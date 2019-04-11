@@ -11,22 +11,29 @@ ID_Actors = {0, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
 
 local buf_edit_targets_name = imgui.ImBuffer(64);
 local buf_edit_actors_name = imgui.ImBuffer(64);
+local buf_edit_cars_name = imgui.ImBuffer(64);
 local buf_edit = imgui.ImFloat(0);
 local main_window = imgui.ImBool(false)
 local targets_window = imgui.ImBool(false)
 local actors_window = imgui.ImBool(false)
+local cars_window = imgui.ImBool(false)
 local targets_window_s1 = imgui.ImBool(false)
 local targets_window_s2 = imgui.ImBool(false)
 local lb_cur_targets = imgui.ImInt(0)
 local lb_cur_actors = imgui.ImInt(0)
+local lb_cur_cars = imgui.ImInt(0)
 local list_targets = {}
 local list_actors = {}
+local list_cars = {}
 local list_name_targets = {}
 local list_name_actors = {}
+local list_name_cars = {}
 local editmode_target = false
+local editmode_actor = false
 local editmode_actor = false
 local id_target = 0;
 local id_actor = 0;
+local id_cars = 0;
 local r
 local miss_start = false
 local update_actor = -1
@@ -41,6 +48,7 @@ function imgui.OnDrawFrame()
 		imgui.Begin(u8'Главное меню', main_window)
 		imgui.Checkbox(u8'Цели',targets_window)
 		imgui.Checkbox(u8'Актёры',actors_window)
+		--imgui.Checkbox(u8'Машины',cars_window)
 		imgui.Separator()
 		if imgui.Button(u8'Запустить миссию') then
 			miss_start = true
@@ -104,7 +112,7 @@ function imgui.OnDrawFrame()
 			if list_targets[i]['Enable'].v then
 				local resX,resY = getScreenResolution()
 				local sizeX,sizeY = 300, 340
-				local targets_list_arr = {u8'Чекпоинт',u8'Сесть в машину'}
+				local targets_list_arr = {u8'Чекпоинт'}--,u8'Сесть в машину'}
 				local targets_marker_color = {u8'Красный',u8'Зелёный',u8'Свело-голубой',u8'Белый',u8'Жёлтый'}
 				imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
 				imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
@@ -114,8 +122,9 @@ function imgui.OnDrawFrame()
 
 				if imgui.Combo(u8'Тип Цели',list_targets[i]['Type'],targets_list_arr) then
 					if list_targets[i]['Type'].v == 0 then
+						local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 						list_targets[i]['Target_Data'] = {}
-						list_targets[i]['Target_Data']['Pos'] = imgui.ImFloat3(2480,-1667,13)
+						list_targets[i]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
 						list_targets[i]['Target_Data']['Radius'] = imgui.ImInt(2)
 						list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
 						list_targets[i]['Target_Data']['Text_time'] = imgui.ImFloat(2)
@@ -176,13 +185,15 @@ function imgui.OnDrawFrame()
 
 		--Кнопки редактирования
 		if imgui.Button(u8'Добавить') then
+			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+			local angle = getCharHeading(PLAYER_PED)
 			list_actors[#list_actors+1] = {
 				['Name'] = u8'Актёр #' .. tostring(#list_actors+1),
 				['Type'] = imgui.ImInt(-1),
 				['Enable'] = imgui.ImBool(false),
 				['Actor_Data'] = {
-					['Pos'] = imgui.ImFloat3(2480,-1667,13),
-					['Angle'] = imgui.ImFloat(0),
+					['Pos'] = imgui.ImFloat3(xx,xy,xz),
+					['Angle'] = imgui.ImFloat(angle),
 					['ModelId'] = imgui.ImInt(0),
 					['StartC'] = imgui.ImInt(0),
 					['EndC'] = imgui.ImInt(0)
@@ -243,6 +254,107 @@ function imgui.OnDrawFrame()
 				imgui.Separator()
 				imgui.Combo(u8'Появление на',list_actors[i]['Actor_Data']['StartC'],list_name_targets)
 				imgui.Combo(u8'Исчезание после',list_actors[i]['Actor_Data']['EndC'],list_name_targets)
+
+				imgui.End()
+			end
+		end
+	end
+
+	-- Окно списка машин
+	if cars_window.v then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 300, 340
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(u8'Машины', cars_window)
+
+		imgui.PushItemWidth(-10)
+
+
+		--Список Машин
+		imgui.ListBox('', lb_cur_cars,list_name_cars,15)
+		if imgui.BeginPopupContextItem('hee') then
+			imgui.InputText('',buf_edit_cars_name)
+			if imgui.Button(u8'Применить') and buf_edit_actors_name.v ~= '' then
+				list_cars[lb_cur_cars.v+1]['Name'] = buf_edit_actors_name.v
+				list_name_cars[lb_cur_cars.v+1] = buf_edit_actors_name.v
+				buf_edit_actors_name.v = ''
+				imgui.CloseCurrentPopup()
+			end
+			imgui.PushItemWidth(-1);
+			imgui.PopItemWidth();
+			imgui.EndPopup();
+		end
+
+		--Кнопки редактирования
+		if imgui.Button(u8'Добавить') then
+			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+			list_cars[#list_cars+1] = {
+				['Name'] = u8'Машина #' .. tostring(#list_cars+1),
+				['Type'] = imgui.ImInt(-1),
+				['Enable'] = imgui.ImBool(false),
+				['Car_Data'] = {
+					['Pos'] = imgui.ImFloat3(xx,xy,xz),
+					['Angle'] = imgui.ImFloat(0),
+					['ModelId'] = imgui.ImInt(0),
+					['StartC'] = imgui.ImInt(0),
+					['EndC'] = imgui.ImInt(0)
+				}
+
+			}
+			list_name_cars[#list_cars] = list_cars[#list_cars]['Name']
+		end
+
+		imgui.SameLine()
+		if imgui.Button(u8'Откр/Закр') then
+			list_cars[lb_cur_cars.v+1]['Enable'].v = not list_cars[lb_cur_cars.v+1]['Enable'].v
+		end
+
+		imgui.SameLine()
+		if imgui.Button(u8'Удалить') then
+			list_cars = DelCellArr(list_cars,lb_cur_cars.v+1)
+			list_name_cars = DelCellArr(list_name_cars,lb_cur_cars.v+1)
+		end
+		imgui.End()
+	end
+
+	--Редактор машин
+	for i = 1, #list_cars do
+		if #list_cars > 0 then
+			if list_cars[i]['Enable'].v then
+				local resX,resY = getScreenResolution()
+				local sizeX,sizeY = 300, 340
+				imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+				imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+				imgui.Begin(list_cars[i]['Name'], list_cars[i]['Enable'])
+				imgui.PushItemWidth(-90)
+
+				if imgui.InputFloat3(u8'Позиция',list_cars[i]['Car_Data']['Pos']) or imgui.SliderFloat(u8'Угол поворота',list_cars[i]['Car_Data']['Angle'],-360,360) then
+					upd_actor:run(i)
+				end
+				if imgui.InputInt(u8'Номер модели',list_cars[i]['Car_Data']['ModelId']) then
+					local id_a = 0
+					for v = 1,#ID_Actors do
+						if list_cars[i]['Car_Data']['ModelId'].v <= ID_Actors[v] then
+							id_a = ID_Actors[v]
+							break
+						end
+					end
+					print(id_a)
+					list_cars[i]['Car_Data']['ModelId'].v = id_a
+					upd_actor:run(i)
+				end
+				if imgui.Button(u8'Редактировать вручную') then
+					editmode_actor = true
+					id_actor = i
+					deleteChar(list_cars[i]['Car_Data']['Car'])
+				end
+
+				imgui.PushItemWidth(-110)
+
+				imgui.Separator()
+				imgui.Combo(u8'Появление на',list_cars[i]['Car_Data']['StartC'],list_name_targets)
+				imgui.Combo(u8'Исчезание после',list_cars[i]['Car_Data']['EndC'],list_name_targets)
 
 				imgui.End()
 			end

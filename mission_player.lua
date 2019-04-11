@@ -5,6 +5,8 @@ koder = require 'TextToGTX'
 encoding = require 'encoding'
 encoding.default = 'CP1251'
 u8 = encoding.UTF8
+mp.actors = {}
+
 
 function mp.start_mission(listt,lista)
 	misflag = mp.flagmis()
@@ -68,10 +70,11 @@ function mp.main_mission(list,list_a)
 				while not isModelAvailable(md) do
 					wait(1)
 				end
-				list_a[a]['Actor_Data']['CharR'] = createChar(4, md, xx, xy, xz)
+				mp.actors[a] = createChar(4, md, xx, xy, xz)
+				setCharHeading(mp.actors[a], list_a[a]['Actor_Data']['Angle'].v)
 			end
 			if list_a[a]['Actor_Data']['EndC'].v + 2 == i then
-				deleteChar(list_a[a]['Actor_Data']['CharR'])
+				deleteChar(mp.actors[a])
 			end
 		end
 		if list[i]['Type'].v == 0 then
@@ -89,6 +92,12 @@ function mp.main_mission(list,list_a)
 			removeBlip(check)
 			--removeSphere(sph[i])
 		end
+	end
+	for v,h in pairs(mp.actors) do
+		deleteChar(mp.actors[v])
+	end
+	for j = 1,#list_a do
+		upd_actor:run(j)
 	end
 	mp.pass(1)
 end
