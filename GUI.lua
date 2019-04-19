@@ -1,3 +1,5 @@
+script_author('SKIC')
+
 vkeys = require 'vkeys'
 imgui = require 'imgui'
 koder = require 'TextToGTX'
@@ -11,32 +13,42 @@ ID_Actors = {0, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
 
 ID_Cars = {400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611}
 
+Anims = {
+	['Anim_name'] = {'PED','BOMBER','POOL','ON_LOOKERS','GANGS','PAULNMAC','BOX'},
+	['Anim_list'] = {{"IDLE_CHAT","ROADCROSS","ATM","FLEE_LKAROUND_01","FUCKU","walk_armed","seat_up","run_armed","idle_gang1","hit_back","hit_r","hit_wall","hit_l","hita_2","climb_pull","bomber","floor_hit_f","fightshb","fall_fall","drown","floor_hit","IDLE_taxi","swim_tread","XPRESSSCRATCH","XPRESSSCRATCH","HANDSUP","KO_SHOT_STOM","KO_SKID_FRONT","DUCK_COWER","GETUP","SEAT_DOWN","ENDCHAT_03","GETUP_FRONT","GUN_STAND","KO_SPIN_L","KO_SKID_BACK","WALK_DRUNK","FALL_SKYDIVE","FALL_FRONT","RUN_PLAYER","WOMAN_IDLESTANCE","TAP_HAND","CAR_SIT","IDLE_STANCE","COWER","CROUCH_ROLL_R","CROUCH_ROLL_L","ENDCHAT_01","KO_SHOT_FACE","PHONE_TALK","KO_SHOT_FRONT","IDLE_ARMED","WEAPON_CROUCH","IDLE_TIRED","SEAT_IDLE","HANDSCOWER","FIGHTIDLE","FIGHTA_G","CAR_HOOKERTALK","HANDSUP","abseil","FIGHTA_M","FIGHTA_block","FIGHTA_2","gas_cwr","ENDCHAT_02"},{"BOM_PLANT_IN","BOM_PLANT_LOOP","BOM_PLANT_CROUCH_IN","BOM_PLANT_CROUCH_OUT","BOM_PLANT_2IDLE"},{"POOL_XLONG_SHOT","POOL_XLONG_START","POOL_LONG_SHOT","POOL_LONG_START","POOL_MED_START","POOL_MED_SHOT","POOL_SHORT_SHOT","POOL_CHALKCUE"},{"LKUP_LOOP","POINTUP_IN","SHOUT_01"},{"PRTIAL_GNGTLKA","PRTIAL_GNGTLKF","PRTIAL_GNGTLKD","PRTIAL_GNGTLKE","HNDSHKFA_SWT", "GANGS","PRTIAL_GNGTLKH","HNDSHKFA","DRUGS_BUY","PRTIAL_GNGTLKC","PRTIAL_GNGTLKH","PRTIAL_GNGTLKG","DRNKBR_PRTL","PRTIAL_GNGTLKB","PRTIAL_HNDSHK_01","DEALER_DEAL"},{"PISS_IN","PISS_LOOP","PISS_OUT","PNM_LOOP_A","PNM_ARGUE2_A","PNM_ARGUE1_A"},{"boxhipin","bxwlko","catch_box","bxshwlk","bxhwlki","boxshup","boxhipup","boxshdwn","bxhipwlk","bxshwlki"}}
+}
 
 local buf_edit_targets_name = imgui.ImBuffer(64);
 local buf_edit_actors_name = imgui.ImBuffer(64);
 local buf_edit_cars_name = imgui.ImBuffer(64);
+local buf_edit_obj_name = imgui.ImBuffer(64);
 local buf_edit = imgui.ImFloat(0);
 local main_window = imgui.ImBool(false)
 local targets_window = imgui.ImBool(false)
 local actors_window = imgui.ImBool(false)
 local cars_window = imgui.ImBool(false)
+local objects_window = imgui.ImBool(false)
 local targets_window_s1 = imgui.ImBool(false)
 local targets_window_s2 = imgui.ImBool(false)
 local lb_cur_targets = imgui.ImInt(0)
 local lb_cur_actors = imgui.ImInt(0)
 local lb_cur_cars = imgui.ImInt(0)
+local lb_cur_objects = imgui.ImInt(0)
 local list_targets = {}
 local list_actors = {}
 local list_cars = {}
+local list_objects = {}
 local list_name_targets = {}
 local list_name_actors = {}
 local list_name_cars = {}
+local list_name_objects = {}
 local editmode_target = false
 local editmode_actor = false
-local editmode_actor = false
+local editmode_objects = false
 local id_target = 0;
 local id_actor = 0;
 local id_cars = 0;
+local id_obj = 0;
 local r
 local miss_start = false
 local update_actor = -1
@@ -52,6 +64,7 @@ function imgui.OnDrawFrame()
 		imgui.Checkbox(u8'Цели',targets_window)
 		imgui.Checkbox(u8'Актёры',actors_window)
 		imgui.Checkbox(u8'Машины',cars_window)
+		imgui.Checkbox(u8'Объекты',objects_window)
 		imgui.Separator()
 		if imgui.Button(u8'Запустить миссию') then
 			miss_start = true
@@ -148,7 +161,7 @@ function imgui.OnDrawFrame()
 
 						if imgui.Button(u8'Режим перемещения') then
 							editmode_target = true
-							printString(koder('Двигать: Стрелки ~n~Выйти: F'),999999)
+							printHelpForever('HTARG')
 							lockPlayerControl(true)
 							id_target = i
 							imgui.Process = false
@@ -173,7 +186,6 @@ function imgui.OnDrawFrame()
 			end
 		end
 	end
-
 
 	-- Окно списка актёров
 	if actors_window.v then
@@ -215,7 +227,8 @@ function imgui.OnDrawFrame()
 					['Angle'] = imgui.ImFloat(angle),
 					['ModelId'] = imgui.ImInt(0),
 					['StartC'] = imgui.ImInt(0),
-					['EndC'] = imgui.ImInt(0)
+					['EndC'] = imgui.ImInt(0),
+					['Anims'] = {}
 				}
 
 			}
@@ -230,6 +243,7 @@ function imgui.OnDrawFrame()
 
 		imgui.SameLine()
 		if imgui.Button(u8'Удалить') then
+			deleteChar(list_actors[lb_cur_actors.v+1]['Actor_Data']['Char'])
 			list_actors = DelCellArr(list_actors,lb_cur_actors.v+1)
 			list_name_actors = DelCellArr(list_name_actors,lb_cur_actors.v+1)
 		end
@@ -240,9 +254,9 @@ function imgui.OnDrawFrame()
 			if #list_actors > 0 then
 				if list_actors[i]['Enable'].v then
 					local resX,resY = getScreenResolution()
-					local sizeX,sizeY = 300, 340
+					local sizeX,sizeY = 400, 340
 					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 300,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
 					imgui.Begin(list_actors[i]['Name'], list_actors[i]['Enable'])
 					imgui.PushItemWidth(-90)
 
@@ -278,7 +292,45 @@ function imgui.OnDrawFrame()
 					end
 					imgui.Combo(u8'Появление на',list_actors[i]['Actor_Data']['StartC'],list_name_targets)
 					imgui.Combo(u8'Исчезание после',list_actors[i]['Actor_Data']['EndC'],list_tg_m)
+					imgui.Separator()
+					imgui.Text(u8'Анимации')
+					if imgui.Button(u8'Добавить') then
+						list_actors[i]['Actor_Data']['Anims'][#list_actors[i]['Actor_Data']['Anims']+1] = {
+							['Anim'] = imgui.ImInt(0),
+							['Pack_anim'] = imgui.ImInt(0),
+							['Loop'] = imgui.ImBool(false),
+							['Time'] = imgui.ImFloat(1.0),
+							['Condition'] = imgui.ImInt(0)
+						}
+					end
+					imgui.SameLine()
+					if imgui.Button(u8'Очистить предпросмотр') then
+						taskPlayAnim(list_actors[i]['Actor_Data']['Char'], 'NULL', 'NULL', 1.0, true, false, false, false, -1)
+					end
+					imgui.PushItemWidth(-150)
+					for a = 1,#list_actors[i]['Actor_Data']['Anims'] do
+						if imgui.TreeNode(u8:encode(a)) then
+							local cond_type = {u8'Ничего',u8'На Цели'}
+							if imgui.Combo(u8'Условие',list_actors[i]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
+								if list_actors[i]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
+									list_actors[i]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
+								end
+							end
+							if list_actors[i]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
+								imgui.Combo(u8'Цель',list_actors[i]['Actor_Data']['Anims'][a]['Target'],list_name_targets)
+							end
+							imgui.Combo(u8'Пак',list_actors[i]['Actor_Data']['Anims'][a]['Pack_anim'],Anims['Anim_name'])
+							imgui.Combo(u8'Анимация',list_actors[i]['Actor_Data']['Anims'][a]['Anim'],Anims['Anim_list'][list_actors[i]['Actor_Data']['Anims'][a]['Pack_anim'].v+1])
+							imgui.InputFloat(u8'Время анимации (сек)',list_actors[i]['Actor_Data']['Anims'][a]['Time'],0)
+							imgui.Checkbox(u8'Зацикленно',list_actors[i]['Actor_Data']['Anims'][a]['Loop'])
+							if imgui.Button(u8'Предпросмотр') then
+								upd_anim_actor:run(i,a)
+							end
+							imgui.Button(u8'Удалить')
+							imgui.TreePop()
 
+						end
+					end
 					imgui.End()
 				end
 			end
@@ -339,6 +391,7 @@ function imgui.OnDrawFrame()
 
 		imgui.SameLine()
 		if imgui.Button(u8'Удалить') then
+			deleteCar(list_cars[lb_cur_cars.v+1]['Car_Data']['Car'])
 			list_cars = DelCellArr(list_cars,lb_cur_cars.v+1)
 			list_name_cars = DelCellArr(list_name_cars,lb_cur_cars.v+1)
 		end
@@ -393,6 +446,111 @@ function imgui.OnDrawFrame()
 		end
 	end
 
+	-- Окно списка объектов
+	if objects_window.v then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 300, 340
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(u8'Объекты', objects_window)
+
+		imgui.PushItemWidth(-10)
+
+
+		--Список Объектов
+		imgui.ListBox('', lb_cur_objects,list_name_objects,15)
+		if imgui.BeginPopupContextItem('hee') then
+			imgui.InputText('',buf_edit_obj_name)
+			if imgui.Button(u8'Применить') and buf_edit_obj_name.v ~= '' then
+				list_objects[lb_cur_objects.v+1]['Name'] = buf_edit_obj_name.v
+				list_name_objects[lb_cur_objects.v+1] = buf_edit_obj_name.v
+				buf_edit_obj_name.v = ''
+				imgui.CloseCurrentPopup()
+			end
+			imgui.PushItemWidth(-1);
+			imgui.PopItemWidth();
+			imgui.EndPopup();
+		end
+
+		--Кнопки редактирования
+		if imgui.Button(u8'Добавить') then
+			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+			xz = getGroundZFor3dCoord(xx, xy, xz)
+			list_objects[#list_objects+1] = {
+				['Name'] = u8'Объект #' .. tostring(#list_objects+1),
+				['Type'] = imgui.ImInt(-1),
+				['Enable'] = imgui.ImBool(false),
+				['Object_Data'] = {
+					['Pos'] = imgui.ImFloat3(xx,xy,xz),
+					['Rotates'] = imgui.ImFloat3(0,0,0),
+					['ModelId'] = imgui.ImInt(400),
+					['StartC'] = imgui.ImInt(0),
+					['EndC'] = imgui.ImInt(0)
+				}
+
+			}
+			list_name_objects[#list_objects] = list_objects[#list_objects]['Name']
+		end
+
+		imgui.SameLine()
+		if imgui.Button(u8'Откр/Закр') and #list_objects > 0 then
+			list_objects[lb_cur_objects.v+1]['Enable'].v = not list_objects[lb_cur_objects.v+1]['Enable'].v
+		end
+
+		imgui.SameLine()
+		if imgui.Button(u8'Удалить') then
+			deleteObject(list_objects[lb_cur_objects.v+1]['Object_Data']['Obj'])
+			list_objects = DelCellArr(list_objects,lb_cur_objects.v+1)
+			list_name_objects = DelCellArr(list_name_objects,lb_cur_objects.v+1)
+		end
+		imgui.End()
+		--Редактор объектов
+		for i = 1, #list_objects do
+			if #list_objects > 0 then
+				if list_objects[i]['Enable'].v then
+					local resX,resY = getScreenResolution()
+					local sizeX,sizeY = 300, 340
+					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+					imgui.Begin(list_objects[i]['Name'], list_objects[i]['Enable'])
+					imgui.PushItemWidth(-90)
+
+					if imgui.InputFloat3(u8'Позиция',list_objects[i]['Object_Data']['Pos']) or imgui.InputFloat3(u8'Угол поворота',list_objects[i]['Object_Data']['Rotates']) then
+						local xx,xy,xz = list_objects[i]['Object_Data']['Pos'].v[1],list_objects[i]['Object_Data']['Pos'].v[2],list_objects[i]['Object_Data']['Pos'].v[3]
+						local rxx,rxy,rxz = list_objects[i]['Object_Data']['Rotates'].v[1],list_objects[i]['Object_Data']['Rotates'].v[2],list_objects[i]['Object_Data']['Rotates'].v[3]
+						setObjectCoordinates(list_objects[i]['Object_Data']['Obj'],xx,xy,xz)
+						setObjectRotation(list_objects[i]['Object_Data']['Obj'], rxx, rxy, rxz)
+					end
+					if imgui.Button(u8'Редактировать вручную') then
+						if list_objects[i]['Object_Data']['Obj'] ~= nil then
+							editmode_objects = true
+							printHelpForever('HOBJ')
+							lockPlayerControl(true)
+							id_obj = i
+							imgui.Process = false
+						end
+					end
+					imgui.InputInt(u8'Номер модели',list_objects[i]['Object_Data']['ModelId'])
+					if imgui.Button(u8'Применить') then
+						upd_object:run(i)
+					end
+
+					imgui.PushItemWidth(-110)
+
+					imgui.Separator()
+					local list_tg_m = {u8'До конца'}
+					for ltg = 1,#list_name_targets do
+						list_tg_m[#list_tg_m+1] = list_name_targets[ltg]
+					end
+					imgui.Combo(u8'Появление на',list_objects[i]['Object_Data']['StartC'],list_name_targets)
+					imgui.Combo(u8'Исчезание после',list_objects[i]['Object_Data']['EndC'],list_tg_m)
+
+					imgui.End()
+				end
+			end
+		end
+	end
+
 end
 
 -- Удаление ячейки
@@ -430,6 +588,18 @@ function update_actor(actorr)
 	setCharCollision(list_actors[actorr]['Actor_Data']['Char'],false)
 end
 
+function update_actor_animation(actorr,anim)
+	if not hasAnimationLoaded(Anims['Anim_name'][list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1]) then
+		requestAnimation(Anims['Anim_name'][list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1])
+		while hasAnimationLoaded(Anims['Anim_name'][list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1]) do
+			wait(0)
+		end
+	end
+	local animm = Anims['Anim_list'][list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1]
+	animm = animm[list_actors[actorr]['Actor_Data']['Anims'][anim]['Anim'].v+1]
+	taskPlayAnim(list_actors[actorr]['Actor_Data']['Char'], animm, Anims['Anim_name'][list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1], 1.0, list_actors[actorr]['Actor_Data']['Anims'][anim]['Loop'].v, false, false, false, -1)
+end
+
 function update_car(carr)
 	local modell = list_cars[carr]['Car_Data']['ModelId'].v
 	local xx,xy,xz = list_cars[carr]['Car_Data']['Pos'].v[1], list_cars[carr]['Car_Data']['Pos'].v[2], list_cars[carr]['Car_Data']['Pos'].v[3]
@@ -452,19 +622,40 @@ function update_car(carr)
 	list_cars[carr]['Car_Data']['Car'] = createCar(modell, xx, xy, xz)
 	setCarHeading(list_cars[carr]['Car_Data']['Car'], angle)
 	setCarCollision(list_cars[carr]['Car_Data']['Car'],false)
-	setCarStatus(list_cars[carr]['Car_Data']['Car'], 2)
+	freezeCarPosition(list_cars[carr]['Car_Data']['Car'], true)
 	setCarCanBeDamaged(list_cars[carr]['Car_Data']['Car'], false)
-	changeCarColour(list_cars[carr]['Car_Data']['Car'], 1, 1)
+	changeCarColour(list_cars[carr]['Car_Data']['Car'], 0, 1)
+end
+
+function update_object(objj)
+	local modell = list_objects[objj]['Object_Data']['ModelId'].v
+	local xx,xy,xz = list_objects[objj]['Object_Data']['Pos'].v[1], list_objects[objj]['Object_Data']['Pos'].v[2], list_objects[objj]['Object_Data']['Pos'].v[3]
+	local rxx,rxy,rxz = list_objects[objj]['Object_Data']['Rotates'].v[1], list_objects[objj]['Object_Data']['Rotates'].v[2], list_objects[objj]['Object_Data']['Rotates'].v[3]
+
+	requestModel(modell)
+	while not hasModelLoaded(modell) do
+		wait(1)
+	end
+
+	deleteObject(list_objects[objj]['Object_Data']['Obj'])
+	list_objects[objj]['Object_Data']['Obj'] = createObject(modell, xx, xy, xz)
+	setObjectCollision(list_objects[objj]['Object_Data']['Obj'], false)
+	setObjectRotation(list_objects[objj]['Object_Data']['Obj'], rxx, rxy, rxz)
 end
 
 
 
-
-
-
 function main()
+	setGxtEntry('HTARG', koder('Двигать: ~r~WASD ~n~~w~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
+	setGxtEntry('HACT', koder('Следующий/Прошлый скин: ~r~I/O~w~~n~Через 10 Следующий/Прошлый: ~r~K/L~w~~n~Выйти: ~r~F'))
+	setGxtEntry('HOBJ', koder('Двигать: ~r~WASD~w~ ~n~Крутить: ~r~SHIFT + WASD~w~~n~Замедлить: ~r~CTRL~w~~n~Выйти: F'))
+
+
 	upd_actor = lua_thread.create_suspended(update_actor)
 	upd_car = lua_thread.create_suspended(update_car)
+	upd_anim_actor = lua_thread.create_suspended(update_actor_animation)
+	upd_object = lua_thread.create_suspended(update_object)
+	mp.tread_play_actr_anim = lua_thread.create_suspended(mp.play_char_anims)
 	while true do
 		wait(0)
 		removeSphere(r)
@@ -474,27 +665,27 @@ function main()
 			--Закрытие редактора
 			if wasKeyPressed(vkeys.VK_F) then
 				lockPlayerControl(false)
-				clearPrints()
+				clearHelp()
 				editmode_target = false
 			end
 			--Переменная замедления
 			local multy = 1
-			if isKeyDown(vkeys.VK_SHIFT) then
+			if isKeyDown(vkeys.VK_CONTROL) then
 				multy = 0.5
 			else
 				multy = 1
 			end
 			--Управление
-			if isKeyDown(vkeys.VK_LEFT) then
+			if isKeyDown(vkeys.VK_A) then
 				list_targets[id_target]['Target_Data']['Pos'].v[2] = list_targets[id_target]['Target_Data']['Pos'].v[2] - 0.2 * multy
 			end
-			if isKeyDown(vkeys.VK_RIGHT) then
+			if isKeyDown(vkeys.VK_D) then
 				list_targets[id_target]['Target_Data']['Pos'].v[2] = list_targets[id_target]['Target_Data']['Pos'].v[2] + 0.2 * multy
 			end
-			if isKeyDown(vkeys.VK_UP) then
+			if isKeyDown(vkeys.VK_W) then
 				list_targets[id_target]['Target_Data']['Pos'].v[1] = list_targets[id_target]['Target_Data']['Pos'].v[1] - 0.2 * multy
 			end
-			if isKeyDown(vkeys.VK_DOWN) then
+			if isKeyDown(vkeys.VK_S) then
 				list_targets[id_target]['Target_Data']['Pos'].v[1] = list_targets[id_target]['Target_Data']['Pos'].v[1] + 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_SPACE) then
@@ -515,13 +706,13 @@ function main()
 			local xx,xy,xz = list_actors[id_actor]['Actor_Data']['Pos'].v[1],list_actors[id_actor]['Actor_Data']['Pos'].v[2],list_actors[id_actor]['Actor_Data']['Pos'].v[3]
 			setCharCoordinates(PLAYER_PED, xx, xy, xz)
 			setCharHeading(PLAYER_PED, list_actors[id_actor]['Actor_Data']['Angle'].v)
-			printString(koder('Следующий/Прошлый скин: I/O~n~Через 10 Следующий/Прошлый: K/L~n~Выйти: F'), 99999)
+			printHelpForever('HACT')
 		end
 		while editmode_actor do
 			--Закрытие редактора
 			wait(0)
 			if wasKeyPressed(vkeys.VK_F) then
-				clearPrints()
+				clearHelp()
 				editmode_actor = false
 				setPlayerModel(PLAYER_HANDLE, model.NULL)
 				local xx,xy,xz = getCharCoordinates(PLAYER_PED)
@@ -603,6 +794,67 @@ function main()
 			end
 		end
 
+		while editmode_objects do
+			wait(0)
+			--Закрытие редактора
+			if wasKeyPressed(vkeys.VK_F) then
+				lockPlayerControl(false)
+				clearHelp()
+				editmode_objects = false
+			end
+			--Переменная замедления
+			local multy = 1
+			if isKeyDown(vkeys.VK_CONTROL) then
+				multy = 0.5
+			else
+				multy = 1
+			end
+			--Управление
+			if isKeyDown(vkeys.VK_A) and not isKeyDown(vkeys.VK_SHIFT) then
+				list_objects[id_obj]['Object_Data']['Pos'].v[2] = list_objects[id_obj]['Object_Data']['Pos'].v[2] - 0.2 * multy
+			end
+			if isKeyDown(vkeys.VK_D) and not isKeyDown(vkeys.VK_SHIFT) then
+				list_objects[id_obj]['Object_Data']['Pos'].v[2] = list_objects[id_obj]['Object_Data']['Pos'].v[2] + 0.2 * multy
+			end
+			if isKeyDown(vkeys.VK_W) and not isKeyDown(vkeys.VK_SHIFT) then
+				list_objects[id_obj]['Object_Data']['Pos'].v[1] = list_objects[id_obj]['Object_Data']['Pos'].v[1] - 0.2 * multy
+			end
+			if isKeyDown(vkeys.VK_S) and not isKeyDown(vkeys.VK_SHIFT)  then
+				list_objects[id_obj]['Object_Data']['Pos'].v[1] = list_objects[id_obj]['Object_Data']['Pos'].v[1] + 0.2 * multy
+			end
+			if isKeyDown(vkeys.VK_Q) and not isKeyDown(vkeys.VK_SHIFT)  then
+				list_objects[id_obj]['Object_Data']['Pos'].v[3] = list_objects[id_obj]['Object_Data']['Pos'].v[3] + 0.2 * multy
+			end
+			if isKeyDown(vkeys.VK_E) and not isKeyDown(vkeys.VK_SHIFT)  then
+				list_objects[id_obj]['Object_Data']['Pos'].v[3] = list_objects[id_obj]['Object_Data']['Pos'].v[3] - 0.2 * multy
+			end
+			if isKeyDown(vkeys.VK_SHIFT) then
+				if isKeyDown(vkeys.VK_A) then
+					list_objects[id_obj]['Object_Data']['Rotates'].v[2] = list_objects[id_obj]['Object_Data']['Rotates'].v[2] - 0.2 * multy
+				end
+				if isKeyDown(vkeys.VK_D) then
+					list_objects[id_obj]['Object_Data']['Rotates'].v[2] = list_objects[id_obj]['Object_Data']['Rotates'].v[2] + 0.2 * multy
+				end
+				if isKeyDown(vkeys.VK_W) then
+					list_objects[id_obj]['Object_Data']['Rotates'].v[1] = list_objects[id_obj]['Object_Data']['Rotates'].v[1] - 0.2 * multy
+				end
+				if isKeyDown(vkeys.VK_S) then
+					list_objects[id_obj]['Object_Data']['Rotates'].v[1] = list_objects[id_obj]['Object_Data']['Rotates'].v[1] + 0.2 * multy
+				end
+				if isKeyDown(vkeys.VK_E) then
+					list_objects[id_obj]['Object_Data']['Rotates'].v[3] = list_objects[id_obj]['Object_Data']['Rotates'].v[3] - 0.2 * multy
+				end
+				if isKeyDown(vkeys.VK_Q) then
+					list_objects[id_obj]['Object_Data']['Rotates'].v[3] = list_objects[id_obj]['Object_Data']['Rotates'].v[3] + 0.2 * multy
+				end
+			end
+			--Отрисовка в редакторе
+			local xx,xy,xz = list_objects[id_obj]['Object_Data']['Pos'].v[1],list_objects[id_obj]['Object_Data']['Pos'].v[2],list_objects[id_obj]['Object_Data']['Pos'].v[3]
+			local rxx,rxy,rxz = list_objects[id_obj]['Object_Data']['Rotates'].v[1],list_objects[id_obj]['Object_Data']['Rotates'].v[2],list_objects[id_obj]['Object_Data']['Rotates'].v[3]
+			setObjectCoordinates(list_objects[id_obj]['Object_Data']['Obj'], xx, xy, xz)
+			setObjectRotation(list_objects[id_obj]['Object_Data']['Obj'], rxx, rxy, rxz)
+		end
+
 		for i = 1, #list_targets do
 			if list_targets[i]['Type'].v == 0 then
 				drawSphere(list_targets[i]['Target_Data']['Pos'].v[1], list_targets[i]['Target_Data']['Pos'].v[2], list_targets[i]['Target_Data']['Pos'].v[3],list_targets[i]['Target_Data']['Radius'].v)
@@ -616,7 +868,7 @@ function main()
 			for c = 1,#list_cars do
 				deleteCar(list_cars[c]['Car_Data']['Car'])
 			end
-			mp.start_mission(list_targets,list_actors,list_cars)
+			mp.start_mission(list_targets,list_actors,list_cars,list_objects)
 			miss_start = false
 		end
 

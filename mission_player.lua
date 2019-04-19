@@ -7,13 +7,14 @@ encoding.default = 'CP1251'
 u8 = encoding.UTF8
 mp.actors = {}
 mp.cars = {}
+mp.objects = {}
+curr_target = 0
 
-
-function mp.start_mission(listt,lista,listc)
+function mp.start_mission(listt,lista,listc,listo)
 	misflag = mp.flagmis()
 	mp.miss = mp.start()
 	imgui.Process = false
-	mp.main_mission(listt,lista,listc)
+	mp.main_mission(listt,lista,listc,listo)
 end
 
 function mp.flagmis()
@@ -61,8 +62,31 @@ function mp.fall()
   mp.miss = 0
 end
 
-function mp.main_mission(list,list_a,list_c)
+function mp.play_char_anims(ped,actr)
+	local curr_anim = 1
+	while curr_anim <= #actr['Anims'] do
+		wait(0)
+		if actr['Anims'][curr_anim]['Condition'].v == 0 then
+			local animm = Anims['Anim_list'][actr['Anims'][curr_anim]['Pack_anim'].v+1]
+			animm = animm[actr['Anims'][curr_anim]['Anim'].v+1]
+			taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1)
+			wait(actr['Anims'][curr_anim]['Time'].v * 1000.0)
+			curr_anim = curr_anim + 1
+		elseif actr['Anims'][curr_anim]['Condition'].v == 1 then
+			if curr_target == actr['Anims'][curr_anim]['Target'].v+1 then
+				local animm = Anims['Anim_list'][actr['Anims'][curr_anim]['Pack_anim'].v+1]
+				animm = animm[actr['Anims'][curr_anim]['Anim'].v+1]
+				taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1)
+				wait(actr['Anims'][curr_anim]['Time'].v * 1000.0)
+				curr_anim = curr_anim + 1
+			end
+		end
+	end
+end
+
+function mp.main_mission(list,list_a,list_c,list_o)
 	for i = 1,#list do
+		curr_target = i
 		for a = 1,#list_a do
 			if list_a[a]['Actor_Data']['StartC'].v + 1 == i then
 				local md = list_a[a]['Actor_Data']['ModelId'].v
@@ -73,6 +97,7 @@ function mp.main_mission(list,list_a,list_c)
 				end
 				mp.actors[a] = createChar(4, md, xx, xy, xz)
 				setCharHeading(mp.actors[a], list_a[a]['Actor_Data']['Angle'].v)
+				mp.tread_play_actr_anim:run(mp.actors[a], list_a[a]['Actor_Data'])
 			end
 			if list_a[a]['Actor_Data']['EndC'].v ~= 0 and list_a[a]['Actor_Data']['EndC'].v + 1 == i then
 				deleteChar(mp.actors[a])
@@ -93,6 +118,19 @@ function mp.main_mission(list,list_a,list_c)
 				deleteCar(mp.cars[c])
 			end
 		end
+		for o = 1,#list_o do
+			if list_o[o]['Object_Data']['StartC'].v + 1 == i then
+				local md = list_o[o]['Object_Data']['ModelId'].v
+				local xx,xy,xz = list_o[o]['Object_Data']['Pos'].v[1], list_o[o]['Object_Data']['Pos'].v[2], list_o[o]['Object_Data']['Pos'].v[3]
+				local rxx,rxy,rxz = list_o[o]['Object_Data']['Rotates'].v[1], list_o[o]['Object_Data']['Rotates'].v[2], list_o[o]['Object_Data']['Rotates'].v[3]
+
+				mp.objects[o] = createObject(md, xx, xy, xz)
+				setObjectRotation(mp.objects[o], rxx, rxy, rxz)
+			end
+			if list_o[o]['Object_Data']['EndC'].v ~= 0 and list_o[o]['Object_Data']['EndC'].v + 1 == i then
+				deleteObject(mp.objects[o])
+			end
+		end
 		if list[i]['Type'].v == 0 then
 			wait(100)
 			local xx,xy,xz = list[i]['Target_Data']['Pos'].v[1],list[i]['Target_Data']['Pos'].v[2],list[i]['Target_Data']['Pos'].v[3]
@@ -101,7 +139,7 @@ function mp.main_mission(list,list_a,list_c)
 			printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)),list[i]['Target_Data']['Text_time'].v * 1000)
 			local check = addBlipForCoord(xx,xy,xz)
 			changeBlipColour(check,list[i]['Target_Data']['Color_blip'].v)
-			while not locateCharOnFoot3d(PLAYER_PED,xx,xy,xz,rad,rad,rad,true) do
+			while not locateCharAnyMeans3d(PLAYER_PED,xx,xy,xz,rad,rad,rad,true) do
 				wait(0)
 			end
 			removeBlip(check)
@@ -119,7 +157,7 @@ function mp.main_mission(list,list_a,list_c)
 		if list[i]['Type'].v == 2 then
 			local check = addBlipForChar(mp.actors[list[i]['Target_Data']['Target_actor_id'].v+1])
 			changeBlipColour(check, 0)
-			printString(koder('Цель: убей ~r~машину'), 2000)
+			printString(koder('Цель: убей ~r~человека'), 2000)
 			while not isCharDead(mp.actors[list[i]['Target_Data']['Target_actor_id'].v+1]) do
 				wait(0)
 			end
@@ -139,11 +177,17 @@ function mp.main_mission(list,list_a,list_c)
 	for v,h in pairs(mp.cars) do
 		deleteCar(mp.cars[v])
 	end
+	for v,h in pairs(mp.objects) do
+		deleteObject(mp.objects[v])
+	end
 	for j = 1,#list_a do
 		upd_actor:run(j)
 	end
 	for j = 1,#list_c do
 		upd_car:run(j)
+	end
+	for j = 1,#list_o do
+		upd_object:run(j)
 	end
 end
 
