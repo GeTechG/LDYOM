@@ -43,6 +43,7 @@ local list_name_actors = {}
 local list_name_cars = {}
 local list_name_objects = {}
 local editmode_target = false
+local editmode_camera = false
 local editmode_actor = false
 local editmode_objects = false
 local id_target = 0;
@@ -127,7 +128,7 @@ function imgui.OnDrawFrame()
 				if list_targets[i]['Enable'].v then
 					local resX,resY = getScreenResolution()
 					local sizeX,sizeY = 300, 340
-					local targets_list_arr = {u8'Чекпоинт',u8'Сесть в машину',u8'Убить Актёра'}
+					local targets_list_arr = {u8'Чекпоинт',u8'Сесть в машину',u8'Убить Актёра',u8'Катсцена'}
 					local targets_marker_color = {u8'Красный',u8'Зелёный',u8'Свело-голубой',u8'Белый',u8'Жёлтый'}
 					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
 					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
@@ -137,8 +138,8 @@ function imgui.OnDrawFrame()
 
 					if imgui.Combo(u8'Тип Цели',list_targets[i]['Type'],targets_list_arr) then
 						list_targets[i]['Target_Data'] = {}
+						local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 						if list_targets[i]['Type'].v == 0 then
-							local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 							list_targets[i]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
 							list_targets[i]['Target_Data']['Radius'] = imgui.ImInt(2)
 							list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
@@ -152,6 +153,13 @@ function imgui.OnDrawFrame()
 						if list_targets[i]['Type'].v == 2 then
 							list_targets[i]['Target_Data']['Target_actor_id'] = imgui.ImInt(0)
 							list_targets[i]['Target_Data']['Color_blip'] = imgui.ImInt(0)
+						end
+						if list_targets[i]['Type'].v == 3 then
+							list_targets[i]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
+							list_targets[i]['Target_Data']['Rotates'] = imgui.ImFloat3(0,0,0)
+							list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
+							list_targets[i]['Target_Data']['Text_time'] = imgui.ImFloat(2)
+							list_targets[i]['Target_Data']['Smooth'] = imgui.ImBool(false)
 						end
 
 					end
@@ -179,6 +187,21 @@ function imgui.OnDrawFrame()
 					if list_targets[i]['Type'].v == 2 then
 						imgui.Combo(u8'Актёры',list_targets[i]['Target_Data']['Target_actor_id'],list_name_actors)
 						imgui.Combo(u8'Цвет маркера',list_targets[i]['Target_Data']['Color_blip'],targets_marker_color)
+					end
+
+					if list_targets[i]['Type'].v == 3 then
+						imgui.InputFloat3(u8'Позиция',list_targets[i]['Target_Data']['Pos'])
+						imgui.InputFloat3(u8'Угл поворота',list_targets[i]['Target_Data']['Rotates'])
+						if imgui.Button(u8'Режим перемещения') then
+							editmode_camera = true
+							printHelpForever('HOBJ')
+							lockPlayerControl(true)
+							id_target = i
+							imgui.Process = false
+						end
+						imgui.Checkbox(u8'Движение камеры',list_targets[i]['Target_Data']['Smooth'])
+						imgui.InputText(u8'Текст',list_targets[i]['Target_Data']['Text'])
+						imgui.InputFloat(u8'Время катсцены (сек)',list_targets[i]['Target_Data']['Text_time'])
 					end
 
 					imgui.End()
@@ -281,6 +304,7 @@ function imgui.OnDrawFrame()
 						editmode_actor = true
 						id_actor = i
 						deleteChar(list_actors[i]['Actor_Data']['Char'])
+						printHelpForever('HACT')
 					end
 
 					imgui.PushItemWidth(-110)
@@ -648,8 +672,8 @@ end
 function main()
 	setGxtEntry('HTARG', koder('Двигать: ~r~WASD ~n~~w~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
 	setGxtEntry('HACT', koder('Следующий/Прошлый скин: ~r~I/O~w~~n~Через 10 Следующий/Прошлый: ~r~K/L~w~~n~Выйти: ~r~F'))
-	setGxtEntry('HOBJ', koder('Двигать: ~r~WASD~w~ ~n~Крутить: ~r~SHIFT + WASD~w~~n~Замедлить: ~r~CTRL~w~~n~Выйти: F'))
-
+	setGxtEntry('HOBJ', koder('Двигать: ~r~WASD~w~ ~n~Крутить: ~r~SHIFT + WASD~w~~n~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
+	--chr = createObject(1253, 0, 0, 0, 0)
 
 	upd_actor = lua_thread.create_suspended(update_actor)
 	upd_car = lua_thread.create_suspended(update_car)
@@ -853,6 +877,98 @@ function main()
 			local rxx,rxy,rxz = list_objects[id_obj]['Object_Data']['Rotates'].v[1],list_objects[id_obj]['Object_Data']['Rotates'].v[2],list_objects[id_obj]['Object_Data']['Rotates'].v[3]
 			setObjectCoordinates(list_objects[id_obj]['Object_Data']['Obj'], xx, xy, xz)
 			setObjectRotation(list_objects[id_obj]['Object_Data']['Obj'], rxx, rxy, rxz)
+		end
+		if editmode_camera then
+			displayRadar(false)
+			displayHud(false)
+		end
+		while editmode_camera do
+			wait(0)
+			--Переменная замедления
+			local multy = 1
+			if isKeyDown(vkeys.VK_CONTROL) then
+				multy = 0.5
+			else
+				multy = 1
+			end
+
+			if isKeyDown(vkeys.VK_A) and not isKeyDown(vkeys.VK_SHIFT) then
+				local sinn = math.sin(math.rad(list_targets[id_target]['Target_Data']['Rotates'].v[2]+90))
+				local coss = math.cos(math.rad(list_targets[id_target]['Target_Data']['Rotates'].v[2]+90))
+				list_targets[id_target]['Target_Data']['Pos'].v[1] = list_targets[id_target]['Target_Data']['Pos'].v[1] - 0.2 *sinn * multy
+				list_targets[id_target]['Target_Data']['Pos'].v[2] = list_targets[id_target]['Target_Data']['Pos'].v[2] - 0.2 *coss * multy
+			end
+			if isKeyDown(vkeys.VK_D) and not isKeyDown(vkeys.VK_SHIFT) then
+				local sinn = math.sin(math.rad(list_targets[id_target]['Target_Data']['Rotates'].v[2]-90))
+				local coss = math.cos(math.rad(list_targets[id_target]['Target_Data']['Rotates'].v[2]-90))
+				list_targets[id_target]['Target_Data']['Pos'].v[1] = list_targets[id_target]['Target_Data']['Pos'].v[1] - 0.2 *sinn * multy
+				list_targets[id_target]['Target_Data']['Pos'].v[2] = list_targets[id_target]['Target_Data']['Pos'].v[2] - 0.2 *coss * multy
+			end
+			if isKeyDown(vkeys.VK_W) and not isKeyDown(vkeys.VK_SHIFT) then
+				local sinn = math.sin(math.rad(list_targets[id_target]['Target_Data']['Rotates'].v[2]))
+				local coss = math.cos(math.rad(list_targets[id_target]['Target_Data']['Rotates'].v[2]))
+				list_targets[id_target]['Target_Data']['Pos'].v[1] = list_targets[id_target]['Target_Data']['Pos'].v[1] + 0.2 *sinn * multy
+				list_targets[id_target]['Target_Data']['Pos'].v[2] = list_targets[id_target]['Target_Data']['Pos'].v[2] + 0.2 *coss * multy
+			end
+			if isKeyDown(vkeys.VK_S) and not isKeyDown(vkeys.VK_SHIFT)  then
+				local sinn = math.sin(math.rad(list_targets[id_target]['Target_Data']['Rotates'].v[2]))
+				local coss = math.cos(math.rad(list_targets[id_target]['Target_Data']['Rotates'].v[2]))
+				list_targets[id_target]['Target_Data']['Pos'].v[1] = list_targets[id_target]['Target_Data']['Pos'].v[1] - 0.2 *sinn * multy
+				list_targets[id_target]['Target_Data']['Pos'].v[2] = list_targets[id_target]['Target_Data']['Pos'].v[2] - 0.2 *coss * multy
+			end
+			if isKeyDown(vkeys.VK_Q) and not isKeyDown(vkeys.VK_SHIFT)  then
+				list_targets[id_target]['Target_Data']['Pos'].v[3] = list_targets[id_target]['Target_Data']['Pos'].v[3] + 0.2 * multy
+			end
+			if isKeyDown(vkeys.VK_E) and not isKeyDown(vkeys.VK_SHIFT)  then
+				list_targets[id_target]['Target_Data']['Pos'].v[3] = list_targets[id_target]['Target_Data']['Pos'].v[3] - 0.2 * multy
+			end
+			if isKeyDown(vkeys.VK_SHIFT) then
+				if isKeyDown(vkeys.VK_A) then
+					list_targets[id_target]['Target_Data']['Rotates'].v[2] = list_targets[id_target]['Target_Data']['Rotates'].v[2] - 0.5 * multy
+				end
+				if isKeyDown(vkeys.VK_D) then
+					list_targets[id_target]['Target_Data']['Rotates'].v[2] = list_targets[id_target]['Target_Data']['Rotates'].v[2] + 0.5 * multy
+				end
+				if isKeyDown(vkeys.VK_W) then
+					list_targets[id_target]['Target_Data']['Rotates'].v[1] = list_targets[id_target]['Target_Data']['Rotates'].v[1] - 0.5 * multy
+				end
+				if isKeyDown(vkeys.VK_S) then
+					list_targets[id_target]['Target_Data']['Rotates'].v[1] = list_targets[id_target]['Target_Data']['Rotates'].v[1] + 0.5 * multy
+				end
+				if isKeyDown(vkeys.VK_E) then
+					list_targets[id_target]['Target_Data']['Rotates'].v[3] = list_targets[id_target]['Target_Data']['Rotates'].v[3] - 0.5 * multy
+				end
+				if isKeyDown(vkeys.VK_Q) then
+					list_targets[id_target]['Target_Data']['Rotates'].v[3] = list_targets[id_target]['Target_Data']['Rotates'].v[3] + 0.2 * multy
+				end
+			end
+
+			local xx,xy,xz = list_targets[id_target]['Target_Data']['Pos'].v[1],list_targets[id_target]['Target_Data']['Pos'].v[2],list_targets[id_target]['Target_Data']['Pos'].v[3]
+			local rxx,rxy,rxz = list_targets[id_target]['Target_Data']['Rotates'].v[1],list_targets[id_target]['Target_Data']['Rotates'].v[2],list_targets[id_target]['Target_Data']['Rotates'].v[3]
+			local x1,y1,z1 = xx,xy,xz
+			local dx,dy,dz = xx+2-x1,xy+2-y1,xz+2-z1
+			x1 = x1 + dx*math.sin(math.rad(rxy))
+			y1 = y1 + dy*math.cos(math.rad(rxy))
+			z1 = z1
+			dx,dy,dz = xx+2-x1,xy+2-y1,xz+2-z1
+			x1 = x1 + dx*math.sin(math.rad(rxy))
+			y1 = y1 + dy*math.cos(math.rad(rxy))
+			z1 = z1 + dz*math.cos(math.rad(rxx))
+
+			--setObjectCoordinates(chr, x1, y1, z1)
+			setFixedCameraPosition(xx, xy, xz,0,rxz,0)
+			pointCameraAtPoint(x1, y1, z1, 2)
+			setCinemaCamera(false)
+
+			--Закрытие редактора
+			if wasKeyPressed(vkeys.VK_F) then
+				lockPlayerControl(false)
+				clearHelp()
+				restoreCamera()
+				editmode_camera = false
+				displayRadar(true)
+				displayHud(true)
+			end
 		end
 
 		for i = 1, #list_targets do

@@ -163,6 +163,35 @@ function mp.main_mission(list,list_a,list_c,list_o)
 			end
 			removeBlip(check)
 		end
+		if list[i]['Type'].v == 3 then
+			displayRadar(false)
+			displayHud(false)
+			local xx,xy,xz = list[i]['Target_Data']['Pos'].v[1],list[i]['Target_Data']['Pos'].v[2],list[i]['Target_Data']['Pos'].v[3]
+			local rxx,rxy,rxz = list[i]['Target_Data']['Rotates'].v[1],list[i]['Target_Data']['Rotates'].v[2],list[i]['Target_Data']['Rotates'].v[3]
+			local x1,y1,z1 = xx,xy,xz
+			local dx,dy,dz = xx+2-x1,xy+2-y1,xz+2-z1
+			x1 = x1 + dx*math.sin(math.rad(rxy))
+			y1 = y1 + dy*math.cos(math.rad(rxy))
+			z1 = z1
+			dx,dy,dz = xx+2-x1,xy+2-y1,xz+2-z1
+			x1 = x1 + dx*math.sin(math.rad(rxy))
+			y1 = y1 + dy*math.cos(math.rad(rxy))
+			z1 = z1 + dz*math.cos(math.rad(rxx))
+			if list[i]['Target_Data']['Smooth'].v then
+				setInterpolationParameters(0,list[i]['Target_Data']['Text_time'].v*1000)
+				setFixedCameraPosition(xx, xy, xz)
+				pointCameraAtPoint(x1, y1, z1, 1)
+			else
+				setFixedCameraPosition(xx, xy, xz)
+				pointCameraAtPoint(x1, y1, z1, 2)
+			end
+
+			printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)), list[i]['Target_Data']['Text_time'].v*1000)
+			wait(list[i]['Target_Data']['Text_time'].v*1000)
+			displayRadar(true)
+			displayHud(true)
+			restoreCameraJumpcut()
+		end
 	end
 	mp.pass(1)
 	if isCharInAnyCar(PLAYER_PED) then
