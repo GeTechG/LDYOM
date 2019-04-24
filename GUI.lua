@@ -3,7 +3,9 @@ script_author('SKIC')
 vkeys = require 'vkeys'
 imgui = require 'imgui'
 koder = require 'TextToGTX'
+--debtab = require 'debug_table'
 mp = require 'mission_player'
+manager_miss = require 'MissManager'
 model = require 'lib.game.models'
 encoding = require 'encoding'
 encoding.default = 'CP1251'
@@ -18,30 +20,40 @@ Anims = {
 	['Anim_list'] = {{"IDLE_CHAT","ROADCROSS","ATM","FLEE_LKAROUND_01","FUCKU","walk_armed","seat_up","run_armed","idle_gang1","hit_back","hit_r","hit_wall","hit_l","hita_2","climb_pull","bomber","floor_hit_f","fightshb","fall_fall","drown","floor_hit","IDLE_taxi","swim_tread","XPRESSSCRATCH","XPRESSSCRATCH","HANDSUP","KO_SHOT_STOM","KO_SKID_FRONT","DUCK_COWER","GETUP","SEAT_DOWN","ENDCHAT_03","GETUP_FRONT","GUN_STAND","KO_SPIN_L","KO_SKID_BACK","WALK_DRUNK","FALL_SKYDIVE","FALL_FRONT","RUN_PLAYER","WOMAN_IDLESTANCE","TAP_HAND","CAR_SIT","IDLE_STANCE","COWER","CROUCH_ROLL_R","CROUCH_ROLL_L","ENDCHAT_01","KO_SHOT_FACE","PHONE_TALK","KO_SHOT_FRONT","IDLE_ARMED","WEAPON_CROUCH","IDLE_TIRED","SEAT_IDLE","HANDSCOWER","FIGHTIDLE","FIGHTA_G","CAR_HOOKERTALK","HANDSUP","abseil","FIGHTA_M","FIGHTA_block","FIGHTA_2","gas_cwr","ENDCHAT_02"},{"BOM_PLANT_IN","BOM_PLANT_LOOP","BOM_PLANT_CROUCH_IN","BOM_PLANT_CROUCH_OUT","BOM_PLANT_2IDLE"},{"POOL_XLONG_SHOT","POOL_XLONG_START","POOL_LONG_SHOT","POOL_LONG_START","POOL_MED_START","POOL_MED_SHOT","POOL_SHORT_SHOT","POOL_CHALKCUE"},{"LKUP_LOOP","POINTUP_IN","SHOUT_01"},{"PRTIAL_GNGTLKA","PRTIAL_GNGTLKF","PRTIAL_GNGTLKD","PRTIAL_GNGTLKE","HNDSHKFA_SWT", "GANGS","PRTIAL_GNGTLKH","HNDSHKFA","DRUGS_BUY","PRTIAL_GNGTLKC","PRTIAL_GNGTLKH","PRTIAL_GNGTLKG","DRNKBR_PRTL","PRTIAL_GNGTLKB","PRTIAL_HNDSHK_01","DEALER_DEAL"},{"PISS_IN","PISS_LOOP","PISS_OUT","PNM_LOOP_A","PNM_ARGUE2_A","PNM_ARGUE1_A"},{"boxhipin","bxwlko","catch_box","bxshwlk","bxhwlki","boxshup","boxhipup","boxshdwn","bxhipwlk","bxshwlki"}}
 }
 
+local name_mission = ''
 local buf_edit_targets_name = imgui.ImBuffer(64);
 local buf_edit_actors_name = imgui.ImBuffer(64);
 local buf_edit_cars_name = imgui.ImBuffer(64);
 local buf_edit_obj_name = imgui.ImBuffer(64);
 local buf_edit = imgui.ImFloat(0);
 local main_window = imgui.ImBool(false)
+local pack_mission_window = imgui.ImBool(false)
+local missions_window = imgui.ImBool(false)
 local targets_window = imgui.ImBool(false)
 local actors_window = imgui.ImBool(false)
 local cars_window = imgui.ImBool(false)
 local objects_window = imgui.ImBool(false)
 local targets_window_s1 = imgui.ImBool(false)
 local targets_window_s2 = imgui.ImBool(false)
+local missions_n_window = imgui.ImBool(false)
 local lb_cur_targets = imgui.ImInt(0)
 local lb_cur_actors = imgui.ImInt(0)
 local lb_cur_cars = imgui.ImInt(0)
 local lb_cur_objects = imgui.ImInt(0)
+local lb_cur_pack_mission = imgui.ImInt(0)
+local lb_cur_missions = imgui.ImInt(0)
 local list_targets = {}
 local list_actors = {}
 local list_cars = {}
 local list_objects = {}
+local list_mission_pack = {}
+local list_missions = {}
 local list_name_targets = {}
 local list_name_actors = {}
 local list_name_cars = {}
 local list_name_objects = {}
+local list_name_mission_pack = {}
+local list_name_missions = {}
 local editmode_target = false
 local editmode_camera = false
 local editmode_actor = false
@@ -70,8 +82,163 @@ function imgui.OnDrawFrame()
 		if imgui.Button(u8'Запустить миссию') then
 			miss_start = true
 		end
+		if imgui.Button(u8'Паки миссий') then
+			pack_mission_window.v = not pack_mission_window.v
+			--manager_miss.save(list_targets,list_actors,list_cars,list_objects)
+		end
+		if imgui.Button(u8'Миссии') then
+			missions_window.v = not missions_window.v
+		end
 		imgui.End()
 	end
+
+	if missions_window.v then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 350, 340
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(u8'Миссии', missions_window)
+
+		imgui.PushItemWidth(-10)
+
+
+		--Список Объектов
+		imgui.ListBox('', lb_cur_missions,list_name_missions,15)
+
+		--Кнопки редактирования
+		if imgui.Button(u8'Добавить') then
+			list_missions[#list_missions+1] = {
+				['Name'] = u8'Миссия #' .. tostring(#list_missions),
+				['Prename'] = imgui.ImBuffer(256),
+				['Enable'] = imgui.ImBool(false),
+				['Mission_Data'] = {
+					['Targets'] = list_targets,
+					['Actors'] = list_actors,
+					['Cars'] = list_cars,
+					['Objects'] = list_objects
+				}
+			}
+			list_name_missions[#list_missions] = list_missions[#list_missions]['Name']
+			name_mission = list_missions[#list_missions]['Name']
+		end
+
+		imgui.SameLine()
+		if imgui.Button(u8'Загрузить') and #list_missions > 0 then
+			for i = 1,#list_actors do
+				deleteChar(list_actors[i]['Actor_Data']['Char'])
+			end
+			for c = 1,#list_cars do
+				deleteCar(list_cars[c]['Car_Data']['Car'])
+			end
+			list_targets = list_missions[lb_cur_missions.v+1]['Mission_Data']['Targets']
+			list_actors = list_missions[lb_cur_missions.v+1]['Mission_Data']['Actors']
+			list_cars = list_missions[lb_cur_missions.v+1]['Mission_Data']['Cars']
+			list_objects = list_missions[lb_cur_missions.v+1]['Mission_Data']['Objects']
+			name_mission = list_missions[lb_cur_missions.v+1]['Name']
+			for a = 1, #list_actors do
+				list_name_actors[a] = list_actors[a]['Name']
+				upd_actor:run(a)
+			end
+			for t = 1, #list_targets do
+				list_name_targets[t] = list_targets[t]['Name']
+			end
+		end
+
+		imgui.SameLine()
+		if imgui.Button(u8'Сохранить') and #list_missions > 0 then
+			list_missions[lb_cur_missions.v+1]['Mission_Data'] = {
+				['Targets'] = list_targets,
+				['Actors'] = list_actors,
+				['Cars'] = list_cars,
+				['Objects'] = list_objects
+			}
+		end
+
+		imgui.SameLine()
+		if imgui.Button(u8'Удалить') then
+			list_missions = DelCellArr(list_missions,lb_cur_missions.v+1)
+			list_name_missions = DelCellArr(list_name_missions,lb_cur_missions.v+1)
+		end
+		imgui.SameLine()
+		if imgui.Button(u8'Настройки') and #list_missions > 0 then
+			list_missions[lb_cur_missions.v+1]['Enable'].v = not list_missions[lb_cur_missions.v+1]['Enable'].v
+		end
+
+		imgui.End()
+		for t = 1,#list_missions do
+			if list_missions[t]['Enable'].v then
+				local resX,resY = getScreenResolution()
+				local sizeX,sizeY = 300, 340
+				imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+				imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+				imgui.Begin(list_missions[t]['Name'], list_missions[t]['Enable'])
+				imgui.PushItemWidth(-120)
+				imgui.InputText(u8'Название миссии',list_missions[t]['Prename'])
+				if imgui.Button(u8'Применить') then
+					list_missions[t]['Name'] = list_missions[t]['Prename'].v
+					list_name_missions[t] = list_missions[t]['Name']
+					name_mission = list_missions[t]['Name']
+				end
+				imgui.End()
+			end
+		end
+
+	end
+
+	if pack_mission_window.v then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 300, 340
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(u8'Сохранение и загрузка пака миссий', pack_mission_window)
+
+		imgui.PushItemWidth(-10)
+
+
+		--Список Объектов
+		imgui.ListBox('', lb_cur_pack_mission,list_name_mission_pack,15)
+
+		--Кнопки редактирования
+		if imgui.Button(u8'Добавить') then
+			list_mission_pack[#list_mission_pack+1] = {
+				['Name'] = u8'Пак миссий #' .. tostring(#list_mission_pack+1),
+				['Enable'] = imgui.ImBool(false),
+				['Missions'] = list_missions
+			}
+			list_name_mission_pack[#list_mission_pack] = list_mission_pack[#list_mission_pack]['Name']
+			manager.save(list_mission_pack[#list_mission_pack],#list_mission_pack-1)
+		end
+
+		imgui.SameLine()
+		if imgui.Button(u8'Загрузить') and #list_mission_pack > 0 then
+			for i = 1,#list_actors do
+				deleteChar(list_actors[i]['Actor_Data']['Char'])
+			end
+			for c = 1,#list_cars do
+				deleteCar(list_cars[c]['Car_Data']['Car'])
+			end
+			list_name_missions = {}
+			list_missions = list_mission_pack[lb_cur_pack_mission.v+1]['Missions']
+			for m = 1,#list_mission_pack[lb_cur_pack_mission.v+1]['Missions'] do
+				list_name_missions[m] = list_mission_pack[lb_cur_pack_mission.v+1]['Missions'][m]['Name']
+			end
+		end
+		imgui.SameLine()
+		if imgui.Button(u8'Сохранить') and #list_mission_pack > 0 then
+			list_mission_pack[lb_cur_pack_mission.v+1]['Missions'] = list_missions
+			manager.save(list_mission_pack[lb_cur_pack_mission.v+1],lb_cur_pack_mission.v)
+		end
+
+		imgui.SameLine()
+		if imgui.Button(u8'Удалить') then
+			list_mission_pack = DelCellArr(list_mission_pack,lb_cur_pack_mission.v+1)
+			list_name_mission_pack = DelCellArr(list_name_mission_pack,lb_cur_pack_mission.v+1)
+		end
+
+
+		imgui.End()
+	end
+
 	-- Окно списка целей
 	if targets_window.v then
 		local resX,resY = getScreenResolution()
@@ -296,7 +463,6 @@ function imgui.OnDrawFrame()
 								break
 							end
 						end
-						print(id_a)
 						list_actors[i]['Actor_Data']['ModelId'].v = id_a
 						upd_actor:run(i)
 					end
@@ -444,7 +610,6 @@ function imgui.OnDrawFrame()
 								break
 							end
 						end
-						print(id_a)
 						list_cars[i]['Car_Data']['ModelId'].v = id_c
 						upd_car:run(i)
 					end
@@ -674,6 +839,11 @@ function main()
 	setGxtEntry('HACT', koder('Следующий/Прошлый скин: ~r~I/O~w~~n~Через 10 Следующий/Прошлый: ~r~K/L~w~~n~Выйти: ~r~F'))
 	setGxtEntry('HOBJ', koder('Двигать: ~r~WASD~w~ ~n~Крутить: ~r~SHIFT + WASD~w~~n~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
 	--chr = createObject(1253, 0, 0, 0, 0)
+
+	list_mission_pack = manager.loadMPack()
+	for mp = 1,#list_mission_pack do
+		list_name_mission_pack[mp] = list_mission_pack[mp]['Name']
+	end
 
 	upd_actor = lua_thread.create_suspended(update_actor)
 	upd_car = lua_thread.create_suspended(update_car)
@@ -984,7 +1154,7 @@ function main()
 			for c = 1,#list_cars do
 				deleteCar(list_cars[c]['Car_Data']['Car'])
 			end
-			mp.start_mission(list_targets,list_actors,list_cars,list_objects)
+			mp.start_mission(list_targets,list_actors,list_cars,list_objects,name_mission)
 			miss_start = false
 		end
 

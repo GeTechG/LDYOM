@@ -10,11 +10,11 @@ mp.cars = {}
 mp.objects = {}
 curr_target = 0
 
-function mp.start_mission(listt,lista,listc,listo)
+function mp.start_mission(listt,lista,listc,listo,name_missionn)
 	misflag = mp.flagmis()
 	mp.miss = mp.start()
 	imgui.Process = false
-	mp.main_mission(listt,lista,listc,listo)
+	mp.main_mission(listt,lista,listc,listo,name_missionn)
 end
 
 function mp.flagmis()
@@ -84,7 +84,8 @@ function mp.play_char_anims(ped,actr)
 	end
 end
 
-function mp.main_mission(list,list_a,list_c,list_o)
+function mp.main_mission(list,list_a,list_c,list_o,name_missionm)
+	printStyledString(koder(u8:decode(name_missionm)), 2000, 2)
 	for i = 1,#list do
 		curr_target = i
 		for a = 1,#list_a do
