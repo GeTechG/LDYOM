@@ -74,10 +74,22 @@ function imgui.OnDrawFrame()
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
 		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
 		imgui.Begin(u8'Главное меню', main_window)
-		imgui.Checkbox(u8'Цели',targets_window)
-		imgui.Checkbox(u8'Актёры',actors_window)
-		imgui.Checkbox(u8'Машины',cars_window)
-		imgui.Checkbox(u8'Объекты',objects_window)
+		if imgui.Button(u8'Цели') then
+			targets_window.v = not targets_window.v
+			main_window.v = false
+		end
+		if imgui.Button(u8'Актёры') then
+			actors_window.v = not actors_window.v
+			main_window.v = false
+		end
+		if imgui.Button(u8'Машины') then
+			cars_window.v = not cars_window.v
+			main_window.v = false
+		end
+		if imgui.Button(u8'Объекты') then
+			objects_window.v = not objects_window.v
+			main_window.v = false
+		end
 		imgui.Separator()
 		if imgui.Button(u8'Запустить миссию') then
 			miss_start = true
@@ -85,9 +97,11 @@ function imgui.OnDrawFrame()
 		if imgui.Button(u8'Паки миссий') then
 			pack_mission_window.v = not pack_mission_window.v
 			--manager_miss.save(list_targets,list_actors,list_cars,list_objects)
+			main_window.v = false
 		end
 		if imgui.Button(u8'Миссии') then
 			missions_window.v = not missions_window.v
+			main_window.v = false
 		end
 		imgui.End()
 	end
@@ -96,7 +110,7 @@ function imgui.OnDrawFrame()
 		local resX,resY = getScreenResolution()
 		local sizeX,sizeY = 350, 340
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
 		imgui.Begin(u8'Миссии', missions_window)
 
 		imgui.PushItemWidth(-10)
@@ -170,7 +184,7 @@ function imgui.OnDrawFrame()
 				local resX,resY = getScreenResolution()
 				local sizeX,sizeY = 300, 340
 				imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-				imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+				imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
 				imgui.Begin(list_missions[t]['Name'], list_missions[t]['Enable'])
 				imgui.PushItemWidth(-120)
 				imgui.InputText(u8'Название миссии',list_missions[t]['Prename'])
@@ -189,7 +203,7 @@ function imgui.OnDrawFrame()
 		local resX,resY = getScreenResolution()
 		local sizeX,sizeY = 300, 340
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
 		imgui.Begin(u8'Сохранение и загрузка пака миссий', pack_mission_window)
 
 		imgui.PushItemWidth(-10)
@@ -233,6 +247,7 @@ function imgui.OnDrawFrame()
 		if imgui.Button(u8'Удалить') then
 			list_mission_pack = DelCellArr(list_mission_pack,lb_cur_pack_mission.v+1)
 			list_name_mission_pack = DelCellArr(list_name_mission_pack,lb_cur_pack_mission.v+1)
+			manager.delete(lb_cur_pack_mission.v)
 		end
 
 
@@ -244,7 +259,7 @@ function imgui.OnDrawFrame()
 		local resX,resY = getScreenResolution()
 		local sizeX,sizeY = 300, 340
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
 		imgui.Begin(u8'Цели', targets_window)
 
 		imgui.PushItemWidth(-10)
@@ -298,7 +313,7 @@ function imgui.OnDrawFrame()
 					local targets_list_arr = {u8'Чекпоинт',u8'Сесть в машину',u8'Убить Актёра',u8'Катсцена'}
 					local targets_marker_color = {u8'Красный',u8'Зелёный',u8'Свело-голубой',u8'Белый',u8'Жёлтый'}
 					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
 					imgui.Begin(list_targets[i]['Name'], list_targets[i]['Enable'])
 
 					imgui.PushItemWidth(-65)
@@ -382,7 +397,7 @@ function imgui.OnDrawFrame()
 		local resX,resY = getScreenResolution()
 		local sizeX,sizeY = 300, 340
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
 		imgui.Begin(u8'Актёры', actors_window)
 
 		imgui.PushItemWidth(-10)
@@ -446,7 +461,7 @@ function imgui.OnDrawFrame()
 					local resX,resY = getScreenResolution()
 					local sizeX,sizeY = 400, 340
 					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 300,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
 					imgui.Begin(list_actors[i]['Name'], list_actors[i]['Enable'])
 					imgui.PushItemWidth(-90)
 
@@ -532,7 +547,7 @@ function imgui.OnDrawFrame()
 		local resX,resY = getScreenResolution()
 		local sizeX,sizeY = 300, 340
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
 		imgui.Begin(u8'Машины', cars_window)
 
 		imgui.PushItemWidth(-10)
@@ -593,7 +608,7 @@ function imgui.OnDrawFrame()
 					local resX,resY = getScreenResolution()
 					local sizeX,sizeY = 300, 340
 					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
 					imgui.Begin(list_cars[i]['Name'], list_cars[i]['Enable'])
 					imgui.PushItemWidth(-90)
 
@@ -640,7 +655,7 @@ function imgui.OnDrawFrame()
 		local resX,resY = getScreenResolution()
 		local sizeX,sizeY = 300, 340
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
 		imgui.Begin(u8'Объекты', objects_window)
 
 		imgui.PushItemWidth(-10)
@@ -700,7 +715,7 @@ function imgui.OnDrawFrame()
 					local resX,resY = getScreenResolution()
 					local sizeX,sizeY = 300, 340
 					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 250,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
 					imgui.Begin(list_objects[i]['Name'], list_objects[i]['Enable'])
 					imgui.PushItemWidth(-90)
 
@@ -837,7 +852,7 @@ end
 function main()
 	setGxtEntry('HTARG', koder('Двигать: ~r~WASD ~n~~w~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
 	setGxtEntry('HACT', koder('Следующий/Прошлый скин: ~r~I/O~w~~n~Через 10 Следующий/Прошлый: ~r~K/L~w~~n~Выйти: ~r~F'))
-	setGxtEntry('HOBJ', koder('Двигать: ~r~WASD~w~ ~n~Крутить: ~r~SHIFT + WASD~w~~n~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
+	setGxtEntry('HOBJ', koder('Двигать: ~r~WASDQE~w~ ~n~Крутить: ~r~SHIFT + WASDQE~w~~n~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
 	--chr = createObject(1253, 0, 0, 0, 0)
 
 	list_mission_pack = manager.loadMPack()
@@ -1165,8 +1180,17 @@ function main()
 		--Откр/Закр. Меню
 		if wasKeyPressed(vkeys.VK_U) then
 			main_window.v = not main_window.v
+			targets_window.v = false
+			actors_window.v = false
+			cars_window.v = false
+			objects_window.v = false
+			missions_window.v = false
+			pack_mission_window.v = false
+
 		end
-		imgui.Process = main_window.v
+
+		imgui.Process = main_window.v or targets_window.v or actors_window.v or cars_window.v or objects_window.v or missions_window.v or pack_mission_window.v
+
 		-- Дебаг: позиция
 		if wasKeyPressed(vkeys.VK_Q) then
 			px,py,pz = getCharCoordinates(PLAYER_PED)

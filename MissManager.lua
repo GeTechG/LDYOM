@@ -55,6 +55,11 @@ function manager.load(num)
 	return packk
 end
 
+function manager.delete(num)
+	os.remove(path .. 'LDYOM' .. tostring(num) .. '.json')
+end
+
+
 function manager.sorterTable(table,typee)
 	tableEnd = {}
 	if typee == 0 then
