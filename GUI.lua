@@ -15,12 +15,26 @@ ID_Actors = {0, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
 
 ID_Cars = {400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611}
 
+Number_Weapons = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46}
+
 Anims = {
 	['Anim_name'] = {'PED','BOMBER','POOL','ON_LOOKERS','GANGS','PAULNMAC','BOX'},
 	['Anim_list'] = {{"IDLE_CHAT","ROADCROSS","ATM","FLEE_LKAROUND_01","FUCKU","walk_armed","seat_up","run_armed","idle_gang1","hit_back","hit_r","hit_wall","hit_l","hita_2","climb_pull","bomber","floor_hit_f","fightshb","fall_fall","drown","floor_hit","IDLE_taxi","swim_tread","XPRESSSCRATCH","XPRESSSCRATCH","HANDSUP","KO_SHOT_STOM","KO_SKID_FRONT","DUCK_COWER","GETUP","SEAT_DOWN","ENDCHAT_03","GETUP_FRONT","GUN_STAND","KO_SPIN_L","KO_SKID_BACK","WALK_DRUNK","FALL_SKYDIVE","FALL_FRONT","RUN_PLAYER","WOMAN_IDLESTANCE","TAP_HAND","CAR_SIT","IDLE_STANCE","COWER","CROUCH_ROLL_R","CROUCH_ROLL_L","ENDCHAT_01","KO_SHOT_FACE","PHONE_TALK","KO_SHOT_FRONT","IDLE_ARMED","WEAPON_CROUCH","IDLE_TIRED","SEAT_IDLE","HANDSCOWER","FIGHTIDLE","FIGHTA_G","CAR_HOOKERTALK","HANDSUP","abseil","FIGHTA_M","FIGHTA_block","FIGHTA_2","gas_cwr","ENDCHAT_02"},{"BOM_PLANT_IN","BOM_PLANT_LOOP","BOM_PLANT_CROUCH_IN","BOM_PLANT_CROUCH_OUT","BOM_PLANT_2IDLE"},{"POOL_XLONG_SHOT","POOL_XLONG_START","POOL_LONG_SHOT","POOL_LONG_START","POOL_MED_START","POOL_MED_SHOT","POOL_SHORT_SHOT","POOL_CHALKCUE"},{"LKUP_LOOP","POINTUP_IN","SHOUT_01"},{"PRTIAL_GNGTLKA","PRTIAL_GNGTLKF","PRTIAL_GNGTLKD","PRTIAL_GNGTLKE","HNDSHKFA_SWT", "GANGS","PRTIAL_GNGTLKH","HNDSHKFA","DRUGS_BUY","PRTIAL_GNGTLKC","PRTIAL_GNGTLKH","PRTIAL_GNGTLKG","DRNKBR_PRTL","PRTIAL_GNGTLKB","PRTIAL_HNDSHK_01","DEALER_DEAL"},{"PISS_IN","PISS_LOOP","PISS_OUT","PNM_LOOP_A","PNM_ARGUE2_A","PNM_ARGUE1_A"},{"boxhipin","bxwlko","catch_box","bxshwlk","bxhwlki","boxshup","boxhipup","boxshdwn","bxhipwlk","bxshwlki"}}
 }
 
-local name_mission = ''
+local mission_data = {
+	['Name'] = '',
+	['Time'] = {0,0},
+	['Weather'] = imgui.ImInt(0),
+	['Riot'] = imgui.ImBool(false),
+	['Player'] = {
+		['Pos'] = {0,0,0},
+		['Angle'] = 0,
+		['ModelId'] = 0,
+		['Weapon'] = 0,
+		['Weap_ammo'] = 0
+	}
+}
 local buf_edit_targets_name = imgui.ImBuffer(64);
 local buf_edit_actors_name = imgui.ImBuffer(64);
 local buf_edit_cars_name = imgui.ImBuffer(64);
@@ -58,6 +72,8 @@ local editmode_target = false
 local editmode_camera = false
 local editmode_actor = false
 local editmode_objects = false
+local editmode_timemiss = false
+local editmode_player = false
 local id_target = 0;
 local id_actor = 0;
 local id_cars = 0;
@@ -90,10 +106,12 @@ function imgui.OnDrawFrame()
 			objects_window.v = not objects_window.v
 			main_window.v = false
 		end
-		imgui.Separator()
-		if imgui.Button(u8'Запустить миссию') then
-			miss_start = true
+		if imgui.Button(u8'Игрок') then
+			editmode_player = true
+			printHelpForever('HPLA')
+			imgui.Process = false
 		end
+		imgui.Separator()
 		if imgui.Button(u8'Паки миссий') then
 			pack_mission_window.v = not pack_mission_window.v
 			--manager_miss.save(list_targets,list_actors,list_cars,list_objects)
@@ -102,6 +120,10 @@ function imgui.OnDrawFrame()
 		if imgui.Button(u8'Миссии') then
 			missions_window.v = not missions_window.v
 			main_window.v = false
+		end
+		imgui.Separator()
+		if imgui.Button(u8'Запустить миссию') then
+			miss_start = true
 		end
 		imgui.End()
 	end
@@ -133,7 +155,7 @@ function imgui.OnDrawFrame()
 				}
 			}
 			list_name_missions[#list_missions] = list_missions[#list_missions]['Name']
-			name_mission = list_missions[#list_missions]['Name']
+			mission_data['Name'] = list_missions[#list_missions]['Name']
 		end
 
 		imgui.SameLine()
@@ -148,7 +170,7 @@ function imgui.OnDrawFrame()
 			list_actors = list_missions[lb_cur_missions.v+1]['Mission_Data']['Actors']
 			list_cars = list_missions[lb_cur_missions.v+1]['Mission_Data']['Cars']
 			list_objects = list_missions[lb_cur_missions.v+1]['Mission_Data']['Objects']
-			name_mission = list_missions[lb_cur_missions.v+1]['Name']
+			mission_data = list_missions[lb_cur_missions.v+1]['Name']
 			for a = 1, #list_actors do
 				list_name_actors[a] = list_actors[a]['Name']
 				upd_actor:run(a)
@@ -179,20 +201,32 @@ function imgui.OnDrawFrame()
 		end
 
 		imgui.End()
+		-- Настройки
 		for t = 1,#list_missions do
 			if list_missions[t]['Enable'].v then
 				local resX,resY = getScreenResolution()
 				local sizeX,sizeY = 300, 340
 				imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
 				imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-				imgui.Begin(list_missions[t]['Name'], list_missions[t]['Enable'])
+				imgui.Begin(u8'Настройки: ' .. list_missions[t]['Name'], list_missions[t]['Enable'])
 				imgui.PushItemWidth(-120)
 				imgui.InputText(u8'Название миссии',list_missions[t]['Prename'])
 				if imgui.Button(u8'Применить') then
 					list_missions[t]['Name'] = list_missions[t]['Prename'].v
 					list_name_missions[t] = list_missions[t]['Name']
-					name_mission = list_missions[t]['Name']
+					mission_data['Name'] = list_missions[t]['Name']
 				end
+				imgui.Separator()
+				if imgui.Button(u8'Игровое время миссии') then
+					editmode_timemiss = true
+					printHelpForever('HMTIM')
+					imgui.Process = false
+				end
+				local Weather_str = {u8'Очень солнечно (LS)',u8'Солнечно (LS)',u8'Очень солнечно, смог (LS)',u8'Солнечно, смог (LS)',u8'Облака (LS)',u8'Солнечно (SF)',u8'Очень солнечно (SF)',u8'Облака (SF)',u8'Дождливая (SF)',u8'Туманная (SF)',u8'Солнечно (LV)',u8'Очень солнечно (LV)',u8'Облака (LV)',u8'Очень солнечно (CS)',u8'Солнечно (CS)',u8'Облака (CS)',u8'Дождливая (CS)',u8'Очень солнечно (Des)',u8'Солнечно (Des)',u8'Песчаная буря (Des)',u8'Подводная', u8'Дополнительно 1',u8'Дополнительно 2'}
+				if imgui.Combo(u8'Погода',mission_data['Weather'],Weather_str) then
+					forceWeatherNow(mission_data['Weather'].v)
+				end
+				imgui.Checkbox(u8'Режим бунта',mission_data['Riot'])
 				imgui.End()
 			end
 		end
@@ -850,9 +884,12 @@ end
 
 
 function main()
-	setGxtEntry('HTARG', koder('Двигать: ~r~WASD ~n~~w~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
+	setGxtEntry('HTARG', koder('Двигать: ~r~WS/AD ~n~~w~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
 	setGxtEntry('HACT', koder('Следующий/Прошлый скин: ~r~I/O~w~~n~Через 10 Следующий/Прошлый: ~r~K/L~w~~n~Выйти: ~r~F'))
-	setGxtEntry('HOBJ', koder('Двигать: ~r~WASDQE~w~ ~n~Крутить: ~r~SHIFT + WASDQE~w~~n~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
+	setGxtEntry('HOBJ', koder('Двигать: ~r~AD/WS/QE~w~ ~n~Крутить: ~r~SHIFT + AD/WS/QE~w~~n~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
+	setGxtEntry('HMTIM', koder('Часы: ~r~I/O~w~~n~Минуты: ~r~K/L~w~~n~Выйти: ~r~F'))
+	setGxtEntry('HPLA', koder('Следующий/Прошлый скин: ~r~I/O~w~~n~Через 10 Следующий/Прошлый: ~r~K/L~w~~n~Следующие/Прошлое оружие: ~r~P/[~n~~w~Применить: ~r~U~n~~w~Выйти: ~r~F'))
+	setGxtEntry('HPLA2', koder('Больше/Меньше патронов: ~r~I/O~n~~w~Применить: ~r~U~n~~w~Выйти: ~r~F'))
 	--chr = createObject(1253, 0, 0, 0, 0)
 
 	list_mission_pack = manager.loadMPack()
@@ -953,10 +990,13 @@ function main()
 			if isKeyDown(vkeys.VK_O) then
 				wait(100)
 				list_actors[id_actor]['Actor_Data']['ModelId'].v = list_actors[id_actor]['Actor_Data']['ModelId'].v - 1
-				local id_a = 0
+				if list_actors[id_actor]['Actor_Data']['ModelId'].v < 0 then
+					list_actors[id_actor]['Actor_Data']['ModelId'].v = 288
+				end
+				local id_a = 288
 				for v = 1,#ID_Actors do
-					if list_actors[id_actor]['Actor_Data']['ModelId'].v <= ID_Actors[v] then
-						id_a = ID_Actors[v]
+					if list_actors[id_actor]['Actor_Data']['ModelId'].v < ID_Actors[v] then
+						id_a = ID_Actors[v-1]
 						break
 					end
 				end
@@ -987,10 +1027,13 @@ function main()
 			if isKeyDown(vkeys.VK_L) then
 				wait(100)
 				list_actors[id_actor]['Actor_Data']['ModelId'].v = list_actors[id_actor]['Actor_Data']['ModelId'].v - 10
-				local id_a = 0
+				if list_actors[id_actor]['Actor_Data']['ModelId'].v < 0 then
+					list_actors[id_actor]['Actor_Data']['ModelId'].v = 289 + list_actors[id_actor]['Actor_Data']['ModelId'].v
+				end
+				local id_a = 288
 				for v = 1,#ID_Actors do
-					if list_actors[id_actor]['Actor_Data']['ModelId'].v <= ID_Actors[v] then
-						id_a = ID_Actors[v]
+					if list_actors[id_actor]['Actor_Data']['ModelId'].v < ID_Actors[v] then
+						id_a = ID_Actors[v-1]
 						break
 					end
 				end
@@ -1014,7 +1057,7 @@ function main()
 			--Переменная замедления
 			local multy = 1
 			if isKeyDown(vkeys.VK_CONTROL) then
-				multy = 0.5
+				multy = 0.2
 			else
 				multy = 1
 			end
@@ -1063,6 +1106,7 @@ function main()
 			setObjectCoordinates(list_objects[id_obj]['Object_Data']['Obj'], xx, xy, xz)
 			setObjectRotation(list_objects[id_obj]['Object_Data']['Obj'], rxx, rxy, rxz)
 		end
+
 		if editmode_camera then
 			displayRadar(false)
 			displayHud(false)
@@ -1109,22 +1153,22 @@ function main()
 			end
 			if isKeyDown(vkeys.VK_SHIFT) then
 				if isKeyDown(vkeys.VK_A) then
-					list_targets[id_target]['Target_Data']['Rotates'].v[2] = list_targets[id_target]['Target_Data']['Rotates'].v[2] - 0.5 * multy
+					list_targets[id_target]['Target_Data']['Rotates'].v[2] = list_targets[id_target]['Target_Data']['Rotates'].v[2] - 2 * multy
 				end
 				if isKeyDown(vkeys.VK_D) then
-					list_targets[id_target]['Target_Data']['Rotates'].v[2] = list_targets[id_target]['Target_Data']['Rotates'].v[2] + 0.5 * multy
+					list_targets[id_target]['Target_Data']['Rotates'].v[2] = list_targets[id_target]['Target_Data']['Rotates'].v[2] + 2 * multy
 				end
 				if isKeyDown(vkeys.VK_W) then
-					list_targets[id_target]['Target_Data']['Rotates'].v[1] = list_targets[id_target]['Target_Data']['Rotates'].v[1] - 0.5 * multy
+					list_targets[id_target]['Target_Data']['Rotates'].v[1] = list_targets[id_target]['Target_Data']['Rotates'].v[1] - 2 * multy
 				end
 				if isKeyDown(vkeys.VK_S) then
-					list_targets[id_target]['Target_Data']['Rotates'].v[1] = list_targets[id_target]['Target_Data']['Rotates'].v[1] + 0.5 * multy
+					list_targets[id_target]['Target_Data']['Rotates'].v[1] = list_targets[id_target]['Target_Data']['Rotates'].v[1] + 2 * multy
 				end
 				if isKeyDown(vkeys.VK_E) then
-					list_targets[id_target]['Target_Data']['Rotates'].v[3] = list_targets[id_target]['Target_Data']['Rotates'].v[3] - 0.5 * multy
+					list_targets[id_target]['Target_Data']['Rotates'].v[3] = list_targets[id_target]['Target_Data']['Rotates'].v[3] - 2 * multy
 				end
 				if isKeyDown(vkeys.VK_Q) then
-					list_targets[id_target]['Target_Data']['Rotates'].v[3] = list_targets[id_target]['Target_Data']['Rotates'].v[3] + 0.2 * multy
+					list_targets[id_target]['Target_Data']['Rotates'].v[3] = list_targets[id_target]['Target_Data']['Rotates'].v[3] + 2 * multy
 				end
 			end
 
@@ -1156,11 +1200,207 @@ function main()
 			end
 		end
 
-		for i = 1, #list_targets do
-			if list_targets[i]['Type'].v == 0 then
-				drawSphere(list_targets[i]['Target_Data']['Pos'].v[1], list_targets[i]['Target_Data']['Pos'].v[2], list_targets[i]['Target_Data']['Pos'].v[3],list_targets[i]['Target_Data']['Radius'].v)
+		while editmode_timemiss do
+			wait(0)
+			--Закрытие редактора
+			if wasKeyPressed(vkeys.VK_F) then
+				lockPlayerControl(false)
+				clearHelp()
+				editmode_timemiss = false
+			end
+			if isKeyDown(vkeys.VK_I) then
+				wait(100)
+				mission_data['Time'][1] = mission_data['Time'][1] + 1
+			end
+			if isKeyDown(vkeys.VK_O) then
+				wait(100)
+				mission_data['Time'][1] = mission_data['Time'][1] - 1
+			end
+			if isKeyDown(vkeys.VK_K) then
+				wait(100)
+				mission_data['Time'][2] = mission_data['Time'][2] + 1
+			end
+			if isKeyDown(vkeys.VK_L) then
+				wait(100)
+				mission_data['Time'][2] = mission_data['Time'][2] - 1
+			end
+			setTimeOfDay(mission_data['Time'][1], mission_data['Time'][2])
+		end
+
+		if editmode_player then
+			local stage = 0
+			local modelID = 0
+			local weapon = 0
+			local ammo = 0
+			while editmode_player do
+				--Закрытие редактора
+				wait(0)
+				if wasKeyPressed(vkeys.VK_F) then
+					clearHelp()
+					editmode_player = false
+					setPlayerModel(PLAYER_HANDLE, model.NULL)
+					removeAllCharWeapons(PLAYER_PED)
+					lockPlayerControl(false)
+				end
+				if wasKeyPressed(vkeys.VK_U) then
+					if stage == 0 then
+						lockPlayerControl(true)
+						printHelpForever('HPLA2')
+						stage = stage + 1
+					elseif stage == 1 then
+						clearHelp()
+						editmode_player = false
+						setPlayerModel(PLAYER_HANDLE, model.NULL)
+						local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+						local angle = getCharHeading(PLAYER_PED)
+						xz = getGroundZFor3dCoord(xx,xy,xz)
+						mission_data['Player']['Pos'] = {xx,xy,xz}
+						mission_data['Player']['Angle'] = angle
+						mission_data['Player']['ModelId'] = modelID
+						mission_data['Player']['Weapon'] = weapon
+						mission_data['Player']['Weap_ammo'] = ammo
+						removeAllCharWeapons(PLAYER_PED)
+						lockPlayerControl(false)
+					end
+				end
+				if stage == 0 then
+					if isKeyDown(vkeys.VK_I) then
+						wait(100)
+						modelID = modelID + 1
+						local id_a = 0
+						for v = 1,#ID_Actors do
+							if modelID <= ID_Actors[v] then
+								id_a = ID_Actors[v]
+								break
+							end
+						end
+						modelID = id_a
+						requestModel(modelID)
+						while not hasModelLoaded(modelID) do
+							wait(1)
+						end
+						setPlayerModel(PLAYER_HANDLE, modelID)
+					end
+					if isKeyDown(vkeys.VK_O) then
+						wait(100)
+						modelID = modelID - 1
+						if modelID < 0 then
+							modelID = 288
+						end
+						local id_a = 288
+						for v = 1,#ID_Actors do
+							if modelID < ID_Actors[v] then
+								id_a = ID_Actors[v-1]
+								break
+							end
+						end
+						modelID = id_a
+						requestModel(modelID)
+						while not hasModelLoaded(modelID) do
+							wait(1)
+						end
+						setPlayerModel(PLAYER_HANDLE, modelID)
+					end
+					if isKeyDown(vkeys.VK_K) then
+						wait(100)
+						modelID = modelID + 10
+						local id_a = 0
+						for v = 1,#ID_Actors do
+							if modelID <= ID_Actors[v] then
+								id_a = ID_Actors[v]
+								break
+							end
+						end
+						modelID = id_a
+						requestModel(modelID)
+						while not hasModelLoaded(modelID) do
+							wait(1)
+						end
+						setPlayerModel(PLAYER_HANDLE, modelID)
+					end
+					if isKeyDown(vkeys.VK_L) then
+						wait(100)
+						modelID = modelID - 10
+						if modelID < 0 then
+							modelID = 289 + modelID
+						end
+						local id_a = 288
+						for v = 1,#ID_Actors do
+							if modelID < ID_Actors[v] then
+								id_a = ID_Actors[v-1]
+								break
+							end
+						end
+						modelID = id_a
+						requestModel(modelID)
+						while not hasModelLoaded(modelID) do
+							wait(1)
+						end
+						setPlayerModel(PLAYER_HANDLE, modelID)
+					end
+					if isKeyDown(vkeys.VK_P) then
+						wait(200)
+						weapon = weapon + 1
+						local id_w = 0
+						for v = 1,#Number_Weapons do
+							if weapon <= Number_Weapons[v] then
+								id_w = Number_Weapons[v]
+								markModelAsNoLongerNeeded(getWeapontypeModel(Number_Weapons[v-1]))
+								break
+							end
+						end
+						weapon = id_w
+						requestModel(getWeapontypeModel(weapon))
+						while not hasModelLoaded(getWeapontypeModel(weapon)) do
+							wait(1)
+						end
+						removeAllCharWeapons(PLAYER_PED)
+						print(weapon)
+						giveWeaponToChar(PLAYER_PED, weapon, 9999)
+						setCurrentCharWeapon(PLAYER_PED,1)
+					end
+					if isKeyDown(vkeys.VK_OEM_4) then
+						wait(200)
+						weapon = weapon - 1
+						if weapon < 0 then
+							weapon = 46
+						end
+						local id_w = 46
+						for v = 1,#Number_Weapons do
+							if weapon < Number_Weapons[v] then
+								id_w = Number_Weapons[v-1]
+								markModelAsNoLongerNeeded(getWeapontypeModel(Number_Weapons[v]))
+								break
+							end
+						end
+						weapon = id_w
+						requestModel(getWeapontypeModel(weapon))
+						while not hasModelLoaded(getWeapontypeModel(weapon)) do
+							wait(1)
+						end
+						removeAllCharWeapons(PLAYER_PED)
+						giveWeaponToChar(PLAYER_PED, weapon, 9999)
+						setCurrentCharWeapon(PLAYER_PED,1)
+					end
+				elseif stage == 1 then
+					if isKeyDown(vkeys.VK_I) then
+						wait(50)
+						ammo = ammo + 10
+					end
+					if isKeyDown(vkeys.VK_O) and ammo > 0 then
+						wait(50)
+						ammo = ammo - 10
+					end
+					printString(koder('Патронов: ' .. '~r~' .. ammo), 0)
+				end
 			end
 		end
+
+			for i = 1, #list_targets do
+				if list_targets[i]['Type'].v == 0 then
+					drawSphere(list_targets[i]['Target_Data']['Pos'].v[1], list_targets[i]['Target_Data']['Pos'].v[2], list_targets[i]['Target_Data']['Pos'].v[3],list_targets[i]['Target_Data']['Radius'].v)
+				end
+			end
 
 		if miss_start then
 			for i = 1,#list_actors do
@@ -1169,7 +1409,7 @@ function main()
 			for c = 1,#list_cars do
 				deleteCar(list_cars[c]['Car_Data']['Car'])
 			end
-			mp.start_mission(list_targets,list_actors,list_cars,list_objects,name_mission)
+			mp.start_mission(list_targets,list_actors,list_cars,list_objects,mission_data)
 			miss_start = false
 		end
 

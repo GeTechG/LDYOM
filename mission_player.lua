@@ -10,11 +10,11 @@ mp.cars = {}
 mp.objects = {}
 curr_target = 0
 
-function mp.start_mission(listt,lista,listc,listo,name_missionn)
+function mp.start_mission(listt,lista,listc,listo,missd)
 	misflag = mp.flagmis()
 	mp.miss = mp.start()
 	imgui.Process = false
-	mp.main_mission(listt,lista,listc,listo,name_missionn)
+	mp.main_mission(listt,lista,listc,listo,missd)
 end
 
 function mp.flagmis()
@@ -84,8 +84,14 @@ function mp.play_char_anims(ped,actr)
 	end
 end
 
-function mp.main_mission(list,list_a,list_c,list_o,name_missionm)
-	printStyledString(koder(u8:decode(name_missionm)), 2000, 2)
+function mp.main_mission(list,list_a,list_c,list_o,miss_data)
+	printStyledString(koder(u8:decode(miss_data['Name'])), 2000, 2)
+	setTimeOfDay(miss_data['Time'][1], miss_data['Time'][2])
+	forceWeatherNow(miss_data['Weather'].v)
+	setLaRiots(miss_data['Riot'].v)
+	setCharCoordinates(PLAYER_PED, miss_data['Player']['Pos'][1], miss_data['Player']['Pos'][2], miss_data['Player']['Pos'][3])
+	setPlayerModel(PLAYER_HANDLE, miss_data['Player']['ModelId'])
+	giveWeaponToChar(PLAYER_PED, miss_data['Player']['Weapon'], miss_data['Player']['Weap_ammo'])
 	for i = 1,#list do
 		curr_target = i
 		for a = 1,#list_a do
@@ -167,6 +173,7 @@ function mp.main_mission(list,list_a,list_c,list_o,name_missionm)
 		if list[i]['Type'].v == 3 then
 			displayRadar(false)
 			displayHud(false)
+			setPlayerControl(PLAYER_HANDLE, false)
 			local xx,xy,xz = list[i]['Target_Data']['Pos'].v[1],list[i]['Target_Data']['Pos'].v[2],list[i]['Target_Data']['Pos'].v[3]
 			local rxx,rxy,rxz = list[i]['Target_Data']['Rotates'].v[1],list[i]['Target_Data']['Rotates'].v[2],list[i]['Target_Data']['Rotates'].v[3]
 			local x1,y1,z1 = xx,xy,xz
@@ -191,6 +198,7 @@ function mp.main_mission(list,list_a,list_c,list_o,name_missionm)
 			wait(list[i]['Target_Data']['Text_time'].v*1000)
 			displayRadar(true)
 			displayHud(true)
+			setPlayerControl(PLAYER_HANDLE, true)
 			restoreCameraJumpcut()
 		end
 	end
@@ -201,6 +209,9 @@ function mp.main_mission(list,list_a,list_c,list_o,name_missionm)
 			wait(0)
 		end
 	end
+	setLaRiots(false)
+	setPlayerModel(PLAYER_HANDLE, model.NULL)
+	removeAllCharWeapons(PLAYER_PED)
 	for v,h in pairs(mp.actors) do
 		deleteChar(mp.actors[v])
 	end
