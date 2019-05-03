@@ -17,7 +17,7 @@ function koder(text)
     ['X'] = 'X', ['x'] = 'x', ['Y'] = 'Y', ['y'] = 'y', ['Z'] = 'Z', ['z'] = 'z', ['0'] = '0', ['1'] = '1', ['2'] = '2',
   ['3'] = '3', ['4'] = '4', ['5'] = '5', ['6'] = '6', ['7'] = '7', ['8'] = '8', ['9'] = '9', [' '] = ' '}
   for i = 1, text:len() do
-    s = text:sub(i, i)
+		s = text:sub(i, i)
     for k, v in pairs(al) do
       if s == k then
         words = words..v

@@ -21,7 +21,21 @@ function manager.save(pack,num)
 				['Targets'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Targets'],0),
 				['Actors'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Actors'],1),
 				['Cars'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Cars'],2),
-				['Objects'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Objects'],3)
+				['Objects'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Objects'],3),
+				['Miss_data'] = {
+					['Name'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Name'],
+					['Time'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][2]},
+					['Weather'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Weather'].v,
+					['Riot'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Riot'].v,
+					['Player'] = {
+						['Pos'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][2],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][3]},
+						['Angle'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Angle'],
+						['ModelId'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['ModelId'],
+						['Weapon'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Weapon'],
+						['Weap_ammo'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Weap_ammo'],
+						['Interior_id'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Interior_id']
+					}
+				}
 			}
 		}
 	end
@@ -48,7 +62,21 @@ function manager.load(num)
 				['Targets'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Targets'],0),
 				['Actors'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Actors'],1),
 				['Cars'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Cars'],2),
-				['Objects'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Objects'],3)
+				['Objects'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Objects'],3),
+				['Miss_data'] = {
+					['Name'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Name'],
+					['Time'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][2]},
+					['Weather'] = imgui.ImInt(pack['Missions'][p]['Mission_Data']['Miss_data']['Weather']),
+					['Riot'] = imgui.ImBool(pack['Missions'][p]['Mission_Data']['Miss_data']['Riot']),
+					['Player'] = {
+						['Pos'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][2],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][3]},
+						['Angle'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Angle'],
+						['ModelId'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['ModelId'],
+						['Weapon'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Weapon'],
+						['Weap_ammo'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Weap_ammo'],
+						['Interior_id'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Interior_id']
+					}
+				}
 			}
 		}
 	end
@@ -65,13 +93,13 @@ function manager.sorterTable(table,typee)
 	if typee == 0 then
 		for tt = 1,#table do
 			tableEnd[tt] = {}
-			tableEnd[tt]['Name'] = u8:decode(table[tt]['Name'])
+			tableEnd[tt]['Name'] = table[tt]['Name']
 			tableEnd[tt]['Type'] = table[tt]['Type'].v
 			if table[tt]['Type'].v == 0 then
 				tableEnd[tt]['Target_Data'] = {
 					['Pos'] = {table[tt]['Target_Data']['Pos'].v[1],table[tt]['Target_Data']['Pos'].v[2],table[tt]['Target_Data']['Pos'].v[3]},
 					['Radius'] = table[tt]['Target_Data']['Radius'].v,
-					['Text'] = u8:decode(table[tt]['Target_Data']['Text'].v),
+					['Text'] = table[tt]['Target_Data']['Text'].v,
 					['Text_time'] = table[tt]['Target_Data']['Text_time'].v,
 					['Color_blip'] = table[tt]['Target_Data']['Color_blip'].v
 				}
@@ -90,19 +118,58 @@ function manager.sorterTable(table,typee)
 			end
 			if table[tt]['Type'].v == 3 then
 				tableEnd[tt]['Target_Data'] = {
+					['Target_type'] = table[tt]['Target_Data']['Target_type'].v,
 					['Pos'] = {table[tt]['Target_Data']['Pos'].v[1],table[tt]['Target_Data']['Pos'].v[2],table[tt]['Target_Data']['Pos'].v[3]},
 					['Rotates'] = {table[tt]['Target_Data']['Rotates'].v[1],table[tt]['Target_Data']['Rotates'].v[2],table[tt]['Target_Data']['Rotates'].v[3]},
-					['Text'] = u8:decode(table[tt]['Target_Data']['Text'].v),
+					['Text'] = table[tt]['Target_Data']['Text'].v,
 					['Text_time'] = table[tt]['Target_Data']['Text_time'].v,
-					['Smooth'] = table[tt]['Target_Data']['Smooth'].v
+					['Smooth'] = table[tt]['Target_Data']['Smooth'].v,
+					['Time'] = table[tt]['Target_Data']['Time'].v,
+					['Weather'] = table[tt]['Target_Data']['Weather'].v,
+					['Clock_time'] = table[tt]['Target_Data']['Clock_time'],
+					['Traffic'] = {table[tt]['Target_Data']['Traffic'][1].v,table[tt]['Target_Data']['Traffic'][2].v}
 				}
+			end
+			if table[tt]['Type'].v == 4 then
+				tableEnd[tt]['Target_Data'] = {
+					['Target_object_id'] = table[tt]['Target_Data']['Target_object_id'].v,
+					['Color_blip'] = table[tt]['Target_Data']['Color_blip'].v,
+					['Target_type'] = table[tt]['Target_Data']['Target_type'].v,
+					['Weap'] = table[tt]['Target_Data']['Weap'].v,
+					['Text'] = table[tt]['Target_Data']['Text'].v
+				}
+			end
+			if table[tt]['Type'].v == 5 then
+				tableEnd[tt]['Target_Data'] = {
+					['Target_type'] = table[tt]['Target_Data']['Target_type'].v,
+					['Pos'] = {table[tt]['Target_Data']['Pos'].v[1],table[tt]['Target_Data']['Pos'].v[2],table[tt]['Target_Data']['Pos'].v[3]},
+					['ModelID'] = table[tt]['Target_Data']['ModelID'].v,
+					['Angle'] = table[tt]['Target_Data']['Angle'].v,
+					['Weapon'] = table[tt]['Target_Data']['Weapon'].v,
+					['Weap_ammo'] = table[tt]['Target_Data']['Weap_ammo'].v,
+					['Anim'] = table[tt]['Target_Data']['Anim'].v,
+					['Pack_anim'] = table[tt]['Target_Data']['Pack_anim'].v,
+					['Loop'] = table[tt]['Target_Data']['Loop'].v,
+					['Car_id'] = table[tt]['Target_Data']['Car_id'].v,
+					['Car_place'] = table[tt]['Target_Data']['Car_place'].v,
+					['Level_battue'] = table[tt]['Target_Data']['Level_battue'].v,
+					['Dialog'] = {},
+					['Add_money'] = table[tt]['Target_Data']['Add_money'].v,
+					['Interior_id'] = table[tt]['Target_Data']['Interior_id']
+				}
+				for d = 1,#table[tt]['Target_Data']['Dialog'] do
+					tableEnd[tt]['Target_Data']['Dialog'][d] = {
+						['Text'] = table[tt]['Target_Data']['Dialog'][d]['Text'].v,
+						['Text_time'] = table[tt]['Target_Data']['Dialog'][d]['Text_time'].v
+					}
+				end
 			end
 		end
 	end
 	if typee == 1 then
 		for tt = 1, #table do
 			tableEnd[tt] = {}
-			tableEnd[tt]['Name'] = u8:decode(table[tt]['Name'])
+			tableEnd[tt]['Name'] = table[tt]['Name']
 			tableEnd[tt]['Type'] = table[tt]['Type'].v
 			tableEnd[tt]['Actor_Data'] = {
 				['Pos'] = {table[tt]['Actor_Data']['Pos'].v[1],table[tt]['Actor_Data']['Pos'].v[2],table[tt]['Actor_Data']['Pos'].v[3]},
@@ -129,7 +196,7 @@ function manager.sorterTable(table,typee)
 	if typee == 2 then
 		for tt = 1, #table do
 			tableEnd[tt] = {}
-			tableEnd[tt]['Name'] = u8:decode(table[tt]['Name'])
+			tableEnd[tt]['Name'] = table[tt]['Name']
 			tableEnd[tt]['Type'] = table[tt]['Type'].v
 			tableEnd[tt]['Car_Data'] = {
 				['Pos'] = {table[tt]['Car_Data']['Pos'].v[1],table[tt]['Car_Data']['Pos'].v[2],table[tt]['Car_Data']['Pos'].v[3]},
@@ -162,14 +229,14 @@ function manager.sorterJson(table,typee)
 	if typee == 0 then
 		for tt = 1, #table do
 			tableEnd[tt] = {
-				['Name'] = u8:encode(table[tt]['Name']),
+				['Name'] = table[tt]['Name'],
 				['Type'] = imgui.ImInt(table[tt]['Type']),
 				['Enable'] = imgui.ImBool(false),
 				['Target_Data'] = {}
 			}
 			if 	tableEnd[tt]['Type'].v == 0 then
 				tableEnd[tt]['Target_Data'] = {
-					['Pos'] = imgui.ImFloat3(table[tt]['Target_Data']['Pos'][1],table[tt]['Target_Data']['Pos'][1],table[tt]['Target_Data']['Pos'][1]),
+					['Pos'] = imgui.ImFloat3(table[tt]['Target_Data']['Pos'][1],table[tt]['Target_Data']['Pos'][2],table[tt]['Target_Data']['Pos'][3]),
 					['Radius'] = imgui.ImInt(table[tt]['Target_Data']['Radius']),
 					['Text'] = imgui.ImBuffer(128),
 					['Text_time'] = imgui.ImFloat(table[tt]['Target_Data']['Text_time']),
@@ -191,20 +258,62 @@ function manager.sorterJson(table,typee)
 			end
 			if tableEnd[tt]['Type'].v == 3 then
 				tableEnd[tt]['Target_Data'] = {
-					['Pos'] = imgui.ImFloat3(table[tt]['Target_Data']['Pos'][1],table[tt]['Target_Data']['Pos'][1],table[tt]['Target_Data']['Pos'][1]),
-					['Rotates'] = imgui.ImFloat3(table[tt]['Target_Data']['Rotates'][1],table[tt]['Target_Data']['Rotates'][1],table[tt]['Target_Data']['Rotates'][1]),
+					['Target_type'] = imgui.ImInt(table[tt]['Target_Data']['Target_type']),
+					['Pos'] = imgui.ImFloat3(table[tt]['Target_Data']['Pos'][1],table[tt]['Target_Data']['Pos'][2],table[tt]['Target_Data']['Pos'][3]),
+					['Rotates'] = imgui.ImFloat3(table[tt]['Target_Data']['Rotates'][1],table[tt]['Target_Data']['Rotates'][2],table[tt]['Target_Data']['Rotates'][3]),
 					['Text'] = imgui.ImBuffer(128),
 					['Text_time'] = imgui.ImFloat(table[tt]['Target_Data']['Text_time']),
-					['Smooth'] = imgui.ImBool(table[tt]['Target_Data']['Smooth'])
+					['Smooth'] = imgui.ImBool(table[tt]['Target_Data']['Smooth']),
+					['Time'] = imgui.ImInt(table[tt]['Target_Data']['Time']),
+					['Weather'] = imgui.ImInt(table[tt]['Target_Data']['Weather']),
+					['Clock_time'] = table[tt]['Target_Data']['Clock_time'],
+					['Traffic'] = {imgui.ImInt(table[tt]['Target_Data']['Traffic'][1]),imgui.ImInt(table[tt]['Target_Data']['Traffic'][2])}
+
 				}
 				tableEnd[tt]['Target_Data']['Text'].v = table[tt]['Target_Data']['Text']
+			end
+			if tableEnd[tt]['Type'].v == 4 then
+				tableEnd[tt]['Target_Data'] = {
+					['Target_object_id'] = imgui.ImInt(table[tt]['Target_Data']['Target_type']),
+					['Color_blip'] = imgui.ImInt(table[tt]['Target_Data']['Color_blip']),
+					['Target_type'] = imgui.ImInt(table[tt]['Target_Data']['Target_type']),
+					['Weap'] = imgui.ImInt(table[tt]['Target_Data']['Weap']),
+					['Text'] = imgui.ImBuffer(table[tt]['Target_Data']['Text'])
+				}
+			end
+			if tableEnd[tt]['Type'].v == 5 then
+				tableEnd[tt]['Target_Data'] = {
+					['Target_type'] = imgui.ImInt(table[tt]['Target_Data']['Target_type']),
+					['Pos'] = imgui.ImFloat3(table[tt]['Target_Data']['Pos'][1],table[tt]['Target_Data']['Pos'][2],table[tt]['Target_Data']['Pos'][3]),
+					['ModelID'] = imgui.ImInt(table[tt]['Target_Data']['ModelID']),
+					['Angle'] = imgui.ImFloat(table[tt]['Target_Data']['Angle']),
+					['Weapon'] = imgui.ImInt(table[tt]['Target_Data']['Weapon']),
+					['Weap_ammo'] = imgui.ImInt(table[tt]['Target_Data']['Weap_ammo']),
+					['Anim'] = imgui.ImInt(table[tt]['Target_Data']['Anim']),
+					['Pack_anim'] = imgui.ImInt(table[tt]['Target_Data']['Pack_anim']),
+					['Loop'] = imgui.ImBool(table[tt]['Target_Data']['Loop']),
+					['Car_id'] = imgui.ImInt(table[tt]['Target_Data']['Car_id']),
+					['Car_place'] = imgui.ImInt(table[tt]['Target_Data']['Car_place']),
+					['Level_battue'] = imgui.ImInt(table[tt]['Target_Data']['Level_battue']),
+					['Dialog'] = {},
+					['Dialog_id'] = imgui.ImInt(0),
+					['Add_money'] = imgui.ImInt(table[tt]['Target_Data']['Add_money']),
+					['Interior_id'] = table[tt]['Target_Data']['Interior_id']
+				}
+				for d = 1,#table[tt]['Target_Data']['Dialog'] do
+					tableEnd[tt]['Target_Data']['Dialog'][d] = {
+						['Text'] = imgui.ImBuffer(128),
+						['Text_time'] = imgui.ImFloat(table[tt]['Target_Data']['Dialog'][d]['Text_time'])
+					}
+					tableEnd[tt]['Target_Data']['Dialog'][d]['Text'].v = table[tt]['Target_Data']['Dialog'][d]['Text']
+				end
 			end
 		end
 	end
 	if typee == 1 then
 		for tt = 1,#table do
 			tableEnd[tt] = {
-				['Name'] = u8:encode(table[tt]['Name']),'NoName',
+				['Name'] = table[tt]['Name'],
 				['Type'] = imgui.ImInt(table[tt]['Type']),
 				['Enable'] = imgui.ImBool(false),
 				['Actor_Data'] = {
@@ -233,15 +342,15 @@ function manager.sorterJson(table,typee)
 	if typee == 2 then
 		for tt = 1,#table do
 			tableEnd[tt] = {
-			['Name'] = u8:encode(table[tt]['Name']),
+			['Name'] = table[tt]['Name'],
 			['Type'] = imgui.ImInt(table[tt]['Type']),
 			['Enable'] = imgui.ImBool(false),
 			['Car_Data'] = {
-				['Pos'] = imgui.ImFloat3(table[tt]['Actor_Data']['Pos'][1],table[tt]['Actor_Data']['Pos'][2],table[tt]['Actor_Data']['Pos'][3]),
-				['Angle'] = imgui.ImFloat(table[tt]['Actor_Data']['Angle']),
-				['ModelId'] = imgui.ImInt(table[tt]['Actor_Data']['ModelId']),
-				['StartC'] = imgui.ImInt(table[tt]['Actor_Data']['StartC']),
-				['EndC'] = imgui.ImInt(table[tt]['Actor_Data']['EndC'])
+				['Pos'] = imgui.ImFloat3(table[tt]['Car_Data']['Pos'][1],table[tt]['Car_Data']['Pos'][2],table[tt]['Car_Data']['Pos'][3]),
+				['Angle'] = imgui.ImFloat(table[tt]['Car_Data']['Angle']),
+				['ModelId'] = imgui.ImInt(table[tt]['Car_Data']['ModelId']),
+				['StartC'] = imgui.ImInt(table[tt]['Car_Data']['StartC']),
+				['EndC'] = imgui.ImInt(table[tt]['Car_Data']['EndC'])
 			}
 		}
 		end
@@ -249,13 +358,13 @@ function manager.sorterJson(table,typee)
 	if typee == 3 then
 		for tt = 1,#table do
 			tableEnd[tt] = {
-				['Name'] = u8:encode(table[tt]['Name']),
+				['Name'] = table[tt]['Name'],
 				['Type'] = imgui.ImInt(table[tt]['Type']),
 				['Enable'] = imgui.ImBool(false),
 				['Object_Data'] = {
 					['Pos'] = imgui.ImFloat3(table[tt]['Object_Data']['Pos'][1],table[tt]['Object_Data']['Pos'][2],table[tt]['Object_Data']['Pos'][3]),
 					['Rotates'] = imgui.ImFloat3(table[tt]['Object_Data']['Rotates'][1],table[tt]['Object_Data']['Rotates'][2],table[tt]['Object_Data']['Rotates'][3]),
-					['Angle'] = imgui.ImFloat(table[tt]['Object_Data']['Angle']),
+					['Rotates'] = imgui.ImFloat3(table[tt]['Object_Data']['Rotates'][1],table[tt]['Object_Data']['Rotates'][2],table[tt]['Object_Data']['Rotates'][3]),
 					['ModelId'] = imgui.ImInt(table[tt]['Object_Data']['ModelId']),
 					['StartC'] = imgui.ImInt(table[tt]['Object_Data']['StartC']),
 					['EndC'] = imgui.ImInt(table[tt]['Object_Data']['EndC'])
