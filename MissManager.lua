@@ -107,13 +107,15 @@ function manager.sorterTable(table,typee)
 			if table[tt]['Type'].v == 1 then
 				tableEnd[tt]['Target_Data'] = {
 					['Target_car_id'] = table[tt]['Target_Data']['Target_car_id'].v,
-					['Color_blip'] = table[tt]['Target_Data']['Color_blip'].v
+					['Color_blip'] = table[tt]['Target_Data']['Color_blip'].v,
+					['Text'] = table[tt]['Target_Data']['Text'].v
 				}
 			end
 			if table[tt]['Type'].v == 2 then
 				tableEnd[tt]['Target_Data'] = {
 					['Target_actor_id'] = table[tt]['Target_Data']['Target_actor_id'].v,
-					['Color_blip'] = table[tt]['Target_Data']['Color_blip'].v
+					['Color_blip'] = table[tt]['Target_Data']['Color_blip'].v,
+					['Text'] = table[tt]['Target_Data']['Text'].v
 				}
 			end
 			if table[tt]['Type'].v == 3 then
@@ -185,7 +187,8 @@ function manager.sorterTable(table,typee)
 					['Pack_anim'] = table[tt]['Actor_Data']['Anims'][t]['Pack_anim'].v,
 					['Loop'] = table[tt]['Actor_Data']['Anims'][t]['Loop'].v,
 					['Time'] = table[tt]['Actor_Data']['Anims'][t]['Time'].v,
-					['Condition'] = table[tt]['Actor_Data']['Anims'][t]['Condition'].v
+					['Condition'] = table[tt]['Actor_Data']['Anims'][t]['Condition'].v,
+					['Unbreakable'] = table[tt]['Actor_Data']['Anims'][t]['Unbreakable'].v
 				}
 				if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] == 1 then
 					tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = table[tt]['Actor_Data']['Anims'][t]['Target'].v
@@ -247,14 +250,18 @@ function manager.sorterJson(table,typee)
 			if 	tableEnd[tt]['Type'].v == 1 then
 				tableEnd[tt]['Target_Data'] = {
 				['Target_car_id'] = imgui.ImInt(table[tt]['Target_Data']['Target_car_id']),
-				['Color_blip'] = imgui.ImInt(table[tt]['Target_Data']['Color_blip'])
+				['Color_blip'] = imgui.ImInt(table[tt]['Target_Data']['Color_blip']),
+				['Text'] = imgui.ImBuffer(128)
 			}
+			tableEnd[tt]['Target_Data']['Text'].v = ternar(table[tt]['Target_Data']['Text'] ~= nil, table[tt]['Target_Data']['Text'],'')
 			end
-			if 	tableEnd[tt]['Type'].v == 2 then
+			if tableEnd[tt]['Type'].v == 2 then
 				tableEnd[tt]['Target_Data'] = {
 				['Target_actor_id'] = imgui.ImInt(table[tt]['Target_Data']['Target_actor_id']),
-				['Color_blip'] = imgui.ImInt(table[tt]['Target_Data']['Color_blip'])
+				['Color_blip'] = imgui.ImInt(table[tt]['Target_Data']['Color_blip']),
+				['Text'] = imgui.ImBuffer(128)
 			}
+			tableEnd[tt]['Target_Data']['Text'].v = ternar(table[tt]['Target_Data']['Text'] ~= nil, table[tt]['Target_Data']['Text'],'')
 			end
 			if tableEnd[tt]['Type'].v == 3 then
 				tableEnd[tt]['Target_Data'] = {
@@ -278,8 +285,9 @@ function manager.sorterJson(table,typee)
 					['Color_blip'] = imgui.ImInt(table[tt]['Target_Data']['Color_blip']),
 					['Target_type'] = imgui.ImInt(table[tt]['Target_Data']['Target_type']),
 					['Weap'] = imgui.ImInt(table[tt]['Target_Data']['Weap']),
-					['Text'] = imgui.ImBuffer(table[tt]['Target_Data']['Text'])
+					['Text'] = imgui.ImBuffer(128)
 				}
+				tableEnd[tt]['Target_Data']['Text'].v = table[tt]['Target_Data']['Text']
 			end
 			if tableEnd[tt]['Type'].v == 5 then
 				tableEnd[tt]['Target_Data'] = {
@@ -322,7 +330,8 @@ function manager.sorterJson(table,typee)
 					['ModelId'] = imgui.ImInt(table[tt]['Actor_Data']['ModelId']),
 					['StartC'] = imgui.ImInt(table[tt]['Actor_Data']['StartC']),
 					['EndC'] = imgui.ImInt(table[tt]['Actor_Data']['EndC']),
-					['Anims'] = {}
+					['Anims'] = {},
+					['Anim_id'] = imgui.ImInt(0)
 				}
 			}
 			for t = 1, #table[tt]['Actor_Data']['Anims'] do
@@ -331,7 +340,8 @@ function manager.sorterJson(table,typee)
 				['Pack_anim'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Pack_anim']),
 				['Loop'] = imgui.ImBool(table[tt]['Actor_Data']['Anims'][t]['Loop']),
 				['Time'] = imgui.ImFloat(table[tt]['Actor_Data']['Anims'][t]['Time']),
-				['Condition'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Condition'])
+				['Condition'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Condition']),
+				['Unbreakable'] = imgui.ImBool(ternar(table[tt]['Actor_Data']['Anims'][t]['Unbreakable'] ~= nil,table[tt]['Actor_Data']['Anims'][t]['Unbreakable'],false))
 				}
 				if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'].v == 1 then
 					tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Target'])

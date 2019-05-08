@@ -185,38 +185,7 @@ function imgui.OnDrawFrame()
 
 		imgui.SameLine()
 		if imgui.Button(u8'Загрузить') and #list_missions > 0 then
-			for i = 1,#list_actors do
-				deleteChar(list_actors[i]['Actor_Data']['Char'])
-			end
-			for c = 1,#list_cars do
-				deleteCar(list_cars[c]['Car_Data']['Car'])
-			end
-			for o = 1,#list_objects do
-				deleteObject(list_objects[o]['Object_Data']['Obj'])
-			end
-			list_targets = list_missions[lb_cur_missions.v+1]['Mission_Data']['Targets']
-			list_actors = list_missions[lb_cur_missions.v+1]['Mission_Data']['Actors']
-			list_cars = list_missions[lb_cur_missions.v+1]['Mission_Data']['Cars']
-			list_objects = list_missions[lb_cur_missions.v+1]['Mission_Data']['Objects']
-			mission_data = list_missions[lb_cur_missions.v+1]['Mission_Data']['Miss_data']
-			for a = 1, #list_actors do
-				list_name_actors[a] = list_actors[a]['Name']
-				upd_actor:run(a)
-			end
-			for o = 1, #list_objects do
-				list_name_objects[o] = list_objects[o]['Name']
-				upd_object:run(o)
-			end
-			for c = 1, #list_cars do
-				list_name_cars[c] = list_cars[c]['Name']
-				upd_car:run(c)
-			end
-			for t = 1, #list_targets do
-				list_name_targets[t] = list_targets[t]['Name']
-			end
-			setCharCoordinates(PLAYER_PED, mission_data['Player']['Pos'][1], mission_data['Player']['Pos'][2], mission_data['Player']['Pos'][3])
-			setCharInterior(PLAYER_PED, mission_data['Player']['Interior_id'])
-			setInteriorVisible(mission_data['Player']['Interior_id'])
+			lua_thread.create(load_mission)
 		end
 
 		imgui.SameLine()
@@ -415,10 +384,12 @@ function imgui.OnDrawFrame()
 						if list_targets[i]['Type'].v == 1 then
 							list_targets[i]['Target_Data']['Target_car_id'] = imgui.ImInt(0)
 							list_targets[i]['Target_Data']['Color_blip'] = imgui.ImInt(0)
+							list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
 						end
 						if list_targets[i]['Type'].v == 2 then
 							list_targets[i]['Target_Data']['Target_actor_id'] = imgui.ImInt(0)
 							list_targets[i]['Target_Data']['Color_blip'] = imgui.ImInt(0)
+							list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
 						end
 						if list_targets[i]['Type'].v == 3 then
 							list_targets[i]['Target_Data']['Target_type'] = imgui.ImInt(-1)
@@ -479,10 +450,12 @@ function imgui.OnDrawFrame()
 					if list_targets[i]['Type'].v == 1 then
 						imgui.Combo(u8'Машина',list_targets[i]['Target_Data']['Target_car_id'],list_name_cars)
 						imgui.Combo(u8'Цвет маркера',list_targets[i]['Target_Data']['Color_blip'],targets_marker_color)
+						imgui.InputText(u8'Текст',list_targets[i]['Target_Data']['Text'])
 					end
 					if list_targets[i]['Type'].v == 2 then
 						imgui.Combo(u8'Актёры',list_targets[i]['Target_Data']['Target_actor_id'],list_name_actors)
 						imgui.Combo(u8'Цвет маркера',list_targets[i]['Target_Data']['Color_blip'],targets_marker_color)
+						imgui.InputText(u8'Текст',list_targets[i]['Target_Data']['Text'])
 					end
 
 					if list_targets[i]['Type'].v == 3 then
@@ -591,7 +564,6 @@ function imgui.OnDrawFrame()
 							imgui.SameLine()
 							if imgui.Button(u8'Удалить') then
 								list_targets[i]['Target_Data']['Dialog'] = DelCellArr(list_targets[i]['Target_Data']['Dialog'],list_targets[i]['Target_Data']['Dialog_id'].v+1)
-
 							end
 							imgui.PushItemWidth(-70)
 							for d = 1,#list_targets[i]['Target_Data']['Dialog'] do
@@ -656,7 +628,8 @@ function imgui.OnDrawFrame()
 					['ModelId'] = imgui.ImInt(0),
 					['StartC'] = imgui.ImInt(0),
 					['EndC'] = imgui.ImInt(0),
-					['Anims'] = {}
+					['Anims'] = {},
+					['Anim_id'] = imgui.ImInt(0)
 				}
 
 			}
@@ -738,18 +711,26 @@ function imgui.OnDrawFrame()
 					imgui.Combo(u8'Исчезание после',list_actors[i]['Actor_Data']['EndC'],list_tg_m)
 					imgui.Separator()
 					imgui.Text(u8'Анимации')
+
 					if imgui.Button(u8'Добавить') then
 						list_actors[i]['Actor_Data']['Anims'][#list_actors[i]['Actor_Data']['Anims']+1] = {
 							['Anim'] = imgui.ImInt(0),
 							['Pack_anim'] = imgui.ImInt(0),
 							['Loop'] = imgui.ImBool(false),
 							['Time'] = imgui.ImFloat(1.0),
-							['Condition'] = imgui.ImInt(0)
+							['Condition'] = imgui.ImInt(0),
+							['Unbreakable'] = imgui.ImBool(false)
 						}
 					end
 					imgui.SameLine()
+					imgui.PushItemWidth(-250)
+					imgui.Combo(u8'Номер',list_actors[i]['Actor_Data']['Anim_id'],range(#list_actors[i]['Actor_Data']['Anims']))
+					imgui.SameLine()
+					if imgui.Button(u8'Удалить') then
+						list_actors[i]['Actor_Data']['Anims'] = DelCellArr(list_actors[i]['Actor_Data']['Anims'],list_actors[i]['Actor_Data']['Anim_id'].v+1)
+					end
 					if imgui.Button(u8'Очистить предпросмотр') then
-						taskPlayAnim(list_actors[i]['Actor_Data']['Char'], 'NULL', 'NULL', 1.0, true, false, false, false, -1)
+						taskPlayAnim(list_actors[i]['Actor_Data']['Char'], "WALK_START", 'PED', 1.0, false, false, false, false, -1)
 					end
 					imgui.PushItemWidth(-150)
 					for a = 1,#list_actors[i]['Actor_Data']['Anims'] do
@@ -767,6 +748,7 @@ function imgui.OnDrawFrame()
 							imgui.Combo(u8'Анимация',list_actors[i]['Actor_Data']['Anims'][a]['Anim'],Anims['Anim_list'][list_actors[i]['Actor_Data']['Anims'][a]['Pack_anim'].v+1])
 							imgui.InputFloat(u8'Время анимации (сек)',list_actors[i]['Actor_Data']['Anims'][a]['Time'],0)
 							imgui.Checkbox(u8'Зацикленно',list_actors[i]['Actor_Data']['Anims'][a]['Loop'])
+							imgui.Checkbox(u8'Неуязвим',list_actors[i]['Actor_Data']['Anims'][a]['Unbreakable'])
 							if imgui.Button(u8'Предпросмотр') then
 								upd_anim_actor:run(i,a)
 							end
@@ -796,7 +778,7 @@ function imgui.OnDrawFrame()
 		imgui.ListBox('', lb_cur_cars,list_name_cars,15)
 		if imgui.BeginPopupContextItem('hee') then
 			imgui.InputText('',buf_edit_cars_name)
-			if imgui.Button(u8'Применить') and buf_edit_actors_name.v ~= '' then
+			if imgui.Button(u8'Применить') and buf_edit_cars_name.v ~= '' then
 				list_cars[lb_cur_cars.v+1]['Name'] = buf_edit_actors_name.v
 				list_name_cars[lb_cur_cars.v+1] = buf_edit_actors_name.v
 				buf_edit_actors_name.v = ''
@@ -1074,7 +1056,7 @@ function update_actor(actorr)
 
 	requestModel(modell)
 	while not hasModelLoaded(modell) do
-		wait(1)
+		wait(0)
 	end
 	local last_id = 288
 	for v = 1,#ID_Actors do
@@ -1094,7 +1076,7 @@ end
 function update_actor_animation(actorr,anim)
 	if not hasAnimationLoaded(Anims['Anim_name'][list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1]) then
 		requestAnimation(Anims['Anim_name'][list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1])
-		while hasAnimationLoaded(Anims['Anim_name'][list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1]) do
+		while not hasAnimationLoaded(Anims['Anim_name'][list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1]) do
 			wait(0)
 		end
 	end
@@ -1110,7 +1092,7 @@ function update_car(carr)
 
 	requestModel(modell)
 	while not hasModelLoaded(modell) do
-		wait(1)
+		wait(0)
 	end
 	local last_id = 611
 	for v = 1,#ID_Cars do
@@ -1137,7 +1119,7 @@ function update_object(objj)
 
 	requestModel(modell)
 	while not hasModelLoaded(modell) do
-		wait(1)
+		wait(0)
 	end
 
 	deleteObject(list_objects[objj]['Object_Data']['Obj'])
@@ -1147,7 +1129,41 @@ function update_object(objj)
 	setObjectRotation(list_objects[objj]['Object_Data']['Obj'], rxx, rxy, rxz)
 end
 
-
+function load_mission()
+	for i = 1,#list_actors do
+		deleteChar(list_actors[i]['Actor_Data']['Char'])
+	end
+	for c = 1,#list_cars do
+		deleteCar(list_cars[c]['Car_Data']['Car'])
+	end
+	for o = 1,#list_objects do
+		deleteObject(list_objects[o]['Object_Data']['Obj'])
+	end
+	list_targets = list_missions[lb_cur_missions.v+1]['Mission_Data']['Targets']
+	list_actors = list_missions[lb_cur_missions.v+1]['Mission_Data']['Actors']
+	list_cars = list_missions[lb_cur_missions.v+1]['Mission_Data']['Cars']
+	list_objects = list_missions[lb_cur_missions.v+1]['Mission_Data']['Objects']
+	mission_data = list_missions[lb_cur_missions.v+1]['Mission_Data']['Miss_data']
+	wait(1)
+	for a = 1, #list_actors do
+		list_name_actors[a] = list_actors[a]['Name']
+		upd_actor:run(a)
+	end
+	for o = 1, #list_objects do
+		list_name_objects[o] = list_objects[o]['Name']
+		upd_object:run(o)
+	end
+	for c = 1, #list_cars do
+		list_name_cars[c] = list_cars[c]['Name']
+		upd_car:run(c)
+	end
+	for t = 1, #list_targets do
+		list_name_targets[t] = list_targets[t]['Name']
+	end
+	setCharCoordinates(PLAYER_PED, mission_data['Player']['Pos'][1], mission_data['Player']['Pos'][2], mission_data['Player']['Pos'][3])
+	setCharInterior(PLAYER_PED, mission_data['Player']['Interior_id'])
+	setInteriorVisible(mission_data['Player']['Interior_id'])
+end
 
 function main()
 	setGxtEntry('HTARG', koder('Двигать: ~r~WS/AD ~n~~w~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
@@ -1444,14 +1460,9 @@ function main()
 			local xx,xy,xz = list_targets[id_target]['Target_Data']['Pos'].v[1],list_targets[id_target]['Target_Data']['Pos'].v[2],list_targets[id_target]['Target_Data']['Pos'].v[3]
 			local rxx,rxy,rxz = list_targets[id_target]['Target_Data']['Rotates'].v[1],list_targets[id_target]['Target_Data']['Rotates'].v[2],list_targets[id_target]['Target_Data']['Rotates'].v[3]
 			local x1,y1,z1 = xx,xy,xz
-			local dx,dy,dz = xx+2-x1,xy+2-y1,xz+2-z1
-			x1 = x1 + dx*math.sin(math.rad(rxy))
-			y1 = y1 + dy*math.cos(math.rad(rxy))
-			z1 = z1
-			dx,dy,dz = xx+2-x1,xy+2-y1,xz+2-z1
-			x1 = x1 + dx*math.sin(math.rad(rxy))
-			y1 = y1 + dy*math.cos(math.rad(rxy))
-			z1 = z1 + dz*math.cos(math.rad(rxx))
+			x1 = x1 + 2*math.sin(math.rad(rxy)) * math.sin(math.rad(rxx))
+			y1 = y1 + 2*math.cos(math.rad(rxy)) * math.sin(math.rad(rxx))
+			z1 = z1 + 2*math.cos(math.rad(rxx))
 
 			--setObjectCoordinates(chr, x1, y1, z1)
 			setFixedCameraPosition(xx, xy, xz,0,rxz,0)
@@ -1493,6 +1504,18 @@ function main()
 				wait(100)
 				mission_data['Time'][2] = mission_data['Time'][2] - 1
 			end
+			if mission_data['Time'][2] == 60 then
+				mission_data['Time'][1] = mission_data['Time'][1] + 1
+				mission_data['Time'][2] = 0
+			elseif mission_data['Time'][2] == -1 then
+				mission_data['Time'][1] = mission_data['Time'][1] - 1
+				mission_data['Time'][2] = 59
+			end
+			if mission_data['Time'][1] == 24 then
+				mission_data['Time'][1] = 0
+			elseif mission_data['Time'][1] == -1 then
+				mission_data['Time'][1] = 23
+			end
 			setTimeOfDay(mission_data['Time'][1], mission_data['Time'][2])
 		end
 
@@ -1519,6 +1542,18 @@ function main()
 			if isKeyDown(vkeys.VK_L) then
 				wait(100)
 				list_targets[id_timetarg]['Target_Data']['Clock_time'][2] = list_targets[id_timetarg]['Target_Data']['Clock_time'][2] - 1
+			end
+			if list_targets[id_timetarg]['Target_Data']['Clock_time'][2] == 60 then
+				list_targets[id_timetarg]['Target_Data']['Clock_time'][1] = list_targets[id_timetarg]['Target_Data']['Clock_time'][1] + 1
+				list_targets[id_timetarg]['Target_Data']['Clock_time'][2] = 0
+			elseif list_targets[id_timetarg]['Target_Data']['Clock_time'][2] == -1 then
+				list_targets[id_timetarg]['Target_Data']['Clock_time'][1] = list_targets[id_timetarg]['Target_Data']['Clock_time'][1] - 1
+				list_targets[id_timetarg]['Target_Data']['Clock_time'][2] = 59
+			end
+			if list_targets[id_timetarg]['Target_Data']['Clock_time'][1] == 24 then
+				list_targets[id_timetarg]['Target_Data']['Clock_time'][1] = 0
+			elseif list_targets[id_timetarg]['Target_Data']['Clock_time'][1] == -1 then
+				list_targets[id_timetarg]['Target_Data']['Clock_time'][1] = 23
 			end
 			setTimeOfDay(list_targets[id_timetarg]['Target_Data']['Clock_time'][1], list_targets[id_timetarg]['Target_Data']['Clock_time'][2])
 		end
@@ -1878,7 +1913,7 @@ function main()
 		if editmode_preview_player_anim then
 			if not hasAnimationLoaded(Anims['Anim_name'][list_targets[id_preview_player_anim]['Target_Data']['Pack_anim'].v+1]) then
 				requestAnimation(Anims['Anim_name'][list_targets[id_preview_player_anim]['Target_Data']['Pack_anim'].v+1])
-				while hasAnimationLoaded(Anims['Anim_name'][list_targets[id_preview_player_anim]['Target_Data']['Pack_anim'].v+1]) do
+				while not hasAnimationLoaded(Anims['Anim_name'][list_targets[id_preview_player_anim]['Target_Data']['Pack_anim'].v+1]) do
 					wait(0)
 				end
 			end

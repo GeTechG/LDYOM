@@ -75,14 +75,28 @@ function mp.play_char_anims(ped,actr)
 			end
 			local animm = Anims['Anim_list'][actr['Anims'][curr_anim]['Pack_anim'].v+1]
 			animm = animm[actr['Anims'][curr_anim]['Anim'].v+1]
-			taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1)
+			if not actr['Anims'][curr_anim]['Unbreakable'].v then
+				taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1)
+			else
+				taskPlayAnimWithFlags(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1,false,false)
+			end
 			wait(actr['Anims'][curr_anim]['Time'].v * 1000.0)
 			curr_anim = curr_anim + 1
 		elseif actr['Anims'][curr_anim]['Condition'].v == 1 then
 			if curr_target == actr['Anims'][curr_anim]['Target'].v+1 then
+				if not hasAnimationLoaded(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1]) then
+					requestAnimation(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1])
+					while not hasAnimationLoaded(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1]) do
+						wait(0)
+					end
+				end
 				local animm = Anims['Anim_list'][actr['Anims'][curr_anim]['Pack_anim'].v+1]
 				animm = animm[actr['Anims'][curr_anim]['Anim'].v+1]
-				taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1)
+				if not actr['Anims'][curr_anim]['Unbreakable'].v then
+					taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1)
+				else
+					taskPlayAnimWithFlags(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1,false,false)
+				end
 				wait(actr['Anims'][curr_anim]['Time'].v * 1000.0)
 				curr_anim = curr_anim + 1
 			end
@@ -96,6 +110,7 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 	forceWeatherNow(miss_data['Weather'].v)
 	setLaRiots(miss_data['Riot'].v)
 	setCharCoordinates(PLAYER_PED, miss_data['Player']['Pos'][1], miss_data['Player']['Pos'][2], miss_data['Player']['Pos'][3])
+	setCharHeading(PLAYER_PED, miss_data['Player']['Angle'])
 	setMaxWantedLevel(6)
 	setCharInterior(PLAYER_PED, miss_data['Player']['Interior_id'])
 	setInteriorVisible(miss_data['Player']['Interior_id'])
@@ -146,7 +161,10 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 				local md = list_o[o]['Object_Data']['ModelId'].v
 				local xx,xy,xz = list_o[o]['Object_Data']['Pos'].v[1], list_o[o]['Object_Data']['Pos'].v[2], list_o[o]['Object_Data']['Pos'].v[3]
 				local rxx,rxy,rxz = list_o[o]['Object_Data']['Rotates'].v[1], list_o[o]['Object_Data']['Rotates'].v[2], list_o[o]['Object_Data']['Rotates'].v[3]
-
+				requestModel(md)
+				while not isModelAvailable(md) do
+					wait(0)
+				end
 				mp.objects[o] = createObject(md, xx, xy, xz)
 				setObjectCoordinates(mp.objects[o], xx, xy, xz)
 				setObjectRotation(mp.objects[o], rxx, rxy, rxz)
@@ -173,8 +191,8 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 		if list[i]['Type'].v == 1 then
 			lockPlayerControl(false)
 			local check = addBlipForCar(mp.cars[list[i]['Target_Data']['Target_car_id'].v+1])
-			changeBlipColour(check, 1)
-			printString(koder('Цель: сесть в ~b~машину'), 2000)
+			changeBlipColour(check, list[i]['Target_Data']['Color_blip'].v)
+			printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)), 2000)
 			while not isCharInCar(PLAYER_PED, mp.cars[list[i]['Target_Data']['Target_car_id'].v+1]) do
 				wait(0)
 			end
@@ -183,8 +201,8 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 		if list[i]['Type'].v == 2 then
 			lockPlayerControl(false)
 			local check = addBlipForChar(mp.actors[list[i]['Target_Data']['Target_actor_id'].v+1])
-			changeBlipColour(check, 0)
-			printString(koder('Цель: убей ~r~человека'), 2000)
+			changeBlipColour(check, list[i]['Target_Data']['Color_blip'].v)
+			printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)), 2000)
 			while not isCharDead(mp.actors[list[i]['Target_Data']['Target_actor_id'].v+1]) do
 				wait(0)
 			end
@@ -198,14 +216,9 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 				local xx,xy,xz = list[i]['Target_Data']['Pos'].v[1],list[i]['Target_Data']['Pos'].v[2],list[i]['Target_Data']['Pos'].v[3]
 				local rxx,rxy,rxz = list[i]['Target_Data']['Rotates'].v[1],list[i]['Target_Data']['Rotates'].v[2],list[i]['Target_Data']['Rotates'].v[3]
 				local x1,y1,z1 = xx,xy,xz
-				local dx,dy,dz = xx+2-x1,xy+2-y1,xz+2-z1
-				x1 = x1 + dx*math.sin(math.rad(rxy))
-				y1 = y1 + dy*math.cos(math.rad(rxy))
-				z1 = z1
-				dx,dy,dz = xx+2-x1,xy+2-y1,xz+2-z1
-				x1 = x1 + dx*math.sin(math.rad(rxy))
-				y1 = y1 + dy*math.cos(math.rad(rxy))
-				z1 = z1 + dz*math.cos(math.rad(rxx))
+				x1 = x1 + 2*math.sin(math.rad(rxy)) * math.sin(math.rad(rxx))
+				y1 = y1 + 2*math.cos(math.rad(rxy)) * math.sin(math.rad(rxx))
+				z1 = z1 + 2*math.cos(math.rad(rxx))
 				if list[i]['Target_Data']['Smooth'].v then
 					setInterpolationParameters(0,list[i]['Target_Data']['Text_time'].v*1000)
 					setFixedCameraPosition(xx, xy, xz)
@@ -294,6 +307,10 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 				end
 				setPlayerModel(PLAYER_HANDLE, list[i]['Target_Data']['ModelID'].v)
 				setCharCoordinates(PLAYER_PED, list[i]['Target_Data']['Pos'].v[1], list[i]['Target_Data']['Pos'].v[2], list[i]['Target_Data']['Pos'].v[3])
+				requestModel(getWeapontypeModel(list[i]['Target_Data']['Weapon'].v))
+				while not hasModelLoaded(getWeapontypeModel(list[i]['Target_Data']['Weapon'].v)) do
+					wait(0)
+				end
 				giveWeaponToChar(PLAYER_PED, list[i]['Target_Data']['Weapon'].v, list[i]['Target_Data']['Weap_ammo'].v)
 				setCharHeading(PLAYER_PED, list[i]['Target_Data']['Angle'].v)
 			end
@@ -301,7 +318,7 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 				lockPlayerControl(true)
 				if not hasAnimationLoaded(Anims['Anim_name'][list[i]['Target_Data']['Pack_anim'].v+1]) then
 					requestAnimation(Anims['Anim_name'][list[i]['Target_Data']['Pack_anim'].v+1])
-					while hasAnimationLoaded(Anims['Anim_name'][list[i]['Target_Data']['Pack_anim'].v+1]) do
+					while not hasAnimationLoaded(Anims['Anim_name'][list[i]['Target_Data']['Pack_anim'].v+1]) do
 						wait(0)
 					end
 				end
@@ -336,22 +353,24 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 					end
 				end
 				phone = createObject(330, 0, 0, 0)
-				wait(1)
-				setObjectCoordinates(phone, 2488.1010742188, -1666.6873779297, 13.34375 )
-				--ObjectDynamic(phones, true)
-				taskPlayAnim(PLAYER_PED, 'phone_in', 'PED', 4.0, false, false, false, true, -1)
+				wait(0)
+				taskPickUpSecondObject(PLAYER_PED, phone, 0, 0, 0, 6, 16, 'phone_in', 'PED', -1)
 				wait(900)
 				taskPickUpObject(PLAYER_PED, phone, 0, 0, 0, 6, 16, 'NULL', 'NULL', -1)
 				wait(1430)
-				taskPlayAnim(PLAYER_PED, 'PHONE_TALK', 'PED', 4.0, true, false, false, true, -1)
 				for d = 1,#list[i]['Target_Data']['Dialog'] do
 					printString(koder(u8:decode(list[i]['Target_Data']['Dialog'][d]['Text'].v)), list[i]['Target_Data']['Dialog'][d]['Text_time'].v*1000)
 					wait(list[i]['Target_Data']['Dialog'][d]['Text_time'].v*1000)
 				end
-				taskPlayAnim(PLAYER_PED, 'PHONE_OUT', 'PED', 4.0, false, false, false, false, -1)
+				removeObjectElegantly(phone)
+				wait(0)
+				phone = createObject(330, 0, 0, 0)
+				taskPickUpSecondObject(PLAYER_PED, phone, 0, 0, 0, 6, 16, 'phone_out', 'PED', -1)
+				taskPickUpObject(PLAYER_PED, phone, 0, 0, 0, 6, 16, 'NULL', 'NULL', -1)
 				wait(1570)
 				removeObjectElegantly(phone)
 				wait(430)
+				taskPickUpSecondObject(PLAYER_PED, phone, 0, 0, 0, 6, 16, 'phone_out', 'PED', -1)
 
 			end
 			if list[i]['Target_Data']['Target_type'].v == 6 then
