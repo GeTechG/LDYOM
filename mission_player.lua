@@ -5,16 +5,21 @@ koder = require 'TextToGTX'
 encoding = require 'encoding'
 encoding.default = 'CP1251'
 u8 = encoding.UTF8
+mp.thread = {}
 mp.actors = {}
 mp.cars = {}
 mp.objects = {}
+mp.pickup = {}
+mp.particle = {}
+mp.explosion = {}
+local thread_miss
 curr_target = 0
 
-function mp.start_mission(listt,lista,listc,listo,missd)
+function mp.start_mission(listt,lista,listc,listo,listp,listpa,liste,missd)
 	misflag = mp.flagmis()
 	mp.miss = mp.start()
 	imgui.Process = false
-	mp.main_mission(listt,lista,listc,listo,missd)
+	thread_miss = lua_thread.create(mp.main_mission,listt,lista,listc,listo,listp,listpa,liste,missd)
 end
 
 function mp.flagmis()
@@ -43,8 +48,14 @@ function mp.defeat()
     wait(0)
     while isPlayerPlaying(PLAYER_HANDLE) do
       wait(0)
-    end
-    fall()
+		end
+		setPlayerModel(PLAYER_HANDLE,model.NULL)
+		while not isPlayerPlaying(PLAYER_HANDLE) do
+      wait(0)
+		end
+		thread_miss:terminate()
+		mp.fall()
+		mp.endmiss()
   end)
 end
 
@@ -56,10 +67,30 @@ function mp.pass(money)
   mp.miss = 0
 end
 
+function mp.respect()
+  setGameGlobal(glob.ONMISSION, 0)
+  printStyledString(koder('Затащено. ~w~Уважение +'), 4000, 1)
+  playMissionPassedTune(1)
+  mp.miss = 0
+end
+
 function mp.fall()
   setGameGlobal(glob.ONMISSION, 0)
   printWithNumberBig("M_FAIL", 100, 4000, 1)
   mp.miss = 0
+end
+
+
+
+function char_is_not_dead(ped)
+	lua_thread.create(function() 
+	while not isCharDead(ped) do
+		wait(0)
+	end
+	thread_miss:terminate()
+	mp.fall()
+	mp.endmiss()
+	end)
 end
 
 function mp.play_char_anims(ped,actr)
@@ -104,7 +135,60 @@ function mp.play_char_anims(ped,actr)
 	end
 end
 
-function mp.main_mission(list,list_a,list_c,list_o,miss_data)
+function car_is_not_dead(car)
+	lua_thread.create(function()
+	while not isCarDead(car) do
+		wait(0)
+	end
+	thread_miss:terminate()
+	mp.fall()
+	mp.endmiss()
+	end)
+end
+
+function mp.play_obj_anims(obj,obj_data)
+	local curr_anim = 1
+	local rotate_obj = {}
+	rotate_obj.x,rotate_obj.y,rotate_obj.z = obj_data['Rotates'].v[1],obj_data['Rotates'].v[2],obj_data['Rotates'].v[3]
+	while curr_anim <= #obj_data['Anims'] do
+		wait(0)
+		local step_pos = {}
+		local startpos = {}
+		local curpos = {}
+		local step_angle = {}
+		startpos.x,startpos.y,startpos.z = select(2,getObjectCoordinates(obj)),select(3,getObjectCoordinates(obj)),select(4,getObjectCoordinates(obj))
+
+		step_pos.x = (obj_data['Anims'][curr_anim]['Pos'].v[1] - startpos.x) / (obj_data['Anims'][curr_anim]['Time'].v * 1000)
+		step_pos.y = (obj_data['Anims'][curr_anim]['Pos'].v[2] - startpos.y) / (obj_data['Anims'][curr_anim]['Time'].v * 1000)
+		step_pos.z = (obj_data['Anims'][curr_anim]['Pos'].v[3] - startpos.z) / (obj_data['Anims'][curr_anim]['Time'].v * 1000)
+
+		step_angle.x = (obj_data['Anims'][curr_anim]['Rotates'].v[1] - rotate_obj.x) / (obj_data['Anims'][curr_anim]['Time'].v * 1000)
+		step_angle.y = (obj_data['Anims'][curr_anim]['Rotates'].v[2] - rotate_obj.y) / (obj_data['Anims'][curr_anim]['Time'].v * 1000)
+		step_angle.z = (obj_data['Anims'][curr_anim]['Rotates'].v[3] - rotate_obj.z) / (obj_data['Anims'][curr_anim]['Time'].v * 1000)
+		if obj_data['Anims'][curr_anim]['Condition'].v == 1 then
+			while curr_target ~= obj_data['Anims'][curr_anim]['Target'].v+1 do
+				wait(0)
+			end
+		end
+		local time = 0
+		while time <= obj_data['Anims'][curr_anim]['Time'].v * 1000 do
+			local old_time = os.clock()
+			wait(1)
+			local delta = (os.clock() - old_time) * 1000
+
+			curpos.x,curpos.y,curpos.z = select(2,getObjectCoordinates(obj)),select(3,getObjectCoordinates(obj)),select(4,getObjectCoordinates(obj))
+			setObjectCoordinates(obj, curpos.x+step_pos.x*delta, curpos.y+step_pos.y*delta, curpos.z+step_pos.z*delta)
+
+			rotate_obj.x,rotate_obj.y,rotate_obj.z = rotate_obj.x+step_angle.x*delta,rotate_obj.y+step_angle.y*delta,rotate_obj.z+step_angle.z*delta
+			setObjectRotation(obj, rotate_obj.x, rotate_obj.y, rotate_obj.z)
+
+			time = time + 1*delta
+		end
+		curr_anim = curr_anim + 1
+	end
+end
+
+function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_data)
 	printStyledString(koder(u8:decode(miss_data['Name'])), 2000, 2)
 	setTimeOfDay(miss_data['Time'][1], miss_data['Time'][2])
 	forceWeatherNow(miss_data['Weather'].v)
@@ -133,9 +217,15 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 					wait(0)
 				end
 				mp.actors[a] = createChar(4, md, xx, xy, xz)
+				setCharHealth(mp.actors[a],list_a[a]['Actor_Data']['Health'].v)
 				setCharHeading(mp.actors[a], list_a[a]['Actor_Data']['Angle'].v)
 				wait(0)
-				mp.tread_play_actr_anim:run(mp.actors[a], list_a[a]['Actor_Data'])
+				if #list_a[a]['Actor_Data']['Anims'] > 0 then
+					mp.thread[#mp.thread+1] = lua_thread.create(mp.play_char_anims,mp.actors[a], list_a[a]['Actor_Data'])
+				end
+				if list_a[a]['Actor_Data']['Should_not_die'].v == true then
+					mp.thread[#mp.thread+1] = lua_thread.create(char_is_not_dead,mp.actors[a])
+				end
 			end
 			if list_a[a]['Actor_Data']['EndC'].v ~= 0 and list_a[a]['Actor_Data']['EndC'].v + 1 == i then
 				deleteChar(mp.actors[a])
@@ -150,7 +240,14 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 					wait(0)
 				end
 				mp.cars[c] = createCar(md, xx, xy, xz)
+				setCarHealth(mp.cars[c],list_c[c]['Car_Data']['Health'].v)
 				setCarHeading(mp.cars[c], list_c[c]['Car_Data']['Angle'].v)
+				setCarProofs(mp.cars[c],list_c[c]['Car_Data']['Bulletproof'].v,list_c[c]['Car_Data']['Fireproof'].v,list_c[c]['Car_Data']['Explosionproof'].v,list_c[c]['Car_Data']['Collisionproof'].v,list_c[c]['Car_Data']['Meleeproof'].v)
+				setCanBurstCarTires(mp.cars[c], not list_c[c]['Car_Data']['Tires_vulnerability'].v)
+				changeCarColour(mp.cars[c], list_c[c]['Car_Data']['Color_primary'].v, list_c[c]['Car_Data']['Color_secondary'].v)
+				if list_c[c]['Car_Data']['Should_not_die'].v == true then
+					mp.thread[#mp.thread+1] = lua_thread.create(car_is_not_dead,mp.cars[c])
+				end
 			end
 			if list_c[c]['Car_Data']['EndC'].v ~= 0 and list_c[c]['Car_Data']['EndC'].v + 1 == i then
 				deleteCar(mp.cars[c])
@@ -168,9 +265,88 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 				mp.objects[o] = createObject(md, xx, xy, xz)
 				setObjectCoordinates(mp.objects[o], xx, xy, xz)
 				setObjectRotation(mp.objects[o], rxx, rxy, rxz)
+				wait(0)
+				mp.thread[#mp.thread+1] = lua_thread.create(mp.play_obj_anims,mp.objects[o],list_o[o]['Object_Data'])
 			end
 			if list_o[o]['Object_Data']['EndC'].v ~= 0 and list_o[o]['Object_Data']['EndC'].v + 1 == i then
 				deleteObject(mp.objects[o])
+			end
+		end
+		for p = 1,#list_pa do
+			if list_pa[p]['Particle_Data']['StartC'].v + 1 == i then
+				local md = Particle_name[list_pa[p]['Particle_Data']['ModelId'].v+1]
+				local xx,xy,xz = list_pa[p]['Particle_Data']['Pos'].v[1], list_pa[p]['Particle_Data']['Pos'].v[2], list_pa[p]['Particle_Data']['Pos'].v[3]
+				local rxx,rxy,rxz = list_pa[p]['Particle_Data']['Rotates'].v[1], list_pa[p]['Particle_Data']['Rotates'].v[2], list_pa[p]['Particle_Data']['Rotates'].v[3]
+
+				mp.particle[p] = createFxSystem(md, xx, xy, xz, 1)
+				playFxSystem(mp.particle[p])
+			end
+			if list_pa[p]['Particle_Data']['EndC'].v ~= 0 and list_pa[p]['Particle_Data']['EndC'].v + 1 == i then
+				killFxSystemNow(mp.particle[p])
+			end
+		end
+		for p = 1,#list_p do
+			if list_p[p]['Pickup_Data']['StartC'].v + 1 == i then
+				local xx,xy,xz = list_p[p]['Pickup_Data']['Pos'].v[1], list_p[p]['Pickup_Data']['Pos'].v[2], list_p[p]['Pickup_Data']['Pos'].v[3]
+				local spawn_t = 3
+				if list_p[p]['Pickup_Data']['spawn_type'].v == 1 then
+					spawn_t = 2
+				elseif list_p[p]['Pickup_Data']['spawn_type'].v == 2 then
+					spawn_t = 15
+				end
+
+				if list_p[p]['Pickup_Data']['Type_pickup'].v == 0 then
+					local md = getWeapontypeModel(list_p[p]['Pickup_Data']['Weapon'].v)
+					if not isModelAvailable(md) then
+						requestModel(md)
+						while not isModelAvailable(md) do
+							wait(0)
+						end
+					end
+
+					mp.pickup[p] = createPickupWithAmmo(md, spawn_t, list_p[p]['Pickup_Data']['Ammo'].v, xx, xy, xz)
+				end
+				if list_p[p]['Pickup_Data']['Type_pickup'].v >= 1 then
+					local md = 1240
+					if list_p[p]['Pickup_Data']['Type_pickup'].v == 2 then
+						md = 1242
+					elseif list_p[p]['Pickup_Data']['Type_pickup'].v == 3 then
+						md = 1247
+					elseif list_p[p]['Pickup_Data']['Type_pickup'].v == 4 then
+						md = 1210
+					elseif list_p[p]['Pickup_Data']['Type_pickup'].v == 5 then
+						md = list_p[p]['Pickup_Data']['ModelId'].v
+					end
+
+					if not isModelAvailable(md) then
+						requestModel(md)
+						while not isModelAvailable(md) do
+							wait(0)
+						end
+					end
+					mp.pickup[p] = select(2,createPickup(md, spawn_t, xx, xy, xz))
+				end
+			end
+			if list_p[p]['Pickup_Data']['EndC'].v ~= 0 and list_p[p]['Pickup_Data']['EndC'].v + 1 == i then
+				removePickup(mp.pickup[p])
+			end
+		end
+		for e = 1,#list_e do
+			if list_e[e]['Explosion_Data']['StartC'].v + 1 == i then
+				local xx,xy,xz = list_e[e]['Explosion_Data']['Pos'].v[1], list_e[e]['Explosion_Data']['Pos'].v[2], list_e[e]['Explosion_Data']['Pos'].v[3]
+				
+				if list_e[e]['Explosion_Data']['Type'].v == 0 then
+					mp.explosion[e] = startScriptFire(xx,xy,xz,list_e[e]['Explosion_Data']['Propagation_fire'].v,list_e[e]['Explosion_Data']['Size_fire'].v)
+				end
+				if list_e[e]['Explosion_Data']['Type'].v == 1 then
+					addExplosion(xx,xy,xz,list_e[e]['Explosion_Data']['Type_explosion'].v)
+				end
+
+			end
+			if list_e[e]['Explosion_Data']['EndC'].v ~= 0 and list_e[e]['Explosion_Data']['EndC'].v + 1 == i then
+				if list_e[e]['Explosion_Data']['Type'].v == 0 then
+					removeScriptFire(mp.explosion[e])
+				end
 			end
 		end
 		if list[i]['Type'].v == 0 then
@@ -181,7 +357,11 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 			--sph[i] = addSphere(xx,xy,xz,rad)
 			printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)),list[i]['Target_Data']['Text_time'].v * 1000)
 			local check = addBlipForCoord(xx,xy,xz)
-			changeBlipColour(check,list[i]['Target_Data']['Color_blip'].v)
+			if list[i]['Target_Data']['Color_blip'].v > 0 then
+				changeBlipColour(check,list[i]['Target_Data']['Color_blip'].v-1)
+			else
+				setBlipAsFriendly(check, 1)
+			end
 			while not locateCharAnyMeans3d(PLAYER_PED,xx,xy,xz,rad,rad,rad,true) do
 				wait(0)
 			end
@@ -191,7 +371,11 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 		if list[i]['Type'].v == 1 then
 			lockPlayerControl(false)
 			local check = addBlipForCar(mp.cars[list[i]['Target_Data']['Target_car_id'].v+1])
-			changeBlipColour(check, list[i]['Target_Data']['Color_blip'].v)
+			if list[i]['Target_Data']['Color_blip'].v > 0 then
+				changeBlipColour(check,list[i]['Target_Data']['Color_blip'].v-1)
+			else
+				setBlipAsFriendly(check, 1)
+			end
 			printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)), 2000)
 			while not isCharInCar(PLAYER_PED, mp.cars[list[i]['Target_Data']['Target_car_id'].v+1]) do
 				wait(0)
@@ -201,7 +385,12 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 		if list[i]['Type'].v == 2 then
 			lockPlayerControl(false)
 			local check = addBlipForChar(mp.actors[list[i]['Target_Data']['Target_actor_id'].v+1])
-			changeBlipColour(check, list[i]['Target_Data']['Color_blip'].v)
+			if list[i]['Target_Data']['Color_blip'].v > 0 then
+			  changeBlipColour(check,list[i]['Target_Data']['Color_blip'].v-1)
+			else
+			  setBlipAsFriendly(check, 1)
+			end
+			setBlipAsFriendly(check, true)
 			printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)), 2000)
 			while not isCharDead(mp.actors[list[i]['Target_Data']['Target_actor_id'].v+1]) do
 				wait(0)
@@ -213,6 +402,12 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 				displayRadar(false)
 				displayHud(false)
 				lockPlayerControl(true)
+				switchWidescreen(true)
+				if not (list[i-1]['Target_Data']['Target_type'].v == 0 and list[i-1]['Type'].v == 3) then
+					doFade(false, 500)
+					wait(1000)
+					doFade(true, 500)
+				end
 				local xx,xy,xz = list[i]['Target_Data']['Pos'].v[1],list[i]['Target_Data']['Pos'].v[2],list[i]['Target_Data']['Pos'].v[3]
 				local rxx,rxy,rxz = list[i]['Target_Data']['Rotates'].v[1],list[i]['Target_Data']['Rotates'].v[2],list[i]['Target_Data']['Rotates'].v[3]
 				local x1,y1,z1 = xx,xy,xz
@@ -230,9 +425,15 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 
 				printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)), list[i]['Target_Data']['Text_time'].v*1000)
 				wait(list[i]['Target_Data']['Text_time'].v*1000)
+				if not (list[i+1]['Target_Data']['Target_type'].v == 0 and list[i+1]['Type'].v == 3) then
+					doFade(false, 500)
+					wait(1000)
+					doFade(true, 500)
+				end
 				displayRadar(true)
 				displayHud(true)
 				lockPlayerControl(false)
+				switchWidescreen(false)
 				restoreCameraJumpcut()
 			end
 			if list[i]['Target_Data']['Target_type'].v == 1 then
@@ -263,8 +464,12 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 		if list[i]['Type'].v == 4 then
 			lockPlayerControl(false)
 			local check = addBlipForObject(mp.objects[list[i]['Target_Data']['Target_object_id'].v+1])
-			changeBlipColour(check, list[i]['Target_Data']['Color_blip'].v)
-			printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)), 2000)
+			if list[i]['Target_Data']['Color_blip'].v > 0 then
+			  changeBlipColour(check,list[i]['Target_Data']['Color_blip'].v-1)
+			else
+			  setBlipAsFriendly(check, 0)
+				print('12')
+			end
 
 			if list[i]['Target_Data']['Target_type'].v == 0 then
 				while not isCharTouchingObject(PLAYER_PED, mp.objects[list[i]['Target_Data']['Target_object_id'].v+1]) do
@@ -289,6 +494,20 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 			removeBlip(check)
 		end
 		if list[i]['Type'].v == 5 then
+			lockPlayerControl(false)
+			local check = addBlipForPickup(mp.pickup[list[i]['Target_Data']['Target_pickup_id'].v+1])
+			if list[i]['Target_Data']['Color_blip'].v > 0 then
+				changeBlipColour(check,list[i]['Target_Data']['Color_blip'].v-1)
+			else
+				setBlipAsFriendly(check, 1)
+			end
+			printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)), 2000)
+			while not hasPickupBeenCollected(mp.pickup[list[i]['Target_Data']['Target_pickup_id'].v+1]) do
+				wait(0)
+			end
+			removeBlip(check)
+		end
+		if list[i]['Type'].v == 6 then
 			if list[i]['Target_Data']['Target_type'].v == 0 then
 				lockPlayerControl(false)
 				if isCharInAnyCar(PLAYER_PED) then
@@ -303,6 +522,7 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 					requestModel(list[i]['Target_Data']['ModelID'].v)
 					while not hasModelLoaded(list[i]['Target_Data']['ModelID'].v) do
 						wait(0)
+
 					end
 				end
 				setPlayerModel(PLAYER_HANDLE, list[i]['Target_Data']['ModelID'].v)
@@ -310,6 +530,7 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 				requestModel(getWeapontypeModel(list[i]['Target_Data']['Weapon'].v))
 				while not hasModelLoaded(getWeapontypeModel(list[i]['Target_Data']['Weapon'].v)) do
 					wait(0)
+
 				end
 				giveWeaponToChar(PLAYER_PED, list[i]['Target_Data']['Weapon'].v, list[i]['Target_Data']['Weap_ammo'].v)
 				setCharHeading(PLAYER_PED, list[i]['Target_Data']['Angle'].v)
@@ -378,7 +599,16 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 			end
 		end
 	end
-	mp.pass(1)
+	mp.respect()
+	mp.endmiss()
+end
+
+function mp.endmiss()
+	local miss_data = vr.mission_data
+	for t = 1, #mp.thread do
+		mp.thread[t]:terminate()
+	end
+	wait(0)
 	if isCharInAnyCar(PLAYER_PED) then
 		taskLeaveAnyCar(PLAYER_PED)
 		while isCharInAnyCar(PLAYER_PED) do
@@ -410,14 +640,32 @@ function mp.main_mission(list,list_a,list_c,list_o,miss_data)
 	for v,h in pairs(mp.objects) do
 		deleteObject(mp.objects[v])
 	end
-	for j = 1,#list_a do
+	for v,h in pairs(mp.pickup) do
+		removePickup(mp.pickup[v])
+	end
+	for v,h in pairs(mp.particle) do
+		killFxSystem(mp.particle[v])
+	end
+	for v,h in pairs(mp.explosion) do
+		killFxSystem(mp.explosion[v])
+	end
+	for j = 1,#vr.list_actors do
 		upd_actor:run(j)
 	end
-	for j = 1,#list_c do
+	for j = 1,#vr.list_cars do
 		upd_car:run(j)
 	end
-	for j = 1,#list_o do
+	for j = 1,#vr.list_objects do
 		upd_object:run(j)
+	end
+	for j = 1,#vr.list_pickup do
+		upd_pickup:run(j)
+	end
+	for j = 1,#vr.list_particle do
+		upd_particle:run(j)
+	end
+	for j = 1,#vr.list_explosion do
+		upd_explosion:run(j)
 	end
 end
 
