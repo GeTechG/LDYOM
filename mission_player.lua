@@ -13,6 +13,7 @@ mp.pickup = {}
 mp.particle = {}
 mp.explosion = {}
 local thread_miss
+local skip = 1
 curr_target = 0
 
 function mp.start_mission(listt,lista,listc,listo,listp,listpa,liste,missd)
@@ -95,26 +96,11 @@ end
 
 function mp.play_char_anims(ped,actr)
 	local curr_anim = 1
+	actr['Anims']['curr_anim'] = curr_anim
 	while curr_anim <= #actr['Anims'] do
 		wait(0)
-		if actr['Anims'][curr_anim]['Condition'].v == 0 then
-			if not hasAnimationLoaded(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1]) then
-				requestAnimation(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1])
-				while not hasAnimationLoaded(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1]) do
-					wait(0)
-				end
-			end
-			local animm = Anims['Anim_list'][actr['Anims'][curr_anim]['Pack_anim'].v+1]
-			animm = animm[actr['Anims'][curr_anim]['Anim'].v+1]
-			if not actr['Anims'][curr_anim]['Unbreakable'].v then
-				taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1)
-			else
-				taskPlayAnimWithFlags(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1,false,false)
-			end
-			wait(actr['Anims'][curr_anim]['Time'].v * 1000.0)
-			curr_anim = curr_anim + 1
-		elseif actr['Anims'][curr_anim]['Condition'].v == 1 then
-			if curr_target == actr['Anims'][curr_anim]['Target'].v+1 then
+		if actr['Anims'][curr_anim]['Type'].v == 0 then
+			if actr['Anims'][curr_anim]['Condition'].v == 0 then
 				if not hasAnimationLoaded(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1]) then
 					requestAnimation(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1])
 					while not hasAnimationLoaded(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1]) do
@@ -130,8 +116,103 @@ function mp.play_char_anims(ped,actr)
 				end
 				wait(actr['Anims'][curr_anim]['Time'].v * 1000.0)
 				curr_anim = curr_anim + 1
+			elseif actr['Anims'][curr_anim]['Condition'].v == 1 then
+				if curr_target == actr['Anims'][curr_anim]['Target'].v+1 then
+					if not hasAnimationLoaded(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1]) then
+						requestAnimation(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1])
+						while not hasAnimationLoaded(Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1]) do
+							wait(0)
+						end
+					end
+					local animm = Anims['Anim_list'][actr['Anims'][curr_anim]['Pack_anim'].v+1]
+					animm = animm[actr['Anims'][curr_anim]['Anim'].v+1]
+					if not actr['Anims'][curr_anim]['Unbreakable'].v then
+						taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1)
+					else
+						taskPlayAnimWithFlags(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim'].v+1], 1.0, actr['Anims'][curr_anim]['Loop'].v, false, false, false, -1,false,false)
+					end
+					wait(actr['Anims'][curr_anim]['Time'].v * 1000.0)
+					curr_anim = curr_anim + 1
+				end
 			end
+		elseif actr['Anims'][curr_anim]['Type'].v == 1 then
+			if actr['Anims'][curr_anim]['Condition'].v == 1 then
+				while not (curr_target == actr['Anims'][curr_anim]['Target'].v+1) do
+					wait(0)
+				end
+			end
+			flushPatrolRoute()
+			local c = 0
+			local type_walk = 4;
+			if actr['Anims'][curr_anim]['Type_move'].v == 2 then type_walk = 6
+			elseif actr['Anims'][curr_anim]['Type_move'].v == 3 then type_walk = 7 end
+			taskToggleDuck(ped, ternar(actr['Anims'][curr_anim]['Type_move'].v == 0,true,false))
+			for i = 1,#actr['Anims'][curr_anim]['Path'] do
+				local x1,y1,z1 = actr['Anims'][curr_anim]['Path'][i][1],actr['Anims'][curr_anim]['Path'][i][2],actr['Anims'][curr_anim]['Path'][i][3]
+					extendPatrolRoute(x1,y1,z1,'NONE','NONE')
+				c = c + 1
+				local px,py,pz = getCharCoordinates(ped)
+					if c == 7 then
+				taskFollowPatrolRoute(ped,type_walk,actr['Anims'][curr_anim]['Type_route'].v)
+				while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][i][1],actr['Anims'][curr_anim]['Path'][i][2],actr['Anims'][curr_anim]['Path'][i][3],px,py,pz) > 0.1 do
+					wait(0)
+					px,py,pz = getCharCoordinates(ped)
+				end
+				flushPatrolRoute()
+				c = 0
+					end
+					taskFollowPatrolRoute(ped,type_walk,actr['Anims'][curr_anim]['Type_route'].v)
+			end
+			while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][1],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][2],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][3],px,py,pz) > 0.1 do
+				wait(0)
+				px,py,pz = getCharCoordinates(ped)
+			end
+			curr_anim = curr_anim + 1
+		elseif actr['Anims'][curr_anim]['Type'].v == 2 then
+			if actr['Anims'][curr_anim]['Condition'].v == 1 then
+				while not (curr_target == actr['Anims'][curr_anim]['Target'].v+1) do
+					wait(0)
+				end
+			end
+			flushRoute()
+			local c = 0
+			local px,py,pz = getCarCoordinates(mp.cars[actr['Anims'][curr_anim]['Car'].v+1])
+			for i = 1,#actr['Anims'][curr_anim]['Path'] do
+			  local x1,y1,z1 = actr['Anims'][curr_anim]['Path'][i][1],actr['Anims'][curr_anim]['Path'][i][2],actr['Anims'][curr_anim]['Path'][i][3]
+			  extendRoute(x1,y1,z1)
+			  c = c + 1
+			  px,py,pz = getCarCoordinates(mp.cars[actr['Anims'][curr_anim]['Car'].v+1])
+			  if c == 7 then
+				taskDrivePointRoute(ped,mp.cars[actr['Anims'][curr_anim]['Car'].v+1],actr['Anims'][curr_anim]['Speed'].v)
+				while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][i][1],actr['Anims'][curr_anim]['Path'][i][2],actr['Anims'][curr_anim]['Path'][i][3],px,py,pz) > 1 do
+				  wait(0)
+				  px,py,pz = getCarCoordinates(mp.cars[actr['Anims'][curr_anim]['Car'].v+1])
+				end
+				flushRoute()
+				c = 0
+			  end
+			end
+			taskDrivePointRoute(ped,mp.cars[actr['Anims'][curr_anim]['Car'].v+1],actr['Anims'][curr_anim]['Speed'].v)
+			while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][1],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][2],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][3],px,py,pz) > 1 do
+			  wait(0)
+			  px,py,pz = getCarCoordinates(mp.cars[actr['Anims'][curr_anim]['Car'].v+1])
+			end
+			curr_anim = curr_anim + 1
+		elseif actr['Anims'][curr_anim]['Type'].v == 3 then
+			if actr['Anims'][curr_anim]['Condition'].v == 1 then
+				while not (curr_target == actr['Anims'][curr_anim]['Target'].v+1) do
+					wait(0)
+				end
+			end
+			if isCharInAnyCar(ped) then
+				taskLeaveAnyCar(ped)
+				while isCharInAnyCar(ped) do
+					wait(0)
+				end
+			end
+			curr_anim = curr_anim + 1
 		end
+		actr['Anims']['curr_anim'] = curr_anim
 	end
 end
 
@@ -402,12 +483,19 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 				displayRadar(false)
 				displayHud(false)
 				lockPlayerControl(true)
-				switchWidescreen(true)
-				if not (list[i-1]['Target_Data']['Target_type'].v == 0 and list[i-1]['Type'].v == 3) then
+        		switchWidescreen(true)
+				if i > 1 and not (list[i-1]['Target_Data']['Target_type'].v == 0 and list[i-1]['Type'].v == 3) then
 					doFade(false, 500)
 					wait(1000)
 					doFade(true, 500)
+					skip = 1
 				end
+				local skipp = lua_thread.create(function()
+					while not wasKeyPressed(vkeys.VK_SPACE) do
+						wait(0)
+					end
+					skip = 0
+					end)
 				local xx,xy,xz = list[i]['Target_Data']['Pos'].v[1],list[i]['Target_Data']['Pos'].v[2],list[i]['Target_Data']['Pos'].v[3]
 				local rxx,rxy,rxz = list[i]['Target_Data']['Rotates'].v[1],list[i]['Target_Data']['Rotates'].v[2],list[i]['Target_Data']['Rotates'].v[3]
 				local x1,y1,z1 = xx,xy,xz
@@ -424,12 +512,13 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 				end
 
 				printString(koder(u8:decode(list[i]['Target_Data']['Text'].v)), list[i]['Target_Data']['Text_time'].v*1000)
-				wait(list[i]['Target_Data']['Text_time'].v*1000)
-				if not (list[i+1]['Target_Data']['Target_type'].v == 0 and list[i+1]['Type'].v == 3) then
+       			wait(list[i]['Target_Data']['Text_time'].v*1000*skip)
+				if i < #list and not (list[i+1]['Target_Data']['Target_type'].v == 0 and list[i+1]['Type'].v == 3) then
 					doFade(false, 500)
 					wait(1000)
 					doFade(true, 500)
 				end
+				skipp:terminate()   
 				displayRadar(true)
 				displayHud(true)
 				lockPlayerControl(false)
@@ -578,11 +667,19 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 				taskPickUpSecondObject(PLAYER_PED, phone, 0, 0, 0, 6, 16, 'phone_in', 'PED', -1)
 				wait(900)
 				taskPickUpObject(PLAYER_PED, phone, 0, 0, 0, 6, 16, 'NULL', 'NULL', -1)
-				wait(1430)
+        wait(1430)
+        skip = 1
+        local skipp = lua_thread.create(function()
+          while not wasKeyPressed(vkeys.VK_SPACE) do
+            wait(0)
+          end
+          skip = 0
+        end)
 				for d = 1,#list[i]['Target_Data']['Dialog'] do
 					printString(koder(u8:decode(list[i]['Target_Data']['Dialog'][d]['Text'].v)), list[i]['Target_Data']['Dialog'][d]['Text_time'].v*1000)
-					wait(list[i]['Target_Data']['Dialog'][d]['Text_time'].v*1000)
-				end
+          wait(list[i]['Target_Data']['Dialog'][d]['Text_time'].v*1000*skip)
+        end
+        skipp:terminate()
 				removeObjectElegantly(phone)
 				wait(0)
 				phone = createObject(330, 0, 0, 0)

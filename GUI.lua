@@ -1,7 +1,8 @@
 script_authors('SKIC','SIZZZ')
-script_version('Beta 0.5.6')
+script_version('Beta 0.5.7')
 
 vkeys = require 'vkeys'
+inicfg = require 'inicfg'
 imgui = require 'imgui'
 koder = require 'TextToGTX'
 --mymod = require 'mymod'
@@ -21,14 +22,61 @@ ID_Cars = {400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413,
 Number_Weapons = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46}
 
 Anims = {
-	['Anim_name'] = {'PED','BOMBER','POOL','ON_LOOKERS','GANGS','PAULNMAC','BOX'},
-	['Anim_list'] = {{"IDLE_CHAT","ROADCROSS","ATM","FLEE_LKAROUND_01","FUCKU","walk_armed","seat_up","run_armed","idle_gang1","hit_back","hit_r","hit_wall","hit_l","hita_2","climb_pull","bomber","floor_hit_f","fightshb","fall_fall","drown","floor_hit","IDLE_taxi","swim_tread","XPRESSSCRATCH","XPRESSSCRATCH","HANDSUP","KO_SHOT_STOM","KO_SKID_FRONT","DUCK_COWER","GETUP","SEAT_DOWN","ENDCHAT_03","GETUP_FRONT","GUN_STAND","KO_SPIN_L","KO_SKID_BACK","WALK_DRUNK","FALL_SKYDIVE","FALL_FRONT","RUN_PLAYER","WOMAN_IDLESTANCE","TAP_HAND","CAR_SIT","IDLE_STANCE","COWER","CROUCH_ROLL_R","CROUCH_ROLL_L","ENDCHAT_01","KO_SHOT_FACE","PHONE_TALK","KO_SHOT_FRONT","IDLE_ARMED","WEAPON_CROUCH","IDLE_TIRED","SEAT_IDLE","HANDSCOWER","FIGHTIDLE","FIGHTA_G","CAR_HOOKERTALK","HANDSUP","abseil","FIGHTA_M","FIGHTA_block","FIGHTA_2","gas_cwr","ENDCHAT_02"},
+	['Anim_name'] = {'PED','BOMBER','POOL','ON_LOOKERS','GANGS','PAULNMAC','BOX','Attractors','BAR','BASEBALL','BD_FIRE','BEACH','benchpress','BLOWJOBZ','CAMERA','CAR','CAR_CHAT','CASINO','COP_AMBIENT','CRACK','CRIB','DAM_JUMP','DANCING','DEALER','DODGE','FOOD','Freeweights','GFUNK','HEIST9','INT_HOUSE','INT_OFFICE','INT_SHOP','KISSING','LOWRIDER','MEDIC','MISC','OTB','PARK','PLAYIDLES','POLICE','RAPPING','RIOT','ROB_BANK','RUNNINGMAN','SCRATCHING','SEX','SHOP','SMOKING','SnM','STRIP','SUNBATHE','SWAT','VENDING','WOP'},
+	['Anim_list'] = {{'abseil','ARRESTgun','ATM','BIKE_elbowL','BIKE_elbowR','BIKE_fallR','BIKE_fall_off','BIKE_pickupL','BIKE_pickupR','BIKE_pullupL','BIKE_pullupR','bomber','CAR_alignHI_LHS','CAR_alignHI_RHS','CAR_align_LHS','CAR_align_RHS','CAR_closedoorL_LHS','CAR_closedoorL_RHS','CAR_closedoor_LHS','CAR_closedoor_RHS','CAR_close_LHS','CAR_close_RHS','CAR_crawloutRHS','CAR_dead_LHS','CAR_dead_RHS','CAR_doorlocked_LHS','CAR_doorlocked_RHS','CAR_fallout_LHS','CAR_fallout_RHS','CAR_getinL_LHS','CAR_getinL_RHS','CAR_getin_LHS','CAR_getin_RHS','CAR_getoutL_LHS','CAR_getoutL_RHS','CAR_getout_LHS','CAR_getout_RHS','car_hookertalk','CAR_jackedLHS','CAR_jackedRHS','CAR_jumpin_LHS','CAR_LB','CAR_LB_pro','CAR_LB_weak','CAR_LjackedLHS','CAR_LjackedRHS','CAR_Lshuffle_RHS','CAR_Lsit','CAR_open_LHS','CAR_open_RHS','CAR_pulloutL_LHS','CAR_pulloutL_RHS','CAR_pullout_LHS','CAR_pullout_RHS','CAR_Qjacked','CAR_rolldoor','CAR_rolldoorLO','CAR_rollout_LHS','CAR_rollout_RHS','CAR_shuffle_RHS','CAR_sit','CAR_sitp','CAR_sitpLO','CAR_sit_pro','CAR_sit_weak','CAR_tune_radio','CLIMB_idle','CLIMB_jump','CLIMB_jump2fall','CLIMB_jump_B','CLIMB_Pull','CLIMB_Stand','CLIMB_Stand_finish','cower','Crouch_Roll_L','Crouch_Roll_R','DAM_armL_frmBK','DAM_armL_frmFT','DAM_armL_frmLT','DAM_armR_frmBK','DAM_armR_frmFT','DAM_armR_frmRT','DAM_LegL_frmBK','DAM_LegL_frmFT','DAM_LegL_frmLT','DAM_LegR_frmBK','DAM_LegR_frmFT','DAM_LegR_frmRT','DAM_stomach_frmBK','DAM_stomach_frmFT','DAM_stomach_frmLT','DAM_stomach_frmRT','DOOR_LHinge_O','DOOR_RHinge_O','DrivebyL_L','DrivebyL_R','Driveby_L','Driveby_R','DRIVE_BOAT','DRIVE_BOAT_back','DRIVE_BOAT_L','DRIVE_BOAT_R','Drive_L','Drive_LO_l','Drive_LO_R','Drive_L_pro','Drive_L_pro_slow','Drive_L_slow','Drive_L_weak','Drive_L_weak_slow','Drive_R','Drive_R_pro','Drive_R_pro_slow','Drive_R_slow','Drive_R_weak','Drive_R_weak_slow','Drive_truck','DRIVE_truck_back','DRIVE_truck_L','DRIVE_truck_R','Drown','DUCK_cower','endchat_01','endchat_02','endchat_03','EV_dive','EV_step','facanger','facgum','facsurp','facsurpm','factalk','facurios','FALL_back','FALL_collapse','FALL_fall','FALL_front','FALL_glide','FALL_land','FALL_skyDive','Fight2Idle','FightA_1','FightA_2','FightA_3','FightA_block','FightA_G','FightA_M','FIGHTIDLE','FightShB','FightShF','FightSh_BWD','FightSh_FWD','FightSh_Left','FightSh_Right','flee_lkaround_01','FLOOR_hit','FLOOR_hit_f','fucku','gang_gunstand','gas_cwr','getup','getup_front','gum_eat','GunCrouchBwd','GunCrouchFwd','GunMove_BWD','GunMove_FWD','GunMove_L','GunMove_R','Gun_2_IDLE','GUN_BUTT','GUN_BUTT_crouch','Gun_stand','handscower','handsup','HitA_1','HitA_2','HitA_3','HIT_back','HIT_behind','HIT_front','HIT_GUN_BUTT','HIT_L','HIT_R','HIT_walk','HIT_wall','Idlestance_fat','idlestance_old','IDLE_armed','IDLE_chat','IDLE_csaw','Idle_Gang1','IDLE_HBHB','IDLE_ROCKET','IDLE_stance','IDLE_taxi','IDLE_tired','Jetpack_Idle','JOG_femaleA','JOG_maleA','JUMP_glide','JUMP_land','JUMP_launch','JUMP_launch_R','KART_drive','KART_L','KART_LB','KART_R','KD_left','KD_right','KO_shot_face','KO_shot_front','KO_shot_stom','KO_skid_back','KO_skid_front','KO_spin_L','KO_spin_R','pass_Smoke_in_car','phone_in','phone_out','phone_talk','Player_Sneak','Player_Sneak_walkstart','roadcross','roadcross_female','roadcross_gang','roadcross_old','run_1armed','run_armed','run_civi','run_csaw','run_fat','run_fatold','run_gang1','run_left','run_old','run_player','run_right','run_rocket','Run_stop','Run_stopR','Run_Wuzi','SEAT_down','SEAT_idle','SEAT_up','SHOT_leftP','SHOT_partial','SHOT_partial_B','SHOT_rightP','Shove_Partial','Smoke_in_car','sprint_civi','sprint_panic','Sprint_Wuzi','swat_run','Swim_Tread','Tap_hand','Tap_handP','turn_180','Turn_L','Turn_R','WALK_armed','WALK_civi','WALK_csaw','Walk_DoorPartial','WALK_drunk','WALK_fat','WALK_fatold','WALK_gang1','WALK_gang2','WALK_old','WALK_player','WALK_rocket','WALK_shuffle','WALK_start','WALK_start_armed','WALK_start_csaw','WALK_start_rocket','Walk_Wuzi','WEAPON_crouch','woman_idlestance','woman_run','WOMAN_runbusy','WOMAN_runfatold','woman_runpanic','WOMAN_runsexy','WOMAN_walkbusy','WOMAN_walkfatold','WOMAN_walknorm','WOMAN_walkold','WOMAN_walkpro','WOMAN_walksexy','WOMAN_walkshop'},
 	{"BOM_PLANT_IN","BOM_PLANT_LOOP","BOM_PLANT_CROUCH_IN","BOM_PLANT_CROUCH_OUT","BOM_PLANT_2IDLE"},
 	{"POOL_XLONG_SHOT","POOL_XLONG_START","POOL_LONG_SHOT","POOL_LONG_START","POOL_MED_START","POOL_MED_SHOT","POOL_SHORT_SHOT","POOL_CHALKCUE"},
 	{"LKUP_LOOP","POINTUP_IN","SHOUT_01"},
-	{"PRTIAL_GNGTLKA","PRTIAL_GNGTLKF","PRTIAL_GNGTLKD","PRTIAL_GNGTLKE","HNDSHKFA_SWT", "GANGS","PRTIAL_GNGTLKH","HNDSHKFA","DRUGS_BUY","PRTIAL_GNGTLKC","PRTIAL_GNGTLKH","PRTIAL_GNGTLKG","DRNKBR_PRTL","PRTIAL_GNGTLKB","PRTIAL_HNDSHK_01","DEALER_DEAL"},
+	{'DEALER_DEAL','DEALER_IDLE','drnkbr_prtl','drnkbr_prtl_F','DRUGS_BUY','hndshkaa','hndshkba','hndshkca','hndshkcb','hndshkda','hndshkea','hndshkfa','hndshkfa_swt','Invite_No','Invite_Yes','leanIDLE','leanIN','leanOUT','prtial_gngtlkA','prtial_gngtlkB','prtial_gngtlkC','prtial_gngtlkD','prtial_gngtlkE','prtial_gngtlkF','prtial_gngtlkG','prtial_gngtlkH','prtial_hndshk_01','prtial_hndshk_biz_01','shake_cara','shake_carK','shake_carSH','smkcig_prtl','smkcig_prtl_F'},
 	{"PISS_IN","PISS_LOOP","PISS_OUT","PNM_LOOP_A","PNM_ARGUE2_A","PNM_ARGUE1_A"},
-	{"boxhipin","bxwlko","catch_box","bxshwlk","bxhwlki","boxshup","boxhipup","boxshdwn","bxhipwlk","bxshwlki"}
+	{"boxhipin","bxwlko","catch_box","bxshwlk","bxhwlki","boxshup","boxhipup","boxshdwn","bxhipwlk","bxshwlki"},
+	{'Stepsit_in','Stepsit_loop','Stepsit_out'},
+	{'Barcustom_get','Barcustom_loop','Barcustom_order','BARman_idle','Barserve_bottle','Barserve_give','Barserve_glass','Barserve_in','Barserve_loop','Barserve_order','dnk_stndF_loop','dnk_stndM_loop'},
+	{'Bat_1','Bat_2','Bat_3','Bat_4','Bat_Hit_1','Bat_block','Bat_Hit_2','Bat_Hit_3','Bat_IDLE','Bat_M'},
+	{'BD_GF_Wave','BD_Panic_01','BD_Panic_02','BD_Panic_03','BD_Panic_04','BD_Panic_Loop','Grlfrd_Kiss_03','M_smklean_loop','Playa_Kiss_03','wash_up'},
+	{'bather','Lay_Bac_Loop','ParkSit_M_loop','ParkSit_W_loop','SitnWait_loop_W'},
+	{'gym_bp_celebrate','gym_bp_down','gym_bp_getoff','gym_bp_geton','gym_bp_up_A','gym_bp_up_B','gym_bp_up_smooth'},
+	{'BJ_Car_End_W','BJ_Car_Loop_P','BJ_Car_Loop_W','BJ_Car_Start_P','BJ_Car_Start_W','BJ_Couch_End_P','BJ_Couch_End_W','BJ_Couch_Loop_P','BJ_Couch_Loop_W','BJ_Couch_Start_P','BJ_Couch_Start_W','BJ_Stand_End_P','BJ_Stand_End_W','BJ_Stand_Loop_P','BJ_Stand_Loop_W','BJ_Stand_Start_P','BJ_Stand_Start_W'},
+	{'camcrch_cmon','camcrch_idleloop','camcrch_stay','camcrch_to_camstnd','camstnd_cmon','camstnd_idleloop','camstnd_lkabt','camstnd_to_camcrch','piccrch_in','piccrch_out','piccrch_take','picstnd_in','picstnd_out','picstnd_take'},
+	{'Fixn_Car_Loop','Fixn_Car_Out','flag_drop'},
+	{'carfone_in','carfone_loopA','carfone_loopA_to_B','carfone_loopB_to_A','carfone_out','CAR_Sc1_BL','CAR_Sc1_BR','CAR_Sc1_FL','CAR_Sc1_FR','CAR_Sc2_FL','CAR_Sc3_BR','CAR_Sc3_FL','CAR_Sc3_FR','CAR_Sc4_FL','car_talkm_in','car_talkm_loop','car_talkm_out'},
+	{'cards_in','cards_loop','cards_lose','cards_out','cards_pick_01','cards_pick_02','cards_raise','cards_win','dealone','manwinb','manwind','Roulette_bet','Roulette_in','Roulette_loop','Roulette_lose','Roulette_out','Roulette_win','Slot_bet_01','Slot_bet_02','Slot_in','Slot_lose_out','Slot_Plyr','Slot_wait','Slot_win_out','wof'},
+	{'Copbrowse_in','Copbrowse_loop','Copbrowse_nod','Copbrowse_out','Copbrowse_shake','Coplook_in','Coplook_loop','Coplook_nod','Coplook_out','Coplook_shake','Coplook_think','Coplook_watch'},
+	{'Bbalbat_Idle_01','Bbalbat_Idle_02','crckdeth1','crckdeth2','crckdeth3','crckdeth4','crckidle1','crckidle2','crckidle3','crckidle4'},
+	{'CRIB_Console_Loop','CRIB_Use_Switch','PED_Console_Loop','PED_Console_Loose','PED_Console_Win'},
+	{'DAM_Dive_Loop','DAM_Land','DAM_Launch','Jump_Roll','SF_JumpWall'},
+	{'bd_clap','bd_clap1','dance_loop','DAN_Down_A','DAN_Left_A','DAN_Loop_A','DAN_Right_A','DAN_Up_A','dnce_M_a','dnce_M_b','dnce_M_c','dnce_M_d','dnce_M_e'},
+	{'DEALER_DEAL','DEALER_IDLE','DEALER_IDLE_01','DEALER_IDLE_02','DEALER_IDLE_03','DRUGS_BUY','shop_pay'},
+	{'Cover_Dive_01','Cover_Dive_02','Crushed','Crush_Jump'},
+	{'EAT_Burger','EAT_Chicken','EAT_Pizza','EAT_Vomit_P','EAT_Vomit_SK','FF_Dam_Bkw','FF_Dam_Fwd','FF_Dam_Left','FF_Dam_Right','FF_Die_Bkw','FF_Die_Fwd','FF_Die_Left','FF_Die_Right','FF_Sit_Eat1','FF_Sit_Eat2','FF_Sit_Eat3','FF_Sit_In','FF_Sit_In_L','FF_Sit_In_R','FF_Sit_Look','FF_Sit_Loop','FF_Sit_Out_180','FF_Sit_Out_L_180','FF_Sit_Out_R_180','SHP_Thank','SHP_Tray_In','SHP_Tray_Lift','SHP_Tray_Lift_In','SHP_Tray_Lift_Loop','SHP_Tray_Lift_Out','SHP_Tray_Out','SHP_Tray_Pose','SHP_Tray_Return'},
+	{'Dance_B1','Dance_B2','Dance_B3','Dance_B4','Dance_B5','Dance_B6','Dance_B7','Dance_B8','Dance_B9','Dance_B10','Dance_B11','Dance_B12','Dance_B13','Dance_B14','Dance_B15','Dance_B16','Dance_G1','Dance_G2','Dance_G3','Dance_G4','Dance_G5','Dance_G6','Dance_G7','Dance_G8','Dance_G9','Dance_G10','Dance_G11','Dance_G12','Dance_G13','Dance_G14','Dance_G15','Dance_G16','dance_loop'},
+	{'gym_barbell','gym_free_A','gym_free_B','gym_free_celebrate','gym_free_down','gym_free_loop','gym_free_pickup','gym_free_putdown','gym_free_up_smooth'},
+	{'CAS_G2_GasKO','swt_wllpk_L','swt_wllpk_L_back','swt_wllpk_R','swt_wllpk_R_back','swt_wllshoot_in_L','swt_wllshoot_in_R','swt_wllshoot_out_L','swt_wllshoot_out_R','Use_SwipeCard'},
+	{'BED_In_L','BED_In_R','BED_Loop_L','BED_Loop_R','BED_Out_L','BED_Out_R','LOU_In','LOU_Loop','LOU_Out','wash_up'},
+	{'FF_Dam_Fwd','OFF_Sit_2Idle_180','OFF_Sit_Bored_Loop','OFF_Sit_Crash','OFF_Sit_Drink','OFF_Sit_Idle_Loop','OFF_Sit_In','OFF_Sit_Read','OFF_Sit_Type_Loop','OFF_Sit_Watch'},
+	{'shop_cashier','shop_in','shop_lookA','shop_lookB','shop_loop','shop_out','shop_pay','shop_shelf'},
+	{'BD_GF_Wave','gfwave2','GF_CarArgue_01','GF_CarArgue_02','GF_CarSpot','GF_StreetArgue_01','GF_StreetArgue_02','gift_get','gift_give','Grlfrd_Kiss_01','Grlfrd_Kiss_02','Grlfrd_Kiss_03','Playa_Kiss_01','Playa_Kiss_02','Playa_Kiss_03'},
+	{'F_smklean_loop','lrgirl_bdbnce','lrgirl_hair','lrgirl_hurry','lrgirl_idleloop','lrgirl_idle_to_l0','lrgirl_l0_bnce','lrgirl_l0_loop','lrgirl_l0_to_l1','lrgirl_l12_to_l0','lrgirl_l1_bnce','lrgirl_l1_loop','lrgirl_l1_to_l2','lrgirl_l2_bnce','lrgirl_l2_loop','lrgirl_l2_to_l3','lrgirl_l345_to_l1','lrgirl_l3_bnce','lrgirl_l3_loop','lrgirl_l3_to_l4','lrgirl_l4_bnce','lrgirl_l4_loop','lrgirl_l4_to_l5','lrgirl_l5_bnce','lrgirl_l5_loop','M_smklean_loop','M_smkstnd_loop','prtial_gngtlkB','prtial_gngtlkC','prtial_gngtlkD','prtial_gngtlkE','prtial_gngtlkF','prtial_gngtlkG','prtial_gngtlkH','RAP_A_Loop','RAP_B_Loop','RAP_C_Loop','Sit_relaxed','Tap_hand'},
+	{'CPR'},
+	{'bitchslap','BMX_celebrate','BMX_comeon','bmx_idleloop_01','bmx_idleloop_02','bmx_talkleft_in','bmx_talkleft_loop','bmx_talkleft_out','bmx_talkright_in','bmx_talkright_loop','bmx_talkright_out','bng_wndw','bng_wndw_02','Case_pickup','door_jet','GRAB_L','GRAB_R','Hiker_Pose','Hiker_Pose_L','Idle_Chat_02','KAT_Throw_K','KAT_Throw_O','KAT_Throw_P','PASS_Rifle_O','PASS_Rifle_Ped','PASS_Rifle_Ply','pickup_box','Plane_door','Plane_exit','Plane_hijack','Plunger_01','Plyrlean_loop','plyr_shkhead','Run_Dive','Scratchballs_01','SEAT_LR','Seat_talk_01','Seat_talk_02','SEAT_watch','smalplane_door','smlplane_door'},
+	{'betslp_in','betslp_lkabt','betslp_loop','betslp_out','betslp_tnk','wtchrace_cmon','wtchrace_in','wtchrace_loop','wtchrace_lose','wtchrace_out','wtchrace_win'},
+	{'Tai_Chi_in','Tai_Chi_Loop','Tai_Chi_Out'},
+	{'shift','shldr','stretch','strleg','time'},
+	{'CopTraf_Away','CopTraf_Come','CopTraf_Left','CopTraf_Stop','COP_getoutcar_LHS','Cop_move_FWD','crm_drgbst_01','Door_Kick','plc_drgbst_01','plc_drgbst_02'},
+	{'Laugh_01','RAP_A_IN','RAP_A_Loop','RAP_A_OUT','RAP_B_IN','RAP_B_Loop','RAP_B_OUT','RAP_C_Loop'},
+	{'RIOT_ANGRY','RIOT_ANGRY_B','RIOT_challenge','RIOT_CHANT','RIOT_FUKU','RIOT_PUNCHES','RIOT_shout'},
+	{'CAT_Safe_End','CAT_Safe_Open','CAT_Safe_Open_O','CAT_Safe_Rob','SHP_HandsUp_Scr'},
+	{'Dance_B1','Dance_B2','Dance_B3','Dance_B4','Dance_B5','Dance_B6','Dance_B7','Dance_B8','Dance_B9','Dance_B10','Dance_B11','Dance_B12','Dance_B13','Dance_B14','Dance_B15','Dance_B16','Dance_G1','Dance_G2','Dance_G3','Dance_G4','Dance_G5','Dance_G6','Dance_G7','Dance_G8','Dance_G9','Dance_G10','Dance_G11','Dance_G12','Dance_G13','Dance_G14','Dance_G15','Dance_G16','dance_loop'},
+	{'scdldlp','scdlulp','scdrdlp','scdrulp','sclng_l','sclng_r','scmid_l','scmid_r','scshrtl','scshrtr','sc_ltor','sc_rtol'},
+	{'SEX_1to2_P','SEX_1to2_W','SEX_1_Cum_P','SEX_1_Cum_W','SEX_1_Fail_P','SEX_1_Fail_W','SEX_1_P','SEX_1_W','SEX_2to3_P','SEX_2to3_W','SEX_2_Fail_P','SEX_2_Fail_W','SEX_2_P','SEX_2_W','SEX_3to1_P','SEX_3to1_W','SEX_3_Fail_P','SEX_3_Fail_W','SEX_3_P','SEX_3_W'},
+	{'ROB_2Idle','ROB_Loop','ROB_Loop_Threat','ROB_Shifty','ROB_StickUp_In','SHP_Duck','SHP_Duck_Aim','SHP_Duck_Fire','SHP_Gun_Aim','SHP_Gun_Duck','SHP_Gun_Fire','SHP_Gun_Grab','SHP_Gun_Threat','SHP_HandsUp_Scr','SHP_Jump_Glide','SHP_Jump_Land','SHP_Jump_Launch','SHP_Rob_GiveCash','SHP_Rob_HandsUp','SHP_Rob_React','SHP_Serve_End','SHP_Serve_Idle','SHP_Serve_Loop','SHP_Serve_Start','Smoke_RYD' },
+	{'F_smklean_loop','M_smklean_loop','M_smkstnd_loop','M_smk_drag','M_smk_in','M_smk_loop','M_smk_out','M_smk_tap'},
+	{'SnM_Caned_Idle_P','SnM_Caned_Idle_W','SnM_Caned_P','SnM_Caned_W','SnM_Cane_Idle_P','SnM_Cane_Idle_W','SnM_Cane_P','SnM_Cane_W','SpankedP','SpankedW','Spanked_IdleP','Spanked_IdleW','SpankingP','SpankingW','Spanking_endP','Spanking_endW','Spanking_IdleP','Spanking_IdleW','Spanking_SittingIdleP','Spanking_SittingIdleW','Spanking_SittingP','Spanking_SittingW'},
+	{'PLY_CASH','PUN_CASH','PUN_HOLLER','PUN_LOOP','strip_A','strip_B','strip_C','strip_D','strip_E','strip_F','strip_G','STR_A2B','STR_B2A','STR_B2C','STR_C1','STR_C2','STR_C2B','STR_Loop_A','STR_Loop_B','STR_Loop_C' },
+	{'batherdown','batherup','Lay_Bac_in','Lay_Bac_out','ParkSit_M_IdleA','ParkSit_M_IdleB','ParkSit_M_IdleC','ParkSit_M_in','ParkSit_M_out','ParkSit_W_idleA','ParkSit_W_idleB','ParkSit_W_idleC','ParkSit_W_in','ParkSit_W_out','SBATHE_F_LieB2Sit','SBATHE_F_Out','SitnWait_in_W','SitnWait_out_W'},
+	{'gnstwall_injurd','JMP_Wall1m_180','Rail_fall','Rail_fall_crawl','swt_breach_01','swt_breach_02','swt_breach_03','swt_go','swt_lkt','swt_sty','swt_vent_01','swt_vent_02','swt_vnt_sht_die','swt_vnt_sht_in','swt_vnt_sht_loop','swt_wllpk_L','swt_wllpk_L_back','swt_wllpk_R','swt_wllpk_R_back','swt_wllshoot_in_L','swt_wllshoot_in_R','swt_wllshoot_out_L','swt_wllshoot_out_R'},
+	{'VEND_Drink2_P','VEND_Drink_P','vend_eat1_P','VEND_Eat_P','VEND_Use','VEND_Use_pt2'},
+	{'Dance_B1','Dance_B2','Dance_B3','Dance_B4','Dance_B5','Dance_B6','Dance_B7','Dance_B8','Dance_B9','Dance_B10','Dance_B11','Dance_B12','Dance_B13','Dance_B14','Dance_B15','Dance_B16','Dance_G1','Dance_G2','Dance_G3','Dance_G4','Dance_G5','Dance_G6','Dance_G7','Dance_G8','Dance_G9','Dance_G10','Dance_G11','Dance_G12','Dance_G13','Dance_G14','Dance_G15','Dance_G16','dance_loop'}
 	}
 }
 
@@ -58,6 +106,7 @@ vr = {
 	['buf_edit_pick_name'] = imgui.ImBuffer(64),
 	['buf_edit_prtcl_name'] = imgui.ImBuffer(64),
 	['buf_edit_explosion_name'] = imgui.ImBuffer(64),
+	['buf_edit_mission_pack_name'] = imgui.ImBuffer(64),
 	['buf_edit'] = imgui.ImFloat(0),
 	['main_window'] = imgui.ImBool(false),
 	['pack_mission_window'] = imgui.ImBool(false),
@@ -73,6 +122,7 @@ vr = {
 	['targets_window_s2'] = imgui.ImBool(false),
 	['missions_n_window'] = imgui.ImBool(false),
 	['info_window'] = imgui.ImBool(false),
+	['settings_window'] = imgui.ImBool(false),
 	['tool_window'] = imgui.ImBool(false),
 	['lb_cur_targets'] = imgui.ImInt(0),
 	['lb_cur_actors'] = imgui.ImInt(0),
@@ -105,6 +155,7 @@ vr = {
 	['editmode_target'] = false,
 	['editmode_camera'] = false,
 	['editmode_actor'] = false,
+	['editmode_actor_add_point'] = false,
 	['editmode_objects'] = false,
 	['editmode_objects_anim'] = false,
 	['editmode_pickup'] = false,
@@ -118,6 +169,7 @@ vr = {
 	['editmode_car'] = false,
 	['id_target'] = 0,
 	['id_actor'] = 0,
+	['id_actor_anim'] = 0,
 	['id_car'] = 0,
 	['id_obj'] = 0,
 	['id_obj_anim'] = 0,
@@ -129,76 +181,85 @@ vr = {
 	['id_preview_player_anim'] = 0,
 	['miss_start'] = false,
 	['update_actor'] = -1,
+	['curr_lang'] = imgui.ImInt(1),
 	['Fast_data'] = {
 		['CurMiss'] = 0,
 		['CurPack'] = 0
 	}
 }
 
+local LanguageArr = {}
+local LanguageList = {}
+
 function imgui.OnDrawFrame()
+	local langt = LanguageArr[vr.curr_lang.v+1]['Keys']
 	-- Главное меню
 	if vr.main_window.v then
 		local resX,resY = getScreenResolution()
 		local sizeX,sizeY = 200, 400
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
 		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Главное меню', vr.main_window)
-		if imgui.Button(u8'Цели') then
+		imgui.Begin(langt['mainMenu'], vr.main_window)
+		if imgui.Button(langt['targets']) then
 			vr.targets_window.v = not vr.targets_window.v
 			vr.main_window.v = false
 		end
-		if imgui.Button(u8'Актёры') then
+		if imgui.Button(langt['actors']) then
 			vr.actors_window.v = not vr.actors_window.v
 			vr.main_window.v = false
 		end
-		if imgui.Button(u8'Машины') then
+		if imgui.Button(langt['cars']) then
 			vr.cars_window.v = not vr.cars_window.v
 			vr.main_window.v = false
 		end
-		if imgui.Button(u8'Объекты') then
+		if imgui.Button(langt['objects']) then
 			vr.objects_window.v = not vr.objects_window.v
 			vr.main_window.v = false
 		end
-		if imgui.Button(u8'Частицы') then
+		if imgui.Button(langt['particles']) then
 			vr.particle_window.v = not vr.particle_window.v
 			vr.main_window.v = false
 		end
-		if imgui.Button(u8'Пикапы') then
+		if imgui.Button(langt['pickups']) then
 			vr.pickup_window.v = true
 			vr.main_window.v = false
 		end
-		if imgui.Button(u8'Взрывы/Огонь') then
+		if imgui.Button(langt['explosions']) then
 			vr.explosion_window.v = true
 			vr.main_window.v = false
 		end
-		if imgui.Button(u8'Игрок') then
+		if imgui.Button(langt['player']) then
 			vr.editmode_player = true
 			printHelpForever('HPLA')
 			imgui.Process = false
 		end
 		imgui.Separator()
-		if imgui.Button(u8'Паки миссий') then
+		if imgui.Button(langt['packsMissions']) then
 			vr.pack_mission_window.v = not vr.pack_mission_window.v
 			--manager_miss.save(vr.list_targets,vr.list_actors,vr.list_cars,vr.list_objects)
 			vr.main_window.v = false
 		end
-		if imgui.Button(u8'Миссии') then
+		if imgui.Button(langt['missions']) then
 			vr.missions_window.v = not vr.missions_window.v
 			vr.main_window.v = false
 		end
 		imgui.Separator()
-		if imgui.Button(u8'Запустить миссию') then
+		if imgui.Button(langt['missionStart']) then
 			vr.miss_start = true
 		end
-		if imgui.Button(u8'Инструменты') then
+		if imgui.Button(langt['tools']) then
 			vr.main_window.v = false
 			vr.tool_window.v = true
 		end
 		imgui.Separator()
-		if imgui.Button(u8'Инфо') then
+		if imgui.Button(langt['info']) then
 			vr.main_window.v = false
 			vr.info_window.v = true
 		end
+		if imgui.Button(langt['settings']) then
+			vr.main_window.v = false
+			vr.settings_window.v = true
+		end 
 		--mymod.main_menu()
 		imgui.End()
 	end
@@ -208,7 +269,7 @@ function imgui.OnDrawFrame()
 		local sizeX,sizeY = 350, 340
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
 		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Миссии', vr.missions_window)
+		imgui.Begin(langt['missions'], vr.missions_window)
 
 		imgui.PushItemWidth(-10)
 
@@ -217,13 +278,12 @@ function imgui.OnDrawFrame()
 		imgui.ListBox('', vr.lb_cur_missions,vr.list_name_missions,15)
 
 		--Кнопки редактирования
-		if imgui.Button(u8'Добавить') then
+		if imgui.Button(langt['save']) then
 			local m = #vr.list_missions+1
-			vr.mission_data['Name'] = u8'Миссия #' .. tostring(m)
+			vr.mission_data['Name'] = langt['mission']..' #' .. tostring(m)
 			vr.list_missions[m] = {
 				['Name'] = vr.mission_data['Name'],
 				['Prename'] = imgui.ImBuffer(256),
-				['Enable'] = imgui.ImBool(false),
 				['Mission_Data'] = {
 					['Targets'] = vr.list_targets,
 					['Actors'] = vr.list_actors,
@@ -240,12 +300,12 @@ function imgui.OnDrawFrame()
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Загрузить') and #vr.list_missions > 0 then
+		if imgui.Button(langt['load']) and #vr.list_missions > 0 then
 			lua_thread.create(load_mission)
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Сохранить') and #vr.list_missions > 0 then
+		if imgui.Button(langt['save']) and #vr.list_missions > 0 then
 			vr.list_missions[vr.lb_cur_missions.v+1]['Mission_Data'] = {
 				['Targets'] = vr.list_targets,
 				['Actors'] = vr.list_actors,
@@ -260,44 +320,38 @@ function imgui.OnDrawFrame()
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Удалить') then
+		if imgui.Button(langt['delete']) then
 			vr.list_missions = DelCellArr(vr.list_missions,vr.lb_cur_missions.v+1)
 			vr.list_name_missions = DelCellArr(vr.list_name_missions,vr.lb_cur_missions.v+1)
-		end
-		imgui.SameLine()
-		if imgui.Button(u8'Настройки') and #vr.list_missions > 0 then
-			vr.list_missions[vr.lb_cur_missions.v+1]['Enable'].v = not vr.list_missions[vr.lb_cur_missions.v+1]['Enable'].v
 		end
 
 		imgui.End()
 		-- Настройки
-		for t = 1,#vr.list_missions do
-			if vr.list_missions[t]['Enable'].v then
-				local resX,resY = getScreenResolution()
-				local sizeX,sizeY = 300, 340
-				imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-				imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-				imgui.Begin(u8'Настройки: ' .. vr.list_missions[t]['Name'], vr.list_missions[t]['Enable'])
-				imgui.PushItemWidth(-120)
-				imgui.InputText(u8'Название миссии',vr.list_missions[t]['Prename'])
-				if imgui.Button(u8'Применить') then
-					vr.list_missions[t]['Name'] = vr.list_missions[t]['Prename'].v
-					vr.list_name_missions[t] = vr.list_missions[t]['Name']
-					vr.mission_data['Name'] = vr.list_missions[t]['Name']
-				end
-				imgui.Separator()
-				if imgui.Button(u8'Игровое время миссии') then
-					vr.editmode_timemiss = true
-					printHelpForever('HMTIM')
-					imgui.Process = false
-				end
-
-				if imgui.Combo(u8'Погода',vr.mission_data['Weather'],Weather_str) then
-					forceWeatherNow(vr.mission_data['Weather'].v)
-				end
-				imgui.Checkbox(u8'Режим бунта',vr.mission_data['Riot'])
-				imgui.End()
+		if  #vr.list_missions > 0 and vr.list_missions[vr.lb_cur_missions.v+1] then
+			local resX,resY = getScreenResolution()
+			local sizeX,sizeY = 300, 340
+			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+			imgui.Begin(langt['settings']..': ' .. vr.list_missions[vr.lb_cur_missions.v+1]['Name'], true)
+			imgui.PushItemWidth(-120)
+			imgui.InputText(langt['nameMission'],vr.list_missions[vr.lb_cur_missions.v+1]['Prename'])
+			if imgui.Button(langt['apply']) then
+				vr.list_missions[vr.lb_cur_missions.v+1]['Name'] = vr.list_missions[vr.lb_cur_missions.v+1]['Prename'].v
+				vr.list_name_missions[vr.lb_cur_missions.v+1] = vr.list_missions[vr.lb_cur_missions.v+1]['Name']
+				vr.mission_data['Name'] = vr.list_missions[vr.lb_cur_missions.v+1]['Name']
 			end
+			imgui.Separator()
+			if imgui.Button(langt['timeGameMiss']) then
+				vr.editmode_timemiss = true
+				printHelpForever('HMTIM')
+				imgui.Process = false
+			end
+			
+			if imgui.Combo(langt['weather'],vr.mission_data['Weather'],Weather_str) then
+				forceWeatherNow(vr.mission_data['Weather'].v)
+			end
+			imgui.Checkbox(langt['modeRiot'],vr.mission_data['Riot'])
+			imgui.End()
 		end
 	end
 
@@ -306,19 +360,31 @@ function imgui.OnDrawFrame()
 		local sizeX,sizeY = 300, 340
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
 		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Сохранение и загрузка пака миссий', vr.pack_mission_window)
+		imgui.Begin(langt['saveLoadMissPack'], vr.pack_mission_window)
 
 		imgui.PushItemWidth(-10)
 
 
 		--Список Объектов
 		imgui.ListBox('', vr.lb_cur_pack_mission,vr.list_name_mission_pack,15)
+		if imgui.BeginPopupContextItem('hee') then
+			imgui.InputText('',vr.buf_edit_mission_pack_name)
+			if imgui.Button(langt['apply']) and vr.buf_edit_mission_pack_name.v ~= '' then
+			  vr.list_mission_pack[vr.lb_cur_pack_mission.v+1]['Name'] = vr.buf_edit_mission_pack_name.v
+			  vr.list_name_mission_pack[vr.lb_cur_pack_mission.v+1] = vr.buf_edit_mission_pack_name.v
+			  vr.buf_edit_mission_pack_name.v = ''
+			  imgui.CloseCurrentPopup()
+			end
+			imgui.PushItemWidth(-1);
+			imgui.PopItemWidth();
+			imgui.EndPopup();
+		  end
 
 		--Кнопки редактирования
-		if imgui.Button(u8'Добавить') then
+		if imgui.Button(langt['add']) then
 			local m = #vr.list_mission_pack+1
 			vr.list_mission_pack[m] = {
-				['Name'] = u8'Пак миссий #' .. tostring(#vr.list_mission_pack+1),
+				['Name'] = langt['add']..' #' .. tostring(#vr.list_mission_pack+1),
 				['Enable'] = imgui.ImBool(false),
 				['Missions'] = vr.list_missions
 			}
@@ -328,7 +394,7 @@ function imgui.OnDrawFrame()
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Загрузить') and #vr.list_mission_pack > 0 then
+		if imgui.Button(langt['load']) and #vr.list_mission_pack > 0 then
 			for i = 1,#vr.list_actors do
 				deleteChar(vr.list_actors[i]['Actor_Data']['Char'])
 			end
@@ -343,14 +409,14 @@ function imgui.OnDrawFrame()
 			end
 		end
 		imgui.SameLine()
-		if imgui.Button(u8'Сохранить') and #vr.list_mission_pack > 0 then
+		if imgui.Button(langt['save']) and #vr.list_mission_pack > 0 then
 			vr.list_mission_pack[vr.lb_cur_pack_mission.v+1]['Missions'] = vr.list_missions
 			manager.save(vr.list_mission_pack[vr.lb_cur_pack_mission.v+1],vr.lb_cur_pack_mission.v)
 			vr.Fast_data['CurPack'] = vr.lb_cur_pack_mission.v
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Удалить') then
+		if imgui.Button(langt['delete']) then
 			vr.list_mission_pack = DelCellArr(vr.list_mission_pack,vr.lb_cur_pack_mission.v+1)
 			vr.list_name_mission_pack = DelCellArr(vr.list_name_mission_pack,vr.lb_cur_pack_mission.v+1)
 			manager.delete(vr.lb_cur_pack_mission.v)
@@ -366,297 +432,285 @@ function imgui.OnDrawFrame()
 		local sizeX,sizeY = 300, 360
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
 		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Цели', vr.targets_window)
-
+		imgui.Begin(langt['targets'], vr.targets_window)
+	  
 		imgui.PushItemWidth(-10)
-
-
+	  
+	  
 		--Список Объектов
 		imgui.ListBox('', vr.lb_cur_targets,vr.list_name_targets,15)
 		if imgui.BeginPopupContextItem('hee') then
-			imgui.InputText('',vr.buf_edit_targets_name)
-			if imgui.Button(u8'Применить') and vr.buf_edit_targets_name.v ~= '' then
-				vr.list_targets[vr.lb_cur_targets.v+1]['Name'] = vr.buf_edit_targets_name.v
-				vr.list_name_targets[vr.lb_cur_targets.v+1] = vr.buf_edit_targets_name.v
-				vr.buf_edit_targets_name.v = ''
-				imgui.CloseCurrentPopup()
-			end
-			imgui.PushItemWidth(-1);
-			imgui.PopItemWidth();
-			imgui.EndPopup();
+		  imgui.InputText('',vr.buf_edit_targets_name)
+		  if imgui.Button(langt['apply']) and vr.buf_edit_targets_name.v ~= '' then
+			vr.list_targets[vr.lb_cur_targets.v+1]['Name'] = vr.buf_edit_targets_name.v
+			vr.list_name_targets[vr.lb_cur_targets.v+1] = vr.buf_edit_targets_name.v
+			vr.buf_edit_targets_name.v = ''
+			imgui.CloseCurrentPopup()
+		  end
+		  imgui.PushItemWidth(-1);
+		  imgui.PopItemWidth();
+		  imgui.EndPopup();
 		end
-
+	  
 		--Кнопки редактирования
-		if imgui.Button(u8'Добавить') then
-			vr.list_targets[#vr.list_targets+1] = {
-				['Name'] = u8'Цель #' .. tostring(#vr.list_targets+1),
-				['Type'] = imgui.ImInt(-1),
-				['Enable'] = imgui.ImBool(false),
-				['Target_Data'] = {}
-			}
-			vr.list_name_targets[#vr.list_targets] = vr.list_targets[#vr.list_targets]['Name']
+		if imgui.Button(langt['add']) then
+		  vr.list_targets[#vr.list_targets+1] = {
+			['Name'] = langt['target']..' #' .. tostring(#vr.list_targets+1),
+			['Type'] = imgui.ImInt(-1),
+			['Target_Data'] = {}
+		  }
+		  vr.list_name_targets[#vr.list_targets] = vr.list_targets[#vr.list_targets]['Name']
 		end
-
+	  
 		imgui.SameLine()
-		if imgui.Button(u8'Откр/Закр') and #vr.list_targets > 0 then
-			vr.list_targets[vr.lb_cur_targets.v+1]['Enable'].v = not vr.list_targets[vr.lb_cur_targets.v+1]['Enable'].v
+		if imgui.Button(langt['delete']) then
+			if vr.list_targets[vr.lb_cur_targets.v+1] then
+				vr.list_targets = DelCellArr(vr.list_targets,vr.lb_cur_targets.v+1)
+				vr.list_name_targets = DelCellArr(vr.list_name_targets,vr.lb_cur_targets.v+1)
+			end
 		end
-
 		imgui.SameLine()
-		if imgui.Button(u8'Удалить') then
-			vr.list_targets = DelCellArr(vr.list_targets,vr.lb_cur_targets.v+1)
-			vr.list_name_targets = DelCellArr(vr.list_name_targets,vr.lb_cur_targets.v+1)
-		end
-		if imgui.Button(u8'Вырезать') and #vr.list_targets > 0 then
-			vr.buffer_target = vr.lb_cur_targets.v + 1
+		if imgui.Button(langt['cut']) and #vr.list_targets > 0 then
+		  vr.buffer_target = vr.lb_cur_targets.v + 1
 		end
 		imgui.SameLine()
 		if vr.buffer_target ~= -1 then
-			if imgui.Button(u8'Вставить') then
-				vr.list_targets = MoveCellArr(vr.list_targets,vr.buffer_target,vr.lb_cur_targets.v+1)
-				vr.list_name_targets = MoveCellArr(vr.list_name_targets,vr.buffer_target,vr.lb_cur_targets.v+1)
-				vr.buffer_target = -1
-			end
+		  if imgui.Button(langt['paste']) then
+			vr.list_targets = MoveCellArr(vr.list_targets,vr.buffer_target,vr.lb_cur_targets.v+1)
+			vr.list_name_targets = MoveCellArr(vr.list_name_targets,vr.buffer_target,vr.lb_cur_targets.v+1)
+			vr.buffer_target = -1
+		  end
 		end
-
+	  
 		imgui.End()
 		--Редактор цели
-		for i = 1, #vr.list_targets do
-			if #vr.list_targets > 0 then
-				if vr.list_targets[i]['Enable'].v then
-					local resX,resY = getScreenResolution()
-					local sizeX,sizeY = 300, 340
-					local targets_list_arr = {u8'Чекпоинт',u8'Сесть в машину',u8'Убить Актёра',u8'Окр. среда',u8'Объект',u8'Пикап',u8'Игрок'}
-					local targets_marker_color = {u8'Синий',u8'Красный',u8'Зелёный',u8'Свело-голубой',u8'Чёрный',u8'Жёлтый'}
-					local weap_names = {u8'Кулак',u8'Кастет',u8'Клюшка для гольфа',u8'Полицейская дубинка',u8'Нож',u8'Бейсбольная бита',u8'Лопата',u8'Кий',u8'Катана',u8'Бензопила',u8'Двухсторонний дилдо',u8'Дилдо',u8'Вибратор',u8'Серебряный вибратор',u8'Букет цветов',u8'Трость',u8'Граната',u8'Слезоточивый газ',u8'Коктейль Молотова',u8'Пистолет 9мм',u8'Пистолет 9мм с глушителем',u8'Пистолет Дезерт Игл',u8'Обычный дробовик',u8'Обрез',u8'Скорострельный дробовик',u8'Узи',u8'MP5',u8'Автомат Калашникова',u8'Винтовка M4',u8'Tec-9',u8'Охотничье ружье',u8'Снайперская винтовка',u8'РПГ',u8'Самонаводящиеся ракеты HS',u8'Огнемет',u8'Миниган',u8'Сумка с тротилом',u8'Детонатор к сумке',u8'Баллончик с краской',u8'Огнетушитель',u8'Фотоаппарат',u8'Прибор ночного видения',u8'Тепловизор',u8'Парашют'}
-					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-					imgui.Begin(vr.list_targets[i]['Name'], vr.list_targets[i]['Enable'])
-
-					imgui.PushItemWidth(-65)
-
-					if imgui.Combo(u8'Тип Цели',vr.list_targets[i]['Type'],targets_list_arr) then
-						vr.list_targets[i]['Target_Data'] = {}
-						local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-						if vr.list_targets[i]['Type'].v == 0 then
-							vr.list_targets[i]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
-							vr.list_targets[i]['Target_Data']['Radius'] = imgui.ImInt(2)
-							vr.list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
-							vr.list_targets[i]['Target_Data']['Text_time'] = imgui.ImFloat(2)
-							vr.list_targets[i]['Target_Data']['Color_blip'] = imgui.ImInt(0)
-						end
-						if vr.list_targets[i]['Type'].v == 1 then
-							vr.list_targets[i]['Target_Data']['Target_car_id'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Color_blip'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
-						end
-						if vr.list_targets[i]['Type'].v == 2 then
-							vr.list_targets[i]['Target_Data']['Target_actor_id'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Color_blip'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
-						end
-						if vr.list_targets[i]['Type'].v == 3 then
-							vr.list_targets[i]['Target_Data']['Target_type'] = imgui.ImInt(-1)
-							vr.list_targets[i]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
-							vr.list_targets[i]['Target_Data']['Rotates'] = imgui.ImFloat3(0,0,0)
-							vr.list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
-							vr.list_targets[i]['Target_Data']['Text_time'] = imgui.ImFloat(2)
-							vr.list_targets[i]['Target_Data']['Smooth'] = imgui.ImBool(false)
-							vr.list_targets[i]['Target_Data']['Time'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Weather'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Clock_time'] = {0,0}
-							vr.list_targets[i]['Target_Data']['Traffic'] = {imgui.ImInt(1),imgui.ImInt(1)}
-						end
-						if vr.list_targets[i]['Type'].v == 4 then
-							vr.list_targets[i]['Target_Data']['Target_object_id'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Color_blip'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Target_type'] = imgui.ImInt(-1)
-							vr.list_targets[i]['Target_Data']['Weap'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
-						end
-						if vr.list_targets[i]['Type'].v == 5 then
-							vr.list_targets[i]['Target_Data']['Target_pickup_id'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Color_blip'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Text'] = imgui.ImBuffer(128)
-						end
-						if vr.list_targets[i]['Type'].v == 6 then
-							vr.list_targets[i]['Target_Data']['Target_type'] = imgui.ImInt(-1)
-							vr.list_targets[i]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
-							vr.list_targets[i]['Target_Data']['ModelID'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Angle'] = imgui.ImFloat(0)
-							vr.list_targets[i]['Target_Data']['Weapon'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Weap_ammo'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Anim'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Pack_anim'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Loop'] = imgui.ImBool(false)
-							vr.list_targets[i]['Target_Data']['Car_id'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Car_place'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Level_battue'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Dialog'] = {}
-							vr.list_targets[i]['Target_Data']['Dialog_id'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Add_money'] = imgui.ImInt(0)
-							vr.list_targets[i]['Target_Data']['Interior_id'] = getActiveInterior()
-						end
-
-					end
-
-					if vr.list_targets[i]['Type'].v == 0 then
-						imgui.InputFloat3(u8'Позиция',vr.list_targets[i]['Target_Data']['Pos'])
-
-						if imgui.Button(u8'Режим перемещения') then
-							vr.editmode_target = true
-							printHelpForever('HTARG')
-							lockPlayerControl(true)
-							vr.id_target = i
-							imgui.Process = false
-						end
-						imgui.PushItemWidth(-130)
-						imgui.DragInt(u8'Радиус чекпоинта',vr.list_targets[i]['Target_Data']['Radius'],0.1,-100,100)
-						imgui.Combo(u8'Цвет маркера',vr.list_targets[i]['Target_Data']['Color_blip'],targets_marker_color)
-						imgui.InputText(u8'Текст цели',vr.list_targets[i]['Target_Data']['Text'])
-						imgui.InputFloat(u8'Время текста (сек)',vr.list_targets[i]['Target_Data']['Text_time'])
-					end
-					if vr.list_targets[i]['Type'].v == 1 then
-						imgui.Combo(u8'Машина',vr.list_targets[i]['Target_Data']['Target_car_id'],vr.list_name_cars)
-						imgui.Combo(u8'Цвет маркера',vr.list_targets[i]['Target_Data']['Color_blip'],targets_marker_color)
-						imgui.InputText(u8'Текст',vr.list_targets[i]['Target_Data']['Text'])
-					end
-					if vr.list_targets[i]['Type'].v == 2 then
-						imgui.Combo(u8'Актёры',vr.list_targets[i]['Target_Data']['Target_actor_id'],vr.list_name_actors)
-						imgui.Combo(u8'Цвет маркера',vr.list_targets[i]['Target_Data']['Color_blip'],targets_marker_color)
-						imgui.InputText(u8'Текст',vr.list_targets[i]['Target_Data']['Text'])
-					end
-
-					if vr.list_targets[i]['Type'].v == 3 then
-						local target_type = {u8'Катсцена',u8'Обратный отсчёт',u8'Тайм-аут',u8'Погода',u8'Время',u8'Траффик Педов/Машин'}
-						imgui.Combo(u8'Тип',vr.list_targets[i]['Target_Data']['Target_type'],target_type)
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 0 then
-							imgui.InputFloat3(u8'Позиция',vr.list_targets[i]['Target_Data']['Pos'])
-							imgui.InputFloat3(u8'Угл поворота',vr.list_targets[i]['Target_Data']['Rotates'])
-							if imgui.Button(u8'Режим перемещения') then
-								vr.editmode_camera = true
-								printHelpForever('HOBJ')
-								lockPlayerControl(true)
-								vr.id_target = i
-								imgui.Process = false
-							end
-							imgui.Checkbox(u8'Движение камеры',vr.list_targets[i]['Target_Data']['Smooth'])
-							imgui.InputText(u8'Текст',vr.list_targets[i]['Target_Data']['Text'])
-							imgui.InputFloat(u8'Время катсцены (сек)',vr.list_targets[i]['Target_Data']['Text_time'])
-						end
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 1 then
-							imgui.InputInt(u8'Время',vr.list_targets[i]['Target_Data']['Time'])
-						end
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 2 then
-							imgui.InputText(u8'Текст',vr.list_targets[i]['Target_Data']['Text'])
-							imgui.InputInt(u8'Тайм-аут',vr.list_targets[i]['Target_Data']['Time'])
-						end
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 3 then
-							if imgui.Combo(u8'Погода',vr.list_targets[i]['Target_Data']['Weather'],Weather_str) then
-								forceWeatherNow(vr.list_targets[i]['Target_Data']['Weather'].v)
-							end
-						end
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 4 then
-							if imgui.Button(u8'Игровое время миссии') then
-								vr.editmode_timetarg = true
-								printHelpForever('HMTIM')
-								imgui.Process = false
-								vr.id_timetarg = i
-							end
-						end
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 5 then
-							local count = {u8'Нет',u8'Обычное',u8'Много'}
-							imgui.PushItemWidth(-100)
-							imgui.Combo(u8'Кол-во педов',vr.list_targets[i]['Target_Data']['Traffic'][1],count)
-							imgui.Combo(u8'Кол-во машин',vr.list_targets[i]['Target_Data']['Traffic'][2],count)
-						end
-					end
-					if vr.list_targets[i]['Type'].v == 4 then
-						local target_type = {u8'Прикоснуться',u8'Повредить',u8'Сфотографровать',u8'Повредить оружием'}
-						imgui.Combo(u8'Объект',vr.list_targets[i]['Target_Data']['Target_object_id'],vr.list_name_objects)
-						imgui.Combo(u8'Тип',vr.list_targets[i]['Target_Data']['Target_type'],target_type)
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 3 then
-							imgui.Combo(u8'Оружие',vr.list_targets[i]['Target_Data']['Weap'],weap_names)
-						end
-						imgui.Combo(u8'Цвет маркера',vr.list_targets[i]['Target_Data']['Color_blip'],targets_marker_color)
-						imgui.InputText(u8'Текст',vr.list_targets[i]['Target_Data']['Text'])
-					end
-					if vr.list_targets[i]['Type'].v == 5 then
-						imgui.Combo(u8'Пикап',vr.list_targets[i]['Target_Data']['Target_pickup_id'],vr.list_name_pickup)
-						imgui.Combo(u8'Цвет маркера',vr.list_targets[i]['Target_Data']['Color_blip'],targets_marker_color)
-						imgui.InputText(u8'Текст',vr.list_targets[i]['Target_Data']['Text'])
-					end
-					if vr.list_targets[i]['Type'].v == 6 then
-						local target_type = {u8'Телепорт',u8'Анимация игрока',u8'Телепорт в машину',u8'Уровень розыска',u8'Убрать оружие',u8'Разговор по телефону',u8'Добавить денег'}
-						imgui.Combo(u8'Тип',vr.list_targets[i]['Target_Data']['Target_type'],target_type)
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 0 then
-							imgui.InputFloat3(u8'Позиция',vr.list_targets[i]['Target_Data']['Pos'])
-							imgui.DragFloat(u8'Угол',vr.list_targets[i]['Target_Data']['Angle'],0.5,-360,360)
-							imgui.InputInt(u8'Модель',vr.list_targets[i]['Target_Data']['ModelID'])
-							imgui.PushItemWidth(-100)
-							imgui.InputInt(u8'Кол-во патронов',vr.list_targets[i]['Target_Data']['Weap_ammo'],10)
-							if imgui.Button(u8'Редактировать вручную') then
-								vr.id_teleport_player = i
-								imgui.Process = false
-								printHelpForever('HPLA')
-								vr.editmode_teleport_player = true
-							end
-						end
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 1 then
-							imgui.Combo(u8'Пак',vr.list_targets[i]['Target_Data']['Pack_anim'],Anims['Anim_name'])
-							imgui.Combo(u8'Анимация',vr.list_targets[i]['Target_Data']['Anim'],Anims['Anim_list'][vr.list_targets[i]['Target_Data']['Pack_anim'].v+1])
-							imgui.Checkbox(u8'Зацикленно',vr.list_targets[i]['Target_Data']['Loop'])
-							if imgui.Button(u8'Предпросмотр') then
-								vr.id_preview_player_anim = i
-								vr.editmode_preview_player_anim = true
-								lockPlayerControl(true)
-								imgui.Process = false
-								printHelpForever('HVIEW')
-							end
-						end
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 2 then
-							local place_car = {u8'Место водителя',u8'Место пассажира',u8'Заднее левое место',u8'Заднее правое место'}
-							imgui.Combo(u8'Машина',vr.list_targets[i]['Target_Data']['Car_id'],vr.list_name_cars)
-							imgui.Combo(u8'Место',vr.list_targets[i]['Target_Data']['Car_place'],place_car)
-						end
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 3 then
-							imgui.PushItemWidth(-100)
-							imgui.SliderInt(u8'Уровень розыска',vr.list_targets[i]['Target_Data']['Level_battue'],0,6)
-						end
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 5 then
-							imgui.Text(u8'Диалог')
-							if imgui.Button(u8'Добавить') then
-								vr.list_targets[i]['Target_Data']['Dialog'][#vr.list_targets[i]['Target_Data']['Dialog']+1] = {
-									['Text'] = imgui.ImBuffer(128),
-									['Text_time'] = imgui.ImFloat(0)
-								}
-							end
-							imgui.PushItemWidth(-150)
-							imgui.SameLine()
-							imgui.Combo(u8'Номер',vr.list_targets[i]['Target_Data']['Dialog_id'],range(#vr.list_targets[i]['Target_Data']['Dialog']))
-							imgui.SameLine()
-							if imgui.Button(u8'Удалить') then
-								vr.list_targets[i]['Target_Data']['Dialog'] = DelCellArr(vr.list_targets[i]['Target_Data']['Dialog'],vr.list_targets[i]['Target_Data']['Dialog_id'].v+1)
-							end
-							imgui.PushItemWidth(-70)
-							for d = 1,#vr.list_targets[i]['Target_Data']['Dialog'] do
-								if imgui.TreeNode(u8:encode(d)) then
-									imgui.InputText(u8'Текст',vr.list_targets[i]['Target_Data']['Dialog'][d]['Text'])
-									imgui.InputFloat(u8'Время',vr.list_targets[i]['Target_Data']['Dialog'][d]['Text_time'])
-									imgui.TreePop()
-
-								end
-							end
-							--imgui.InputText(u8'Текст',vr.list_targets[i]['Target_Data']['Text'])
-						end
-						if vr.list_targets[i]['Target_Data']['Target_type'].v == 6 then
-							imgui.InputInt(u8'Добавить',vr.list_targets[i]['Target_Data']['Add_money'])
-						end
-					end
-
-					imgui.End()
-				end
+		if #vr.list_targets > 0 and vr.list_targets[vr.lb_cur_targets.v+1] then
+			local resX,resY = getScreenResolution()
+			local sizeX,sizeY = 300, 340
+			local targets_list_arr = decodeJson(langt['targets_list_arr'])
+			local targets_marker_color = decodeJson(langt['targets_marker_color'])
+			local weap_names = decodeJson(langt['weap_names'])
+			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
+			imgui.Begin(vr.list_targets[vr.lb_cur_targets.v+1]['Name'], true)
+			imgui.PushItemWidth(-65)
+			if imgui.Combo(langt['typeTarget'],vr.list_targets[vr.lb_cur_targets.v+1]['Type'],targets_list_arr) then
+			  vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data'] = {}
+			  local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 0 then
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Radius'] = imgui.ImInt(2)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text_time'] = imgui.ImFloat(2)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'] = imgui.ImInt(0)
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 1 then
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_car_id'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 2 then
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_actor_id'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 3 then
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'] = imgui.ImInt(-1)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Rotates'] = imgui.ImFloat3(0,0,0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text_time'] = imgui.ImFloat(2)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Smooth'] = imgui.ImBool(false)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Time'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weather'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Clock_time'] = {0,0}
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Traffic'] = {imgui.ImInt(1),imgui.ImInt(1)}
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 4 then
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_object_id'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'] = imgui.ImInt(-1)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weap'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 5 then
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_pickup_id'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 6 then
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'] = imgui.ImInt(-1)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['ModelID'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Angle'] = imgui.ImFloat(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weapon'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weap_ammo'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Anim'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pack_anim'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Loop'] = imgui.ImBool(false)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Car_id'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Car_place'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Level_battue'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'] = {}
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog_id'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Add_money'] = imgui.ImInt(0)
+				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Interior_id'] = getActiveInterior()
+			  end
+		  
 			end
+
+			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 0 then
+			  imgui.InputFloat3(langt['position'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'])
+			  if imgui.Button(langt['modeMove']) then
+				vr.editmode_target = true
+				printHelpForever('HTARG')
+				lockPlayerControl(true)
+				vr.id_target = vr.lb_cur_targets.v+1
+				imgui.Process = false
+			  end
+			  imgui.PushItemWidth(-130)
+			  imgui.DragInt(langt['radiusCheckpoint'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Radius'],0.1,-100,100)
+			  imgui.Combo(langt['colorMarker'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'],targets_marker_color)
+			  imgui.InputText(langt['textTarget'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+			  imgui.InputFloat(langt['timeText'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text_time'])
+			end
+			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 1 then
+			  imgui.Combo(langt['car'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_car_id'],vr.list_name_cars)
+			  imgui.Combo(u8'Цвет маркера',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'],targets_marker_color)
+			  imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+			end
+			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 2 then
+			  imgui.Combo(u8'Актёры',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_actor_id'],vr.list_name_actors)
+			  imgui.Combo(u8'Цвет маркера',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'],targets_marker_color)
+			  imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+			end
+			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 3 then
+			  local target_type = {u8'Катсцена',u8'Обратный отсчёт',u8'Тайм-аут',u8'Погода',u8'Время',u8'Траффик Педов/Машин'}
+			  imgui.Combo(u8'Тип',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'],target_type)
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 0 then
+				imgui.InputFloat3(langt['position'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'])
+				imgui.InputFloat3(u8'Угл поворота',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Rotates'])
+				if imgui.Button(u8'Режим перемещения') then
+				  vr.editmode_camera = true
+				  printHelpForever('HOBJ')
+				  lockPlayerControl(true)
+				  vr.id_target = vr.lb_cur_targets.v+1
+				  imgui.Process = false
+				end
+				imgui.Checkbox(u8'Движение камеры',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Smooth'])
+				imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+				imgui.InputFloat(u8'Время катсцены (сек)',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text_time'])
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 1 then
+				imgui.InputInt(u8'Время',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Time'])
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 2 then
+				imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+				imgui.InputInt(u8'Тайм-аут',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Time'])
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 3 then
+				if imgui.Combo(u8'Погода',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weather'],Weather_str) then
+				  forceWeatherNow(vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weather'].v)
+				end
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 4 then
+				if imgui.Button(u8'Игровое время миссии') then
+				  vr.editmode_timetarg = true
+				  printHelpForever('HMTIM')
+				  imgui.Process = false
+				  vr.id_timetarg = vr.lb_cur_targets.v+1
+				end
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 5 then
+				local count = {u8'Нет',u8'Обычное',u8'Много'}
+				imgui.PushItemWidth(-100)
+				imgui.Combo(u8'Кол-во педов',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Traffic'][1],count)
+				imgui.Combo(u8'Кол-во машин',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Traffic'][2],count)
+			  end
+			end
+			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 4 then
+			  local target_type = {u8'Прикоснуться',u8'Повредить',u8'Сфотографровать',u8'Повредить оружием'}
+			  imgui.Combo(u8'Объект',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_object_id'],vr.list_name_objects)
+			  imgui.Combo(u8'Тип',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'],target_type)
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 3 then
+				imgui.Combo(u8'Оружие',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weap'],weap_names)
+			  end
+			  imgui.Combo(u8'Цвет маркера',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'],targets_marker_color)
+			  imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+			end
+			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 5 then
+			  imgui.Combo(u8'Пикап',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_pickup_id'],vr.list_name_pickup)
+			  imgui.Combo(u8'Цвет маркера',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'],targets_marker_color)
+			  imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+			end
+			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 6 then
+			  local target_type = {u8'Телепорт',u8'Анимация игрока',u8'Телепорт в машину',u8'Уровень розыска',u8'Убрать оружие',u8'Разговор по телефону',u8'Добавить денег'}
+			  imgui.Combo(u8'Тип',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'],target_type)
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 0 then
+				imgui.InputFloat3(langt['position'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'])
+				imgui.DragFloat(u8'Угол',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Angle'],0.5,-360,360)
+				imgui.InputInt(u8'Модель',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['ModelID'])
+				imgui.PushItemWidth(-100)
+				imgui.InputInt(u8'Кол-во патронов',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weap_ammo'],10)
+				if imgui.Button(u8'Редактировать вручную') then
+				  vr.id_teleport_player = vr.lb_cur_targets.v+1
+				  imgui.Process = false
+				  printHelpForever('HPLA')
+				  vr.editmode_teleport_player = true
+				end
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 1 then
+				imgui.Combo(u8'Пак',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pack_anim'],Anims['Anim_name'])
+				imgui.Combo(u8'Анимация',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Anim'],Anims['Anim_list'][vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pack_anim'].v+1])
+				imgui.Checkbox(u8'Зацикленно',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Loop'])
+				if imgui.Button(u8'Предпросмотр') then
+				  vr.id_preview_player_anim = vr.lb_cur_targets.v+1
+				  vr.editmode_preview_player_anim = true
+				  lockPlayerControl(true)
+				  imgui.Process = false
+				  printHelpForever('HVIEW')
+				end
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 2 then
+				local place_car = {u8'Место водителя',u8'Место пассажира',u8'Заднее левое место',u8'Заднее правое место'}
+				imgui.Combo(u8'Машина',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Car_id'],vr.list_name_cars)
+				imgui.Combo(u8'Место',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Car_place'],place_car)
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 3 then
+				imgui.PushItemWidth(-100)
+				imgui.SliderInt(u8'Уровень розыска',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Level_battue'],0,6)
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 5 then
+				imgui.Text(u8'Диалог')
+				if imgui.Button(langt['add']) then
+				  vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'][#vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog']+1] = {
+					['Text'] = imgui.ImBuffer(128),
+					['Text_time'] = imgui.ImFloat(0)
+				  }
+				end
+				imgui.PushItemWidth(-150)
+				imgui.SameLine()
+				imgui.Combo(u8'Номер',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog_id'],range(#vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog']))
+				imgui.SameLine()
+				if imgui.Button(langt['delete']) then
+				  vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'] = DelCellArr(vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog_id'].v+1)
+				end
+				imgui.PushItemWidth(-70)
+				for d = 1,#vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'] do
+				  if imgui.TreeNode(u8:encode(d)) then
+					imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'][d]['Text'])
+					imgui.InputFloat(u8'Время',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'][d]['Text_time'])
+					imgui.TreePop()
+		  
+				  end
+				end
+				--imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+			  end
+			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 6 then
+				imgui.InputInt(langt['add'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Add_money'])
+			  end
+			end
+			imgui.End()
 		end
 	end
 
@@ -675,7 +729,7 @@ function imgui.OnDrawFrame()
 		imgui.ListBox('', vr.lb_cur_actors,vr.list_name_actors,15)
 		if imgui.BeginPopupContextItem('hee') then
 			imgui.InputText('',vr.buf_edit_actors_name)
-			if imgui.Button(u8'Применить') and vr.buf_edit_actors_name.v ~= '' then
+			if imgui.Button(langt['apply']) and vr.buf_edit_actors_name.v ~= '' then
 				vr.list_actors[vr.lb_cur_actors.v+1]['Name'] = vr.buf_edit_actors_name.v
 				vr.list_name_actors[vr.lb_cur_actors.v+1] = vr.buf_edit_actors_name.v
 				vr.buf_edit_actors_name.v = ''
@@ -687,14 +741,13 @@ function imgui.OnDrawFrame()
 		end
 
 		--Кнопки редактирования
-		if imgui.Button(u8'Добавить') then
+		if imgui.Button(langt['add']) then
 			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 			xz = getGroundZFor3dCoord(xx,xy,xz)
 			local angle = getCharHeading(PLAYER_PED)
 			vr.list_actors[#vr.list_actors+1] = {
 				['Name'] = u8'Актёр #' .. tostring(#vr.list_actors+1),
 				['Type'] = imgui.ImInt(-1),
-				['Enable'] = imgui.ImBool(false),
 				['Actor_Data'] = {
 					['Pos'] = imgui.ImFloat3(xx,xy,xz),
 					['Angle'] = imgui.ImFloat(angle),
@@ -713,12 +766,7 @@ function imgui.OnDrawFrame()
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Откр/Закр') and #vr.list_actors > 0 then
-			vr.list_actors[vr.lb_cur_actors.v+1]['Enable'].v = not vr.list_actors[vr.lb_cur_actors.v+1]['Enable'].v
-		end
-
-		imgui.SameLine()
-		if imgui.Button(u8'Удалить') then
+		if imgui.Button(langt['delete']) then
 			deleteChar(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'])
 			vr.list_actors = DelCellArr(vr.list_actors,vr.lb_cur_actors.v+1)
 			vr.list_name_actors = DelCellArr(vr.list_name_actors,vr.lb_cur_actors.v+1)
@@ -742,101 +790,286 @@ function imgui.OnDrawFrame()
 
 		imgui.End()
 		--Редактор актёра
-		for i = 1, #vr.list_actors do
-			if #vr.list_actors > 0 then
-				if vr.list_actors[i]['Enable'].v then
-					local resX,resY = getScreenResolution()
-					local sizeX,sizeY = 400, 340
-					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-					imgui.Begin(vr.list_actors[i]['Name'], vr.list_actors[i]['Enable'])
-					imgui.PushItemWidth(-90)
-
-					if imgui.InputFloat3(u8'Позиция',vr.list_actors[i]['Actor_Data']['Pos']) or imgui.SliderFloat(u8'Угол поворота',vr.list_actors[i]['Actor_Data']['Angle'],-360,360) then
-						local xx,xy,xz = vr.list_actors[i]['Actor_Data']['Pos'].v[1],vr.list_actors[i]['Actor_Data']['Pos'].v[2],vr.list_actors[i]['Actor_Data']['Pos'].v[3]
-						setCharCoordinates(vr.list_actors[i]['Actor_Data']['Char'],xx,xy,xz)
-						setCharHeading(vr.list_actors[i]['Actor_Data']['Char'], vr.list_actors[i]['Actor_Data']['Angle'].v)
+		if #vr.list_actors > 0 and vr.list_actors[vr.lb_cur_actors.v+1] then
+			local resX,resY = getScreenResolution()
+			local sizeX,sizeY = 400, 340
+			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+			imgui.Begin(vr.list_actors[vr.lb_cur_actors.v+1]['Name'], vr.list_actors[vr.lb_cur_actors.v+1]['Enable'])
+			imgui.PushItemWidth(-90)
+			
+			if imgui.InputFloat3(langt['position'],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos']) or imgui.SliderFloat(u8'Угол поворота',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Angle'],-360,360) then
+			  local xx,xy,xz = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[1],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[2],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[3]
+			  setCharCoordinates(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],xx,xy,xz)
+			  setCharHeading(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'], vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Angle'].v)
+			end
+			if imgui.InputInt(u8'Номер модели',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['ModelId']) then
+			  local id_a = 0
+			  for v = 1,#ID_Actors do
+				if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['ModelId'].v <= ID_Actors[v] then
+				  id_a = ID_Actors[v]
+				  break
+				end
+			  end
+			  vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['ModelId'].v = id_a
+			  upd_actor:run(vr.lb_cur_actors.v+1)
+			end
+			imgui.InputInt(u8'Кол-во здоровья',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Health'])
+			imgui.Checkbox(u8'Должен выжить?',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Should_not_die'])
+			if imgui.Button(u8'Редактировать вручную') then
+			  vr.editmode_actor = true
+			  vr.id_actor = vr.lb_cur_actors.v+1
+			  deleteChar(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'])
+			  printHelpForever('HACT')
+			end
+			
+			imgui.PushItemWidth(-110)
+			
+			imgui.Separator()
+			local list_tg_m = {u8'До конца'}
+			for ltg = 1,#vr.list_name_targets do
+			  list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+			end
+			imgui.Combo(u8'Появление на',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['StartC'],vr.list_name_targets)
+			imgui.Combo(u8'Исчезание после',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['EndC'],list_tg_m)
+			imgui.Separator()
+			imgui.Text(u8'Действия')
+			
+			if imgui.Button(langt['add']) then
+			  vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims']+1] = {
+				['Type'] = imgui.ImInt(-1),
+			  }
+			end
+			imgui.SameLine()
+			imgui.PushItemWidth(-250)
+			imgui.Combo(u8'Номер',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anim_id'],range(#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims']))
+			imgui.SameLine()
+			if imgui.Button(langt['delete']) then
+			  vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'] = DelCellArr(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anim_id'].v+1)
+			end
+			if imgui.Button(u8'Очистить предпросмотр/движение') then
+			  upd_actor:run(vr.lb_cur_actors.v+1)
+			end
+			imgui.PushItemWidth(-150)
+			for a = 1,#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'] do
+				if imgui.TreeNode(u8:encode(a)) then
+					local type = {u8'Анимация',u8'Передвижение по пути',u8'Ехать по пути на авто','Выйти из авто'}
+					if imgui.Combo(u8'Тип',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'],type) then
+						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 0 then
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Anim'] = imgui.ImInt(0)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Pack_anim'] = imgui.ImInt(0)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Loop'] = imgui.ImBool(false)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Time'] = imgui.ImFloat(1.0)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Unbreakable'] = imgui.ImBool(false)
+						end
+						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 1 then
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'] = {}
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type_move'] = imgui.ImInt(0)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type_route'] = imgui.ImInt(0)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'] = imgui.ImInt(0)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point'] = imgui.ImBool(false)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
+						end
+						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 2 then
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'] = {}
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'] = imgui.ImInt(0)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Speed'] = imgui.ImInt(0)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'] = imgui.ImInt(0)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point'] = imgui.ImBool(false)
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
+						end
+						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 3 then
+							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
+						end
 					end
-					if imgui.InputInt(u8'Номер модели',vr.list_actors[i]['Actor_Data']['ModelId']) then
-						local id_a = 0
-						for v = 1,#ID_Actors do
-							if vr.list_actors[i]['Actor_Data']['ModelId'].v <= ID_Actors[v] then
-								id_a = ID_Actors[v]
-								break
+					
+					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 0 then
+						local cond_type = {u8'Ничего',u8'На Цели'}
+						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
+							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
+								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
 							end
 						end
-						vr.list_actors[i]['Actor_Data']['ModelId'].v = id_a
-						upd_actor:run(i)
+						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
+							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
+						end
+						imgui.Combo(u8'Пак',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Pack_anim'],Anims['Anim_name'])
+						imgui.Combo(u8'Анимация',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Anim'],Anims['Anim_list'][vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Pack_anim'].v+1])
+						imgui.InputFloat(u8'Время анимации (сек)',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Time'],0)
+						imgui.Checkbox(u8'Зацикленно',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Loop'])
+						imgui.Checkbox(u8'Неуязвим',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Unbreakable'])
+						if imgui.Button(u8'Предпросмотр') then
+							upd_anim_actor:run(vr.lb_cur_actors.v+1,a)
+						end
+						imgui.Button(langt['delete'])
 					end
-					imgui.InputInt(u8'Кол-во здоровья',vr.list_actors[i]['Actor_Data']['Health'])
-					imgui.Checkbox(u8'Должен выжить?',vr.list_actors[i]['Actor_Data']['Should_not_die'])
-					if imgui.Button(u8'Редактировать вручную') then
-						vr.editmode_actor = true
-						vr.id_actor = i
-						deleteChar(vr.list_actors[i]['Actor_Data']['Char'])
-						printHelpForever('HACT')
-					end
-
-					imgui.PushItemWidth(-110)
-
-					imgui.Separator()
-					local list_tg_m = {u8'До конца'}
-					for ltg = 1,#vr.list_name_targets do
-						list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-					end
-					imgui.Combo(u8'Появление на',vr.list_actors[i]['Actor_Data']['StartC'],vr.list_name_targets)
-					imgui.Combo(u8'Исчезание после',vr.list_actors[i]['Actor_Data']['EndC'],list_tg_m)
-					imgui.Separator()
-					imgui.Text(u8'Анимации')
-
-					if imgui.Button(u8'Добавить') then
-						vr.list_actors[i]['Actor_Data']['Anims'][#vr.list_actors[i]['Actor_Data']['Anims']+1] = {
-							['Anim'] = imgui.ImInt(0),
-							['Pack_anim'] = imgui.ImInt(0),
-							['Loop'] = imgui.ImBool(false),
-							['Time'] = imgui.ImFloat(1.0),
-							['Condition'] = imgui.ImInt(0),
-							['Unbreakable'] = imgui.ImBool(false)
-						}
-					end
-					imgui.SameLine()
-					imgui.PushItemWidth(-250)
-					imgui.Combo(u8'Номер',vr.list_actors[i]['Actor_Data']['Anim_id'],range(#vr.list_actors[i]['Actor_Data']['Anims']))
-					imgui.SameLine()
-					if imgui.Button(u8'Удалить') then
-						vr.list_actors[i]['Actor_Data']['Anims'] = DelCellArr(vr.list_actors[i]['Actor_Data']['Anims'],vr.list_actors[i]['Actor_Data']['Anim_id'].v+1)
-					end
-					if imgui.Button(u8'Очистить предпросмотр') then
-						taskPlayAnim(vr.list_actors[i]['Actor_Data']['Char'], "WALK_START", 'PED', 1.0, false, false, false, false, -1)
-					end
-					imgui.PushItemWidth(-150)
-					for a = 1,#vr.list_actors[i]['Actor_Data']['Anims'] do
-						if imgui.TreeNode(u8:encode(a)) then
-							local cond_type = {u8'Ничего',u8'На Цели'}
-							if imgui.Combo(u8'Условие',vr.list_actors[i]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
-								if vr.list_actors[i]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-									vr.list_actors[i]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
+					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 1 then
+						local cond_type = {u8'Ничего',u8'На Цели'}
+						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
+							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
+								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
+							end
+						end
+						local move_type = {u8'Согнуто',u8'Ходьба',u8'Бег',u8'Быстрый бег'}
+						local move_route = {u8'до конца и останавливается.',u8'до конца и обратно, останавливается',u8'зацикленно, ходит по пути',u8'зацикленно, в конце идёт на начало.'}
+						imgui.Combo(u8'Тип передвижения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type_move'],move_type)
+						local list_name_point = {}
+						imgui.Combo(u8'тип маршрута',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type_route'],move_route)
+						for i = 1, #vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'] do
+							local point = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][i]
+							list_name_point[i] = tostring(point[1])..' '..tostring(point[2]) ..' '..tostring(point[3])
+						end
+						if imgui.Checkbox(u8'Отображать путь',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point']) then
+							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point'].v then
+								lua_thread.create(function(anim)
+									local font = renderCreateFont('Verdana',12)
+									while anim['Vis_point'].v do
+										wait(0)
+										vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][0] = {vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[1],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[2],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[3]}
+										for i = 1, #anim['Path'] do
+											local x1,y1,z1 = anim['Path'][i][1],anim['Path'][i][2],anim['Path'][i][3]
+											local x2,y2,z2 = anim['Path'][i-1][1],anim['Path'][i-1][2],anim['Path'][i-1][3]
+											local font_pos_x1,font_pos_y1 = convert3DCoordsToScreen(x1,y1,z1+0.1)
+											local font_pos_x2,font_pos_y2 = convert3DCoordsToScreen(x2,y2,z2+0.1)
+											DrawLineBy3dCoords(x1,y1,z1,x2,y2,z2,2,0xFFFFFFFF)
+											if isPointOnScreen(x1, y1, z1,1) then
+												renderFontDrawText(font,tostring(x1)..' '..tostring(y1) ..' '..tostring(z1),font_pos_x1,font_pos_y1,0xFFFFFFFF)
+											end
+											if isPointOnScreen(x2, y2, z2,1) then
+												renderFontDrawText(font,tostring(x2)..' '..tostring(y2) ..' '..tostring(z2),font_pos_x2,font_pos_y2,0xFFFFFFFF)
+											end
+										end
+									end
+									renderReleaseFont(font)
+								end,
+								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a])
+							end
+							
+						end
+						imgui.ListBox(u8'Точки пути',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'],list_name_point,4)
+						if imgui.Button(langt['add']) then
+							local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+							table.insert(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'],{xx,xy,xz})
+						end
+						imgui.SameLine()
+						if imgui.Button(u8'Добавить вводом') then
+							imgui.Process = false;
+							vr.id_actor_anim = a;
+							vr.editmode_actor_add_point = true;
+						end
+						imgui.SameLine()
+						if imgui.Button(langt['delete']) then
+							table.remove(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'].v+1)
+						end
+						imgui.Separator()
+						if imgui.Button(u8'Выполнить') then
+							local xx,xy,xz = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[1],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[2],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[3]
+							local dec = loadCharDecisionMaker(0)
+							setCharProofs(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],true,true,true,true,true)
+							setCharDecisionMaker(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],dec)
+							setCharCoordinates(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],xx,xy,xz)
+							setCharCollision(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],true)
+							lua_thread.create(function(path)
+								flushPatrolRoute()
+								local c = 1
+								local type_walk = 4;
+								if path['Type_move'].v == 2 then type_walk = 6
+								elseif path['Type_move'].v == 3 then type_walk = 7 end
+								taskToggleDuck(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'], ternar(path['Type_move'].v == 0,true,false))
+								for i = 1,#path['Path'] do
+									local x1,y1,z1 = path['Path'][i][1],path['Path'][i][2],path['Path'][i][3]
+									extendPatrolRoute(x1,y1,z1,'NONE','NONE')
+									c = c + 1
+									if c == 7 then
+										local px,py,pz = getCharCoordinates(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'])
+										taskFollowPatrolRoute(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],type_walk,path['Type_route'].v)
+										while getDistanceBetweenCoords3d(path['Path'][i][1],path['Path'][i][2],path['Path'][i][3],px,py,pz) > 0.1 do
+											wait(0)
+											px,py,pz = getCharCoordinates(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'])
+										end
+										flushPatrolRoute()
+										c = 1
+									end
 								end
-							end
-							if vr.list_actors[i]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-								imgui.Combo(u8'Цель',vr.list_actors[i]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-							end
-							imgui.Combo(u8'Пак',vr.list_actors[i]['Actor_Data']['Anims'][a]['Pack_anim'],Anims['Anim_name'])
-							imgui.Combo(u8'Анимация',vr.list_actors[i]['Actor_Data']['Anims'][a]['Anim'],Anims['Anim_list'][vr.list_actors[i]['Actor_Data']['Anims'][a]['Pack_anim'].v+1])
-							imgui.InputFloat(u8'Время анимации (сек)',vr.list_actors[i]['Actor_Data']['Anims'][a]['Time'],0)
-							imgui.Checkbox(u8'Зацикленно',vr.list_actors[i]['Actor_Data']['Anims'][a]['Loop'])
-							imgui.Checkbox(u8'Неуязвим',vr.list_actors[i]['Actor_Data']['Anims'][a]['Unbreakable'])
-							if imgui.Button(u8'Предпросмотр') then
-								upd_anim_actor:run(i,a)
-							end
-							imgui.Button(u8'Удалить')
-							imgui.TreePop()
-
+								taskFollowPatrolRoute(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],type_walk,path['Type_route'].v)
+							end,vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a])
 						end
 					end
-					imgui.End()
+					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 2 then
+						local cond_type = {u8'Ничего',u8'На Цели'}
+						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
+							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
+								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
+							end
+						end
+						local list_name_point = {}
+						for i,_ in pairs(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path']) do
+							local point = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][i]
+							list_name_point[i] = tostring(point[1])..' '..tostring(point[2]) ..' '..tostring(point[3])
+						end
+						if imgui.Checkbox(u8'Отображать путь',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point']) then
+							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point'].v then
+								lua_thread.create(function(anim)
+									local font = renderCreateFont('Verdana',12)
+									while anim['Vis_point'].v do
+										wait(0)
+										if #vr.list_cars > 0 then
+											vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][0] = {vr.list_cars[vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'].v+1]['Car_Data']['Pos'].v[1] or 0 ,vr.list_cars[vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'].v+1]['Car_Data']['Pos'].v[2] or 0 ,vr.list_cars[vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'].v+1]['Car_Data']['Pos'].v[3] or 0 }
+										else
+											vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][0] = {0,0,0}
+										end
+										for i = 1, #anim['Path'] do
+											local x1,y1,z1 = anim['Path'][i][1],anim['Path'][i][2],anim['Path'][i][3]
+											local x2,y2,z2 = anim['Path'][i-1][1],anim['Path'][i-1][2],anim['Path'][i-1][3]
+											local font_pos_x1,font_pos_y1 = convert3DCoordsToScreen(x1,y1,z1+0.1)
+											local font_pos_x2,font_pos_y2 = convert3DCoordsToScreen(x2,y2,z2+0.1)
+											DrawLineBy3dCoords(x1,y1,z1,x2,y2,z2,2,0xFFFFFFFF)
+											if isPointOnScreen(x1, y1, z1,1) then
+												renderFontDrawText(font,tostring(x1)..' '..tostring(y1) ..' '..tostring(z1),font_pos_x1,font_pos_y1,0xFFFFFFFF)
+											end
+											if isPointOnScreen(x2, y2, z2,1) then
+												renderFontDrawText(font,tostring(x2)..' '..tostring(y2) ..' '..tostring(z2),font_pos_x2,font_pos_y2,0xFFFFFFFF)
+											end
+										end
+									end
+									renderReleaseFont(font)
+								end,
+								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a])
+							end
+							
+						end
+						imgui.Combo(u8'Машина',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'],vr.list_name_cars)
+						imgui.InputInt(u8'Скорость',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Speed'])
+						imgui.ListBox(u8'Точки пути',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'],list_name_point,4)
+						if imgui.Button(langt['add']) then
+							local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+							table.insert(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'],{xx,xy,xz})
+						end
+						imgui.SameLine()
+						if imgui.Button(u8'Добавить вводом') then
+							imgui.Process = false;
+							vr.id_actor_anim = a;
+							vr.editmode_actor_add_point = true;
+						end
+						imgui.SameLine()
+						if imgui.Button(langt['delete']) then
+							table.remove(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'].v+1)
+						end
+					end
+					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 3 then
+						local cond_type = {u8'Ничего',u8'На Цели'}
+						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
+							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
+								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
+							end
+						end
+
+					end
+					imgui.TreePop()
 				end
 			end
+			imgui.End()
 		end
 	end
 
@@ -855,7 +1088,7 @@ function imgui.OnDrawFrame()
 		imgui.ListBox('', vr.lb_cur_cars,vr.list_name_cars,15)
 		if imgui.BeginPopupContextItem('hee') then
 			imgui.InputText('',vr.buf_edit_cars_name)
-			if imgui.Button(u8'Применить') and vr.buf_edit_cars_name.v ~= '' then
+			if imgui.Button(langt['apply']) and vr.buf_edit_cars_name.v ~= '' then
 				vr.list_cars[vr.lb_cur_cars.v+1]['Name'] = vr.buf_edit_actors_name.v
 				vr.list_name_cars[vr.lb_cur_cars.v+1] = vr.buf_edit_actors_name.v
 				vr.buf_edit_actors_name.v = ''
@@ -867,13 +1100,12 @@ function imgui.OnDrawFrame()
 		end
 
 		--Кнопки редактирования
-		if imgui.Button(u8'Добавить') then
+		if imgui.Button(langt['add']) then
 			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 			xz = getGroundZFor3dCoord(xx, xy, xz+10.0)
 			vr.list_cars[#vr.list_cars+1] = {
 				['Name'] = u8'Машина #' .. tostring(#vr.list_cars+1),
 				['Type'] = imgui.ImInt(-1),
-				['Enable'] = imgui.ImBool(false),
 				['Car_Data'] = {
 					['Pos'] = imgui.ImFloat3(xx,xy,xz),
 					['Angle'] = imgui.ImFloat(0),
@@ -898,78 +1130,71 @@ function imgui.OnDrawFrame()
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Откр/Закр') and #vr.list_cars > 0 then
-			vr.list_cars[vr.lb_cur_cars.v+1]['Enable'].v = not vr.list_cars[vr.lb_cur_cars.v+1]['Enable'].v
-		end
-
-		imgui.SameLine()
-		if imgui.Button(u8'Удалить') then
-			deleteCar(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'])
-			vr.list_cars = DelCellArr(vr.list_cars,vr.lb_cur_cars.v+1)
-			vr.list_name_cars = DelCellArr(vr.list_name_cars,vr.lb_cur_cars.v+1)
+		if imgui.Button(langt['delete']) then
+			if vr.list_cars[vr.lb_cur_cars.v+1] then
+				deleteCar(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'])
+				vr.list_cars = DelCellArr(vr.list_cars,vr.lb_cur_cars.v+1)
+				vr.list_name_cars = DelCellArr(vr.list_name_cars,vr.lb_cur_cars.v+1)
+			end
 		end
 		imgui.End()
 		--Редактор машин
-		for i = 1, #vr.list_cars do
-			if #vr.list_cars > 0 then
-				if vr.list_cars[i]['Enable'].v then
-					local resX,resY = getScreenResolution()
-					local sizeX,sizeY = 300, 340
-					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-					imgui.Begin(vr.list_cars[i]['Name'], vr.list_cars[i]['Enable'])
-					imgui.PushItemWidth(-90)
-
-					if imgui.InputFloat3(u8'Позиция',vr.list_cars[i]['Car_Data']['Pos']) or imgui.SliderFloat(u8'Угол поворота',vr.list_cars[i]['Car_Data']['Angle'],-360,360) then
-						local xx,xy,xz = vr.list_cars[i]['Car_Data']['Pos'].v[1],vr.list_cars[i]['Car_Data']['Pos'].v[2],vr.list_cars[i]['Car_Data']['Pos'].v[3]
-						setCarCoordinates(vr.list_cars[i]['Car_Data']['Car'],xx,xy,xz)
-						setCarHeading(vr.list_cars[i]['Car_Data']['Car'], vr.list_cars[i]['Car_Data']['Angle'].v)
-					end
-					if imgui.InputInt(u8'Номер модели',vr.list_cars[i]['Car_Data']['ModelId']) then
-						local id_c = 400
-						for v = 1,#ID_Cars do
-							if vr.list_cars[i]['Car_Data']['ModelId'].v <= ID_Cars[v] then
-								id_c = ID_Cars[v]
-								break
-							end
-						end
-						vr.list_cars[i]['Car_Data']['ModelId'].v = id_c
-						upd_car:run(i)
-					end
-					if imgui.DragInt(u8'Цвет машины 1',vr.list_cars[i]['Car_Data']['Color_primary'],0.1,0,126) then
-						changeCarColour(vr.list_cars[i]['Car_Data']['Car'],vr.list_cars[i]['Car_Data']['Color_primary'].v,vr.list_cars[i]['Car_Data']['Color_secondary'].v)
-					end
-					if imgui.DragInt(u8'Цвет машины 2',vr.list_cars[i]['Car_Data']['Color_secondary'],0.1,0,126) then
-						changeCarColour(vr.list_cars[i]['Car_Data']['Car'],vr.list_cars[i]['Car_Data']['Color_primary'].v,vr.list_cars[i]['Car_Data']['Color_secondary'].v)
-					end
-					imgui.InputInt(u8'Кол-во здоровья',vr.list_cars[i]['Car_Data']['Health'])
-					imgui.Checkbox(u8'Пуленепробиваемый',vr.list_cars[i]['Car_Data']['Bulletproof'])
-					imgui.Checkbox(u8'Огнестойки',vr.list_cars[i]['Car_Data']['Fireproof'])
-					imgui.Checkbox(u8'Взрывоустойчивый',vr.list_cars[i]['Car_Data']['Explosionproof'])
-					imgui.Checkbox(u8'Неуязвим от столкновений',vr.list_cars[i]['Car_Data']['Collisionproof'])
-					imgui.Checkbox(u8'Удароустойчивый',vr.list_cars[i]['Car_Data']['Meleeproof'])
-					imgui.Checkbox(u8'Неуязвимые шины',vr.list_cars[i]['Car_Data']['Tires_vulnerability'])
-					imgui.Checkbox(u8'Должен выжить?',vr.list_cars[i]['Car_Data']['Should_not_die'])
-					if imgui.Button(u8'Редактировать вручную') then
-						vr.editmode_car = true
-						vr.id_car = i
-						deleteCar(vr.list_cars[i]['Car_Data']['Car'])
-						imgui.Process = false
-					end
-
-					imgui.PushItemWidth(-110)
-
-					imgui.Separator()
-					local list_tg_m = {u8'До конца'}
-					for ltg = 1,#vr.list_name_targets do
-						list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-					end
-					imgui.Combo(u8'Появление на',vr.list_cars[i]['Car_Data']['StartC'],vr.list_name_targets)
-					imgui.Combo(u8'Исчезание после',vr.list_cars[i]['Car_Data']['EndC'],list_tg_m)
-
-					imgui.End()
-				end
+		if #vr.list_cars > 0 and vr.list_cars[vr.lb_cur_cars.v+1] then
+			local resX,resY = getScreenResolution()
+			local sizeX,sizeY = 300, 340
+			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+			imgui.Begin(vr.list_cars[vr.lb_cur_cars.v+1]['Name'], vr.list_cars[vr.lb_cur_cars.v+1]['Enable'])
+			imgui.PushItemWidth(-90)
+		  
+			if imgui.InputFloat3(langt['position'],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Pos']) or imgui.SliderFloat(u8'Угол поворота',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Angle'],-360,360) then
+			  local xx,xy,xz = vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Pos'].v[1],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Pos'].v[2],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Pos'].v[3]
+			  setCarCoordinates(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'],xx,xy,xz)
+			  setCarHeading(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'], vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Angle'].v)
 			end
+			if imgui.InputInt(u8'Номер модели',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['ModelId']) then
+			  local id_c = 400
+			  for v = 1,#ID_Cars do
+				if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['ModelId'].v <= ID_Cars[v] then
+				  id_c = ID_Cars[v]
+				  break
+				end
+			  end
+			  vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['ModelId'].v = id_c
+			  upd_car:run(vr.lb_cur_cars.v+1)
+			end
+			if imgui.DragInt(u8'Цвет машины 1',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_primary'],0.1,0,126) then
+			  changeCarColour(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_primary'].v,vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_secondary'].v)
+			end
+			if imgui.DragInt(u8'Цвет машины 2',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_secondary'],0.1,0,126) then
+			  changeCarColour(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_primary'].v,vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_secondary'].v)
+			end
+			imgui.InputInt(u8'Кол-во здоровья',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Health'])
+			imgui.Checkbox(u8'Пуленепробиваемый',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Bulletproof'])
+			imgui.Checkbox(u8'Огнестойки',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Fireproof'])
+			imgui.Checkbox(u8'Взрывоустойчивый',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Explosionproof'])
+			imgui.Checkbox(u8'Неуязвим от столкновений',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Collisionproof'])
+			imgui.Checkbox(u8'Удароустойчивый',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Meleeproof'])
+			imgui.Checkbox(u8'Неуязвимые шины',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Tires_vulnerability'])
+			imgui.Checkbox(u8'Должен выжить?',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Should_not_die'])
+			if imgui.Button(u8'Редактировать вручную') then
+			  vr.editmode_car = true
+			  vr.id_car = vr.lb_cur_cars.v+1
+			  deleteCar(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'])
+			  imgui.Process = false
+			end
+		  
+			imgui.PushItemWidth(-110)
+		  
+			imgui.Separator()
+			local list_tg_m = {u8'До конца'}
+			for ltg = 1,#vr.list_name_targets do
+			  list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+			end
+			imgui.Combo(u8'Появление на',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['StartC'],vr.list_name_targets)
+			imgui.Combo(u8'Исчезание после',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['EndC'],list_tg_m)
+		  
+			imgui.End()
 		end
 	end
 
@@ -988,7 +1213,7 @@ function imgui.OnDrawFrame()
 		imgui.ListBox('', vr.lb_cur_objects,vr.list_name_objects,15)
 		if imgui.BeginPopupContextItem('hee') then
 			imgui.InputText('',vr.buf_edit_obj_name)
-			if imgui.Button(u8'Применить') and vr.buf_edit_obj_name.v ~= '' then
+			if imgui.Button(langt['apply']) and vr.buf_edit_obj_name.v ~= '' then
 				vr.list_objects[vr.lb_cur_objects.v+1]['Name'] = vr.buf_edit_obj_name.v
 				vr.list_name_objects[vr.lb_cur_objects.v+1] = vr.buf_edit_obj_name.v
 				vr.buf_edit_obj_name.v = ''
@@ -1000,13 +1225,12 @@ function imgui.OnDrawFrame()
 		end
 
 		--Кнопки редактирования
-		if imgui.Button(u8'Добавить') then
+		if imgui.Button(langt['add']) then
 			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 			xz = getGroundZFor3dCoord(xx, xy, xz)
 			vr.list_objects[#vr.list_objects+1] = {
 				['Name'] = u8'Объект #' .. tostring(#vr.list_objects+1),
 				['Type'] = imgui.ImInt(-1),
-				['Enable'] = imgui.ImBool(false),
 				['Object_Data'] = {
 					['Pos'] = imgui.ImFloat3(xx,xy,xz),
 					['Rotates'] = imgui.ImFloat3(0,0,0),
@@ -1023,109 +1247,101 @@ function imgui.OnDrawFrame()
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Откр/Закр') and #vr.list_objects > 0 then
-			vr.list_objects[vr.lb_cur_objects.v+1]['Enable'].v = not vr.list_objects[vr.lb_cur_objects.v+1]['Enable'].v
-		end
-
-		imgui.SameLine()
-		if imgui.Button(u8'Удалить') then
-			deleteObject(vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'])
-			vr.list_objects = DelCellArr(vr.list_objects,vr.lb_cur_objects.v+1)
-			vr.list_name_objects = DelCellArr(vr.list_name_objects,vr.lb_cur_objects.v+1)
+		if imgui.Button(langt['delete']) then
+			if vr.list_objects[vr.lb_cur_objects.v+1] then
+				deleteObject(vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'])
+				vr.list_objects = DelCellArr(vr.list_objects,vr.lb_cur_objects.v+1)
+				vr.list_name_objects = DelCellArr(vr.list_name_objects,vr.lb_cur_objects.v+1)
+			end
 		end
 		imgui.End()
 		--Редактор объектов
-		for i = 1, #vr.list_objects do
-			if #vr.list_objects > 0 then
-				if vr.list_objects[i]['Enable'].v then
-					local resX,resY = getScreenResolution()
-					local sizeX,sizeY = 360, 340
-					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 180,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-					imgui.Begin(vr.list_objects[i]['Name'], vr.list_objects[i]['Enable'])
-					imgui.PushItemWidth(-90)
-
-					if imgui.InputFloat3(u8'Позиция',vr.list_objects[i]['Object_Data']['Pos']) or imgui.InputFloat3(u8'Угол поворота',vr.list_objects[i]['Object_Data']['Rotates']) then
-						local xx,xy,xz = vr.list_objects[i]['Object_Data']['Pos'].v[1],vr.list_objects[i]['Object_Data']['Pos'].v[2],vr.list_objects[i]['Object_Data']['Pos'].v[3]
-						local rxx,rxy,rxz = vr.list_objects[i]['Object_Data']['Rotates'].v[1],vr.list_objects[i]['Object_Data']['Rotates'].v[2],vr.list_objects[i]['Object_Data']['Rotates'].v[3]
-						setObjectCoordinates(vr.list_objects[i]['Object_Data']['Obj'],xx,xy,xz)
-						setObjectRotation(vr.list_objects[i]['Object_Data']['Obj'], rxx, rxy, rxz)
+		if #vr.list_objects > 0 and vr.list_objects[vr.lb_cur_objects.v+1] then
+			local resX,resY = getScreenResolution()
+			local sizeX,sizeY = 360, 340
+			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 180,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+			imgui.Begin(vr.list_objects[vr.lb_cur_objects.v+1]['Name'], vr.list_objects[vr.lb_cur_objects.v+1]['Enable'])
+			imgui.PushItemWidth(-90)
+		
+			if imgui.InputFloat3(langt['position'],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Pos']) or imgui.InputFloat3(u8'Угол поворота',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Rotates']) then
+				local xx,xy,xz = vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Pos'].v[1],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Pos'].v[2],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Pos'].v[3]
+				local rxx,rxy,rxz = vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Rotates'].v[1],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Rotates'].v[2],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Rotates'].v[3]
+				setObjectCoordinates(vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'],xx,xy,xz)
+				setObjectRotation(vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'], rxx, rxy, rxz)
+			end
+			if imgui.Button(u8'Редактировать вручную') then
+				if vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'] ~= nil then
+					vr.editmode_objects = true
+					printHelpForever('HOBJ')
+					lockPlayerControl(true)
+					vr.id_obj = vr.lb_cur_objects.v+1
+					imgui.Process = false
+				end
+			end
+			imgui.InputInt(u8'Номер модели',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['ModelId'])
+			if imgui.Button(langt['apply']) then
+				upd_object:run(vr.lb_cur_objects.v+1)
+			end
+		
+			imgui.PushItemWidth(-110)
+		
+			imgui.Separator()
+			local list_tg_m = {u8'До конца'}
+			for ltg = 1,#vr.list_name_targets do
+				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+			end
+			imgui.Combo(u8'Появление на',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['StartC'],vr.list_name_targets)
+			imgui.Combo(u8'Исчезание после',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['EndC'],list_tg_m)
+			imgui.Text(u8'Анимации')
+		
+			if imgui.Button(langt['add']) then
+				local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+				vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][#vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims']+1] = {
+					['Pos'] = imgui.ImFloat3(xx,xy,xz),
+					['Rotates'] = imgui.ImFloat3(0,0,0),
+					['Time'] = imgui.ImFloat(1.0),
+					['Condition'] = imgui.ImInt(0),
+				}
+			end
+			imgui.SameLine()
+			imgui.PushItemWidth(-200)
+			imgui.Combo(u8'Номер',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anim_id'],range(#vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims']))
+			imgui.SameLine()
+			if imgui.Button(langt['delete']) then
+				vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'] = DelCellArr(vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anim_id'].v+1)
+			end
+		
+			imgui.PushItemWidth(-100)
+			for a = 1,#vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'] do
+				if imgui.TreeNode(u8:encode(a)) then
+					local cond_type = {u8'Ничего',u8'На Цели'}
+					if imgui.Combo(u8'Условие',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Condition'],cond_type) then
+						if vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Condition'].v == 1 then
+							vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
+						end
 					end
+					if vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Condition'].v == 1 then
+						imgui.Combo(u8'Цель',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Target'],vr.list_name_targets)
+					end
+		
+					imgui.InputFloat3(langt['position'],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Pos'])
+					imgui.InputFloat3(u8'Угол поворота',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Rotates'])
+					imgui.InputFloat(u8'Время анимации (сек)',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Time'],0)
 					if imgui.Button(u8'Редактировать вручную') then
-						if vr.list_objects[i]['Object_Data']['Obj'] ~= nil then
-							vr.editmode_objects = true
+						if vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'] ~= nil then
+							vr.editmode_objects_anim = true
 							printHelpForever('HOBJ')
 							lockPlayerControl(true)
-							vr.id_obj = i
+							vr.id_obj = vr.lb_cur_objects.v+1
+							vr.id_obj_anim = a
 							imgui.Process = false
 						end
 					end
-					imgui.InputInt(u8'Номер модели',vr.list_objects[i]['Object_Data']['ModelId'])
-					if imgui.Button(u8'Применить') then
-						upd_object:run(i)
-					end
-
-					imgui.PushItemWidth(-110)
-
-					imgui.Separator()
-					local list_tg_m = {u8'До конца'}
-					for ltg = 1,#vr.list_name_targets do
-						list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-					end
-					imgui.Combo(u8'Появление на',vr.list_objects[i]['Object_Data']['StartC'],vr.list_name_targets)
-					imgui.Combo(u8'Исчезание после',vr.list_objects[i]['Object_Data']['EndC'],list_tg_m)
-					imgui.Text(u8'Анимации')
-
-					if imgui.Button(u8'Добавить') then
-						local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-						vr.list_objects[i]['Object_Data']['Anims'][#vr.list_objects[i]['Object_Data']['Anims']+1] = {
-							['Pos'] = imgui.ImFloat3(xx,xy,xz),
-							['Rotates'] = imgui.ImFloat3(0,0,0),
-							['Time'] = imgui.ImFloat(1.0),
-							['Condition'] = imgui.ImInt(0),
-						}
-					end
-					imgui.SameLine()
-					imgui.PushItemWidth(-200)
-					imgui.Combo(u8'Номер',vr.list_objects[i]['Object_Data']['Anim_id'],range(#vr.list_objects[i]['Object_Data']['Anims']))
-					imgui.SameLine()
-					if imgui.Button(u8'Удалить') then
-						vr.list_objects[i]['Object_Data']['Anims'] = DelCellArr(vr.list_objects[i]['Object_Data']['Anims'],vr.list_objects[i]['Object_Data']['Anim_id'].v+1)
-					end
-
-					imgui.PushItemWidth(-100)
-					for a = 1,#vr.list_objects[i]['Object_Data']['Anims'] do
-						if imgui.TreeNode(u8:encode(a)) then
-							local cond_type = {u8'Ничего',u8'На Цели'}
-							if imgui.Combo(u8'Условие',vr.list_objects[i]['Object_Data']['Anims'][a]['Condition'],cond_type) then
-								if vr.list_objects[i]['Object_Data']['Anims'][a]['Condition'].v == 1 then
-									vr.list_objects[i]['Object_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-								end
-							end
-							if vr.list_objects[i]['Object_Data']['Anims'][a]['Condition'].v == 1 then
-								imgui.Combo(u8'Цель',vr.list_objects[i]['Object_Data']['Anims'][a]['Target'],vr.list_name_targets)
-							end
-
-							imgui.InputFloat3(u8'Позиция',vr.list_objects[i]['Object_Data']['Anims'][a]['Pos'])
-							imgui.InputFloat3(u8'Угол поворота',vr.list_objects[i]['Object_Data']['Anims'][a]['Rotates'])
-							imgui.InputFloat(u8'Время анимации (сек)',vr.list_objects[i]['Object_Data']['Anims'][a]['Time'],0)
-							if imgui.Button(u8'Редактировать вручную') then
-								if vr.list_objects[i]['Object_Data']['Obj'] ~= nil then
-									vr.editmode_objects_anim = true
-									printHelpForever('HOBJ')
-									lockPlayerControl(true)
-									vr.id_obj = i
-									vr.id_obj_anim = a
-									imgui.Process = false
-								end
-							end
-
-							imgui.TreePop()
-						end
-					end
-					imgui.End()
+					imgui.TreePop()
 				end
 			end
+			imgui.End()
 		end
 	end
 
@@ -1143,7 +1359,7 @@ function imgui.OnDrawFrame()
 		imgui.ListBox('', vr.lb_cur_pickup,vr.list_name_pickup,15)
 		if imgui.BeginPopupContextItem('hee') then
 			imgui.InputText('',vr.buf_edit_pick_name)
-			if imgui.Button(u8'Применить') and vr.buf_edit_pick_name.v ~= '' then
+			if imgui.Button(langt['apply']) and vr.buf_edit_pick_name.v ~= '' then
 				vr.list_pickup[vr.lb_cur_pickup.v+1]['Name'] = vr.buf_edit_pick_name.v
 				vr.list_name_pickup[vr.lb_cur_pickup.v+1] = vr.buf_edit_pick_name.v
 				vr.buf_edit_pick_name.v = ''
@@ -1155,13 +1371,12 @@ function imgui.OnDrawFrame()
 		end
 
 		--Кнопки редактирования
-		if imgui.Button(u8'Добавить') then
+		if imgui.Button(langt['add']) then
 			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 			xz = getGroundZFor3dCoord(xx, xy, xz)
 			vr.list_pickup[#vr.list_pickup+1] = {
 				['Name'] = u8'Пикап #' .. tostring(#vr.list_pickup+1),
 				['Type'] = imgui.ImInt(-1),
-				['Enable'] = imgui.ImBool(false),
 				['Pickup_Data'] = {
 					['Type_pickup'] = imgui.ImInt(-1),
 					['Pos'] = imgui.ImFloat3(xx,xy,xz),
@@ -1175,79 +1390,72 @@ function imgui.OnDrawFrame()
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Откр/Закр') and #vr.list_pickup > 0 then
-			vr.list_pickup[vr.lb_cur_pickup.v+1]['Enable'].v = not vr.list_pickup[vr.lb_cur_pickup.v+1]['Enable'].v
-		end
-
-		imgui.SameLine()
-		if imgui.Button(u8'Удалить') then
-			removePickup(vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Pick'])
-			vr.list_pickup = DelCellArr(vr.list_pickup,vr.lb_cur_pickup.v+1)
-			vr.list_name_pickup = DelCellArr(vr.list_name_pickup,vr.lb_cur_pickup.v+1)
+		if imgui.Button(langt['delete']) then
+			if vr.list_pickup[vr.lb_cur_pickup.v+1] then
+				removePickup(vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Pick'])
+				vr.list_pickup = DelCellArr(vr.list_pickup,vr.lb_cur_pickup.v+1)
+				vr.list_name_pickup = DelCellArr(vr.list_name_pickup,vr.lb_cur_pickup.v+1)
+			end
 		end
 		imgui.End()
 		--Окно пикапа
-		for i = 1, #vr.list_pickup do
-			if #vr.list_pickup > 0 then
-				if vr.list_pickup[i]['Enable'].v then
-					local resX,resY = getScreenResolution()
-					local sizeX,sizeY = 300, 340
-					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-					imgui.Begin(vr.list_pickup[i]['Name'], vr.list_pickup[i]['Enable'])
-					imgui.PushItemWidth(-90)
-					local type_pick = {u8'Оружие',u8'Здоровье',u8'Броня',u8'Откуп от полиции',u8'Наркотик',u8'Другое'}
-					local spawn_type = {u8'Одноразовый',u8'за 30 секунд',u8'за 6 минут'}
-					imgui.Combo(u8'Спавн',vr.list_pickup[i]['Pickup_Data']['spawn_type'],spawn_type)
-					if imgui.Combo(u8'Тип',vr.list_pickup[i]['Pickup_Data']['Type_pickup'],type_pick) then
-						if vr.list_pickup[i]['Pickup_Data']['Type_pickup'].v == 0 then
-							vr.list_pickup[i]['Pickup_Data']['Ammo'] = imgui.ImInt(0)
-							vr.list_pickup[i]['Pickup_Data']['Weapon'] = imgui.ImInt(1)
-						end
-						if vr.list_pickup[i]['Pickup_Data']['Type_pickup'].v == 5 then
-							vr.list_pickup[i]['Pickup_Data']['ModelId'] = imgui.ImInt(0)
-						end
-						if vr.list_pickup[i]['Pickup_Data']['Type_pickup'].v ~= 5 then upd_pickup:run(i) end
+		if #vr.list_pickup > 0 and vr.list_pickup[vr.lb_cur_pickup.v+1] then
+			local resX,resY = getScreenResolution()
+			local sizeX,sizeY = 300, 340
+			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+			imgui.Begin(vr.list_pickup[vr.lb_cur_pickup.v+1]['Name'], vr.list_pickup[vr.lb_cur_pickup.v+1]['Enable'])
+			imgui.PushItemWidth(-90)
+			local type_pick = {u8'Оружие',u8'Здоровье',u8'Броня',u8'Откуп от полиции',u8'Наркотик',u8'Другое'}
+			local spawn_type = {u8'Одноразовый',u8'за 30 секунд',u8'за 6 минут'}
+			imgui.Combo(u8'Спавн',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['spawn_type'],spawn_type)
+			if imgui.Combo(u8'Тип',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'],type_pick) then
+				if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v == 0 then
+					vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Ammo'] = imgui.ImInt(0)
+					vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Weapon'] = imgui.ImInt(1)
+				end
+				if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v == 5 then
+					vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['ModelId'] = imgui.ImInt(0)
+				end
+				if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v ~= 5 then upd_pickup:run(vr.lb_cur_pickup.v+1) end
+			end
+		
+			if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v == 0 then
+				imgui.Separator()
+				if imgui.Button(u8'Редактировать вручную') then
+					vr.editmode_pickup = true
+					imgui.Process = false
+					vr.id_pick = vr.lb_cur_pickup.v+1
+					lockPlayerControl(true)
+					printHelpForever('HPICW')
+				end
+				imgui.InputInt(u8'Патронов',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Ammo'])
+				imgui.Separator()
+			end
+			if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v >= 1 then
+				if imgui.Button(u8'Редактировать вручную') then
+					vr.editmode_pickup = true
+					imgui.Process = false
+					vr.id_pick = vr.lb_cur_pickup.v+1
+					lockPlayerControl(true)
+					printHelpForever('HTARG')
+				end
+				if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v == 5 then
+					imgui.InputInt(u8'Модель',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['ModelId'])
+					if imgui.Button(langt['apply']) then
+						upd_pickup:run(vr.lb_cur_pickup.v+1)
 					end
-
-					if vr.list_pickup[i]['Pickup_Data']['Type_pickup'].v == 0 then
-						imgui.Separator()
-						if imgui.Button(u8'Редактировать вручную') then
-							vr.editmode_pickup = true
-							imgui.Process = false
-							vr.id_pick = i
-							lockPlayerControl(true)
-							printHelpForever('HPICW')
-						end
-						imgui.InputInt(u8'Патронов',vr.list_pickup[i]['Pickup_Data']['Ammo'])
-						imgui.Separator()
-					end
-					if vr.list_pickup[i]['Pickup_Data']['Type_pickup'].v >= 1 then
-						if imgui.Button(u8'Редактировать вручную') then
-							vr.editmode_pickup = true
-							imgui.Process = false
-							vr.id_pick = i
-							lockPlayerControl(true)
-							printHelpForever('HTARG')
-						end
-						if vr.list_pickup[i]['Pickup_Data']['Type_pickup'].v == 5 then
-							imgui.InputInt(u8'Модель',vr.list_pickup[i]['Pickup_Data']['ModelId'])
-							if imgui.Button(u8'Применить') then
-								upd_pickup:run(i)
-							end
-						end
-					end
-
-					local list_tg_m = {u8'До конца'}
-					for ltg = 1,#vr.list_name_targets do
-						list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-					end
-					imgui.Combo(u8'Появление на',vr.list_pickup[i]['Pickup_Data']['StartC'],vr.list_name_targets)
-					imgui.Combo(u8'Исчезание после',vr.list_pickup[i]['Pickup_Data']['EndC'],list_tg_m)
-
-					imgui.End()
 				end
 			end
+		
+			local list_tg_m = {u8'До конца'}
+			for ltg = 1,#vr.list_name_targets do
+				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+			end
+			imgui.Combo(u8'Появление на',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['StartC'],vr.list_name_targets)
+			imgui.Combo(u8'Исчезание после',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['EndC'],list_tg_m)
+		
+			imgui.End()
 		end
 	end
 
@@ -1266,7 +1474,7 @@ function imgui.OnDrawFrame()
 		imgui.ListBox('', vr.lb_cur_particle,vr.list_name_particle,15)
 		if imgui.BeginPopupContextItem('hee') then
 			imgui.InputText('',vr.buf_edit_prtcl_name)
-			if imgui.Button(u8'Применить') and vr.buf_edit_prtcl_name.v ~= '' then
+			if imgui.Button(langt['apply']) and vr.buf_edit_prtcl_name.v ~= '' then
 				vr.list_particle[vr.lb_cur_particle.v+1]['Name'] = vr.buf_edit_prtcl_name.v
 				vr.list_name_particle[vr.lb_cur_particle.v+1] = vr.buf_edit_prtcl_name.v
 				vr.buf_edit_prtcl_name.v = ''
@@ -1278,13 +1486,12 @@ function imgui.OnDrawFrame()
 		end
 
 		--Кнопки редактирования
-		if imgui.Button(u8'Добавить') then
+		if imgui.Button(langt['add']) then
 			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 			xz = getGroundZFor3dCoord(xx, xy, xz)
 			vr.list_particle[#vr.list_particle+1] = {
 				['Name'] = u8'Частица #' .. tostring(#vr.list_particle+1),
 				['Type'] = imgui.ImInt(-1),
-				['Enable'] = imgui.ImBool(false),
 				['Particle_Data'] = {
 					['Pos'] = imgui.ImFloat3(xx,xy,xz),
 					['Rotates'] = imgui.ImFloat3(0,0,0),
@@ -1299,58 +1506,51 @@ function imgui.OnDrawFrame()
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Откр/Закр') and #vr.list_particle > 0 then
-			vr.list_particle[vr.lb_cur_particle.v+1]['Enable'].v = not vr.list_particle[vr.lb_cur_particle.v+1]['Enable'].v
-		end
-
-		imgui.SameLine()
-		if imgui.Button(u8'Удалить') then
-			killFxSystemNow(vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['Prtcl'])
-			vr.list_particle = DelCellArr(vr.list_particle,vr.lb_cur_particle.v+1)
-			vr.list_name_particle = DelCellArr(vr.list_name_particle,vr.lb_cur_particle.v+1)
+		if imgui.Button(langt['delete']) then
+			if vr.list_particle[vr.lb_cur_particle.v+1] then
+				killFxSystemNow(vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['Prtcl'])
+				vr.list_particle = DelCellArr(vr.list_particle,vr.lb_cur_particle.v+1)
+				vr.list_name_particle = DelCellArr(vr.list_name_particle,vr.lb_cur_particle.v+1)
+			end
 		end
 		imgui.End()
 		--Редактор объектов
-		for i = 1, #vr.list_particle do
-			if #vr.list_particle > 0 then
-				if vr.list_particle[i]['Enable'].v then
-					local resX,resY = getScreenResolution()
-					local sizeX,sizeY = 300, 340
-					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-					imgui.Begin(vr.list_particle[i]['Name'], vr.list_particle[i]['Enable'])
-					imgui.PushItemWidth(-90)
-
-					--imgui.InputFloat3(u8'Угол поворота',vr.list_particle[i]['Particle_Data']['Rotates'])
-					if imgui.InputFloat3(u8'Позиция',vr.list_particle[i]['Particle_Data']['Pos']) then
-						upd_particle:run(i)
-					end
-					if imgui.Button(u8'Редактировать вручную') then
-						if vr.list_particle[i]['Particle_Data']['Prtcl'] ~= nil then
-							vr.editmode_particle = true
-							printHelpForever('HOBJ')
-							lockPlayerControl(true)
-							vr.id_prtcl = i
-							imgui.Process = false
-						end
-					end
-					if imgui.Combo(u8'Частица',vr.list_particle[i]['Particle_Data']['ModelId'],Particle_name) then
-						upd_particle:run(i)
-					end
-
-					imgui.PushItemWidth(-110)
-
-					imgui.Separator()
-					local list_tg_m = {u8'До конца'}
-					for ltg = 1,#vr.list_name_targets do
-						list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-					end
-					imgui.Combo(u8'Появление на',vr.list_particle[i]['Particle_Data']['StartC'],vr.list_name_targets)
-					imgui.Combo(u8'Исчезание после',vr.list_particle[i]['Particle_Data']['EndC'],list_tg_m)
-
-					imgui.End()
+		if #vr.list_particle > 0 and vr.list_particle[vr.lb_cur_particle.v+1] then
+			local resX,resY = getScreenResolution()
+			local sizeX,sizeY = 300, 340
+			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+			imgui.Begin(vr.list_particle[vr.lb_cur_particle.v+1]['Name'], vr.list_particle[vr.lb_cur_particle.v+1]['Enable'])
+			imgui.PushItemWidth(-90)
+		
+			--imgui.InputFloat3(u8'Угол поворота',vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['Rotates'])
+			if imgui.InputFloat3(langt['position'],vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['Pos']) then
+				upd_particle:run(vr.lb_cur_particle.v+1)
+			end
+			if imgui.Button(u8'Редактировать вручную') then
+				if vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['Prtcl'] ~= nil then
+					vr.editmode_particle = true
+					printHelpForever('HOBJ')
+					lockPlayerControl(true)
+					vr.id_prtcl = vr.lb_cur_particle.v+1
+					imgui.Process = false
 				end
 			end
+			if imgui.Combo(u8'Частица',vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['ModelId'],Particle_name) then
+				upd_particle:run(vr.lb_cur_particle.v+1)
+			end
+		
+			imgui.PushItemWidth(-110)
+		
+			imgui.Separator()
+			local list_tg_m = {u8'До конца'}
+			for ltg = 1,#vr.list_name_targets do
+				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+			end
+			imgui.Combo(u8'Появление на',vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['StartC'],vr.list_name_targets)
+			imgui.Combo(u8'Исчезание после',vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['EndC'],list_tg_m)
+		
+			imgui.End()
 		end
 	end
 
@@ -1368,7 +1568,7 @@ function imgui.OnDrawFrame()
 		imgui.ListBox('', vr.lb_cur_explosion,vr.list_name_explosion,15)
 		if imgui.BeginPopupContextItem('hee') then
 			imgui.InputText('',vr.buf_edit_explosion_name)
-			if imgui.Button(u8'Применить') and vr.buf_edit_explosion_name.v ~= '' then
+			if imgui.Button(langt['apply']) and vr.buf_edit_explosion_name.v ~= '' then
 				vr.list_explosion[vr.lb_cur_explosion.v+1]['Name'] = vr.buf_edit_explosion_name.v
 				vr.list_name_explosion[vr.lb_cur_explosion.v+1] = vr.buf_edit_explosion_name.v
 				vr.buf_edit_explosion_name.v = ''
@@ -1380,13 +1580,12 @@ function imgui.OnDrawFrame()
 		end
 
 		--Кнопки редактирования
-		if imgui.Button(u8'Добавить') then
+		if imgui.Button(langt['add']) then
 			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 			xz = getGroundZFor3dCoord(xx, xy, xz)
 			vr.list_explosion[#vr.list_explosion+1] = {
 				['Name'] = u8'Пикап #' .. tostring(#vr.list_explosion+1),
 				['Type'] = imgui.ImInt(-1),
-				['Enable'] = imgui.ImBool(false),
 				['Explosion_Data'] = {
 					['Type'] = imgui.ImInt(-1),
 					['Pos'] = imgui.ImFloat3(xx,xy,xz),
@@ -1399,81 +1598,74 @@ function imgui.OnDrawFrame()
 		end
 
 		imgui.SameLine()
-		if imgui.Button(u8'Откр/Закр') and #vr.list_explosion > 0 then
-			vr.list_explosion[vr.lb_cur_explosion.v+1]['Enable'].v = not vr.list_explosion[vr.lb_cur_explosion.v+1]['Enable'].v
-		end
-
-		imgui.SameLine()
-		if imgui.Button(u8'Удалить') then
-			removeScriptFire(vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Fire'])
-			deleteObject(vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Explosion'])
-			vr.list_explosion = DelCellArr(vr.list_explosion,vr.lb_cur_explosion.v+1)
-			vr.list_name_explosion = DelCellArr(vr.list_name_explosion,vr.lb_cur_explosion.v+1)
+		if imgui.Button(langt['delete']) then
+			if vr.list_explosion[vr.lb_cur_explosion.v+1] then
+				removeScriptFire(vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Fire'])
+				deleteObject(vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Explosion'])
+				vr.list_explosion = DelCellArr(vr.list_explosion,vr.lb_cur_explosion.v+1)
+				vr.list_name_explosion = DelCellArr(vr.list_name_explosion,vr.lb_cur_explosion.v+1)
+			end
 		end
 		imgui.End()
 		--Окно пикапа
-		for i = 1, #vr.list_explosion do
-			if #vr.list_explosion > 0 then
-				if vr.list_explosion[i]['Enable'].v then
-					local resX,resY = getScreenResolution()
-					local sizeX,sizeY = 300, 340
-					imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-					imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-					imgui.Begin(vr.list_explosion[i]['Name'], vr.list_explosion[i]['Enable'])
-					imgui.PushItemWidth(-90)
-					local type_expl = {u8'Огонь',u8'Взрыв'}
-					if imgui.Combo(u8'Тип',vr.list_explosion[i]['Explosion_Data']['Type'],type_expl) then
-						if vr.list_explosion[i]['Explosion_Data']['Type'].v == 1 then
-							vr.list_explosion[i]['Explosion_Data']['Type_explosion'] = imgui.ImInt(0)
-							removeScriptFire(vr.list_explosion[i]['Explosion_Data']['Fire'])
-							upd_explosion:run(i)
-						end
-						if vr.list_explosion[i]['Explosion_Data']['Type'].v == 0 then
-							vr.list_explosion[i]['Explosion_Data']['Size_fire'] = imgui.ImInt(0)
-							vr.list_explosion[i]['Explosion_Data']['Propagation_fire'] = imgui.ImInt(0)
-							deleteObject(vr.list_explosion[i]['Explosion_Data']['Explosion'])
-							upd_explosion:run(i)
-						end
-					end
-					
-					if imgui.InputFloat3(u8'Позиция',vr.list_explosion[i]['Explosion_Data']['Pos']) then
-						upd_explosion:run(i)
-					end
-
-					if vr.list_explosion[i]['Explosion_Data']['Type'].v == 1 then
-						imgui.InputInt(u8'Тип взрыва',vr.list_explosion[i]['Explosion_Data']['Type_explosion'])
-					end
-					if vr.list_explosion[i]['Explosion_Data']['Type'].v == 0 then
-						if imgui.InputInt(u8'Размер огня',vr.list_explosion[i]['Explosion_Data']['Size_fire']) then
-							upd_explosion:run(i)
-						end
-						if imgui.InputInt(u8'Распространение огня',vr.list_explosion[i]['Explosion_Data']['Propagation_fire']) then
-							upd_explosion:run(i)
-						end
-					end
-
-					if imgui.Button(u8'Редактировать вручную') then
-						if vr.list_explosion[i]['Explosion_Data']['Type'].v ~= -1 then
-							vr.editmode_explosion = true
-							printHelpForever('HTARG')
-							lockPlayerControl(true)
-							vr.id_explosion = i
-							imgui.Process = false
-						end
-					end
-
-					imgui.Separator()
-					local list_tg_m = {u8'До конца'}
-					for ltg = 1,#vr.list_name_targets do
-						list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-					end
-					imgui.Combo(u8'Появление на',vr.list_explosion[i]['Explosion_Data']['StartC'],vr.list_name_targets)
-					imgui.Combo(u8'Исчезание после',vr.list_explosion[i]['Explosion_Data']['EndC'],list_tg_m)
-
-
-					imgui.End()
+		if #vr.list_explosion > 0 and vr.list_explosion[vr.lb_cur_explosion.v+1] then
+			local resX,resY = getScreenResolution()
+			local sizeX,sizeY = 300, 340
+			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+			imgui.Begin(vr.list_explosion[vr.lb_cur_explosion.v+1]['Name'], vr.list_explosion[vr.lb_cur_explosion.v+1]['Enable'])
+			imgui.PushItemWidth(-90)
+			local type_expl = {u8'Огонь',u8'Взрыв'}
+			if imgui.Combo(u8'Тип',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'],type_expl) then
+				if vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'].v == 1 then
+					vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type_explosion'] = imgui.ImInt(0)
+					removeScriptFire(vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Fire'])
+					upd_explosion:run(vr.lb_cur_explosion.v+1)
+				end
+				if vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'].v == 0 then
+					vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Size_fire'] = imgui.ImInt(0)
+					vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Propagation_fire'] = imgui.ImInt(0)
+					deleteObject(vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Explosion'])
+					upd_explosion:run(vr.lb_cur_explosion.v+1)
 				end
 			end
+		
+			if imgui.InputFloat3(langt['position'],vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Pos']) then
+				upd_explosion:run(vr.lb_cur_explosion.v+1)
+			end
+		
+			if vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'].v == 1 then
+				imgui.InputInt(u8'Тип взрыва',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type_explosion'])
+			end
+			if vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'].v == 0 then
+				if imgui.InputInt(u8'Размер огня',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Size_fire']) then
+					upd_explosion:run(vr.lb_cur_explosion.v+1)
+				end
+				if imgui.InputInt(u8'Распространение огня',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Propagation_fire']) then
+					upd_explosion:run(vr.lb_cur_explosion.v+1)
+				end
+			end
+		
+			if imgui.Button(u8'Редактировать вручную') then
+				if vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'].v ~= -1 then
+					vr.editmode_explosion = true
+					printHelpForever('HTARG')
+					lockPlayerControl(true)
+					vr.id_explosion = vr.lb_cur_explosion.v+1
+					imgui.Process = false
+				end
+			end
+		
+			imgui.Separator()
+			local list_tg_m = {u8'До конца'}
+			for ltg = 1,#vr.list_name_targets do
+				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+			end
+			imgui.Combo(u8'Появление на',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['StartC'],vr.list_name_targets)
+			imgui.Combo(u8'Исчезание после',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['EndC'],list_tg_m)
+		
+		
+			imgui.End()
 		end
 	end
 
@@ -1495,6 +1687,18 @@ function imgui.OnDrawFrame()
 		imgui.NewLine()
 		imgui.Text(u8'Горячие клавишы:')
 		imgui.Text(u8'Ctrl + S - Быстрое сохранение')
+		imgui.End()
+	end
+
+	if vr.settings_window.v then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 200, 400
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
+		imgui.Begin(u8'Настройки', vr.settings_window)
+
+		imgui.Combo(u8'Язык',vr.curr_lang,LanguageList)
+
 		imgui.End()
 	end
 
@@ -1540,6 +1744,22 @@ function range(r)
 	return arr
 end
 
+function ternar(condition,truee,falses)
+	if condition then
+		return truee
+	else
+		return falses
+	end
+end
+
+function DrawLineBy3dCoords(posX, posY, posZ, posX2, posY2, posZ2, width, color)
+	if isPointOnScreen(posX, posY, posZ,1) and isPointOnScreen(posX2, posY2, posZ2,1) then
+		local SposX, SposY = convert3DCoordsToScreen(posX, posY, posZ)
+		local SposX2, SposY2 = convert3DCoordsToScreen(posX2, posY2, posZ2)
+		renderDrawLine(SposX, SposY, SposX2, SposY2, width, color)
+	end
+end
+
 -- Перемещение ячейки
 function MoveCellArr(arr,i,j)
 	local array = {}
@@ -1554,24 +1774,26 @@ function MoveCellArr(arr,i,j)
 	return array
 end
 
-function deepcopymod1(obj)
-  local lookup_table = {}
-  local function _copy(object)
-    if type(object) == "function" then
-      return loadstring(string.dump(object))
-    elseif type(object) ~= "table" then
-      return object
-    elseif lookup_table[object] then
-      return lookup_table[object]
+function deepcopy(object)
+  local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[manager.sorterTable2(orig_key)] = manager.sorterTable2(orig_value)
+        end
+		setmetatable(copy, manager.sorterTable2(getmetatable(orig)))
+	elseif orig_type == 'userdata' then
+		if type(orig.v) == 'userdata' then
+			copy = {orig.v[1],orig.v[2],orig.v[3]}
+		else
+			copy = orig.v
+		end
+
+    else
+        copy = orig
     end
-    local new_table = {}
-    lookup_table[object] = new_table
-    for index, value in pairs(object) do
-      new_table[_copy(index)] = _copy(value)
-    end
-    return setmetatable(new_table, _copy(getmetatable(object)))
-  end
-  return _copy(obj)
+    return copy
 end
 
 function update_actor(actorr)
@@ -1607,7 +1829,11 @@ function update_actor_animation(actorr,anim)
 	end
 	local animm = Anims['Anim_list'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1]
 	animm = animm[vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Anim'].v+1]
-	taskPlayAnim(vr.list_actors[actorr]['Actor_Data']['Char'], animm, Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1], 1.0, vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Loop'].v, false, false, false, -1)
+	taskPlayAnimNonInterruptable(vr.list_actors[actorr]['Actor_Data']['Char'], animm, Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1], 1, vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Loop'].v, false, false, false, -1)
+	while not isCharPlayingAnim(vr.list_actors[actorr]['Actor_Data']['Char'],animm) do
+		wait(0)
+	end
+	vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Time'].v = getCharAnimTotalTime(vr.list_actors[actorr]['Actor_Data']['Char'],animm) / 1000
 end
 
 function update_car(carr)
@@ -1824,6 +2050,16 @@ function onStartNewGame(missionPackNumber)
 end
 
 function main()
+	
+	local tl = {}
+	for line in io.popen("dir \""..getWorkingDirectory() .. '\\Language'.."\" /a:-d /b", "r"):lines() do
+		if string.sub(line, -3) == 'ini' then
+			LanguageArr[#LanguageArr+1] = inicfg.load(nil,getWorkingDirectory() .. '\\Language\\'..line)
+			print(getWorkingDirectory() .. '\\Language\\'..line)
+			LanguageList[#LanguageList+1] = LanguageArr[#LanguageArr]['Info']['name']
+		end
+	end
+
 	setGxtEntry('HTARG', koder('Двигать: ~r~WS/AD ~n~~w~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
 	setGxtEntry('HACT', koder('Следующий/Прошлый скин: ~r~I/O~w~~n~Через 10 Следующий/Прошлый: ~r~K/L~w~~n~Выйти: ~r~F'))
 	setGxtEntry('HOBJ', koder('Двигать: ~r~AD/WS/QE~w~ ~n~Крутить: ~r~SHIFT + AD/WS/QE~w~~n~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
@@ -1875,6 +2111,7 @@ function main()
 			end
 		end
 		removeSphere(r)
+
 		--Редактор позиции объекта
 		while vr.editmode_target do
 			wait(0)
@@ -2014,6 +2251,23 @@ function main()
 					wait(1)
 				end
 				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v)
+			end
+		end
+
+		while vr.editmode_actor_add_point do
+			wait(0)
+			if wasKeyPressed(vkeys.VK_U) then
+				print('ch')
+				local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+				table.insert(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][vr.id_actor_anim]['Path'],{xx,xy,xz})
+			end
+			local mx,my = getCursorPos()
+			mx,my = convertWindowScreenCoordsToGameScreenCoords(mx,my)
+			local xx,xy,xz = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][vr.id_actor_anim]['Path'][#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][vr.id_actor_anim]['Path']]
+			if wasKeyPressed(vkeys.VK_F) then
+				lockPlayerControl(false)
+				clearHelp()
+				vr.editmode_actor_add_point = false
 			end
 		end
 
@@ -2934,7 +3188,7 @@ function main()
 
 		--Откр/Закр. Меню
 		if wasKeyPressed(vkeys.VK_U) then
-			if vr.main_window.v or vr.targets_window.v or vr.actors_window.v or vr.cars_window.v or vr.objects_window.v or vr.missions_window.v or vr.pack_mission_window.v or vr.info_window.v or vr.pickup_window.v or vr.tool_window.v or vr.particle_window.v or vr.explosion_window.v then
+			if vr.main_window.v or vr.targets_window.v or vr.actors_window.v or vr.cars_window.v or vr.objects_window.v or vr.missions_window.v or vr.pack_mission_window.v or vr.info_window.v or vr.pickup_window.v or vr.tool_window.v or vr.particle_window.v or vr.explosion_window.v or vr.settings_window.v then
 				vr.main_window.v = false
 				vr.targets_window.v = false
 				vr.actors_window.v = false
@@ -2947,6 +3201,7 @@ function main()
 				vr.tool_window.v = false
 				vr.particle_window.v = false
 				vr.explosion_window.v = false
+				vr.settings_window.v = false
 			else
 				vr.main_window.v = not vr.main_window.v
 			end
@@ -2997,7 +3252,7 @@ function main()
 			end
 			printHelpString(koder('Сохранено!'))
 		end
-		imgui.Process = vr.main_window.v or vr.targets_window.v or vr.actors_window.v or vr.cars_window.v or vr.objects_window.v or vr.missions_window.v or vr.pack_mission_window.v or vr.info_window.v or vr.pickup_window.v or vr.tool_window.v or vr.particle_window.v or vr.explosion_window.v
+		imgui.Process = vr.main_window.v or vr.targets_window.v or vr.actors_window.v or vr.cars_window.v or vr.objects_window.v or vr.missions_window.v or vr.pack_mission_window.v or vr.info_window.v or vr.pickup_window.v or vr.tool_window.v or vr.particle_window.v or vr.explosion_window.v or vr.settings_window.v
 
 		-- Дебаг: позиция
 		if wasKeyPressed(vkeys.VK_Q) then
