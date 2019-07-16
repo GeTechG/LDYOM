@@ -149,23 +149,24 @@ function mp.play_char_anims(ped,actr)
 			taskToggleDuck(ped, ternar(actr['Anims'][curr_anim]['Type_move'].v == 0,true,false))
 			for i = 1,#actr['Anims'][curr_anim]['Path'] do
 				local x1,y1,z1 = actr['Anims'][curr_anim]['Path'][i][1],actr['Anims'][curr_anim]['Path'][i][2],actr['Anims'][curr_anim]['Path'][i][3]
-					extendPatrolRoute(x1,y1,z1,'NONE','NONE')
-				c = c + 1
 				local px,py,pz = getCharCoordinates(ped)
-					if c == 7 then
+				if i % 7 == 0 then
+					taskFollowPatrolRoute(ped,type_walk,actr['Anims'][curr_anim]['Type_route'].v)
+					while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][i-1][1],actr['Anims'][curr_anim]['Path'][i-1][2],actr['Anims'][curr_anim]['Path'][i-1][3],px,py,pz) > 0.1 do
+						wait(0)
+						px,py,pz = getCharCoordinates(ped)
+					end
+					flushPatrolRoute()
+				end
+				extendPatrolRoute(x1,y1,z1,'NONE','NONE')
 				taskFollowPatrolRoute(ped,type_walk,actr['Anims'][curr_anim]['Type_route'].v)
-				while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][i][1],actr['Anims'][curr_anim]['Path'][i][2],actr['Anims'][curr_anim]['Path'][i][3],px,py,pz) > 0.1 do
+			end
+			
+			if actr['Anims'][curr_anim]['wait_end'].v then
+				while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][1],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][2],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][3],px,py,pz) > 0.1 do
 					wait(0)
 					px,py,pz = getCharCoordinates(ped)
 				end
-				flushPatrolRoute()
-				c = 0
-					end
-					taskFollowPatrolRoute(ped,type_walk,actr['Anims'][curr_anim]['Type_route'].v)
-			end
-			while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][1],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][2],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][3],px,py,pz) > 0.1 do
-				wait(0)
-				px,py,pz = getCharCoordinates(ped)
 			end
 			curr_anim = curr_anim + 1
 		elseif actr['Anims'][curr_anim]['Type'].v == 2 then
@@ -193,9 +194,11 @@ function mp.play_char_anims(ped,actr)
 			  end
 			end
 			taskDrivePointRoute(ped,mp.cars[actr['Anims'][curr_anim]['Car'].v+1],actr['Anims'][curr_anim]['Speed'].v)
-			while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][1],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][2],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][3],px,py,pz) > 1 do
-			  wait(0)
-			  px,py,pz = getCarCoordinates(mp.cars[actr['Anims'][curr_anim]['Car'].v+1])
+			if actr['Anims'][curr_anim]['wait_end'].v then
+				while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][1],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][2],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][3],px,py,pz) > 1 do
+					wait(0)
+					px,py,pz = getCarCoordinates(mp.cars[actr['Anims'][curr_anim]['Car'].v+1])
+				end
 			end
 			curr_anim = curr_anim + 1
 		elseif actr['Anims'][curr_anim]['Type'].v == 3 then
@@ -204,15 +207,77 @@ function mp.play_char_anims(ped,actr)
 					wait(0)
 				end
 			end
-			if isCharInAnyCar(ped) then
-				taskLeaveAnyCar(ped)
-				while isCharInAnyCar(ped) do
+			if actr['Anims'][curr_anim]['wait_end'].v then
+				if isCharInAnyCar(ped) then
+					taskLeaveAnyCar(ped)
+					while isCharInAnyCar(ped) do
+						wait(0)
+					end
+				end
+			end
+			curr_anim = curr_anim + 1
+		
+		elseif actr['Anims'][curr_anim]['Type'].v == 4 then
+			if actr['Anims'][curr_anim]['Condition'].v == 1 then
+				while not (curr_target == actr['Anims'][curr_anim]['Target'].v+1) do
+					wait(0)
+				end
+			end
+			taskCarMission(ped,mp.cars[actr['Anims'][curr_anim]['Car_a'].v+1],mp.cars[actr['Anims'][curr_anim]['Car_t'].v+1],actr['Anims'][curr_anim]['Vehicle_mission'].v-1,actr['Anims'][curr_anim]['Speed'].v,actr['Anims'][curr_anim]['trafficFlag'].v)
+			curr_anim = curr_anim + 1
+		elseif actr['Anims'][curr_anim]['Type'].v == 5 then
+			if actr['Anims'][curr_anim]['Condition'].v == 1 then
+				while not (curr_target == actr['Anims'][curr_anim]['Target'].v+1) do
+					wait(0)
+				end
+			end
+			if actr['Anims'][curr_anim]['place_in_car'].v == 0 then
+				setNextDesiredMoveState(actr['Anims'][curr_anim]['speed_walk'].v+4)
+				taskEnterCarAsDriver(ped,mp.cars[actr['Anims'][curr_anim]['Car'].v+1],-1)
+			else
+				setNextDesiredMoveState(actr['Anims'][curr_anim]['speed_walk'].v+4)
+				taskEnterCarAsPassenger(ped,mp.cars[actr['Anims'][curr_anim]['Car'].v+1],-1,actr['Anims'][curr_anim]['place_in_car'].v-1)
+			end
+			if actr['Anims'][curr_anim]['wait_end'].v then
+				while not isCharInAnyCar(ped) do
 					wait(0)
 				end
 			end
 			curr_anim = curr_anim + 1
 		end
 		actr['Anims']['curr_anim'] = curr_anim
+	end
+end
+
+function mp.play_car_anims(car,vehic)
+	local curr_anim = 1
+	vehic['Anims']['curr_anim'] = curr_anim
+	while curr_anim <= #vehic['Anims'] do
+		wait(0)
+		if vehic['Anims'][curr_anim]['Type'].v == 0 then
+			if vehic['Anims'][curr_anim]['Condition'].v == 1 then
+				while not (curr_target == vehic['Anims'][curr_anim]['Target'].v+1) do
+					wait(0)
+				end
+			end
+			closeAllCarDoors(car)
+			for g = 1,6 do
+				print(g)
+				if vehic['Anims'][curr_anim]['Doors'][g].v then
+					openCarDoor(car,g-1)
+				end
+			end
+			curr_anim = curr_anim + 1
+		elseif vehic['Anims'][curr_anim]['Type'].v == 1 then
+			if vehic['Anims'][curr_anim]['Condition'].v == 1 then
+				while not (curr_target == vehic['Anims'][curr_anim]['Target'].v+1) do
+					wait(0)
+				end
+			end
+			lockCarDoors(car,vehic['Anims'][curr_anim]['Door_lock'].v+1)
+			curr_anim = curr_anim + 1
+		end
+		vehic['Anims']['curr_anim'] = curr_anim
 	end
 end
 
@@ -328,6 +393,9 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 				changeCarColour(mp.cars[c], list_c[c]['Car_Data']['Color_primary'].v, list_c[c]['Car_Data']['Color_secondary'].v)
 				if list_c[c]['Car_Data']['Should_not_die'].v == true then
 					mp.thread[#mp.thread+1] = lua_thread.create(car_is_not_dead,mp.cars[c])
+				end
+				if #list_c[c]['Car_Data']['Anims'] > 0 then
+					mp.thread[#mp.thread+1] = lua_thread.create(mp.play_car_anims,mp.cars[c], list_c[c]['Car_Data'])
 				end
 			end
 			if list_c[c]['Car_Data']['EndC'].v ~= 0 and list_c[c]['Car_Data']['EndC'].v + 1 == i then

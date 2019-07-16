@@ -3,6 +3,7 @@ manager = {}
 encoding = require 'encoding'
 --debtab = require 'debug_table'
 encoding.default = 'CP1251'
+json = require 'json'
 u8 = encoding.UTF8
 path = getWorkingDirectory() .. "\\Missions_pack\\"
 path_backup = getWorkingDirectory() .. "\\Backup\\"
@@ -53,13 +54,13 @@ function manager.save(pack,num)
 		f:close()
 	end
 	local f = io.open(path .. 'LDYOM' .. tostring(num) .. '.json',"w")
-	f:write(encodeJson(packk))
+	f:write(json.encode(packk))
 	f:close()
 end
 
 function manager.load(num)
 	f = io.open(path .. 'LDYOM' .. tostring(num) .. '.json',"r")
-	local pack = decodeJson(f:read())
+	local pack = json.decode(f:read())
 	f:close()
 	packk = {
 		['Name'] = pack['Name'],
@@ -294,6 +295,31 @@ function manager.sorterJson(table,typee)
 						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Target'])
 					end
 				end
+				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'].v == 4 then
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0)
+					
+					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'].v == 1 then
+						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Target'])
+					end
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Car_a'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Car_a'])
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Car_t'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Car_t'])
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Speed'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Speed'])
+					tableEnd[tt]['Actor_Data']['Anims'][t]['trafficFlag'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['trafficFlag'])
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Vehicle_mission'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Vehicle_mission'])
+
+				end
+				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'].v == 5 then
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0)
+					
+					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'].v == 1 then
+						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Target'])
+					end
+					tableEnd[tt]['Actor_Data']['Anims'][t]['place_in_car'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['place_in_car'])
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Car'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['Car'])
+					tableEnd[tt]['Actor_Data']['Anims'][t]['speed_walk'] = imgui.ImInt(table[tt]['Actor_Data']['Anims'][t]['speed_walk'])
+					tableEnd[tt]['Actor_Data']['Anims'][t]['wait_end'] = imgui.ImBool(table[tt]['Actor_Data']['Anims'][t]['wait_end'])
+					
+				end
 			end
 		end
 	end
@@ -318,8 +344,33 @@ function manager.sorterJson(table,typee)
 				['Collisionproof'] = imgui.ImBool(table[tt]['Car_Data']['Collisionproof'] or false),
 				['Meleeproof'] = imgui.ImBool(table[tt]['Car_Data']['Meleeproof'] or false),
 				['Tires_vulnerability'] = imgui.ImBool(table[tt]['Car_Data']['Tires_vulnerability'] or false),
+				['Anims'] = {},
+				['Anim_id'] = imgui.ImInt(0)
+				}
 			}
-		}
+			if table[tt]['Car_Data']['Anims'] then
+				for t = 1, #table[tt]['Car_Data']['Anims'] do
+					tableEnd[tt]['Car_Data']['Anims'][t] = {
+					['Type'] = imgui.ImInt(table[tt]['Car_Data']['Anims'][t]['Type'] or 0)
+					}
+					if tableEnd[tt]['Car_Data']['Anims'][t]['Type'].v == 0 then
+						tableEnd[tt]['Car_Data']['Anims'][t]['Doors'] = {imgui.ImBool(table[tt]['Car_Data']['Anims'][t]['Doors'][1]),imgui.ImBool(table[tt]['Car_Data']['Anims'][t]['Doors'][2]),imgui.ImBool(table[tt]['Car_Data']['Anims'][t]['Doors'][3]),imgui.ImBool(table[tt]['Car_Data']['Anims'][t]['Doors'][4]),imgui.ImBool(table[tt]['Car_Data']['Anims'][t]['Doors'][5]),imgui.ImBool(table[tt]['Car_Data']['Anims'][t]['Doors'][6])}
+						tableEnd[tt]['Car_Data']['Anims'][t]['Condition'] = imgui.ImInt(table[tt]['Car_Data']['Anims'][t]['Condition'])
+						
+						if tableEnd[tt]['Car_Data']['Anims'][t]['Condition'].v == 1 then
+							tableEnd[tt]['Car_Data']['Anims'][t]['Target'] = imgui.ImInt(table[tt]['Car_Data']['Anims'][t]['Target'])
+						end
+					end
+					if tableEnd[tt]['Car_Data']['Anims'][t]['Type'].v == 1 then
+						tableEnd[tt]['Car_Data']['Anims'][t]['Door_lock'] = imgui.ImInt(table[tt]['Car_Data']['Anims'][t]['Door_lock'])
+						tableEnd[tt]['Car_Data']['Anims'][t]['Condition'] = imgui.ImInt(table[tt]['Car_Data']['Anims'][t]['Condition'])
+						
+						if tableEnd[tt]['Car_Data']['Anims'][t]['Condition'].v == 1 then
+							tableEnd[tt]['Car_Data']['Anims'][t]['Target'] = imgui.ImInt(table[tt]['Car_Data']['Anims'][t]['Target'])
+						end
+					end
+				end
+			end
 		end
 	end
 	if typee == 3 then
