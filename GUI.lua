@@ -1,5 +1,5 @@
 script_authors('SKIC','SIZZZ')
-script_version('Beta 0.5.7.1')
+script_version('Beta 0.5.7')
 
 vkeys = require 'vkeys'
 inicfg = require 'inicfg'
@@ -278,7 +278,7 @@ function imgui.OnDrawFrame()
 		imgui.ListBox('', vr.lb_cur_missions,vr.list_name_missions,15)
 
 		--Кнопки редактирования
-		if imgui.Button(langt['add']) then
+		if imgui.Button(langt['save']) then
 			local m = #vr.list_missions+1
 			vr.mission_data['Name'] = langt['mission']..' #' .. tostring(m)
 			vr.list_missions[m] = {
@@ -853,7 +853,7 @@ function imgui.OnDrawFrame()
 			imgui.PushItemWidth(-150)
 			for a = 1,#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'] do
 				if imgui.TreeNode(u8:encode(a)) then
-					local type = {u8'Анимация',u8'Передвижение по пути',u8'Ехать по пути на авто',u8'Выйти из авто',u8'Ехать за машиной',u8'Сесть в машину'}
+					local type = {u8'Анимация',u8'Передвижение по пути',u8'Ехать по пути на авто',u8'Выйти из авто'}
 					if imgui.Combo(u8'Тип',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'],type) then
 						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 0 then
 							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Anim'] = imgui.ImInt(0)
@@ -870,7 +870,6 @@ function imgui.OnDrawFrame()
 							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'] = imgui.ImInt(0)
 							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point'] = imgui.ImBool(false)
 							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'] = imgui.ImBool(false)
 						end
 						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 2 then
 							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'] = {}
@@ -879,29 +878,12 @@ function imgui.OnDrawFrame()
 							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'] = imgui.ImInt(0)
 							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point'] = imgui.ImBool(false)
 							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'] = imgui.ImBool(false)
 						end
 						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 3 then
 							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'] = imgui.ImBool(false)
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 4 then
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car_a'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car_t'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Speed'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['trafficFlag'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vehicle_mission'] = imgui.ImInt(0)
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 5 then
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['place_in_car'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['speed_walk'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'] = imgui.ImBool(false)
 						end
 					end
-					imgui.Separator()
+					
 					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 0 then
 						local cond_type = {u8'Ничего',u8'На Цели'}
 						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
@@ -912,7 +894,6 @@ function imgui.OnDrawFrame()
 						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
 							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
 						end
-						imgui.Separator()
 						imgui.Combo(u8'Пак',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Pack_anim'],Anims['Anim_name'])
 						imgui.Combo(u8'Анимация',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Anim'],Anims['Anim_list'][vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Pack_anim'].v+1])
 						imgui.InputFloat(u8'Время анимации (сек)',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Time'],0)
@@ -930,10 +911,6 @@ function imgui.OnDrawFrame()
 								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
 							end
 						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
 						local move_type = {u8'Согнуто',u8'Ходьба',u8'Бег',u8'Быстрый бег'}
 						local move_route = {u8'до конца и останавливается.',u8'до конца и обратно, останавливается',u8'зацикленно, ходит по пути',u8'зацикленно, в конце идёт на начало.'}
 						imgui.Combo(u8'Тип передвижения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type_move'],move_type)
@@ -995,30 +972,29 @@ function imgui.OnDrawFrame()
 							setCharCollision(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],true)
 							lua_thread.create(function(path)
 								flushPatrolRoute()
+								local c = 1
 								local type_walk = 4;
 								if path['Type_move'].v == 2 then type_walk = 6
 								elseif path['Type_move'].v == 3 then type_walk = 7 end
 								taskToggleDuck(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'], ternar(path['Type_move'].v == 0,true,false))
 								for i = 1,#path['Path'] do
 									local x1,y1,z1 = path['Path'][i][1],path['Path'][i][2],path['Path'][i][3]
-									if i % 7 == 0 then
-										wait(0)
+									extendPatrolRoute(x1,y1,z1,'NONE','NONE')
+									c = c + 1
+									if c == 7 then
 										local px,py,pz = getCharCoordinates(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'])
 										taskFollowPatrolRoute(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],type_walk,path['Type_route'].v)
-										while getDistanceBetweenCoords3d(path['Path'][i-1][1],path['Path'][i-1][2],path['Path'][i-1][3],px,py,pz) > 0.1 do
+										while getDistanceBetweenCoords3d(path['Path'][i][1],path['Path'][i][2],path['Path'][i][3],px,py,pz) > 0.1 do
 											wait(0)
 											px,py,pz = getCharCoordinates(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'])
-											print(getDistanceBetweenCoords3d(path['Path'][i][1],path['Path'][i][2],path['Path'][i][3],px,py,pz))
 										end
-										print('hel')
 										flushPatrolRoute()
+										c = 1
 									end
-									extendPatrolRoute(x1,y1,z1,'NONE','NONE')
 								end
 								taskFollowPatrolRoute(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],type_walk,path['Type_route'].v)
 							end,vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a])
 						end
-						imgui.Checkbox(u8'Ждать выполнения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'])
 					end
 					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 2 then
 						local cond_type = {u8'Ничего',u8'На Цели'}
@@ -1027,12 +1003,8 @@ function imgui.OnDrawFrame()
 								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
 							end
 						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
 						local list_name_point = {}
-						for i = 1,#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'] do
+						for i,_ in pairs(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path']) do
 							local point = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][i]
 							list_name_point[i] = tostring(point[1])..' '..tostring(point[2]) ..' '..tostring(point[3])
 						end
@@ -1084,7 +1056,6 @@ function imgui.OnDrawFrame()
 						if imgui.Button(langt['delete']) then
 							table.remove(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'].v+1)
 						end
-						imgui.Checkbox(u8'Ждать выполнения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'])
 					end
 					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 3 then
 						local cond_type = {u8'Ничего',u8'На Цели'}
@@ -1093,47 +1064,7 @@ function imgui.OnDrawFrame()
 								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
 							end
 						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Checkbox(u8'Ждать выполнения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'])
-					end
-					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 4 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						local drive_beh = {u8'Сдаёт назад',u8'Cтоит на месте',u8'Пытается удрать от погони',u8'Пытается нанести удары'}
-						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						imgui.Combo(u8'Машина актёра',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car_a'],vr.list_name_cars)
-						imgui.InputInt(u8'Максимальная скорость',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Speed'])
-						imgui.InputInt(u8'Поведение транспорта',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['trafficFlag'])
-						imgui.Combo(u8'Поведение водителя',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vehicle_mission'],drive_beh)
-						imgui.Separator()
-						imgui.Combo(u8'Машина цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car_t'],vr.list_name_cars)
-					end
-					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 5 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						local place_in_car = {u8'Водитель',u8'Переднее правое',u8'Заднее левое',u8'Заднее правое'}
-						local speed_walk_car = {u8'Идёт',u8'Смотрит',u8'Бежит',u8'Спринт'}
-						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						imgui.Combo(u8'Скорость ходьбы',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['speed_walk'],speed_walk_car)
-						imgui.Combo(u8'Машина',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'],vr.list_name_cars)
-						imgui.Combo(u8'Сиденье',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['place_in_car'],place_in_car)
-						imgui.Checkbox(u8'Ждать выполнения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'])
+
 					end
 					imgui.TreePop()
 				end
@@ -1190,9 +1121,7 @@ function imgui.OnDrawFrame()
 					['Explosionproof'] = imgui.ImBool(false),
 					['Collisionproof'] = imgui.ImBool(false),
 					['Meleeproof'] = imgui.ImBool(false),
-					['Tires_vulnerability'] = imgui.ImBool(false),
-					['Anims'] = {},
-					['Anim_id'] = imgui.ImInt(0)
+					['Tires_vulnerability'] = imgui.ImBool(false)
 				}
 
 			}
@@ -1212,9 +1141,9 @@ function imgui.OnDrawFrame()
 		--Редактор машин
 		if #vr.list_cars > 0 and vr.list_cars[vr.lb_cur_cars.v+1] then
 			local resX,resY = getScreenResolution()
-			local sizeX,sizeY = 340, 340
+			local sizeX,sizeY = 300, 340
 			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 170,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
 			imgui.Begin(vr.list_cars[vr.lb_cur_cars.v+1]['Name'], vr.list_cars[vr.lb_cur_cars.v+1]['Enable'])
 			imgui.PushItemWidth(-90)
 		  
@@ -1264,74 +1193,7 @@ function imgui.OnDrawFrame()
 			end
 			imgui.Combo(u8'Появление на',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['StartC'],vr.list_name_targets)
 			imgui.Combo(u8'Исчезание после',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['EndC'],list_tg_m)
-
-			imgui.Text(u8'Действия')
-
-			if imgui.Button(langt['add']) then
-				vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][#vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims']+1] = {
-				['Type'] = imgui.ImInt(-1),
-			  }
-			end
-			imgui.SameLine()
-			imgui.PushItemWidth(-150)
-			imgui.Combo(u8'Номер',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anim_id'],range(#vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims']))
-			imgui.SameLine()
-			if imgui.Button(langt['delete']) then
-				vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'] = DelCellArr(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anim_id'].v+1)
-			end
-			-- if imgui.Button(u8'Очистить предпросмотр/движение') then
-			--   upd_actor:run(vr.lb_cur_actors.v+1)
-			-- end
-			imgui.PushItemWidth(-150)
-			for a = 1,#vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'] do
-				if imgui.TreeNode(u8:encode(a)) then
-					local type = {u8'Двери',u8'Запереть/Отпереть двери'}
-					if imgui.Combo(u8'Тип',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Type'],type) then
-						if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Type'].v == 0 then
-							vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'] = {imgui.ImBool(false),imgui.ImBool(false),imgui.ImBool(false),imgui.ImBool(false),imgui.ImBool(false),imgui.ImBool(false)}
-							vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'] = imgui.ImInt(0) 
-						end
-						if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Type'].v == 1 then
-							vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Door_lock'] = imgui.ImInt(0)
-							vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-						end
-					end
-					if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Type'].v == 0 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						if imgui.Combo(u8'Условие',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						imgui.Text(u8'Открыть дверь:')
-						imgui.Checkbox(u8'Капота',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][1])
-						imgui.Checkbox(u8'Багажника',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][2])
-						imgui.Checkbox(u8'Водителя',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][3])
-						imgui.Checkbox(u8'Переднего правого',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][4])
-						imgui.Checkbox(u8'Заднего левого',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][5])
-						imgui.Checkbox(u8'Заднего правого',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][6])
-					end
-					if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Type'].v == 1 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						if imgui.Combo(u8'Условие',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						local open_close = {u8'Открыть',u8'Закрыть'}
-						imgui.Combo(u8'Двери',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Door_lock'],open_close)
-					end
-					imgui.TreePop()
-				end
-			end
+		  
 			imgui.End()
 		end
 	end
@@ -2231,7 +2093,7 @@ function main()
 			vr.mpack = nil
 		end
 
-		if testCheat('top2009') then
+		if testCheat('top') then
 			if top == nil then
 				top = {loadAudioStream('https://muzlo.me/get/music/20181006/muzlome_Twenty_One_Pilots_-_Chlorine_59446258.mp3'),loadAudioStream('https://muzlo.me/get/music/20180829/muzlome_Twenty_One_Pilots_-_My_Blood_58278582.mp3'),loadAudioStream('https://muzlo.me/get/music/20170830/muzlome_Twenty_One_Pilots_-_Heavydirtysoul_47828698.mp3'),loadAudioStream('https://muzlo.me/get/music/20170830/muzlome_Twenty_One_Pilots_-_Stressed_Out_47828699.mp3'),loadAudioStream('https://muzlo.me/get/music/20180809/muzlome_Twenty_One_Pilots_-_Levitate_57877672.mp3')}
 			end
