@@ -1,17 +1,22 @@
 script_authors('SKIC','SIZZZ')
 script_version('Beta 0.5.7.1')
 
+require 'libstd.deps' {
+    'fyp:mimgui',
+ }
+
 vkeys = require 'vkeys'
-inicfg = require 'inicfg'
-imgui = require 'imgui'
+local inicfg = require 'inicfg'
+imgui = require 'mimgui'
+ffi = require 'ffi'
+new = imgui.new
 koder = require 'TextToGTX'
---mymod = require 'mymod'
---debtab = require 'debug_table'
-mp = require 'mission_player'
-manager_miss = require 'MissManager'
+local manager_miss = require 'MissManager'
+local mp = require 'mission_player'
 model = require 'lib.game.models'
 weapons = require 'lib.game.weapons'
-encoding = require 'encoding'
+local encoding = require 'encoding'
+imgui.Process = false
 encoding.default = 'CP1251'
 u8 = encoding.UTF8
 
@@ -80,7 +85,7 @@ Anims = {
 	}
 }
 
-Weather_str = {u8'Очень солнечно (LS)',u8'Солнечно (LS)',u8'Очень солнечно, смог (LS)',u8'Солнечно, смог (LS)',u8'Облака (LS)',u8'Солнечно (SF)',u8'Очень солнечно (SF)',u8'Облака (SF)',u8'Дождливая (SF)',u8'Туманная (SF)',u8'Солнечно (LV)',u8'Очень солнечно (LV)',u8'Облака (LV)',u8'Очень солнечно (CS)',u8'Солнечно (CS)',u8'Облака (CS)',u8'Дождливая (CS)',u8'Очень солнечно (Des)',u8'Солнечно (Des)',u8'Песчаная буря (Des)',u8'Подводная', u8'Дополнительно 1',u8'Дополнительно 2'}
+local Weather_str = {u8'Очень солнечно (LS)',u8'Солнечно (LS)',u8'Очень солнечно, смог (LS)',u8'Солнечно, смог (LS)',u8'Облака (LS)',u8'Солнечно (SF)',u8'Очень солнечно (SF)',u8'Облака (SF)',u8'Дождливая (SF)',u8'Туманная (SF)',u8'Солнечно (LV)',u8'Очень солнечно (LV)',u8'Облака (LV)',u8'Очень солнечно (CS)',u8'Солнечно (CS)',u8'Облака (CS)',u8'Дождливая (CS)',u8'Очень солнечно (Des)',u8'Солнечно (Des)',u8'Песчаная буря (Des)',u8'Подводная', u8'Дополнительно 1',u8'Дополнительно 2'}
 
 Particle_name = {"blood_heli","boat_prop","camflash","carwashspray","cement","cloudfast","coke_puff","coke_trail","cigarette_smoke","explosion_barrel","explosion_crate","explosion_door","exhale","explosion_fuel_car","explosion_large","explosion_medium","explosion_molotov","explosion_small","explosion_tiny","extinguisher","flame","fire","fire_med","fire_large","flamethrower","fire_bike","fire_car","gunflash","gunsmoke","insects","heli_dust","jetpack","jetthrust","nitro","molotov_flame","overheat_car","overheat_car_electric","prt_boatsplash","prt_cardebris","prt_collisionsmoke","prt_glass","prt_gunshell","prt_sand","prt_sand2","prt_smokeII_3_expand","prt_smoke_huge","prt_spark","prt_spark_2","prt_splash","prt_wake","prt_watersplash","prt_wheeldirt","petrolcan","puke","riot_smoke","spraycan","smoke30lit","smoke30m","smoke50lit","shootlight","smoke_flare","tank_fire","teargas","teargasAD","tree_hit_fir","tree_hit_palm","vent","vent2","water_hydrant","water_ripples","water_speed","water_splash","water_splash_big","water_splsh_sml","water_swim","waterfall_end","water_fnt_tme","water_fountain","wallbust","WS_factorysmoke"}
 
@@ -88,8 +93,8 @@ vr = {
 	['mission_data'] = {
 		['Name'] = '',
 		['Time'] = {0,0},
-		['Weather'] = imgui.ImInt(0),
-		['Riot'] = imgui.ImBool(false),
+		['Weather'] = new.int(0),
+		['Riot'] = new.bool(false),
 		['Player'] = {
 			['Pos'] = {884,-1221,16},
 			['Angle'] = 0,
@@ -99,40 +104,40 @@ vr = {
 			['Interior_id'] = 0
 		}
 	},
-	['buf_edit_targets_name'] = imgui.ImBuffer(64),
-	['buf_edit_actors_name'] = imgui.ImBuffer(64),
-	['buf_edit_cars_name'] = imgui.ImBuffer(64),
-	['buf_edit_obj_name'] = imgui.ImBuffer(64),
-	['buf_edit_pick_name'] = imgui.ImBuffer(64),
-	['buf_edit_prtcl_name'] = imgui.ImBuffer(64),
-	['buf_edit_explosion_name'] = imgui.ImBuffer(64),
-	['buf_edit_mission_pack_name'] = imgui.ImBuffer(64),
-	['buf_edit'] = imgui.ImFloat(0),
-	['main_window'] = imgui.ImBool(false),
-	['pack_mission_window'] = imgui.ImBool(false),
-	['missions_window'] = imgui.ImBool(false),
-	['targets_window'] = imgui.ImBool(false),
-	['actors_window'] = imgui.ImBool(false),
-	['cars_window'] = imgui.ImBool(false),
-	['objects_window'] = imgui.ImBool(false),
-	['pickup_window'] = imgui.ImBool(false),
-	['particle_window'] = imgui.ImBool(false),
-	['explosion_window'] = imgui.ImBool(false),
-	['targets_window_s1'] = imgui.ImBool(false),
-	['targets_window_s2'] = imgui.ImBool(false),
-	['missions_n_window'] = imgui.ImBool(false),
-	['info_window'] = imgui.ImBool(false),
-	['settings_window'] = imgui.ImBool(false),
-	['tool_window'] = imgui.ImBool(false),
-	['lb_cur_targets'] = imgui.ImInt(0),
-	['lb_cur_actors'] = imgui.ImInt(0),
-	['lb_cur_cars'] = imgui.ImInt(0),
-	['lb_cur_objects'] = imgui.ImInt(0),
-	['lb_cur_pickup'] = imgui.ImInt(0),
-	['lb_cur_particle'] = imgui.ImInt(0),
-	['lb_cur_explosion'] = imgui.ImInt(0),
-	['lb_cur_pack_mission'] = imgui.ImInt(0),
-	['lb_cur_missions'] = imgui.ImInt(0),
+	['buf_edit_targets_name'] = new.char[64](),
+	['buf_edit_actors_name'] = new.char[64](),
+	['buf_edit_cars_name'] = new.char[64](),
+	['buf_edit_obj_name'] = new.char[64](),
+	['buf_edit_pick_name'] = new.char[64](),
+	['buf_edit_prtcl_name'] = new.char[64](),
+	['buf_edit_explosion_name'] = new.char[64](),
+	['buf_edit_mission_pack_name'] = new.char[64](),
+	['buf_edit'] = new.float(0),
+	['main_window'] = new.bool(false),
+	['pack_mission_window'] = new.bool(false),
+	['missions_window'] = new.bool(false),
+	['targets_window'] = new.bool(false),
+	['actors_window'] = new.bool(false),
+	['cars_window'] = new.bool(false),
+	['objects_window'] = new.bool(false),
+	['pickup_window'] = new.bool(false),
+	['particle_window'] = new.bool(false),
+	['explosion_window'] = new.bool(false),
+	['targets_window_s1'] = new.bool(false),
+	['targets_window_s2'] = new.bool(false),
+	['missions_n_window'] = new.bool(false),
+	['info_window'] = new.bool(false),
+	['settings_window'] = new.bool(false),
+	['tool_window'] = new.bool(false),
+	['lb_cur_targets'] = new.int(0),
+	['lb_cur_actors'] = new.int(0),
+	['lb_cur_cars'] = new.int(0),
+	['lb_cur_objects'] = new.int(0),
+	['lb_cur_pickup'] = new.int(0),
+	['lb_cur_particle'] = new.int(0),
+	['lb_cur_explosion'] = new.int(0),
+	['lb_cur_pack_mission'] = new.int(0),
+	['lb_cur_missions'] = new.int(0),
 	['buffer_target'] = -1,
 	['list_targets'] = {},
 	['list_actors'] = {},
@@ -181,7 +186,7 @@ vr = {
 	['id_preview_player_anim'] = 0,
 	['miss_start'] = false,
 	['update_actor'] = -1,
-	['curr_lang'] = imgui.ImInt(1),
+	['curr_lang'] = new.int(1),
 	['Fast_data'] = {
 		['CurMiss'] = 0,
 		['CurPack'] = 0
@@ -191,122 +196,104 @@ vr = {
 local LanguageArr = {}
 local LanguageList = {}
 
-function imgui.OnDrawFrame()
-	local langt = LanguageArr[vr.curr_lang.v+1]['Keys']
-	-- Главное меню
-	if vr.main_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 200, 400
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-		imgui.Begin(langt['mainMenu'], vr.main_window)
-		if imgui.Button(langt['targets']) then
-			vr.targets_window.v = not vr.targets_window.v
-			vr.main_window.v = false
-		end
-		if imgui.Button(langt['actors']) then
-			vr.actors_window.v = not vr.actors_window.v
-			vr.main_window.v = false
-		end
-		if imgui.Button(langt['cars']) then
-			vr.cars_window.v = not vr.cars_window.v
-			vr.main_window.v = false
-		end
-		if imgui.Button(langt['objects']) then
-			vr.objects_window.v = not vr.objects_window.v
-			vr.main_window.v = false
-		end
-		if imgui.Button(langt['particles']) then
-			vr.particle_window.v = not vr.particle_window.v
-			vr.main_window.v = false
-		end
-		if imgui.Button(langt['pickups']) then
-			vr.pickup_window.v = true
-			vr.main_window.v = false
-		end
-		if imgui.Button(langt['explosions']) then
-			vr.explosion_window.v = true
-			vr.main_window.v = false
-		end
-		if imgui.Button(langt['player']) then
-			vr.editmode_player = true
-			printHelpForever('HPLA')
-			imgui.Process = false
-		end
-		imgui.Separator()
-		if imgui.Button(langt['packsMissions']) then
-			vr.pack_mission_window.v = not vr.pack_mission_window.v
-			--manager_miss.save(vr.list_targets,vr.list_actors,vr.list_cars,vr.list_objects)
-			vr.main_window.v = false
-		end
-		if imgui.Button(langt['missions']) then
-			vr.missions_window.v = not vr.missions_window.v
-			vr.main_window.v = false
-		end
-		imgui.Separator()
-		if imgui.Button(langt['missionStart']) then
-			vr.miss_start = true
-		end
-		if imgui.Button(langt['tools']) then
-			vr.main_window.v = false
-			vr.tool_window.v = true
-		end
-		imgui.Separator()
-		if imgui.Button(langt['info']) then
-			vr.main_window.v = false
-			vr.info_window.v = true
-		end
-		if imgui.Button(langt['settings']) then
-			vr.main_window.v = false
-			vr.settings_window.v = true
-		end 
-		--mymod.main_menu()
-		imgui.End()
-	end
+-- Главное меню
+imgui.OnFrame(function() return vr.main_window[0] and imgui.Process end, 
+function()
+    local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+    
+    local resX,resY = getScreenResolution()
+    local sizeX,sizeY = 200, 400
+    imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+    imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
+    imgui.Begin(langt['mainMenu'], vr.main_window)
+    if imgui.Button(langt['targets']) then
+      vr.targets_window[0] = not vr.targets_window[0]
+      vr.main_window[0] = false
+    end
+    if imgui.Button(langt['actors']) then
+      vr.actors_window[0] = not vr.actors_window[0]
+      vr.main_window[0] = false
+    end
+    if imgui.Button(langt['cars']) then
+      vr.cars_window[0] = not vr.cars_window[0]
+      vr.main_window[0] = false
+    end
+    if imgui.Button(langt['objects']) then
+      vr.objects_window[0] = not vr.objects_window[0]
+      vr.main_window[0] = false
+    end
+    if imgui.Button(langt['particles']) then
+      vr.particle_window[0] = not vr.particle_window[0]
+      vr.main_window[0] = false
+    end
+    if imgui.Button(langt['pickups']) then
+      vr.pickup_window[0] = true
+      vr.main_window[0] = false
+    end
+    if imgui.Button(langt['explosions']) then
+      vr.explosion_window[0] = true
+      vr.main_window[0] = false
+    end
+    if imgui.Button(langt['player']) then
+      vr.editmode_player = true
+      printHelpForever('HPLA')
+      imgui.Process = false
+    end
+    imgui.Separator()
+    if imgui.Button(langt['packsMissions']) then
+      vr.pack_mission_window[0] = not vr.pack_mission_window[0]
+      --manager_miss.save(vr.list_targets,vr.list_actors,vr.list_cars,vr.list_objects)
+      vr.main_window[0] = false
+    end
+    if imgui.Button(langt['missions']) then
+      vr.missions_window[0] = not vr.missions_window[0]
+      vr.main_window[0] = false
+    end
+    imgui.Separator()
+    if imgui.Button(langt['missionStart']) then
+      vr.miss_start = true
+    end
+    if imgui.Button(langt['tools']) then
+      vr.main_window[0] = false
+      vr.tool_window[0] = true
+    end
+    imgui.Separator()
+    if imgui.Button(langt['info']) then
+      vr.main_window[0] = false
+      vr.info_window[0] = true
+    end
+    if imgui.Button(langt['settings']) then
+      vr.main_window[0] = false
+      vr.settings_window[0] = true
+    end
+    --mymod.main_menu()
+    imgui.End()
+end)
 
-	if vr.missions_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 350, 340
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-		imgui.Begin(langt['missions'], vr.missions_window)
+imgui.OnFrame(function() return vr.missions_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
 
-		imgui.PushItemWidth(-10)
+	local resX,resY = getScreenResolution()
+	local sizeX,sizeY = 350, 340
+	imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+	imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+	imgui.Begin(langt['missions'], vr.missions_window)
+
+	imgui.PushItemWidth(-10)
 
 
-		--Список Объектов
-		imgui.ListBox('', vr.lb_cur_missions,vr.list_name_missions,15)
+	--Список Объектов
+	imgui.ListBoxStr_arr('', vr.lb_cur_missions,new('const char* const [?]', #vr.list_name_missions, vr.list_name_missions),#vr.list_name_missions,15)
 
-		--Кнопки редактирования
-		if imgui.Button(langt['add']) then
-			local m = #vr.list_missions+1
-			vr.mission_data['Name'] = langt['mission']..' #' .. tostring(m)
-			vr.list_missions[m] = {
-				['Name'] = vr.mission_data['Name'],
-				['Prename'] = imgui.ImBuffer(256),
-				['Mission_Data'] = {
-					['Targets'] = vr.list_targets,
-					['Actors'] = vr.list_actors,
-					['Cars'] = vr.list_cars,
-					['Objects'] = vr.list_objects,
-					['Pickup'] = vr.list_pickup,
-					['Particle'] = vr.list_particle,
-					['Explosion'] = vr.list_explosion,
-					['Miss_data'] = vr.mission_data
-				}
-			}
-			vr.list_name_missions[m] = vr.list_missions[m]['Name']
-			vr.Fast_data['CurMiss'] = m-1
-		end
-
-		imgui.SameLine()
-		if imgui.Button(langt['load']) and #vr.list_missions > 0 then
-			lua_thread.create(load_mission)
-		end
-
-		imgui.SameLine()
-		if imgui.Button(langt['save']) and #vr.list_missions > 0 then
-			vr.list_missions[vr.lb_cur_missions.v+1]['Mission_Data'] = {
+	--Кнопки редактирования
+	if imgui.Button(langt['add']) then
+		local m = #vr.list_missions+1
+		vr.mission_data['Name'] = langt['mission']..' #' .. tostring(m)
+		vr.list_missions[m] = {
+			['Name'] = vr.mission_data['Name'],
+			['Prename'] = new.char[128](),
+			['Mission_Data'] = {
 				['Targets'] = vr.list_targets,
 				['Actors'] = vr.list_actors,
 				['Cars'] = vr.list_cars,
@@ -316,1552 +303,1609 @@ function imgui.OnDrawFrame()
 				['Explosion'] = vr.list_explosion,
 				['Miss_data'] = vr.mission_data
 			}
-			vr.Fast_data['CurMiss'] = vr.lb_cur_missions.v
-		end
-
-		imgui.SameLine()
-		if imgui.Button(langt['delete']) then
-			vr.list_missions = DelCellArr(vr.list_missions,vr.lb_cur_missions.v+1)
-			vr.list_name_missions = DelCellArr(vr.list_name_missions,vr.lb_cur_missions.v+1)
-		end
-
-		imgui.End()
-		-- Настройки
-		if  #vr.list_missions > 0 and vr.list_missions[vr.lb_cur_missions.v+1] then
-			local resX,resY = getScreenResolution()
-			local sizeX,sizeY = 300, 340
-			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-			imgui.Begin(langt['settings']..': ' .. vr.list_missions[vr.lb_cur_missions.v+1]['Name'], true)
-			imgui.PushItemWidth(-120)
-			imgui.InputText(langt['nameMission'],vr.list_missions[vr.lb_cur_missions.v+1]['Prename'])
-			if imgui.Button(langt['apply']) then
-				vr.list_missions[vr.lb_cur_missions.v+1]['Name'] = vr.list_missions[vr.lb_cur_missions.v+1]['Prename'].v
-				vr.list_name_missions[vr.lb_cur_missions.v+1] = vr.list_missions[vr.lb_cur_missions.v+1]['Name']
-				vr.mission_data['Name'] = vr.list_missions[vr.lb_cur_missions.v+1]['Name']
-			end
-			imgui.Separator()
-			if imgui.Button(langt['timeGameMiss']) then
-				vr.editmode_timemiss = true
-				printHelpForever('HMTIM')
-				imgui.Process = false
-			end
-			
-			if imgui.Combo(langt['weather'],vr.mission_data['Weather'],Weather_str) then
-				forceWeatherNow(vr.mission_data['Weather'].v)
-			end
-			imgui.Checkbox(langt['modeRiot'],vr.mission_data['Riot'])
-			imgui.End()
-		end
+		}
+		vr.list_name_missions[m] = vr.list_missions[m]['Name']
+		vr.Fast_data['CurMiss'] = m-1
 	end
 
-	if vr.pack_mission_window.v then
+	imgui.SameLine()
+	if imgui.Button(langt['load']) and #vr.list_missions > 0 then
+		lua_thread.create(load_mission)
+	end
+
+	imgui.SameLine()
+	if imgui.Button(langt['save']) and #vr.list_missions > 0 then
+		vr.list_missions[vr.lb_cur_missions[0]+1]['Mission_Data'] = {
+			['Targets'] = vr.list_targets,
+			['Actors'] = vr.list_actors,
+			['Cars'] = vr.list_cars,
+			['Objects'] = vr.list_objects,
+			['Pickup'] = vr.list_pickup,
+			['Particle'] = vr.list_particle,
+			['Explosion'] = vr.list_explosion,
+			['Miss_data'] = vr.mission_data
+		}
+		vr.Fast_data['CurMiss'] = vr.lb_cur_missions[0]
+	end
+
+	imgui.SameLine()
+	if imgui.Button(langt['delete']) then
+		vr.list_missions = DelCellArr(vr.list_missions,vr.lb_cur_missions[0]+1)
+		vr.list_name_missions = DelCellArr(vr.list_name_missions,vr.lb_cur_missions[0]+1)
+	end
+
+	imgui.End()
+	-- Настройки
+	if  #vr.list_missions > 0 and vr.list_missions[vr.lb_cur_missions[0]+1] then
 		local resX,resY = getScreenResolution()
 		local sizeX,sizeY = 300, 340
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-		imgui.Begin(langt['saveLoadMissPack'], vr.pack_mission_window)
-
-		imgui.PushItemWidth(-10)
-
-
-		--Список Объектов
-		imgui.ListBox('', vr.lb_cur_pack_mission,vr.list_name_mission_pack,15)
-		if imgui.BeginPopupContextItem('hee') then
-			imgui.InputText('',vr.buf_edit_mission_pack_name)
-			if imgui.Button(langt['apply']) and vr.buf_edit_mission_pack_name.v ~= '' then
-			  vr.list_mission_pack[vr.lb_cur_pack_mission.v+1]['Name'] = vr.buf_edit_mission_pack_name.v
-			  vr.list_name_mission_pack[vr.lb_cur_pack_mission.v+1] = vr.buf_edit_mission_pack_name.v
-			  vr.buf_edit_mission_pack_name.v = ''
-			  imgui.CloseCurrentPopup()
-			end
-			imgui.PushItemWidth(-1);
-			imgui.PopItemWidth();
-			imgui.EndPopup();
-		  end
-
-		--Кнопки редактирования
-		if imgui.Button(langt['add']) then
-			local m = #vr.list_mission_pack+1
-			vr.list_mission_pack[m] = {
-				['Name'] = langt['add']..' #' .. tostring(#vr.list_mission_pack+1),
-				['Enable'] = imgui.ImBool(false),
-				['Missions'] = vr.list_missions
-			}
-			vr.list_name_mission_pack[m] = vr.list_mission_pack[m]['Name']
-			manager.save(vr.list_mission_pack[m],m-1)
-			vr.Fast_data['CurPack'] = m-1
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(langt['settings']..': ' .. vr.list_missions[vr.lb_cur_missions[0]+1]['Name'])
+		imgui.PushItemWidth(-120)
+		imgui.InputText(langt['nameMission'],vr.list_missions[vr.lb_cur_missions[0]+1]['Prename'],ffi.sizeof(vr.list_missions[vr.lb_cur_missions[0]+1]['Prename']))
+		if imgui.Button(langt['apply']) then
+			vr.list_missions[vr.lb_cur_missions[0]+1]['Name'] = vr.list_missions[vr.lb_cur_missions[0]+1]['Prename'][0]
+			vr.list_name_missions[vr.lb_cur_missions[0]+1] = vr.list_missions[vr.lb_cur_missions[0]+1]['Name']
+			vr.mission_data['Name'] = vr.list_missions[vr.lb_cur_missions[0]+1]['Name']
 		end
-
-		imgui.SameLine()
-		if imgui.Button(langt['load']) and #vr.list_mission_pack > 0 then
-			for i = 1,#vr.list_actors do
-				deleteChar(vr.list_actors[i]['Actor_Data']['Char'])
-			end
-			for c = 1,#vr.list_cars do
-				deleteCar(vr.list_cars[c]['Car_Data']['Car'])
-			end
-			vr.list_name_missions = {}
-			vr.list_missions = vr.list_mission_pack[vr.lb_cur_pack_mission.v+1]['Missions']
-			vr.Fast_data['CurPack'] = vr.lb_cur_pack_mission.v
-			for m = 1,#vr.list_mission_pack[vr.lb_cur_pack_mission.v+1]['Missions'] do
-				vr.list_name_missions[m] = vr.list_mission_pack[vr.lb_cur_pack_mission.v+1]['Missions'][m]['Name']
-			end
+		imgui.Separator()
+		if imgui.Button(langt['timeGameMiss']) then
+			vr.editmode_timemiss = true
+			printHelpForever('HMTIM')
+			imgui.Process = false
 		end
-		imgui.SameLine()
-		if imgui.Button(langt['save']) and #vr.list_mission_pack > 0 then
-			vr.list_mission_pack[vr.lb_cur_pack_mission.v+1]['Missions'] = vr.list_missions
-			manager.save(vr.list_mission_pack[vr.lb_cur_pack_mission.v+1],vr.lb_cur_pack_mission.v)
-			vr.Fast_data['CurPack'] = vr.lb_cur_pack_mission.v
+		
+		if imgui.Combo(langt['weather'],vr.mission_data['Weather'],new('const char* const [?]', #Weather_str, Weather_str),#Weather_str) then
+			forceWeatherNow(vr.mission_data['Weather'][0])
 		end
-
-		imgui.SameLine()
-		if imgui.Button(langt['delete']) then
-			vr.list_mission_pack = DelCellArr(vr.list_mission_pack,vr.lb_cur_pack_mission.v+1)
-			vr.list_name_mission_pack = DelCellArr(vr.list_name_mission_pack,vr.lb_cur_pack_mission.v+1)
-			manager.delete(vr.lb_cur_pack_mission.v)
-		end
-
-
+		imgui.Checkbox(langt['modeRiot'],vr.mission_data['Riot'])
 		imgui.End()
 	end
+end)
 
-	-- Окно списка целей
-	if vr.targets_window.v then
+-- Паки миссий
+imgui.OnFrame(function() return vr.pack_mission_window[0] and imgui.Process end, 
+function()
+  local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+  local resX,resY = getScreenResolution()
+  local sizeX,sizeY = 300, 340
+  imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+  imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
+  imgui.Begin(langt['saveLoadMissPack'], vr.pack_mission_window)
+
+  imgui.PushItemWidth(-10)
+
+
+  --Список Объектов
+  imgui.ListBoxStr_arr('',vr.lb_cur_pack_mission,new('const char* const [?]', #vr.list_name_mission_pack, vr.list_name_mission_pack),#vr.list_name_mission_pack,15)
+  if imgui.BeginPopupContextItem('hee') then
+    imgui.InputText('',vr.buf_edit_mission_pack_name)
+    if imgui.Button(langt['apply']) and vr.buf_edit_mission_pack_name[0] ~= '' then
+      vr.list_mission_pack[vr.lb_cur_pack_mission[0]+1]['Name'] = vr.buf_edit_mission_pack_name[0]
+      vr.list_name_mission_pack[vr.lb_cur_pack_mission[0]+1] = vr.buf_edit_mission_pack_name[0]
+      vr.buf_edit_mission_pack_name[0] = ''
+      imgui.CloseCurrentPopup()
+    end
+    imgui.PushItemWidth(-1);
+    imgui.PopItemWidth();
+    imgui.EndPopup();
+	imgui.End()
+  end
+
+  --Кнопки редактирования
+  if imgui.Button(langt['add']) then
+    local m = #vr.list_mission_pack+1
+    vr.list_mission_pack[m] = {
+      ['Name'] = langt['add']..' #' .. tostring(#vr.list_mission_pack+1),
+      ['Enable'] = new.bool(false),
+      ['Missions'] = vr.list_missions
+    }
+    vr.list_name_mission_pack[m] = vr.list_mission_pack[m]['Name']
+    manager.save(vr.list_mission_pack[m],m-1)
+    vr.Fast_data['CurPack'] = m-1
+  end
+
+  imgui.SameLine()
+  if imgui.Button(langt['load']) and #vr.list_mission_pack > 0 then
+    for i = 1,#vr.list_actors do
+      deleteChar(vr.list_actors[i]['Actor_Data']['Char'])
+    end
+    for c = 1,#vr.list_cars do
+      deleteCar(vr.list_cars[c]['Car_Data']['Car'])
+    end
+    vr.list_name_missions = {}
+    vr.list_missions = vr.list_mission_pack[vr.lb_cur_pack_mission[0]+1]['Missions']
+    vr.Fast_data['CurPack'] = vr.lb_cur_pack_mission[0]
+    for m = 1,#vr.list_mission_pack[vr.lb_cur_pack_mission[0]+1]['Missions'] do
+      vr.list_name_missions[m] = vr.list_mission_pack[vr.lb_cur_pack_mission[0]+1]['Missions'][m]['Name']
+    end
+  end
+  imgui.SameLine()
+  if imgui.Button(langt['save']) and #vr.list_mission_pack > 0 then
+    vr.list_mission_pack[vr.lb_cur_pack_mission[0]+1]['Missions'] = vr.list_missions
+    manager.save(vr.list_mission_pack[vr.lb_cur_pack_mission[0]+1],vr.lb_cur_pack_mission[0])
+    vr.Fast_data['CurPack'] = vr.lb_cur_pack_mission[0]
+  end
+
+  imgui.SameLine()
+  if imgui.Button(langt['delete']) then
+    vr.list_mission_pack = DelCellArr(vr.list_mission_pack,vr.lb_cur_pack_mission[0]+1)
+    vr.list_name_mission_pack = DelCellArr(vr.list_name_mission_pack,vr.lb_cur_pack_mission[0]+1)
+    manager.delete(vr.lb_cur_pack_mission[0])
+  end
+end)
+
+-- Цели
+imgui.OnFrame(function() return vr.targets_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+  local resX,resY = getScreenResolution()
+  local sizeX,sizeY = 300, 360
+  imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+  imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
+  imgui.Begin(langt['targets'], vr.targets_window)
+
+  imgui.PushItemWidth(-10)
+
+
+  --Список Объектов
+  imgui.ListBoxStr_arr('', vr.lb_cur_targets,new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets,15)
+  if imgui.BeginPopupContextItem('hee') then
+    imgui.InputText('',vr.buf_edit_targets_name,ffi.sizeof(vr.buf_edit_targets_name))
+    if imgui.Button(langt['apply']) and vr.buf_edit_targets_name[0] ~= '' then
+      vr.list_targets[vr.lb_cur_targets[0]+1]['Name'] =  ffi.string(vr.buf_edit_targets_name)
+      vr.list_name_targets[vr.lb_cur_targets[0]+1] = ffi.string(vr.buf_edit_targets_name)
+      imgui.StrCopy(vr.buf_edit_targets_name,'')
+	  imgui.CloseCurrentPopup()
+    end
+    imgui.PushItemWidth(-1);
+    imgui.PopItemWidth();
+    imgui.EndPopup();
+  end
+
+  --Кнопки редактирования
+  if imgui.Button(langt['add']) then
+    vr.list_targets[#vr.list_targets+1] = {
+      ['Name'] = langt['target']..' #' .. tostring(#vr.list_targets+1),
+      ['Type'] = new.int(-1),
+      ['Target_Data'] = {}
+	}
+    vr.list_name_targets[#vr.list_targets] = vr.list_targets[#vr.list_targets]['Name']
+  end
+
+  imgui.SameLine()
+  if imgui.Button(langt['delete']) then
+    if vr.list_targets[vr.lb_cur_targets[0]+1] then
+      vr.list_targets = DelCellArr(vr.list_targets,vr.lb_cur_targets[0]+1)
+      vr.list_name_targets = DelCellArr(vr.list_name_targets,vr.lb_cur_targets[0]+1)
+    end
+  end
+  imgui.SameLine()
+  if imgui.Button(langt['cut']) and #vr.list_targets > 0 then
+    vr.buffer_target = vr.lb_cur_targets[0] + 1
+  end
+  imgui.SameLine()
+  if vr.buffer_target ~= -1 then
+    if imgui.Button(langt['paste']) then
+      vr.list_targets = MoveCellArr(vr.list_targets,vr.buffer_target,vr.lb_cur_targets[0]+1)
+      vr.list_name_targets = MoveCellArr(vr.list_name_targets,vr.buffer_target,vr.lb_cur_targets[0]+1)
+      vr.buffer_target = -1
+    end
+  end
+
+  imgui.End()
+
+  --Редактор цели
+	if #vr.list_targets > 0 and vr.list_targets[vr.lb_cur_targets[0]+1] then
 		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 300, 360
+		local sizeX,sizeY = 300, 340
+		local targets_list_arr = decodeJson(langt['targets_list_arr'])
+		local targets_marker_color = decodeJson(langt['targets_marker_color'])
+		local weap_names = decodeJson(langt['weap_names'])
 		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-		imgui.Begin(langt['targets'], vr.targets_window)
-	  
-		imgui.PushItemWidth(-10)
-	  
-	  
-		--Список Объектов
-		imgui.ListBox('', vr.lb_cur_targets,vr.list_name_targets,15)
-		if imgui.BeginPopupContextItem('hee') then
-		  imgui.InputText('',vr.buf_edit_targets_name)
-		  if imgui.Button(langt['apply']) and vr.buf_edit_targets_name.v ~= '' then
-			vr.list_targets[vr.lb_cur_targets.v+1]['Name'] = vr.buf_edit_targets_name.v
-			vr.list_name_targets[vr.lb_cur_targets.v+1] = vr.buf_edit_targets_name.v
-			vr.buf_edit_targets_name.v = ''
-			imgui.CloseCurrentPopup()
-		  end
-		  imgui.PushItemWidth(-1);
-		  imgui.PopItemWidth();
-		  imgui.EndPopup();
-		end
-	  
-		--Кнопки редактирования
-		if imgui.Button(langt['add']) then
-		  vr.list_targets[#vr.list_targets+1] = {
-			['Name'] = langt['target']..' #' .. tostring(#vr.list_targets+1),
-			['Type'] = imgui.ImInt(-1),
-			['Target_Data'] = {}
-		  }
-		  vr.list_name_targets[#vr.list_targets] = vr.list_targets[#vr.list_targets]['Name']
-		end
-	  
-		imgui.SameLine()
-		if imgui.Button(langt['delete']) then
-			if vr.list_targets[vr.lb_cur_targets.v+1] then
-				vr.list_targets = DelCellArr(vr.list_targets,vr.lb_cur_targets.v+1)
-				vr.list_name_targets = DelCellArr(vr.list_name_targets,vr.lb_cur_targets.v+1)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
+		imgui.Begin(vr.list_targets[vr.lb_cur_targets[0]+1]['Name'])
+		imgui.PushItemWidth(-65)
+		if imgui.Combo(langt['typeTarget'],vr.list_targets[vr.lb_cur_targets[0]+1]['Type'],new('const char* const [?]',#targets_list_arr,targets_list_arr),#targets_list_arr) then
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data'] = {}
+			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 0 then
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pos'] = new.float[3](xx,xy,xz)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Radius'] = new.int(2)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'] = new.char[128]()
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text_time'] = new.float(2)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Color_blip'] = new.int(0)
 			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 1 then
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_car_id'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Color_blip'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'] = new.char[128]()
+			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 2 then
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_actor_id'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Color_blip'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'] = new.char[128]()
+			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 3 then
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'] = new.int(-1)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pos'] = new.float[3](xx,xy,xz)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Rotates'] = new.float[3](0,0,0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'] = new.char[128]()
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text_time'] = new.float(2)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Smooth'] = new.bool(false)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Time'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Weather'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Clock_time'] = {0,0}
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Traffic'] = {new.int(1),new.int(1)}
+			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 4 then
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_object_id'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Color_blip'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'] = new.int(-1)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Weap'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'] = new.char[128]()
+			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 5 then
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_pickup_id'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Color_blip'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'] = new.char[128]()
+			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 6 then
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'] = new.int(-1)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pos'] = new.float[3](xx,xy,xz)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['ModelID'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Angle'] = new.float(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Weapon'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Weap_ammo'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Anim'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pack_anim'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Loop'] = new.bool(false)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Car_id'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Car_place'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Level_battue'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog'] = {}
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog_id'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Add_money'] = new.int(0)
+			vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Interior_id'] = getActiveInterior()
+			end
+		
 		end
-		imgui.SameLine()
-		if imgui.Button(langt['cut']) and #vr.list_targets > 0 then
-		  vr.buffer_target = vr.lb_cur_targets.v + 1
+
+		if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 0 then
+			imgui.InputFloat3(langt['position'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pos'])
+			if imgui.Button(langt['modeMove']) then
+			vr.editmode_target = true
+			printHelpForever('HTARG')
+			lockPlayerControl(true)
+			vr.id_target = vr.lb_cur_targets[0]+1
+			imgui.Process = false
+			end
+			imgui.PushItemWidth(-130)
+			imgui.DragInt(langt['radiusCheckpoint'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Radius'],0.1,-100,100)
+			imgui.Combo(langt['colorMarker'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Color_blip'],new('const char* const [?]',#targets_marker_color,targets_marker_color),#targets_marker_color)
+			imgui.InputText(langt['textTarget'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'],ffi.sizeof(vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text']))
+			imgui.InputFloat(langt['timeText'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text_time'])
 		end
-		imgui.SameLine()
-		if vr.buffer_target ~= -1 then
-		  if imgui.Button(langt['paste']) then
-			vr.list_targets = MoveCellArr(vr.list_targets,vr.buffer_target,vr.lb_cur_targets.v+1)
-			vr.list_name_targets = MoveCellArr(vr.list_name_targets,vr.buffer_target,vr.lb_cur_targets.v+1)
-			vr.buffer_target = -1
-		  end
+		if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 1 then
+			imgui.Combo(langt['car'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_car_id'],new('const char* const [?]',#vr.list_name_cars,vr.list_name_cars),#vr.list_name_cars)
+			imgui.Combo(langt['colorMarker'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Color_blip'],new('const char* const [?]',#targets_marker_color,targets_marker_color),#targets_marker_color)
+			imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'],ffi.sizeof(vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text']))
 		end
-	  
-		imgui.End()
-		--Редактор цели
-		if #vr.list_targets > 0 and vr.list_targets[vr.lb_cur_targets.v+1] then
-			local resX,resY = getScreenResolution()
-			local sizeX,sizeY = 300, 340
-			local targets_list_arr = decodeJson(langt['targets_list_arr'])
-			local targets_marker_color = decodeJson(langt['targets_marker_color'])
-			local weap_names = decodeJson(langt['weap_names'])
-			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-			imgui.Begin(vr.list_targets[vr.lb_cur_targets.v+1]['Name'], true)
-			imgui.PushItemWidth(-65)
-			if imgui.Combo(langt['typeTarget'],vr.list_targets[vr.lb_cur_targets.v+1]['Type'],targets_list_arr) then
-			  vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data'] = {}
-			  local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 0 then
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Radius'] = imgui.ImInt(2)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text_time'] = imgui.ImFloat(2)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'] = imgui.ImInt(0)
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 1 then
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_car_id'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 2 then
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_actor_id'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 3 then
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'] = imgui.ImInt(-1)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Rotates'] = imgui.ImFloat3(0,0,0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text_time'] = imgui.ImFloat(2)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Smooth'] = imgui.ImBool(false)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Time'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weather'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Clock_time'] = {0,0}
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Traffic'] = {imgui.ImInt(1),imgui.ImInt(1)}
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 4 then
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_object_id'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'] = imgui.ImInt(-1)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weap'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 5 then
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_pickup_id'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'] = imgui.ImBuffer(128)
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 6 then
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'] = imgui.ImInt(-1)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['ModelID'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Angle'] = imgui.ImFloat(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weapon'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weap_ammo'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Anim'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pack_anim'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Loop'] = imgui.ImBool(false)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Car_id'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Car_place'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Level_battue'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'] = {}
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog_id'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Add_money'] = imgui.ImInt(0)
-				vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Interior_id'] = getActiveInterior()
-			  end
-		  
+		if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 2 then
+			imgui.Combo(langt['actor'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_actor_id'],new('const char* const [?]',#vr.list_name_actors,vr.list_name_actors),#vr.list_name_actors)
+			imgui.Combo(langt['colorMarker'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Color_blip'],new('const char* const [?]',#targets_marker_color,targets_marker_color),#targets_marker_color)
+			imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'],ffi.sizeof(vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text']))
+		end
+		if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 3 then
+			local target_type = decodeJson(langt['target_type'])
+			imgui.Combo(langt['type'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'],new('const char* const [?]',#target_type,target_type),#target_type)
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 0 then
+				imgui.InputFloat3(langt['position'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pos'])
+				imgui.InputFloat3(langt['rotate'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Rotates'])
+				if imgui.Button(langt['modeMove']) then
+					vr.editmode_camera = true
+					printHelpForever('HOBJ')
+					lockPlayerControl(true)
+					vr.id_target = vr.lb_cur_targets[0]+1
+					imgui.Process = false
+				end
+				imgui.Checkbox(langt['movecam'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Smooth'])
+				imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'],ffi.sizeof(vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text']))
+				imgui.InputFloat(langt['timecutscene'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text_time'])
 			end
 
-			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 0 then
-			  imgui.InputFloat3(langt['position'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'])
-			  if imgui.Button(langt['modeMove']) then
-				vr.editmode_target = true
-				printHelpForever('HTARG')
-				lockPlayerControl(true)
-				vr.id_target = vr.lb_cur_targets.v+1
-				imgui.Process = false
-			  end
-			  imgui.PushItemWidth(-130)
-			  imgui.DragInt(langt['radiusCheckpoint'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Radius'],0.1,-100,100)
-			  imgui.Combo(langt['colorMarker'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'],targets_marker_color)
-			  imgui.InputText(langt['textTarget'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
-			  imgui.InputFloat(langt['timeText'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text_time'])
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 1 then
+				imgui.InputInt(langt['time'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Time'])
 			end
-			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 1 then
-			  imgui.Combo(langt['car'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_car_id'],vr.list_name_cars)
-			  imgui.Combo(u8'Цвет маркера',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'],targets_marker_color)
-			  imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 2 then
+				imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'],ffi.sizeof(vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text']))
+				imgui.InputInt(langt['timeout'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Time'])
 			end
-			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 2 then
-			  imgui.Combo(u8'Актёры',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_actor_id'],vr.list_name_actors)
-			  imgui.Combo(u8'Цвет маркера',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'],targets_marker_color)
-			  imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 3 then
+				if imgui.Combo(langt['weather'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Weather'],new('const char* const [?]',#Weather_str,Weather_str),#Weather_str) then
+					forceWeatherNow(vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Weather'][0])
+				end
 			end
-			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 3 then
-			  local target_type = {u8'Катсцена',u8'Обратный отсчёт',u8'Тайм-аут',u8'Погода',u8'Время',u8'Траффик Педов/Машин'}
-			  imgui.Combo(u8'Тип',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'],target_type)
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 0 then
-				imgui.InputFloat3(langt['position'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'])
-				imgui.InputFloat3(u8'Угл поворота',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Rotates'])
-				if imgui.Button(u8'Режим перемещения') then
-				  vr.editmode_camera = true
-				  printHelpForever('HOBJ')
-				  lockPlayerControl(true)
-				  vr.id_target = vr.lb_cur_targets.v+1
-				  imgui.Process = false
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 4 then
+				if imgui.Button(langt['timeGameMiss']) then
+					vr.editmode_timetarg = true
+					printHelpForever('HMTIM')
+					imgui.Process = false
+					vr.id_timetarg = vr.lb_cur_targets[0]+1
 				end
-				imgui.Checkbox(u8'Движение камеры',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Smooth'])
-				imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
-				imgui.InputFloat(u8'Время катсцены (сек)',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text_time'])
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 1 then
-				imgui.InputInt(u8'Время',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Time'])
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 2 then
-				imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
-				imgui.InputInt(u8'Тайм-аут',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Time'])
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 3 then
-				if imgui.Combo(u8'Погода',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weather'],Weather_str) then
-				  forceWeatherNow(vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weather'].v)
-				end
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 4 then
-				if imgui.Button(u8'Игровое время миссии') then
-				  vr.editmode_timetarg = true
-				  printHelpForever('HMTIM')
-				  imgui.Process = false
-				  vr.id_timetarg = vr.lb_cur_targets.v+1
-				end
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 5 then
-				local count = {u8'Нет',u8'Обычное',u8'Много'}
+			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 5 then
+				local count = decodeJson(langt['count_traffic'])
 				imgui.PushItemWidth(-100)
-				imgui.Combo(u8'Кол-во педов',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Traffic'][1],count)
-				imgui.Combo(u8'Кол-во машин',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Traffic'][2],count)
-			  end
+				imgui.Combo(langt['countPed'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Traffic'][1],new('const char* const [?]',#count,count),#count)
+				imgui.Combo(langt['countCar'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Traffic'][2],new('const char* const [?]',#count,count),#count)
 			end
-			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 4 then
-			  local target_type = {u8'Прикоснуться',u8'Повредить',u8'Сфотографровать',u8'Повредить оружием'}
-			  imgui.Combo(u8'Объект',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_object_id'],vr.list_name_objects)
-			  imgui.Combo(u8'Тип',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'],target_type)
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 3 then
-				imgui.Combo(u8'Оружие',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weap'],weap_names)
-			  end
-			  imgui.Combo(u8'Цвет маркера',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'],targets_marker_color)
-			  imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
+		end
+		if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 4 then
+			local target_type = decodeJson(langt['target_type_obj'])
+			imgui.Combo(langt['object'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_object_id'],new('const char* const [?]',#vr.list_name_objects,vr.list_name_objects),#vr.list_name_objects)
+			imgui.Combo(langt['type'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'],new('const char* const [?]',#target_type,target_type),#target_type)
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 3 then
+				imgui.Combo(langt['weapon'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Weap'],new('const char* const [?]',#weap_names,weap_names),#weap_names)
 			end
-			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 5 then
-			  imgui.Combo(u8'Пикап',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_pickup_id'],vr.list_name_pickup)
-			  imgui.Combo(u8'Цвет маркера',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Color_blip'],targets_marker_color)
-			  imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
-			end
-			if vr.list_targets[vr.lb_cur_targets.v+1]['Type'].v == 6 then
-			  local target_type = {u8'Телепорт',u8'Анимация игрока',u8'Телепорт в машину',u8'Уровень розыска',u8'Убрать оружие',u8'Разговор по телефону',u8'Добавить денег'}
-			  imgui.Combo(u8'Тип',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'],target_type)
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 0 then
-				imgui.InputFloat3(langt['position'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pos'])
-				imgui.DragFloat(u8'Угол',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Angle'],0.5,-360,360)
-				imgui.InputInt(u8'Модель',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['ModelID'])
+			imgui.Combo(langt['colorMarker'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Color_blip'],new('const char* const [?]',#targets_marker_color,targets_marker_color),#targets_marker_color)
+			imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'],ffi.sizeof(vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text']))
+		end
+		if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 5 then
+			imgui.Combo(langt['pickup'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_pickup_id'],new('const char* const [?]',#vr.list_name_pickup,vr.list_name_pickup),#vr.list_name_pickup)
+			imgui.Combo(langt['colorMarker'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Color_blip'],new('const char* const [?]',#targets_marker_color,targets_marker_color),#targets_marker_color)
+			imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'],ffi.sizeof(vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text']))
+		end
+		if vr.list_targets[vr.lb_cur_targets[0]+1]['Type'][0] == 6 then
+			local target_type = decodeJson(langt['target_type_ev'])
+			imgui.Combo(langt['type'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'],new('const char* const [?]',#target_type,target_type),#target_type)
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 0 then
+				imgui.InputFloat3(langt['position'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pos'])
+				imgui.DragFloat(langt['angle'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Angle'],0.5,-360,360)
+				imgui.InputInt(langt['model'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['ModelID'])
 				imgui.PushItemWidth(-100)
-				imgui.InputInt(u8'Кол-во патронов',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Weap_ammo'],10)
-				if imgui.Button(u8'Редактировать вручную') then
-				  vr.id_teleport_player = vr.lb_cur_targets.v+1
-				  imgui.Process = false
-				  printHelpForever('HPLA')
-				  vr.editmode_teleport_player = true
+				imgui.InputInt(langt['countAmmo'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Weap_ammo'],10)
+				if imgui.Button(langt['edithand']) then
+					vr.id_teleport_player = vr.lb_cur_targets[0]+1
+					imgui.Process = false
+					printHelpForever('HPLA')
+					vr.editmode_teleport_player = true
 				end
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 1 then
-				imgui.Combo(u8'Пак',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pack_anim'],Anims['Anim_name'])
-				imgui.Combo(u8'Анимация',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Anim'],Anims['Anim_list'][vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Pack_anim'].v+1])
-				imgui.Checkbox(u8'Зацикленно',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Loop'])
-				if imgui.Button(u8'Предпросмотр') then
-				  vr.id_preview_player_anim = vr.lb_cur_targets.v+1
-				  vr.editmode_preview_player_anim = true
-				  lockPlayerControl(true)
-				  imgui.Process = false
-				  printHelpForever('HVIEW')
+			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 1 then
+				imgui.Combo(langt['pack'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pack_anim'],new('const char* const [?]',#Anims['Anim_name'],Anims['Anim_name']),#Anims['Anim_name'])
+				imgui.Combo(langt['anim'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Anim'],new('const char* const [?]',#Anims['Anim_list'][vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pack_anim'][0]+1],Anims['Anim_list'][vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pack_anim'][0]+1]),#Anims['Anim_list'][vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Pack_anim'][0]+1])
+				imgui.Checkbox(langt['looped'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Loop'])
+				if imgui.Button(langt['preview']) then
+					vr.id_preview_player_anim = vr.lb_cur_targets[0]+1
+					vr.editmode_preview_player_anim = true
+					lockPlayerControl(true)
+					imgui.Process = false
+					printHelpForever('HVIEW')
 				end
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 2 then
-				local place_car = {u8'Место водителя',u8'Место пассажира',u8'Заднее левое место',u8'Заднее правое место'}
-				imgui.Combo(u8'Машина',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Car_id'],vr.list_name_cars)
-				imgui.Combo(u8'Место',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Car_place'],place_car)
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 3 then
+			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 2 then
+				local place_car = decodeJson(langt['place_car'])
+				imgui.Combo(langt['car'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Car_id'],new('const char* const [?]',#vr.list_name_cars,vr.list_name_cars),#vr.list_name_cars)
+				imgui.Combo(langt['place'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Car_place'],new('const char* const [?]',#place_car,place_car),#place_car)
+			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 3 then
 				imgui.PushItemWidth(-100)
-				imgui.SliderInt(u8'Уровень розыска',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Level_battue'],0,6)
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 5 then
-				imgui.Text(u8'Диалог')
+				imgui.SliderInt(langt['levelp'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Level_battue'],0,6)
+			end
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 5 then
+				imgui.Text(langt['dialog'])
 				if imgui.Button(langt['add']) then
-				  vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'][#vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog']+1] = {
-					['Text'] = imgui.ImBuffer(128),
-					['Text_time'] = imgui.ImFloat(0)
-				  }
+					vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog'][#vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog']+1] = {
+					['Text'] = new.char[128](),
+					['Text_time'] = new.float(0)
+					}
 				end
 				imgui.PushItemWidth(-150)
 				imgui.SameLine()
-				imgui.Combo(u8'Номер',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog_id'],range(#vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog']))
+				local rang = range(#vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog'])
+				imgui.Combo(langt['number'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog_id'],new('const char* const [?]',#rang,rang),#rang)
 				imgui.SameLine()
 				if imgui.Button(langt['delete']) then
-				  vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'] = DelCellArr(vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog_id'].v+1)
+				vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog'] = DelCellArr(vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog_id'][0]+1)
 				end
 				imgui.PushItemWidth(-70)
-				for d = 1,#vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'] do
-				  if imgui.TreeNode(u8:encode(d)) then
-					imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'][d]['Text'])
-					imgui.InputFloat(u8'Время',vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Dialog'][d]['Text_time'])
+				for d = 1,#vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog'] do
+					if imgui.TreeNodeStr(u8:encode(d)) then
+					imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog'][d]['Text'],ffi.sizeof(vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog'][d]['Text']))
+					imgui.InputFloat(langt['time'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Dialog'][d]['Text_time'])
 					imgui.TreePop()
-		  
-				  end
+					end
 				end
-				--imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Text'])
-			  end
-			  if vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Target_type'].v == 6 then
-				imgui.InputInt(langt['add'],vr.list_targets[vr.lb_cur_targets.v+1]['Target_Data']['Add_money'])
-			  end
+				--imgui.InputText(langt['text'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Text'])
 			end
-			imgui.End()
+			if vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Target_type'][0] == 6 then
+				imgui.InputInt(langt['add'],vr.list_targets[vr.lb_cur_targets[0]+1]['Target_Data']['Add_money'])
+			end
 		end
+		imgui.End()
 	end
 
-	-- Окно списка актёров
-	if vr.actors_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 300, 340
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Актёры', vr.actors_window)
+end)
 
-		imgui.PushItemWidth(-10)
+--Актёры
+imgui.OnFrame(function() return vr.actors_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
 
+	local resX,resY = getScreenResolution()
+	local sizeX,sizeY = 300, 340
+	imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+	imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+	imgui.Begin(langt['actors'])
+	imgui.PushItemWidth(-10)
 
-		--Список Актёров
-		imgui.ListBox('', vr.lb_cur_actors,vr.list_name_actors,15)
-		if imgui.BeginPopupContextItem('hee') then
-			imgui.InputText('',vr.buf_edit_actors_name)
-			if imgui.Button(langt['apply']) and vr.buf_edit_actors_name.v ~= '' then
-				vr.list_actors[vr.lb_cur_actors.v+1]['Name'] = vr.buf_edit_actors_name.v
-				vr.list_name_actors[vr.lb_cur_actors.v+1] = vr.buf_edit_actors_name.v
-				vr.buf_edit_actors_name.v = ''
-				imgui.CloseCurrentPopup()
-			end
-			imgui.PushItemWidth(-1);
-			imgui.PopItemWidth();
-			imgui.EndPopup();
+	--Список Актёров
+	imgui.ListBoxStr_arr('', vr.lb_cur_actors,new('const char* const [?]',#vr.list_name_actors,vr.list_name_actors),#vr.list_name_actors,15)
+	if imgui.BeginPopupContextItem('hee') then
+		imgui.InputText('',vr.buf_edit_actors_name,ffi.sizeof(vr.buf_edit_actors_name))
+		if imgui.Button(langt['apply']) and vr.buf_edit_actors_name[0] ~= '' then
+			vr.list_actors[vr.lb_cur_actors[0]+1]['Name'] = ffi.string(vr.buf_edit_actors_name)
+			vr.list_name_actors[vr.lb_cur_actors[0]+1] = ffi.string(vr.buf_edit_actors_name)
+			imgui.StrCopy(vr.buf_edit_actors_name,'')
+			imgui.CloseCurrentPopup()
 		end
-
-		--Кнопки редактирования
-		if imgui.Button(langt['add']) then
-			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-			xz = getGroundZFor3dCoord(xx,xy,xz)
-			local angle = getCharHeading(PLAYER_PED)
-			vr.list_actors[#vr.list_actors+1] = {
-				['Name'] = u8'Актёр #' .. tostring(#vr.list_actors+1),
-				['Type'] = imgui.ImInt(-1),
-				['Actor_Data'] = {
-					['Pos'] = imgui.ImFloat3(xx,xy,xz),
-					['Angle'] = imgui.ImFloat(angle),
-					['ModelId'] = imgui.ImInt(0),
-					['StartC'] = imgui.ImInt(0),
-					['EndC'] = imgui.ImInt(0),
-					['Anims'] = {},
-					['Anim_id'] = imgui.ImInt(0),
-					['Should_not_die'] = imgui.ImBool(false),
-					['Health'] = imgui.ImInt(100)
-				}
-
+		imgui.PushItemWidth(-1);
+		imgui.PopItemWidth();
+		imgui.EndPopup();
+	end
+	--Кнопки редактирования
+	if imgui.Button(langt['add']) then
+		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+		xz = getGroundZFor3dCoord(xx,xy,xz)
+		local angle = getCharHeading(PLAYER_PED)
+		vr.list_actors[#vr.list_actors+1] = {
+			['Name'] = langt['actor']..' #' .. tostring(#vr.list_actors+1),
+			['Type'] = new.int(-1),
+			['Actor_Data'] = {
+				['Pos'] = new.float[3](xx,xy,xz),
+				['Angle'] = new.float(angle),
+				['ModelId'] = new.int(0),
+				['StartC'] = new.int(0),
+				['EndC'] = new.int(0),
+				['Anims'] = {},
+				['Anim_id'] = new.int(0),
+				['Should_not_die'] = new.bool(false),
+				['Health'] = new.int(100)
 			}
-			upd_actor:run(#vr.list_actors)
-			vr.list_name_actors[#vr.list_actors] = vr.list_actors[#vr.list_actors]['Name']
-		end
+		}
+		upd_actor:run(#vr.list_actors)
+		vr.list_name_actors[#vr.list_actors] = vr.list_actors[#vr.list_actors]['Name']
+	end
+	imgui.SameLine()
+	if imgui.Button(langt['delete']) then
+		deleteChar(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'])
+		vr.list_actors = DelCellArr(vr.list_actors,vr.lb_cur_actors[0]+1)
+		vr.list_name_actors = DelCellArr(vr.list_name_actors,vr.lb_cur_actors[0]+1)
+	end
+	-- if imgui.Button(u8'Дублировать') then
+	-- 	vr.list_actors[#vr.list_actors+1] = {
+	-- 		['Name'] = vr.list_actors[vr.lb_cur_actors[0]+1]['Name'] .. u8'д',
+	-- 		['Type'] = new.int(vr.list_actors[vr.lb_cur_actors[0]+1]['Type'][0]),
+	-- 		['Enable'] = new.bool(vr.list_actors[vr.lb_cur_actors[0]+1]['Enable'][0]),
+	-- 		['Actor_Data'] = {
+	-- 			['Pos'] = new.float[3](vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][0],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][1],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][2]),
+	-- 			['Angle'] = new.float(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Angle'][0]),
+	-- 			['ModelId'] = new.int(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['ModelId'][0]),
+	-- 			['StartC'] = new.int(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['StartC'][0]),
+	-- 			['EndC'] = new.int(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['EndC'][0]),
+	-- 			['Anims'] = {}
+	-- 		}
+	-- 	}
+	-- 	vr.list_name_actors[#vr.list_actors] = vr.list_actors[vr.lb_cur_actors[0]+1]['Name']
+	-- end
+	imgui.End()
 
+	--Редактор актёра
+	if #vr.list_actors > 0 and vr.list_actors[vr.lb_cur_actors[0]+1] then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 400, 340
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(vr.list_actors[vr.lb_cur_actors[0]+1]['Name'])
+		imgui.PushItemWidth(-90)
+		
+		if imgui.InputFloat3(langt['position'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos']) or imgui.SliderFloat(langt['rotate'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Angle'],-360,360) then
+		  local xx,xy,xz = vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][0],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][1],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][2]
+		  setCharCoordinates(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'],xx,xy,xz)
+		  setCharHeading(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'], vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Angle'][0])
+		end
+		if imgui.InputInt(langt['model'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['ModelId']) then
+		  local id_a = 0
+		  for v = 1,#ID_Actors do
+			if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['ModelId'][0] <= ID_Actors[v] then
+			  id_a = ID_Actors[v]
+			  break
+			end
+		  end
+		  vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['ModelId'][0] = id_a
+		  upd_actor:run(vr.lb_cur_actors[0]+1)
+		end
+		imgui.InputInt(langt['countlive'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Health'])
+		imgui.Checkbox(langt['should_live'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Should_not_die'])
+		if imgui.Button(langt['edithand']) then
+		  vr.editmode_actor = true
+		  vr.id_actor = vr.lb_cur_actors[0]+1
+		  deleteChar(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'])
+		  printHelpForever('HACT')
+		end
+		
+		imgui.PushItemWidth(-110)
+		
+		imgui.Separator()
+		local list_tg_m = {langt['toend']}
+		for ltg = 1,#vr.list_name_targets do
+		  list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+		end
+		imgui.Combo(langt['app_on'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['StartC'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+		imgui.Combo(langt['dis_after'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['EndC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+		imgui.Separator()
+		imgui.Text(langt['actions'])
+		
+		if imgui.Button(langt['add']) then
+		  vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][#vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims']+1] = {
+			['Type'] = new.int(-1),
+		  }
+		end
+		imgui.SameLine()
+		imgui.PushItemWidth(-250)
+		local rang = range(#vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'])
+		imgui.Combo(langt['number'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anim_id'],new('const char* const [?]',#rang,rang),#rang)
 		imgui.SameLine()
 		if imgui.Button(langt['delete']) then
-			deleteChar(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'])
-			vr.list_actors = DelCellArr(vr.list_actors,vr.lb_cur_actors.v+1)
-			vr.list_name_actors = DelCellArr(vr.list_name_actors,vr.lb_cur_actors.v+1)
+		  vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'] = DelCellArr(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anim_id'][0]+1)
 		end
-		-- if imgui.Button(u8'Дублировать') then
-		-- 	vr.list_actors[#vr.list_actors+1] = {
-		-- 		['Name'] = vr.list_actors[vr.lb_cur_actors.v+1]['Name'] .. u8'д',
-		-- 		['Type'] = imgui.ImInt(vr.list_actors[vr.lb_cur_actors.v+1]['Type'].v),
-		-- 		['Enable'] = imgui.ImBool(vr.list_actors[vr.lb_cur_actors.v+1]['Enable'].v),
-		-- 		['Actor_Data'] = {
-		-- 			['Pos'] = imgui.ImFloat3(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[1],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[2],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[3]),
-		-- 			['Angle'] = imgui.ImFloat(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Angle'].v),
-		-- 			['ModelId'] = imgui.ImInt(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['ModelId'].v),
-		-- 			['StartC'] = imgui.ImInt(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['StartC'].v),
-		-- 			['EndC'] = imgui.ImInt(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['EndC'].v),
-		-- 			['Anims'] = {}
-		-- 		}
-		-- 	}
-		-- 	vr.list_name_actors[#vr.list_actors] = vr.list_actors[vr.lb_cur_actors.v+1]['Name']
-		-- end
-
-		imgui.End()
-		--Редактор актёра
-		if #vr.list_actors > 0 and vr.list_actors[vr.lb_cur_actors.v+1] then
-			local resX,resY = getScreenResolution()
-			local sizeX,sizeY = 400, 340
-			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 175,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-			imgui.Begin(vr.list_actors[vr.lb_cur_actors.v+1]['Name'], vr.list_actors[vr.lb_cur_actors.v+1]['Enable'])
-			imgui.PushItemWidth(-90)
-			
-			if imgui.InputFloat3(langt['position'],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos']) or imgui.SliderFloat(u8'Угол поворота',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Angle'],-360,360) then
-			  local xx,xy,xz = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[1],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[2],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[3]
-			  setCharCoordinates(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],xx,xy,xz)
-			  setCharHeading(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'], vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Angle'].v)
-			end
-			if imgui.InputInt(u8'Номер модели',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['ModelId']) then
-			  local id_a = 0
-			  for v = 1,#ID_Actors do
-				if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['ModelId'].v <= ID_Actors[v] then
-				  id_a = ID_Actors[v]
-				  break
+		if imgui.Button(langt['del_preview']) then
+		  upd_actor:run(vr.lb_cur_actors[0]+1)
+		end
+		imgui.PushItemWidth(-150)
+		for a = 1,#vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'] do
+			if imgui.TreeNodeStr(u8:encode(a)) then
+				local type = decodeJson(langt['type_anim_actr'])
+				if imgui.Combo(langt['type'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'],new('const char* const [?]',#type,type),#type) then
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 0 then
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Anim'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Pack_anim'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Loop'] = new.bool(false)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Time'] = new.float(1.0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Unbreakable'] = new.bool(false)
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 1 then
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'] = {}
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type_move'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type_route'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Cur_point'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Vis_point'] = new.bool(false)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['wait_end'] = new.bool(false)
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 2 then
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'] = {}
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Speed'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Cur_point'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Vis_point'] = new.bool(false)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['wait_end'] = new.bool(false)
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 3 then
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['wait_end'] = new.bool(false)
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 4 then
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car_a'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car_t'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Speed'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['trafficFlag'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Vehicle_mission'] = new.int(0)
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 5 then
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['place_in_car'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['speed_walk'] = new.int(0)
+						vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['wait_end'] = new.bool(false)
+					end
 				end
-			  end
-			  vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['ModelId'].v = id_a
-			  upd_actor:run(vr.lb_cur_actors.v+1)
-			end
-			imgui.InputInt(u8'Кол-во здоровья',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Health'])
-			imgui.Checkbox(u8'Должен выжить?',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Should_not_die'])
-			if imgui.Button(u8'Редактировать вручную') then
-			  vr.editmode_actor = true
-			  vr.id_actor = vr.lb_cur_actors.v+1
-			  deleteChar(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'])
-			  printHelpForever('HACT')
-			end
-			
-			imgui.PushItemWidth(-110)
-			
-			imgui.Separator()
-			local list_tg_m = {u8'До конца'}
-			for ltg = 1,#vr.list_name_targets do
-			  list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-			end
-			imgui.Combo(u8'Появление на',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['StartC'],vr.list_name_targets)
-			imgui.Combo(u8'Исчезание после',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['EndC'],list_tg_m)
-			imgui.Separator()
-			imgui.Text(u8'Действия')
-			
-			if imgui.Button(langt['add']) then
-			  vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims']+1] = {
-				['Type'] = imgui.ImInt(-1),
-			  }
-			end
-			imgui.SameLine()
-			imgui.PushItemWidth(-250)
-			imgui.Combo(u8'Номер',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anim_id'],range(#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims']))
-			imgui.SameLine()
-			if imgui.Button(langt['delete']) then
-			  vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'] = DelCellArr(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anim_id'].v+1)
-			end
-			if imgui.Button(u8'Очистить предпросмотр/движение') then
-			  upd_actor:run(vr.lb_cur_actors.v+1)
-			end
-			imgui.PushItemWidth(-150)
-			for a = 1,#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'] do
-				if imgui.TreeNode(u8:encode(a)) then
-					local type = {u8'Анимация',u8'Передвижение по пути',u8'Ехать по пути на авто',u8'Выйти из авто',u8'Ехать за машиной',u8'Сесть в машину'}
-					if imgui.Combo(u8'Тип',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'],type) then
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 0 then
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Anim'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Pack_anim'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Loop'] = imgui.ImBool(false)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Time'] = imgui.ImFloat(1.0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Unbreakable'] = imgui.ImBool(false)
+				imgui.Separator()
+				if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 0 then
+					local cond_type = decodeJson(langt['cond_type'])
+					if imgui.Combo(langt['cond'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'],new('const char* const [?]',#cond_type,cond_type),#cond_type) then
+						if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+							vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'] = new.int(0)
 						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 1 then
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'] = {}
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type_move'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type_route'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point'] = imgui.ImBool(false)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'] = imgui.ImBool(false)
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 2 then
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'] = {}
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Speed'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point'] = imgui.ImBool(false)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'] = imgui.ImBool(false)
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 3 then
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'] = imgui.ImBool(false)
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 4 then
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car_a'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car_t'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Speed'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['trafficFlag'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vehicle_mission'] = imgui.ImInt(0)
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 5 then
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['place_in_car'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['speed_walk'] = imgui.ImInt(0)
-							vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'] = imgui.ImBool(false)
-						end
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+						imgui.Combo(langt['target'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
 					end
 					imgui.Separator()
-					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 0 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						imgui.Combo(u8'Пак',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Pack_anim'],Anims['Anim_name'])
-						imgui.Combo(u8'Анимация',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Anim'],Anims['Anim_list'][vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Pack_anim'].v+1])
-						imgui.InputFloat(u8'Время анимации (сек)',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Time'],0)
-						imgui.Checkbox(u8'Зацикленно',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Loop'])
-						imgui.Checkbox(u8'Неуязвим',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Unbreakable'])
-						if imgui.Button(u8'Предпросмотр') then
-							upd_anim_actor:run(vr.lb_cur_actors.v+1,a)
-						end
-						imgui.Button(langt['delete'])
+					imgui.Combo(langt['pack'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Pack_anim'],new('const char* const [?]',#Anims['Anim_name'],Anims['Anim_name']),#Anims['Anim_name'])
+					imgui.Combo(langt['anim'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Anim'],new('const char* const [?]',#Anims['Anim_list'][vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Pack_anim'][0]+1],Anims['Anim_list'][vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Pack_anim'][0]+1]),#Anims['Anim_list'][vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Pack_anim'][0]+1])
+					imgui.InputFloat(langt['time_anim'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Time'],0)
+					imgui.Checkbox(langt['looped'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Loop'])
+					imgui.Checkbox(langt['unbreak'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Unbreakable'])
+					if imgui.Button(langt['preview']) then
+						upd_anim_actor:run(vr.lb_cur_actors[0]+1,a)
 					end
-					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 1 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
+					imgui.Button(langt['delete'])
+				end
+				if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 1 then
+					local cond_type = decodeJson(langt['cond_type'])
+					if imgui.Combo(langt['cond'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'],new('const char* const [?]',#cond_type,cond_type),#cond_type) then
+						if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+							vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'] = new.int(0)
 						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						local move_type = {u8'Согнуто',u8'Ходьба',u8'Бег',u8'Быстрый бег'}
-						local move_route = {u8'до конца и останавливается.',u8'до конца и обратно, останавливается',u8'зацикленно, ходит по пути',u8'зацикленно, в конце идёт на начало.'}
-						imgui.Combo(u8'Тип передвижения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type_move'],move_type)
-						local list_name_point = {}
-						imgui.Combo(u8'тип маршрута',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type_route'],move_route)
-						for i = 1, #vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'] do
-							local point = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][i]
-							list_name_point[i] = tostring(point[1])..' '..tostring(point[2]) ..' '..tostring(point[3])
-						end
-						if imgui.Checkbox(u8'Отображать путь',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point']) then
-							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point'].v then
-								lua_thread.create(function(anim)
-									local font = renderCreateFont('Verdana',12)
-									while anim['Vis_point'].v do
-										wait(0)
-										vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][0] = {vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[1],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[2],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[3]}
-										for i = 1, #anim['Path'] do
-											local x1,y1,z1 = anim['Path'][i][1],anim['Path'][i][2],anim['Path'][i][3]
-											local x2,y2,z2 = anim['Path'][i-1][1],anim['Path'][i-1][2],anim['Path'][i-1][3]
-											local font_pos_x1,font_pos_y1 = convert3DCoordsToScreen(x1,y1,z1+0.1)
-											local font_pos_x2,font_pos_y2 = convert3DCoordsToScreen(x2,y2,z2+0.1)
-											DrawLineBy3dCoords(x1,y1,z1,x2,y2,z2,2,0xFFFFFFFF)
-											if isPointOnScreen(x1, y1, z1,1) then
-												renderFontDrawText(font,tostring(x1)..' '..tostring(y1) ..' '..tostring(z1),font_pos_x1,font_pos_y1,0xFFFFFFFF)
-											end
-											if isPointOnScreen(x2, y2, z2,1) then
-												renderFontDrawText(font,tostring(x2)..' '..tostring(y2) ..' '..tostring(z2),font_pos_x2,font_pos_y2,0xFFFFFFFF)
-											end
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+						imgui.Combo(langt['target'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+					end
+					imgui.Separator()
+					local move_type = decodeJson(langt['move_type_ped'])
+					local move_route = decodeJson(langt['move_route_ped'])
+					imgui.Combo(langt['type_move_ped'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type_move'],new('const char* const [?]',#move_type,move_type),#move_type)
+					local list_name_point = {}
+					imgui.Combo(langt['type_route_ped'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type_route'],new('const char* const [?]',#move_route,move_route),#move_route)
+					for i = 1, #vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'] do
+						local point = vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'][i]
+						list_name_point[i] = tostring(point[1])..' '..tostring(point[2]) ..' '..tostring(point[3])
+					end
+					if imgui.Checkbox(langt['view_path'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Vis_point']) then
+						if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Vis_point'][0] then
+							lua_thread.create(function(anim)
+								local font = renderCreateFont('Verdana',12)
+								while anim['Vis_point'][0] do
+									wait(0)
+									vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'][0] = {vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][0],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][1],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][2]}
+									for i = 1, #anim['Path'] do
+										local x1,y1,z1 = anim['Path'][i][1],anim['Path'][i][2],anim['Path'][i][3]
+										local x2,y2,z2 = anim['Path'][i-1][1],anim['Path'][i-1][2],anim['Path'][i-1][3]
+										local font_pos_x1,font_pos_y1 = convert3DCoordsToScreen(x1,y1,z1+0.1)
+										local font_pos_x2,font_pos_y2 = convert3DCoordsToScreen(x2,y2,z2+0.1)
+										DrawLineBy3dCoords(x1,y1,z1,x2,y2,z2,2,0xFFFFFFFF)
+										if isPointOnScreen(x1, y1, z1,1) then
+											renderFontDrawText(font,tostring(x1)..' '..tostring(y1) ..' '..tostring(z1),font_pos_x1,font_pos_y1,0xFFFFFFFF)
+										end
+										if isPointOnScreen(x2, y2, z2,1) then
+											renderFontDrawText(font,tostring(x2)..' '..tostring(y2) ..' '..tostring(z2),font_pos_x2,font_pos_y2,0xFFFFFFFF)
 										end
 									end
-									renderReleaseFont(font)
-								end,
-								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a])
-							end
-							
-						end
-						imgui.ListBox(u8'Точки пути',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'],list_name_point,4)
-						if imgui.Button(langt['add']) then
-							local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-							table.insert(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'],{xx,xy,xz})
-						end
-						imgui.SameLine()
-						if imgui.Button(u8'Добавить вводом') then
-							imgui.Process = false;
-							vr.id_actor_anim = a;
-							vr.editmode_actor_add_point = true;
-						end
-						imgui.SameLine()
-						if imgui.Button(langt['delete']) then
-							table.remove(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'].v+1)
-						end
-						imgui.Separator()
-						if imgui.Button(u8'Выполнить') then
-							local xx,xy,xz = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[1],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[2],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Pos'].v[3]
-							local dec = loadCharDecisionMaker(0)
-							setCharProofs(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],true,true,true,true,true)
-							setCharDecisionMaker(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],dec)
-							setCharCoordinates(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],xx,xy,xz)
-							setCharCollision(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],true)
-							lua_thread.create(function(path)
-								flushPatrolRoute()
-								local type_walk = 4;
-								if path['Type_move'].v == 2 then type_walk = 6
-								elseif path['Type_move'].v == 3 then type_walk = 7 end
-								taskToggleDuck(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'], ternar(path['Type_move'].v == 0,true,false))
-								for i = 1,#path['Path'] do
-									local x1,y1,z1 = path['Path'][i][1],path['Path'][i][2],path['Path'][i][3]
-									if i % 7 == 0 then
-										wait(0)
-										local px,py,pz = getCharCoordinates(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'])
-										taskFollowPatrolRoute(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],type_walk,path['Type_route'].v)
-										while getDistanceBetweenCoords3d(path['Path'][i-1][1],path['Path'][i-1][2],path['Path'][i-1][3],px,py,pz) > 0.1 do
-											wait(0)
-											px,py,pz = getCharCoordinates(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'])
-											print(getDistanceBetweenCoords3d(path['Path'][i][1],path['Path'][i][2],path['Path'][i][3],px,py,pz))
-										end
-										print('hel')
-										flushPatrolRoute()
-									end
-									extendPatrolRoute(x1,y1,z1,'NONE','NONE')
 								end
-								taskFollowPatrolRoute(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Char'],type_walk,path['Type_route'].v)
-							end,vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a])
+								renderReleaseFont(font)
+							end,
+							vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a])
 						end
-						imgui.Checkbox(u8'Ждать выполнения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'])
+						
 					end
-					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 2 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						local list_name_point = {}
-						for i = 1,#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'] do
-							local point = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][i]
-							list_name_point[i] = tostring(point[1])..' '..tostring(point[2]) ..' '..tostring(point[3])
-						end
-						if imgui.Checkbox(u8'Отображать путь',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point']) then
-							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vis_point'].v then
-								lua_thread.create(function(anim)
-									local font = renderCreateFont('Verdana',12)
-									while anim['Vis_point'].v do
+					imgui.ListBoxStr_arr(langt['point_path'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Cur_point'],new('const char* const [?]',#list_name_point,list_name_point),#list_name_point,4)
+					if imgui.Button(langt['add']) then
+						local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+						table.insert(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'],{xx,xy,xz})
+					end
+					imgui.SameLine()
+					if imgui.Button(langt['add_enter']) then
+						imgui.Process = false;
+						vr.id_actor_anim = a;
+						vr.editmode_actor_add_point = true;
+					end
+					imgui.SameLine()
+					if imgui.Button(langt['delete']) then
+						table.remove(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Cur_point'][0]+1)
+					end
+					imgui.Separator()
+					if imgui.Button(langt['perform']) then
+						local xx,xy,xz = vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][0],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][1],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Pos'][2]
+						local dec = loadCharDecisionMaker(0)
+						setCharProofs(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'],true,true,true,true,true)
+						setCharDecisionMaker(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'],dec)
+						setCharCoordinates(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'],xx,xy,xz)
+						setCharCollision(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'],true)
+						lua_thread.create(function(path)
+							flushPatrolRoute()
+							local type_walk = 4;
+							if path['Type_move'][0] == 2 then type_walk = 6
+							elseif path['Type_move'][0] == 3 then type_walk = 7 end
+							taskToggleDuck(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'], ternar(path['Type_move'][0] == 0,true,false))
+							for i = 1,#path['Path'] do
+								local x1,y1,z1 = path['Path'][i][1],path['Path'][i][2],path['Path'][i][3]
+								if i % 7 == 0 then
+									wait(0)
+									local px,py,pz = getCharCoordinates(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'])
+									taskFollowPatrolRoute(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'],type_walk,path['Type_route'][0])
+									while getDistanceBetweenCoords3d(path['Path'][i-1][1],path['Path'][i-1][2],path['Path'][i-1][3],px,py,pz) > 0.1 do
 										wait(0)
-										if #vr.list_cars > 0 then
-											vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][0] = {vr.list_cars[vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'].v+1]['Car_Data']['Pos'].v[1] or 0 ,vr.list_cars[vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'].v+1]['Car_Data']['Pos'].v[2] or 0 ,vr.list_cars[vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'].v+1]['Car_Data']['Pos'].v[3] or 0 }
-										else
-											vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'][0] = {0,0,0}
+										px,py,pz = getCharCoordinates(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'])
+										print(getDistanceBetweenCoords3d(path['Path'][i][1],path['Path'][i][2],path['Path'][i][3],px,py,pz))
+									end
+									flushPatrolRoute()
+								end
+								extendPatrolRoute(x1,y1,z1,'NONE','NONE')
+							end
+							taskFollowPatrolRoute(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Char'],type_walk,path['Type_route'][0])
+						end,vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a])
+					end
+					imgui.Checkbox(langt['wait_end'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['wait_end'])
+				end
+				if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 2 then
+					local cond_type = decodeJson(langt['cond_type'])
+					if imgui.Combo(langt['cond'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'],new('const char* const [?]',#cond_type,cond_type),#cond_type) then
+						if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+							vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'] = new.int(0)
+						end
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+						imgui.Combo(langt['target'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+					end
+					imgui.Separator()
+					local list_name_point = {}
+					for i = 1,#vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'] do
+						local point = vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'][i]
+						list_name_point[i] = tostring(point[1])..' '..tostring(point[2]) ..' '..tostring(point[3])
+					end
+					if imgui.Checkbox(langt['view_path'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Vis_point']) then
+						if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Vis_point'][0] then
+							lua_thread.create(function(anim)
+								local font = renderCreateFont('Verdana',12)
+								while anim['Vis_point'][0] do
+									wait(0)
+									if #vr.list_cars > 0 then
+										vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'][0] = {vr.list_cars[vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car'][0]+1]['Car_Data']['Pos'][0] or 0 ,vr.list_cars[vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car'][0]+1]['Car_Data']['Pos'][1] or 0 ,vr.list_cars[vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car'][0]+1]['Car_Data']['Pos'][2] or 0 }
+									else
+										vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'][0] = {0,0,0}
+									end
+									for i = 1, #anim['Path'] do
+										local x1,y1,z1 = anim['Path'][i][1],anim['Path'][i][2],anim['Path'][i][3]
+										local x2,y2,z2 = anim['Path'][i-1][1],anim['Path'][i-1][2],anim['Path'][i-1][3]
+										local font_pos_x1,font_pos_y1 = convert3DCoordsToScreen(x1,y1,z1+0.1)
+										local font_pos_x2,font_pos_y2 = convert3DCoordsToScreen(x2,y2,z2+0.1)
+										DrawLineBy3dCoords(x1,y1,z1,x2,y2,z2,2,0xFFFFFFFF)
+										if isPointOnScreen(x1, y1, z1,1) then
+											renderFontDrawText(font,tostring(x1)..' '..tostring(y1) ..' '..tostring(z1),font_pos_x1,font_pos_y1,0xFFFFFFFF)
 										end
-										for i = 1, #anim['Path'] do
-											local x1,y1,z1 = anim['Path'][i][1],anim['Path'][i][2],anim['Path'][i][3]
-											local x2,y2,z2 = anim['Path'][i-1][1],anim['Path'][i-1][2],anim['Path'][i-1][3]
-											local font_pos_x1,font_pos_y1 = convert3DCoordsToScreen(x1,y1,z1+0.1)
-											local font_pos_x2,font_pos_y2 = convert3DCoordsToScreen(x2,y2,z2+0.1)
-											DrawLineBy3dCoords(x1,y1,z1,x2,y2,z2,2,0xFFFFFFFF)
-											if isPointOnScreen(x1, y1, z1,1) then
-												renderFontDrawText(font,tostring(x1)..' '..tostring(y1) ..' '..tostring(z1),font_pos_x1,font_pos_y1,0xFFFFFFFF)
-											end
-											if isPointOnScreen(x2, y2, z2,1) then
-												renderFontDrawText(font,tostring(x2)..' '..tostring(y2) ..' '..tostring(z2),font_pos_x2,font_pos_y2,0xFFFFFFFF)
-											end
+										if isPointOnScreen(x2, y2, z2,1) then
+											renderFontDrawText(font,tostring(x2)..' '..tostring(y2) ..' '..tostring(z2),font_pos_x2,font_pos_y2,0xFFFFFFFF)
 										end
 									end
-									renderReleaseFont(font)
-								end,
-								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a])
-							end
-							
+								end
+								renderReleaseFont(font)
+							end,
+							vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a])
 						end
-						imgui.Combo(u8'Машина',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'],vr.list_name_cars)
-						imgui.InputInt(u8'Скорость',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Speed'])
-						imgui.ListBox(u8'Точки пути',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'],list_name_point,4)
-						if imgui.Button(langt['add']) then
-							local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-							table.insert(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'],{xx,xy,xz})
-						end
-						imgui.SameLine()
-						if imgui.Button(u8'Добавить вводом') then
-							imgui.Process = false;
-							vr.id_actor_anim = a;
-							vr.editmode_actor_add_point = true;
-						end
-						imgui.SameLine()
-						if imgui.Button(langt['delete']) then
-							table.remove(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Path'],vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Cur_point'].v+1)
-						end
-						imgui.Checkbox(u8'Ждать выполнения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'])
+						
 					end
-					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 3 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Checkbox(u8'Ждать выполнения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'])
+					imgui.Combo(langt['car'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car'],new('const char* const [?]',#vr.list_name_cars,vr.list_name_cars),#vr.list_name_cars)
+					imgui.InputInt(langt['speed'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Speed'])
+					imgui.ListBoxStr_arr(langt['point_path'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Cur_point'],list_name_point,4)
+					if imgui.Button(langt['add']) then
+						local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+						table.insert(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'],{xx,xy,xz})
 					end
-					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 4 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						local drive_beh = {u8'Сдаёт назад',u8'Cтоит на месте',u8'Пытается удрать от погони',u8'Пытается нанести удары'}
-						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						imgui.Combo(u8'Машина актёра',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car_a'],vr.list_name_cars)
-						imgui.InputInt(u8'Максимальная скорость',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Speed'])
-						imgui.InputInt(u8'Поведение транспорта',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['trafficFlag'])
-						imgui.Combo(u8'Поведение водителя',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Vehicle_mission'],drive_beh)
-						imgui.Separator()
-						imgui.Combo(u8'Машина цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car_t'],vr.list_name_cars)
+					imgui.SameLine()
+					if imgui.Button(langt['add_enter']) then
+						imgui.Process = false;
+						vr.id_actor_anim = a;
+						vr.editmode_actor_add_point = true;
 					end
-					if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Type'].v == 5 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						local place_in_car = {u8'Водитель',u8'Переднее правое',u8'Заднее левое',u8'Заднее правое'}
-						local speed_walk_car = {u8'Идёт',u8'Смотрит',u8'Бежит',u8'Спринт'}
-						if imgui.Combo(u8'Условие',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						imgui.Combo(u8'Скорость ходьбы',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['speed_walk'],speed_walk_car)
-						imgui.Combo(u8'Машина',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['Car'],vr.list_name_cars)
-						imgui.Combo(u8'Сиденье',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['place_in_car'],place_in_car)
-						imgui.Checkbox(u8'Ждать выполнения',vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][a]['wait_end'])
+					imgui.SameLine()
+					if imgui.Button(langt['delete']) then
+						table.remove(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Path'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Cur_point'][0]+1)
 					end
-					imgui.TreePop()
+					imgui.Checkbox(langt['wait_end'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['wait_end'])
 				end
+				if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 3 then
+					local cond_type = decodeJson(langt['cond_type'])
+					if imgui.Combo(langt['cond'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'],new('const char* const [?]',#cond_type,cond_type),#cond_type) then
+						if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+							vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'] = new.int(0)
+						end
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+						imgui.Combo(langt['target'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+					end
+					imgui.Checkbox(langt['wait_end'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['wait_end'])
+				end
+				if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 4 then
+					local drive_beh = decodeJson(langt['driver_beh'])
+					local cond_type = decodeJson(langt['cond_type'])
+					if imgui.Combo(langt['cond'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'],new('const char* const [?]',#cond_type,cond_type),#cond_type) then
+						if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+							vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'] = new.int(0)
+						end
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+						imgui.Combo(langt['target'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+					end
+					imgui.Separator()
+					imgui.Combo(langt['car_actr'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car_a'],new('const char* const [?]',#vr.list_name_cars,vr.list_name_cars),#vr.list_name_cars)
+					imgui.InputInt(langt['max_speeed'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Speed'])
+					imgui.InputInt(langt['beh_transp'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['trafficFlag'])
+					imgui.Combo(langt['beh_driver'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Vehicle_mission'],new('const char* const [?]',#drive_beh,drive_beh),#drive_beh)
+					imgui.Separator()
+					imgui.Combo(langt,vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car_t'],new('const char* const [?]',#vr.list_name_cars,vr.list_name_cars),#vr.list_name_cars)
+				end
+				if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Type'][0] == 5 then
+					local place_in_car = decodeJson(langt['place_in_car'])
+					local speed_walk_to_car = decodeJson(langt['speed_walk_to_car'])
+					local cond_type = decodeJson(langt['cond_type'])
+					if imgui.Combo(langt['cond'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'],new('const char* const [?]',#cond_type,cond_type),#cond_type) then
+						if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+							vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'] = new.int(0)
+						end
+					end
+					if vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Condition'][0] == 1 then
+						imgui.Combo(langt['target'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Target'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+					end
+					imgui.Separator()
+					imgui.Combo(langt['speed_walk'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['speed_walk'],new('const char* const [?]',#speed_walk_to_car,speed_walk_to_car),#speed_walk_to_car)
+					imgui.Combo(langt['car'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['Car'],new('const char* const [?]',#vr.list_name_cars,vr.list_name_cars),#vr.list_name_cars)
+					imgui.Combo(langt['seat'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['place_in_car'],new('const char* const [?]',#place_in_car,place_in_car),#place_in_car)
+					imgui.Checkbox(langt['wait_end'],vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][a]['wait_end'])
+				end
+				imgui.TreePop()
 			end
-			imgui.End()
 		end
+		imgui.End()
+	end
+end)
+
+
+-- Окно списка машин
+imgui.OnFrame(function() return vr.cars_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+	local resX,resY = getScreenResolution()
+	local sizeX,sizeY = 300, 340
+	imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+	imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+	imgui.Begin(langt['cars'])
+
+	imgui.PushItemWidth(-10)
+
+
+	--Список Машин
+	imgui.ListBoxStr_arr('', vr.lb_cur_cars,new('const char* const [?]',#vr.list_name_cars,vr.list_name_cars),#vr.list_name_cars,15)
+	if imgui.BeginPopupContextItem('hee') then
+		imgui.InputText('',vr.buf_edit_cars_name,ffi.sizeof(vr.buf_edit_cars_name))
+		if imgui.Button(langt['apply']) and vr.buf_edit_cars_name[0] ~= '' then
+			vr.list_cars[vr.lb_cur_cars[0]+1]['Name'] = ffi.string(vr.buf_edit_cars_name)
+			vr.list_name_cars[vr.lb_cur_cars[0]+1] = ffi.string(vr.buf_edit_cars_name)
+			imgui.StrCopy(vr.buf_edit_cars_name,'')
+			imgui.CloseCurrentPopup()
+		end
+		imgui.PushItemWidth(-1);
+		imgui.PopItemWidth();
+		imgui.EndPopup();
 	end
 
-	-- Окно списка машин
-	if vr.cars_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 300, 340
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Машины', vr.cars_window)
-
-		imgui.PushItemWidth(-10)
-
-
-		--Список Машин
-		imgui.ListBox('', vr.lb_cur_cars,vr.list_name_cars,15)
-		if imgui.BeginPopupContextItem('hee') then
-			imgui.InputText('',vr.buf_edit_cars_name)
-			if imgui.Button(langt['apply']) and vr.buf_edit_cars_name.v ~= '' then
-				vr.list_cars[vr.lb_cur_cars.v+1]['Name'] = vr.buf_edit_cars_name.v
-				vr.list_name_cars[vr.lb_cur_cars.v+1] = vr.buf_edit_cars_name.v
-				vr.buf_edit_cars_name.v = ''
-				imgui.CloseCurrentPopup()
-			end
-			imgui.PushItemWidth(-1);
-			imgui.PopItemWidth();
-			imgui.EndPopup();
-		end
-
-		--Кнопки редактирования
-		if imgui.Button(langt['add']) then
-			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-			xz = getGroundZFor3dCoord(xx, xy, xz+10.0)
-			vr.list_cars[#vr.list_cars+1] = {
-				['Name'] = u8'Машина #' .. tostring(#vr.list_cars+1),
-				['Type'] = imgui.ImInt(-1),
-				['Car_Data'] = {
-					['Pos'] = imgui.ImFloat3(xx,xy,xz),
-					['Angle'] = imgui.ImFloat(0),
-					['ModelId'] = imgui.ImInt(400),
-					['StartC'] = imgui.ImInt(0),
-					['EndC'] = imgui.ImInt(0),
-					['Color_primary'] = imgui.ImInt(0),
-					['Color_secondary'] = imgui.ImInt(0),
-					['Should_not_die'] = imgui.ImBool(false),
-					['Health'] = imgui.ImInt(1000),
-					['Bulletproof'] = imgui.ImBool(false),
-					['Fireproof'] = imgui.ImBool(false),
-					['Explosionproof'] = imgui.ImBool(false),
-					['Collisionproof'] = imgui.ImBool(false),
-					['Meleeproof'] = imgui.ImBool(false),
-					['Tires_vulnerability'] = imgui.ImBool(false),
-					['Anims'] = {},
-					['Anim_id'] = imgui.ImInt(0)
-				}
-
+	--Кнопки редактирования
+	if imgui.Button(langt['add']) then
+		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+		xz = getGroundZFor3dCoord(xx, xy, xz+10.0)
+		vr.list_cars[#vr.list_cars+1] = {
+			['Name'] = langt['car']..' #' .. tostring(#vr.list_cars+1),
+			['Type'] = new.int(-1),
+			['Car_Data'] = {
+				['Pos'] = new.float[3](xx,xy,xz),
+				['Angle'] = new.float(0),
+				['ModelId'] = new.int(400),
+				['StartC'] = new.int(0),
+				['EndC'] = new.int(0),
+				['Color_primary'] = new.int(0),
+				['Color_secondary'] = new.int(0),
+				['Should_not_die'] = new.bool(false),
+				['Health'] = new.int(1000),
+				['Bulletproof'] = new.bool(false),
+				['Fireproof'] = new.bool(false),
+				['Explosionproof'] = new.bool(false),
+				['Collisionproof'] = new.bool(false),
+				['Meleeproof'] = new.bool(false),
+				['Tires_vulnerability'] = new.bool(false),
+				['Anims'] = {},
+				['Anim_id'] = new.int(0)
 			}
-			upd_car:run(#vr.list_cars)
-			vr.list_name_cars[#vr.list_cars] = vr.list_cars[#vr.list_cars]['Name']
-		end
 
+		}
+		upd_car:run(#vr.list_cars)
+		vr.list_name_cars[#vr.list_cars] = vr.list_cars[#vr.list_cars]['Name']
+	end
+
+	imgui.SameLine()
+	if imgui.Button(langt['delete']) then
+		if vr.list_cars[vr.lb_cur_cars[0]+1] then
+			deleteCar(vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Car'])
+			vr.list_cars = DelCellArr(vr.list_cars,vr.lb_cur_cars[0]+1)
+			vr.list_name_cars = DelCellArr(vr.list_name_cars,vr.lb_cur_cars[0]+1)
+		end
+	end
+	imgui.End()
+	--Редактор машин
+	if #vr.list_cars > 0 and vr.list_cars[vr.lb_cur_cars[0]+1] then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 340, 340
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 170,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(vr.list_cars[vr.lb_cur_cars[0]+1]['Name'])
+		imgui.PushItemWidth(-90)
+		
+		if imgui.InputFloat3(langt['position'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Pos']) or imgui.SliderFloat(langt['rotate'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Angle'],-360,360) then
+			local xx,xy,xz = vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Pos'][0],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Pos'][1],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Pos'][2]
+			setCarCoordinates(vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Car'],xx,xy,xz)
+			setCarHeading(vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Car'], vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Angle'][0])
+		end
+		if imgui.InputInt(langt['model'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['ModelId']) then
+			local id_c = 400
+			for v = 1,#ID_Cars do
+			if vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['ModelId'][0] <= ID_Cars[v] then
+				id_c = ID_Cars[v]
+				break
+			end
+			end
+			vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['ModelId'][0] = id_c
+			upd_car:run(vr.lb_cur_cars[0]+1)
+		end
+		if imgui.DragInt(langt['color_car']..' 1',vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Color_primary'],0.1,0,126) then
+			changeCarColour(vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Car'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Color_primary'][0],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Color_secondary'][0])
+		end
+		if imgui.DragInt(langt['color_car']..' 2',vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Color_secondary'],0.1,0,126) then
+			changeCarColour(vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Car'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Color_primary'][0],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Color_secondary'][0])
+		end
+		imgui.InputInt(langt['countlive'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Health'])
+		local car_unbreak = decodeJson(langt['car_unbreak'])
+		imgui.Checkbox(car_unbreak[1],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Bulletproof'])
+		imgui.Checkbox(car_unbreak[2],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Fireproof'])
+		imgui.Checkbox(car_unbreak[3],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Explosionproof'])
+		imgui.Checkbox(car_unbreak[4],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Collisionproof'])
+		imgui.Checkbox(car_unbreak[5],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Meleeproof'])
+		imgui.Checkbox(car_unbreak[6],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Tires_vulnerability'])
+		imgui.Checkbox(langt['should_live'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Should_not_die'])
+		if imgui.Button(langt['edithand']) then
+			vr.editmode_car = true
+			vr.id_car = vr.lb_cur_cars[0]+1
+			deleteCar(vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Car'])
+			imgui.Process = false
+		end
+		
+		imgui.PushItemWidth(-110)
+		
+		imgui.Separator()
+		local list_tg_m = {langt['toend']}
+		for ltg = 1,#vr.list_name_targets do
+			list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+		end
+		imgui.Combo(langt['app_on'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['StartC'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+		imgui.Combo(langt['dis_after'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['EndC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+
+		imgui.Text(langt['actions'])
+
+		if imgui.Button(langt['add']) then
+			vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][#vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims']+1] = {
+			['Type'] = new.int(-1),
+			}
+		end
+		imgui.SameLine()
+		imgui.PushItemWidth(-150)
+		local rang = range(#vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'])
+		imgui.Combo(langt['number'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anim_id'],new('const char* const [?]',#rang,rang),#rang)
 		imgui.SameLine()
 		if imgui.Button(langt['delete']) then
-			if vr.list_cars[vr.lb_cur_cars.v+1] then
-				deleteCar(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'])
-				vr.list_cars = DelCellArr(vr.list_cars,vr.lb_cur_cars.v+1)
-				vr.list_name_cars = DelCellArr(vr.list_name_cars,vr.lb_cur_cars.v+1)
-			end
+			vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'] = DelCellArr(vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anim_id'][0]+1)
 		end
-		imgui.End()
-		--Редактор машин
-		if #vr.list_cars > 0 and vr.list_cars[vr.lb_cur_cars.v+1] then
-			local resX,resY = getScreenResolution()
-			local sizeX,sizeY = 340, 340
-			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 170,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-			imgui.Begin(vr.list_cars[vr.lb_cur_cars.v+1]['Name'], vr.list_cars[vr.lb_cur_cars.v+1]['Enable'])
-			imgui.PushItemWidth(-90)
-		  
-			if imgui.InputFloat3(langt['position'],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Pos']) or imgui.SliderFloat(u8'Угол поворота',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Angle'],-360,360) then
-			  local xx,xy,xz = vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Pos'].v[1],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Pos'].v[2],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Pos'].v[3]
-			  setCarCoordinates(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'],xx,xy,xz)
-			  setCarHeading(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'], vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Angle'].v)
-			end
-			if imgui.InputInt(u8'Номер модели',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['ModelId']) then
-			  local id_c = 400
-			  for v = 1,#ID_Cars do
-				if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['ModelId'].v <= ID_Cars[v] then
-				  id_c = ID_Cars[v]
-				  break
-				end
-			  end
-			  vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['ModelId'].v = id_c
-			  upd_car:run(vr.lb_cur_cars.v+1)
-			end
-			if imgui.DragInt(u8'Цвет машины 1',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_primary'],0.1,0,126) then
-			  changeCarColour(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_primary'].v,vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_secondary'].v)
-			end
-			if imgui.DragInt(u8'Цвет машины 2',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_secondary'],0.1,0,126) then
-			  changeCarColour(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_primary'].v,vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Color_secondary'].v)
-			end
-			imgui.InputInt(u8'Кол-во здоровья',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Health'])
-			imgui.Checkbox(u8'Пуленепробиваемый',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Bulletproof'])
-			imgui.Checkbox(u8'Огнестойки',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Fireproof'])
-			imgui.Checkbox(u8'Взрывоустойчивый',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Explosionproof'])
-			imgui.Checkbox(u8'Неуязвим от столкновений',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Collisionproof'])
-			imgui.Checkbox(u8'Удароустойчивый',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Meleeproof'])
-			imgui.Checkbox(u8'Неуязвимые шины',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Tires_vulnerability'])
-			imgui.Checkbox(u8'Должен выжить?',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Should_not_die'])
-			if imgui.Button(u8'Редактировать вручную') then
-			  vr.editmode_car = true
-			  vr.id_car = vr.lb_cur_cars.v+1
-			  deleteCar(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Car'])
-			  imgui.Process = false
-			end
-		  
-			imgui.PushItemWidth(-110)
-		  
-			imgui.Separator()
-			local list_tg_m = {u8'До конца'}
-			for ltg = 1,#vr.list_name_targets do
-			  list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-			end
-			imgui.Combo(u8'Появление на',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['StartC'],vr.list_name_targets)
-			imgui.Combo(u8'Исчезание после',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['EndC'],list_tg_m)
-
-			imgui.Text(u8'Действия')
-
-			if imgui.Button(langt['add']) then
-				vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][#vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims']+1] = {
-				['Type'] = imgui.ImInt(-1),
-			  }
-			end
-			imgui.SameLine()
-			imgui.PushItemWidth(-150)
-			imgui.Combo(u8'Номер',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anim_id'],range(#vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims']))
-			imgui.SameLine()
-			if imgui.Button(langt['delete']) then
-				vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'] = DelCellArr(vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'],vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anim_id'].v+1)
-			end
-			-- if imgui.Button(u8'Очистить предпросмотр/движение') then
-			--   upd_actor:run(vr.lb_cur_actors.v+1)
-			-- end
-			imgui.PushItemWidth(-150)
-			for a = 1,#vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'] do
-				if imgui.TreeNode(u8:encode(a)) then
-					local type = {u8'Двери',u8'Запереть/Отпереть двери'}
-					if imgui.Combo(u8'Тип',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Type'],type) then
-						if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Type'].v == 0 then
-							vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'] = {imgui.ImBool(false),imgui.ImBool(false),imgui.ImBool(false),imgui.ImBool(false),imgui.ImBool(false),imgui.ImBool(false)}
-							vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'] = imgui.ImInt(0) 
-						end
-						if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Type'].v == 1 then
-							vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Door_lock'] = imgui.ImInt(0)
-							vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'] = imgui.ImInt(0)
-						end
-					end
-					if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Type'].v == 0 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						if imgui.Combo(u8'Условие',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						imgui.Text(u8'Открыть дверь:')
-						imgui.Checkbox(u8'Капота',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][1])
-						imgui.Checkbox(u8'Багажника',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][2])
-						imgui.Checkbox(u8'Водителя',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][3])
-						imgui.Checkbox(u8'Переднего правого',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][4])
-						imgui.Checkbox(u8'Заднего левого',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][5])
-						imgui.Checkbox(u8'Заднего правого',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Doors'][6])
-					end
-					if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Type'].v == 1 then
-						local cond_type = {u8'Ничего',u8'На Цели'}
-						if imgui.Combo(u8'Условие',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'],cond_type) then
-							if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'].v == 1 then
-								vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-							end
-						end
-						if vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Condition'].v == 1 then
-							imgui.Combo(u8'Цель',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Target'],vr.list_name_targets)
-						end
-						imgui.Separator()
-						local open_close = {u8'Открыть',u8'Закрыть'}
-						imgui.Combo(u8'Двери',vr.list_cars[vr.lb_cur_cars.v+1]['Car_Data']['Anims'][a]['Door_lock'],open_close)
-					end
-					imgui.TreePop()
-				end
-			end
-			imgui.End()
-		end
-	end
-
-	-- Окно списка объектов
-	if vr.objects_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 300, 340
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Объекты', vr.objects_window)
-
-		imgui.PushItemWidth(-10)
-
-
-		--Список Объектов
-		imgui.ListBox('', vr.lb_cur_objects,vr.list_name_objects,15)
-		if imgui.BeginPopupContextItem('hee') then
-			imgui.InputText('',vr.buf_edit_obj_name)
-			if imgui.Button(langt['apply']) and vr.buf_edit_obj_name.v ~= '' then
-				vr.list_objects[vr.lb_cur_objects.v+1]['Name'] = vr.buf_edit_obj_name.v
-				vr.list_name_objects[vr.lb_cur_objects.v+1] = vr.buf_edit_obj_name.v
-				vr.buf_edit_obj_name.v = ''
-				imgui.CloseCurrentPopup()
-			end
-			imgui.PushItemWidth(-1);
-			imgui.PopItemWidth();
-			imgui.EndPopup();
-		end
-
-		--Кнопки редактирования
-		if imgui.Button(langt['add']) then
-			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-			xz = getGroundZFor3dCoord(xx, xy, xz)
-			vr.list_objects[#vr.list_objects+1] = {
-				['Name'] = u8'Объект #' .. tostring(#vr.list_objects+1),
-				['Type'] = imgui.ImInt(-1),
-				['Object_Data'] = {
-					['Pos'] = imgui.ImFloat3(xx,xy,xz),
-					['Rotates'] = imgui.ImFloat3(0,0,0),
-					['ModelId'] = imgui.ImInt(400),
-					['StartC'] = imgui.ImInt(0),
-					['EndC'] = imgui.ImInt(0),
-					['Anim_id'] = imgui.ImInt(0),
-					['Anims'] = {}
-				}
-
-			}
-			print(vr.list_objects[#vr.list_objects]['Object_Data']['Pos'].v[3])
-			vr.list_name_objects[#vr.list_objects] = vr.list_objects[#vr.list_objects]['Name']
-		end
-
-		imgui.SameLine()
-		if imgui.Button(langt['delete']) then
-			if vr.list_objects[vr.lb_cur_objects.v+1] then
-				deleteObject(vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'])
-				vr.list_objects = DelCellArr(vr.list_objects,vr.lb_cur_objects.v+1)
-				vr.list_name_objects = DelCellArr(vr.list_name_objects,vr.lb_cur_objects.v+1)
-			end
-		end
-		imgui.End()
-		--Редактор объектов
-		if #vr.list_objects > 0 and vr.list_objects[vr.lb_cur_objects.v+1] then
-			local resX,resY = getScreenResolution()
-			local sizeX,sizeY = 360, 340
-			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 180,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-			imgui.Begin(vr.list_objects[vr.lb_cur_objects.v+1]['Name'], vr.list_objects[vr.lb_cur_objects.v+1]['Enable'])
-			imgui.PushItemWidth(-90)
-		
-			if imgui.InputFloat3(langt['position'],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Pos']) or imgui.InputFloat3(u8'Угол поворота',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Rotates']) then
-				local xx,xy,xz = vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Pos'].v[1],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Pos'].v[2],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Pos'].v[3]
-				local rxx,rxy,rxz = vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Rotates'].v[1],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Rotates'].v[2],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Rotates'].v[3]
-				setObjectCoordinates(vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'],xx,xy,xz)
-				setObjectRotation(vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'], rxx, rxy, rxz)
-			end
-			if imgui.Button(u8'Редактировать вручную') then
-				if vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'] ~= nil then
-					vr.editmode_objects = true
-					printHelpForever('HOBJ')
-					lockPlayerControl(true)
-					vr.id_obj = vr.lb_cur_objects.v+1
-					imgui.Process = false
-				end
-			end
-			imgui.InputInt(u8'Номер модели',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['ModelId'])
-			if imgui.Button(langt['apply']) then
-				upd_object:run(vr.lb_cur_objects.v+1)
-			end
-		
-			imgui.PushItemWidth(-110)
-		
-			imgui.Separator()
-			local list_tg_m = {u8'До конца'}
-			for ltg = 1,#vr.list_name_targets do
-				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-			end
-			imgui.Combo(u8'Появление на',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['StartC'],vr.list_name_targets)
-			imgui.Combo(u8'Исчезание после',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['EndC'],list_tg_m)
-			imgui.Text(u8'Анимации')
-		
-			if imgui.Button(langt['add']) then
-				local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-				vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][#vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims']+1] = {
-					['Pos'] = imgui.ImFloat3(xx,xy,xz),
-					['Rotates'] = imgui.ImFloat3(0,0,0),
-					['Time'] = imgui.ImFloat(1.0),
-					['Condition'] = imgui.ImInt(0),
-				}
-			end
-			imgui.SameLine()
-			imgui.PushItemWidth(-200)
-			imgui.Combo(u8'Номер',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anim_id'],range(#vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims']))
-			imgui.SameLine()
-			if imgui.Button(langt['delete']) then
-				vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'] = DelCellArr(vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anim_id'].v+1)
-			end
-		
-			imgui.PushItemWidth(-100)
-			for a = 1,#vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'] do
-				if imgui.TreeNode(u8:encode(a)) then
-					local cond_type = {u8'Ничего',u8'На Цели'}
-					if imgui.Combo(u8'Условие',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Condition'],cond_type) then
-						if vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Condition'].v == 1 then
-							vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Target'] = imgui.ImInt(0)
-						end
-					end
-					if vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Condition'].v == 1 then
-						imgui.Combo(u8'Цель',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Target'],vr.list_name_targets)
-					end
-		
-					imgui.InputFloat3(langt['position'],vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Pos'])
-					imgui.InputFloat3(u8'Угол поворота',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Rotates'])
-					imgui.InputFloat(u8'Время анимации (сек)',vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Anims'][a]['Time'],0)
-					if imgui.Button(u8'Редактировать вручную') then
-						if vr.list_objects[vr.lb_cur_objects.v+1]['Object_Data']['Obj'] ~= nil then
-							vr.editmode_objects_anim = true
-							printHelpForever('HOBJ')
-							lockPlayerControl(true)
-							vr.id_obj = vr.lb_cur_objects.v+1
-							vr.id_obj_anim = a
-							imgui.Process = false
-						end
-					end
-					imgui.TreePop()
-				end
-			end
-			imgui.End()
-		end
-	end
-
-	if vr.pickup_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 300, 340
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Пикапы', vr.pickup_window)
-
-		imgui.PushItemWidth(-10)
-
-
-		--Список Объектов
-		imgui.ListBox('', vr.lb_cur_pickup,vr.list_name_pickup,15)
-		if imgui.BeginPopupContextItem('hee') then
-			imgui.InputText('',vr.buf_edit_pick_name)
-			if imgui.Button(langt['apply']) and vr.buf_edit_pick_name.v ~= '' then
-				vr.list_pickup[vr.lb_cur_pickup.v+1]['Name'] = vr.buf_edit_pick_name.v
-				vr.list_name_pickup[vr.lb_cur_pickup.v+1] = vr.buf_edit_pick_name.v
-				vr.buf_edit_pick_name.v = ''
-				imgui.CloseCurrentPopup()
-			end
-			imgui.PushItemWidth(-1);
-			imgui.PopItemWidth();
-			imgui.EndPopup();
-		end
-
-		--Кнопки редактирования
-		if imgui.Button(langt['add']) then
-			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-			xz = getGroundZFor3dCoord(xx, xy, xz)
-			vr.list_pickup[#vr.list_pickup+1] = {
-				['Name'] = u8'Пикап #' .. tostring(#vr.list_pickup+1),
-				['Type'] = imgui.ImInt(-1),
-				['Pickup_Data'] = {
-					['Type_pickup'] = imgui.ImInt(-1),
-					['Pos'] = imgui.ImFloat3(xx,xy,xz),
-					['StartC'] = imgui.ImInt(0),
-					['EndC'] = imgui.ImInt(0),
-					['spawn_type'] = imgui.ImInt(0)
-				}
-
-			}
-			vr.list_name_pickup[#vr.list_pickup] = vr.list_pickup[#vr.list_pickup]['Name']
-		end
-
-		imgui.SameLine()
-		if imgui.Button(langt['delete']) then
-			if vr.list_pickup[vr.lb_cur_pickup.v+1] then
-				removePickup(vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Pick'])
-				vr.list_pickup = DelCellArr(vr.list_pickup,vr.lb_cur_pickup.v+1)
-				vr.list_name_pickup = DelCellArr(vr.list_name_pickup,vr.lb_cur_pickup.v+1)
-			end
-		end
-		imgui.End()
-		--Окно пикапа
-		if #vr.list_pickup > 0 and vr.list_pickup[vr.lb_cur_pickup.v+1] then
-			local resX,resY = getScreenResolution()
-			local sizeX,sizeY = 300, 340
-			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-			imgui.Begin(vr.list_pickup[vr.lb_cur_pickup.v+1]['Name'], vr.list_pickup[vr.lb_cur_pickup.v+1]['Enable'])
-			imgui.PushItemWidth(-90)
-			local type_pick = {u8'Оружие',u8'Здоровье',u8'Броня',u8'Откуп от полиции',u8'Наркотик',u8'Другое'}
-			local spawn_type = {u8'Одноразовый',u8'за 30 секунд',u8'за 6 минут'}
-			imgui.Combo(u8'Спавн',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['spawn_type'],spawn_type)
-			if imgui.Combo(u8'Тип',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'],type_pick) then
-				if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v == 0 then
-					vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Ammo'] = imgui.ImInt(0)
-					vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Weapon'] = imgui.ImInt(1)
-				end
-				if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v == 5 then
-					vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['ModelId'] = imgui.ImInt(0)
-				end
-				if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v ~= 5 then upd_pickup:run(vr.lb_cur_pickup.v+1) end
-			end
-		
-			if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v == 0 then
-				imgui.Separator()
-				if imgui.Button(u8'Редактировать вручную') then
-					vr.editmode_pickup = true
-					imgui.Process = false
-					vr.id_pick = vr.lb_cur_pickup.v+1
-					lockPlayerControl(true)
-					printHelpForever('HPICW')
-				end
-				imgui.InputInt(u8'Патронов',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Ammo'])
-				imgui.Separator()
-			end
-			if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v >= 1 then
-				if imgui.Button(u8'Редактировать вручную') then
-					vr.editmode_pickup = true
-					imgui.Process = false
-					vr.id_pick = vr.lb_cur_pickup.v+1
-					lockPlayerControl(true)
-					printHelpForever('HTARG')
-				end
-				if vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['Type_pickup'].v == 5 then
-					imgui.InputInt(u8'Модель',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['ModelId'])
-					if imgui.Button(langt['apply']) then
-						upd_pickup:run(vr.lb_cur_pickup.v+1)
-					end
-				end
-			end
-		
-			local list_tg_m = {u8'До конца'}
-			for ltg = 1,#vr.list_name_targets do
-				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-			end
-			imgui.Combo(u8'Появление на',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['StartC'],vr.list_name_targets)
-			imgui.Combo(u8'Исчезание после',vr.list_pickup[vr.lb_cur_pickup.v+1]['Pickup_Data']['EndC'],list_tg_m)
-		
-			imgui.End()
-		end
-	end
-
-	-- Окно списка частиц
-	if vr.particle_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 300, 340
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Частицы', vr.particle_window)
-
-		imgui.PushItemWidth(-10)
-
-
-		--Список Объектов
-		imgui.ListBox('', vr.lb_cur_particle,vr.list_name_particle,15)
-		if imgui.BeginPopupContextItem('hee') then
-			imgui.InputText('',vr.buf_edit_prtcl_name)
-			if imgui.Button(langt['apply']) and vr.buf_edit_prtcl_name.v ~= '' then
-				vr.list_particle[vr.lb_cur_particle.v+1]['Name'] = vr.buf_edit_prtcl_name.v
-				vr.list_name_particle[vr.lb_cur_particle.v+1] = vr.buf_edit_prtcl_name.v
-				vr.buf_edit_prtcl_name.v = ''
-				imgui.CloseCurrentPopup()
-			end
-			imgui.PushItemWidth(-1);
-			imgui.PopItemWidth();
-			imgui.EndPopup();
-		end
-
-		--Кнопки редактирования
-		if imgui.Button(langt['add']) then
-			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-			xz = getGroundZFor3dCoord(xx, xy, xz)
-			vr.list_particle[#vr.list_particle+1] = {
-				['Name'] = u8'Частица #' .. tostring(#vr.list_particle+1),
-				['Type'] = imgui.ImInt(-1),
-				['Particle_Data'] = {
-					['Pos'] = imgui.ImFloat3(xx,xy,xz),
-					['Rotates'] = imgui.ImFloat3(0,0,0),
-					['ModelId'] = imgui.ImInt(0),
-					['StartC'] = imgui.ImInt(0),
-					['EndC'] = imgui.ImInt(0)
-				}
-
-			}
-			vr.list_name_particle[#vr.list_particle] = vr.list_particle[#vr.list_particle]['Name']
-			upd_particle:run(#vr.list_particle)
-		end
-
-		imgui.SameLine()
-		if imgui.Button(langt['delete']) then
-			if vr.list_particle[vr.lb_cur_particle.v+1] then
-				killFxSystemNow(vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['Prtcl'])
-				vr.list_particle = DelCellArr(vr.list_particle,vr.lb_cur_particle.v+1)
-				vr.list_name_particle = DelCellArr(vr.list_name_particle,vr.lb_cur_particle.v+1)
-			end
-		end
-		imgui.End()
-		--Редактор объектов
-		if #vr.list_particle > 0 and vr.list_particle[vr.lb_cur_particle.v+1] then
-			local resX,resY = getScreenResolution()
-			local sizeX,sizeY = 300, 340
-			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-			imgui.Begin(vr.list_particle[vr.lb_cur_particle.v+1]['Name'], vr.list_particle[vr.lb_cur_particle.v+1]['Enable'])
-			imgui.PushItemWidth(-90)
-		
-			--imgui.InputFloat3(u8'Угол поворота',vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['Rotates'])
-			if imgui.InputFloat3(langt['position'],vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['Pos']) then
-				upd_particle:run(vr.lb_cur_particle.v+1)
-			end
-			if imgui.Button(u8'Редактировать вручную') then
-				if vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['Prtcl'] ~= nil then
-					vr.editmode_particle = true
-					printHelpForever('HOBJ')
-					lockPlayerControl(true)
-					vr.id_prtcl = vr.lb_cur_particle.v+1
-					imgui.Process = false
-				end
-			end
-			if imgui.Combo(u8'Частица',vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['ModelId'],Particle_name) then
-				upd_particle:run(vr.lb_cur_particle.v+1)
-			end
-		
-			imgui.PushItemWidth(-110)
-		
-			imgui.Separator()
-			local list_tg_m = {u8'До конца'}
-			for ltg = 1,#vr.list_name_targets do
-				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-			end
-			imgui.Combo(u8'Появление на',vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['StartC'],vr.list_name_targets)
-			imgui.Combo(u8'Исчезание после',vr.list_particle[vr.lb_cur_particle.v+1]['Particle_Data']['EndC'],list_tg_m)
-		
-			imgui.End()
-		end
-	end
-
-	if vr.explosion_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 300, 340
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Взрывы/Огонь', vr.explosion_window)
-
-		imgui.PushItemWidth(-10)
-
-
-		--Список Объектов
-		imgui.ListBox('', vr.lb_cur_explosion,vr.list_name_explosion,15)
-		if imgui.BeginPopupContextItem('hee') then
-			imgui.InputText('',vr.buf_edit_explosion_name)
-			if imgui.Button(langt['apply']) and vr.buf_edit_explosion_name.v ~= '' then
-				vr.list_explosion[vr.lb_cur_explosion.v+1]['Name'] = vr.buf_edit_explosion_name.v
-				vr.list_name_explosion[vr.lb_cur_explosion.v+1] = vr.buf_edit_explosion_name.v
-				vr.buf_edit_explosion_name.v = ''
-				imgui.CloseCurrentPopup()
-			end
-			imgui.PushItemWidth(-1);
-			imgui.PopItemWidth();
-			imgui.EndPopup();
-		end
-
-		--Кнопки редактирования
-		if imgui.Button(langt['add']) then
-			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-			xz = getGroundZFor3dCoord(xx, xy, xz)
-			vr.list_explosion[#vr.list_explosion+1] = {
-				['Name'] = u8'Пикап #' .. tostring(#vr.list_explosion+1),
-				['Type'] = imgui.ImInt(-1),
-				['Explosion_Data'] = {
-					['Type'] = imgui.ImInt(-1),
-					['Pos'] = imgui.ImFloat3(xx,xy,xz),
-					['StartC'] = imgui.ImInt(0),
-					['EndC'] = imgui.ImInt(0)
-				}
-
-			}
-			vr.list_name_explosion[#vr.list_explosion] = vr.list_explosion[#vr.list_explosion]['Name']
-		end
-
-		imgui.SameLine()
-		if imgui.Button(langt['delete']) then
-			if vr.list_explosion[vr.lb_cur_explosion.v+1] then
-				removeScriptFire(vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Fire'])
-				deleteObject(vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Explosion'])
-				vr.list_explosion = DelCellArr(vr.list_explosion,vr.lb_cur_explosion.v+1)
-				vr.list_name_explosion = DelCellArr(vr.list_name_explosion,vr.lb_cur_explosion.v+1)
-			end
-		end
-		imgui.End()
-		--Окно пикапа
-		if #vr.list_explosion > 0 and vr.list_explosion[vr.lb_cur_explosion.v+1] then
-			local resX,resY = getScreenResolution()
-			local sizeX,sizeY = 300, 340
-			imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-			imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
-			imgui.Begin(vr.list_explosion[vr.lb_cur_explosion.v+1]['Name'], vr.list_explosion[vr.lb_cur_explosion.v+1]['Enable'])
-			imgui.PushItemWidth(-90)
-			local type_expl = {u8'Огонь',u8'Взрыв'}
-			if imgui.Combo(u8'Тип',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'],type_expl) then
-				if vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'].v == 1 then
-					vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type_explosion'] = imgui.ImInt(0)
-					removeScriptFire(vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Fire'])
-					upd_explosion:run(vr.lb_cur_explosion.v+1)
-				end
-				if vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'].v == 0 then
-					vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Size_fire'] = imgui.ImInt(0)
-					vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Propagation_fire'] = imgui.ImInt(0)
-					deleteObject(vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Explosion'])
-					upd_explosion:run(vr.lb_cur_explosion.v+1)
-				end
-			end
-		
-			if imgui.InputFloat3(langt['position'],vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Pos']) then
-				upd_explosion:run(vr.lb_cur_explosion.v+1)
-			end
-		
-			if vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'].v == 1 then
-				imgui.InputInt(u8'Тип взрыва',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type_explosion'])
-			end
-			if vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'].v == 0 then
-				if imgui.InputInt(u8'Размер огня',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Size_fire']) then
-					upd_explosion:run(vr.lb_cur_explosion.v+1)
-				end
-				if imgui.InputInt(u8'Распространение огня',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Propagation_fire']) then
-					upd_explosion:run(vr.lb_cur_explosion.v+1)
-				end
-			end
-		
-			if imgui.Button(u8'Редактировать вручную') then
-				if vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['Type'].v ~= -1 then
-					vr.editmode_explosion = true
-					printHelpForever('HTARG')
-					lockPlayerControl(true)
-					vr.id_explosion = vr.lb_cur_explosion.v+1
-					imgui.Process = false
-				end
-			end
-		
-			imgui.Separator()
-			local list_tg_m = {u8'До конца'}
-			for ltg = 1,#vr.list_name_targets do
-				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
-			end
-			imgui.Combo(u8'Появление на',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['StartC'],vr.list_name_targets)
-			imgui.Combo(u8'Исчезание после',vr.list_explosion[vr.lb_cur_explosion.v+1]['Explosion_Data']['EndC'],list_tg_m)
-		
-		
-			imgui.End()
-		end
-	end
-
-	if vr.info_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 200, 400
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Инфо', vr.info_window)
-		imgui.Text(u8'Автор LDYOM:')
-		imgui.SameLine()
-		imgui.TextColored(imgui.ImVec4(1.0,0.0,0.0,1.0),thisScript().authors[1])
-		imgui.Text(u8'Автор Mission pack:')
-		imgui.SameLine()
-		imgui.TextColored(imgui.ImVec4(1.0,0.0,0.0,1.0),thisScript().authors[2])
-		imgui.Text(u8'Версия:')
-		imgui.SameLine()
-		imgui.Text(thisScript().version)
-		imgui.NewLine()
-		imgui.Text(u8'Горячие клавишы:')
-		imgui.Text(u8'Ctrl + S - Быстрое сохранение')
-		imgui.End()
-	end
-
-	if vr.settings_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 200, 400
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Настройки', vr.settings_window)
-
-		imgui.Combo(u8'Язык',vr.curr_lang,LanguageList)
-
-		imgui.End()
-	end
-
-	if vr.tool_window.v then
-		local resX,resY = getScreenResolution()
-		local sizeX,sizeY = 200, 400
-		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
-		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
-		imgui.Begin(u8'Инструменты', vr.tool_window)
-
-		if imgui.Button(u8'Телепорт к метке') then
-			local xx,xy,xz = getTargetBlipCoordinates()
-			setCharCoordinates(PLAYER_PED,select(2,getTargetBlipCoordinates()),select(3,getTargetBlipCoordinates()),select(4,getTargetBlipCoordinates()))
-		end
-		if imgui.Button(u8'Джетпак') then
-			taskJetpack(PLAYER_PED)
-		end
-		-- if imgui.Button(u8'Потушить пожар') then
-		-- 	switchEmergencyServices(true)
+		-- if imgui.Button(u8'Очистить предпросмотр/движение') then
+		--   upd_actor:run(vr.lb_cur_actors[0]+1)
 		-- end
+		imgui.PushItemWidth(-150)
+		for a = 1,#vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'] do
+			if imgui.TreeNodeStr(u8:encode(a)) then
+				local type = decodeJson(langt['type_car_anim'])
+				if imgui.Combo(langt['type'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Type'],new('const char* const [?]',#type,type),#type) then
+					if vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Type'][0] == 0 then
+						vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Doors'] = {new.bool(false),new.bool(false),new.bool(false),new.bool(false),new.bool(false),new.bool(false)}
+						vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Condition'] = new.int(0) 
+					end
+					if vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Type'][0] == 1 then
+						vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Door_lock'] = new.int(0)
+						vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Condition'] = new.int(0)
+					end
+				end
+				if vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Type'][0] == 0 then
+					local cond_type = decodeJson(langt['cond_type'])
+					if imgui.Combo(langt['cond'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Condition'],new('const char* const [?]',#cond_type,cond_type),#cond_type) then
+						if vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Condition'][0] == 1 then
+							vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Target'] = new.int(0)
+						end
+					end
+					if vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Condition'][0] == 1 then
+						imgui.Combo(langt['target'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Target'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+					end
+					imgui.Separator()
+					imgui.Text(langt['open_door_to'])
+					local door_car = decodeJson(langt['door_car'])
+					imgui.Checkbox(door_car[1],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Doors'][1])
+					imgui.Checkbox(door_car[2],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Doors'][2])
+					imgui.Checkbox(door_car[3],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Doors'][3])
+					imgui.Checkbox(door_car[4],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Doors'][4])
+					imgui.Checkbox(door_car[5],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Doors'][5])
+					imgui.Checkbox(door_car[6],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Doors'][6])
+				end
+				if vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Type'][0] == 1 then
+					local cond_type = decodeJson(langt['cond_type'])
+					if imgui.Combo(langt['cond'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Condition'],new('const char* const [?]',#cond_type,cond_type),#cond_type) then
+						if vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Condition'][0] == 1 then
+							vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Target'] = new.int(0)
+						end
+					end
+					if vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Condition'][0] == 1 then
+						imgui.Combo(langt['target'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Target'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+					end
+					imgui.Separator()
+					local open_close = decodeJson(langt['open_close'])
+					imgui.Combo(langt['doors'],vr.list_cars[vr.lb_cur_cars[0]+1]['Car_Data']['Anims'][a]['Door_lock'],new('const char* const [?]',#open_close,open_close),#open_close)
+				end
+				imgui.TreePop()
+			end
+		end
+		imgui.End()
+	end
+end)
 
+-- Окно списка объектов
+imgui.OnFrame(function() return vr.objects_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+	local resX,resY = getScreenResolution()
+	local sizeX,sizeY = 300, 340
+	imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+	imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+	imgui.Begin(langt['objects'])
+
+	imgui.PushItemWidth(-10)
+
+
+	--Список Объектов
+	imgui.ListBoxStr_arr('', vr.lb_cur_objects,new('const char* const [?]',#vr.list_name_objects,vr.list_name_objects),#vr.list_name_objects,15)
+	if imgui.BeginPopupContextItem('hee') then
+		imgui.InputText('',vr.buf_edit_obj_name,ffi.sizeof(vr.buf_edit_obj_name))
+		if imgui.Button(langt['apply']) and vr.buf_edit_obj_name[0] ~= '' then
+			vr.list_objects[vr.lb_cur_objects[0]+1]['Name'] = ffi.string(vr.buf_edit_obj_name)
+			vr.list_name_objects[vr.lb_cur_objects[0]+1] = ffi.string(vr.buf_edit_obj_name)
+			imgui.StrCopy(vr.buf_edit_obj_name,'')
+			imgui.CloseCurrentPopup()
+		end
+		imgui.PushItemWidth(-1);
+		imgui.PopItemWidth();
+		imgui.EndPopup();
+	end
+
+	--Кнопки редактирования
+	if imgui.Button(langt['add']) then
+		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+		xz = getGroundZFor3dCoord(xx, xy, xz)
+		vr.list_objects[#vr.list_objects+1] = {
+			['Name'] = u8'Объект #' .. tostring(#vr.list_objects+1),
+			['Type'] = new.int(-1),
+			['Object_Data'] = {
+				['Pos'] = new.float[3](xx,xy,xz),
+				['Rotates'] = new.float[3](0,0,0),
+				['ModelId'] = new.int(400),
+				['StartC'] = new.int(0),
+				['EndC'] = new.int(0),
+				['Anim_id'] = new.int(0),
+				['Anims'] = {}
+			}
+
+		}
+		vr.list_name_objects[#vr.list_objects] = vr.list_objects[#vr.list_objects]['Name']
+	end
+
+	imgui.SameLine()
+	if imgui.Button(langt['delete']) then
+		if vr.list_objects[vr.lb_cur_objects[0]+1] then
+			deleteObject(vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Obj'])
+			vr.list_objects = DelCellArr(vr.list_objects,vr.lb_cur_objects[0]+1)
+			vr.list_name_objects = DelCellArr(vr.list_name_objects,vr.lb_cur_objects[0]+1)
+		end
+	end
+	imgui.End()
+	--Редактор объектов
+	if #vr.list_objects > 0 and vr.list_objects[vr.lb_cur_objects[0]+1] then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 360, 340
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 180,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(vr.list_objects[vr.lb_cur_objects[0]+1]['Name'], vr.list_objects[vr.lb_cur_objects[0]+1]['Enable'])
+		imgui.PushItemWidth(-90)
+	
+		if imgui.InputFloat3(langt['position'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Pos']) or imgui.InputFloat3(langt['rotate'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Rotates']) then
+			local xx,xy,xz = vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Pos'][0],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Pos'][1],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Pos'][2]
+			local rxx,rxy,rxz = vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Rotates'][0],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Rotates'][1],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Rotates'][2]
+			setObjectCoordinates(vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Obj'],xx,xy,xz)
+			setObjectRotation(vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Obj'], rxx, rxy, rxz)
+		end
+		if imgui.Button(langt['edithand']) then
+			if vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Obj'] ~= nil then
+				vr.editmode_objects = true
+				printHelpForever('HOBJ')
+				lockPlayerControl(true)
+				vr.id_obj = vr.lb_cur_objects[0]+1
+				imgui.Process = false
+			end
+		end
+		imgui.InputInt(langt['model'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['ModelId'])
+		if imgui.Button(langt['apply']) then
+			upd_object:run(vr.lb_cur_objects[0]+1)
+		end
+	
+		imgui.PushItemWidth(-110)
+	
+		imgui.Separator()
+		local list_tg_m = {langt['toend']}
+		for ltg = 1,#vr.list_name_targets do
+			list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+		end
+		imgui.Combo(langt['app_on'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['StartC'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+		imgui.Combo(langt['dis_after'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['EndC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+		imgui.Text(langt['anim'])
+	
+		if imgui.Button(langt['add']) then
+			local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+			vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'][#vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims']+1] = {
+				['Pos'] = new.float[3](xx,xy,xz),
+				['Rotates'] = new.float[3](0,0,0),
+				['Time'] = new.float(1.0),
+				['Condition'] = new.int(0),
+			}
+		end
+		imgui.SameLine()
+		imgui.PushItemWidth(-200)
+		local rang = range(#vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'])
+		imgui.Combo(langt['number'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anim_id'],new('const char* const [?]',#rang,rang),#rang)
+		imgui.SameLine()
+		if imgui.Button(langt['delete']) then
+			vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'] = DelCellArr(vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anim_id'][0]+1)
+		end
+	
+		imgui.PushItemWidth(-100)
+		for a = 1,#vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'] do
+			if imgui.TreeNodeStr(u8:encode(a)) then
+				local cond_type = decodeJson(langt['cond_type'])
+				if imgui.Combo(langt['cond'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'][a]['Condition'],new('const char* const [?]',#cond_type,cond_type),#cond_type) then
+					if vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'][a]['Condition'][0] == 1 then
+						vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'][a]['Target'] = new.int(0)
+					end
+				end
+				if vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'][a]['Condition'][0] == 1 then
+					imgui.Combo(langt['target'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'][a]['Target'],vr.list_name_targets)
+				end
+	
+				imgui.InputFloat3(langt['position'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'][a]['Pos'])
+				imgui.InputFloat3(langt['rotate'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'][a]['Rotates'])
+				imgui.InputFloat(langt['time_anim'],vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Anims'][a]['Time'],0)
+				if imgui.Button(langt['edithand']) then
+					if vr.list_objects[vr.lb_cur_objects[0]+1]['Object_Data']['Obj'] ~= nil then
+						vr.editmode_objects_anim = true
+						printHelpForever('HOBJ')
+						lockPlayerControl(true)
+						vr.id_obj = vr.lb_cur_objects[0]+1
+						vr.id_obj_anim = a
+						imgui.Process = false
+					end
+				end
+				imgui.TreePop()
+			end
+		end
+		imgui.End()
+	end
+end)
+
+imgui.OnFrame(function() return vr.pickup_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+	local resX,resY = getScreenResolution()
+	local sizeX,sizeY = 300, 340
+	imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+	imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+	imgui.Begin(langt['pickups'])
+
+	imgui.PushItemWidth(-10)
+
+
+	--Список Объектов
+	imgui.ListBoxStr_arr('', vr.lb_cur_pickup,new('const char* const [?]',#vr.list_name_pickup,vr.list_name_pickup),#vr.list_name_pickup,15)
+	if imgui.BeginPopupContextItem('hee') then
+		imgui.InputText('',vr.buf_edit_pick_name,ffi.sizeof(vr.buf_edit_pick_name))
+		if imgui.Button(langt['apply']) and vr.buf_edit_pick_name[0] ~= '' then
+			vr.list_pickup[vr.lb_cur_pickup[0]+1]['Name'] = ffi.string(vr.buf_edit_pick_name)
+			vr.list_name_pickup[vr.lb_cur_pickup[0]+1] = ffi.string(vr.buf_edit_pick_name)
+			imgui.StrCopy(vr.buf_edit_pick_name,'')
+			imgui.CloseCurrentPopup()
+		end
+		imgui.PushItemWidth(-1);
+		imgui.PopItemWidth();
+		imgui.EndPopup();
+	end
+
+	--Кнопки редактирования
+	if imgui.Button(langt['add']) then
+		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+		xz = getGroundZFor3dCoord(xx, xy, xz)
+		vr.list_pickup[#vr.list_pickup+1] = {
+			['Name'] = langt['pickup']..' #' .. tostring(#vr.list_pickup+1),
+			['Type'] = new.int(-1),
+			['Pickup_Data'] = {
+				['Type_pickup'] = new.int(-1),
+				['Pos'] = new.float[3](xx,xy,xz),
+				['StartC'] = new.int(0),
+				['EndC'] = new.int(0),
+				['spawn_type'] = new.int(0)
+			}
+
+		}
+		vr.list_name_pickup[#vr.list_pickup] = vr.list_pickup[#vr.list_pickup]['Name']
+	end
+
+	imgui.SameLine()
+	if imgui.Button(langt['delete']) then
+		if vr.list_pickup[vr.lb_cur_pickup[0]+1] then
+			removePickup(vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Pick'])
+			vr.list_pickup = DelCellArr(vr.list_pickup,vr.lb_cur_pickup[0]+1)
+			vr.list_name_pickup = DelCellArr(vr.list_name_pickup,vr.lb_cur_pickup[0]+1)
+		end
+	end
+	imgui.End()
+	--Окно пикапа
+	if #vr.list_pickup > 0 and vr.list_pickup[vr.lb_cur_pickup[0]+1] then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 300, 340
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(vr.list_pickup[vr.lb_cur_pickup[0]+1]['Name'], vr.list_pickup[vr.lb_cur_pickup[0]+1]['Enable'])
+		imgui.PushItemWidth(-90)
+		local type_pick = decodeJson(langt['type_pickup'])
+		local spawn_type = decodeJson(langt['spawn_type_pickup'])
+		imgui.Combo(langt['spawn'],vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['spawn_type'],new('const char* const [?]',#spawn_type,spawn_type),#spawn_type)
+		if imgui.Combo(langt['type'],vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Type_pickup'],new('const char* const [?]',#type_pick,type_pick),#type_pick) then
+			if vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Type_pickup'][0] == 0 then
+				vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Ammo'] = new.int(0)
+				vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Weapon'] = new.int(1)
+			end
+			if vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Type_pickup'][0] == 5 then
+				vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['ModelId'] = new.int(0)
+			end
+			if vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Type_pickup'][0] ~= 5 then upd_pickup:run(vr.lb_cur_pickup[0]+1) end
+		end
+	
+		if vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Type_pickup'][0] == 0 then
+			imgui.Separator()
+			if imgui.Button(langt['edithand']) then
+				vr.editmode_pickup = true
+				imgui.Process = false
+				vr.id_pick = vr.lb_cur_pickup[0]+1
+				lockPlayerControl(true)
+				printHelpForever('HPICW')
+			end
+			imgui.InputInt(langt['ammo'],vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Ammo'])
+			imgui.Separator()
+		end
+		if vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Type_pickup'][0] >= 1 then
+			if imgui.Button(langt['edithand']) then
+				vr.editmode_pickup = true
+				imgui.Process = false
+				vr.id_pick = vr.lb_cur_pickup[0]+1
+				lockPlayerControl(true)
+				printHelpForever('HTARG')
+			end
+			if vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['Type_pickup'][0] == 5 then
+				imgui.InputInt(langt['model'],vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['ModelId'])
+				if imgui.Button(langt['apply']) then
+					upd_pickup:run(vr.lb_cur_pickup[0]+1)
+				end
+			end
+		end
+	
+		local list_tg_m = {langt['toend']}
+		for ltg = 1,#vr.list_name_targets do
+			list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+		end
+		imgui.Combo(langt['app_on'],vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['StartC'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+		imgui.Combo(langt['dis_after'],vr.list_pickup[vr.lb_cur_pickup[0]+1]['Pickup_Data']['EndC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+	
 		imgui.End()
 	end
 
-end
+end)
+
+imgui.OnFrame(function() return vr.particle_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+	local resX,resY = getScreenResolution()
+	local sizeX,sizeY = 300, 340
+	imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+	imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+	imgui.Begin(langt['particles'])
+
+	imgui.PushItemWidth(-10)
+
+
+	--Список Объектов
+	imgui.ListBoxStr_arr('', vr.lb_cur_particle,new('const char* const [?]',#vr.list_name_particle,vr.list_name_particle),#vr.list_name_particle,15)
+	if imgui.BeginPopupContextItem('hee') then
+		imgui.InputText('',vr.buf_edit_prtcl_name,ffi.sizeof(vr.buf_edit_prtcl_name))
+		if imgui.Button(langt['apply']) and vr.buf_edit_prtcl_name[0] ~= '' then
+			vr.list_particle[vr.lb_cur_particle[0]+1]['Name'] = ffi.string(vr.buf_edit_prtcl_name)
+			vr.list_name_particle[vr.lb_cur_particle[0]+1] = ffi.string(vr.buf_edit_prtcl_name)
+			imgui.StrCopy(vr.buf_edit_prtcl_name[0],'')
+			imgui.CloseCurrentPopup()
+		end
+		imgui.PushItemWidth(-1);
+		imgui.PopItemWidth();
+		imgui.EndPopup();
+	end
+
+	--Кнопки редактирования
+	if imgui.Button(langt['add']) then
+		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+		xz = getGroundZFor3dCoord(xx, xy, xz)
+		vr.list_particle[#vr.list_particle+1] = {
+			['Name'] = langt['particle']..' #' .. tostring(#vr.list_particle+1),
+			['Type'] = new.int(-1),
+			['Particle_Data'] = {
+				['Pos'] = new.float[3](xx,xy,xz),
+				['Rotates'] = new.float[3](0,0,0),
+				['ModelId'] = new.int(0),
+				['StartC'] = new.int(0),
+				['EndC'] = new.int(0)
+			}
+
+		}
+		vr.list_name_particle[#vr.list_particle] = vr.list_particle[#vr.list_particle]['Name']
+		upd_particle:run(#vr.list_particle)
+	end
+
+	imgui.SameLine()
+	if imgui.Button(langt['delete']) then
+		if vr.list_particle[vr.lb_cur_particle[0]+1] then
+			killFxSystemNow(vr.list_particle[vr.lb_cur_particle[0]+1]['Particle_Data']['Prtcl'])
+			vr.list_particle = DelCellArr(vr.list_particle,vr.lb_cur_particle[0]+1)
+			vr.list_name_particle = DelCellArr(vr.list_name_particle,vr.lb_cur_particle[0]+1)
+		end
+	end
+	imgui.End()
+	--Редактор объектов
+	if #vr.list_particle > 0 and vr.list_particle[vr.lb_cur_particle[0]+1] then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 300, 340
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(vr.list_particle[vr.lb_cur_particle[0]+1]['Name'], vr.list_particle[vr.lb_cur_particle[0]+1]['Enable'])
+		imgui.PushItemWidth(-90)
+	
+		--imgui.InputFloat3(u8'Угол поворота',vr.list_particle[vr.lb_cur_particle[0]+1]['Particle_Data']['Rotates'])
+		if imgui.InputFloat3(langt['position'],vr.list_particle[vr.lb_cur_particle[0]+1]['Particle_Data']['Pos']) then
+			upd_particle:run(vr.lb_cur_particle[0]+1)
+		end
+		if imgui.Button(langt['edithand']) then
+			if vr.list_particle[vr.lb_cur_particle[0]+1]['Particle_Data']['Prtcl'] ~= nil then
+				vr.editmode_particle = true
+				printHelpForever('HOBJ')
+				lockPlayerControl(true)
+				vr.id_prtcl = vr.lb_cur_particle[0]+1
+				imgui.Process = false
+			end
+		end
+		if imgui.Combo(langt['particle'],vr.list_particle[vr.lb_cur_particle[0]+1]['Particle_Data']['ModelId'],new('const char* const [?]',#Particle_name,Particle_name),#Particle_name) then
+			upd_particle:run(vr.lb_cur_particle[0]+1)
+		end
+	
+		imgui.PushItemWidth(-110)
+	
+		imgui.Separator()
+		local list_tg_m = {langt['toend']}
+		for ltg = 1,#vr.list_name_targets do
+			list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+		end
+		imgui.Combo(langt['app_on'],vr.list_particle[vr.lb_cur_particle[0]+1]['Particle_Data']['StartC'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+		imgui.Combo(langt['dis_after'],vr.list_particle[vr.lb_cur_particle[0]+1]['Particle_Data']['EndC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+	
+		imgui.End()
+	end
+
+end)
+
+imgui.OnFrame(function() return vr.explosion_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+	local resX,resY = getScreenResolution()
+	local sizeX,sizeY = 300, 340
+	imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+	imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 + 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+	imgui.Begin(langt['explosions'])
+
+	imgui.PushItemWidth(-10)
+
+
+	--Список Объектов
+	imgui.ListBoxStr_arr('', vr.lb_cur_explosion,new('const char* const [?]',#vr.list_name_explosion,vr.list_name_explosion),#vr.list_name_explosion,15)
+	if imgui.BeginPopupContextItem('hee') then
+		imgui.InputText('',vr.buf_edit_explosion_name,ffi.sizeof(vr.buf_edit_explosion_name))
+		if imgui.Button(langt['apply']) and vr.buf_edit_explosion_name[0] ~= '' then
+			vr.list_explosion[vr.lb_cur_explosion[0]+1]['Name'] = ffi.string(vr.buf_edit_explosion_name)
+			vr.list_name_explosion[vr.lb_cur_explosion[0]+1] = ffi.string(vr.buf_edit_explosion_name)
+			imgui.StrCopy(vr.buf_edit_explosion_name,'')
+			imgui.CloseCurrentPopup()
+		end
+		imgui.PushItemWidth(-1);
+		imgui.PopItemWidth();
+		imgui.EndPopup();
+	end
+
+	--Кнопки редактирования
+	if imgui.Button(langt['add']) then
+		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+		xz = getGroundZFor3dCoord(xx, xy, xz)
+		vr.list_explosion[#vr.list_explosion+1] = {
+			['Name'] = langt['explosion']..' #' .. tostring(#vr.list_explosion+1),
+			['Type'] = new.int(-1),
+			['Explosion_Data'] = {
+				['Type'] = new.int(-1),
+				['Pos'] = new.float[3](xx,xy,xz),
+				['StartC'] = new.int(0),
+				['EndC'] = new.int(0)
+			}
+
+		}
+		vr.list_name_explosion[#vr.list_explosion] = vr.list_explosion[#vr.list_explosion]['Name']
+	end
+
+	imgui.SameLine()
+	if imgui.Button(langt['delete']) then
+		if vr.list_explosion[vr.lb_cur_explosion[0]+1] then
+			removeScriptFire(vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Fire'])
+			deleteObject(vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Explosion'])
+			vr.list_explosion = DelCellArr(vr.list_explosion,vr.lb_cur_explosion[0]+1)
+			vr.list_name_explosion = DelCellArr(vr.list_name_explosion,vr.lb_cur_explosion[0]+1)
+		end
+	end
+	imgui.End()
+	--Окно пикапа
+	if #vr.list_explosion > 0 and vr.list_explosion[vr.lb_cur_explosion[0]+1] then
+		local resX,resY = getScreenResolution()
+		local sizeX,sizeY = 300, 340
+		imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+		imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2 - 150,(resY-sizeY)/2 - 30),imgui.Cond.FirstUseEver)
+		imgui.Begin(vr.list_explosion[vr.lb_cur_explosion[0]+1]['Name'], vr.list_explosion[vr.lb_cur_explosion[0]+1]['Enable'])
+		imgui.PushItemWidth(-90)
+		local type_expl = decodeJson(langt['type_expl'])
+		if imgui.Combo(langt['type'],vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Type'],new('const char* const [?]',#type_expl,type_expl),#type_expl) then
+			if vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Type'][0] == 1 then
+				vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Type_explosion'] = new.int(0)
+				removeScriptFire(vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Fire'])
+				upd_explosion:run(vr.lb_cur_explosion[0]+1)
+			end
+			if vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Type'][0] == 0 then
+				vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Size_fire'] = new.int(0)
+				vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Propagation_fire'] = new.int(0)
+				deleteObject(vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Explosion'])
+				upd_explosion:run(vr.lb_cur_explosion[0]+1)
+			end
+		end
+	
+		if imgui.InputFloat3(langt['position'],vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Pos']) then
+			upd_explosion:run(vr.lb_cur_explosion[0]+1)
+		end
+	
+		if vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Type'][0] == 1 then
+			imgui.InputInt(langt['type_explosions'],vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Type_explosion'])
+		end
+		if vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Type'][0] == 0 then
+			if imgui.InputInt(langt['size_fire'],vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Size_fire']) then
+				upd_explosion:run(vr.lb_cur_explosion[0]+1)
+			end
+			if imgui.InputInt(langt['spread_fire'],vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Propagation_fire']) then
+				upd_explosion:run(vr.lb_cur_explosion[0]+1)
+			end
+		end
+	
+		if imgui.Button(langt['edithand']) then
+			if vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['Type'][0] ~= -1 then
+				vr.editmode_explosion = true
+				printHelpForever('HTARG')
+				lockPlayerControl(true)
+				vr.id_explosion = vr.lb_cur_explosion[0]+1
+				imgui.Process = false
+			end
+		end
+	
+		imgui.Separator()
+		local list_tg_m = {langt['toend']}
+		for ltg = 1,#vr.list_name_targets do
+			list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+		end
+		imgui.Combo(langt['app_on'],vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['StartC'],new('const char* const [?]',#vr.list_name_targets,vr.list_name_targets),#vr.list_name_targets)
+		imgui.Combo(langt['dis_after'],vr.list_explosion[vr.lb_cur_explosion[0]+1]['Explosion_Data']['EndC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+	
+	
+		imgui.End()
+	end
+end)
+
+imgui.OnFrame(function() return vr.info_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+	local resX,resY = getScreenResolution()
+	local sizeX,sizeY = 200, 400
+	imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+	imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
+	imgui.Begin(langt['info'])
+	local info_t = decodeJson(langt['info_t'])
+	imgui.Text(info_t[1])
+	imgui.SameLine()
+	imgui.TextColored(imgui.ImVec4(1.0,0.0,0.0,1.0),thisScript().authors[1])
+	imgui.Text(info_t[2])
+	imgui.SameLine()
+	imgui.TextColored(imgui.ImVec4(1.0,0.0,0.0,1.0),thisScript().authors[2])
+	imgui.Text(info_t[3])
+	imgui.SameLine()
+	imgui.Text(thisScript().version)
+	imgui.NewLine()
+	imgui.Text(info_t[4])
+	imgui.Text(info_t[5])
+	imgui.End()
+
+end)
+
+-- Настройки
+imgui.OnFrame(function() return vr.settings_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+	local resX,resY = getScreenResolution()
+	local sizeX,sizeY = 200, 400
+	imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+	imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
+	imgui.Begin(langt['settings'], vr.settings_window)
+	imgui.Combo(langt['lang'],vr.curr_lang,new('const char* const [?]',#LanguageList,LanguageList),#LanguageList)
+	imgui.End()
+end)
+
+imgui.OnFrame(function() return vr.tool_window[0] and imgui.Process end, 
+function()
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+	local resX,resY = getScreenResolution()
+	local sizeX,sizeY = 200, 400
+	imgui.SetNextWindowSize(imgui.ImVec2(sizeX,sizeY), imgui.Cond.FirstUseEver)
+	imgui.SetNextWindowPos(imgui.ImVec2((resX-sizeX)/2,(resY-sizeY)/2),imgui.Cond.FirstUseEver)
+	imgui.Begin(langt['setting'], vr.tool_window)
+
+	if imgui.Button(langt['tool_tp_marker']) then
+		local xx,xy,xz = getTargetBlipCoordinates()
+		setCharCoordinates(PLAYER_PED,select(2,getTargetBlipCoordinates()),select(3,getTargetBlipCoordinates()),select(4,getTargetBlipCoordinates()))
+	end
+	if imgui.Button(langt['jetpack']) then
+		taskJetpack(PLAYER_PED)
+	end
+	-- if imgui.Button(u8'Потушить пожар') then
+	-- 	switchEmergencyServices(true)
+	-- end
+
+	imgui.End()
+
+end)
 
 -- Удаление ячейки
 function DelCellArr(arr,i)
@@ -1922,10 +1966,10 @@ function deepcopy(object)
         end
 		setmetatable(copy, manager.sorterTable2(getmetatable(orig)))
 	elseif orig_type == 'userdata' then
-		if type(orig.v) == 'userdata' then
-			copy = {orig.v[1],orig.v[2],orig.v[3]}
+		if type(orig[0]) == 'userdata' then
+			copy = {orig[0][1],orig[0][2],orig[0][3]}
 		else
-			copy = orig.v
+			copy = orig[0]
 		end
 
     else
@@ -1935,9 +1979,9 @@ function deepcopy(object)
 end
 
 function update_actor(actorr)
-	local modell = vr.list_actors[actorr]['Actor_Data']['ModelId'].v
-	local xx,xy,xz = vr.list_actors[actorr]['Actor_Data']['Pos'].v[1], vr.list_actors[actorr]['Actor_Data']['Pos'].v[2], vr.list_actors[actorr]['Actor_Data']['Pos'].v[3]
-	local angle = vr.list_actors[actorr]['Actor_Data']['Angle'].v
+	local modell = vr.list_actors[actorr]['Actor_Data']['ModelId'][0]
+	local xx,xy,xz = vr.list_actors[actorr]['Actor_Data']['Pos'][0], vr.list_actors[actorr]['Actor_Data']['Pos'][1], vr.list_actors[actorr]['Actor_Data']['Pos'][2]
+	local angle = vr.list_actors[actorr]['Actor_Data']['Angle'][0]
 
 	requestModel(modell)
 	while not hasModelLoaded(modell) do
@@ -1959,25 +2003,25 @@ function update_actor(actorr)
 end
 
 function update_actor_animation(actorr,anim)
-	if not hasAnimationLoaded(Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1]) then
-		requestAnimation(Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1])
-		while not hasAnimationLoaded(Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1]) do
+	if not hasAnimationLoaded(Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'][0]+1]) then
+		requestAnimation(Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'][0]+1])
+		while not hasAnimationLoaded(Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'][0]+1]) do
 			wait(0)
 		end
 	end
-	local animm = Anims['Anim_list'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1]
-	animm = animm[vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Anim'].v+1]
-	taskPlayAnimNonInterruptable(vr.list_actors[actorr]['Actor_Data']['Char'], animm, Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'].v+1], 1, vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Loop'].v, false, false, false, -1)
+	local animm = Anims['Anim_list'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'][0]+1]
+	animm = animm[vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Anim'][0]+1]
+	taskPlayAnimNonInterruptable(vr.list_actors[actorr]['Actor_Data']['Char'], animm, Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim'][0]+1], 1, vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Loop'][0], false, false, false, -1)
 	while not isCharPlayingAnim(vr.list_actors[actorr]['Actor_Data']['Char'],animm) do
 		wait(0)
 	end
-	vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Time'].v = getCharAnimTotalTime(vr.list_actors[actorr]['Actor_Data']['Char'],animm) / 1000
+	vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Time'][0] = getCharAnimTotalTime(vr.list_actors[actorr]['Actor_Data']['Char'],animm) / 1000
 end
 
 function update_car(carr)
-	local modell = vr.list_cars[carr]['Car_Data']['ModelId'].v
-	local xx,xy,xz = vr.list_cars[carr]['Car_Data']['Pos'].v[1], vr.list_cars[carr]['Car_Data']['Pos'].v[2], vr.list_cars[carr]['Car_Data']['Pos'].v[3]
-	local angle = vr.list_cars[carr]['Car_Data']['Angle'].v
+	local modell = vr.list_cars[carr]['Car_Data']['ModelId'][0]
+	local xx,xy,xz = vr.list_cars[carr]['Car_Data']['Pos'][0], vr.list_cars[carr]['Car_Data']['Pos'][1], vr.list_cars[carr]['Car_Data']['Pos'][2]
+	local angle = vr.list_cars[carr]['Car_Data']['Angle'][0]
 
 	requestModel(modell)
 	while not hasModelLoaded(modell) do
@@ -1998,13 +2042,13 @@ function update_car(carr)
 	setCarCollision(vr.list_cars[carr]['Car_Data']['Car'],false)
 	freezeCarPosition(vr.list_cars[carr]['Car_Data']['Car'], true)
 	setCarCanBeDamaged(vr.list_cars[carr]['Car_Data']['Car'], false)
-	changeCarColour(vr.list_cars[carr]['Car_Data']['Car'], vr.list_cars[carr]['Car_Data']['Color_primary'].v,vr.list_cars[carr]['Car_Data']['Color_secondary'].v)
+	changeCarColour(vr.list_cars[carr]['Car_Data']['Car'], vr.list_cars[carr]['Car_Data']['Color_primary'][0],vr.list_cars[carr]['Car_Data']['Color_secondary'][0])
 end
 
 function update_object(objj)
-	local modell = vr.list_objects[objj]['Object_Data']['ModelId'].v
-	local xx,xy,xz = vr.list_objects[objj]['Object_Data']['Pos'].v[1], vr.list_objects[objj]['Object_Data']['Pos'].v[2], vr.list_objects[objj]['Object_Data']['Pos'].v[3]
-	local rxx,rxy,rxz = vr.list_objects[objj]['Object_Data']['Rotates'].v[1], vr.list_objects[objj]['Object_Data']['Rotates'].v[2], vr.list_objects[objj]['Object_Data']['Rotates'].v[3]
+	local modell = vr.list_objects[objj]['Object_Data']['ModelId'][0]
+	local xx,xy,xz = vr.list_objects[objj]['Object_Data']['Pos'][0], vr.list_objects[objj]['Object_Data']['Pos'][1], vr.list_objects[objj]['Object_Data']['Pos'][2]
+	local rxx,rxy,rxz = vr.list_objects[objj]['Object_Data']['Rotates'][0], vr.list_objects[objj]['Object_Data']['Rotates'][1], vr.list_objects[objj]['Object_Data']['Rotates'][2]
 
 	requestModel(modell)
 	while not hasModelLoaded(modell) do
@@ -2014,26 +2058,25 @@ function update_object(objj)
 	deleteObject(vr.list_objects[objj]['Object_Data']['Obj'])
 	vr.list_objects[objj]['Object_Data']['Obj'] = createObject(modell, xx, xy, xz)
 	setObjectCoordinates(vr.list_objects[objj]['Object_Data']['Obj'], xx, xy, xz)
-	setObjectCollision(vr.list_objects[objj]['Object_Data']['Obj'], false)
 	setObjectRotation(vr.list_objects[objj]['Object_Data']['Obj'], rxx, rxy, rxz)
 end
 
 function update_pickup(pickk)
 	removePickup(vr.list_pickup[pickk]['Pickup_Data']['Pick'])
 	wait(1)
-	local xx,xy,xz = vr.list_pickup[pickk]['Pickup_Data']['Pos'].v[1],vr.list_pickup[pickk]['Pickup_Data']['Pos'].v[2],vr.list_pickup[pickk]['Pickup_Data']['Pos'].v[3]
-	vr.list_pickup[pickk]['Pickup_Data']['Pos'].v[3] = getGroundZFor3dCoord(xx, xy, xz+1) + 1
-	xz = vr.list_pickup[pickk]['Pickup_Data']['Pos'].v[3]
+	local xx,xy,xz = vr.list_pickup[pickk]['Pickup_Data']['Pos'][0],vr.list_pickup[pickk]['Pickup_Data']['Pos'][1],vr.list_pickup[pickk]['Pickup_Data']['Pos'][2]
+	vr.list_pickup[pickk]['Pickup_Data']['Pos'][2] = getGroundZFor3dCoord(xx, xy, xz+1) + 1
+	xz = vr.list_pickup[pickk]['Pickup_Data']['Pos'][2]
 
-	if vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'].v == 0 then
-		if not hasModelLoaded(getWeapontypeModel(vr.list_pickup[pickk]['Pickup_Data']['Weapon'].v)) then
-			requestModel(getWeapontypeModel(vr.list_pickup[pickk]['Pickup_Data']['Weapon'].v))
-			while not hasModelLoaded(getWeapontypeModel(vr.list_pickup[pickk]['Pickup_Data']['Weapon'].v)) do
+	if vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'][0] == 0 then
+		if not hasModelLoaded(getWeapontypeModel(vr.list_pickup[pickk]['Pickup_Data']['Weapon'][0])) then
+			requestModel(getWeapontypeModel(vr.list_pickup[pickk]['Pickup_Data']['Weapon'][0]))
+			while not hasModelLoaded(getWeapontypeModel(vr.list_pickup[pickk]['Pickup_Data']['Weapon'][0])) do
 				wait(0)
 			end
 		end
-		vr.list_pickup[pickk]['Pickup_Data']['Pick'] = createPickupWithAmmo(getWeapontypeModel(vr.list_pickup[pickk]['Pickup_Data']['Weapon'].v),9,1,xx,xy,xz)
-	elseif vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'].v == 1 then
+		vr.list_pickup[pickk]['Pickup_Data']['Pick'] = createPickupWithAmmo(getWeapontypeModel(vr.list_pickup[pickk]['Pickup_Data']['Weapon'][0]),9,1,xx,xy,xz)
+	elseif vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'][0] == 1 then
 		if not hasModelLoaded(1240) then
 			requestModel(1240)
 			while not hasModelLoaded(1240) do
@@ -2041,7 +2084,7 @@ function update_pickup(pickk)
 			end
 		end
 		vr.list_pickup[pickk]['Pickup_Data']['Pick'] = select(2,createPickup(1240,9,xx,xy,xz))
-	elseif vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'].v == 2 then
+	elseif vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'][0] == 2 then
 		if not hasModelLoaded(1242) then
 			requestModel(1242)
 			while not hasModelLoaded(1242) do
@@ -2049,7 +2092,7 @@ function update_pickup(pickk)
 			end
 		end
 		vr.list_pickup[pickk]['Pickup_Data']['Pick'] = select(2,createPickup(1242,9,xx,xy,xz))
-	elseif vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'].v == 3 then
+	elseif vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'][0] == 3 then
 		if not hasModelLoaded(1247) then
 			requestModel(1247)
 			while not hasModelLoaded(1247) do
@@ -2057,7 +2100,7 @@ function update_pickup(pickk)
 			end
 		end
 		vr.list_pickup[pickk]['Pickup_Data']['Pick'] = select(2,createPickup(1247,9,xx,xy,xz))
-	elseif vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'].v == 4 then
+	elseif vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'][0] == 4 then
 		if not hasModelLoaded(1241) then
 			requestModel(1241)
 			while not hasModelLoaded(1241) do
@@ -2065,21 +2108,21 @@ function update_pickup(pickk)
 			end
 		end
 		vr.list_pickup[pickk]['Pickup_Data']['Pick'] = select(2,createPickup(1241,9,xx,xy,xz))
-	elseif vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'].v == 5 then
+	elseif vr.list_pickup[pickk]['Pickup_Data']['Type_pickup'][0] == 5 then
 		if not hasModelLoaded() then
-			requestModel(vr.list_pickup[pickk]['Pickup_Data']['ModelId'].v)
-			while not hasModelLoaded(vr.list_pickup[pickk]['Pickup_Data']['ModelId'].v) do
+			requestModel(vr.list_pickup[pickk]['Pickup_Data']['ModelId'][0])
+			while not hasModelLoaded(vr.list_pickup[pickk]['Pickup_Data']['ModelId'][0]) do
 				wait(0)
 			end
 		end
-		vr.list_pickup[pickk]['Pickup_Data']['Pick'] = select(2,createPickup(vr.list_pickup[pickk]['Pickup_Data']['ModelId'].v,9,xx,xy,xz))
+		vr.list_pickup[pickk]['Pickup_Data']['Pick'] = select(2,createPickup(vr.list_pickup[pickk]['Pickup_Data']['ModelId'][0],9,xx,xy,xz))
 	end
 end
 
 function update_explosion(expl)
-	local xx,xy,xz = vr.list_explosion[expl]['Explosion_Data']['Pos'].v[1],vr.list_explosion[expl]['Explosion_Data']['Pos'].v[2],vr.list_explosion[expl]['Explosion_Data']['Pos'].v[3]
+	local xx,xy,xz = vr.list_explosion[expl]['Explosion_Data']['Pos'][0],vr.list_explosion[expl]['Explosion_Data']['Pos'][1],vr.list_explosion[expl]['Explosion_Data']['Pos'][2]
 
-	if vr.list_explosion[expl]['Explosion_Data']['Type'].v == 1 then
+	if vr.list_explosion[expl]['Explosion_Data']['Type'][0] == 1 then
 		if not doesObjectExist(vr.list_explosion[expl]['Explosion_Data']['Explosion']) then
 			if not hasModelLoaded(1654) then
 				requestModel(1654)
@@ -2092,17 +2135,17 @@ function update_explosion(expl)
 		end
 		setObjectCoordinates(vr.list_explosion[expl]['Explosion_Data']['Explosion'],xx,xy,xz)
 	end
-	if vr.list_explosion[expl]['Explosion_Data']['Type'].v == 0 then
+	if vr.list_explosion[expl]['Explosion_Data']['Type'][0] == 0 then
 		removeScriptFire(vr.list_explosion[expl]['Explosion_Data']['Fire'])
 		wait(0)
-		vr.list_explosion[expl]['Explosion_Data']['Fire'] = startScriptFire(xx,xy,xz,0,vr.list_explosion[expl]['Explosion_Data']['Size_fire'].v)
+		vr.list_explosion[expl]['Explosion_Data']['Fire'] = startScriptFire(xx,xy,xz,0,vr.list_explosion[expl]['Explosion_Data']['Size_fire'][0])
 	end
 end
 
 function update_particle(prtcl)
-	local modell = Particle_name[vr.list_particle[prtcl]['Particle_Data']['ModelId'].v+1]
-	local xx,xy,xz = vr.list_particle[prtcl]['Particle_Data']['Pos'].v[1], vr.list_particle[prtcl]['Particle_Data']['Pos'].v[2], vr.list_particle[prtcl]['Particle_Data']['Pos'].v[3]
-	local rxx,rxy,rxz = vr.list_particle[prtcl]['Particle_Data']['Rotates'].v[1], vr.list_particle[prtcl]['Particle_Data']['Rotates'].v[2], vr.list_particle[prtcl]['Particle_Data']['Rotates'].v[3]
+	local modell = Particle_name[vr.list_particle[prtcl]['Particle_Data']['ModelId'][0]+1]
+	local xx,xy,xz = vr.list_particle[prtcl]['Particle_Data']['Pos'][0], vr.list_particle[prtcl]['Particle_Data']['Pos'][1], vr.list_particle[prtcl]['Particle_Data']['Pos'][2]
+	local rxx,rxy,rxz = vr.list_particle[prtcl]['Particle_Data']['Rotates'][0], vr.list_particle[prtcl]['Particle_Data']['Rotates'][1], vr.list_particle[prtcl]['Particle_Data']['Rotates'][2]
 
 	killFxSystem(vr.list_particle[prtcl]['Particle_Data']['Prtcl'])
 	wait(0)
@@ -2130,15 +2173,15 @@ function load_mission()
 	for p = 1,#vr.list_particle do
 		removePickup(vr.list_pickup[p]['Particle_Data']['Prtcl'])
 	end
-	vr.list_targets = vr.list_missions[vr.lb_cur_missions.v+1]['Mission_Data']['Targets']
-	vr.list_actors = vr.list_missions[vr.lb_cur_missions.v+1]['Mission_Data']['Actors']
-	vr.list_cars = vr.list_missions[vr.lb_cur_missions.v+1]['Mission_Data']['Cars']
-	vr.list_objects = vr.list_missions[vr.lb_cur_missions.v+1]['Mission_Data']['Objects']
-	vr.list_pickup = vr.list_missions[vr.lb_cur_missions.v+1]['Mission_Data']['Pickup']
-	vr.list_particle = vr.list_missions[vr.lb_cur_missions.v+1]['Mission_Data']['Particle']
-	vr.list_explosion = vr.list_missions[vr.lb_cur_missions.v+1]['Mission_Data']['Explosion']
-	vr.mission_data = vr.list_missions[vr.lb_cur_missions.v+1]['Mission_Data']['Miss_data']
-	vr.Fast_data['CurMiss'] = vr.lb_cur_missions.v
+	vr.list_targets = vr.list_missions[vr.lb_cur_missions[0]+1]['Mission_Data']['Targets']
+	vr.list_actors = vr.list_missions[vr.lb_cur_missions[0]+1]['Mission_Data']['Actors']
+	vr.list_cars = vr.list_missions[vr.lb_cur_missions[0]+1]['Mission_Data']['Cars']
+	vr.list_objects = vr.list_missions[vr.lb_cur_missions[0]+1]['Mission_Data']['Objects']
+	vr.list_pickup = vr.list_missions[vr.lb_cur_missions[0]+1]['Mission_Data']['Pickup']
+	vr.list_particle = vr.list_missions[vr.lb_cur_missions[0]+1]['Mission_Data']['Particle']
+	vr.list_explosion = vr.list_missions[vr.lb_cur_missions[0]+1]['Mission_Data']['Explosion']
+	vr.mission_data = vr.list_missions[vr.lb_cur_missions[0]+1]['Mission_Data']['Miss_data']
+	vr.Fast_data['CurMiss'] = vr.lb_cur_missions[0]
 	vr.list_name_actors,vr.list_name_objects,vr.list_name_cars,vr.list_name_pickup,vr.list_name_particle,vr.list_name_explosion = {},{},{},{},{},{}
 	for a = 1, #vr.list_actors do
 		wait(0)
@@ -2188,8 +2231,7 @@ function onStartNewGame(missionPackNumber)
 end
 
 function main()
-	
-	local tl = {}
+  local tl = {}
 	for line in io.popen("dir \""..getWorkingDirectory() .. '\\Language'.."\" /a:-d /b", "r"):lines() do
 		if string.sub(line, -3) == 'ini' then
 			LanguageArr[#LanguageArr+1] = inicfg.load(nil,getWorkingDirectory() .. '\\Language\\'..line)
@@ -2198,15 +2240,17 @@ function main()
 		end
 	end
 
-	setGxtEntry('HTARG', koder('Двигать: ~r~WS/AD ~n~~w~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
-	setGxtEntry('HACT', koder('Следующий/Прошлый скин: ~r~I/O~w~~n~Через 10 Следующий/Прошлый: ~r~K/L~w~~n~Выйти: ~r~F'))
-	setGxtEntry('HOBJ', koder('Двигать: ~r~AD/WS/QE~w~ ~n~Крутить: ~r~SHIFT + AD/WS/QE~w~~n~Замедлить: ~r~CTRL~w~~n~Выйти: ~r~F'))
-	setGxtEntry('HMTIM', koder('Часы: ~r~I/O~w~~n~Минуты: ~r~K/L~w~~n~Выйти: ~r~F'))
-	setGxtEntry('HPLA', koder('Следующий/Прошлый скин: ~r~I/O~w~~n~Через 10 Следующий/Прошлый: ~r~K/L~w~~n~Следующие/Прошлое оружие: ~r~P/[~n~~w~Применить: ~r~Space~n~~w~Выйти: ~r~F'))
-	setGxtEntry('HPLA2', koder('Больше/Меньше патронов: ~r~I/O~n~~w~Применить: ~r~Space~n~~w~Выйти: ~r~F'))
-	setGxtEntry('HVIEW',koder('Выйти: ~r~F'))
-	setGxtEntry('HPICW', koder('Двигать: ~r~WS/AD ~n~~w~Замедлить: ~r~CTRL~w~~n~Следующие/Прошлое оружие: ~r~I/O~w~~n~Выйти: ~r~F'))
-	--chr = createObject(1253, 0, 0, 0, 0)
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
+	setGxtEntry('HTARG', koder(u8:decode(langt['HTARG'])))
+	setGxtEntry('HACT', koder(u8:decode(langt['HACT'])))
+	setGxtEntry('HOBJ', koder(u8:decode(langt['HOBJ'])))
+	setGxtEntry('HMTIM', koder(u8:decode(langt['HMTIM'])))
+	setGxtEntry('HPLA', koder(u8:decode(langt['HPLA'])))
+	setGxtEntry('HPLA2', koder(u8:decode(langt['HPLA2'])))
+	setGxtEntry('HVIEW',koder(u8:decode(langt['HVIEW'])))
+	setGxtEntry('HPICW', koder(u8:decode(langt['HPICW'])))
+
 	local top
 	local rand
 
@@ -2223,30 +2267,20 @@ function main()
 	upd_particle = lua_thread.create_suspended(update_particle)
 	upd_explosion = lua_thread.create_suspended(update_explosion)
 
+
+	local langt = LanguageArr[vr.curr_lang[0]+1]['Keys']
+
 	while true do
 		wait(0)
 		if vr.mpack == 7 then
 			wait(500)
-			printHelpString(koder('Добро пожаловать в ~n~LDYOM ~r~' .. tostring(thisScript().version) .. '~w~!' .. '~n~~n~Нажмите ~y~U~w~ чтобы открыть главное меню'))
+			local welcome_t = decodeJson((langt['welcome_t']))
+			printHelpString(koder(u8:decode(welcome_t[1]) .. tostring(thisScript().version) .. u8:decode(welcome_t[2])))
 			vr.mpack = nil
 		end
 
 		if testCheat('top2009') then
-			if top == nil then
-				top = {loadAudioStream('https://muzlo.me/get/music/20181006/muzlome_Twenty_One_Pilots_-_Chlorine_59446258.mp3'),loadAudioStream('https://muzlo.me/get/music/20180829/muzlome_Twenty_One_Pilots_-_My_Blood_58278582.mp3'),loadAudioStream('https://muzlo.me/get/music/20170830/muzlome_Twenty_One_Pilots_-_Heavydirtysoul_47828698.mp3'),loadAudioStream('https://muzlo.me/get/music/20170830/muzlome_Twenty_One_Pilots_-_Stressed_Out_47828699.mp3'),loadAudioStream('https://muzlo.me/get/music/20180809/muzlome_Twenty_One_Pilots_-_Levitate_57877672.mp3')}
-			end
-			rand = math.random(1,5)
-			for i = 1, #top do
-				setAudioStreamState(top[i], 0)
-			end
-			if getAudioStreamState(top[rand]) <= 0 then
-				setAudioStreamState(top[rand], 1)
-				printHelpString('~r~I LOVE TWENTY ONE PILOTS')
-			else
-				for i = 1, #top do
-					setAudioStreamState(top[i], 0)
-				end
-			end
+			printHelpString('~r~I LOVE TWENTY ONE PILOTS')
 		end
 		removeSphere(r)
 
@@ -2268,36 +2302,36 @@ function main()
 			end
 			--Управление
 			if isKeyDown(vkeys.VK_A) then
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] - 0.2 * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] - 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_D) then
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] + 0.2 * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] + 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_W) then
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] - 0.2 * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] - 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_S) then
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] + 0.2 * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] + 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_SPACE) then
-				vr.list_targets[vr.id_target]['Target_Data']['Radius'].v = vr.list_targets[vr.id_target]['Target_Data']['Radius'].v + 1 * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Radius'][0] = vr.list_targets[vr.id_target]['Target_Data']['Radius'][0] + 1 * multy
 			end
 			--Отрисовка в редакторе
-			local xx,xy,xz = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1],vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2],vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[3]
-			vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[3] = getGroundZFor3dCoord(xx, xy, xz+2)
-			drawSphere(xx, xy, xz,vr.list_targets[vr.id_target]['Target_Data']['Radius'].v)
+			local xx,xy,xz = vr.list_targets[vr.id_target]['Target_Data']['Pos'][0],vr.list_targets[vr.id_target]['Target_Data']['Pos'][1],vr.list_targets[vr.id_target]['Target_Data']['Pos'][2]
+			vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = getGroundZFor3dCoord(xx, xy, xz+2)
+			drawSphere(xx, xy, xz,vr.list_targets[vr.id_target]['Target_Data']['Radius'][0])
 		end
 
 		if vr.editmode_actor then
 			imgui.Process = false
 			requestModel(model.BMORI)
-			while not hasModelLoaded(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v) do
+			while not hasModelLoaded(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0]) do
 				wait(1)
 			end
-			setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v)
-			local xx,xy,xz = vr.list_actors[vr.id_actor]['Actor_Data']['Pos'].v[1],vr.list_actors[vr.id_actor]['Actor_Data']['Pos'].v[2],vr.list_actors[vr.id_actor]['Actor_Data']['Pos'].v[3]
+			setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0])
+			local xx,xy,xz = vr.list_actors[vr.id_actor]['Actor_Data']['Pos'][0],vr.list_actors[vr.id_actor]['Actor_Data']['Pos'][1],vr.list_actors[vr.id_actor]['Actor_Data']['Pos'][2]
 			setCharCoordinates(PLAYER_PED, xx, xy, xz)
-			setCharHeading(PLAYER_PED, vr.list_actors[vr.id_actor]['Actor_Data']['Angle'].v)
+			setCharHeading(PLAYER_PED, vr.list_actors[vr.id_actor]['Actor_Data']['Angle'][0])
 			printHelpForever('HACT')
 		end
 		while vr.editmode_actor do
@@ -2310,85 +2344,85 @@ function main()
 				local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 				local angle = getCharHeading(PLAYER_PED)
 				xz = getGroundZFor3dCoord(xx,xy,xz)
-				vr.list_actors[vr.id_actor]['Actor_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
-				vr.list_actors[vr.id_actor]['Actor_Data']['Angle'].v = angle
+				vr.list_actors[vr.id_actor]['Actor_Data']['Pos'] = new.float[3](xx,xy,xz)
+				vr.list_actors[vr.id_actor]['Actor_Data']['Angle'][0] = angle
 
 				upd_actor:run(vr.id_actor)
 				clearPrints()
 			end
 			if isKeyDown(vkeys.VK_I) then
 				wait(100)
-				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v = vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v + 1
+				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] = vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] + 1
 				local id_a = 0
 				for v = 1,#ID_Actors do
-					if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v <= ID_Actors[v] then
+					if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] <= ID_Actors[v] then
 						id_a = ID_Actors[v]
 						break
 					end
 				end
-				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v = id_a
-				requestModel(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v)
-				while not hasModelLoaded(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v) do
+				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] = id_a
+				requestModel(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0])
+				while not hasModelLoaded(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0]) do
 					wait(1)
 				end
-				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v)
+				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0])
 			end
 			if isKeyDown(vkeys.VK_O) then
 				wait(100)
-				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v = vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v - 1
-				if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v < 0 then
-					vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v = 288
+				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] = vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] - 1
+				if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] < 0 then
+					vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] = 288
 				end
 				local id_a = 288
 				for v = 1,#ID_Actors do
-					if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v < ID_Actors[v] then
+					if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] < ID_Actors[v] then
 						id_a = ID_Actors[v-1]
 						break
 					end
 				end
-				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v = id_a
-				requestModel(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v)
-				while not hasModelLoaded(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v) do
+				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] = id_a
+				requestModel(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0])
+				while not hasModelLoaded(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0]) do
 					wait(1)
 				end
-				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v)
+				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0])
 			end
 			if isKeyDown(vkeys.VK_K) then
 				wait(100)
-				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v = vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v + 10
+				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] = vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] + 10
 				local id_a = 0
 				for v = 1,#ID_Actors do
-					if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v <= ID_Actors[v] then
+					if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] <= ID_Actors[v] then
 						id_a = ID_Actors[v]
 						break
 					end
 				end
-				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v = id_a
-				requestModel(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v)
-				while not hasModelLoaded(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v) do
+				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] = id_a
+				requestModel(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0])
+				while not hasModelLoaded(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0]) do
 					wait(1)
 				end
-				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v)
+				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0])
 			end
 			if isKeyDown(vkeys.VK_L) then
 				wait(100)
-				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v = vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v - 10
-				if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v < 0 then
-					vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v = 289 + vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v
+				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] = vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] - 10
+				if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] < 0 then
+					vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] = 289 + vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0]
 				end
 				local id_a = 288
 				for v = 1,#ID_Actors do
-					if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v < ID_Actors[v] then
+					if vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] < ID_Actors[v] then
 						id_a = ID_Actors[v-1]
 						break
 					end
 				end
-				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v = id_a
-				requestModel(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v)
-				while not hasModelLoaded(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v) do
+				vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0] = id_a
+				requestModel(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0])
+				while not hasModelLoaded(vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0]) do
 					wait(1)
 				end
-				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'].v)
+				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.id_actor]['Actor_Data']['ModelId'][0])
 			end
 		end
 
@@ -2397,11 +2431,11 @@ function main()
 			if wasKeyPressed(vkeys.VK_U) then
 				print('ch')
 				local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-				table.insert(vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][vr.id_actor_anim]['Path'],{xx,xy,xz})
+				table.insert(vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][vr.id_actor_anim]['Path'],{xx,xy,xz})
 			end
 			local mx,my = getCursorPos()
 			mx,my = convertWindowScreenCoordsToGameScreenCoords(mx,my)
-			local xx,xy,xz = vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][vr.id_actor_anim]['Path'][#vr.list_actors[vr.lb_cur_actors.v+1]['Actor_Data']['Anims'][vr.id_actor_anim]['Path']]
+			local xx,xy,xz = vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][vr.id_actor_anim]['Path'][#vr.list_actors[vr.lb_cur_actors[0]+1]['Actor_Data']['Anims'][vr.id_actor_anim]['Path']]
 			if wasKeyPressed(vkeys.VK_F) then
 				lockPlayerControl(false)
 				clearHelp()
@@ -2426,47 +2460,47 @@ function main()
 			end
 			--Управление
 			if isKeyDown(vkeys.VK_A) and not isKeyDown(vkeys.VK_SHIFT) then
-				vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[2] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[2] - 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Pos'][1] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'][1] - 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_D) and not isKeyDown(vkeys.VK_SHIFT) then
-				vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[2] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[2] + 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Pos'][1] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'][1] + 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_W) and not isKeyDown(vkeys.VK_SHIFT) then
-				vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[1] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[1] - 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Pos'][0] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'][0] - 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_S) and not isKeyDown(vkeys.VK_SHIFT)  then
-				vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[1] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[1] + 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Pos'][0] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'][0] + 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_Q) and not isKeyDown(vkeys.VK_SHIFT)  then
-				vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[3] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[3] + 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Pos'][2] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'][2] + 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_E) and not isKeyDown(vkeys.VK_SHIFT)  then
-				vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[3] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[3] - 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Pos'][2] = vr.list_objects[vr.id_obj]['Object_Data']['Pos'][2] - 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_SHIFT) then
 				if isKeyDown(vkeys.VK_A) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[2] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[2] - 0.2 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][1] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][1] - 0.2 * multy
 				end
 				if isKeyDown(vkeys.VK_D) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[2] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[2] + 0.2 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][1] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][1] + 0.2 * multy
 				end
 				if isKeyDown(vkeys.VK_W) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[1] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[1] - 0.2 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][0] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][0] - 0.2 * multy
 				end
 				if isKeyDown(vkeys.VK_S) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[1] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[1] + 0.2 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][0] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][0] + 0.2 * multy
 				end
 				if isKeyDown(vkeys.VK_E) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[3] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[3] - 0.2 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][2] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][2] - 0.2 * multy
 				end
 				if isKeyDown(vkeys.VK_Q) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[3] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[3] + 0.2 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][2] = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][2] + 0.2 * multy
 				end
 			end
 			--Отрисовка в редакторе
-			local xx,xy,xz = vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[1],vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[2],vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[3]
-			local rxx,rxy,rxz = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[1],vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[2],vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[3]
-			print(vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[3])
+			local xx,xy,xz = vr.list_objects[vr.id_obj]['Object_Data']['Pos'][0],vr.list_objects[vr.id_obj]['Object_Data']['Pos'][1],vr.list_objects[vr.id_obj]['Object_Data']['Pos'][2]
+			local rxx,rxy,rxz = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][0],vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][1],vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][2]
+			print(vr.list_objects[vr.id_obj]['Object_Data']['Pos'][2])
 			setObjectCoordinates(vr.list_objects[vr.id_obj]['Object_Data']['Obj'], xx, xy, xz)
 			setObjectRotation(vr.list_objects[vr.id_obj]['Object_Data']['Obj'], rxx, rxy, rxz)
 		end
@@ -2482,47 +2516,47 @@ function main()
 			end
 			--Управление
 			if isKeyDown(vkeys.VK_A) and not isKeyDown(vkeys.VK_SHIFT) then
-			vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[2] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[2] - 0.2 * multy
+			vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][1] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][1] - 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_D) and not isKeyDown(vkeys.VK_SHIFT) then
-				vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[2] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[2] + 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][1] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][1] + 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_W) and not isKeyDown(vkeys.VK_SHIFT) then
-				vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[1] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[1] - 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][0] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][0] - 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_S) and not isKeyDown(vkeys.VK_SHIFT)  then
-				vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[1] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[1] + 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][0] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][0] + 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_Q) and not isKeyDown(vkeys.VK_SHIFT)  then
-				vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[3] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[3] + 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][2] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][2] + 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_E) and not isKeyDown(vkeys.VK_SHIFT)  then
-				vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[3] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[3] - 0.2 * multy
+				vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][2] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][2] - 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_SHIFT) then
 				if isKeyDown(vkeys.VK_A) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[2] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[2] - 0.2 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][1] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][1] - 0.2 * multy
 				end
 				if isKeyDown(vkeys.VK_D) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[2] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[2] + 0.2 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][1] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][1] + 0.2 * multy
 				end
 				if isKeyDown(vkeys.VK_W) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[1] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[1] - 0.2 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][0] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][0] - 0.2 * multy
 				end
 				if isKeyDown(vkeys.VK_S) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[1] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[1] + 0.2 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][0] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][0] + 0.2 * multy
 				end
 				if isKeyDown(vkeys.VK_E) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[3] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[3] - 0.5 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][2] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][2] - 0.5 * multy
 				end
 				if isKeyDown(vkeys.VK_Q) then
-					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[3] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[3] + 0.5 * multy
+					vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][2] = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][2] + 0.5 * multy
 				end
 			end
 			--Отрисовка в редакторе
-			local xx,xy,xz = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[1],vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[2],vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'].v[3]
+			local xx,xy,xz = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][0],vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][1],vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Pos'][2]
 
-			local rxx,rxy,rxz = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[1],vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[2],vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'].v[3]
+			local rxx,rxy,rxz = vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][0],vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][1],vr.list_objects[vr.id_obj]['Object_Data']['Anims'][vr.id_obj_anim]['Rotates'][2]
 
 			setObjectCoordinates(vr.list_objects[vr.id_obj]['Object_Data']['Obj'], xx, xy, xz)
 			setObjectRotation(vr.list_objects[vr.id_obj]['Object_Data']['Obj'], rxx, rxy, rxz)
@@ -2531,8 +2565,8 @@ function main()
 			if wasKeyPressed(vkeys.VK_F) then
 				lockPlayerControl(false)
 				clearHelp()
-				local xx,xy,xz = vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[1],vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[2],vr.list_objects[vr.id_obj]['Object_Data']['Pos'].v[3]
-				local rxx,rxy,rxz = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[1],vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[2],vr.list_objects[vr.id_obj]['Object_Data']['Rotates'].v[3]
+				local xx,xy,xz = vr.list_objects[vr.id_obj]['Object_Data']['Pos'][0],vr.list_objects[vr.id_obj]['Object_Data']['Pos'][1],vr.list_objects[vr.id_obj]['Object_Data']['Pos'][2]
+				local rxx,rxy,rxz = vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][0],vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][1],vr.list_objects[vr.id_obj]['Object_Data']['Rotates'][2]
 				setObjectCoordinates(vr.list_objects[vr.id_obj]['Object_Data']['Obj'], xx, xy, xz)
 				setObjectRotation(vr.list_objects[vr.id_obj]['Object_Data']['Obj'], rxx, rxy, rxz)
 				vr.editmode_objects_anim = false
@@ -2557,61 +2591,62 @@ function main()
 			--Управление
 			if isKeyDown(vkeys.VK_A) and not isKeyDown(vkeys.VK_SHIFT) then
 				wait(100)
-				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[2] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[2] - 0.2 * multy
+				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][1] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][1] + 0.2 * multy
 				upd_particle:run(vr.id_prtcl)
 			end
 			if isKeyDown(vkeys.VK_D) and not isKeyDown(vkeys.VK_SHIFT) then
 				wait(100)
-				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[2] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[2] + 0.2 * multy
+				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][1] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][1] - 0.2 * multy
+				upd_particle:run(vr.id_prtcl)
 			end
 			if isKeyDown(vkeys.VK_W) and not isKeyDown(vkeys.VK_SHIFT) then
 				wait(100)
-				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[1] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[1] - 0.2 * multy
+				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][0] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][0] + 0.2 * multy
 				upd_particle:run(vr.id_prtcl)
 			end
 			if isKeyDown(vkeys.VK_S) and not isKeyDown(vkeys.VK_SHIFT)  then
 				wait(100)
-				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[1] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[1] + 0.2 * multy
+				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][0] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][0] - 0.2 * multy
 				upd_particle:run(vr.id_prtcl)
 			end
 			if isKeyDown(vkeys.VK_Q) and not isKeyDown(vkeys.VK_SHIFT)  then
 				wait(100)
-				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[3] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[3] + 0.2 * multy
+				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][2] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][2] + 0.2 * multy
 				upd_particle:run(vr.id_prtcl)
 			end
 			if isKeyDown(vkeys.VK_E) and not isKeyDown(vkeys.VK_SHIFT)  then
 				wait(100)
-				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[3] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'].v[3] - 0.2 * multy
+				vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][2] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Pos'][2] - 0.2 * multy
 				upd_particle:run(vr.id_prtcl)
 			end
 			if isKeyDown(vkeys.VK_SHIFT) then
 				if isKeyDown(vkeys.VK_A) then
 					wait(100)
-					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[2] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[2] - 0.2 * multy
+					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][1] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][1] + 0.2 * multy
 					upd_particle:run(vr.id_prtcl)
 				end
 				if isKeyDown(vkeys.VK_D) then
 					wait(100)
-					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[2] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[2] + 0.2 * multy
+					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][1] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][1] - 0.2 * multy
 					upd_particle:run(vr.id_prtcl)
 				end
 				if isKeyDown(vkeys.VK_W) then
 					wait(100)
-					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[1] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[1] - 0.2 * multy
+					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][0] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][0] + 0.2 * multy
 					upd_particle:run(vr.id_prtcl)
 				end
 				if isKeyDown(vkeys.VK_S) then
-					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[1] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[1] + 0.2 * multy
+					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][0] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][0] - 0.2 * multy
 					upd_particle:run(vr.id_prtcl)
 				end
 				if isKeyDown(vkeys.VK_E) then
 					wait(100)
-					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[3] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[3] - 0.2 * multy
+					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][2] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][2] + 0.2 * multy
 					upd_particle:run(vr.id_prtcl)
 				end
 				if isKeyDown(vkeys.VK_Q) then
 					wait(100)
-					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[3] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'].v[3] + 0.2 * multy
+					vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][2] = vr.list_particle[vr.id_prtcl]['Particle_Data']['Rotates'][2] - 0.2 * multy
 					upd_particle:run(vr.id_prtcl)
 				end
 			end
@@ -2635,56 +2670,56 @@ function main()
 			--Управление
 			if isKeyDown(vkeys.VK_A) then
 				wait(50)
-				vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'].v[2] = vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'].v[2] - 0.2 * multy
+				vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'][1] = vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'][1] - 0.2 * multy
 				upd_pickup:run(vr.id_pick)
 			end
 			if isKeyDown(vkeys.VK_D) then
 				wait(50)
-				vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'].v[2] = vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'].v[2] + 0.2 * multy
+				vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'][1] = vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'][1] + 0.2 * multy
 				upd_pickup:run(vr.id_pick)
 			end
 			if isKeyDown(vkeys.VK_W) then
 				wait(50)
-				vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'].v[1] = vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'].v[1] - 0.2 * multy
+				vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'][0] = vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'][0] - 0.2 * multy
 				upd_pickup:run(vr.id_pick)
 			end
 			if isKeyDown(vkeys.VK_S) then
 				wait(50)
-				vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'].v[1] = vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'].v[1] + 0.2 * multy
+				vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'][0] = vr.list_pickup[vr.id_pick]['Pickup_Data']['Pos'][0] + 0.2 * multy
 				upd_pickup:run(vr.id_pick)
 			end
 			if isKeyDown(vkeys.VK_I) then
 				wait(100)
-				if vr.list_pickup[vr.id_pick]['Pickup_Data']['Type_pickup'].v == 0 then
-					vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'].v = vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'].v + 1
+				if vr.list_pickup[vr.id_pick]['Pickup_Data']['Type_pickup'][0] == 0 then
+					vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'][0] = vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'][0] + 1
 					local id_w = 1
 					for v = 1,#Number_Weapons do
-						if vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'].v <= Number_Weapons[v] then
+						if vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'][0] <= Number_Weapons[v] then
 							id_w = Number_Weapons[v]
 							markModelAsNoLongerNeeded(getWeapontypeModel(Number_Weapons[v-1]))
 							break
 						end
 					end
-					vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'].v = id_w
+					vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'][0] = id_w
 					upd_pickup:run(vr.id_pick)
 				end
 			end
 			if isKeyDown(vkeys.VK_O) then
 				wait(100)
-				if 	vr.list_pickup[vr.id_pick]['Pickup_Data']['Type_pickup'].v == 0 then
-					vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'].v = vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'].v - 1
-					if vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'].v < 1 then
-						vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'].v = 46
+				if 	vr.list_pickup[vr.id_pick]['Pickup_Data']['Type_pickup'][0] == 0 then
+					vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'][0] = vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'][0] - 1
+					if vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'][0] < 1 then
+						vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'][0] = 46
 					end
 					local id_w = 46
 					for v = 1,#Number_Weapons do
-						if vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'].v < Number_Weapons[v] then
+						if vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'][0] < Number_Weapons[v] then
 							id_w = Number_Weapons[v-1]
 							markModelAsNoLongerNeeded(getWeapontypeModel(Number_Weapons[v]))
 							break
 						end
 					end
-					vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'].v = id_w
+					vr.list_pickup[vr.id_pick]['Pickup_Data']['Weapon'][0] = id_w
 				end
 				upd_pickup:run(vr.id_pick)
 			end
@@ -2707,27 +2742,27 @@ function main()
 			end
 			--Управление
 			if isKeyDown(vkeys.VK_A) then
-				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[2] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[2] - 0.2 * multy
+				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][1] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][1] + 0.2 * multy
 				upd_explosion:run(vr.id_explosion)
 			end
 			if isKeyDown(vkeys.VK_D) then
-				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[2] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[2] + 0.2 * multy
+				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][1] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][1] - 0.2 * multy
 				upd_explosion:run(vr.id_explosion)
 			end
 			if isKeyDown(vkeys.VK_W) then
-				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[1] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[1] - 0.2 * multy
+				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][0] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][0] + 0.2 * multy
 				upd_explosion:run(vr.id_explosion)
 			end
 			if isKeyDown(vkeys.VK_S) then
-				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[1] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[1] + 0.2 * multy
+				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][0] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][0] - 0.2 * multy
 				upd_explosion:run(vr.id_explosion)
 			end
 			if isKeyDown(vkeys.VK_Q) then
-				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[3] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[3] + 0.2 * multy
+				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][2] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][2] + 0.2 * multy
 				upd_explosion:run(vr.id_explosion)
 			end
 			if isKeyDown(vkeys.VK_E) then
-				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[3] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'].v[3] - 0.2 * multy
+				vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][2] = vr.list_explosion[vr.id_explosion]['Explosion_Data']['Pos'][2] - 0.2 * multy
 				upd_explosion:run(vr.id_explosion)
 			end
 		end
@@ -2747,58 +2782,58 @@ function main()
 			end
 
 			if isKeyDown(vkeys.VK_A) and not isKeyDown(vkeys.VK_SHIFT) then
-				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2]+90))
-				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2]+90))
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] - 0.2 *sinn * multy
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] - 0.2 *coss * multy
+				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1]+90))
+				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1]+90))
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] - 0.2 *sinn * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] - 0.2 *coss * multy
 			end
 			if isKeyDown(vkeys.VK_D) and not isKeyDown(vkeys.VK_SHIFT) then
-				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2]-90))
-				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2]-90))
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] - 0.2 *sinn * multy
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] - 0.2 *coss * multy
+				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1]-90))
+				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1]-90))
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] - 0.2 *sinn * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] - 0.2 *coss * multy
 			end
 			if isKeyDown(vkeys.VK_W) and not isKeyDown(vkeys.VK_SHIFT) then
-				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2]))
-				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2]))
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] + 0.2 *sinn * multy
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] + 0.2 *coss * multy
+				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1]))
+				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1]))
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] + 0.2 *sinn * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] + 0.2 *coss * multy
 			end
 			if isKeyDown(vkeys.VK_S) and not isKeyDown(vkeys.VK_SHIFT)  then
-				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2]))
-				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2]))
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1] - 0.2 *sinn * multy
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2] - 0.2 *coss * multy
+				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1]))
+				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1]))
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][0] - 0.2 *sinn * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] - 0.2 *coss * multy
 			end
 			if isKeyDown(vkeys.VK_Q) and not isKeyDown(vkeys.VK_SHIFT)  then
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[3] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[3] + 0.2 * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] + 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_E) and not isKeyDown(vkeys.VK_SHIFT)  then
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[3] = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[3] - 0.2 * multy
+				vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] - 0.2 * multy
 			end
 			if isKeyDown(vkeys.VK_SHIFT) then
 				if isKeyDown(vkeys.VK_A) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2] - 2 * multy
+					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] - 2 * multy
 				end
 				if isKeyDown(vkeys.VK_D) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2] + 2 * multy
+					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] + 2 * multy
 				end
 				if isKeyDown(vkeys.VK_W) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[1] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[1] - 2 * multy
+					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][0] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][0] - 2 * multy
 				end
 				if isKeyDown(vkeys.VK_S) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[1] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[1] + 2 * multy
+					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][0] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][0] + 2 * multy
 				end
 				if isKeyDown(vkeys.VK_E) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[3] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[3] - 2 * multy
+					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] - 2 * multy
 				end
 				if isKeyDown(vkeys.VK_Q) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[3] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[3] + 2 * multy
+					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] + 2 * multy
 				end
 			end
 
-			local xx,xy,xz = vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[1],vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[2],vr.list_targets[vr.id_target]['Target_Data']['Pos'].v[3]
-			local rxx,rxy,rxz = vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[1],vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[2],vr.list_targets[vr.id_target]['Target_Data']['Rotates'].v[3]
+			local xx,xy,xz = vr.list_targets[vr.id_target]['Target_Data']['Pos'][0],vr.list_targets[vr.id_target]['Target_Data']['Pos'][1],vr.list_targets[vr.id_target]['Target_Data']['Pos'][2]
+			local rxx,rxy,rxz = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][0],vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1],vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]
 			local x1,y1,z1 = xx,xy,xz
 			x1 = x1 + 2*math.sin(math.rad(rxy)) * math.sin(math.rad(rxx))
 			y1 = y1 + 2*math.cos(math.rad(rxy)) * math.sin(math.rad(rxx))
@@ -3070,19 +3105,19 @@ function main()
 
 		if vr.editmode_teleport_player then
 			local stage = 0
-			local modelID = vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'].v
-			local weapon = vr.list_targets[vr.id_teleport_player]['Target_Data']['Weapon'].v
-			local ammo = vr.list_targets[vr.id_teleport_player]['Target_Data']['Weap_ammo'].v
-			setCharCoordinates(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'].v[1], vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'].v[2], vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'].v[3])
-			if not hasModelLoaded(vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'].v) then
-				requestModel(vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'].v)
-				while not hasModelLoaded(vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'].v) do
+			local modelID = vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'][0]
+			local weapon = vr.list_targets[vr.id_teleport_player]['Target_Data']['Weapon'][0]
+			local ammo = vr.list_targets[vr.id_teleport_player]['Target_Data']['Weap_ammo'][0]
+			setCharCoordinates(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'][0], vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'][1], vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'][2])
+			if not hasModelLoaded(vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'][0]) then
+				requestModel(vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'][0])
+				while not hasModelLoaded(vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'][0]) do
 					wait(1)
 				end
 			end
-			setPlayerModel(PLAYER_HANDLE, vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'].v)
-			setCharHeading(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Angle'].v)
-			giveWeaponToChar(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Weapon'].v, 99999)
+			setPlayerModel(PLAYER_HANDLE, vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'][0])
+			setCharHeading(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Angle'][0])
+			giveWeaponToChar(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Weapon'][0], 99999)
 			setInteriorVisible(vr.list_targets[vr.id_teleport_player]['Target_Data']['Interior_id'])
 			setCharInterior(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Interior_id'])
 			while vr.editmode_teleport_player do
@@ -3107,11 +3142,11 @@ function main()
 						local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 						local angle = getCharHeading(PLAYER_PED)
 						xz = getGroundZFor3dCoord(xx,xy,xz)
-						vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
-						vr.list_targets[vr.id_teleport_player]['Target_Data']['Angle'].v = angle
-						vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'].v = modelID
-						vr.list_targets[vr.id_teleport_player]['Target_Data']['Weapon'].v = weapon
-						vr.list_targets[vr.id_teleport_player]['Target_Data']['Weap_ammo'].v = ammo
+						vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'] = new.float[3](xx,xy,xz)
+						vr.list_targets[vr.id_teleport_player]['Target_Data']['Angle'][0] = angle
+						vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'][0] = modelID
+						vr.list_targets[vr.id_teleport_player]['Target_Data']['Weapon'][0] = weapon
+						vr.list_targets[vr.id_teleport_player]['Target_Data']['Weap_ammo'][0] = ammo
 						vr.list_targets[vr.id_teleport_player]['Target_Data']['Interior_id'] = getActiveInterior()
 						removeAllCharWeapons(PLAYER_PED)
 						lockPlayerControl(false)
@@ -3251,15 +3286,15 @@ function main()
 		end
 
 		if vr.editmode_preview_player_anim then
-			if not hasAnimationLoaded(Anims['Anim_name'][vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Pack_anim'].v+1]) then
-				requestAnimation(Anims['Anim_name'][vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Pack_anim'].v+1])
-				while not hasAnimationLoaded(Anims['Anim_name'][vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Pack_anim'].v+1]) do
+			if not hasAnimationLoaded(Anims['Anim_name'][vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Pack_anim'][0]+1]) then
+				requestAnimation(Anims['Anim_name'][vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Pack_anim'][0]+1])
+				while not hasAnimationLoaded(Anims['Anim_name'][vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Pack_anim'][0]+1]) do
 					wait(0)
 				end
 			end
-			local animm = Anims['Anim_list'][vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Pack_anim'].v+1]
-			animm = animm[vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Anim'].v+1]
-			taskPlayAnim(PLAYER_PED, animm, Anims['Anim_name'][vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Pack_anim'].v+1], 1.0, vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Loop'].v, false, false, false, -1)
+			local animm = Anims['Anim_list'][vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Pack_anim'][0]+1]
+			animm = animm[vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Anim'][0]+1]
+			taskPlayAnim(PLAYER_PED, animm, Anims['Anim_name'][vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Pack_anim'][0]+1], 1.0, vr.list_targets[vr.id_preview_player_anim]['Target_Data']['Loop'][0], false, false, false, -1)
 			while vr.editmode_preview_player_anim do
 				wait(0)
 				if wasKeyPressed(vkeys.VK_F) then
@@ -3272,16 +3307,16 @@ function main()
 		end
 
 		if vr.editmode_car then
-			local carr = createCar(vr.list_cars[vr.id_car]['Car_Data']['ModelId'].v, vr.list_cars[vr.id_car]['Car_Data']['Pos'].v[1], vr.list_cars[vr.id_car]['Car_Data']['Pos'].v[2], vr.list_cars[vr.id_car]['Car_Data']['Pos'].v[3])
-			changeCarColour(carr, vr.list_cars[vr.id_car]['Car_Data']['Color_primary'].v,vr.list_cars[vr.id_car]['Car_Data']['Color_secondary'].v)
-			setCarHeading(carr, vr.list_cars[vr.id_car]['Car_Data']['Angle'].v)
+			local carr = createCar(vr.list_cars[vr.id_car]['Car_Data']['ModelId'][0], vr.list_cars[vr.id_car]['Car_Data']['Pos'][0], vr.list_cars[vr.id_car]['Car_Data']['Pos'][1], vr.list_cars[vr.id_car]['Car_Data']['Pos'][2])
+			changeCarColour(carr, vr.list_cars[vr.id_car]['Car_Data']['Color_primary'][0],vr.list_cars[vr.id_car]['Car_Data']['Color_secondary'][0])
+			setCarHeading(carr, vr.list_cars[vr.id_car]['Car_Data']['Angle'][0])
 			taskWarpCharIntoCarAsDriver(PLAYER_PED, carr)
 			while vr.editmode_car do
 				wait(0)
 				if not isCharInCar(PLAYER_PED, carr) then
 					local xx,xy,xz = getCarCoordinates(carr)
-					vr.list_cars[vr.id_car]['Car_Data']['Pos'] = imgui.ImFloat3(xx,xy,xz)
-					vr.list_cars[vr.id_car]['Car_Data']['Angle'].v = getCarHeading(carr)
+					vr.list_cars[vr.id_car]['Car_Data']['Pos'] = new.float[3](xx,xy,xz)
+					vr.list_cars[vr.id_car]['Car_Data']['Angle'][0] = getCarHeading(carr)
 					deleteCar(carr)
 					upd_car:run(vr.id_car)
 					vr.editmode_car = false
@@ -3290,8 +3325,8 @@ function main()
 		end
 
 		for i = 1, #vr.list_targets do
-			if vr.list_targets[i]['Type'].v == 0 then
-				drawSphere(vr.list_targets[i]['Target_Data']['Pos'].v[1], vr.list_targets[i]['Target_Data']['Pos'].v[2], vr.list_targets[i]['Target_Data']['Pos'].v[3],vr.list_targets[i]['Target_Data']['Radius'].v)
+			if vr.list_targets[i]['Type'][0] == 0 then
+				drawSphere(vr.list_targets[i]['Target_Data']['Pos'][0], vr.list_targets[i]['Target_Data']['Pos'][1], vr.list_targets[i]['Target_Data']['Pos'][2],vr.list_targets[i]['Target_Data']['Radius'][0])
 				end
 		end
 
@@ -3326,22 +3361,22 @@ function main()
 
 		--Откр/Закр. Меню
 		if wasKeyPressed(vkeys.VK_U) then
-			if vr.main_window.v or vr.targets_window.v or vr.actors_window.v or vr.cars_window.v or vr.objects_window.v or vr.missions_window.v or vr.pack_mission_window.v or vr.info_window.v or vr.pickup_window.v or vr.tool_window.v or vr.particle_window.v or vr.explosion_window.v or vr.settings_window.v then
-				vr.main_window.v = false
-				vr.targets_window.v = false
-				vr.actors_window.v = false
-				vr.cars_window.v = false
-				vr.objects_window.v = false
-				vr.missions_window.v = false
-				vr.pack_mission_window.v = false
-				vr.info_window.v = false
-				vr.pickup_window.v = false
-				vr.tool_window.v = false
-				vr.particle_window.v = false
-				vr.explosion_window.v = false
-				vr.settings_window.v = false
+			if vr.main_window[0] or vr.targets_window[0] or vr.actors_window[0] or vr.cars_window[0] or vr.objects_window[0] or vr.missions_window[0] or vr.pack_mission_window[0] or vr.info_window[0] or vr.pickup_window[0] or vr.tool_window[0] or vr.particle_window[0] or vr.explosion_window[0] or vr.settings_window[0] then
+				vr.main_window[0] = false
+				vr.targets_window[0] = false
+				vr.actors_window[0] = false
+				vr.cars_window[0] = false
+				vr.objects_window[0] = false
+				vr.missions_window[0] = false
+				vr.pack_mission_window[0] = false
+				vr.info_window[0] = false
+				vr.pickup_window[0] = false
+				vr.tool_window[0] = false
+				vr.particle_window[0] = false
+				vr.explosion_window[0] = false
+				vr.settings_window[0] = false
 			else
-				vr.main_window.v = not vr.main_window.v
+				vr.main_window[0] = not vr.main_window[0]
 			end
 		end
 
@@ -3350,8 +3385,8 @@ function main()
 				vr.mission_data['Name'] = u8'Миссия #' .. tostring(vr.Fast_data['CurMiss']+1)
 				vr.list_missions[vr.Fast_data['CurMiss']+1] = {
 					['Name'] = vr.mission_data['Name'],
-					['Prename'] = imgui.ImBuffer(256),
-					['Enable'] = imgui.ImBool(false),
+					['Prename'] = new.char[128](),
+					['Enable'] = new.bool(false),
 					['Mission_Data'] = {
 						['Targets'] = vr.list_targets,
 						['Actors'] = vr.list_actors,
@@ -3379,7 +3414,7 @@ function main()
 			if vr.list_mission_pack[vr.Fast_data['CurPack']+1] == nil then
 				vr.list_mission_pack[vr.Fast_data['CurPack']+1] = {
 					['Name'] = u8'Пак миссий #' .. tostring(vr.Fast_data['CurPack']+1),
-					['Enable'] = imgui.ImBool(false),
+					['Enable'] = new.bool(false),
 					['Missions'] = vr.list_missions
 				}
 				vr.list_name_mission_pack[vr.Fast_data['CurPack']+1] = vr.list_mission_pack[vr.Fast_data['CurPack']+1]['Name']
@@ -3390,7 +3425,7 @@ function main()
 			end
 			printHelpString(koder('Сохранено!'))
 		end
-		imgui.Process = vr.main_window.v or vr.targets_window.v or vr.actors_window.v or vr.cars_window.v or vr.objects_window.v or vr.missions_window.v or vr.pack_mission_window.v or vr.info_window.v or vr.pickup_window.v or vr.tool_window.v or vr.particle_window.v or vr.explosion_window.v or vr.settings_window.v
+		imgui.Process = vr.main_window[0] or vr.targets_window[0] or vr.actors_window[0] or vr.cars_window[0] or vr.objects_window[0] or vr.missions_window[0] or vr.pack_mission_window[0] or vr.info_window[0] or vr.pickup_window[0] or vr.tool_window[0] or vr.particle_window[0] or vr.explosion_window[0] or vr.settings_window[0]
 
 		-- Дебаг: позиция
 		if wasKeyPressed(vkeys.VK_Q) then
