@@ -1,9 +1,5 @@
 manager = {}
 
-require 'libstd.deps' {
-    'luarocks:json4lua',
- }
-
 encoding = require 'encoding'
 --debtab = require 'debug_table'
 encoding.default = 'CP1251'
@@ -33,8 +29,8 @@ function manager.save(pack,num)
 				['Miss_data'] = {
 					['Name'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Name'],
 					['Time'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][2]},
-					['Weather'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Weather'][0],
-					['Riot'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Riot'][0],
+					['Weather'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Weather'],
+					['Riot'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Riot'],
 					['Player'] = {
 						['Pos'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][2],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][3]},
 						['Angle'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Angle'],
@@ -71,11 +67,11 @@ function manager.load(num)
 		['Missions'] = {}
 	}
 	for p = 1, #pack['Missions'] do
-		--print(debtab.tostring(pack['Missions'][1]))
+		--print(debtab.tostring(pack['Missions'][1])
 		packk['Missions'][p] = {
 			['Name'] = pack['Missions'][p]['Name'],
 			['Prename'] = new.char[128](),
-			['Enable'] = new.bool(false),
+			['Enable'] = false,
 			['Mission_Data'] = {
 				['Targets'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Targets'],0),
 				['Actors'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Actors'],1),
@@ -87,8 +83,8 @@ function manager.load(num)
 				['Miss_data'] = {
 					['Name'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Name'],
 					['Time'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][2]},
-					['Weather'] = new.int(pack['Missions'][p]['Mission_Data']['Miss_data']['Weather']),
-					['Riot'] = new.bool(pack['Missions'][p]['Mission_Data']['Miss_data']['Riot']),
+					['Weather'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Weather'],
+					['Riot'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Riot'],
 					['Player'] = {
 						['Pos'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][2],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][3]},
 						['Angle'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Angle'],
@@ -117,13 +113,7 @@ function manager.sorterTable(orig)
             copy[manager.sorterTable(orig_key)] = manager.sorterTable(orig_value)
         end
 		setmetatable(copy, manager.sorterTable(getmetatable(orig)))
-	elseif orig_type == 'userdata' then
-		if type(orig[0]) == 'userdata' then
-			copy = {orig[0][1],orig[0][2],orig[0][3]}
-		else
-			copy = orig[0]
-		end
-
+	elseif orig_type == 'cdata' then
     else
         copy = orig
     end
@@ -136,94 +126,87 @@ function manager.sorterJson(table,typee)
 		for tt = 1, #table do
 			tableEnd[tt] = {
 				['Name'] = table[tt]['Name'],
-				['Type'] = new.int(table[tt]['Type']),
+				['Type'] = table[tt]['Type'],
 				['Target_Data'] = {}
 			}
-			if 	tableEnd[tt]['Type'][0] == 0 then
+			if 	tableEnd[tt]['Type'] == 1 then
 				tableEnd[tt]['Target_Data'] = {
-					['Pos'] = new.float[3](table[tt]['Target_Data']['Pos'][1],table[tt]['Target_Data']['Pos'][2],table[tt]['Target_Data']['Pos'][3]),
-					['Radius'] = new.int(table[tt]['Target_Data']['Radius']),
-					['Text'] = new.char[128](),
-					['Text_time'] = new.float(table[tt]['Target_Data']['Text_time']),
-					['Color_blip'] = new.int(table[tt]['Target_Data']['Color_blip']),
+					['Pos'] = table[tt]['Target_Data']['Pos'],
+					['Radius'] = table[tt]['Target_Data']['Radius'],
+					['Text'] = table[tt]['Target_Data']['Text'],
+					['Text_time'] = table[tt]['Target_Data']['Text_time'],
+					['Color_blip'] = table[tt]['Target_Data']['Color_blip'],
 				}
-				imgui.StrCopy(tableEnd[tt]['Target_Data']['Text'],table[tt]['Target_Data']['Text'])
 			end
-			if 	tableEnd[tt]['Type'][0] == 1 then
+			if 	tableEnd[tt]['Type'] == 2 then
 				tableEnd[tt]['Target_Data'] = {
-				['Target_car_id'] = new.int(table[tt]['Target_Data']['Target_car_id']),
-				['Color_blip'] = new.int(table[tt]['Target_Data']['Color_blip']),
-				['Text'] = new.char[128]()
+				['Target_car_id'] = table[tt]['Target_Data']['Target_car_id'],
+				['Color_blip'] = table[tt]['Target_Data']['Color_blip'],
+				['Text'] = ternar(table[tt]['Target_Data']['Text'] ~= nil, table[tt]['Target_Data']['Text'],'')
 			}
-			imgui.StrCopy(tableEnd[tt]['Target_Data']['Text'],ternar(table[tt]['Target_Data']['Text'] ~= nil, table[tt]['Target_Data']['Text'],''))
 			end
-			if tableEnd[tt]['Type'][0] == 2 then
+			if tableEnd[tt]['Type'] == 3 then
 				tableEnd[tt]['Target_Data'] = {
-				['Target_actor_id'] = new.int(table[tt]['Target_Data']['Target_actor_id']),
-				['Color_blip'] = new.int(table[tt]['Target_Data']['Color_blip']),
-				['Text'] = new.char[128]()
+				['Target_actor_id'] = table[tt]['Target_Data']['Target_actor_id'],
+				['Color_blip'] = table[tt]['Target_Data']['Color_blip'],
+				['Text'] = table[tt]['Target_Data']['Text'] or ''
 			}
-			imgui.StrCopy(tableEnd[tt]['Target_Data']['Text'],table[tt]['Target_Data']['Text'] or '')
 			end
-			if tableEnd[tt]['Type'][0] == 3 then
+			if tableEnd[tt]['Type'] == 4 then
 				tableEnd[tt]['Target_Data'] = {
-					['Target_type'] = new.int(table[tt]['Target_Data']['Target_type']),
-					['Pos'] = new.float[3](table[tt]['Target_Data']['Pos'][1],table[tt]['Target_Data']['Pos'][2],table[tt]['Target_Data']['Pos'][3]),
-					['Rotates'] = new.float[3](table[tt]['Target_Data']['Rotates'][1],table[tt]['Target_Data']['Rotates'][2],table[tt]['Target_Data']['Rotates'][3]),
-					['Text'] = new.char[128](),
-					['Text_time'] = new.float(table[tt]['Target_Data']['Text_time']),
-					['Smooth'] = new.bool(table[tt]['Target_Data']['Smooth']),
-					['Time'] = new.int(table[tt]['Target_Data']['Time']),
-					['Weather'] = new.int(table[tt]['Target_Data']['Weather']),
+					['Target_type'] = table[tt]['Target_Data']['Target_type'],
+					['Pos'] = table[tt]['Target_Data']['Pos'],
+					['Rotates'] = table[tt]['Target_Data']['Rotates'],
+					['Text'] = table[tt]['Target_Data']['Text'],
+					['Text_time'] = table[tt]['Target_Data']['Text_time'],
+					['Smooth'] = table[tt]['Target_Data']['Smooth'],
+					['Time'] = table[tt]['Target_Data']['Time'],
+					['Weather'] = table[tt]['Target_Data']['Weather'],
 					['Clock_time'] = table[tt]['Target_Data']['Clock_time'],
-					['Traffic'] = {new.int(table[tt]['Target_Data']['Traffic'][1]),new.int(table[tt]['Target_Data']['Traffic'][2])}
+					['Traffic'] = table[tt]['Target_Data']['Traffic']
 
 				}
-				imgui.StrCopy(tableEnd[tt]['Target_Data']['Text'],table[tt]['Target_Data']['Text'])
 			end
-			if tableEnd[tt]['Type'][0] == 4 then
+			if tableEnd[tt]['Type'] == 5 then
 				tableEnd[tt]['Target_Data'] = {
-					['Target_object_id'] = new.int(table[tt]['Target_Data']['Target_type']),
-					['Color_blip'] = new.int(table[tt]['Target_Data']['Color_blip']),
-					['Target_type'] = new.int(table[tt]['Target_Data']['Target_type']),
-					['Weap'] = new.int(table[tt]['Target_Data']['Weap']),
-					['Text'] = new.char[128]()
+					['Target_object_id'] = table[tt]['Target_Data']['Target_type'],
+					['Color_blip'] = table[tt]['Target_Data']['Color_blip'],
+					['Target_type'] = table[tt]['Target_Data']['Target_type'],
+					['Weap'] = table[tt]['Target_Data']['Weap'],
+					['Text'] = table[tt]['Target_Data']['Text']
 				}
-				imgui.StrCopy(tableEnd[tt]['Target_Data']['Text'],table[tt]['Target_Data']['Text'])
 			end
-			if tableEnd[tt]['Type'][0] == 5 then
+			if tableEnd[tt]['Type'] == 6 then
 				tableEnd[tt]['Target_Data'] = {
-				['Target_pickup_id'] = new.int(table[tt]['Target_Data']['Target_pickup_id']),
-				['Color_blip'] = new.int(table[tt]['Target_Data']['Color_blip']),
-				['Text'] = new.char[128]()
+				['Target_pickup_id'] = table[tt]['Target_Data']['Target_pickup_id'],
+				['Color_blip'] = table[tt]['Target_Data']['Color_blip'],
+				['Text'] = table[tt]['Target_Data']['Text']
 			}
-			imgui.StrCopy(tableEnd[tt]['Target_Data']['Text'],table[tt]['Target_Data']['Text'])
 		end
-			if tableEnd[tt]['Type'][0] == 6 then
+			if tableEnd[tt]['Type'] == 7 then
 				tableEnd[tt]['Target_Data'] = {
-					['Target_type'] = new.int(table[tt]['Target_Data']['Target_type']),
-					['Pos'] = new.float[3](table[tt]['Target_Data']['Pos'][1],table[tt]['Target_Data']['Pos'][2],table[tt]['Target_Data']['Pos'][3]),
-					['ModelID'] = new.int(table[tt]['Target_Data']['ModelID']),
-					['Angle'] = new.float(table[tt]['Target_Data']['Angle']),
-					['Weapon'] = new.int(table[tt]['Target_Data']['Weapon']),
-					['Weap_ammo'] = new.int(table[tt]['Target_Data']['Weap_ammo']),
-					['Anim'] = new.int(table[tt]['Target_Data']['Anim']),
-					['Pack_anim'] = new.int(table[tt]['Target_Data']['Pack_anim']),
-					['Loop'] = new.bool(table[tt]['Target_Data']['Loop']),
-					['Car_id'] = new.int(table[tt]['Target_Data']['Car_id']),
-					['Car_place'] = new.int(table[tt]['Target_Data']['Car_place']),
-					['Level_battue'] = new.int(table[tt]['Target_Data']['Level_battue']),
+					['Target_type'] = table[tt]['Target_Data']['Target_type'],
+					['Pos'] = table[tt]['Target_Data']['Pos'],
+					['ModelID'] = table[tt]['Target_Data']['ModelID'],
+					['Angle'] = table[tt]['Target_Data']['Angle'],
+					['Weapon'] = table[tt]['Target_Data']['Weapon'],
+					['Weap_ammo'] = table[tt]['Target_Data']['Weap_ammo'],
+					['Anim'] = table[tt]['Target_Data']['Anim'],
+					['Pack_anim'] = table[tt]['Target_Data']['Pack_anim'],
+					['Loop'] = table[tt]['Target_Data']['Loop'],
+					['Car_id'] = table[tt]['Target_Data']['Car_id'],
+					['Car_place'] = table[tt]['Target_Data']['Car_place'],
+					['Level_battue'] = table[tt]['Target_Data']['Level_battue'],
 					['Dialog'] = {},
-					['Dialog_id'] = new.int(0),
-					['Add_money'] = new.int(table[tt]['Target_Data']['Add_money']),
+					['Dialog_id'] = 0,
+					['Add_money'] = table[tt]['Target_Data']['Add_money'],
 					['Interior_id'] = table[tt]['Target_Data']['Interior_id']
 				}
 				for d = 1,#table[tt]['Target_Data']['Dialog'] do
 					tableEnd[tt]['Target_Data']['Dialog'][d] = {
-						['Text'] = new.char[128](),
-						['Text_time'] = new.float(table[tt]['Target_Data']['Dialog'][d]['Text_time'])
+						['Text'] = table[tt]['Target_Data']['Dialog'][d]['Text'],
+						['Text_time'] = table[tt]['Target_Data']['Dialog'][d]['Text_time']
 					}
-					imgui.StrCopy(tableEnd[tt]['Target_Data']['Dialog'][d]['Text'],table[tt]['Target_Data']['Dialog'][d]['Text'])
 				end
 			end
 		end
@@ -232,96 +215,96 @@ function manager.sorterJson(table,typee)
 		for tt = 1,#table do
 			tableEnd[tt] = {
 				['Name'] = table[tt]['Name'],
-				['Type'] = new.int(table[tt]['Type']),
+				['Type'] = table[tt]['Type'],
 				['Actor_Data'] = {
-					['Pos'] = new.float[3](table[tt]['Actor_Data']['Pos'][1],table[tt]['Actor_Data']['Pos'][2],table[tt]['Actor_Data']['Pos'][3]),
-					['Angle'] = new.float(table[tt]['Actor_Data']['Angle']),
-					['ModelId'] = new.int(table[tt]['Actor_Data']['ModelId']),
-					['StartC'] = new.int(table[tt]['Actor_Data']['StartC']),
-					['EndC'] = new.int(table[tt]['Actor_Data']['EndC']),
+					['Pos'] = table[tt]['Actor_Data']['Pos'],
+					['Angle'] = table[tt]['Actor_Data']['Angle'],
+					['ModelId'] = table[tt]['Actor_Data']['ModelId'],
+					['StartC'] = table[tt]['Actor_Data']['StartC'],
+					['EndC'] = table[tt]['Actor_Data']['EndC'],
 					['Anims'] = {},
-					['Anim_id'] = new.int(0),
-					['Should_not_die'] = new.bool(table[tt]['Actor_Data']['Should_not_die'] or false),
-					['Health'] = new.int(table[tt]['Actor_Data']['Health'] or 100),
+					['Anim_id'] = 0,
+					['Should_not_die'] = table[tt]['Actor_Data']['Should_not_die'] or false,
+					['Health'] = table[tt]['Actor_Data']['Health'] or 100,
 				}
 			}
 			for t = 1, #table[tt]['Actor_Data']['Anims'] do
 				tableEnd[tt]['Actor_Data']['Anims'][t] = {
-				['Type'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Type'] or 0)
+				['Type'] = table[tt]['Actor_Data']['Anims'][t]['Type'] or 0
 				}
 
-				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'][0] == 0 then
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Anim'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Anim'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Pack_anim'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Pack_anim'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Loop'] = new.bool(table[tt]['Actor_Data']['Anims'][t]['Loop'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Time'] = new.float(table[tt]['Actor_Data']['Anims'][t]['Time'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Condition'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Unbreakable'] = new.bool(ternar(table[tt]['Actor_Data']['Anims'][t]['Unbreakable'] ~= nil,table[tt]['Actor_Data']['Anims'][t]['Unbreakable'],false))
+				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'] == 1 then
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Anim'] = table[tt]['Actor_Data']['Anims'][t]['Anim']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Pack_anim'] = table[tt]['Actor_Data']['Anims'][t]['Pack_anim']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Loop'] = table[tt]['Actor_Data']['Anims'][t]['Loop']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Time'] = table[tt]['Actor_Data']['Anims'][t]['Time']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = table[tt]['Actor_Data']['Anims'][t]['Condition']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Unbreakable'] = ternar(table[tt]['Actor_Data']['Anims'][t]['Unbreakable'] ~= nil,table[tt]['Actor_Data']['Anims'][t]['Unbreakable'],false)
 					
-					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'][0] == 1 then
-						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Target'])
+					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] == 2 then
+						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = table[tt]['Actor_Data']['Anims'][t]['Target']
 					end
 				end
-				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'][0] == 1 then
+				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'] == 2 then
 					tableEnd[tt]['Actor_Data']['Anims'][t]['Path'] = {}
 					for i,_ in pairs(table[tt]['Actor_Data']['Anims'][t]['Path']) do
 						tableEnd[tt]['Actor_Data']['Anims'][t]['Path'][tonumber(i)] = table[tt]['Actor_Data']['Anims'][t]['Path'][i]
 					end
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Type_move'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Type_move'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Type_route'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Type_route'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Cur_point'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Cur_point'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0)
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Vis_point'] = new.bool(false)
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Type_move'] = table[tt]['Actor_Data']['Anims'][t]['Type_move']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Type_route'] = table[tt]['Actor_Data']['Anims'][t]['Type_route']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Cur_point'] = table[tt]['Actor_Data']['Anims'][t]['Cur_point']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Vis_point'] = false
 					
-					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'][0] == 1 then
-						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Target'])
+					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] == 2 then
+						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = table[tt]['Actor_Data']['Anims'][t]['Target']
 					end
 				end
-				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'][0] == 2 then
+				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'] == 3 then
 					tableEnd[tt]['Actor_Data']['Anims'][t]['Path'] = {}
 					for i,_ in pairs(table[tt]['Actor_Data']['Anims'][t]['Path']) do
 						tableEnd[tt]['Actor_Data']['Anims'][t]['Path'][tonumber(i)] = table[tt]['Actor_Data']['Anims'][t]['Path'][i]
 					end
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Car'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Car'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Speed'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Speed'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Cur_point'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Cur_point'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0)
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Vis_point'] = new.bool(false)
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Car'] = table[tt]['Actor_Data']['Anims'][t]['Car']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Speed'] = table[tt]['Actor_Data']['Anims'][t]['Speed']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Cur_point'] = table[tt]['Actor_Data']['Anims'][t]['Cur_point']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Vis_point'] = false
 					
-					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'][0] == 1 then
-						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Target'])
+					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] == 2 then
+						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = table[tt]['Actor_Data']['Anims'][t]['Target']
 					end
 				end
-				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'][0] == 3 then
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0)
+				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'] == 4 then
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0
 					
-					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'][0] == 1 then
-						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Target'])
+					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] == 2 then
+						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = table[tt]['Actor_Data']['Anims'][t]['Target']
 					end
 				end
-				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'][0] == 4 then
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0)
+				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'] == 5 then
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0
 					
-					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'][0] == 1 then
-						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Target'])
+					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] == 2 then
+						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = table[tt]['Actor_Data']['Anims'][t]['Target']
 					end
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Car_a'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Car_a'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Car_t'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Car_t'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Speed'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Speed'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['trafficFlag'] = new.int(table[tt]['Actor_Data']['Anims'][t]['trafficFlag'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Vehicle_mission'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Vehicle_mission'])
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Car_a'] = table[tt]['Actor_Data']['Anims'][t]['Car_a']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Car_t'] = table[tt]['Actor_Data']['Anims'][t]['Car_t']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Speed'] = table[tt]['Actor_Data']['Anims'][t]['Speed']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['trafficFlag'] = table[tt]['Actor_Data']['Anims'][t]['trafficFlag']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Vehicle_mission'] = table[tt]['Actor_Data']['Anims'][t]['Vehicle_mission']
 
 				end
-				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'][0] == 5 then
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0)
+				if tableEnd[tt]['Actor_Data']['Anims'][t]['Type'] == 6 then
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] = table[tt]['Actor_Data']['Anims'][t]['Condition'] or 0
 					
-					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'][0] == 1 then
-						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Target'])
+					if tableEnd[tt]['Actor_Data']['Anims'][t]['Condition'] == 2 then
+						tableEnd[tt]['Actor_Data']['Anims'][t]['Target'] = table[tt]['Actor_Data']['Anims'][t]['Target']
 					end
-					tableEnd[tt]['Actor_Data']['Anims'][t]['place_in_car'] = new.int(table[tt]['Actor_Data']['Anims'][t]['place_in_car'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['Car'] = new.int(table[tt]['Actor_Data']['Anims'][t]['Car'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['speed_walk'] = new.int(table[tt]['Actor_Data']['Anims'][t]['speed_walk'])
-					tableEnd[tt]['Actor_Data']['Anims'][t]['wait_end'] = new.bool(table[tt]['Actor_Data']['Anims'][t]['wait_end'])
+					tableEnd[tt]['Actor_Data']['Anims'][t]['place_in_car'] = table[tt]['Actor_Data']['Anims'][t]['place_in_car']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['Car'] = table[tt]['Actor_Data']['Anims'][t]['Car']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['speed_walk'] = table[tt]['Actor_Data']['Anims'][t]['speed_walk']
+					tableEnd[tt]['Actor_Data']['Anims'][t]['wait_end'] = table[tt]['Actor_Data']['Anims'][t]['wait_end']
 					
 				end
 			end
@@ -331,46 +314,46 @@ function manager.sorterJson(table,typee)
 		for tt = 1,#table do
 			tableEnd[tt] = {
 			['Name'] = table[tt]['Name'],
-			['Type'] = new.int(table[tt]['Type']),
+			['Type'] = table[tt]['Type'],
 			['Car_Data'] = {
-				['Pos'] = new.float[3](table[tt]['Car_Data']['Pos'][1],table[tt]['Car_Data']['Pos'][2],table[tt]['Car_Data']['Pos'][3]),
-				['Angle'] = new.float(table[tt]['Car_Data']['Angle']),
-				['ModelId'] = new.int(table[tt]['Car_Data']['ModelId']),
-				['StartC'] = new.int(table[tt]['Car_Data']['StartC']),
-				['EndC'] = new.int(table[tt]['Car_Data']['EndC']),
-				['Color_primary'] = new.int(table[tt]['Car_Data']['Color_primary'] or 0),
-				['Color_secondary'] = new.int(table[tt]['Car_Data']['Color_secondary'] or 0),
-				['Should_not_die'] = new.bool(table[tt]['Car_Data']['Should_not_die'] or false),
-				['Health'] = new.int(table[tt]['Car_Data']['Health'] or 1000),
-				['Bulletproof'] = new.bool(table[tt]['Car_Data']['Bulletproof'] or false),
-				['Fireproof'] = new.bool(table[tt]['Car_Data']['Fireproof'] or false),
-				['Explosionproof'] = new.bool(table[tt]['Car_Data']['Explosionproof'] or false),
-				['Collisionproof'] = new.bool(table[tt]['Car_Data']['Collisionproof'] or false),
-				['Meleeproof'] = new.bool(table[tt]['Car_Data']['Meleeproof'] or false),
-				['Tires_vulnerability'] = new.bool(table[tt]['Car_Data']['Tires_vulnerability'] or false),
+				['Pos'] = table[tt]['Car_Data']['Pos'],
+				['Angle'] = table[tt]['Car_Data']['Angle'],
+				['ModelId'] = table[tt]['Car_Data']['ModelId'],
+				['StartC'] = table[tt]['Car_Data']['StartC'],
+				['EndC'] = table[tt]['Car_Data']['EndC'],
+				['Color_primary'] = table[tt]['Car_Data']['Color_primary'] or 0,
+				['Color_secondary'] = table[tt]['Car_Data']['Color_secondary'] or 0,
+				['Should_not_die'] = table[tt]['Car_Data']['Should_not_die'] or false,
+				['Health'] = table[tt]['Car_Data']['Health'] or 1000,
+				['Bulletproof'] = table[tt]['Car_Data']['Bulletproof'] or false,
+				['Fireproof'] = table[tt]['Car_Data']['Fireproof'] or false,
+				['Explosionproof'] = table[tt]['Car_Data']['Explosionproof'] or false,
+				['Collisionproof'] = table[tt]['Car_Data']['Collisionproof'] or false,
+				['Meleeproof'] = table[tt]['Car_Data']['Meleeproof'] or false,
+				['Tires_vulnerability'] = table[tt]['Car_Data']['Tires_vulnerability'] or false,
 				['Anims'] = {},
-				['Anim_id'] = new.int(0)
+				['Anim_id'] = 0
 				}
 			}
 			if table[tt]['Car_Data']['Anims'] then
 				for t = 1, #table[tt]['Car_Data']['Anims'] do
 					tableEnd[tt]['Car_Data']['Anims'][t] = {
-					['Type'] = new.int(table[tt]['Car_Data']['Anims'][t]['Type'] or 0)
+					['Type'] = table[tt]['Car_Data']['Anims'][t]['Type'] or 0
 					}
-					if tableEnd[tt]['Car_Data']['Anims'][t]['Type'][0] == 0 then
-						tableEnd[tt]['Car_Data']['Anims'][t]['Doors'] = {new.bool(table[tt]['Car_Data']['Anims'][t]['Doors'][1]),new.bool(table[tt]['Car_Data']['Anims'][t]['Doors'][2]),new.bool(table[tt]['Car_Data']['Anims'][t]['Doors'][3]),new.bool(table[tt]['Car_Data']['Anims'][t]['Doors'][4]),new.bool(table[tt]['Car_Data']['Anims'][t]['Doors'][5]),new.bool(table[tt]['Car_Data']['Anims'][t]['Doors'][6])}
-						tableEnd[tt]['Car_Data']['Anims'][t]['Condition'] = new.int(table[tt]['Car_Data']['Anims'][t]['Condition'])
+					if tableEnd[tt]['Car_Data']['Anims'][t]['Type'] == 1 then
+						tableEnd[tt]['Car_Data']['Anims'][t]['Doors'] = table[tt]['Car_Data']['Anims'][t]['Doors']
+						tableEnd[tt]['Car_Data']['Anims'][t]['Condition'] = table[tt]['Car_Data']['Anims'][t]['Condition']
 						
-						if tableEnd[tt]['Car_Data']['Anims'][t]['Condition'][0] == 1 then
-							tableEnd[tt]['Car_Data']['Anims'][t]['Target'] = new.int(table[tt]['Car_Data']['Anims'][t]['Target'])
+						if tableEnd[tt]['Car_Data']['Anims'][t]['Condition'] == 2 then
+							tableEnd[tt]['Car_Data']['Anims'][t]['Target'] = table[tt]['Car_Data']['Anims'][t]['Target']
 						end
 					end
-					if tableEnd[tt]['Car_Data']['Anims'][t]['Type'][0] == 1 then
-						tableEnd[tt]['Car_Data']['Anims'][t]['Door_lock'] = new.int(table[tt]['Car_Data']['Anims'][t]['Door_lock'])
-						tableEnd[tt]['Car_Data']['Anims'][t]['Condition'] = new.int(table[tt]['Car_Data']['Anims'][t]['Condition'])
+					if tableEnd[tt]['Car_Data']['Anims'][t]['Type'] == 2 then
+						tableEnd[tt]['Car_Data']['Anims'][t]['Door_lock'] = table[tt]['Car_Data']['Anims'][t]['Door_lock']
+						tableEnd[tt]['Car_Data']['Anims'][t]['Condition'] = table[tt]['Car_Data']['Anims'][t]['Condition']
 						
-						if tableEnd[tt]['Car_Data']['Anims'][t]['Condition'][0] == 1 then
-							tableEnd[tt]['Car_Data']['Anims'][t]['Target'] = new.int(table[tt]['Car_Data']['Anims'][t]['Target'])
+						if tableEnd[tt]['Car_Data']['Anims'][t]['Condition'] == 2 then
+							tableEnd[tt]['Car_Data']['Anims'][t]['Target'] = table[tt]['Car_Data']['Anims'][t]['Target']
 						end
 					end
 				end
@@ -381,26 +364,26 @@ function manager.sorterJson(table,typee)
 		for tt = 1,#table do
 			tableEnd[tt] = {
 				['Name'] = table[tt]['Name'],
-				['Type'] = new.int(table[tt]['Type']),
+				['Type'] = table[tt]['Type'],
 				['Object_Data'] = {
-					['Pos'] = new.float[3](table[tt]['Object_Data']['Pos'][1],table[tt]['Object_Data']['Pos'][2],table[tt]['Object_Data']['Pos'][3]),
-					['Rotates'] = new.float[3](table[tt]['Object_Data']['Rotates'][1],table[tt]['Object_Data']['Rotates'][2],table[tt]['Object_Data']['Rotates'][3]),
-					['ModelId'] = new.int(table[tt]['Object_Data']['ModelId']),
-					['StartC'] = new.int(table[tt]['Object_Data']['StartC']),
-					['EndC'] = new.int(table[tt]['Object_Data']['EndC']),
+					['Pos'] = table[tt]['Object_Data']['Pos'],
+					['Rotates'] = table[tt]['Object_Data']['Rotates'],
+					['ModelId'] = table[tt]['Object_Data']['ModelId'],
+					['StartC'] = table[tt]['Object_Data']['StartC'],
+					['EndC'] = table[tt]['Object_Data']['EndC'],
 					['Anims'] = {},
-					['Anim_id'] = new.int(0)
+					['Anim_id'] = 0
 				}
 			}
 			for t = 1, #(table[tt]['Object_Data']['Anims'] or {}) do
 				tableEnd[tt]['Object_Data']['Anims'][t] = {
-				['Time'] = new.float(table[tt]['Object_Data']['Anims'][t]['Time']),
-				['Condition'] = new.int(table[tt]['Object_Data']['Anims'][t]['Condition']),
-				['Pos'] = new.float[3](table[tt]['Object_Data']['Anims'][t]['Pos'][1],table[tt]['Object_Data']['Anims'][t]['Pos'][2],table[tt]['Object_Data']['Anims'][t]['Pos'][3]),
-				['Rotates'] = new.float[3](table[tt]['Object_Data']['Anims'][t]['Rotates'][1],table[tt]['Object_Data']['Anims'][t]['Rotates'][2],table[tt]['Object_Data']['Anims'][t]['Rotates'][3]),
+				['Time'] = table[tt]['Object_Data']['Anims'][t]['Time'],
+				['Condition'] = table[tt]['Object_Data']['Anims'][t]['Condition'],
+				['Pos'] = table[tt]['Object_Data']['Anims'][t]['Pos'],
+				['Rotates'] = table[tt]['Object_Data']['Anims'][t]['Rotates'],
 				}
-				if tableEnd[tt]['Object_Data']['Anims'][t]['Condition'][0] == 1 then
-					tableEnd[tt]['Object_Data']['Anims'][t]['Target'] = new.int(table[tt]['Object_Data']['Anims'][t]['Target'])
+				if tableEnd[tt]['Object_Data']['Anims'][t]['Condition'] == 2 then
+					tableEnd[tt]['Object_Data']['Anims'][t]['Target'] = table[tt]['Object_Data']['Anims'][t]['Target']
 				end
 			end
 		end
@@ -409,21 +392,21 @@ function manager.sorterJson(table,typee)
 		for tt = 1,#table do
 			tableEnd[tt] = {
 				['Name'] = table[tt]['Name'],
-				['Type'] = new.int(table[tt]['Type']),
+				['Type'] = table[tt]['Type'],
 				['Pickup_Data'] = {
-					['Type_pickup'] = new.int(table[tt]['Pickup_Data']['Type_pickup']),
-					['Pos'] = new.float[3](table[tt]['Pickup_Data']['Pos'][1],table[tt]['Pickup_Data']['Pos'][2],table[tt]['Pickup_Data']['Pos'][3]),
-					['StartC'] = new.int(table[tt]['Pickup_Data']['StartC']),
-					['EndC'] = new.int(table[tt]['Pickup_Data']['EndC']),
-					['spawn_type'] = new.int(table[tt]['Pickup_Data']['spawn_type'])
+					['Type_pickup'] = table[tt]['Pickup_Data']['Type_pickup'],
+					['Pos'] = table[tt]['Pickup_Data']['Pos'],
+					['StartC'] = table[tt]['Pickup_Data']['StartC'],
+					['EndC'] = table[tt]['Pickup_Data']['EndC'],
+					['spawn_type'] = table[tt]['Pickup_Data']['spawn_type']
 				}
 			}
-			if table[tt]['Pickup_Data']['Type_pickup'] == 0 then
-				tableEnd[tt]['Pickup_Data']['Ammo'] = new.int(table[tt]['Pickup_Data']['Ammo'])
-				tableEnd[tt]['Pickup_Data']['Weapon'] = new.int(table[tt]['Pickup_Data']['Weapon'])
+			if table[tt]['Pickup_Data']['Type_pickup'] == 1 then
+				tableEnd[tt]['Pickup_Data']['Ammo'] = table[tt]['Pickup_Data']['Ammo']
+				tableEnd[tt]['Pickup_Data']['Weapon'] = table[tt]['Pickup_Data']['Weapon']
 			end
-			if table[tt]['Pickup_Data']['Type_pickup'] == 5 then
-				tableEnd[tt]['Pickup_Data']['ModelId'] = new.int(table[tt]['Pickup_Data']['ModelId'])
+			if table[tt]['Pickup_Data']['Type_pickup'] == 6 then
+				tableEnd[tt]['Pickup_Data']['ModelId'] = table[tt]['Pickup_Data']['ModelId']
 			end
 		end
 	end
@@ -431,14 +414,13 @@ function manager.sorterJson(table,typee)
 		for tt = 1,#table do
 			tableEnd[tt] = {
 				['Name'] = table[tt]['Name'],
-				['Type'] = new.int(table[tt]['Type']),
+				['Type'] = table[tt]['Type'],
 				['Particle_Data'] = {
-					['Pos'] = new.float[3](table[tt]['Particle_Data']['Pos'][1],table[tt]['Particle_Data']['Pos'][2],table[tt]['Particle_Data']['Pos'][3]),
-					['Rotates'] = new.float[3](table[tt]['Particle_Data']['Rotates'][1],table[tt]['Particle_Data']['Rotates'][2],table[tt]['Particle_Data']['Rotates'][3]),
-					['Rotates'] = new.float[3](table[tt]['Particle_Data']['Rotates'][1],table[tt]['Particle_Data']['Rotates'][2],table[tt]['Particle_Data']['Rotates'][3]),
-					['ModelId'] = new.int(table[tt]['Particle_Data']['ModelId']),
-					['StartC'] = new.int(table[tt]['Particle_Data']['StartC']),
-					['EndC'] = new.int(table[tt]['Particle_Data']['EndC'])
+					['Pos'] = table[tt]['Particle_Data']['Pos'],
+					['Rotates'] = table[tt]['Particle_Data']['Rotates'],
+					['ModelId'] = table[tt]['Particle_Data']['ModelId'],
+					['StartC'] = table[tt]['Particle_Data']['StartC'],
+					['EndC'] = table[tt]['Particle_Data']['EndC']
 				}
 			}
 		end
@@ -447,20 +429,20 @@ function manager.sorterJson(table,typee)
 		for tt = 1,#table do
 			tableEnd[tt] = {
 				['Name'] = table[tt]['Name'],
-				['Type'] = new.int(table[tt]['Type']),
+				['Type'] = table[tt]['Type'],
 				['Explosion_Data'] = {
-					['Pos'] = new.float[3](table[tt]['Explosion_Data']['Pos'][1],table[tt]['Explosion_Data']['Pos'][2],table[tt]['Explosion_Data']['Pos'][3]),
-					['Type'] = new.int(table[tt]['Explosion_Data']['Type']),
-					['StartC'] = new.int(table[tt]['Explosion_Data']['StartC']),
-					['EndC'] = new.int(table[tt]['Explosion_Data']['EndC'])
+					['Pos'] = table[tt]['Explosion_Data']['Pos'],
+					['Type'] = table[tt]['Explosion_Data']['Type'],
+					['StartC'] = table[tt]['Explosion_Data']['StartC'],
+					['EndC'] = table[tt]['Explosion_Data']['EndC']
 				}
 			}
-			if tableEnd[tt]['Explosion_Data']['Type'][0] == 0 then
-				tableEnd[tt]['Explosion_Data']['Size_fire'] = new.int(table[tt]['Explosion_Data']['Size_fire'])
-				tableEnd[tt]['Explosion_Data']['Propagation_fire'] = new.int(table[tt]['Explosion_Data']['Propagation_fire'])
+			if tableEnd[tt]['Explosion_Data']['Type'] == 1 then
+				tableEnd[tt]['Explosion_Data']['Size_fire'] = table[tt]['Explosion_Data']['Size_fire']
+				tableEnd[tt]['Explosion_Data']['Propagation_fire'] = table[tt]['Explosion_Data']['Propagation_fire']
 			end
-			if tableEnd[tt]['Explosion_Data']['Type'][0] == 1 then
-				tableEnd[tt]['Explosion_Data']['Type_explosion'] = new.int(table[tt]['Explosion_Data']['Type_explosion'])
+			if tableEnd[tt]['Explosion_Data']['Type'] == 2 then
+				tableEnd[tt]['Explosion_Data']['Type_explosion'] = table[tt]['Explosion_Data']['Type_explosion']
 			end
 		end
 	end
