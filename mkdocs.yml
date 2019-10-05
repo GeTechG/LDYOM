@@ -1,5 +1,5 @@
 site_name: LDYOM docs
 nav:
     - Home: index.md
-    - Инфа сотка: en/about.md
+    - Инфа сотка: about.md
 theme: readthedocs
