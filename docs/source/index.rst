@@ -1,5 +1,3 @@
-
-
 Welcome to LDYOM's docs
 =================================
 
@@ -7,6 +5,7 @@ Welcome to LDYOM's docs
    :maxdepth: 2
    :caption: Contents:
 
+Hello darness old my friend
 
 
 Indices and tables
