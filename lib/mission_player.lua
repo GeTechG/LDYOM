@@ -341,27 +341,69 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 	setMaxWantedLevel(6)
 	setCharInterior(PLAYER_PED, miss_data['Player']['Interior_id'])
 	setInteriorVisible(miss_data['Player']['Interior_id'])
-	if not hasModelLoaded(miss_data['Player']['ModelId']) then
-		requestModel(miss_data['Player']['ModelId'])
-		while not hasModelLoaded(miss_data['Player']['ModelId']) do
+	local modell
+	if miss_data['Player']['ped_type'] then
+		modell = ID_Actors[miss_data['Player']['ModelId']]
+		requestModel(modell)
+		while not hasModelLoaded(modell) do
 			wait(0)
 		end
+	else
+		local modell_n = ID_Spec_Actors[miss_data['Player']['ModelId']]
+		loadSpecialCharacter(modell_n,10)
+		while not hasSpecialCharacterLoaded(10) do
+			wait(0)
+		end
+		modell = 290 + 10-1
 	end
-	setPlayerModel(PLAYER_HANDLE, miss_data['Player']['ModelId'])
-	giveWeaponToChar(PLAYER_PED, miss_data['Player']['Weapon'], miss_data['Player']['Weap_ammo'])
+	setPlayerModel(PLAYER_HANDLE, modell)
+	giveWeaponToChar(PLAYER_PED, ID_Weapons[miss_data['Player']['Weapon']], miss_data['Player']['Weap_ammo'])
+	for i = 2,9 do
+		if vr.Group_relationships[i] ~= nil then
+			for y = 1,9 do
+				if vr.Group_relationships[i][y] ~= nil then
+					if y == 1 then
+						setRelationship(vr.Group_relationships[i][y]-1,24+i-2,0)
+						setRelationship(vr.Group_relationships[i][y]-1,24+i-2,23)
+						setRelationship(vr.Group_relationships[i][y]-1,23,24+i-2)
+					else
+						setRelationship(vr.Group_relationships[i][y]-1,24+i-2,24+y-2)
+					end
+				end
+			end
+		end
+	end
 	for i = 1,#list do
 		curr_target = i
 		for a = 1,#list_a do
 			if list_a[a]['Actor_Data']['StartC'] == i then
-				local md = list_a[a]['Actor_Data']['ModelId']
 				local xx,xy,xz = list_a[a]['Actor_Data']['Pos'][1], list_a[a]['Actor_Data']['Pos'][2], list_a[a]['Actor_Data']['Pos'][3]
-				requestModel(md)
-				while not isModelAvailable(md) do
-					wait(0)
+				local modell
+				if list_a[a]['Actor_Data']['Model_type'] == 1 then
+					modell = ID_Actors[list_a[a]['Actor_Data']['ModelId']]
+					requestModel(modell)
+					while not hasModelLoaded(modell) do
+						wait(0)
+					end
+				elseif list_a[a]['Actor_Data']['Model_type'] == 2 then
+					local modell_n = ID_Spec_Actors[list_a[a]['Actor_Data']['ModelId']]
+					loadSpecialCharacter(modell_n,list_a[a]['Actor_Data']['Slot_model'])
+					while not hasSpecialCharacterLoaded(list_a[a]['Actor_Data']['Slot_model']) do
+						wait(0)
+					end
+					modell = 290 + list_a[a]['Actor_Data']['Slot_model']-1
 				end
-				mp.actors[a] = createChar(4, md, xx, xy, xz)
+				if list_a[a]['Actor_Data']['Group'] == 1 then
+					mp.actors[a] = createChar(23, modell, xx, xy, xz)
+					local g = getPlayerGroup(PLAYER_HANDLE)
+					setGroupMember(g,mp.actors[a])
+				else
+					mp.actors[a] = createChar(24 + list_a[a]['Actor_Data']['Group']-2, modell, xx, xy, xz)
+				end
 				setCharHealth(mp.actors[a],list_a[a]['Actor_Data']['Health'])
 				setCharHeading(mp.actors[a], list_a[a]['Actor_Data']['Angle'])
+				giveWeaponToChar(mp.actors[a], ID_Weapons[list_a[a]['Actor_Data']['Weapon']], list_a[a]['Actor_Data']['Ammo'])
+				setCurrentCharWeapon(mp.actors[a],1)
 				wait(0)
 				if #list_a[a]['Actor_Data']['Anims'] > 0 then
 					mp.thread[#mp.thread+1] = lua_thread.create(mp.play_char_anims,mp.actors[a], list_a[a]['Actor_Data'])
@@ -544,7 +586,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 			removeBlip(check)
 		end
 		if list[i]['Type'] == 4 then
-			if list[i]['Target_Data']['Target_type'] == 0 then
+			if list[i]['Target_Data']['Target_type'] == 1 then
 				displayRadar(false)
 				displayHud(false)
 				lockPlayerControl(true)
@@ -662,7 +704,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 			removeBlip(check)
 		end
 		if list[i]['Type'] == 7 then
-			if list[i]['Target_Data']['Target_type'] == 0 then
+			if list[i]['Target_Data']['Target_type'] == 1 then
 				lockPlayerControl(false)
 				if isCharInAnyCar(PLAYER_PED) then
 					taskLeaveAnyCar(PLAYER_PED)
@@ -672,21 +714,29 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 				end
 				setCharInterior(PLAYER_PED, list[i]['Target_Data']['Interior_id'])
 				setInteriorVisible(list[i]['Target_Data']['Interior_id'])
-				if not hasModelLoaded(list[i]['Target_Data']['ModelId']) then
-					requestModel(list[i]['Target_Data']['ModelId'])
-					while not hasModelLoaded(list[i]['Target_Data']['ModelId']) do
+				local modell
+				if list[i]['Target_Data']['Model_type'] == 1 then
+					modell = ID_Actors[list[i]['Target_Data']['ModelId']]
+					requestModel(modell)
+					while not hasModelLoaded(modell) do
 						wait(0)
-
 					end
+				else
+					local modell_n = ID_Spec_Actors[list[i]['Target_Data']['ModelId']]
+					loadSpecialCharacter(modell_n,10)
+					while not hasSpecialCharacterLoaded(10) do
+						wait(0)
+					end
+					modell = 290 + 10-1
 				end
-				setPlayerModel(PLAYER_HANDLE, list[i]['Target_Data']['ModelId'])
+				setPlayerModel(PLAYER_HANDLE, modell)
 				setCharCoordinates(PLAYER_PED, list[i]['Target_Data']['Pos'][1], list[i]['Target_Data']['Pos'][2], list[i]['Target_Data']['Pos'][3])
 				requestModel(getWeapontypeModel(list[i]['Target_Data']['Weapon']))
 				while not hasModelLoaded(getWeapontypeModel(list[i]['Target_Data']['Weapon'])) do
 					wait(0)
 
 				end
-				giveWeaponToChar(PLAYER_PED, list[i]['Target_Data']['Weapon'], list[i]['Target_Data']['Weap_ammo'])
+				giveWeaponToChar(PLAYER_PED, ID_Weapons[list[i]['Target_Data']['Weapon']], list[i]['Target_Data']['Weap_ammo'])
 				setCharHeading(PLAYER_PED, list[i]['Target_Data']['Angle'])
 			end
 			if list[i]['Target_Data']['Target_type'] == 2 then
@@ -792,6 +842,7 @@ function mp.endmiss()
 	setCharCoordinates(PLAYER_PED, miss_data['Player']['Pos'][1], miss_data['Player']['Pos'][2], miss_data['Player']['Pos'][3])
 	setCharInterior(PLAYER_PED, miss_data['Player']['Interior_id'])
 	setInteriorVisible(miss_data['Player']['Interior_id'])
+	lockPlayerControl(true)
 	setMaxWantedLevel(0)
 	for v,h in pairs(mp.actors) do
 		deleteChar(mp.actors[v])
