@@ -19,13 +19,13 @@ function manager.save(pack,num)
 		packk['Missions'][p] = {
 			['Name'] = pack['Missions'][p]['Name'],
 			['Mission_Data'] = {
-				['Targets'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Targets']),
-				['Actors'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Actors']),
-				['Cars'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Cars']),
-				['Objects'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Objects']),
-				['Pickup'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Pickup']),
-				['Particle'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Particle']),
-				['Explosion'] = manager.sorterTable(pack['Missions'][p]['Mission_Data']['Explosion']),
+				['Targets'] = pack['Missions'][p]['Mission_Data']['Targets'],
+				['Actors'] = pack['Missions'][p]['Mission_Data']['Actors'],
+				['Cars'] = pack['Missions'][p]['Mission_Data']['Cars'],
+				['Objects'] = pack['Missions'][p]['Mission_Data']['Objects'],
+				['Pickup'] = pack['Missions'][p]['Mission_Data']['Pickup'],
+				['Particle'] = pack['Missions'][p]['Mission_Data']['Particle'],
+				['Explosion'] = pack['Missions'][p]['Mission_Data']['Explosion'],
 				['Miss_data'] = {
 					['Name'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Name'],
 					['Time'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][2]},
@@ -43,6 +43,7 @@ function manager.save(pack,num)
 			}
 		}
 	end
+	packk = manager.sorterTable(pack)
 	createDirectory(path_backup)
 	local old_save
 	if doesFileExist(path .. 'LDYOM' .. tostring(num) .. '.json') then
@@ -60,43 +61,8 @@ end
 
 function manager.load(num)
 	f = io.open(path .. 'LDYOM' .. tostring(num) .. '.json',"r")
-	local pack = json.decode(f:read())
+	local packk = json.decode(f:read())
 	f:close()
-	packk = {
-		['Name'] = pack['Name'],
-		['Missions'] = {}
-	}
-	for p = 1, #pack['Missions'] do
-		--print(debtab.tostring(pack['Missions'][1])
-		packk['Missions'][p] = {
-			['Name'] = pack['Missions'][p]['Name'],
-			['Prename'] = new.char[128](),
-			['Enable'] = false,
-			['Mission_Data'] = {
-				['Targets'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Targets'],0),
-				['Actors'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Actors'],1),
-				['Cars'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Cars'],2),
-				['Objects'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Objects'],3),
-				['Pickup'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Pickup'] or {},4),
-				['Particle'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Particle'] or {},5),
-				['Explosion'] = manager.sorterJson(pack['Missions'][p]['Mission_Data']['Explosion'] or {},6),
-				['Miss_data'] = {
-					['Name'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Name'],
-					['Time'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][2]},
-					['Weather'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Weather'],
-					['Riot'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Riot'],
-					['Player'] = {
-						['Pos'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][2],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][3]},
-						['Angle'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Angle'],
-						['ModelId'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['ModelId'],
-						['Weapon'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Weapon'],
-						['Weap_ammo'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Weap_ammo'],
-						['Interior_id'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Interior_id']
-					}
-				}
-			}
-		}
-	end
 	return packk
 end
 

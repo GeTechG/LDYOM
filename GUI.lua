@@ -1,5 +1,5 @@
 script_authors('SKIC','SIZZZ')
-script_version('Beta 0.6.0')
+script_version('Beta 0.6.1')
 
 require 'libstd.deps' {
 	'fyp:mimgui'
@@ -23,9 +23,11 @@ u8 = encoding.UTF8
 
 ID_Actors = {0, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288}
 
+ID_Spec_Actors = {'andre','bbthin','bb','cat','cesar','copgrl1', 'copgrl2','claude','crogrl1', 'crogrl2','dwayne','emmet','forelli','janitor','jethro','jizzy','hern','gangrl2','gungrl1','gungrl2','kendl','maccer','maddogg','mecgrl2','nurgrl2','ogloc','paul','pulaski','rose','ryder','ryder2','ryder3','sindaco','smoke','smokev','suzie','sweet','tbone','tenpen','torino','wuzimu','zero'}
+
 ID_Cars = {400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611}
 
-Number_Weapons = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46}
+ID_Weapons = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46}
 
 Anims = {
 	['Anim_name'] = {'PED','BOMBER','POOL','ON_LOOKERS','GANGS','PAULNMAC','BOX','Attractors','BAR','BASEBALL','BD_FIRE','BEACH','benchpress','BLOWJOBZ','CAMERA','CAR','CAR_CHAT','CASINO','COP_AMBIENT','CRACK','CRIB','DAM_JUMP','DANCING','DEALER','DODGE','FOOD','Freeweights','GFUNK','HEIST9','INT_HOUSE','INT_OFFICE','INT_SHOP','KISSING','LOWRIDER','MEDIC','MISC','OTB','PARK','PLAYIDLES','POLICE','RAPPING','RIOT','ROB_BANK','RUNNINGMAN','SCRATCHING','SEX','SHOP','SMOKING','SnM','STRIP','SUNBATHE','SWAT','VENDING','WOP'},
@@ -102,9 +104,10 @@ vr = {
 			['Pos'] = {884,-1221,16},
 			['Angle'] = 0,
 			['ModelId'] = 0,
-			['Weapon'] = 0,
+			['Weapon'] = 1,
 			['Weap_ammo'] = 0,
-			['Interior_id'] = 0
+			['Interior_id'] = 0,
+			['ped_type'] = true
 		}
 	},
 	['Data'] = {
@@ -112,7 +115,8 @@ vr = {
 			['curr_lang'] = 1
 		}
 	},
-	['timer_time'] = 0,
+	['Group_relationships'] = {},
+ 	['timer_time'] = 0,
 	['Chalet_font'] = renderCreateFont('Chalet-LondonNineteenSixty',14),
 	['SignPainter_font'] = renderCreateFont('SignPainter HouseScript',32),
 	['Pricedown_font'] = renderCreateFont('Pricedown Rus',32,0),
@@ -158,6 +162,8 @@ vr = {
 	['tools_window'] = false,
 	['info_window'] = false,
 	['settings_window'] = false,
+	['Group_relationships_list_window'] = false,
+	['Group_relationships_window'] = false,
 	['actor_list_toggle'] = 1,
 	['actor_anims_list_toggle'] = 1,
 	['car_anims_list_toggle'] = 1,
@@ -215,6 +221,7 @@ vr = {
 	['current_mission_pack'] = 1,
 	['current_missions'] = 1,
 	['current_dialog_target'] = 1,
+	['current_group_relationships'] = 1,
 	['miss_start'] = false,
 	['current_item'] = 1,
 	['selected_item'] = -1,
@@ -361,6 +368,12 @@ function timer()
 	end
 end
 
+function add_items(arr,arr_id,pos0)
+	for n,i in ipairs(arr_id) do
+		arr[pos0+n-1] = i
+	end
+end
+
 function drawMenu(title_name,arr_menu,width,height)
 	renderDrawBox(10,10,width,50,rgba_to_int(67, 35, 153, 150))
 	renderFontDrawText(vr.SignPainter_font,u8:decode(title_name),(10+width/2)-renderGetFontDrawTextLength(vr.SignPainter_font,u8:decode(title_name))/2, 15,rgba_to_int(255,255,255,255))
@@ -380,7 +393,7 @@ function drawMenu(title_name,arr_menu,width,height)
 					if wasKeyPressed(0x20) or wasKeyPressed(0x0D) then
 						setAudioStreamVolume(resource.sounds.enter,10)
 						setAudioStreamState(resource.sounds.enter,1)
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][3]
 						return true
 					end
 				else
@@ -399,7 +412,7 @@ function drawMenu(title_name,arr_menu,width,height)
 							arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][5]
 						end
 						vr.timer_time = 60
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][8]
 						return true
 					end
 					if isKeyDown(0x44) and vr.timer_time == 0 then
@@ -408,7 +421,7 @@ function drawMenu(title_name,arr_menu,width,height)
 							arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][6]
 						end
 						vr.timer_time = 60
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][8]
 						return true
 					end
 				else
@@ -430,7 +443,7 @@ function drawMenu(title_name,arr_menu,width,height)
 						setAudioStreamVolume(resource.sounds.enter,10)
 						setAudioStreamState(resource.sounds.enter,1)
 						arr_menu[g][3][arr_menu[g][4]] = not arr_menu[g][3][arr_menu[g][4]]
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][5]
 						return true
 					end
 				else
@@ -456,7 +469,7 @@ function drawMenu(title_name,arr_menu,width,height)
 							arr_menu[g][3][arr_menu[g][4]] = 1
 						end
 						vr.timer_time = 60
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][6]
 						return true
 					end
 					if isKeyDown(0x44) and vr.timer_time == 0 then
@@ -465,7 +478,7 @@ function drawMenu(title_name,arr_menu,width,height)
 							arr_menu[g][3][arr_menu[g][4]] = #arr_menu[g][5]
 						end
 						vr.timer_time = 100
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][6]
 						return true
 					end
 				else
@@ -485,7 +498,7 @@ function drawMenu(title_name,arr_menu,width,height)
 					if wasKeyPressed(0x20) or wasKeyPressed(0x0D) then
 						setAudioStreamVolume(resource.sounds.enter,10)
 						setAudioStreamState(resource.sounds.enter,1)
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][3]
 						return true
 					end
 				else
@@ -504,7 +517,7 @@ function drawMenu(title_name,arr_menu,width,height)
 							arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][5]
 						end
 						vr.timer_time = 60
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][8]
 						return true
 					end
 					if isKeyDown(0x44) and vr.timer_time == 0 then
@@ -513,7 +526,7 @@ function drawMenu(title_name,arr_menu,width,height)
 							arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][6]
 						end
 						vr.timer_time = 60
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][8]
 						return true
 					end
 				else
@@ -535,7 +548,7 @@ function drawMenu(title_name,arr_menu,width,height)
 						setAudioStreamVolume(resource.sounds.enter,10)
 						setAudioStreamState(resource.sounds.enter,1)
 						arr_menu[g][3][arr_menu[g][4]] = not arr_menu[g][3][arr_menu[g][4]]
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][5]
 						return true
 					end
 				else
@@ -561,7 +574,7 @@ function drawMenu(title_name,arr_menu,width,height)
 							arr_menu[g][3][arr_menu[g][4]] = 1
 						end
 						vr.timer_time = 100
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][6]
 						return true
 					end
 					if isKeyDown(0x44) and vr.timer_time == 0 then
@@ -570,7 +583,7 @@ function drawMenu(title_name,arr_menu,width,height)
 							arr_menu[g][3][arr_menu[g][4]] = #arr_menu[g][5]
 						end
 						vr.timer_time = 100
-						vr.selected_item = vr.current_item
+						vr.selected_item = arr_menu[g][6]
 						return true
 					end
 				else
@@ -628,46 +641,50 @@ function main_menu()
 	elseif vr.selected_item == 3 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.cars_change_window = true
+		vr.Group_relationships_list_window = true
 	elseif vr.selected_item == 4 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.objects_change_window = true
+		vr.cars_change_window = true
 	elseif vr.selected_item == 5 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.particles_change_window = true
+		vr.objects_change_window = true
 	elseif vr.selected_item == 6 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.pickup_change_window = true
+		vr.particles_change_window = true
 	elseif vr.selected_item == 7 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.explosion_change_window = true
+		vr.pickup_change_window = true
 	elseif vr.selected_item == 8 then
+		vr.current_item = 1
+		vr.main_menu_window = false
+		vr.explosion_change_window = true
+	elseif vr.selected_item == 9 then
 		vr.editmode_player = true
 		printHelpForever('HPLA')
 		lockPlayerControl(false)
-	elseif vr.selected_item == 9 then
-		vr.current_item = 1
-		vr.main_menu_window = false
-		vr.pack_mission_change_window = true
 	elseif vr.selected_item == 10 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.missions_change_window = true
+		vr.pack_mission_change_window = true
 	elseif vr.selected_item == 11 then
-		vr.miss_start = true
-	elseif vr.selected_item == 12 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.tools_window = true
+		vr.missions_change_window = true
+	elseif vr.selected_item == 12 then
+		vr.miss_start = true
 	elseif vr.selected_item == 13 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.info_window = true
+		vr.tools_window = true
 	elseif vr.selected_item == 14 then
+		vr.current_item = 1
+		vr.main_menu_window = false
+		vr.info_window = true
+	elseif vr.selected_item == 15 then
 		vr.current_item = 1
 		vr.main_menu_window = false
 		vr.settings_window = true
@@ -686,13 +703,18 @@ function actor_change()
 			['Actor_Data'] = {
 				['Pos'] = {xx,xy,xz},
 				['Angle'] = math.floor(angle),
-				['ModelId'] = 0,
+				['ModelId'] = 1,
+				['Weapon'] = 1,
+				['Ammo'] = 0,
 				['StartC'] = 1,
 				['EndC'] = 1,
 				['Anims'] = {},
 				['Anim_id'] = 0,
 				['Should_not_die'] = false,
-				['Health'] = 100
+				['Health'] = 100,
+				['Group'] = 2,
+				['Model_type'] = 1,
+				['Slot_model'] = 1
 			}
 		}
 		upd_actor:run(#vr.list_actors)
@@ -731,14 +753,13 @@ function actor_list()
 end
 
 function actor()
-	
 	if vr.selected_item == 1 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
-			{'int_slider',names[1],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'],1,_,_,0.01},
-			{'int_slider',names[2],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'],2,_,_,0.01},
-			{'int_slider',names[3],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'],3,_,_,0.01},
-			{'button',names[4]}
+			{'int_slider',names[1],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'],1,_,_,0.01,1},
+			{'int_slider',names[2],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'],2,_,_,0.01,2},
+			{'int_slider',names[3],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'],3,_,_,0.01,3},
+			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = decodeJson(langt['actor_arr'])[1]
 		vr.previous_window = 'actor_window'
@@ -748,12 +769,23 @@ function actor()
 	elseif vr.selected_item == 2 then
 		setCharHeading(vr.list_actors[vr.current_actor]['Actor_Data']['Char'], vr.list_actors[vr.current_actor]['Actor_Data']['Angle'])
 	elseif vr.selected_item == 3 then
+		vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = 1
+		upd_actor:run(vr.current_actor)
+	elseif vr.selected_item == 4 or vr.selected_item == 5 then
 		upd_actor:run(vr.current_actor)
 	elseif vr.selected_item == 6 then
+		requestModel(getWeapontypeModel(ID_Weapons[vr.list_actors[vr.current_actor]['Actor_Data']['Weapon']]))
+		while not hasModelLoaded(getWeapontypeModel(ID_Weapons[vr.list_actors[vr.current_actor]['Actor_Data']['Weapon']])) do
+			wait(0)
+		end
+		removeAllCharWeapons(vr.list_actors[vr.current_actor]['Actor_Data']['Char'])
+		giveWeaponToChar(vr.list_actors[vr.current_actor]['Actor_Data']['Char'], ID_Weapons[vr.list_actors[vr.current_actor]['Actor_Data']['Weapon']], 1)
+		setCurrentCharWeapon(vr.list_actors[vr.current_actor]['Actor_Data']['Char'],1)
+		markModelAsNoLongerNeeded(getWeapontypeModel(ID_Weapons[vr.list_actors[vr.current_actor]['Actor_Data']['Weapon']]))
+	elseif vr.selected_item == 11 then
 		vr.editmode_actor = true
 		deleteChar(vr.list_actors[vr.current_actor]['Actor_Data']['Char'])
-		printHelpForever('HACT')
-	elseif vr.selected_item == 7 then
+	elseif vr.selected_item == 12 then
 		vr.current_item = 1
 		vr.actor_anims_change_window = true
 		vr.actor_window = false 
@@ -845,17 +877,14 @@ function actor_anim()
 		end
 	
 	end
-	if vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 1 then
-		if vr.selected_item == 4 + (vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Condition'] - 1) then
-			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Anim'] = 1
-		elseif vr.selected_item == 9 + (vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Condition'] - 1) then
-			upd_anim_actor:run(vr.current_actor,vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id'])
-		end
-	elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 2 then
-		if vr.selected_item == 3 + (vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Condition'] - 1) then
-			upd_actor:run(vr.current_actor)
-		elseif vr.selected_item == 6 + (vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Condition'] - 1) then
-			if vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Vis_point'] then
+	if vr.selected_item == 5 then
+		vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Anim'] = 1
+	elseif vr.selected_item == 10 then
+		upd_anim_actor:run(vr.current_actor,vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id'])
+	elseif vr.selected_item == 4 then
+		upd_actor:run(vr.current_actor)
+	elseif vr.selected_item == 13 then
+		if vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Vis_point'] then
 				lua_thread.create(function(anim,spos)
 					local font = renderCreateFont('Verdana',12)
 					while anim['Vis_point'] do
@@ -879,22 +908,22 @@ function actor_anim()
 					renderReleaseFont(font)
 				end,
 				vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'])
-			end
-		elseif vr.selected_item == 7 + (vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Condition'] - 1) then
-			printHelpForever('AAAP')
-			lockPlayerControl(false)
-			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Path'] = {}
-			vr.actor_anim_window = false
-			vr.id_actor_anim = vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id'];
-			vr.editmode_actor_add_point = true;
-		elseif vr.selected_item == 8 + (vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Condition'] - 1) then
-			local xx,xy,xz = vr.list_actors[vr.current_actor]['Actor_Data']['Pos'][1],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'][2],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'][3]
-			local dec = loadCharDecisionMaker(0)
-			setCharProofs(vr.list_actors[vr.current_actor]['Actor_Data']['Char'],true,true,true,true,true)
-			setCharDecisionMaker(vr.list_actors[vr.current_actor]['Actor_Data']['Char'],dec)
-			setCharCoordinates(vr.list_actors[vr.current_actor]['Actor_Data']['Char'],xx,xy,xz)
-			setCharCollision(vr.list_actors[vr.current_actor]['Actor_Data']['Char'],true)
-			lua_thread.create(function(path)
+		end
+	elseif vr.selected_item == 14 then
+		printHelpForever('AAAP')
+		lockPlayerControl(false)
+		vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Path'] = {}
+		vr.actor_anim_window = false
+		vr.id_actor_anim = vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id'];
+		vr.editmode_actor_add_point = true;
+	elseif vr.selected_item == 15 then
+		local xx,xy,xz = vr.list_actors[vr.current_actor]['Actor_Data']['Pos'][1],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'][2],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'][3]
+		local dec = loadCharDecisionMaker(0)
+		setCharProofs(vr.list_actors[vr.current_actor]['Actor_Data']['Char'],true,true,true,true,true)
+		setCharDecisionMaker(vr.list_actors[vr.current_actor]['Actor_Data']['Char'],dec)
+		setCharCoordinates(vr.list_actors[vr.current_actor]['Actor_Data']['Char'],xx,xy,xz)
+		setCharCollision(vr.list_actors[vr.current_actor]['Actor_Data']['Char'],true)
+		lua_thread.create(function(path)
 				local type_walk = 4;
 				if path['Type_move'] == 3 then type_walk = 6
 				elseif path['Type_move'] == 4 then type_walk = 7 end
@@ -912,43 +941,40 @@ function actor_anim()
 					wait(0)
 				until path['Type_route'] == 1
 				taskToggleDuck(vr.list_actors[vr.current_actor]['Actor_Data']['Char'],false)
-			end,vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']])
-		end
-	elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 3 then
-		if vr.selected_item == 4 + (vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Condition'] - 1) then
-			if vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Vis_point'] then
-				lua_thread.create(function(anim,spos)
-					local font = renderCreateFont('Verdana',12)
-					while anim['Vis_point'] do
-						wait(0)
-						anim['Path'][0] = {spos[1],spos[2],spos[3]}
-						print(#anim['Path'])
-						for i = 1, #anim['Path'] do
-							local x1,y1,z1 = anim['Path'][i][1],anim['Path'][i][2],anim['Path'][i][3]
-							local x2,y2,z2 = anim['Path'][i-1][1],anim['Path'][i-1][2],anim['Path'][i-1][3]
-							local font_pos_x1,font_pos_y1 = convert3DCoordsToScreen(x1,y1,z1+0.1)
-							local font_pos_x2,font_pos_y2 = convert3DCoordsToScreen(x2,y2,z2+0.1)
-							DrawLineBy3dCoords(x1,y1,z1,x2,y2,z2,2,0xFFFFFFFF)
-							if isPointOnScreen(x1, y1, z1,1) then
-								renderFontDrawText(font,tostring(x1)..' '..tostring(y1) ..' '..tostring(z1),font_pos_x1,font_pos_y1,0xFFFFFFFF)
-							end
-							if isPointOnScreen(x2, y2, z2,1) then
-								renderFontDrawText(font,tostring(x2)..' '..tostring(y2) ..' '..tostring(z2),font_pos_x2,font_pos_y2,0xFFFFFFFF)
-							end
+		end,vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']])
+	elseif vr.selected_item == 17 then
+		if vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Vis_point'] then
+			lua_thread.create(function(anim,spos)
+				local font = renderCreateFont('Verdana',12)
+				while anim['Vis_point'] do
+					wait(0)
+					anim['Path'][0] = {spos[1],spos[2],spos[3]}
+					print(#anim['Path'])
+					for i = 1, #anim['Path'] do
+						local x1,y1,z1 = anim['Path'][i][1],anim['Path'][i][2],anim['Path'][i][3]
+						local x2,y2,z2 = anim['Path'][i-1][1],anim['Path'][i-1][2],anim['Path'][i-1][3]
+						local font_pos_x1,font_pos_y1 = convert3DCoordsToScreen(x1,y1,z1+0.1)
+						local font_pos_x2,font_pos_y2 = convert3DCoordsToScreen(x2,y2,z2+0.1)
+						DrawLineBy3dCoords(x1,y1,z1,x2,y2,z2,2,0xFFFFFFFF)
+						if isPointOnScreen(x1, y1, z1,1) then
+							renderFontDrawText(font,tostring(x1)..' '..tostring(y1) ..' '..tostring(z1),font_pos_x1,font_pos_y1,0xFFFFFFFF)
+						end
+						if isPointOnScreen(x2, y2, z2,1) then
+							renderFontDrawText(font,tostring(x2)..' '..tostring(y2) ..' '..tostring(z2),font_pos_x2,font_pos_y2,0xFFFFFFFF)
 						end
 					end
-					renderReleaseFont(font)
-				end,
-				vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],vr.list_cars[vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Car']]['Car_Data']['Pos'])
-			end
-		elseif vr.selected_item == 7 + (vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Condition'] - 1) then
-			printHelpForever('AAAP')
-			lockPlayerControl(false)
-			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Path'] = {}
-			vr.actor_anim_window = false
-			vr.id_actor_anim = vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id'];
-			vr.editmode_actor_add_point = true;
+				end
+				renderReleaseFont(font)
+			end,
+			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],vr.list_cars[vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Car']]['Car_Data']['Pos'])
 		end
+	elseif vr.selected_item == 20 then
+		printHelpForever('AAAP')
+		lockPlayerControl(false)
+		vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Path'] = {}
+		vr.actor_anim_window = false
+		vr.id_actor_anim = vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id'];
+		vr.editmode_actor_add_point = true;
 	end
 end
 
@@ -1024,6 +1050,7 @@ function target()
 			vr.list_targets[vr.current_target]['Target_Data']['Text'] = ''
 			vr.list_targets[vr.current_target]['Target_Data']['Text_time'] = 2
 			vr.list_targets[vr.current_target]['Target_Data']['Color_blip'] = 1
+
 		elseif vr.list_targets[vr.current_target]['Type'] == 2 then
 			vr.list_targets[vr.current_target]['Target_Data']['Target_car_id'] = 1
 			vr.list_targets[vr.current_target]['Target_Data']['Color_blip'] = 1
@@ -1056,10 +1083,11 @@ function target()
 		elseif vr.list_targets[vr.current_target]['Type'] == 7 then
 			vr.list_targets[vr.current_target]['Target_Data']['Target_type'] = 1
 			vr.list_targets[vr.current_target]['Target_Data']['Pos'] = {xx,xy,xz}
-			vr.list_targets[vr.current_target]['Target_Data']['ModelID'] = 1
+			vr.list_targets[vr.current_target]['Target_Data']['ModelId'] = 1
+			vr.list_targets[vr.current_target]['Target_Data']['Model_type'] = 1
 			vr.list_targets[vr.current_target]['Target_Data']['Angle'] = 0
 			vr.list_targets[vr.current_target]['Target_Data']['Weapon'] = 1
-			vr.list_targets[vr.current_target]['Target_Data']['Weap_ammo'] = 1
+			vr.list_targets[vr.current_target]['Target_Data']['Weap_ammo'] = 0
 			vr.list_targets[vr.current_target]['Target_Data']['Anim'] = 1
 			vr.list_targets[vr.current_target]['Target_Data']['Pack_anim'] = 1
 			vr.list_targets[vr.current_target]['Target_Data']['Loop'] = false
@@ -1071,205 +1099,178 @@ function target()
 			vr.list_targets[vr.current_target]['Target_Data']['Add_money'] = 1
 			vr.list_targets[vr.current_target]['Target_Data']['Interior_id'] = getActiveInterior()
 		end
-	end
-	if vr.list_targets[vr.current_target]['Type'] == 1 then
-		if vr.selected_item == 2 then
-			local names = decodeJson(langt['vector3_arr'])
-			vr.vector3_items = {
-				{'int_slider',names[1],vr.list_targets[vr.current_target]['Target_Data']['Pos'],1,_,_,0.01},
-				{'int_slider',names[2],vr.list_targets[vr.current_target]['Target_Data']['Pos'],2,_,_,0.01},
-				{'int_slider',names[3],vr.list_targets[vr.current_target]['Target_Data']['Pos'],3,_,_,0.01},
-				{'button',names[4]}
-			}
-			vr.vector3_items[0] = langt['position']
-			vr.previous_window = 'target_window'
-			vr.current_item = 1
-			vr.vector3_window = true
-			vr.target_window = false
-		elseif vr.selected_item == 3 then
-			vr.editmode_target = true
-			printHelpForever('HTARG')
-			lockPlayerControl(true)
-			vr.id_target = vr.current_target
-		elseif vr.selected_item == 4 then
+	elseif vr.selected_item == 2 then
+		local names = decodeJson(langt['vector3_arr'])
+		vr.vector3_items = {
+			{'int_slider',names[1],vr.list_targets[vr.current_target]['Target_Data']['Pos'],1,_,_,0.01,1},
+			{'int_slider',names[2],vr.list_targets[vr.current_target]['Target_Data']['Pos'],2,_,_,0.01,2},
+			{'int_slider',names[3],vr.list_targets[vr.current_target]['Target_Data']['Pos'],3,_,_,0.01,3},
+			{'button',names[4],4}
+		}
+		vr.vector3_items[0] = langt['position']
+		vr.previous_window = 'target_window'
+		vr.current_item = 1
+		vr.vector3_window = true
+		vr.target_window = false
+	elseif vr.selected_item == 3 then
+		vr.editmode_target = true
+		printHelpForever('HTARG')
+		lockPlayerControl(true)
+		vr.id_target = vr.current_target
+	elseif vr.selected_item == 4 then
+		wait(0)
+	elseif vr.selected_item == 6 then
+		imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
+		vr.editmode_input = true
+		while vr.editmode_input do
 			wait(0)
-		elseif vr.selected_item == 6 then
-			imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
-			vr.editmode_input = true
-			while vr.editmode_input do
-				wait(0)
-				if wasKeyReleased(0x46) then
-					vr.editmode_input = false
-				end
-			end
-			vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
-		end
-	elseif vr.list_targets[vr.current_target]['Type'] == 2 then
-		if vr.selected_item == 4 then
-			imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
-			vr.editmode_input = true
-			while vr.editmode_input do
-				wait(0)
-				if wasKeyReleased(0x46) then
-					vr.editmode_input = false
-				end
-			end
-			vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
-		end
-	elseif vr.list_targets[vr.current_target]['Type'] == 3 then
-		if vr.selected_item == 4 then
-			imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
-			vr.editmode_input = true
-			while vr.editmode_input do
-				wait(0)
-				if wasKeyReleased(0x46) then
-					vr.editmode_input = false
-				end
-			end
-			vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
-		end
-	elseif vr.list_targets[vr.current_target]['Type'] == 4 then
-		if vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 1 then
-			if vr.selected_item == 3 then
-				local names = decodeJson(langt['vector3_arr'])
-				vr.vector3_items = {
-					{'int_slider',names[1],vr.list_targets[vr.current_target]['Target_Data']['Pos'],1,_,_,0.01},
-					{'int_slider',names[2],vr.list_targets[vr.current_target]['Target_Data']['Pos'],2,_,_,0.01},
-					{'int_slider',names[3],vr.list_targets[vr.current_target]['Target_Data']['Pos'],3,_,_,0.01},
-					{'button',names[4]}
-				}
-				vr.vector3_items[0] = langt['position']
-				vr.previous_window = 'target_window'
-				vr.current_item = 1
-				vr.vector3_window = true
-				vr.target_window = false
-			elseif vr.selected_item == 4 then
-				local names = decodeJson(langt['vector3_arr'])
-				vr.vector3_items = {
-					{'int_slider',names[1],vr.list_targets[vr.current_target]['Target_Data']['Rotates'],1,0,360},
-					{'int_slider',names[2],vr.list_targets[vr.current_target]['Target_Data']['Rotates'],2,0,360},
-					{'int_slider',names[3],vr.list_targets[vr.current_target]['Target_Data']['Rotates'],3,0,360},
-					{'button',names[4]}
-				}
-				vr.vector3_items[0] = langt['rotate']
-				vr.previous_window = 'target_window'
-				vr.current_item = 1
-				vr.vector3_window = true
-				vr.target_window = false
-			elseif vr.selected_item == 5 then
-				vr.editmode_camera = true
-				printHelpForever('HOBJ')
-				vr.id_target = vr.current_target
-			elseif vr.selected_item == 7 then
-				imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
-				vr.editmode_input = true
-				while vr.editmode_input do
-					wait(0)
-					if wasKeyReleased(0x46) then
-						vr.editmode_input = false
-					end
-				end
-				vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
-			end
-		elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 3 then
-			if vr.selected_item == 3 then
-				imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
-				vr.editmode_input = true
-				while vr.editmode_input do
-					wait(0)
-					if wasKeyReleased(0x46) then
-					vr.editmode_input = false
-					end
-				end
-				vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
-			end
-		elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 4 then
-			if vr.selected_item == 3 then
-				forceWeatherNow(vr.list_targets[vr.current_target]['Target_Data']['Weather']-1)
-			end
-		elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 5 then
-			if vr.selected_item == 3 then
-				vr.editmode_timetarg = true
-				printHelpForever('HMTIM')
-				vr.id_timetarg = vr.current_target
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
 			end
 		end
-	elseif vr.list_targets[vr.current_target]['Type'] == 5 then
-		if vr.selected_item == 5 + ternar(vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 4,1,0) then
-			imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
-			vr.editmode_input = true
-			while vr.editmode_input do
-				wait(0)
-				if wasKeyReleased(0x46) then
-					vr.editmode_input = false
-				end
-			end
-			vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
-		end
-	elseif vr.list_targets[vr.current_target]['Type'] == 6 then
-		if vr.selected_item == 4 then
-			imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
-			vr.editmode_input = true
-			while vr.editmode_input do
-				wait(0)
-				if wasKeyReleased(0x46) then
-					vr.editmode_input = false
-				end
-			end
-			vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
-		end
-	elseif vr.list_targets[vr.current_target]['Type'] == 7 then
-		if vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 1 then
-			if vr.selected_item == 3 then
-				local names = decodeJson(langt['vector3_arr'])
-				vr.vector3_items = {
-					{'int_slider',names[1],vr.list_targets[vr.current_target]['Target_Data']['Pos'],1,_,_,0.01},
-					{'int_slider',names[2],vr.list_targets[vr.current_target]['Target_Data']['Pos'],2,_,_,0.01},
-					{'int_slider',names[3],vr.list_targets[vr.current_target]['Target_Data']['Pos'],3,_,_,0.01},
-					{'button',names[4]}
-				}
-				vr.vector3_items[0] = langt['position']
-				vr.previous_window = 'target_window'
-				vr.current_item = 1
-				vr.vector3_window = true
-				vr.target_window = false
-			elseif vr.selected_item == 7 then
-				vr.id_teleport_player = vr.current_target
-				printHelpForever('HPLA')
-				vr.editmode_teleport_player = true
-				lockPlayerControl(false)
-			end
-		elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 2 then
-			if vr.selected_item == 3 then
-				vr.list_targets[vr.current_target]['Target_Data']['Anim'] = 1
-			elseif vr.selected_item == 6 then
-				vr.id_preview_player_anim = vr.current_target
-				vr.editmode_preview_player_anim = true
-				lockPlayerControl(true)
-				printHelpForever('HVIEW')
-			end
-		elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 6 then
-			if vr.selected_item == 3 then
-				vr.list_targets[vr.current_target]['Target_Data']['Dialog'][#vr.list_targets[vr.current_target]['Target_Data']['Dialog']+1] = {
-					['Text'] = '',
-					['Text_time'] = 1
-				}
-				vr.current_dialog_target = #vr.list_targets[vr.current_target]['Target_Data']['Dialog']
-				vr.current_item = 1
-				vr.target_dialog_window = true
-				vr.target_window = false
-			elseif vr.selected_item == 4 then
-				vr.current_item = 1
-				vr.targets_dialog_toggle = 1
-				vr.target_list_dialog_window = true
-				vr.target_window = false
-			elseif vr.selected_item == 5 then
-				vr.current_item = 1
-				vr.targets_dialog_toggle = 2
-				vr.target_list_dialog_window = true
-				vr.target_window = false
+		vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
+	elseif vr.selected_item == 10 then
+		imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
 			end
 		end
+		vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
+	elseif vr.selected_item == 13 then
+		imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
+	elseif vr.selected_item == 15 then
+		local names = decodeJson(langt['vector3_arr'])
+		vr.vector3_items = {
+			{'int_slider',names[1],vr.list_targets[vr.current_target]['Target_Data']['Pos'],1,_,_,0.01,1},
+			{'int_slider',names[2],vr.list_targets[vr.current_target]['Target_Data']['Pos'],2,_,_,0.01,2},
+			{'int_slider',names[3],vr.list_targets[vr.current_target]['Target_Data']['Pos'],3,_,_,0.01,3},
+			{'button',names[4],4}
+		}
+		vr.vector3_items[0] = langt['position']
+		vr.previous_window = 'target_window'
+		vr.current_item = 1
+		vr.vector3_window = true
+		vr.target_window = false
+	elseif vr.selected_item == 16 then
+		local names = decodeJson(langt['vector3_arr'])
+		vr.vector3_items = {
+			{'int_slider',names[1],vr.list_targets[vr.current_target]['Target_Data']['Rotates'],1,0,360,1},
+			{'int_slider',names[2],vr.list_targets[vr.current_target]['Target_Data']['Rotates'],2,0,360,2},
+			{'int_slider',names[3],vr.list_targets[vr.current_target]['Target_Data']['Rotates'],3,0,360,3},
+			{'button',names[4],4}
+		}
+		vr.vector3_items[0] = langt['rotate']
+		vr.previous_window = 'target_window'
+		vr.current_item = 1
+		vr.vector3_window = true
+		vr.target_window = false
+	elseif vr.selected_item == 17 then
+		vr.editmode_camera = true
+		printHelpForever('HOBJ')
+		vr.id_target = vr.current_target
+	elseif vr.selected_item == 19 then
+		imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
+	elseif vr.selected_item == 22 then
+		imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+			vr.editmode_input = false
+			end
+		end
+		vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
+	elseif vr.selected_item == 24 then
+		forceWeatherNow(vr.list_targets[vr.current_target]['Target_Data']['Weather']-1)
+	elseif vr.selected_item == 25 then
+		vr.editmode_timetarg = true
+		printHelpForever('HMTIM')
+		vr.id_timetarg = vr.current_target
+	elseif vr.selected_item == 32 then
+		imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
+	elseif vr.selected_item == 35 then
+		imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Text'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_targets[vr.current_target]['Target_Data']['Text'] = ffi.string(vr.buffer_input)
+	elseif vr.selected_item == 37 then
+		local names = decodeJson(langt['vector3_arr'])
+		vr.vector3_items = {
+			{'int_slider',names[1],vr.list_targets[vr.current_target]['Target_Data']['Pos'],1,_,_,0.01,1},
+			{'int_slider',names[2],vr.list_targets[vr.current_target]['Target_Data']['Pos'],2,_,_,0.01,2},
+			{'int_slider',names[3],vr.list_targets[vr.current_target]['Target_Data']['Pos'],3,_,_,0.01,3},
+			{'button',names[4],4}
+		}
+		vr.vector3_items[0] = langt['position']
+		vr.previous_window = 'target_window'
+		vr.current_item = 1
+		vr.vector3_window = true
+		vr.target_window = false
+	elseif vr.selected_item == 39 then
+		vr.list_targets[vr.current_target]['Target_Data']['ModelId'] = 1
+	elseif vr.selected_item == 43 then
+		vr.id_teleport_player = vr.current_target
+		printHelpForever('HPLA')
+		vr.editmode_teleport_player = true
+		lockPlayerControl(false)
+	elseif vr.selected_item == 44 then
+		vr.list_targets[vr.current_target]['Target_Data']['Anim'] = 1
+	elseif vr.selected_item == 48 then
+		vr.id_preview_player_anim = vr.current_target
+		vr.editmode_preview_player_anim = true
+		lockPlayerControl(true)
+		printHelpForever('HVIEW')
+	elseif vr.selected_item == 52 then
+		vr.list_targets[vr.current_target]['Target_Data']['Dialog'][#vr.list_targets[vr.current_target]['Target_Data']['Dialog']+1] = {
+			['Text'] = '',
+			['Text_time'] = 1
+		}
+		vr.current_dialog_target = #vr.list_targets[vr.current_target]['Target_Data']['Dialog']
+		vr.current_item = 1
+		vr.target_dialog_window = true
+		vr.target_window = false
+	elseif vr.selected_item == 53 then
+		vr.current_item = 1
+		vr.targets_dialog_toggle = 1
+		vr.target_list_dialog_window = true
+		vr.target_window = false
+	elseif vr.selected_item == 54 then
+		vr.current_item = 1
+		vr.targets_dialog_toggle = 2
+		vr.target_list_dialog_window = true
+		vr.target_window = false
 	end
 end
 
@@ -1373,10 +1374,10 @@ function car()
 	if vr.selected_item == 1 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
-			{'int_slider',names[1],vr.list_cars[vr.current_car]['Car_Data']['Pos'],1,_,_,0.01},
-			{'int_slider',names[2],vr.list_cars[vr.current_car]['Car_Data']['Pos'],2,_,_,0.01},
-			{'int_slider',names[3],vr.list_cars[vr.current_car]['Car_Data']['Pos'],3,_,_,0.01},
-			{'button',names[4]}
+			{'int_slider',names[1],vr.list_cars[vr.current_car]['Car_Data']['Pos'],1,_,_,0.01,1},
+			{'int_slider',names[2],vr.list_cars[vr.current_car]['Car_Data']['Pos'],2,_,_,0.01,2},
+			{'int_slider',names[3],vr.list_cars[vr.current_car]['Car_Data']['Pos'],3,_,_,0.01,3},
+			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = langt['position']
 		vr.previous_window = 'car_window'
@@ -1507,10 +1508,10 @@ function object()
 	if vr.selected_item == 1 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
-			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Pos'],1,_,_,0.01},
-			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Pos'],2,_,_,0.01},
-			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Pos'],3,_,_,0.01},
-			{'button',names[4]}
+			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Pos'],1,_,_,0.01,1},
+			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Pos'],2,_,_,0.01,2},
+			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Pos'],3,_,_,0.01,3},
+			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = decodeJson(langt['actor_arr'])[1]
 		vr.previous_window = 'object_window'
@@ -1520,10 +1521,10 @@ function object()
 	elseif vr.selected_item == 2 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
-			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],1,-360,360,1},
-			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],2,-360,360,1},
 			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],3,-360,360,1},
-			{'button',names[4]}
+			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],2,-360,360,2},
+			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],1,-360,360,3},
+			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = langt['rotate']
 		vr.previous_window = 'object_window'
@@ -1596,33 +1597,33 @@ end
 
 function object_anim()
 	
-	if vr.selected_item == 2 + (vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Condition'] - 1) then
+	if vr.selected_item == 3 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
-			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Pos'],1,_,_,0.01},
-			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Pos'],2,_,_,0.01},
-			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Pos'],3,_,_,0.01},
-			{'button',names[4]}
+			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Pos'],1,_,_,0.01,1},
+			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Pos'],2,_,_,0.01,2},
+			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Pos'],3,_,_,0.01,3},
+			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = decodeJson(langt['actor_arr'])[1]
 		vr.previous_window = 'object_anim_window'
 		vr.current_item = 1
 		vr.vector3_window = true
 		vr.object_anim_window = false
-	elseif vr.selected_item == 3 + (vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Condition'] - 1) then
+	elseif vr.selected_item == 4 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
 			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],1,-360,360,1},
-			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],2,-360,360,1},
-			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],3,-360,360,1},
-			{'button',names[4]}
+			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],2,-360,360,2},
+			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],3,-360,360,3},
+			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = langt['rotate']
 		vr.previous_window = 'object_anim_window'
 		vr.current_item = 1
 		vr.vector3_window = true
 		vr.object_anim_window = false
-	elseif vr.selected_item == 5 + (vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Condition'] - 1) then
+	elseif vr.selected_item == 6 then
 		if vr.list_objects[vr.current_object]['Object_Data']['Obj'] ~= nil then
 			vr.editmode_objects_anim = true
 			printHelpForever('HOBJ')
@@ -1689,10 +1690,10 @@ function particle()
 	if vr.selected_item == 1 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
-			{'int_slider',names[1],vr.list_particle[vr.current_particle]['Particle_Data']['Pos'],1,_,_,0.01},
-			{'int_slider',names[2],vr.list_particle[vr.current_particle]['Particle_Data']['Pos'],2,_,_,0.01},
-			{'int_slider',names[3],vr.list_particle[vr.current_particle]['Particle_Data']['Pos'],3,_,_,0.01},
-			{'button',names[4]}
+			{'int_slider',names[1],vr.list_particle[vr.current_particle]['Particle_Data']['Pos'],1,_,_,0.01,1},
+			{'int_slider',names[2],vr.list_particle[vr.current_particle]['Particle_Data']['Pos'],2,_,_,0.01,2},
+			{'int_slider',names[3],vr.list_particle[vr.current_particle]['Particle_Data']['Pos'],3,_,_,0.01,3},
+			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = decodeJson(langt['actor_arr'])[1]
 		vr.previous_window = 'particle_window'
@@ -1703,9 +1704,9 @@ function particle()
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
 			{'int_slider',names[1],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],1,-360,360,1},
-			{'int_slider',names[2],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],2,-360,360,1},
-			{'int_slider',names[3],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],3,-360,360,1},
-			{'button',names[4]}
+			{'int_slider',names[2],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],2,-360,360,2},
+			{'int_slider',names[3],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],3,-360,360,3},
+			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = langt['rotate']
 		vr.previous_window = 'particle_window'
@@ -1780,32 +1781,28 @@ function pickup()
 	
 	if vr.selected_item == 2 then
 		if vr.list_pickup[vr.current_pickup]['Pickup_Data']['Type_pickup'] == 1 then
-		vr.list_pickup[vr.current_pickup]['Pickup_Data']['Ammo'] = 0
-		vr.list_pickup[vr.current_pickup]['Pickup_Data']['Weapon'] = 1
+			vr.list_pickup[vr.current_pickup]['Pickup_Data']['Ammo'] = 0
+			vr.list_pickup[vr.current_pickup]['Pickup_Data']['Weapon'] = 1
 		elseif vr.list_pickup[vr.current_pickup]['Pickup_Data']['Type_pickup'] == 6 then
-		vr.list_pickup[vr.current_pickup]['Pickup_Data']['ModelId'] = 0
+			vr.list_pickup[vr.current_pickup]['Pickup_Data']['ModelId'] = 0
 		end
 		if vr.list_pickup[vr.current_pickup]['Pickup_Data']['Type_pickup'] ~= 6 then upd_pickup:run(vr.current_pickup) end
-	end
-	if vr.selected_item == 3 then
+	elseif vr.selected_item == 3 then
 		vr.editmode_pickup = true
 		vr.id_pick = vr.current_pickup
 		lockPlayerControl(true)
 		printHelpForever('HPICW')
-	end
-	if vr.list_pickup[vr.current_pickup]['Pickup_Data']['Type_pickup'] == 6 then
-		if vr.selected_item == 4 then
-			imgui.StrCopy(vr.buffer_input,tostring(vr.list_pickup[vr.current_pickup]['Pickup_Data']['ModelId']))
-			vr.editmode_input = true
-			while vr.editmode_input do
-				wait(0)
-				if wasKeyReleased(0x46) then
-					vr.editmode_input = false
-				end
+	elseif vr.selected_item == 6 then
+		imgui.StrCopy(vr.buffer_input,tostring(vr.list_pickup[vr.current_pickup]['Pickup_Data']['ModelId']))
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
 			end
-			vr.list_pickup[vr.current_pickup]['Pickup_Data']['ModelId'] = tonumber(ffi.string(vr.buffer_input)) or 0
-			upd_pickup:run(vr.current_pickup)
 		end
+		vr.list_pickup[vr.current_pickup]['Pickup_Data']['ModelId'] = tonumber(ffi.string(vr.buffer_input)) or 0
+		upd_pickup:run(vr.current_pickup)
 	end
 end
 
@@ -1887,9 +1884,9 @@ function explosion()
 		vr.current_item = 1
 		vr.vector3_window = true
 		vr.explosion_window = false
-	elseif (vr.selected_item == 3 or vr.selected_item == 4) and vr.list_explosion[vr.current_explosion]['Explosion_Data']['Type'] == 1 then
+	elseif (vr.selected_item == 4 or vr.selected_item == 5) then
 		upd_explosion:run(vr.current_explosion)
-	elseif (vr.selected_item == 4 and vr.list_explosion[vr.current_explosion]['Explosion_Data']['Type'] == 2) or (vr.selected_item == 5 and vr.list_explosion[vr.current_explosion]['Explosion_Data']['Type'] == 1) then
+	elseif vr.selected_item == 6 then
 		vr.editmode_explosion = true
 		printHelpForever('HTARG')
 		lockPlayerControl(true)
@@ -1902,7 +1899,6 @@ function pack_mission_change()
 		local m = #vr.list_mission_pack+1
     	vr.list_mission_pack[m] = {
     	  ['Name'] = langt['packMissions']..' #' .. tostring(#vr.list_mission_pack+1),
-    	  ['Enable'] = false,
     	  ['Missions'] = vr.list_missions
     	}
     	vr.list_name_mission_pack[m] = vr.list_mission_pack[m]['Name']
@@ -2041,7 +2037,8 @@ function missions_list()
 			['Pickup'] = vr.list_pickup,
 			['Particle'] = vr.list_particle,
 			['Explosion'] = vr.list_explosion,
-			['Miss_data'] = vr.mission_data
+			['Miss_data'] = vr.mission_data,
+			['Group_relationships'] = vr.Group_relationships
 		}
 		vr.Fast_data['CurMiss'] = vr.selected_item
 		vr.missions_change_window = true
@@ -2199,6 +2196,25 @@ function settings()
 	end
 end
 
+function Group_relationships_list()
+	vr.Group_relationships_items = {}
+	local groups = decodeJson(langt['name_groups'])
+	for i = 1,9 do
+		if i ~= vr.selected_item then
+			print(vr.current_group_relationships)
+			print(encodeJson(vr['Group_relationships'][vr.current_group_relationships]))
+			vr.Group_relationships_items[#vr.Group_relationships_items+1] = {'arr_slider',groups[i],vr['Group_relationships'][vr.selected_item],i,decodeJson(langt['Relationship_types']),i}
+		end
+	end
+	vr.current_item = 1
+	vr.Group_relationships_list_window = false
+	vr.current_group_relationships = vr.selected_item
+	vr.Group_relationships_window = true
+end
+
+function Group_relationships()
+end
+
 function vector3(arr_menu)
 	if vr.selected_item ~= #arr_menu then
 		if vr.previous_window == 'actor_window' then
@@ -2297,33 +2313,42 @@ function deepcopy(object)
 end
 
 function update_actor(actorr)
-	local modell = 0
-	for v = 1,#ID_Actors do
-		if vr.list_actors[actorr]['Actor_Data']['ModelId'] <= ID_Actors[v] then
-			modell = ID_Actors[v]
-			break
-		end
-	end
+	local modell
 	local xx,xy,xz = vr.list_actors[actorr]['Actor_Data']['Pos'][1], vr.list_actors[actorr]['Actor_Data']['Pos'][2], vr.list_actors[actorr]['Actor_Data']['Pos'][3]
 	local angle = vr.list_actors[actorr]['Actor_Data']['Angle']
 
-	requestModel(modell)
-	while not hasModelLoaded(modell) do
-		wait(0)
-	end
-	local last_id = 288
-	for v = 1,#ID_Actors do
-		if modell == ID_Actors[v] then
-			last_id = ID_Cars[v-1]
-			break
+	if vr.list_actors[actorr]['Actor_Data']['Model_type'] == 1 then
+		modell = ID_Actors[vr.list_actors[actorr]['Actor_Data']['ModelId']]
+		requestModel(modell)
+		while not hasModelLoaded(modell) do
+			wait(0)
 		end
+	elseif vr.list_actors[actorr]['Actor_Data']['Model_type'] == 2 then
+		local modell_n = ID_Spec_Actors[vr.list_actors[actorr]['Actor_Data']['ModelId']]
+		loadSpecialCharacter(modell_n,vr.list_actors[actorr]['Actor_Data']['Slot_model'])
+		while not hasSpecialCharacterLoaded(vr.list_actors[actorr]['Actor_Data']['Slot_model']) do
+			wait(0)
+		end
+		modell = 290 + vr.list_actors[actorr]['Actor_Data']['Slot_model']-1
 	end
-	markModelAsNoLongerNeeded(last_id)
 
 	deleteChar(vr.list_actors[actorr]['Actor_Data']['Char'])
+	print(modell)
 	vr.list_actors[actorr]['Actor_Data']['Char'] = createChar(4,modell,xx,xy,xz)
+	if vr.list_actors[actorr]['Actor_Data']['Model_type'] == 1 then
+		markModelAsNoLongerNeeded(modell)
+	else
+		unloadSpecialCharacter(vr.list_actors[actorr]['Actor_Data']['Slot_model'])
+	end
 	setCharHeading(vr.list_actors[actorr]['Actor_Data']['Char'], angle)
 	setCharCollision(vr.list_actors[actorr]['Actor_Data']['Char'],false)
+	requestModel(getWeapontypeModel(ID_Weapons[vr.list_actors[actorr]['Actor_Data']['Weapon']]))
+	while not hasModelLoaded(getWeapontypeModel(ID_Weapons[vr.list_actors[actorr]['Actor_Data']['Weapon']])) do
+		wait(0)
+	end
+	giveWeaponToChar(vr.list_actors[actorr]['Actor_Data']['Char'], ID_Weapons[vr.list_actors[actorr]['Actor_Data']['Weapon']], 1)
+	setCurrentCharWeapon(vr.list_actors[actorr]['Actor_Data']['Char'],1)
+	markModelAsNoLongerNeeded(getWeapontypeModel(ID_Weapons[vr.list_actors[actorr]['Actor_Data']['Weapon']]))
 end
 
 function update_actor_animation(actorr,anim)
@@ -2511,36 +2536,37 @@ function load_mission()
 	vr.list_particle = vr.list_missions[vr.current_missions]['Mission_Data']['Particle']
 	vr.list_explosion = vr.list_missions[vr.current_missions]['Mission_Data']['Explosion']
 	vr.mission_data = vr.list_missions[vr.current_missions]['Mission_Data']['Miss_data']
+	vr.Group_relationships = vr.list_missions[vr.current_missions]['Mission_Data']['Group_relationships']
 	vr.Fast_data['CurMiss'] = vr.current_missions
 	vr.list_name_actors,vr.list_name_objects,vr.list_name_cars,vr.list_name_pickup,vr.list_name_particle,vr.list_name_explosion = {},{},{},{},{},{}
 	for a = 1, #vr.list_actors do
 		wait(0)
 		vr.list_name_actors[a] = vr.list_actors[a]['Name']
-		upd_actor:run(a)
+		update_actor(a)
 	end
 	for o = 1, #vr.list_objects do
 		vr.list_name_objects[o] = vr.list_objects[o]['Name']
-		upd_object:run(o)
+		update_object(o)
 	end
 	for c = 1, #vr.list_cars do
 		wait(0)
 		vr.list_name_cars[c] = vr.list_cars[c]['Name']
-		upd_car:run(c)
+		update_car(c)
 	end
 	for p = 1, #vr.list_pickup do
 		wait(0)
 		vr.list_name_pickup[p] = vr.list_pickup[p]['Name']
-		upd_pickup:run(p)
+		update_pickup(p)
 	end
 	for p = 1, #vr.list_particle do
 		wait(0)
 		vr.list_name_particle[p] = vr.list_particle[p]['Name']
-		upd_particle:run(p)
+		update_particle(p)
 	end
 	for e = 1, #vr.list_explosion do
 		wait(0)
 		vr.list_name_explosion[e] = vr.list_explosion[e]['Name']
-		upd_explosion:run(e)
+		update_explosion(e)
 	end
 	for t = 1, #vr.list_targets do
 		wait(0)
@@ -2551,14 +2577,6 @@ function load_mission()
 	setInteriorVisible(vr.mission_data['Player']['Interior_id'])
 end
 
-function onStartNewGame(missionPackNumber)
-	vr.mpack = missionPackNumber
-	if missionPackNumber ~= 7 then
-		thisScript():pause()
-	else
-		thisScript():resume()
-	end
-end
 
 function table.merge(t1,t2)
 	for _,k in ipairs(t2) do
@@ -2606,6 +2624,16 @@ function main()
 
 	Weather_str = decodeJson(langt['Weather_arr'])
 
+	vr.Group_relationships_list_items = {}
+	for i = 2,9 do
+		vr['Group_relationships'][i] = {}
+		for y = 1,9 do
+			if i ~= y then
+				vr['Group_relationships'][i][y] = 3
+			end
+		end
+		vr.Group_relationships_list_items[#vr.Group_relationships_list_items+1] = {'button',langt['group']..' '..i-1,i}
+	end
 
 	vr.list_mission_pack = manager.loadMPack()
 	for mp = 1,#vr.list_mission_pack do
@@ -2623,85 +2651,86 @@ function main()
 
 	local names = decodeJson(langt['main_menu_arr'])
 	vr.main_menu_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]},
-		{'button',names[4]},
-		{'button',names[5]},
-		{'button',names[6]},
-		{'button',names[7]},
-		{'button',names[8]},
-		{'button',names[9]},
-		{'button',names[10]},
-		{'button',names[11]},
-		{'button',names[12]},
-		{'button',names[13]},
-		{'button',names[14]},
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3},
+		{'button',names[4],4},
+		{'button',names[5],5},
+		{'button',names[6],6},
+		{'button',names[7],7},
+		{'button',names[8],8},
+		{'button',names[9],9},
+		{'button',names[10],10},
+		{'button',names[11],11},
+		{'button',names[12],12},
+		{'button',names[13],13},
+		{'button',names[14],14},
+		{'button',names[14],15},
 	}
 	names = decodeJson(langt['actor_change_arr'])
 	vr.actor_change_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]}
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3}
 	}
 	names = decodeJson(langt['actor_anims_change_arr'])
 	vr.actor_anims_change_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]}
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3}
 	}
 	names = decodeJson(langt['targets_change_arr'])
 	vr.targets_change_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]},
-		{'button',names[4]}
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3},
+		{'button',names[4],4}
 	}
 	names = decodeJson(langt['cars_change_arr'])
 	vr.cars_change_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]}
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3}
 	}
 	names = decodeJson(langt['objects_change_arr'])
 	vr.objects_change_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]}
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3}
 	}
 	names = decodeJson(langt['particles_change_arr'])
 	vr.particles_change_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]}
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3}
 	}
 	names = decodeJson(langt['pickup_change_arr'])
 	vr.pickup_change_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]}
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3}
 	}
 	names = decodeJson(langt['explosion_change_arr'])
 	vr.explosion_change_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]}
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3}
 	}
 	names = decodeJson(langt['mission_pack_change_arr'])
 	vr.mission_pack_change_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]},
-		{'button',names[4]},
-		{'button',names[5]}
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3},
+		{'button',names[4],4},
+		{'button',names[5],5}
 	}
 	names = decodeJson(langt['missions_change_arr'])
 	vr.missions_change_items = {
-		{'button',names[1]},
-		{'button',names[2]},
-		{'button',names[3]},
-		{'button',names[4]},
-		{'button',names[5]}
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3},
+		{'button',names[4],4},
+		{'button',names[5],5}
 	}
 	while true do
 		wait(0)
@@ -2710,6 +2739,9 @@ function main()
 			local welcome_t = decodeJson((langt['welcome_t']))
 			printHelpString(koder(u8:decode(welcome_t[1]) .. tostring(thisScript().version) .. u8:decode(welcome_t[2])))
 			vr.mpack = nil
+		end
+		if vr.mpack ~= nil then
+			break
 		end
 
 		if testCheat('top2009') then
@@ -2772,106 +2804,246 @@ function main()
 			vr.actor_window = false
 			openMenu = true
 			lockPlayerControl(false)
-			requestModel(model.BMORI)
-			while not hasModelLoaded(vr.list_actors[vr.current_actor]['Actor_Data']['ModelId']) do
-				wait(1)
+			local stage = 0
+			local modelId = vr.list_actors[vr.current_actor]['Actor_Data']['ModelId']
+			local weapon = vr.list_actors[vr.current_actor]['Actor_Data']['Weapon']
+			local ammo = vr.list_actors[vr.current_actor]['Actor_Data']['Ammo']
+			if vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] == 1 then
+				modell = ID_Actors[vr.list_actors[vr.current_actor]['Actor_Data']['ModelId']]
+				requestModel(modell)
+				while not hasModelLoaded(modell) do
+					wait(0)
+				end
+			else
+				local modell_n = ID_Spec_Actors[vr.list_actors[vr.current_actor]['Actor_Data']['ModelId']]
+				loadSpecialCharacter(modell_n,vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model'])
+				while not hasSpecialCharacterLoaded(vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model']) do
+					wait(0)
+				end
+				modell = 290 + vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model']-1
 			end
-			setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'])
+			setPlayerModel(PLAYER_HANDLE, modell)
 			local xx,xy,xz = vr.list_actors[vr.current_actor]['Actor_Data']['Pos'][1],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'][2],vr.list_actors[vr.current_actor]['Actor_Data']['Pos'][3]
 			setCharCoordinates(PLAYER_PED, xx, xy, xz)
 			setCharHeading(PLAYER_PED, vr.list_actors[vr.current_actor]['Actor_Data']['Angle'])
-			printHelpForever('HACT')
-		end
-		while vr.editmode_actor do
-			--Закрытие редактора
-			wait(0)
-			if wasKeyReleased(vkeys.VK_F) then
-				clearHelp()
-				vr.editmode_actor = false
-				setPlayerModel(PLAYER_HANDLE, model.NULL)
-				local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-				local angle = getCharHeading(PLAYER_PED)
-				xz = getGroundZFor3dCoord(xx,xy,xz)
-				vr.list_actors[vr.current_actor]['Actor_Data']['Pos'] = {xx,xy,xz}
-				vr.list_actors[vr.current_actor]['Actor_Data']['Angle'] = angle
-				upd_actor:run(vr.current_actor)
-				clearPrints()
-				vr.actor_window = true
-				lockPlayerControl(true)
-			end
-			if isKeyDown(vkeys.VK_I) then
-				wait(100)
-				vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] + 1
-				local id_a = 0
-				for v = 1,#ID_Actors do
-					if vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] <= ID_Actors[v] then
-						id_a = ID_Actors[v]
-						break
+			giveWeaponToChar(PLAYER_PED,ID_Weapons[weapon], 99999)
+			setCurrentCharWeapon(PLAYER_PED,1)
+			printHelpForever('HPLA')
+			while vr.editmode_actor do
+				--Закрытие редактора
+				wait(0)
+				if wasKeyReleased(vkeys.VK_F) then
+					clearHelp()
+					vr.editmode_actor = false
+					setPlayerModel(PLAYER_HANDLE, model.NULL)
+					local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+					local angle = getCharHeading(PLAYER_PED)
+					xz = getGroundZFor3dCoord(xx,xy,xz)
+					removeAllCharWeapons(PLAYER_PED)
+					upd_actor:run(vr.current_actor)
+					clearPrints()
+					vr.actor_window = true
+					lockPlayerControl(true)
+				end
+				if wasKeyPressed(vkeys.VK_G) then
+					if stage == 0 then
+						lockPlayerControl(true)
+						printHelpForever('HPLA2')
+						stage = stage + 1
+					elseif stage == 1 then
+						clearHelp()
+						vr.editmode_actor = false
+						setPlayerModel(PLAYER_HANDLE, model.NULL)
+						local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+						local angle = getCharHeading(PLAYER_PED)
+						xz = getGroundZFor3dCoord(xx,xy,xz)
+						removeAllCharWeapons(PLAYER_PED)
+						vr.list_actors[vr.current_actor]['Actor_Data']['Pos'] = {xx,xy,xz}
+						vr.list_actors[vr.current_actor]['Actor_Data']['Angle'] = angle
+						vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = modelId
+						vr.list_actors[vr.current_actor]['Actor_Data']['Weapon'] = weapon
+						vr.list_actors[vr.current_actor]['Actor_Data']['Ammo'] = ammo
+						upd_actor:run(vr.current_actor)
+						clearPrints()
+						vr.actor_window = true
+						lockPlayerControl(true)
 					end
 				end
-				vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = id_a
-				requestModel(vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'])
-				while not hasModelLoaded(vr.list_actors[vr.current_actor]['Actor_Data']['ModelId']) do
-					wait(1)
-				end
-				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'])
-			end
-			if isKeyDown(vkeys.VK_O) then
-				wait(100)
-				vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] - 1
-				if vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] < 0 then
-					vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = 288
-				end
-				local id_a = 288
-				for v = 1,#ID_Actors do
-					if vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] < ID_Actors[v] then
-						id_a = ID_Actors[v-1]
-						break
+				if wasKeyReleased(vkeys.VK_U) then
+					if vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] == 1 then
+						vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] = 2
+					else
+						vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] = 1
 					end
-				end
-				vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = id_a
-				requestModel(vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'])
-				while not hasModelLoaded(vr.list_actors[vr.current_actor]['Actor_Data']['ModelId']) do
-					wait(1)
-				end
-				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'])
-			end
-			if isKeyDown(vkeys.VK_K) then
-				wait(100)
-				vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] + 10
-				local id_a = 0
-				for v = 1,#ID_Actors do
-					if vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] <= ID_Actors[v] then
-						id_a = ID_Actors[v]
-						break
+					modelId = 1
+					local modell
+					if vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] == 1 then
+						modell = ID_Actors[modelId]
+						requestModel(modell)
+						while not hasModelLoaded(modell) do
+							wait(0)
+						end
+					else
+						local modell_n = ID_Spec_Actors[modelId]
+						loadSpecialCharacter(modell_n,10)
+						while not hasSpecialCharacterLoaded(10) do
+							wait(0)
+						end
+						modell = 290 + 10-1
 					end
+					setPlayerModel(PLAYER_HANDLE, modell)
 				end
-				vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = id_a
-				requestModel(vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'])
-				while not hasModelLoaded(vr.list_actors[vr.current_actor]['Actor_Data']['ModelId']) do
-					wait(1)
-				end
-				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'])
-			end
-			if isKeyDown(vkeys.VK_L) then
-				wait(100)
-				vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] - 10
-				if vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] < 0 then
-					vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = 289 + vr.list_actors[vr.current_actor]['Actor_Data']['ModelId']
-				end
-				local id_a = 288
-				for v = 1,#ID_Actors do
-					if vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] < ID_Actors[v] then
-						id_a = ID_Actors[v-1]
-						break
+				if stage == 0 then
+					if isKeyDown(vkeys.VK_I) then
+						wait(100)
+						print("df")
+						local modell
+						modelId = modelId + 1
+						if vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] == 1 then
+							if modelId > #ID_Actors then
+								modelId = 1+modelId-#ID_Actors
+							end
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId > #ID_Spec_Actors then
+								modelId = 1+modelId-#ID_Spec_Actors
+							end
+
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model'])
+							while not hasSpecialCharacterLoaded(vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model']) do
+								wait(0)
+							end
+							modell = 290 + vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model']-1
+						end
+						setPlayerModel(PLAYER_HANDLE, modell)
 					end
+					if isKeyDown(vkeys.VK_O) then
+						wait(100)
+						local modell
+						modelId = modelId - 1
+						if vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] == 1 then
+							if modelId < 1 then
+								modelId = #ID_Actors+modelId
+							end
+
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId < 1 then
+								modelId = #ID_Spec_Actors+modelId
+							end
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model'])
+							while not hasSpecialCharacterLoaded(vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model']) do
+								wait(0)
+							end
+							modell = 290 + vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model']-1
+						end
+						setPlayerModel(PLAYER_HANDLE, modell)
+					end
+					if isKeyDown(vkeys.VK_K) then
+						wait(100)
+						local modell
+						modelId = modelId + 10
+						if vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] == 1 then
+							if modelId > #ID_Actors then
+								modelId = 1+modelId-#ID_Actors
+							end
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId > #ID_Spec_Actors then
+								modelId = 1+modelId-#ID_Spec_Actors
+							end
+
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model'])
+							while not hasSpecialCharacterLoaded(vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model']) do
+								wait(0)
+							end
+							modell = 290 + vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model']-1
+						end
+						setPlayerModel(PLAYER_HANDLE, modell)
+					end
+					if isKeyDown(vkeys.VK_L) then
+						wait(100)
+						local modell
+						modelId = modelId - 10
+						if vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] == 1 then
+							if modelId < 1 then
+								modelId = #ID_Actors+modelId
+							end
+
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId < 1 then
+								modelId = #ID_Spec_Actors+modelId
+							end
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model'])
+							while not hasSpecialCharacterLoaded(vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model']) do
+								wait(0)
+							end
+							modell = 290 + vr.list_actors[vr.current_actor]['Actor_Data']['Slot_model']-1
+						end
+						setPlayerModel(PLAYER_HANDLE, modell)
+					end
+					if isKeyDown(vkeys.VK_P) then
+						wait(200)
+						weapon = weapon + 1
+						if weapon > #ID_Weapons then
+							weapon = 1
+						end
+						local id_w = ID_Weapons[weapon]
+						requestModel(getWeapontypeModel(id_w))
+						while not hasModelLoaded(getWeapontypeModel(id_w)) do
+							wait(1)
+						end
+						removeAllCharWeapons(PLAYER_PED)
+						giveWeaponToChar(PLAYER_PED, id_w, 9999)
+						setCurrentCharWeapon(PLAYER_PED,1)
+					end
+					if isKeyDown(vkeys.VK_OEM_4) then
+						wait(200)
+						weapon = weapon - 1
+						if weapon < 1 then
+							weapon = #ID_Weapons
+						end
+						local id_w = ID_Weapons[weapon]
+						requestModel(getWeapontypeModel(id_w))
+						while not hasModelLoaded(getWeapontypeModel(id_w)) do
+							wait(1)
+						end
+						removeAllCharWeapons(PLAYER_PED)
+						giveWeaponToChar(PLAYER_PED, id_w, 9999)
+						setCurrentCharWeapon(PLAYER_PED,1)
+					end
+				elseif stage == 1 then
+					if isKeyDown(vkeys.VK_I) then
+						wait(50)
+						ammo = ammo + 10
+					end
+					if isKeyDown(vkeys.VK_O) and ammo > 0 then
+						wait(50)
+						ammo = ammo - 10
+					end
+					printString(koder(u8:decode(langt['ammo'])..': ' .. '~r~' .. ammo), 0)
 				end
-				vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'] = id_a
-				requestModel(vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'])
-				while not hasModelLoaded(vr.list_actors[vr.current_actor]['Actor_Data']['ModelId']) do
-					wait(1)
-				end
-				setPlayerModel(PLAYER_HANDLE, vr.list_actors[vr.current_actor]['Actor_Data']['ModelId'])
 			end
 		end
 
@@ -3383,9 +3555,10 @@ function main()
 		end
 		if vr.editmode_player then
 			local stage = 0
-			local modelID = 0
-			local weapon = 0
+			local modelId = 1
+			local weapon = 1
 			local ammo = 0
+			local ped_type = true
 			while vr.editmode_player do
 				--Закрытие редактора
 				wait(0)
@@ -3410,131 +3583,172 @@ function main()
 						xz = getGroundZFor3dCoord(xx,xy,xz)
 						vr.mission_data['Player']['Pos'] = {xx,xy,xz}
 						vr.mission_data['Player']['Angle'] = angle
-						vr.mission_data['Player']['ModelId'] = modelID
+						vr.mission_data['Player']['ModelId'] = modelId
 						vr.mission_data['Player']['Weapon'] = weapon
 						vr.mission_data['Player']['Weap_ammo'] = ammo
 						vr.mission_data['Player']['Interior_id'] = getActiveInterior()
+						vr.mission_data['Player']['ped_type'] = ped_type
 						removeAllCharWeapons(PLAYER_PED)
 						lockPlayerControl(true)
 					end
 				end
+				if wasKeyPressed(vkeys.VK_U) then
+					ped_type = not ped_type
+					modelId = 1
+					local modell
+					if ped_type then
+						modell = ID_Actors[modelId]
+						requestModel(modell)
+						while not hasModelLoaded(modell) do
+							wait(0)
+						end
+					else
+						local modell_n = ID_Spec_Actors[modelId]
+						loadSpecialCharacter(modell_n,10)
+						while not hasSpecialCharacterLoaded(10) do
+							wait(0)
+						end
+						modell = 290 + 10-1
+					end
+					setPlayerModel(PLAYER_HANDLE, modell)
+				end
 				if stage == 0 then
 					if isKeyDown(vkeys.VK_I) then
 						wait(100)
-						modelID = modelID + 1
-						local id_a = 0
-						for v = 1,#ID_Actors do
-							if modelID <= ID_Actors[v] then
-								id_a = ID_Actors[v]
-								break
+						local modell
+						modelId = modelId + 1
+						if ped_type then
+							if modelId > #ID_Actors then
+								modelId = 1+modelId-#ID_Actors
 							end
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId > #ID_Spec_Actors then
+								modelId = 1+modelId-#ID_Spec_Actors
+							end
+						
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,10)
+							while not hasSpecialCharacterLoaded(10) do
+								wait(0)
+							end
+							modell = 290 + 10-1
 						end
-						modelID = id_a
-						requestModel(modelID)
-						while not hasModelLoaded(modelID) do
-							wait(1)
-						end
-						setPlayerModel(PLAYER_HANDLE, modelID)
+						setPlayerModel(PLAYER_HANDLE, modell)
 					end
 					if isKeyDown(vkeys.VK_O) then
 						wait(100)
-						modelID = modelID - 1
-						if modelID < 0 then
-							modelID = 288
-						end
-						local id_a = 288
-						for v = 1,#ID_Actors do
-							if modelID < ID_Actors[v] then
-								id_a = ID_Actors[v-1]
-								break
+						local modell
+						modelId = modelId - 1
+						if ped_type then
+							if modelId < 1 then
+								modelId = #ID_Actors-modelId
 							end
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId < 1 then
+								modelId = #ID_Spec_Actors-modelId
+							end
+						
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,10)
+							while not hasSpecialCharacterLoaded(10) do
+								wait(0)
+							end
+							modell = 290 + 10-1
 						end
-						modelID = id_a
-						requestModel(modelID)
-						while not hasModelLoaded(modelID) do
-							wait(1)
-						end
-						setPlayerModel(PLAYER_HANDLE, modelID)
+						setPlayerModel(PLAYER_HANDLE, modell)
 					end
 					if isKeyDown(vkeys.VK_K) then
 						wait(100)
-						modelID = modelID + 10
-						local id_a = 0
-						for v = 1,#ID_Actors do
-							if modelID <= ID_Actors[v] then
-								id_a = ID_Actors[v]
-								break
+						local modell
+						modelId = modelId + 10
+						if ped_type then
+							if modelId > #ID_Actors then
+								modelId = 1+modelId-#ID_Actors
 							end
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId > #ID_Spec_Actors then
+								modelId = 1+modelId-#ID_Spec_Actors
+							end
+						
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,10)
+							while not hasSpecialCharacterLoaded(10) do
+								wait(0)
+							end
+							modell = 290 + 10-1
 						end
-						modelID = id_a
-						requestModel(modelID)
-						while not hasModelLoaded(modelID) do
-							wait(1)
-						end
-						setPlayerModel(PLAYER_HANDLE, modelID)
+						setPlayerModel(PLAYER_HANDLE, modell)
 					end
 					if isKeyDown(vkeys.VK_L) then
 						wait(100)
-						modelID = modelID - 10
-						if modelID < 0 then
-							modelID = 289 + modelID
-						end
-						local id_a = 288
-						for v = 1,#ID_Actors do
-							if modelID < ID_Actors[v] then
-								id_a = ID_Actors[v-1]
-								break
+						local modell
+						modelId = modelId - 10
+						if ped_type then
+							if modelId < 1 then
+								modelId = #ID_Actors-modelId
 							end
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId < 1 then
+								modelId = #ID_Spec_Actors-modelId
+							end
+						
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,10)
+							while not hasSpecialCharacterLoaded(10) do
+								wait(0)
+							end
+							modell = 290 + 10-1
 						end
-						modelID = id_a
-						requestModel(modelID)
-						while not hasModelLoaded(modelID) do
-							wait(1)
-						end
-						setPlayerModel(PLAYER_HANDLE, modelID)
+						setPlayerModel(PLAYER_HANDLE, modell)
 					end
 					if isKeyDown(vkeys.VK_P) then
 						wait(200)
 						weapon = weapon + 1
-						local id_w = 0
-						for v = 1,#Number_Weapons do
-							if weapon <= Number_Weapons[v] then
-								id_w = Number_Weapons[v]
-								markModelAsNoLongerNeeded(getWeapontypeModel(Number_Weapons[v-1]))
-								break
-							end
+						if weapon > #ID_Weapons then
+							weapon = 1
 						end
-						weapon = id_w
-						requestModel(getWeapontypeModel(weapon))
-						while not hasModelLoaded(getWeapontypeModel(weapon)) do
+						local id_w = ID_Weapons[weapon]
+						requestModel(getWeapontypeModel(id_w))
+						while not hasModelLoaded(getWeapontypeModel(id_w)) do
 							wait(1)
 						end
 						removeAllCharWeapons(PLAYER_PED)
-						print(weapon)
-						giveWeaponToChar(PLAYER_PED, weapon, 9999)
+						giveWeaponToChar(PLAYER_PED, id_w, 9999)
 						setCurrentCharWeapon(PLAYER_PED,1)
 					end
 					if isKeyDown(vkeys.VK_OEM_4) then
 						wait(200)
 						weapon = weapon - 1
-						if weapon < 0 then
-							weapon = 46
+						if weapon < 1 then
+							weapon = #ID_Weapons
 						end
-						local id_w = 46
-						for v = 1,#Number_Weapons do
-							if weapon < Number_Weapons[v] then
-								id_w = Number_Weapons[v-1]
-								markModelAsNoLongerNeeded(getWeapontypeModel(Number_Weapons[v]))
-								break
-							end
-						end
-						weapon = id_w
-						requestModel(getWeapontypeModel(weapon))
-						while not hasModelLoaded(getWeapontypeModel(weapon)) do
+						local id_w = ID_Weapons[weapon]
+						requestModel(getWeapontypeModel(id_w))
+						while not hasModelLoaded(getWeapontypeModel(id_w)) do
 							wait(1)
 						end
 						removeAllCharWeapons(PLAYER_PED)
-						giveWeaponToChar(PLAYER_PED, weapon, 9999)
+						giveWeaponToChar(PLAYER_PED, id_w, 9999)
 						setCurrentCharWeapon(PLAYER_PED,1)
 					end
 				elseif stage == 1 then
@@ -3553,27 +3767,35 @@ function main()
 
 		if vr.editmode_teleport_player then
 			local stage = 0
-			local modelID = vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID']
+			local modelId = vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelId']
 			local weapon = vr.list_targets[vr.id_teleport_player]['Target_Data']['Weapon']
 			local ammo = vr.list_targets[vr.id_teleport_player]['Target_Data']['Weap_ammo']
 			setCharCoordinates(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'][1], vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'][2], vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'][3])
-			local id_a = 0
-			for v = 1,#ID_Actors do
-				if modelID <= ID_Actors[v] then
-					id_a = ID_Actors[v]
-					break
+			local modell
+			if vr.list_targets[vr.current_target]['Target_Data']['Model_type'] == 1 then
+				if modelId > #ID_Actors then
+					modelId = 1+modelId-#ID_Actors
 				end
-			end
-			vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'] = id_a
-			if not hasModelLoaded(vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID']) then
-				requestModel(vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'])
-				while not hasModelLoaded(vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID']) do
-					wait(1)
+				modell = ID_Actors[modelId]
+				requestModel(modell)
+				while not hasModelLoaded(modell) do
+					wait(0)
 				end
+			else
+				if modelId > #ID_Spec_Actors then
+					modelId = 1+modelId-#ID_Spec_Actors
+				end
+			
+				local modell_n = ID_Spec_Actors[modelId]
+				loadSpecialCharacter(modell_n,10)
+				while not hasSpecialCharacterLoaded(10) do
+					wait(0)
+				end
+				modell = 290 + 10-1
 			end
-			setPlayerModel(PLAYER_HANDLE, vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'])
+			setPlayerModel(PLAYER_HANDLE, modell)
 			setCharHeading(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Angle'])
-			giveWeaponToChar(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Weapon'], 99999)
+			giveWeaponToChar(PLAYER_PED,ID_Weapons[weapon], 99999)
 			setInteriorVisible(vr.list_targets[vr.id_teleport_player]['Target_Data']['Interior_id'])
 			setCharInterior(PLAYER_PED, vr.list_targets[vr.id_teleport_player]['Target_Data']['Interior_id'])
 			while vr.editmode_teleport_player do
@@ -3585,6 +3807,30 @@ function main()
 					setPlayerModel(PLAYER_HANDLE, model.NULL)
 					removeAllCharWeapons(PLAYER_PED)
 					lockPlayerControl(true)
+				end
+				if wasKeyReleased(vkeys.VK_U) then
+					if vr.list_targets[vr.current_target]['Target_Data']['Model_type'] == 1 then
+						vr.list_targets[vr.current_target]['Target_Data']['Model_type'] = 2
+					else
+						vr.list_targets[vr.current_target]['Target_Data']['Model_type'] = 1
+					end
+					modelId = 1
+					local modell
+					if vr.list_targets[vr.current_target]['Target_Data']['Model_type'] == 1 then
+						modell = ID_Actors[modelId]
+						requestModel(modell)
+						while not hasModelLoaded(modell) do
+							wait(0)
+						end
+					else
+						local modell_n = ID_Spec_Actors[modelId]
+						loadSpecialCharacter(modell_n,10)
+						while not hasSpecialCharacterLoaded(10) do
+							wait(0)
+						end
+						modell = 290 + 10-1
+					end
+					setPlayerModel(PLAYER_HANDLE, modell)
 				end
 				if wasKeyReleased(vkeys.VK_G) then
 					if stage == 0 then
@@ -3600,7 +3846,7 @@ function main()
 						xz = getGroundZFor3dCoord(xx,xy,xz)
 						vr.list_targets[vr.id_teleport_player]['Target_Data']['Pos'] = {xx,xy,xz}
 						vr.list_targets[vr.id_teleport_player]['Target_Data']['Angle'] = angle
-						vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelID'] = modelID
+						vr.list_targets[vr.id_teleport_player]['Target_Data']['ModelId'] = modelId
 						vr.list_targets[vr.id_teleport_player]['Target_Data']['Weapon'] = weapon
 						vr.list_targets[vr.id_teleport_player]['Target_Data']['Weap_ammo'] = ammo
 						vr.list_targets[vr.id_teleport_player]['Target_Data']['Interior_id'] = getActiveInterior()
@@ -3611,119 +3857,140 @@ function main()
 				if stage == 0 then
 					if isKeyDown(vkeys.VK_I) then
 						wait(100)
-						modelID = modelID + 1
-						local id_a = 0
-						for v = 1,#ID_Actors do
-							if modelID <= ID_Actors[v] then
-								id_a = ID_Actors[v]
-								break
+						local modell
+						modelId = modelId + 1
+						if vr.list_targets[vr.current_target]['Target_Data']['Model_type'] == 1 then
+							if modelId > #ID_Actors then
+								modelId = 1+modelId-#ID_Actors
 							end
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId > #ID_Spec_Actors then
+								modelId = 1+modelId-#ID_Spec_Actors
+							end
+						
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,10)
+							while not hasSpecialCharacterLoaded(10) do
+								wait(0)
+							end
+							modell = 290 + 10-1
 						end
-						modelID = id_a
-						requestModel(modelID)
-						while not hasModelLoaded(modelID) do
-							wait(1)
-						end
-						setPlayerModel(PLAYER_HANDLE, modelID)
+						setPlayerModel(PLAYER_HANDLE, modell)
 					end
 					if isKeyDown(vkeys.VK_O) then
 						wait(100)
-						modelID = modelID - 1
-						if modelID < 0 then
-							modelID = 288
-						end
-						local id_a = 288
-						for v = 1,#ID_Actors do
-							if modelID < ID_Actors[v] then
-								id_a = ID_Actors[v-1]
-								break
+						local modell
+						modelId = modelId - 1
+						if vr.list_targets[vr.current_target]['Target_Data']['Model_type'] == 1 then
+							if modelId < 1 then
+								modelId = #ID_Actors-modelId
 							end
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId < 1 then
+								modelId = #ID_Spec_Actors-modelId
+							end
+						
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,10)
+							while not hasSpecialCharacterLoaded(10) do
+								wait(0)
+							end
+							modell = 290 + 10-1
 						end
-						modelID = id_a
-						requestModel(modelID)
-						while not hasModelLoaded(modelID) do
-							wait(1)
-						end
-						setPlayerModel(PLAYER_HANDLE, modelID)
+						setPlayerModel(PLAYER_HANDLE, modell)
 					end
 					if isKeyDown(vkeys.VK_K) then
 						wait(100)
-						modelID = modelID + 10
-						local id_a = 0
-						for v = 1,#ID_Actors do
-							if modelID <= ID_Actors[v] then
-								id_a = ID_Actors[v]
-								break
+						local modell
+						modelId = modelId + 10
+						if vr.list_targets[vr.current_target]['Target_Data']['Model_type'] == 1 then
+							if modelId > #ID_Actors then
+								modelId = 1+modelId-#ID_Actors
 							end
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId > #ID_Spec_Actors then
+								modelId = 1+modelId-#ID_Spec_Actors
+							end
+						
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,10)
+							while not hasSpecialCharacterLoaded(10) do
+								wait(0)
+							end
+							modell = 290 + 10-1
 						end
-						modelID = id_a
-						requestModel(modelID)
-						while not hasModelLoaded(modelID) do
-							wait(1)
-						end
-						setPlayerModel(PLAYER_HANDLE, modelID)
+						setPlayerModel(PLAYER_HANDLE, modell)
 					end
 					if isKeyDown(vkeys.VK_L) then
 						wait(100)
-						modelID = modelID - 10
-						if modelID < 0 then
-							modelID = 289 + modelID
-						end
-						local id_a = 288
-						for v = 1,#ID_Actors do
-							if modelID < ID_Actors[v] then
-								id_a = ID_Actors[v-1]
-								break
+						local modell
+						modelId = modelId - 10
+						if vr.list_targets[vr.current_target]['Target_Data']['Model_type'] == 1 then
+							if modelId < 1 then
+								modelId = #ID_Actors-modelId
 							end
+							modell = ID_Actors[modelId]
+							requestModel(modell)
+							while not hasModelLoaded(modell) do
+								wait(0)
+							end
+						else
+							if modelId < 1 then
+								modelId = #ID_Spec_Actors-modelId
+							end
+						
+							local modell_n = ID_Spec_Actors[modelId]
+							loadSpecialCharacter(modell_n,10)
+							while not hasSpecialCharacterLoaded(10) do
+								wait(0)
+							end
+							modell = 290 + 10-1
 						end
-						modelID = id_a
-						requestModel(modelID)
-						while not hasModelLoaded(modelID) do
-							wait(1)
-						end
-						setPlayerModel(PLAYER_HANDLE, modelID)
+						setPlayerModel(PLAYER_HANDLE, modell)
 					end
 					if isKeyDown(vkeys.VK_P) then
 						wait(200)
 						weapon = weapon + 1
-						local id_w = 0
-						for v = 1,#Number_Weapons do
-							if weapon <= Number_Weapons[v] then
-								id_w = Number_Weapons[v]
-								markModelAsNoLongerNeeded(getWeapontypeModel(Number_Weapons[v-1]))
-								break
-							end
+						if weapon > #ID_Weapons then
+							weapon = 1
 						end
-						weapon = id_w
-						requestModel(getWeapontypeModel(weapon))
-						while not hasModelLoaded(getWeapontypeModel(weapon)) do
+						local id_w = ID_Weapons[weapon]
+						requestModel(getWeapontypeModel(id_w))
+						while not hasModelLoaded(getWeapontypeModel(id_w)) do
 							wait(1)
 						end
 						removeAllCharWeapons(PLAYER_PED)
-						giveWeaponToChar(PLAYER_PED, weapon, 9999)
+						giveWeaponToChar(PLAYER_PED, id_w, 9999)
 						setCurrentCharWeapon(PLAYER_PED,1)
 					end
 					if isKeyDown(vkeys.VK_OEM_4) then
 						wait(200)
 						weapon = weapon - 1
-						if weapon < 0 then
-							weapon = 46
+						if weapon < 1 then
+							weapon = #ID_Weapons
 						end
-						local id_w = 46
-						for v = 1,#Number_Weapons do
-							if weapon < Number_Weapons[v] then
-								id_w = Number_Weapons[v-1]
-								markModelAsNoLongerNeeded(getWeapontypeModel(Number_Weapons[v]))
-								break
-							end
-						end
-						weapon = id_w
-						requestModel(getWeapontypeModel(weapon))
-						while not hasModelLoaded(getWeapontypeModel(weapon)) do
+						local id_w = ID_Weapons[weapon]
+						requestModel(getWeapontypeModel(id_w))
+						while not hasModelLoaded(getWeapontypeModel(id_w)) do
 							wait(1)
 						end
 						removeAllCharWeapons(PLAYER_PED)
-						giveWeaponToChar(PLAYER_PED, weapon, 9999)
+						giveWeaponToChar(PLAYER_PED, id_w, 9999)
 						setCurrentCharWeapon(PLAYER_PED,1)
 					end
 				elseif stage == 1 then
@@ -3822,6 +4089,7 @@ function main()
 		if wasKeyReleased(0x45) then
 			vr.editmode_input = true
 		end
+
 		if vr.main_menu_window then
 			if drawMenu(langt['main_menu'],vr.main_menu_items,300,320) then
 				main_menu()
@@ -3841,7 +4109,7 @@ function main()
 		elseif vr.actor_list_window then
 			vr.actor_list_items =  {}
 			for i = 1,#vr.list_name_actors do
-				vr.actor_list_items[#vr.actor_list_items+1] = {'button',vr.list_name_actors[i]}
+				vr.actor_list_items[#vr.actor_list_items+1] = {'button',vr.list_name_actors[i],i}
 			end
 			if drawMenu(langt['actors'],vr.actor_list_items,300,320) then
 				actor_list()
@@ -3857,17 +4125,32 @@ function main()
 			  list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
 			end
 			vr.actor_items = {
-				{'button',names[1]},
-				{'int_slider',names[2],vr.list_actors[vr.current_actor]['Actor_Data'],"Angle",0,360},
-				{'int_slider',names[3],vr.list_actors[vr.current_actor]['Actor_Data'],"ModelId",0,ID_Actors[#ID_Actors]},
-				{'int_slider',names[4],vr.list_actors[vr.current_actor]['Actor_Data'],"Health",0},
-				{'checkbox',names[5],vr.list_actors[vr.current_actor]['Actor_Data'],"Should_not_die"},
-				{'button',names[6]},
-				{'button',names[7]},
-				{'arr_slider',names[8],vr.list_actors[vr.current_actor]['Actor_Data'],"StartC",vr.list_name_targets},
-				{'arr_slider',names[9],vr.list_actors[vr.current_actor]['Actor_Data'],"EndC",list_tg_m}
+				{'button',names[1],1},
+				{'int_slider',names[2],vr.list_actors[vr.current_actor]['Actor_Data'],"Angle",0,360,_,2},
+				{'arr_slider',langt['type_model'],vr.list_actors[vr.current_actor]['Actor_Data'],"Model_type",decodeJson(langt['type_model_arr']),3}
 			}
-			if drawMenu(langt['actors'],vr.actor_items,320,320) then
+			if vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] == 1 then
+				table.merge(vr.actor_items,{
+					{'arr_slider',names[3],vr.list_actors[vr.current_actor]['Actor_Data'],"ModelId",ID_Actors,4}
+				})
+			elseif vr.list_actors[vr.current_actor]['Actor_Data']['Model_type'] == 2 then
+				table.merge(vr.actor_items,{
+					{'arr_slider',names[3],vr.list_actors[vr.current_actor]['Actor_Data'],"ModelId",ID_Spec_Actors,4},
+					{'int_slider',langt['slot'],vr.list_actors[vr.current_actor]['Actor_Data'],"Slot_model",1,10,_,5},
+				})
+			end
+			table.merge(vr.actor_items,{
+				{'arr_slider',names[4],vr.list_actors[vr.current_actor]['Actor_Data'],"Weapon",decodeJson(langt['weap_names']),6},
+				{'int_slider',names[5],vr.list_actors[vr.current_actor]['Actor_Data'],"Ammo",0,_,_,7},
+				{'int_slider',names[6],vr.list_actors[vr.current_actor]['Actor_Data'],"Health",0,_,_,8},
+				{'arr_slider',names[7],vr.list_actors[vr.current_actor]['Actor_Data'],"Group",decodeJson(langt['name_groups']),9},
+				{'checkbox',names[8],vr.list_actors[vr.current_actor]['Actor_Data'],"Should_not_die",10},
+				{'button',names[9],11},
+				{'button',names[10],12},
+				{'arr_slider',names[11],vr.list_actors[vr.current_actor]['Actor_Data'],"StartC",vr.list_name_targets,13},
+				{'arr_slider',names[12],vr.list_actors[vr.current_actor]['Actor_Data'],"EndC",list_tg_m,14}
+			})
+			if drawMenu(langt['actors'],vr.actor_items,360,320) then
 				actor()
 			end
 			if isKeyJustPressed(0x46) then
@@ -3893,7 +4176,7 @@ function main()
 		elseif vr.actor_anims_list_window then
 			vr.actor_anims_list_items =  {}
 			for i = 1,#vr.list_actors[vr.current_actor]['Actor_Data']['Anims'] do
-				vr.actor_anims_list_items[#vr.actor_anims_list_items+1] = {'button',i}
+				vr.actor_anims_list_items[#vr.actor_anims_list_items+1] = {'button',i,i}
 			end
 			if drawMenu(langt['actors'],vr.actor_anims_list_items,300,320) then
 				actor_anims_list()
@@ -3907,67 +4190,67 @@ function main()
 			local type = decodeJson(langt['type_anim_actr'])
 			local cond_type = decodeJson(langt['cond_type'])
 			vr.actor_anim_items = {
-				{'arr_slider',langt['type'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],'Type',type},
-				{'arr_slider',langt['cond'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],'Condition',cond_type}
+				{'arr_slider',langt['type'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],'Type',type,1},
+				{'arr_slider',langt['cond'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],'Condition',cond_type,2}
 			}
 			if vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Condition']  == 2 then
 				vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Target'] = 1
 				table.merge(vr.actor_anim_items,{
-					{'arr_slider',langt['target'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],'Target',vr.list_name_targets},
+					{'arr_slider',langt['target'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],'Target',vr.list_name_targets,3},
 				})
 			end
 			table.merge(vr.actor_anim_items,{
-				{'button',langt['del_preview']}
+				{'button',langt['del_preview'],4}
 			})
 			if vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 1 then
 				table.merge(vr.actor_anim_items,{
-					{'arr_slider',langt['pack'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Pack_anim",Anims['Anim_name']},
-					{'arr_slider',langt['anim'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Anim",Anims['Anim_list'][vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Pack_anim']]},	
-					{'int_slider',langt['time_anim'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Time",0,_,0.05},
-					{'checkbox',langt['looped'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Loop"},
-					{'checkbox',langt['unbreak'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Unbreakable"},
-					{'button',langt['preview']}
+					{'arr_slider',langt['pack'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Pack_anim",Anims['Anim_name'],5},
+					{'arr_slider',langt['anim'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Anim",Anims['Anim_list'][vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Pack_anim']],6},	
+					{'int_slider',langt['time_anim'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Time",0,_,0.05,7},
+					{'checkbox',langt['looped'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Loop",8},
+					{'checkbox',langt['unbreak'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Unbreakable",9},
+					{'button',langt['preview'],10}
 				})
 			elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 2 then
 				local move_type = decodeJson(langt['move_type_ped'])
 				local move_route = decodeJson(langt['move_route_ped'])
 				table.merge(vr.actor_anim_items,{
-					{'arr_slider',langt['type_move_ped'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Type_move",move_type},
-					{'arr_slider',langt['type_move_ped'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Type_route",move_route},
-					{'checkbox',langt['view_path'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Vis_point"},
-					{'button',langt['add_enter']},
-					{'button',langt['perform']},
-					{'checkbox',langt['wait_end'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"wait_end"},
+					{'arr_slider',langt['type_move_ped'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Type_move",move_type,11},
+					{'arr_slider',langt['type_move_ped'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Type_route",move_route,12},
+					{'checkbox',langt['view_path'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Vis_point",13},
+					{'button',langt['add_enter'],14},
+					{'button',langt['perform'],15},
+					{'checkbox',langt['wait_end'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"wait_end",16},
 				})
 			elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 3 then
 				table.merge(vr.actor_anim_items,{
-					{'checkbox',langt['view_path'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Vis_point"},
-					{'arr_slider',langt['car'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Car",vr.list_name_cars},
-					{'int_slider',langt['speed'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Speed",0},
-					{'button',langt['add_enter']},
-					{'checkbox',langt['wait_end'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"wait_end"},
+					{'checkbox',langt['view_path'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Vis_point",17},
+					{'arr_slider',langt['car'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Car",vr.list_name_cars,18},
+					{'int_slider',langt['speed'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Speed",0,_,_,19},
+					{'button',langt['add_enter'],20},
+					{'checkbox',langt['wait_end'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"wait_end",21},
 				})
 			elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 4 then
 				table.merge(vr.actor_anim_items,{
-					{'checkbox',langt['wait_end'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"wait_end"},
+					{'checkbox',langt['wait_end'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"wait_end",22},
 				})
 			elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 5 then
 				local drive_beh = decodeJson(langt['driver_beh'])
 				table.merge(vr.actor_anim_items,{
-					{'arr_slider',langt['car_actr'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Car_a",vr.list_name_cars},
-					{'int_slider',langt['max_speed'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Speed",0},
-					{'int_slider',langt['beh_transp'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"trafficFlag",0},
-					{'arr_slider',langt['beh_driver'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Vehicle_mission",drive_beh},
-					{'arr_slider',langt['car_target'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Car_t",vr.list_name_cars},
+					{'arr_slider',langt['car_actr'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Car_a",vr.list_name_cars,23},
+					{'int_slider',langt['max_speed'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Speed",0,_,_,24},
+					{'int_slider',langt['beh_transp'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"trafficFlag",0,_,_,25},
+					{'arr_slider',langt['beh_driver'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Vehicle_mission",drive_beh,26},
+					{'arr_slider',langt['car_target'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Car_t",vr.list_name_cars,27},
 				})
 			elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 6 then
 				local place_in_car = decodeJson(langt['place_in_car'])
 				local speed_walk_to_car = decodeJson(langt['speed_walk_to_car'])
 				table.merge(vr.actor_anim_items,{
-					{'arr_slider',langt['speed_walk'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"speed_walk",speed_walk_to_car},
-					{'arr_slider',langt['car'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Car",vr.list_name_cars},
-					{'arr_slider',langt['seat'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"place_in_car",place_in_car},
-					{'checkbox',langt['wait_end'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"wait_end"},
+					{'arr_slider',langt['speed_walk'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"speed_walk",speed_walk_to_car,28},
+					{'arr_slider',langt['car'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Car",vr.list_name_cars,29},
+					{'arr_slider',langt['seat'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"place_in_car",place_in_car,30},
+					{'checkbox',langt['wait_end'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"wait_end",31},
 				})
 			end
 			if drawMenu(langt['actors'],vr.actor_anim_items,540,320) then
@@ -3988,7 +4271,7 @@ function main()
 		elseif vr.targets_list_window then
 			vr.targets_list_items =  {}
 			for i = 1,#vr.list_name_targets do
-				vr.targets_list_items[#vr.targets_list_items+1] = {'button',vr.list_name_targets[i]}
+				vr.targets_list_items[#vr.targets_list_items+1] = {'button',vr.list_name_targets[i],i}
 			end
 			local namet = ''
 			if vr.targets_list_toggle == 1 then
@@ -4012,128 +4295,139 @@ function main()
 			local targets_marker_color = decodeJson(langt['targets_marker_color'])
 			local weap_names = decodeJson(langt['weap_names'])
 			vr.target_items = {
-				{'arr_slider',langt['typeTarget'],vr.list_targets[vr.current_target],"Type",targets_list_arr}
+				{'arr_slider',langt['typeTarget'],vr.list_targets[vr.current_target],"Type",targets_list_arr,1}
 			}
 			if vr.list_targets[vr.current_target]['Type'] == 1 then
 				table.merge(vr.target_items,{
-					{'button',langt['position']},
-					{'button',langt['modeMove']},
-					{'int_slider',langt['radiusCheckpoint'],vr.list_targets[vr.current_target]['Target_Data'],"Radius",0,100,0.1},
-					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color},
-					{'button',langt['textTarget']},
-					{'int_slider',langt['timeText'],vr.list_targets[vr.current_target]['Target_Data'],"Text_time",0,_,0.1},
+					{'button',langt['position'],2},
+					{'button',langt['modeMove'],3},
+					{'int_slider',langt['radiusCheckpoint'],vr.list_targets[vr.current_target]['Target_Data'],"Radius",0,100,0.1,4},
+					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color,5},
+					{'button',langt['textTarget'],6},
+					{'int_slider',langt['timeText'],vr.list_targets[vr.current_target]['Target_Data'],"Text_time",0,_,0.1,7},
 				})
 			elseif vr.list_targets[vr.current_target]['Type'] == 2 then
 				table.merge(vr.target_items,{
-					{'arr_slider',langt['car'],vr.list_targets[vr.current_target]['Target_Data'],"Target_car_id",vr.list_name_cars},
-					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color},
-					{'button',langt['text']},	
+					{'arr_slider',langt['car'],vr.list_targets[vr.current_target]['Target_Data'],"Target_car_id",vr.list_name_cars,8},
+					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color,9},
+					{'button',langt['text'],10},	
 				})
 			elseif vr.list_targets[vr.current_target]['Type'] == 3 then
 				table.merge(vr.target_items,{
-					{'arr_slider',langt['actor'],vr.list_targets[vr.current_target]['Target_Data'],"Target_actor_id",vr.list_name_actors},
-					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color},
-					{'button',langt['text']},
+					{'arr_slider',langt['actor'],vr.list_targets[vr.current_target]['Target_Data'],"Target_actor_id",vr.list_name_actors,11},
+					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color,12},
+					{'button',langt['text'],13},
 				})
 			elseif vr.list_targets[vr.current_target]['Type'] == 4 then
 				local target_type = decodeJson(langt['target_type'])
 				table.merge(vr.target_items,{
-					{'arr_slider',langt['type'],vr.list_targets[vr.current_target]['Target_Data'],"Target_type",target_type},
+					{'arr_slider',langt['type'],vr.list_targets[vr.current_target]['Target_Data'],"Target_type",target_type,14},
 				})
 				if vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 1 then
 					table.merge(vr.target_items,{
-						{'button',langt['position']},
-						{'button',langt['rotate']},
-						{'button',langt['modeMove']},
-						{'checkbox',langt['movecam'],vr.list_targets[vr.current_target]['Target_Data'],"Smooth"},
-						{'button',langt['text']},
-						{'int_slider',langt['timecutscene'],vr.list_targets[vr.current_target]['Target_Data'],"Text_time",0,_,0.1},
+						{'button',langt['position'],15},
+						{'button',langt['rotate'],16},
+						{'button',langt['modeMove'],17},
+						{'checkbox',langt['movecam'],vr.list_targets[vr.current_target]['Target_Data'],"Smooth",18},
+						{'button',langt['text'],19},
+						{'int_slider',langt['timecutscene'],vr.list_targets[vr.current_target]['Target_Data'],"Text_time",0,_,0.1,20},
 					})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 2 then
 					table.merge(vr.target_items,{
-					{'int_slider',langt['time'],vr.list_targets[vr.current_target]['Target_Data'],"Time",0,_,0.1},
+					{'int_slider',langt['time'],vr.list_targets[vr.current_target]['Target_Data'],"Time",0,_,0.1,21},
 					})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 3 then
 					table.merge(vr.target_items,{
-					{'button',langt['text']},
-					{'int_slider',langt['timeout'],vr.list_targets[vr.current_target]['Target_Data'],"Time",0,_,0.1},
+					{'button',langt['text'],22},
+					{'int_slider',langt['timeout'],vr.list_targets[vr.current_target]['Target_Data'],"Time",0,_,0.1,23},
 				})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 4 then
 					table.merge(vr.target_items,{
-					{'arr_slider',langt['weather'],vr.list_targets[vr.current_target]['Target_Data'],"Weather",Weather_str},
+					{'arr_slider',langt['weather'],vr.list_targets[vr.current_target]['Target_Data'],"Weather",Weather_str,24},
 				})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 5 then
 					table.merge(vr.target_items,{
-					{'button',langt['timeGameMiss']},
+					{'button',langt['timeGameMiss'],25},
 				})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 6 then
 					local count = decodeJson(langt['count_traffic'])
 					table.merge(vr.target_items,{
-					{'arr_slider',langt['countPed'],vr.list_targets[vr.current_target]['Target_Data']['Traffic'],1,count},
-					{'arr_slider',langt['countCar'],vr.list_targets[vr.current_target]['Target_Data']['Traffic'],2,count},
+					{'arr_slider',langt['countPed'],vr.list_targets[vr.current_target]['Target_Data']['Traffic'],1,count,26},
+					{'arr_slider',langt['countCar'],vr.list_targets[vr.current_target]['Target_Data']['Traffic'],2,count,27},
 					})
 				end
 			elseif vr.list_targets[vr.current_target]['Type'] == 5 then
 				local target_type = decodeJson(langt['target_type_obj'])
 				table.merge(vr.target_items,{
-					{'arr_slider',langt['object'],vr.list_targets[vr.current_target]['Target_Data'],"Target_object_id",vr.list_name_objects},
-					{'arr_slider',langt['type'],vr.list_targets[vr.current_target]['Target_Data'],"Target_type",target_type},	
+					{'arr_slider',langt['object'],vr.list_targets[vr.current_target]['Target_Data'],"Target_object_id",vr.list_name_objects,28},
+					{'arr_slider',langt['type'],vr.list_targets[vr.current_target]['Target_Data'],"Target_type",target_type,29},	
 				})
 				if vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 4 then
 					table.merge(vr.target_items,{
-						{'arr_slider',langt['weapon'],vr.list_targets[vr.current_target]['Target_Data'],"Weap",weap_names},
+						{'arr_slider',langt['weapon'],vr.list_targets[vr.current_target]['Target_Data'],"Weap",weap_names,30},
 					})
 				end
 				table.merge(vr.target_items,{
-					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color},
-					{'button',langt['text']},
+					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color,31},
+					{'button',langt['text'],32},
 				})
 			elseif vr.list_targets[vr.current_target]['Type'] == 6 then
 				table.merge(vr.target_items,{
-					{'arr_slider',langt['pickup'],vr.list_targets[vr.current_target]['Target_Data'],"Target_pickup_id",vr.list_name_pickup},
-					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color},
-					{'button',langt['text']},
+					{'arr_slider',langt['pickup'],vr.list_targets[vr.current_target]['Target_Data'],"Target_pickup_id",vr.list_name_pickup,33},
+					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color,34},
+					{'button',langt['text'],35},
 				})
 			elseif vr.list_targets[vr.current_target]['Type'] == 7 then
 				local target_type = decodeJson(langt['target_type_ev'])
 				table.merge(vr.target_items,{
-					{'arr_slider',langt['type'],vr.list_targets[vr.current_target]['Target_Data'],"Target_type",target_type},
+					{'arr_slider',langt['type'],vr.list_targets[vr.current_target]['Target_Data'],"Target_type",target_type,36},
 				})
 				if vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 1 then
 					table.merge(vr.target_items,{
-						{'button',langt['position']},
-						{'int_slider',langt['angle'],vr.list_targets[vr.current_target]['Target_Data'],"Angle",0,360,1},
-						{'int_slider',langt['model'],vr.list_targets[vr.current_target]['Target_Data'],"ModelID",0,ID_Actors[#ID_Actors]},
-						{'int_slider',langt['countAmmo'],vr.list_targets[vr.current_target]['Target_Data'],"Weap_ammo",0,_,1},
-						{'button',langt['edithand']},
+						{'button',langt['position'],37},
+						{'int_slider',langt['angle'],vr.list_targets[vr.current_target]['Target_Data'],"Angle",0,360,1,38},
+						{'arr_slider',langt['type_model'],vr.list_targets[vr.current_target]['Target_Data'],"Model_type",decodeJson(langt['type_model_arr']),39},
+					})
+					if vr.list_targets[vr.current_target]['Target_Data']['Model_type'] == 1 then
+						table.merge(vr.target_items,{
+							{'int_slider',langt['model'],vr.list_targets[vr.current_target]['Target_Data'],"ModelId",0,ID_Actors[#ID_Actors],40},
+						})
+					else
+						table.merge(vr.target_items,{
+							{'arr_slider',langt['model'],vr.list_targets[vr.current_target]['Target_Data'],"ModelId",ID_Spec_Actors,41},
+						})
+					end
+					table.merge(vr.target_items,{
+						{'int_slider',langt['countAmmo'],vr.list_targets[vr.current_target]['Target_Data'],"Weap_ammo",0,_,1,42},
+						{'button',langt['edithand'],43},
 					})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 2 then
 					table.merge(vr.target_items,{
-						{'arr_slider',langt['pack'],vr.list_targets[vr.current_target]['Target_Data'],"Pack_anim",Anims['Anim_name']},
-						{'arr_slider',langt['anim'],vr.list_targets[vr.current_target]['Target_Data'],"Anim",Anims['Anim_list'][vr.list_targets[vr.current_target]['Target_Data']['Pack_anim']]},
-						{'checkbox',langt['looped'],vr.list_targets[vr.current_target]['Target_Data'],"Loop"},
-						{'button',langt['preview']},
+						{'arr_slider',langt['pack'],vr.list_targets[vr.current_target]['Target_Data'],"Pack_anim",Anims['Anim_name'],44},
+						{'arr_slider',langt['anim'],vr.list_targets[vr.current_target]['Target_Data'],"Anim",Anims['Anim_list'][vr.list_targets[vr.current_target]['Target_Data']['Pack_anim']],46},
+						{'checkbox',langt['looped'],vr.list_targets[vr.current_target]['Target_Data'],"Loop",47},
+						{'button',langt['preview'],48},
 					})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 3 then
 					local place_car = decodeJson(langt['place_car'])
 					table.merge(vr.target_items,{
-						{'arr_slider',langt['car'],vr.list_targets[vr.current_target]['Target_Data'],"Car_id",vr.list_name_cars},
-						{'arr_slider',langt['place'],vr.list_targets[vr.current_target]['Target_Data'],"Car_place",place_car},
+						{'arr_slider',langt['car'],vr.list_targets[vr.current_target]['Target_Data'],"Car_id",vr.list_name_cars,49},
+						{'arr_slider',langt['place'],vr.list_targets[vr.current_target]['Target_Data'],"Car_place",place_car,50},
 					})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 4 then
 					table.merge(vr.target_items,{
-						{'int_slider',langt['levelp'],vr.list_targets[vr.current_target]['Target_Data'],"Level_battue",0,6,1},
+						{'int_slider',langt['levelp'],vr.list_targets[vr.current_target]['Target_Data'],"Level_battue",0,6,1,51},
 					})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 6 then
 					local names = decodeJson(langt['target_dialog_change_arr'])
 					table.merge(vr.target_items,{
-						{'button',names[1]},
-						{'button',names[2]},
-						{'button',names[3]},
+						{'button',names[1],52},
+						{'button',names[2],53},
+						{'button',names[3]},54,
 					})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 7 then
 					table.merge(vr.target_items,{
-						{'int_slider',langt['add'],vr.list_targets[vr.current_target]['Target_Data'],"Add_money"},
+						{'int_slider',langt['add'],vr.list_targets[vr.current_target]['Target_Data'],"Add_money",55},
 					})
 				end
 			end
@@ -4146,9 +4440,9 @@ function main()
 			end
 		elseif vr.target_dialog_window then
 			vr.target_dialog_items = {
-				{'button',langt['text']},
-				{'int_slider',langt['time'],vr.list_targets[vr.current_target]['Target_Data']['Dialog'][vr.current_dialog_target],"Text_time",0,_,0.1},
-				{'button',langt['back']},
+				{'button',langt['text'],1},
+				{'int_slider',langt['time'],vr.list_targets[vr.current_target]['Target_Data']['Dialog'][vr.current_dialog_target],"Text_time",0,_,0.1,2},
+				{'button',langt['back'],3},
 			}
 			if drawMenu(langt['replica'],vr.target_dialog_items,360,320) then
 				target_dialog()
@@ -4160,7 +4454,7 @@ function main()
 		elseif vr.target_list_dialog_window then
 			vr.target_list_dialog_items =  {}
 			for i = 1,#vr.list_targets[vr.current_target]['Target_Data']['Dialog'] do
-				vr.target_list_dialog_items[#vr.target_list_dialog_items+1] = {'button',i}
+				vr.target_list_dialog_items[#vr.target_list_dialog_items+1] = {'button',i,i}
 			end
 			if drawMenu(langt['replicas'],vr.target_list_dialog_items,300,320) then
 				target_list_dialog()
@@ -4180,7 +4474,7 @@ function main()
 		elseif vr.cars_list_window then
 			vr.cars_list_items =  {}
 			for i = 1,#vr.list_name_cars do
-				vr.cars_list_items[#vr.cars_list_items+1] = {'button',vr.list_name_cars[i]}
+				vr.cars_list_items[#vr.cars_list_items+1] = {'button',vr.list_name_cars[i],i}
 			end
 			if drawMenu(langt['cars'],vr.cars_list_items,300,320) then
 				cars_list()
@@ -4196,22 +4490,22 @@ function main()
 				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
 			end
 			vr.cars_items = {
-				{'button',langt['position']},
-				{'int_slider',langt['model'], vr.list_cars[vr.current_car]['Car_Data'],"ModelId",400,ID_Cars[#ID_Cars]},
-				{'int_slider',langt['color_car']..' 1', vr.list_cars[vr.current_car]['Car_Data'],"Color_primary",0,126},
-				{'int_slider',langt['color_car']..' 2', vr.list_cars[vr.current_car]['Car_Data'],"Color_secondary",0,126},
-				{'int_slider',langt['countlive'], vr.list_cars[vr.current_car]['Car_Data'],"Health",0},
-				{'checkbox',car_unbreak[1],vr.list_cars[vr.current_car]['Car_Data'],"Bulletproof"},
-				{'checkbox',car_unbreak[2],vr.list_cars[vr.current_car]['Car_Data'],"Fireproof"},
-				{'checkbox',car_unbreak[3],vr.list_cars[vr.current_car]['Car_Data'],"Explosionproof"},
-				{'checkbox',car_unbreak[4],vr.list_cars[vr.current_car]['Car_Data'],"Collisionproof"},
-				{'checkbox',car_unbreak[5],vr.list_cars[vr.current_car]['Car_Data'],"Meleeproof"},
-				{'checkbox',car_unbreak[6],vr.list_cars[vr.current_car]['Car_Data'],"Tires_vulnerability"},
-				{'checkbox',langt['should_live'],vr.list_cars[vr.current_car]['Car_Data'],"Should_not_die"},
-				{'button',langt['edithand']},
-				{'button',langt['actions']},
-				{'arr_slider',langt['app_on'],vr.list_cars[vr.current_car]['Car_Data'],"StartC",vr.list_name_targets},
-				{'arr_slider',langt['dis_after'],vr.list_cars[vr.current_car]['Car_Data'],"EndC",list_tg_m}
+				{'button',langt['position'],1},
+				{'int_slider',langt['model'], vr.list_cars[vr.current_car]['Car_Data'],"ModelId",400,ID_Cars[#ID_Cars],_,2},
+				{'int_slider',langt['color_car']..' 1', vr.list_cars[vr.current_car]['Car_Data'],"Color_primary",0,126,_,3},
+				{'int_slider',langt['color_car']..' 2', vr.list_cars[vr.current_car]['Car_Data'],"Color_secondary",0,126,_,4},
+				{'int_slider',langt['countlive'], vr.list_cars[vr.current_car]['Car_Data'],"Health",0,5},
+				{'checkbox',car_unbreak[1],vr.list_cars[vr.current_car]['Car_Data'],"Bulletproof",6},
+				{'checkbox',car_unbreak[2],vr.list_cars[vr.current_car]['Car_Data'],"Fireproof",7},
+				{'checkbox',car_unbreak[3],vr.list_cars[vr.current_car]['Car_Data'],"Explosionproof",8},
+				{'checkbox',car_unbreak[4],vr.list_cars[vr.current_car]['Car_Data'],"Collisionproof",9},
+				{'checkbox',car_unbreak[5],vr.list_cars[vr.current_car]['Car_Data'],"Meleeproof",10},
+				{'checkbox',car_unbreak[6],vr.list_cars[vr.current_car]['Car_Data'],"Tires_vulnerability",11},
+				{'checkbox',langt['should_live'],vr.list_cars[vr.current_car]['Car_Data'],"Should_not_die",12},
+				{'button',langt['edithand'],13},
+				{'button',langt['actions'],13},
+				{'arr_slider',langt['app_on'],vr.list_cars[vr.current_car]['Car_Data'],"StartC",vr.list_name_targets,14},
+				{'arr_slider',langt['dis_after'],vr.list_cars[vr.current_car]['Car_Data'],"EndC",list_tg_m,15}
 			}
 			if drawMenu(langt['car'],vr.cars_items,320,320) then
 				car()
@@ -4231,7 +4525,7 @@ function main()
 		elseif vr.car_anims_list_window then
 			vr.car_anims_list_items =  {}
 			for i = 1,#vr.list_cars[vr.current_car]['Car_Data']['Anims'] do
-				vr.car_anims_list_items[#vr.car_anims_list_items+1] = {'button',i}
+				vr.car_anims_list_items[#vr.car_anims_list_items+1] = {'button',i,i}
 			end
 			if drawMenu(langt['cars'],vr.car_anims_list_items,300,320) then
 				car_anims_list()
@@ -4243,40 +4537,40 @@ function main()
 		elseif vr.car_anim_window then
 			local type = decodeJson(langt['type_car_anim'])
 			vr.car_anim_items = {
-				{'arr_slider',langt['type'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Type",type},
+				{'arr_slider',langt['type'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Type",type,1},
 			}
 			if vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Type'] == 1 then
 				local cond_type = decodeJson(langt['cond_type'])
 				table.merge(vr.car_anim_items,{
-					{'arr_slider',langt['cond'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Condition",cond_type},
+					{'arr_slider',langt['cond'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Condition",cond_type,2},
 				})
 				if vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Condition'] == 2 then
 					table.merge(vr.car_anim_items,{
-					{'arr_slider',langt['target'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Target",vr.list_name_targets},
+					{'arr_slider',langt['target'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Target",vr.list_name_targets,3},
 				})
 				end
 				local door_car = decodeJson(langt['door_car'])
 				table.merge(vr.car_anim_items,{
-					{'checkbox',door_car[1],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],1},
-					{'checkbox',door_car[2],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],2},
-					{'checkbox',door_car[3],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],3},
-					{'checkbox',door_car[4],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],4},
-					{'checkbox',door_car[5],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],5},
-					{'checkbox',door_car[6],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],6},
+					{'checkbox',door_car[1],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],1,4},
+					{'checkbox',door_car[2],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],2,5},
+					{'checkbox',door_car[3],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],3,6},
+					{'checkbox',door_car[4],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],4,7},
+					{'checkbox',door_car[5],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],5,8},
+					{'checkbox',door_car[6],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'],6,9},
 				})
 			elseif vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Type'] == 2 then
 				local cond_type = decodeJson(langt['cond_type'])
 				table.merge(vr.car_anim_items,{
-					{'arr_slider',langt['cond'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Condition",cond_type},
+					{'arr_slider',langt['cond'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Condition",cond_type,10},
 				})
 				if vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Condition'] == 2 then
 					table.merge(vr.car_anim_items,{
-					{'arr_slider',langt['target'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Target",vr.list_name_targets},
+					{'arr_slider',langt['target'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Target",vr.list_name_targets,11},
 				})
 				end
 				local open_close = decodeJson(langt['open_close'])
 				table.merge(vr.car_anim_items,{
-					{'arr_slider',langt['doors'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Door_lock",open_close},	
+					{'arr_slider',langt['doors'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Door_lock",open_close,12},	
 				})
 			end
 
@@ -4298,7 +4592,7 @@ function main()
 		elseif vr.objects_list_window then
 			vr.objects_list_items =  {}
 			for i = 1,#vr.list_name_objects do
-				vr.objects_list_items[#vr.objects_list_items+1] = {'button',vr.list_name_objects[i]}
+				vr.objects_list_items[#vr.objects_list_items+1] = {'button',vr.list_name_objects[i],i}
 			end
 			if drawMenu(langt['objects'],vr.objects_list_items,300,320) then
 				objects_list()
@@ -4313,13 +4607,13 @@ function main()
 				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
 			end
 			vr.object_items =  {
-				{'button',langt['position']},
-				{'button',langt['rotate']},
-				{'button',langt['edithand']},
-				{'button',langt['model']},
-				{'button',langt['actions']},
-				{'arr_slider',langt['app_on'],vr.list_objects[vr.current_object]['Object_Data'],"StartC",vr.list_name_targets},
-				{'arr_slider',langt['dis_after'],vr.list_objects[vr.current_object]['Object_Data'],"EndC",list_tg_m}
+				{'button',langt['position'],1},
+				{'button',langt['rotate'],2},
+				{'button',langt['edithand'],3},
+				{'button',langt['model'],4},
+				{'button',langt['actions'],5},
+				{'arr_slider',langt['app_on'],vr.list_objects[vr.current_object]['Object_Data'],"StartC",vr.list_name_targets,6},
+				{'arr_slider',langt['dis_after'],vr.list_objects[vr.current_object]['Object_Data'],"EndC",list_tg_m,7}
 			}
 			if drawMenu(langt['object'],vr.object_items,320,320) then
 				object()
@@ -4339,7 +4633,7 @@ function main()
 		elseif vr.object_anims_list_window then
 			vr.object_anims_list_items =  {}
 			for i = 1,#vr.list_objects[vr.current_object]['Object_Data']['Anims'] do
-				vr.object_anims_list_items[#vr.object_anims_list_items+1] = {'button',i}
+				vr.object_anims_list_items[#vr.object_anims_list_items+1] = {'button',i,i}
 			end
 			if drawMenu(langt['objects'],vr.object_anims_list_items,300,320) then
 				object_anims_list()
@@ -4352,18 +4646,18 @@ function main()
 			vr.object_anim_items = {}
 			local cond_type = decodeJson(langt['cond_type'])
 			table.merge(vr.object_anim_items,{
-				{'arr_slider',langt['cond'],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']],"Condition",cond_type},
+				{'arr_slider',langt['cond'],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']],"Condition",cond_type,1},
 			})
 			if vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Condition'] == 2 then
 				table.merge(vr.object_anim_items,{
-					{'arr_slider',langt['target'],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']],"Target",vr.list_name_targets},
+					{'arr_slider',langt['target'],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']],"Target",vr.list_name_targets,2},
 				})
 			end
 			table.merge(vr.object_anim_items,{
-				{'button',langt['position']},
-				{'button',langt['rotate']},
-				{'int_slider',langt['time_anim'],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']],"Time",0,_,0.1},
-				{'button',langt['edithand']},
+				{'button',langt['position'],3},
+				{'button',langt['rotate'],4},
+				{'int_slider',langt['time_anim'],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']],"Time",0,_,0.1,5},
+				{'button',langt['edithand'],6},
 			})
 			if drawMenu(langt['object'],vr.object_anim_items,300,320) then
 				object_anim()
@@ -4383,7 +4677,7 @@ function main()
 		elseif vr.particles_list_window then
 			vr.particles_list_items =  {}
 			for i = 1,#vr.list_name_particle do
-				vr.particles_list_items[#vr.particles_list_items+1] = {'button',vr.list_name_particle[i]}
+				vr.particles_list_items[#vr.particles_list_items+1] = {'button',vr.list_name_particle[i],i}
 			end
 			if drawMenu(langt['particles'],vr.particles_list_items,300,320) then
 				particles_list()
@@ -4398,12 +4692,12 @@ function main()
 				list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
 			end
 			vr.particle_items =  {
-				{'button',langt['position']},
-				{'button',langt['rotate']},
-				{'button',langt['edithand']},
-				{'arr_slider',langt['particle'],vr.list_particle[vr.current_particle]['Particle_Data'],"ModelId",Particle_name},
-				{'arr_slider',langt['app_on'],vr.list_particle[vr.current_particle]['Particle_Data'],"StartC",vr.list_name_targets},
-				{'arr_slider',langt['dis_after'],vr.list_particle[vr.current_particle]['Particle_Data'],"EndC",list_tg_m}
+				{'button',langt['position'],1},
+				{'button',langt['rotate'],2},
+				{'button',langt['edithand'],3},
+				{'arr_slider',langt['particle'],vr.list_particle[vr.current_particle]['Particle_Data'],"ModelId",Particle_name,4},
+				{'arr_slider',langt['app_on'],vr.list_particle[vr.current_particle]['Particle_Data'],"StartC",vr.list_name_targets,5},
+				{'arr_slider',langt['dis_after'],vr.list_particle[vr.current_particle]['Particle_Data'],"EndC",list_tg_m,6}
 			}
 			if drawMenu(langt['particle'],vr.particle_items,320,320) then
 				particle()
@@ -4423,7 +4717,7 @@ function main()
 		elseif vr.pickup_list_window then
 			vr.pickup_list_items =  {}
 			for i = 1,#vr.list_name_pickup do
-				vr.pickup_list_items[#vr.pickup_list_items+1] = {'button',vr.list_name_pickup[i]}
+				vr.pickup_list_items[#vr.pickup_list_items+1] = {'button',vr.list_name_pickup[i],i}
 			end
 			if drawMenu(langt['pickup'],vr.pickup_list_items,300,320) then
 				pickup_list()
@@ -4440,27 +4734,27 @@ function main()
 			local type_pick = decodeJson(langt['type_pickup'])
 			local spawn_type = decodeJson(langt['spawn_type_pickup'])
 			vr.pickup_items =  {
-				{'arr_slider',langt['spawn'],vr.list_pickup[vr.current_pickup]['Pickup_Data'],"spawn_type",spawn_type},
-				{'arr_slider',langt['type'],vr.list_pickup[vr.current_pickup]['Pickup_Data'],"Type_pickup",type_pick},
+				{'arr_slider',langt['spawn'],vr.list_pickup[vr.current_pickup]['Pickup_Data'],"spawn_type",spawn_type,1},
+				{'arr_slider',langt['type'],vr.list_pickup[vr.current_pickup]['Pickup_Data'],"Type_pickup",type_pick,2},
 			}
 			if vr.list_pickup[vr.current_pickup]['Pickup_Data']['Type_pickup'] == 1 then
 				table.merge(vr.pickup_items,{
-					{'button',langt['edithand']},
-					{'int_slider',langt['ammo'], vr.list_pickup[vr.current_pickup]['Pickup_Data'],"Ammo",0},
+					{'button',langt['edithand'],3},
+					{'int_slider',langt['ammo'], vr.list_pickup[vr.current_pickup]['Pickup_Data'],"Ammo",0,_,_,4},
 				})
 			elseif vr.list_pickup[vr.current_pickup]['Pickup_Data']['Type_pickup'] >= 2 then
 				table.merge(vr.pickup_items,{
-					{'button',langt['edithand']},
+					{'button',langt['edithand'],5},
 				})
 				if vr.list_pickup[vr.current_pickup]['Pickup_Data']['Type_pickup'] == 6 then
 					table.merge(vr.pickup_items,{
-						{'button',langt['model']},
+						{'button',langt['model'],6},
 					})
 				end
 			end
 			table.merge(vr.pickup_items,{
-				{'arr_slider',langt['app_on'],vr.list_pickup[vr.current_pickup]['Pickup_Data'],"StartC",vr.list_name_targets},
-				{'arr_slider',langt['dis_after'],vr.list_pickup[vr.current_pickup]['Pickup_Data'],"EndC",list_tg_m}
+				{'arr_slider',langt['app_on'],vr.list_pickup[vr.current_pickup]['Pickup_Data'],"StartC",vr.list_name_targets,7},
+				{'arr_slider',langt['dis_after'],vr.list_pickup[vr.current_pickup]['Pickup_Data'],"EndC",list_tg_m,8}
 			})
 			if drawMenu(langt['pickup'],vr.pickup_items,340,320) then
 				pickup()
@@ -4480,7 +4774,7 @@ function main()
 		elseif vr.explosion_list_window then
 			vr.explosion_list_items =  {}
 			for i = 1,#vr.list_name_explosion do
-				vr.explosion_list_items[#vr.explosion_list_items+1] = {'button',vr.list_name_explosion[i]}
+				vr.explosion_list_items[#vr.explosion_list_items+1] = {'button',vr.list_name_explosion[i],i}
 			end
 			if drawMenu(langt['explosions'],vr.explosion_list_items,300,320) then
 				explosion_list()
@@ -4499,25 +4793,25 @@ function main()
 
 			local type_expl = decodeJson(langt['type_expl'])
 			table.merge(vr.explosion_items,{
-				{'arr_slider',langt['type'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"Type",type_expl},
-				{'button',langt['position']},
+				{'arr_slider',langt['type'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"Type",type_expl,1},
+				{'button',langt['position'],2},
 			})
 
 			if vr.list_explosion[vr.current_explosion]['Explosion_Data']['Type'] == 2 then
 				table.merge(vr.explosion_items,{
-					{'int_slider',langt['type_explosion'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"Type_explosion",0},
+					{'int_slider',langt['type_explosion'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"Type_explosion",0,_,_,3},
 				})
 			elseif vr.list_explosion[vr.current_explosion]['Explosion_Data']['Type'] == 1 then
 				table.merge(vr.explosion_items,{
-					{'int_slider',langt['size_fire'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"Size_fire",0},
-					{'int_slider',langt['spread_fire'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"Propagation_fire",0},
+					{'int_slider',langt['size_fire'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"Size_fire",0,_,_,4},
+					{'int_slider',langt['spread_fire'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"Propagation_fire",0,_,_,5},
 				})
 			end
 
 			table.merge(vr.explosion_items,{
-				{'button',langt['edithand']},
-				{'arr_slider',langt['app_on'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"StartC",vr.list_name_targets},
-				{'arr_slider',langt['dis_after'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"EndC",list_tg_m},
+				{'button',langt['edithand'],6},
+				{'arr_slider',langt['app_on'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"StartC",vr.list_name_targets,7},
+				{'arr_slider',langt['dis_after'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"EndC",list_tg_m,8},
 			})
 
 			if drawMenu(langt['explosion'],vr.explosion_items,320,320) then
@@ -4538,7 +4832,7 @@ function main()
 		elseif vr.pack_mission_list_window then
 			vr.pack_mission_list_items =  {}
 			for i = 1,#vr.list_name_mission_pack do
-				vr.pack_mission_list_items[#vr.pack_mission_list_items+1] = {'button',vr.list_name_mission_pack[i]}
+				vr.pack_mission_list_items[#vr.pack_mission_list_items+1] = {'button',vr.list_name_mission_pack[i],i}
 			end
 			if drawMenu(langt['packsMissions'],vr.pack_mission_list_items,460,320) then
 				pack_mission_list()
@@ -4558,7 +4852,7 @@ function main()
 		elseif vr.missions_list_window then
 			vr.missions_list_items =  {}
 			for i = 1,#vr.list_name_missions do
-				vr.missions_list_items[#vr.missions_list_items+1] = {'button',vr.list_name_missions[i]}
+				vr.missions_list_items[#vr.missions_list_items+1] = {'button',vr.list_name_missions[i],i}
 			end
 			if drawMenu(langt['missions'],vr.missions_list_items,460,320) then
 				missions_list()
@@ -4569,10 +4863,10 @@ function main()
 			end
 		elseif vr.missions_settings_window then
 			vr.missions_settings_items =  {
-				{'button',langt['nameMission']},
-				{'button',langt['timeGameMiss']},
-				{'arr_slider',langt['weather'],vr.mission_data,"Weather",Weather_str},
-				{'checkbox',langt['modeRiot'],vr.mission_data,"Riot"},
+				{'button',langt['nameMission'],1},
+				{'button',langt['timeGameMiss'],2},
+				{'arr_slider',langt['weather'],vr.mission_data,"Weather",Weather_str,3},
+				{'checkbox',langt['modeRiot'],vr.mission_data,"Riot",4},
 
 			}
 			if drawMenu(langt['missions'],vr.missions_settings_items,460,320) then
@@ -4584,8 +4878,8 @@ function main()
 			end
 		elseif vr.tools_window then
 			vr.tools_items =  {
-				{'button',langt['tool_tp_marker']},
-				{'button',langt['jetpack']},
+				{'button',langt['tool_tp_marker'],1},
+				{'button',langt['jetpack'],2},
 			}
 			if drawMenu(langt['tools'],vr.tools_items,300,320) then
 				tools()
@@ -4605,13 +4899,29 @@ function main()
 			lockPlayerControl(false)
 		elseif vr.settings_window then
 			vr.settings_items =  {
-				{'arr_slider',langt['lang'],vr.Data.Settings,'curr_lang',LanguageList},
+				{'arr_slider',langt['lang'],vr.Data.Settings,'curr_lang',LanguageList,1},
 			}
 			if drawMenu(langt['settings'],vr.settings_items,300,320) then
 				settings()
 			end
 			if isKeyJustPressed(0x46) then
 				vr.settings_window = false
+				lockPlayerControl(false)
+			end
+		elseif vr.Group_relationships_list_window then
+			if drawMenu(langt['groups'],vr.Group_relationships_list_items,300,320) then
+				Group_relationships_list()
+			end
+			if isKeyJustPressed(0x46) then
+				vr.Group_relationships_list_window = false
+				lockPlayerControl(false)
+			end
+		elseif vr.Group_relationships_window then
+			if drawMenu(langt['Relationship_to_groups'],vr.Group_relationships_items,340,320) then
+				Group_relationships()
+			end
+			if isKeyJustPressed(0x46) then
+				vr.Group_relationships_window = false
 				lockPlayerControl(false)
 			end
 		end
