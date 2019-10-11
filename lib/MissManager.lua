@@ -11,39 +11,6 @@ path_backup = getWorkingDirectory() .. "\\Backup\\"
 local CountMPacks = 0
 
 function manager.save(pack,num)
-	local packk = {
-		['Name'] = pack['Name'],
-		['Missions'] = {}
-	}
-	for p = 1, #pack['Missions'] do
-		packk['Missions'][p] = {
-			['Name'] = pack['Missions'][p]['Name'],
-			['Mission_Data'] = {
-				['Targets'] = pack['Missions'][p]['Mission_Data']['Targets'],
-				['Actors'] = pack['Missions'][p]['Mission_Data']['Actors'],
-				['Cars'] = pack['Missions'][p]['Mission_Data']['Cars'],
-				['Objects'] = pack['Missions'][p]['Mission_Data']['Objects'],
-				['Pickup'] = pack['Missions'][p]['Mission_Data']['Pickup'],
-				['Particle'] = pack['Missions'][p]['Mission_Data']['Particle'],
-				['Explosion'] = pack['Missions'][p]['Mission_Data']['Explosion'],
-				['Miss_data'] = {
-					['Name'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Name'],
-					['Time'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Time'][2]},
-					['Weather'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Weather'],
-					['Riot'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Riot'],
-					['Player'] = {
-						['Pos'] = {pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][1],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][2],pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Pos'][3]},
-						['Angle'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Angle'],
-						['ModelId'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['ModelId'],
-						['Weapon'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Weapon'],
-						['Weap_ammo'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Weap_ammo'],
-						['Interior_id'] = pack['Missions'][p]['Mission_Data']['Miss_data']['Player']['Interior_id']
-					}
-				}
-			}
-		}
-	end
-	packk = manager.sorterTable(pack)
 	createDirectory(path_backup)
 	local old_save
 	if doesFileExist(path .. 'LDYOM' .. tostring(num) .. '.json') then
@@ -55,12 +22,12 @@ function manager.save(pack,num)
 		f:close()
 	end
 	local f = io.open(path .. 'LDYOM' .. tostring(num) .. '.json',"w")
-	f:write(json.encode(packk))
+	f:write(json.encode(pack))
 	f:close()
 end
 
 function manager.load(num)
-	f = io.open(path .. 'LDYOM' .. tostring(num) .. '.json',"r")
+	local f = io.open(path .. 'LDYOM' .. tostring(num) .. '.json',"r")
 	local packk = json.decode(f:read())
 	f:close()
 	return packk

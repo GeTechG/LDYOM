@@ -96,7 +96,7 @@ end
 
 function mp.play_char_anims(ped,actr)
 	local curr_anim = 1
-	actr['Anims']['curr_anim'] = curr_anim
+	actr['curr_anim'] = curr_anim
 	while curr_anim <= #actr['Anims'] do
 		wait(0)
 		if actr['Anims'][curr_anim]['Type'] == 1 then
@@ -242,13 +242,13 @@ function mp.play_char_anims(ped,actr)
 			end
 			curr_anim = curr_anim + 1
 		end
-		actr['Anims']['curr_anim'] = curr_anim
+		actr['curr_anim'] = curr_anim
 	end
 end
 
 function mp.play_car_anims(car,vehic)
 	local curr_anim = 1
-	vehic['Anims']['curr_anim'] = curr_anim
+	vehic['curr_anim'] = curr_anim
 	while curr_anim <= #vehic['Anims'] do
 		wait(0)
 		if vehic['Anims'][curr_anim]['Type'] == 1 then
@@ -274,7 +274,7 @@ function mp.play_car_anims(car,vehic)
 			lockCarDoors(car,vehic['Anims'][curr_anim]['Door_lock'])
 			curr_anim = curr_anim + 1
 		end
-		vehic['Anims']['curr_anim'] = curr_anim
+		vehic['curr_anim'] = curr_anim
 	end
 end
 
@@ -357,11 +357,17 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 		modell = 290 + 10-1
 	end
 	setPlayerModel(PLAYER_HANDLE, modell)
+	requestModel(getWeapontypeModel(ID_Weapons[miss_data['Player']['Weapon']]))
+	while not hasModelLoaded(getWeapontypeModel(ID_Weapons[miss_data['Player']['Weapon']])) do
+		wait(0)
+	end
 	giveWeaponToChar(PLAYER_PED, ID_Weapons[miss_data['Player']['Weapon']], miss_data['Player']['Weap_ammo'])
+	setCurrentCharWeapon(PLAYER_PED,1)
+	markModelAsNoLongerNeeded(getWeapontypeModel(ID_Weapons[miss_data['Player']['Weapon']]))
 	for i = 2,9 do
-		if vr.Group_relationships[i] ~= nil then
+		if vr.Group_relationships[i] ~= 'NULL' then
 			for y = 1,9 do
-				if vr.Group_relationships[i][y] ~= nil then
+				if vr.Group_relationships[i][y] ~= 'NULL' then
 					if y == 1 then
 						setRelationship(vr.Group_relationships[i][y]-1,24+i-2,0)
 						setRelationship(vr.Group_relationships[i][y]-1,24+i-2,23)
@@ -402,8 +408,13 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 				end
 				setCharHealth(mp.actors[a],list_a[a]['Actor_Data']['Health'])
 				setCharHeading(mp.actors[a], list_a[a]['Actor_Data']['Angle'])
+				requestModel(getWeapontypeModel(ID_Weapons[list_a[a]['Actor_Data']['Weapon']]))
+				while not hasModelLoaded(getWeapontypeModel(ID_Weapons[list_a[a]['Actor_Data']['Weapon']])) do
+					wait(0)
+				end
 				giveWeaponToChar(mp.actors[a], ID_Weapons[list_a[a]['Actor_Data']['Weapon']], list_a[a]['Actor_Data']['Ammo'])
 				setCurrentCharWeapon(mp.actors[a],1)
+				markModelAsNoLongerNeeded(getWeapontypeModel(ID_Weapons[list_a[a]['Actor_Data']['Weapon']]))
 				wait(0)
 				if #list_a[a]['Actor_Data']['Anims'] > 0 then
 					mp.thread[#mp.thread+1] = lua_thread.create(mp.play_char_anims,mp.actors[a], list_a[a]['Actor_Data'])
@@ -591,7 +602,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 				displayHud(false)
 				lockPlayerControl(true)
         		switchWidescreen(true)
-				if i > 1 and not (list[i-1]['Target_Data']['Target_type'] == 0 and list[i-1]['Type'] == 4) then
+				if i > 1 and not (list[i-1]['Target_Data']['Target_type'] == 1 and list[i-1]['Type'] == 4) then
 					doFade(false, 500)
 					wait(1000)
 					doFade(true, 500)
@@ -620,7 +631,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 
 				printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
        			wait(list[i]['Target_Data']['Text_time']*1000*skip)
-				if i < #list and not (list[i+1]['Target_Data']['Target_type'] == 0 and list[i+1]['Type'] == 4) then
+				if i < #list and not (list[i+1]['Target_Data']['Target_type'] == 1 and list[i+1]['Type'] == 4) then
 					doFade(false, 500)
 					wait(1000)
 					doFade(true, 500)
