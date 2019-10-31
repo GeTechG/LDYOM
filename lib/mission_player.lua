@@ -12,15 +12,16 @@ mp.objects = {}
 mp.pickup = {}
 mp.particle = {}
 mp.explosion = {}
+mp.audio = {}
 local thread_miss
 local skip = 1
 curr_target = 0
 
-function mp.start_mission(listt,lista,listc,listo,listp,listpa,liste,missd)
+function mp.start_mission(listt,lista,listc,listo,listp,listpa,liste,missd,listau)
 	misflag = mp.flagmis()
 	mp.miss = mp.start()
 	imgui.Process = false
-	thread_miss = lua_thread.create(mp.main_mission,listt,lista,listc,listo,listp,listpa,liste,missd)
+	thread_miss = lua_thread.create(mp.main_mission,listt,lista,listc,listo,listp,listpa,liste,missd,listau)
 end
 
 function mp.flagmis()
@@ -81,6 +82,39 @@ function mp.fall()
   mp.miss = 0
 end
 
+function audio_player(list_a,list_c,list_o,list_au)
+	for a = 1,#list_au do
+		if list_au[a]['Audio_Data']['3daudioW'] then
+			if list_au[a]['Audio_Data']['Place_type'] == 2 then
+				setPlay3dAudioStreamAtChar(mp.audio[a],mp.actors[list_au[a]['Audio_Data']['Place']])
+			elseif list_au[a]['Audio_Data']['Place_type'] == 3 then
+				setPlay3dAudioStreamAtCar(mp.audio[a],mp.cars[list_au[a]['Audio_Data']['Place']])
+			elseif list_au[a]['Audio_Data']['Place_type'] == 4 then
+				setPlay3dAudioStreamAtObject(mp.audio[a],mp.objects[list_au[a]['Audio_Data']['Place']])
+			end
+		end
+		if list_au[a]['Audio_Data']['Type'] == 1 then
+			if list_au[a]['Audio_Data']['Target'] == curr_target and getAudioStreamState(mp.audio[a]) == -1 then
+				setAudioStreamState(mp.audio[a],1)
+			elseif list_au[a]['Audio_Data']['To_target'] == curr_target+1 then
+				releaseAudioStream(mp.audio[a])
+			end
+		elseif list_au[a]['Audio_Data']['Type'] == 2 then
+			if list_au[a]['Audio_Data']['Actor_act'] == list_a[list_au[a]['Audio_Data']['Actor']]['Actor_Data']['curr_anim']+1 and getAudioStreamState(mp.audio[a]) == -1 then
+			
+				setAudioStreamState(mp.audio[a],1)
+			end
+		elseif list_au[a]['Audio_Data']['Type'] == 3 then
+			if list_au[a]['Audio_Data']['Car_act'] == list_c[list_au[a]['Audio_Data']['Car']]['Car_Data']['curr_anim']+1 and getAudioStreamState(mp.audio[a]) == -1 then
+				setAudioStreamState(mp.audio[a],1)
+			end
+		elseif list_au[a]['Audio_Data']['Type'] == 4 then
+			if list_au[a]['Audio_Data']['Object_act'] == (list_o[list_au[a]['Audio_Data']['Object']]['Object_Data']['curr_anim'] or -1) and getAudioStreamState(mp.audio[a]) == -1 then
+				setAudioStreamState(mp.audio[a],1)
+			end
+		end
+	end
+end
 
 
 function char_is_not_dead(ped)
@@ -114,7 +148,9 @@ function mp.play_char_anims(ped,actr)
 				else
 					taskPlayAnimWithFlags(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim']], 1.0, actr['Anims'][curr_anim]['Loop'], false, false, false, -1,false,false)
 				end
-				wait(actr['Anims'][curr_anim]['Time'] * 1000.0)
+				if not actr['Anims'][curr_anim]['Loop'] then
+					wait(actr['Anims'][curr_anim]['Time'] * 1000.0)
+				end
 				curr_anim = curr_anim + 1
 			elseif actr['Anims'][curr_anim]['Condition'] == 2 then
 				if curr_target == actr['Anims'][curr_anim]['Target'] then
@@ -241,8 +277,54 @@ function mp.play_char_anims(ped,actr)
 				end
 			end
 			curr_anim = curr_anim + 1
+		elseif actr['Anims'][curr_anim]['Type'] == 7 then
+			if actr['Anims'][curr_anim]['Condition'] == 2 then
+				while not (curr_target == actr['Anims'][curr_anim]['Target']) do
+					wait(0)
+				end
+			end
+			while not (actr['Anims'][curr_anim]['To_target']+1 == curr_target) do
+				wait(0)
+				local xa,ya,za = getCharCoordinates(ped)
+				if actr['Anims'][curr_anim]['Target_actor_id'] == 1 then
+					local xp,yp,zp = getCharCoordinates(PLAYER_PED)
+					print(getDistanceBetweenCoords2d(xa,ya,xp,yp) > actr['Anims'][curr_anim]['Radius'],getDistanceBetweenCoords2d(xa,ya,xp,yp))
+					if getDistanceBetweenCoords2d(xa,ya,xp,yp) > actr['Anims'][curr_anim]['Radius'] then
+						taskGotoChar(ped,PLAYER_PED,-1,actr['Anims'][curr_anim]['Radius'])
+					end
+				else
+					local xp,yp,zp = getCharCoordinates(mp.actors[actr['Anims'][curr_anim]['Target_actor_id']-1])
+					print(getDistanceBetweenCoords2d(xa,ya,xp,yp) > actr['Anims'][curr_anim]['Radius'],getDistanceBetweenCoords2d(xa,ya,xp,yp))
+					if getDistanceBetweenCoords2d(xa,ya,xp,yp) > actr['Anims'][curr_anim]['Radius'] then
+						taskGotoChar(ped,mp.actors[actr['Anims'][curr_anim]['Target_actor_id']-1],-1,actr['Anims'][curr_anim]['Radius'])
+					end
+				end
+			end
+			curr_anim = curr_anim + 1
+		elseif actr['Anims'][curr_anim]['Type'] == 8 then
+			if actr['Anims'][curr_anim]['Condition'] == 2 then
+				while not (curr_target == actr['Anims'][curr_anim]['Target']) do
+					wait(0)
+				end
+			end
+			requestModel(getWeapontypeModel(ID_Weapons[actr['Anims'][curr_anim]['Weapon']]))
+			while not hasModelLoaded(getWeapontypeModel(ID_Weapons[actr['Anims'][curr_anim]['Weapon']])) do
+				wait(0)
+			end
+			giveWeaponToChar(ped, ID_Weapons[actr['Anims'][curr_anim]['Weapon']], actr['Anims'][curr_anim]['Ammo'])
+			setCurrentCharWeapon(ped,1)
+			curr_anim = curr_anim + 1
+		elseif actr['Anims'][curr_anim]['Type'] == 9 then
+			if actr['Anims'][curr_anim]['Condition'] == 2 then
+				while not (curr_target == actr['Anims'][curr_anim]['Target']) do
+					wait(0)
+				end
+			end
+			removeAllCharWeapons(ped)
+			curr_anim = curr_anim + 1
 		end
 		actr['curr_anim'] = curr_anim
+		audio_player(vr.list_actors,vr.list_cars,vr.list_objects,vr.list_audio)
 	end
 end
 
@@ -275,6 +357,7 @@ function mp.play_car_anims(car,vehic)
 			curr_anim = curr_anim + 1
 		end
 		vehic['curr_anim'] = curr_anim
+		audio_player(vr.list_actors,vr.list_cars,vr.list_objects,vr.list_audio)
 	end
 end
 
@@ -291,6 +374,7 @@ end
 
 function mp.play_obj_anims(obj,obj_data)
 	local curr_anim = 1
+	obj_data['curr_anim'] = curr_anim
 	local rotate_obj = {}
 	rotate_obj.x,rotate_obj.y,rotate_obj.z = obj_data['Rotates'][1],obj_data['Rotates'][2],obj_data['Rotates'][3]
 	while curr_anim <= #obj_data['Anims'] do
@@ -328,10 +412,12 @@ function mp.play_obj_anims(obj,obj_data)
 			time = time + 1*delta
 		end
 		curr_anim = curr_anim + 1
+		obj_data['curr_anim'] = curr_anim
+		audio_player(vr.list_actors,vr.list_cars,vr.list_objects,vr.list_audio)
 	end
 end
 
-function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_data)
+function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_data,list_au)
 	printStyledString(koder(u8:decode(miss_data['Name'])), 2000, 2)
 	setTimeOfDay(miss_data['Time'][1], miss_data['Time'][2])
 	forceWeatherNow(miss_data['Weather'])
@@ -379,6 +465,20 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 			end
 		end
 	end
+	for a = 1,#list_au do
+		print(list_au[a]['Audio_Data']['3daudioW'])
+		if list_au[a]['Audio_Data']['3daudioW'] then
+			mp.audio[a] = load3dAudioStream(vr.Audios_pack[list_au[a]['Audio_Data']['Audio']])
+			if list_au[a]['Audio_Data']['Place_type'] == 1 then
+				local xx,yy,zz = list_au[a]['Audio_Data']['Pos'][1],list_au[a]['Audio_Data']['Pos'][2],list_au[a]['Audio_Data']['Pos'][3]
+				setPlay3dAudioStreamAtCoordinates(mp.audio[a],xx,yy,zz)
+			end
+		else
+			mp.audio[a] = loadAudioStream(vr.Audios_pack[list_au[a]['Audio_Data']['Audio']])
+		end
+		setAudioStreamLooped(mp.audio[a],list_au[a]['Audio_Data']['Repeat'])
+	end
+	--mp.thread[#mp.thread+1] = lua_thread.create(audio_player,list_a,list_c,list_o,list_au)
 	for i = 1,#list do
 		curr_target = i
 		for a = 1,#list_a do
@@ -548,6 +648,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 				end
 			end
 		end
+		audio_player(vr.list_actors,vr.list_cars,vr.list_objects,vr.list_audio)
 		if list[i]['Type'] == 1 then
 			lockPlayerControl(false)
 			wait(100)
@@ -583,18 +684,50 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 		end
 		if list[i]['Type'] == 3 then
 			lockPlayerControl(false)
-			local check = addBlipForChar(mp.actors[list[i]['Target_Data']['Target_actor_id']])
-			if list[i]['Target_Data']['Color_blip'] > 1 then
-			  changeBlipColour(check,list[i]['Target_Data']['Color_blip']-2)
-			else
-			  setBlipAsFriendly(check, 1)
-			end
-			setBlipAsFriendly(check, true)
 			printString(koder(u8:decode(list[i]['Target_Data']['Text'])), 2000)
-			while not isCharDead(mp.actors[list[i]['Target_Data']['Target_actor_id']]) do
-				wait(0)
+			if list[i]['Target_Data']['Kill_group'] then
+				local peds = {}
+				local check = {}
+				for a = 1,#mp.actors do
+					if mp.actors[a] ~= nil and not isCharDead(mp.actors[a]) then
+						if getPedType(mp.actors[a]) == getPedType(mp.actors[list[i]['Target_Data']['Target_actor_id']]) then
+							peds[#peds+1] = mp.actors[a]
+							check[#peds] = addBlipForChar(peds[#peds])
+							if list[i]['Target_Data']['Color_blip'] > 1 then
+								changeBlipColour(check[#peds],list[i]['Target_Data']['Color_blip']-2)
+							else
+								setBlipAsFriendly(check[#peds], 1)
+							end
+							setBlipAsFriendly(check[#peds], true)
+						end
+					end
+				end
+				local count_dead = 0
+				while count_dead ~= #peds do
+					wait(0)
+					count_dead = 0
+					for p = 1,#peds do
+						if isCharDead(peds[p]) then
+							count_dead = count_dead + 1
+						end
+					end
+				end
+				for b = 1,#check do
+					removeBlip(check[b])
+				end
+			else
+				local check = addBlipForChar(mp.actors[list[i]['Target_Data']['Target_actor_id']])
+				if list[i]['Target_Data']['Color_blip'] > 1 then
+					changeBlipColour(check,list[i]['Target_Data']['Color_blip']-2)
+				else
+					setBlipAsFriendly(check, 1)
+				end
+				setBlipAsFriendly(check, true)
+				while not isCharDead(mp.actors[list[i]['Target_Data']['Target_actor_id']]) do
+					wait(0)
+				end
+				removeBlip(check)
 			end
-			removeBlip(check)
 		end
 		if list[i]['Type'] == 4 then
 			if list[i]['Target_Data']['Target_type'] == 1 then
@@ -793,19 +926,19 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 				taskPickUpSecondObject(PLAYER_PED, phone, 0, 0, 0, 6, 16, 'phone_in', 'PED', -1)
 				wait(900)
 				taskPickUpObject(PLAYER_PED, phone, 0, 0, 0, 6, 16, 'NULL', 'NULL', -1)
-        wait(1430)
-        skip = 1
-        local skipp = lua_thread.create(function()
-          while not wasKeyPressed(vkeys.VK_SPACE) do
-            wait(0)
-          end
-          skip = 0
-        end)
+				wait(1430)
+				skip = 1
+				local skipp = lua_thread.create(function()
+				while not wasKeyPressed(vkeys.VK_SPACE) do
+					wait(0)
+				end
+				skip = 0
+				end)
 				for d = 1,#list[i]['Target_Data']['Dialog'] do
 					printString(koder(u8:decode(ffi.string(list[i]['Target_Data']['Dialog'][d]['Text']))), list[i]['Target_Data']['Dialog'][d]['Text_time']*1000)
-          wait(list[i]['Target_Data']['Dialog'][d]['Text_time']*1000*skip)
-        end
-        skipp:terminate()
+					wait(list[i]['Target_Data']['Dialog'][d]['Text_time']*1000*skip)
+				end
+				skipp:terminate()
 				removeObjectElegantly(phone)
 				wait(0)
 				phone = createObject(330, 0, 0, 0)
@@ -855,6 +988,9 @@ function mp.endmiss()
 	setInteriorVisible(miss_data['Player']['Interior_id'])
 	lockPlayerControl(true)
 	setMaxWantedLevel(0)
+	for i = 1,#mp.audio do
+		setAudioStreamState(mp.audio[i],0)
+	end
 	for v,h in pairs(mp.actors) do
 		deleteChar(mp.actors[v])
 	end
@@ -873,23 +1009,37 @@ function mp.endmiss()
 	for v,h in pairs(mp.explosion) do
 		killFxSystem(mp.explosion[v])
 	end
+	for a = 1,#vr.list_audio do
+		if vr.list_audio[a]['Audio_Data']['3daudioW'] then
+			if vr.list_audio[a]['Audio_Data']['Place_type'] == 1 then
+				local xx,yy,zz = getCharCoordinates(PLAYER_PED)
+				vr.list_audio[a]['Audio_Data']['Pos'] = {xx,yy,zz}
+				requestModel(2231)
+				while not hasModelLoaded(2231) do
+					wait(0)
+				end
+				vr.list_audio[a]['Audio_Data']['Obj'] = createObject(2231,xx,yy,zz)
+				setObjectCollision(vr.list_audio[a]['Audio_Data']['Obj'],false)
+			end
+		end
+	end
 	for j = 1,#vr.list_actors do
-		upd_actor:run(j)
+		update_actor(j)
 	end
 	for j = 1,#vr.list_cars do
-		upd_car:run(j)
+		update_car(j)
 	end
 	for j = 1,#vr.list_objects do
-		upd_object:run(j)
+		update_object(j)
 	end
 	for j = 1,#vr.list_pickup do
-		upd_pickup:run(j)
+		update_pickup(j)
 	end
 	for j = 1,#vr.list_particle do
-		upd_particle:run(j)
+		update_particle(j)
 	end
 	for j = 1,#vr.list_explosion do
-		upd_explosion:run(j)
+		update_explosion(j)
 	end
 end
 

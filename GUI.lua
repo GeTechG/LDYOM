@@ -1,5 +1,5 @@
 script_authors('SKIC','SIZZZ')
-script_version('Beta 0.6.1')
+script_version('Beta 0.6.2')
 
 require 'libstd.deps' {
 	'fyp:mimgui'
@@ -167,6 +167,9 @@ vr = {
 	['settings_window'] = false,
 	['Group_relationships_list_window'] = false,
 	['Group_relationships_window'] = false,
+	['audio_window'] = false,
+	['audio_change_window'] = false,
+	['audio_list_window'] = false,
 	['actor_list_toggle'] = 1,
 	['actor_anims_list_toggle'] = 1,
 	['car_anims_list_toggle'] = 1,
@@ -178,6 +181,7 @@ vr = {
 	['targets_list_toggle'] = 1,
 	['mission_pack_list_toggle'] = 1,
 	['missions_list_toggle'] = 1,
+	['audio_list_toggle'] = 1,
 	['list_actors'] = {},
 	['list_targets'] = {},
 	['list_cars'] = {},
@@ -187,6 +191,7 @@ vr = {
 	['list_explosion'] = {},
 	['list_mission_pack'] = {},
 	['list_missions'] = {},
+	['list_audio'] = {},
 	['list_name_actors'] = {},
 	['list_name_targets'] = {},
 	['list_name_cars'] = {},
@@ -196,6 +201,7 @@ vr = {
 	['list_name_explosion'] = {},
 	['list_name_mission_pack'] = {},
 	['list_name_missions'] = {},
+	['list_name_audio'] = {},
 	['vector3_window'] = false,
 	['previous_window'] = '',
 	['editmode_target'] = false,
@@ -233,8 +239,12 @@ vr = {
 	['Fast_data'] = {
 		['CurMiss'] = 1,
 		['CurPack'] = 1
-	}
+	},
+	['Audios_pack'] = {},
+	['Audios_pack_name'] = {}
 }
+
+addons = {}
 
 local LanguageArr = {}
 local LanguageList = {}
@@ -261,9 +271,9 @@ imgui.OnInitialize(function()
     imgui.GetIO().Fonts:AddFontFromMemoryCompressedBase85TTF(resource.font.Chalet, 18.0, nil, range[0].Data)
 end)
 
-imgui.OnFrame(function() return vr.editmode_input end, 
+imgui.OnFrame(function() return vr.editmode_input end,
 function()
-	
+
 	imgui.SetNextWindowSize(imgui.ImVec2(640,60),imgui.Cond.Always)
 	imgui.SetNextWindowPos(imgui.ImVec2(10,10),imgui.Cond.Always)
 	imgui.Begin('test',nil,imgui.WindowFlags.NoDecoration)
@@ -409,8 +419,12 @@ function drawMenu(title_name,arr_menu,width,height)
 					renderDrawTexture(resource.icons.arrow_right,30+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][2])),25+12+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,4,8,180,rgba_to_int(0,0,0,255))
 					renderFontDrawText(vr.Chalet_font,arr_menu[g][3][arr_menu[g][4]],40+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][2])),25+5+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,rgba_to_int(0,0,0,255))
 					renderDrawTexture(resource.icons.arrow_right,45+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][2]))+renderGetFontDrawTextLength(vr.Chalet_font,arr_menu[g][3][arr_menu[g][4]]),25+12+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,4,8,0,rgba_to_int(0,0,0,255))
-					if isKeyDown(0x41) and vr.timer_time == 0 then
-						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] - (arr_menu[g][7] or 1)
+					local multy = 1
+					if isKeyDown(0x10) then
+						multy = 10
+					end
+					if (isKeyDown(0x41) or isKeyDown(0x25)) and vr.timer_time == 0 then
+						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] - (arr_menu[g][7] or 1)*multy
 						if arr_menu[g][5] and arr_menu[g][3][arr_menu[g][4]] < arr_menu[g][5] then
 							arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][5]
 						end
@@ -418,12 +432,27 @@ function drawMenu(title_name,arr_menu,width,height)
 						vr.selected_item = arr_menu[g][8]
 						return true
 					end
-					if isKeyDown(0x44) and vr.timer_time == 0 then
-						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] + (arr_menu[g][7] or 1)
+					if (isKeyDown(0x44) or isKeyDown(0x27)) and vr.timer_time == 0 then
+						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] + (arr_menu[g][7] or 1)*multy
 						if arr_menu[g][6] and arr_menu[g][3][arr_menu[g][4]] > arr_menu[g][6] then
 							arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][6]
 						end
 						vr.timer_time = 60
+						vr.selected_item = arr_menu[g][8]
+						return true
+					end
+					if wasKeyPressed(0x20) or wasKeyPressed(0x0D) then
+						setAudioStreamVolume(resource.sounds.enter,10)
+						setAudioStreamState(resource.sounds.enter,1)
+						imgui.StrCopy(vr.buffer_input,arr_menu[g][3][arr_menu[g][4]])
+						vr.editmode_input = true
+						while vr.editmode_input do
+							wait(0)
+							if wasKeyReleased(0x46) then
+								vr.editmode_input = false
+							end
+						end
+						arr_menu[g][3][arr_menu[g][4]] = tonumber(calc(ffi.string(vr.buffer_input))) or 0
 						vr.selected_item = arr_menu[g][8]
 						return true
 					end
@@ -458,6 +487,9 @@ function drawMenu(title_name,arr_menu,width,height)
 					end
 				end
 			elseif arr_menu[g][1] == 'arr_slider' then
+				if arr_menu[g][3][arr_menu[g][4]] > #arr_menu[g][5] then
+					arr_menu[g][3][arr_menu[g][4]] = ternar(#arr_menu[g][5] >= 1,#arr_menu[g][5],1)
+				end
 				if i == 10 then
 					renderDrawBox(10,25+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,width,renderGetFontDrawHeight(vr.Chalet_font)+10,rgba_to_int(67, 35, 153, 255))
 					renderFontDrawText(vr.Chalet_font,u8:decode(arr_menu[g][2]),20,25+5+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,rgba_to_int(0,0,0,255))
@@ -466,19 +498,23 @@ function drawMenu(title_name,arr_menu,width,height)
 						renderFontDrawText(vr.Chalet_font,u8:decode(arr_menu[g][5][arr_menu[g][3][arr_menu[g][4]]]),40+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][2])),25+5+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,rgba_to_int(0,0,0,255))
 						renderDrawTexture(resource.icons.arrow_right,45+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][2]))+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][5][arr_menu[g][3][arr_menu[g][4]]])),25+12+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,4,8,0,rgba_to_int(0,0,0,255))
 					end
+					local multy = 1
+					if isKeyDown(0x10) then
+						multy = 10
+					end
 					if isKeyDown(0x41) and vr.timer_time == 0 then
-						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] - 1
+						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] - 1*multy
 						if arr_menu[g][3][arr_menu[g][4]] < 1 then
-							arr_menu[g][3][arr_menu[g][4]] = 1
+							arr_menu[g][3][arr_menu[g][4]] = #arr_menu[g][5]
 						end
 						vr.timer_time = 60
 						vr.selected_item = arr_menu[g][6]
 						return true
 					end
 					if isKeyDown(0x44) and vr.timer_time == 0 then
-						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] + 1
+						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] + 1*multy
 						if arr_menu[g][3][arr_menu[g][4]] > #arr_menu[g][5] then
-							arr_menu[g][3][arr_menu[g][4]] = #arr_menu[g][5]
+							arr_menu[g][3][arr_menu[g][4]] = 1
 						end
 						vr.timer_time = 100
 						vr.selected_item = arr_menu[g][6]
@@ -514,8 +550,12 @@ function drawMenu(title_name,arr_menu,width,height)
 					renderDrawTexture(resource.icons.arrow_right,30+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][2])),25+12+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,4,8,180,rgba_to_int(0,0,0,255))
 					renderFontDrawText(vr.Chalet_font,arr_menu[g][3][arr_menu[g][4]],40+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][2])),25+5+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,rgba_to_int(0,0,0,255))
 					renderDrawTexture(resource.icons.arrow_right,45+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][2]))+renderGetFontDrawTextLength(vr.Chalet_font,arr_menu[g][3][arr_menu[g][4]]),25+12+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,4,8,0,rgba_to_int(0,0,0,255))
-					if isKeyDown(0x41) and vr.timer_time == 0 then
-						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] - (arr_menu[g][7] or 1)
+					local multy = 1
+					if isKeyDown(0x10) then
+						multy = 10
+					end
+					if (isKeyDown(0x41) or isKeyDown(0x25)) and vr.timer_time == 0 then
+						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] - (arr_menu[g][7] or 1)*multy
 						if arr_menu[g][5] and arr_menu[g][3][arr_menu[g][4]] < arr_menu[g][5] then
 							arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][5]
 						end
@@ -523,12 +563,27 @@ function drawMenu(title_name,arr_menu,width,height)
 						vr.selected_item = arr_menu[g][8]
 						return true
 					end
-					if isKeyDown(0x44) and vr.timer_time == 0 then
-						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] + (arr_menu[g][7] or 1)
-						if arr_menu[g][6] and arr_menu[g][3][arr_menu[g][4]] > arr_menu[g][6] then
+					if (isKeyDown(0x44) or isKeyDown(0x27)) and vr.timer_time == 0 then
+						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] + (arr_menu[g][7] or 1)*multy
+						if arr_menu[g][6] and (arr_menu[g][3][arr_menu[g][4]] > arr_menu[g][6]) then
 							arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][6]
 						end
 						vr.timer_time = 60
+						vr.selected_item = arr_menu[g][8]
+						return true
+					end
+					if wasKeyPressed(0x20) or wasKeyPressed(0x0D) then
+						setAudioStreamVolume(resource.sounds.enter,10)
+						setAudioStreamState(resource.sounds.enter,1)
+						imgui.StrCopy(vr.buffer_input,tostring(arr_menu[g][3][arr_menu[g][4]]))
+						vr.editmode_input = true
+						while vr.editmode_input do
+							wait(0)
+							if wasKeyReleased(0x46) then
+								vr.editmode_input = false
+							end
+						end
+						arr_menu[g][3][arr_menu[g][4]] = tonumber(calc(ffi.string(vr.buffer_input))) or 0
 						vr.selected_item = arr_menu[g][8]
 						return true
 					end
@@ -563,6 +618,9 @@ function drawMenu(title_name,arr_menu,width,height)
 					end
 				end
 			elseif arr_menu[g][1] == 'arr_slider' then
+				if arr_menu[g][3][arr_menu[g][4]] > #arr_menu[g][5] then
+					arr_menu[g][3][arr_menu[g][4]] = ternar(#arr_menu[g][5] >= 1,#arr_menu[g][5],1)
+				end
 				if i == vr.current_item then
 					renderDrawBox(10,25+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,width,renderGetFontDrawHeight(vr.Chalet_font)+10,rgba_to_int(67, 35, 153, 255))
 					renderFontDrawText(vr.Chalet_font,u8:decode(arr_menu[g][2]),20,25+5+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,rgba_to_int(0,0,0,255))
@@ -571,19 +629,23 @@ function drawMenu(title_name,arr_menu,width,height)
 						renderFontDrawText(vr.Chalet_font,u8:decode(arr_menu[g][5][arr_menu[g][3][arr_menu[g][4]]]),40+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][2])),25+5+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,rgba_to_int(0,0,0,255))
 						renderDrawTexture(resource.icons.arrow_right,45+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][2]))+renderGetFontDrawTextLength(vr.Chalet_font,u8:decode(arr_menu[g][5][arr_menu[g][3][arr_menu[g][4]]])),25+12+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,4,8,0,rgba_to_int(0,0,0,255))
 					end
+					local multy = 1
+					if isKeyDown(0x10) then
+						multy = 10
+					end
 					if isKeyDown(0x41) and vr.timer_time == 0 then
-						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] - 1
+						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] - 1*multy
 						if arr_menu[g][3][arr_menu[g][4]] < 1 then
-							arr_menu[g][3][arr_menu[g][4]] = 1
+							arr_menu[g][3][arr_menu[g][4]] = #arr_menu[g][5]
 						end
 						vr.timer_time = 100
 						vr.selected_item = arr_menu[g][6]
 						return true
 					end
 					if isKeyDown(0x44) and vr.timer_time == 0 then
-						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] + 1
+						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] + 1*multy
 						if arr_menu[g][3][arr_menu[g][4]] > #arr_menu[g][5] then
-							arr_menu[g][3][arr_menu[g][4]] = #arr_menu[g][5]
+							arr_menu[g][3][arr_menu[g][4]] = 1
 						end
 						vr.timer_time = 100
 						vr.selected_item = arr_menu[g][6]
@@ -605,7 +667,7 @@ function drawMenu(title_name,arr_menu,width,height)
 		renderDrawBox(10,10+50+height,width,35,rgba_to_int(0, 0, 0, 200))
 		renderDrawTexture(resource.icons.scroll,width/2 - 10,17+50+height,20,20,0,rgba_to_int(255,255,255,255))
 	end
-	if wasKeyPressed(0x57) then
+	if wasKeyPressed(0x57) or wasKeyPressed(0x26) then
 		setAudioStreamState(resource.sounds.scroll,1)
 		if vr.current_item ~= 1 then
 			vr.current_item = vr.current_item - 1
@@ -613,7 +675,7 @@ function drawMenu(title_name,arr_menu,width,height)
 			vr.current_item = #arr_menu
 		end
 	end
-	if wasKeyPressed(0x53) then
+	if wasKeyPressed(0x53) or wasKeyPressed(0x28) then
 		setAudioStreamState(resource.sounds.scroll,1)
 		if vr.current_item ~= #arr_menu then
 			vr.current_item = vr.current_item + 1
@@ -632,7 +694,14 @@ function rgba_to_int(r,g,b,a)
 end
 
 
-function main_menu()
+function main_menu(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].main_menu,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		vr.current_item = 1
 		vr.main_menu_window = false
@@ -648,54 +717,64 @@ function main_menu()
 	elseif vr.selected_item == 4 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.cars_change_window = true
+		vr.audio_change_window = true
 	elseif vr.selected_item == 5 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.objects_change_window = true
+		vr.cars_change_window = true
 	elseif vr.selected_item == 6 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.particles_change_window = true
+		vr.objects_change_window = true
 	elseif vr.selected_item == 7 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.pickup_change_window = true
+		vr.particles_change_window = true
 	elseif vr.selected_item == 8 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.explosion_change_window = true
+		vr.pickup_change_window = true
 	elseif vr.selected_item == 9 then
+		vr.current_item = 1
+		vr.main_menu_window = false
+		vr.explosion_change_window = true
+	elseif vr.selected_item == 10 then
 		vr.editmode_player = true
 		printHelpForever('HPLA')
 		lockPlayerControl(false)
-	elseif vr.selected_item == 10 then
-		vr.current_item = 1
-		vr.main_menu_window = false
-		vr.pack_mission_change_window = true
 	elseif vr.selected_item == 11 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.missions_change_window = true
+		vr.pack_mission_change_window = true
 	elseif vr.selected_item == 12 then
-		vr.miss_start = true
-	elseif vr.selected_item == 13 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.tools_window = true
+		vr.missions_change_window = true
+	elseif vr.selected_item == 13 then
+		vr.miss_start = true
 	elseif vr.selected_item == 14 then
 		vr.current_item = 1
 		vr.main_menu_window = false
-		vr.info_window = true
+		vr.tools_window = true
 	elseif vr.selected_item == 15 then
+		vr.current_item = 1
+		vr.main_menu_window = false
+		vr.info_window = true
+	elseif vr.selected_item == 16 then
 		vr.current_item = 1
 		vr.main_menu_window = false
 		vr.settings_window = true
 	end
 end
 
-function actor_change()
-	
+function actor_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].main_menu,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 		xz = getGroundZFor3dCoord(xx,xy,xz)
@@ -736,16 +815,39 @@ function actor_change()
 		vr.current_item = 1
 		vr.actor_change_window = false
 		vr.actor_list_window = true
+	elseif vr.selected_item == 4 then
+		vr.actor_list_toggle = 3
+		vr.current_item = 1
+		vr.actor_change_window = false
+		vr.actor_list_window = true
 	end
 end
 
-function actor_list()
+function actor_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].actor_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.actor_list_toggle == 1 then
 		vr.current_actor = vr.selected_item
 		vr.current_item = 1
 		vr.actor_list_window = false
 		vr.actor_window = true
 	elseif vr.actor_list_toggle == 2 then
+		imgui.StrCopy(vr.buffer_input,vr.list_actors[vr.selected_item]['Name'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_actors[vr.selected_item]['Name'] = ffi.string(vr.buffer_input)
+		vr.list_name_actors[vr.selected_item] = ffi.string(vr.buffer_input)
+	elseif vr.actor_list_toggle == 3 then
 		deleteChar(vr.list_actors[vr.selected_item]['Actor_Data']['Char'])
 		vr.list_actors = DelCellArr(vr.list_actors,vr.selected_item)
 		vr.list_name_actors = DelCellArr(vr.list_name_actors,vr.selected_item)
@@ -755,7 +857,14 @@ function actor_list()
 	end
 end
 
-function actor()
+function actor(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].actor,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
@@ -791,11 +900,18 @@ function actor()
 	elseif vr.selected_item == 12 then
 		vr.current_item = 1
 		vr.actor_anims_change_window = true
-		vr.actor_window = false 
+		vr.actor_window = false
 	end
 end
 
-function actor_anims_change()
+function actor_anims_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].actor_anims_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][#vr.list_actors[vr.current_actor]['Actor_Data']['Anims']+1] = {
 			['Type'] = 1,
@@ -823,7 +939,14 @@ function actor_anims_change()
 	end
 end
 
-function actor_anims_list()
+function actor_anims_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].actor_anims_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.actor_anims_list_toggle == 1 then
 		vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id'] = vr.selected_item
 		vr.current_item = 1
@@ -837,7 +960,14 @@ function actor_anims_list()
 	end
 end
 
-function actor_anim()
+function actor_anim(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].actor_anim,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		if vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 1 then
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Anim'] = 1
@@ -877,12 +1007,20 @@ function actor_anim()
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Car'] = 1
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['speed_walk'] = 1
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['wait_end'] = false
+		elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 7 then
+			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Target_actor_id'] = 1
+			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Radius'] = 1
+			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['To_target'] = 1
+		elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 8 then
+			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Weapon'] = 1
+			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Ammo'] = 0
 		end
 	elseif vr.selected_item == 2 then
 		vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Target'] = 1
 	elseif vr.selected_item == 5 then
 		vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Anim'] = 1
-	elseif vr.selected_item == 10 then
+		upd_anim_actor:run(vr.current_actor,vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id'])
+	elseif vr.selected_item == 10 or vr.selected_item == 6 then
 		upd_anim_actor:run(vr.current_actor,vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id'])
 	elseif vr.selected_item == 4 then
 		upd_actor:run(vr.current_actor)
@@ -981,8 +1119,14 @@ function actor_anim()
 	end
 end
 
-function targets_change()
-	
+function targets_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].targets_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 	if vr.selected_item == 1 then
 		vr.list_targets[#vr.list_targets+1] = {
@@ -1006,7 +1150,7 @@ function targets_change()
 		vr.targets_change_window = false
 		vr.targets_list_window = true
 	elseif vr.selected_item == 3 then
-		vr.targets_list_toggle = 3
+		vr.targets_list_toggle = 4
 		vr.current_item = 1
 		vr.targets_change_window = false
 		vr.targets_list_window = true
@@ -1015,25 +1159,48 @@ function targets_change()
 		vr.current_item = 1
 		vr.targets_change_window = false
 		vr.targets_list_window = true
+	elseif vr.selected_item == 5 then
+		vr.targets_list_toggle = 3
+		vr.current_item = 1
+		vr.targets_change_window = false
+		vr.targets_list_window = true
 	end
 end
 
-function targets_list()
+function targets_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].targets_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.targets_list_toggle == 1 then
 		vr.current_target = vr.selected_item
 		vr.current_item = 1
 		vr.targets_list_window = false
 		vr.target_window = true
 	elseif vr.targets_list_toggle == 2 then
+		imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.selected_item]['Name'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_targets[vr.selected_item]['Name'] = ffi.string(vr.buffer_input)
+		vr.list_name_targets[vr.selected_item] = ffi.string(vr.buffer_input)
+	elseif vr.targets_list_toggle == 3 then
 		vr.list_targets = DelCellArr(vr.list_targets,vr.current_target)
       	vr.list_name_targets = DelCellArr(vr.list_name_targets,vr.current_target)
 		vr.current_item = 1
 		vr.targets_list_window = false
 		vr.targets_change_window = true
-	elseif vr.targets_list_toggle == 3 then
+	elseif vr.targets_list_toggle == 4 then
 		vr.buffer_target = vr.current_item
 		vr.targets_list_toggle = 4
-	elseif vr.targets_list_toggle == 4 then
+	elseif vr.targets_list_toggle == 5 then
 		vr.list_targets = MoveCellArr(vr.list_targets,vr.buffer_target,vr.current_item)
      	vr.list_name_targets = MoveCellArr(vr.list_name_targets,vr.buffer_target,vr.current_item)
 		vr.buffer_target = -1
@@ -1043,8 +1210,14 @@ function targets_list()
 	end
 end
 
-function target()
-	
+function target(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].target,last_id)
+		if r == true then
+			return
+		end
+	end
 	local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 	if vr.selected_item == 1 then
 		if vr.list_targets[vr.current_target]['Type'] == 1 then
@@ -1061,6 +1234,7 @@ function target()
 		elseif vr.list_targets[vr.current_target]['Type'] == 3 then
 			vr.list_targets[vr.current_target]['Target_Data']['Target_actor_id'] = 1
 			vr.list_targets[vr.current_target]['Target_Data']['Color_blip'] = 1
+			vr.list_targets[vr.current_target]['Target_Data']['Kill_group'] = false
 			vr.list_targets[vr.current_target]['Target_Data']['Text'] = ''
 		elseif vr.list_targets[vr.current_target]['Type'] == 4 then
 			vr.list_targets[vr.current_target]['Target_Data']['Target_type'] = 1
@@ -1277,7 +1451,14 @@ function target()
 	end
 end
 
-function target_list_dialog()
+function target_list_dialog(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].target_list_dialog,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.targets_dialog_toggle == 1 then
 		vr.current_dialog_target = vr.selected_item
 		vr.current_item = 1
@@ -1291,7 +1472,14 @@ function target_list_dialog()
 	end
 end
 
-function target_dialog()
+function target_dialog(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].target_dialog,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		imgui.StrCopy(vr.buffer_input,vr.list_targets[vr.current_target]['Target_Data']['Dialog'][vr.current_dialog_target]['Text'])
 		vr.editmode_input = true
@@ -1308,8 +1496,14 @@ function target_dialog()
 	end
 end
 
-function cars_change()
-	
+function cars_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].cars_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 		xz = getGroundZFor3dCoord(xx, xy, xz+10.0)
@@ -1353,16 +1547,39 @@ function cars_change()
 		vr.current_item = 1
 		vr.cars_change_window = false
 		vr.cars_list_window = true
+	elseif vr.selected_item == 4 then
+		vr.cars_list_toggle = 3
+		vr.current_item = 1
+		vr.cars_change_window = false
+		vr.cars_list_window = true
 	end
 end
 
-function cars_list()
+function cars_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].cars_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.cars_list_toggle == 1 then
 		vr.current_car = vr.selected_item
 		vr.current_item = 1
 		vr.cars_list_window = false
 		vr.car_window = true
 	elseif vr.cars_list_toggle == 2 then
+		imgui.StrCopy(vr.buffer_input,vr.list_cars[vr.selected_item]['Name'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_cars[vr.selected_item]['Name'] = ffi.string(vr.buffer_input)
+		vr.list_name_cars[vr.selected_item] = ffi.string(vr.buffer_input)
+	elseif vr.cars_list_toggle == 3 then
 		deleteCar(vr.list_cars[vr.selected_item]['Car_Data']['Car'])
 		vr.list_cars = DelCellArr(vr.list_cars,vr.selected_item)
 		vr.list_name_cars = DelCellArr(vr.list_name_cars,vr.selected_item)
@@ -1372,8 +1589,14 @@ function cars_list()
 	end
 end
 
-function car()
-	
+function car(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].car,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
@@ -1402,14 +1625,21 @@ function car()
 	end
 end
 
-function car_anims_change()
+function car_anims_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].car_anims_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		vr.list_cars[vr.current_car]['Car_Data']['Anims'][#vr.list_cars[vr.current_car]['Car_Data']['Anims']+1] = {
 			['Type'] = 1,
 		}
 		vr.list_cars[vr.current_car]['Car_Data']['Anim_id'] = #vr.list_cars[vr.current_car]['Car_Data']['Anims']
 		vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'] = {false,false,false,false,false,false}
-		vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Condition'] = 1 
+		vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Condition'] = 1
 		vr.current_item = 1
 		vr.car_anims_change_window = false
 		vr.car_anim_window = true
@@ -1426,13 +1656,20 @@ function car_anims_change()
 	end
 end
 
-function car_anims_list()
+function car_anims_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].car_anims_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.car_anims_list_toggle == 1 then
 		vr.list_cars[vr.current_car]['Car_Data']['Anim_id'] = vr.selected_item
 		vr.current_item = 1
 		vr.car_anims_list_window = false
 		vr.car_anim_window = true
-	elseif vr.actor_anims_list_toggle == 2 then
+	elseif vr.car_anims_list_toggle == 2 then
 		vr.list_cars[vr.current_car]['Car_Data']['Anims'] = DelCellArr(vr.list_cars[vr.current_car]['Car_Data']['Anims'],vr.selected_item)
 		vr.current_item = 1
 		vr.car_anims_list_window = false
@@ -1440,20 +1677,37 @@ function car_anims_list()
 	end
 end
 
-function car_anim()
+function car_anim(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].car_anim,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		if vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Type'] == 1 then
 			vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Doors'] = {false,false,false,false,false,false}
-			vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Condition'] = 1 
+			vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Condition'] = 1
 		elseif vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Type'] == 2 then
 			vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Door_lock'] = 1
 			vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Condition'] = 1
 		end
+	elseif vr.selected_item == 2 then
+		if vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Condition'] == 2 then
+			vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']]['Target'] = 1
+		end
 	end
 end
 
-function objects_change()
-	
+function objects_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].objects_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 		xz = getGroundZFor3dCoord(xx, xy, xz)
@@ -1487,16 +1741,39 @@ function objects_change()
 		vr.current_item = 1
 		vr.objects_change_window = false
 		vr.objects_list_window = true
+	elseif vr.selected_item == 4 then
+		vr.objects_list_toggle = 3
+		vr.current_item = 1
+		vr.objects_change_window = false
+		vr.objects_list_window = true
 	end
 end
 
-function objects_list()
+function objects_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].objects_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.objects_list_toggle == 1 then
 		vr.current_object = vr.selected_item
 		vr.current_item = 1
 		vr.objects_list_window = false
 		vr.object_window = true
 	elseif vr.objects_list_toggle == 2 then
+		imgui.StrCopy(vr.buffer_input,vr.list_objects[vr.selected_item]['Name'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_objects[vr.selected_item]['Name'] = ffi.string(vr.buffer_input)
+		vr.list_name_objects[vr.selected_item] = ffi.string(vr.buffer_input)
+	elseif vr.objects_list_toggle == 3 then
 		deleteObject(vr.list_objects[vr.selected_item]['Object_Data']['Obj'])
 		vr.list_objects = DelCellArr(vr.list_objects,vr.selected_item)
 		vr.list_name_objects = DelCellArr(vr.list_name_objects,vr.selected_item)
@@ -1506,8 +1783,14 @@ function objects_list()
 	end
 end
 
-function object()
-	
+function object(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].object,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
@@ -1559,7 +1842,14 @@ function object()
 	end
 end
 
-function object_anims_change()
+function object_anims_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].object_anims_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 			vr.list_objects[vr.current_object]['Object_Data']['Anims'][#vr.list_objects[vr.current_object]['Object_Data']['Anims']+1] = {
@@ -1584,7 +1874,14 @@ function object_anims_change()
 	end
 end
 
-function object_anims_list()
+function object_anims_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].object_anims_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.object_anims_list_toggle == 1 then
 		vr.list_objects[vr.current_object]['Object_Data']['Anim_id'] = vr.selected_item
 		vr.current_item = 1
@@ -1598,8 +1895,14 @@ function object_anims_list()
 	end
 end
 
-function object_anim()
-	
+function object_anim(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].object_anim,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 3 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
@@ -1637,8 +1940,14 @@ function object_anim()
 	end
 end
 
-function particles_change()
-	
+function particles_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].particles_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 		xz = getGroundZFor3dCoord(xx, xy, xz)
@@ -1669,16 +1978,39 @@ function particles_change()
 		vr.current_item = 1
 		vr.particles_change_window = false
 		vr.particles_list_window = true
+	elseif vr.selected_item == 4 then
+		vr.particles_list_toggle = 3
+		vr.current_item = 1
+		vr.particles_change_window = false
+		vr.particles_list_window = true
 	end
 end
 
-function particles_list()
+function particles_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].particles_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.particles_list_toggle == 1 then
 		vr.current_particle = vr.selected_item
 		vr.current_item = 1
 		vr.particles_list_window = false
 		vr.particle_window = true
 	elseif vr.particles_list_toggle == 2 then
+		imgui.StrCopy(vr.buffer_input,vr.list_particle[vr.selected_item]['Name'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_particle[vr.selected_item]['Name'] = ffi.string(vr.buffer_input)
+		vr.list_name_particle[vr.selected_item] = ffi.string(vr.buffer_input)
+	elseif vr.particles_list_toggle == 3 then
 		killFxSystem(vr.list_particle[vr.selected_item]['Particle_Data']['Prtcl'])
 		vr.list_particle = DelCellArr(vr.list_particle,vr.selected_item)
 		vr.list_name_particle = DelCellArr(vr.list_name_particle,vr.selected_item)
@@ -1688,8 +2020,14 @@ function particles_list()
 	end
 end
 
-function particle()
-	
+function particle(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].particle,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
@@ -1726,8 +2064,14 @@ function particle()
 	end
 end
 
-function pickup_change()
-	
+function pickup_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].pickup_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 		xz = getGroundZFor3dCoord(xx, xy, xz)
@@ -1761,16 +2105,39 @@ function pickup_change()
 		vr.current_item = 1
 		vr.pickup_change_window = false
 		vr.pickup_list_window = true
+	elseif vr.selected_item == 4 then
+		vr.pickup_list_toggle = 3
+		vr.current_item = 1
+		vr.pickup_change_window = false
+		vr.pickup_list_window = true
 	end
 end
 
-function pickup_list()
+function pickup_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].pickup_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.pickup_list_toggle == 1 then
 		vr.current_pickup = vr.selected_item
 		vr.current_item = 1
 		vr.pickup_list_window = false
 		vr.pickup_window = true
 	elseif vr.pickup_list_toggle == 2 then
+		imgui.StrCopy(vr.buffer_input,vr.list_pickup[vr.selected_item]['Name'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_pickup[vr.selected_item]['Name'] = ffi.string(vr.buffer_input)
+		vr.list_name_pickup[vr.selected_item] = ffi.string(vr.buffer_input)
+	elseif vr.pickup_list_toggle == 3 then
 		removePickup(vr.list_pickup[vr.selected_item]['Pickup_Data']['Pick'])
 		vr.list_pickup = DelCellArr(vr.list_pickup,vr.selected_item)
 		vr.list_name_pickup = DelCellArr(vr.list_name_pickup,vr.selected_item)
@@ -1780,8 +2147,14 @@ function pickup_list()
 	end
 end
 
-function pickup()
-	
+function pickup(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].pickup,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 2 then
 		if vr.list_pickup[vr.current_pickup]['Pickup_Data']['Type_pickup'] == 1 then
 			vr.list_pickup[vr.current_pickup]['Pickup_Data']['Ammo'] = 0
@@ -1809,7 +2182,14 @@ function pickup()
 	end
 end
 
-function explosion_change()
+function explosion_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].explosion_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
 		xz = getGroundZFor3dCoord(xx, xy, xz)
@@ -1843,16 +2223,39 @@ function explosion_change()
 		vr.current_item = 1
 		vr.explosion_change_window = false
 		vr.explosion_list_window = true
+	elseif vr.selected_item == 4 then
+		vr.explosion_list_toggle = 3
+		vr.current_item = 1
+		vr.explosion_change_window = false
+		vr.explosion_list_window = true
 	end
 end
 
-function explosion_list()
+function explosion_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].explosion_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.explosion_list_toggle == 1 then
 		vr.current_explosion = vr.selected_item
 		vr.current_item = 1
 		vr.explosion_list_window = false
 		vr.explosion_window = true
 	elseif vr.explosion_list_toggle == 2 then
+		imgui.StrCopy(vr.buffer_input,vr.list_explosion[vr.selected_item]['Name'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_explosion[vr.selected_item]['Name'] = ffi.string(vr.buffer_input)
+		vr.list_name_explosion[vr.selected_item] = ffi.string(vr.buffer_input)
+	elseif vr.explosion_list_toggle == 3 then
 		removeExplosion(vr.list_explosion[vr.selected_item]['Explosion_Data']['Pick'])
 		vr.list_explosion = DelCellArr(vr.list_explosion,vr.selected_item)
 		vr.list_name_explosion = DelCellArr(vr.list_name_explosion,vr.selected_item)
@@ -1862,7 +2265,14 @@ function explosion_list()
 	end
 end
 
-function explosion()
+function explosion(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].explosion,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		if vr.list_explosion[vr.current_explosion]['Explosion_Data']['Type'] == 1 then
 			vr.list_explosion[vr.current_explosion]['Explosion_Data']['Size_fire'] = 0
@@ -1897,7 +2307,14 @@ function explosion()
 	end
 end
 
-function pack_mission_change()
+function pack_mission_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].pack_mission_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local m = #vr.list_mission_pack+1
     	vr.list_mission_pack[m] = {
@@ -1931,7 +2348,14 @@ function pack_mission_change()
 	end
 end
 
-function pack_mission_list()
+function pack_mission_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].pack_mission_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.pack_mission_list_toggle == 1 then
 		for i = 1,#vr.list_actors do
 			deleteChar(vr.list_actors[i]['Actor_Data']['Char'])
@@ -1945,6 +2369,19 @@ function pack_mission_list()
 		for m = 1,#vr.list_mission_pack[vr.selected_item]['Missions'] do
 			vr.list_name_missions[m] = vr.list_mission_pack[vr.selected_item]['Missions'][m]['Name']
 		end
+
+		if doesDirectoryExist(getWorkingDirectory()..'\\Audio\\'..tostring(vr.Fast_data.CurPack-1)) then
+			vr.Audios_pack = {}
+			vr.Audios_pack_name = {}
+			for line in io.popen("dir \""..getWorkingDirectory() .. '\\Audio\\'..tostring(vr.Fast_data.CurPack-1).."\" /a:-d /b", "r"):lines() do
+				if string.sub(line, -3) == 'mp3' then
+					vr.Audios_pack[#vr.Audios_pack+1] = getWorkingDirectory() .. '\\Audio\\'..tostring(vr.Fast_data.CurPack-1)..'\\'..line
+					vr.Audios_pack_name[#vr.Audios_pack_name+1] = line
+					print(line)
+				end
+			end
+		end
+
 		vr.current_item = 1
 		vr.pack_mission_list_window = false
 		vr.pack_mission_change_window = true
@@ -1980,7 +2417,14 @@ function pack_mission_list()
 	end
 end
 
-function missions_change()
+function missions_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].missions_change,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local m = #vr.list_missions+1
 		vr.mission_data['Name'] = langt['mission']..' #' .. tostring(m)
@@ -1996,7 +2440,8 @@ function missions_change()
 				['Particle'] = vr.list_particle,
 				['Explosion'] = vr.list_explosion,
 				['Miss_data'] = vr.mission_data,
-				['Group_relationships'] = vr.Group_relationships
+				['Group_relationships'] = vr.Group_relationships,
+				['Audio'] = vr.list_audio
 			}
 		}
 		vr.list_name_missions[m] = vr.list_missions[m]['Name']
@@ -2025,7 +2470,14 @@ function missions_change()
 	end
 end
 
-function missions_list()
+function missions_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].missions_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.missions_list_toggle == 1 then
 		vr.current_missions = vr.selected_item
 		lua_thread.create(load_mission)
@@ -2042,7 +2494,8 @@ function missions_list()
 			['Particle'] = vr.list_particle,
 			['Explosion'] = vr.list_explosion,
 			['Miss_data'] = vr.mission_data,
-			['Group_relationships'] = vr.Group_relationships
+			['Group_relationships'] = vr.Group_relationships,
+			['Audio'] = vr.list_audio
 		}
 		vr.Fast_data['CurMiss'] = vr.selected_item
 		vr.missions_change_window = true
@@ -2062,7 +2515,14 @@ function missions_list()
 	end
 end
 
-function missions_settings()
+function missions_settings(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].missions_settings,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		imgui.StrCopy(vr.buffer_input,vr.list_missions[vr.Fast_data['CurMiss']]['Name'])
 		vr.editmode_input = true
@@ -2086,7 +2546,14 @@ function missions_settings()
 	end
 end
 
-function tools()
+function tools(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].tools,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		local _,xx,xy,xz = getTargetBlipCoordinates()
 		setCharCoordinates(PLAYER_PED,xx,xy,xz)
@@ -2095,7 +2562,14 @@ function tools()
 	end
 end
 
-function settings()
+function settings(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].settings,last_id)
+		if r == true then
+			return
+		end
+	end
 	if vr.selected_item == 1 then
 		inicfg.save(vr.Data,getWorkingDirectory()..'\\LDYOM_data.ini')
 		langt = LanguageArr[vr.Data.Settings.curr_lang]['Keys']
@@ -2117,90 +2591,173 @@ function settings()
 
 		local names = decodeJson(langt['main_menu_arr'])
 		vr.main_menu_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]},
-			{'button',names[4]},
-			{'button',names[5]},
-			{'button',names[6]},
-			{'button',names[7]},
-			{'button',names[8]},
-			{'button',names[9]},
-			{'button',names[10]},
-			{'button',names[11]},
-			{'button',names[12]},
-			{'button',names[13]},
-			{'button',names[14]},
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4},
+			{'button',names[5],5},
+			{'button',names[6],6},
+			{'button',names[7],7},
+			{'button',names[8],8},
+			{'button',names[9],9},
+			{'button',names[10],10},
+			{'button',names[11],11},
+			{'button',names[12],12},
+			{'button',names[13],13},
+			{'button',names[14],14},
+			{'button',names[15],15},
+			{'button',names[16],16},
 		}
+		last_id = 16
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].main_menu_items,vr.main_menu_items,last_id)
+		end
 		names = decodeJson(langt['actor_change_arr'])
 		vr.actor_change_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]}
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4}
 		}
+		last_id = 4
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].actor_change_items,vr.actor_change_items,last_id)
+		end
 		names = decodeJson(langt['actor_anims_change_arr'])
 		vr.actor_anims_change_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]}
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3}
 		}
+		last_id = 4
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].actor_anims_change_items,vr.actor_anims_change_items,last_id)
+		end
 		names = decodeJson(langt['targets_change_arr'])
 		vr.targets_change_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]},
-			{'button',names[4]}
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4},
+			{'button',names[5],5},
 		}
+		last_id = 5
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].targets_change_items,vr.targets_change_items,last_id)
+		end
 		names = decodeJson(langt['cars_change_arr'])
 		vr.cars_change_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]}
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4}
 		}
+		last_id = 4
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].cars_change_items,vr.cars_change_items,last_id)
+		end
 		names = decodeJson(langt['objects_change_arr'])
 		vr.objects_change_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]}
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4},
 		}
+		last_id = 4
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].objects_change_items,vr.objects_change_items,last_id)
+		end
 		names = decodeJson(langt['particles_change_arr'])
 		vr.particles_change_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]}
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4}
 		}
+		last_id = 4
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].particles_change_items,vr.particles_change_items,last_id)
+		end
 		names = decodeJson(langt['pickup_change_arr'])
 		vr.pickup_change_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]}
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4}
 		}
+		last_id = 4
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].pickup_change_items,vr.pickup_change_items,last_id)
+		end
 		names = decodeJson(langt['explosion_change_arr'])
 		vr.explosion_change_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]}
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4}
 		}
+		last_id = 4
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].explosion_change_items,vr.explosion_change_items,last_id)
+		end
 		names = decodeJson(langt['mission_pack_change_arr'])
 		vr.mission_pack_change_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]},
-			{'button',names[4]},
-			{'button',names[5]}
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4},
+			{'button',names[5],5}
 		}
+		last_id = 5
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].mission_pack_change_items,vr.mission_pack_change_items,last_id)
+		end
 		names = decodeJson(langt['missions_change_arr'])
 		vr.missions_change_items = {
-			{'button',names[1]},
-			{'button',names[2]},
-			{'button',names[3]},
-			{'button',names[4]},
-			{'button',names[5]}
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4},
+			{'button',names[5],5}
 		}
+		last_id = 5
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].missions_change_items,vr.missions_change_items,last_id)
+		end
+		names = decodeJson(langt['audio_change_arr'])
+		vr.audio_change_items = {
+			{'button',names[1],1},
+			{'button',names[2],2},
+			{'button',names[3],3},
+			{'button',names[4],4}
+		}
+		last_id = 4
+		for i = 1,#addons do
+			local _
+			_,last_id = pcall(addons[i].audio_change_items,vr.audio_change_items,last_id)
+		end
 	end
 end
 
-function Group_relationships_list()
+function Group_relationships_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].Group_relationships_list,last_id)
+		if r == true then
+			return
+		end
+	end
 	vr.Group_relationships_items = {}
 	local groups = decodeJson(langt['name_groups'])
 	for i = 1,9 do
@@ -2214,9 +2771,6 @@ function Group_relationships_list()
 	vr.Group_relationships_list_window = false
 	vr.current_group_relationships = vr.selected_item
 	vr.Group_relationships_window = true
-end
-
-function Group_relationships()
 end
 
 function vector3(arr_menu)
@@ -2237,11 +2791,166 @@ function vector3(arr_menu)
 			upd_particle:run(#vr.list_particle)
 		elseif vr.previous_window == 'explosion_window' then
 			upd_explosion:run(vr.current_explosion)
+		elseif vr.previous_window == 'audio_window' then
+			local xx,xy,xz = vr.list_audio[vr.current_audio]['Audio_Data']['Pos'][1],vr.list_audio[vr.current_audio]['Audio_Data']['Pos'][2],vr.list_audio[vr.current_audio]['Audio_Data']['Pos'][3]
+			setObjectCoordinates(vr.list_audio[vr.current_audio]['Audio_Data']['Obj'],xx,xy,xz)
 		end
 	else
 		vr.current_item = 1
 		vr[vr.previous_window] = true
 		vr.vector3_window = false
+	end
+end
+
+function audio_change(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].audio_change,last_id)
+		if r == true then
+			return
+		end
+	end
+	if vr.selected_item == 1 then
+		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
+		xz = getGroundZFor3dCoord(xx, xy, xz)
+		vr.list_audio[#vr.list_audio+1] = {
+			['Name'] = langt['sound']..' #' .. tostring(#vr.list_audio+1),
+			['Audio_Data'] = {
+				['Audio'] = 1,
+				['Type'] = 1,
+				['Repeat'] = false,
+			}
+
+		}
+		vr.list_name_audio[#vr.list_audio] = vr.list_audio[#vr.list_audio]['Name']
+		vr.current_audio = #vr.list_audio
+		vr.list_audio[vr.current_audio]['Audio_Data']['Target'] = 1
+		vr.list_audio[vr.current_audio]['Audio_Data']['To_target'] = 1
+		vr.list_audio[vr.current_audio]['Audio_Data']['3daudioW'] = false
+		vr.current_item = 1
+		vr.audio_change_window = false
+		vr.audio_window = true
+	elseif vr.selected_item == 2 then
+		vr.audio_list_toggle = 1
+		vr.current_item = 1
+		vr.audio_change_window = false
+		vr.audio_list_window = true
+	elseif vr.selected_item == 3 then
+		vr.audio_list_toggle = 2
+		vr.current_item = 1
+		vr.audio_change_window = false
+		vr.audio_list_window = true
+	elseif vr.selected_item == 4 then
+		vr.audio_list_toggle = 3
+		vr.current_item = 1
+		vr.audio_change_window = false
+		vr.audio_list_window = true
+	end
+end
+
+function audio_list(last_id)
+	for i = 1,#addons do
+		local e,r
+		e,r,last_id = pcall(addons[i].audio_list,last_id)
+		if r == true then
+			return
+		end
+	end
+	if vr.audio_list_toggle == 1 then
+		vr.current_audio = vr.selected_item
+		vr.current_item = 1
+		vr.audio_list_window = false
+		vr.audio_window = true
+	elseif vr.audio_list_toggle == 2 then
+		imgui.StrCopy(vr.buffer_input,vr.list_audio[vr.selected_item]['Name'])
+		vr.editmode_input = true
+		while vr.editmode_input do
+			wait(0)
+			if wasKeyReleased(0x46) then
+				vr.editmode_input = false
+			end
+		end
+		vr.list_audio[vr.selected_item]['Name'] = ffi.string(vr.buffer_input)
+		vr.list_name_audio[vr.selected_item] = ffi.string(vr.buffer_input)
+	elseif vr.audio_list_toggle == 3 then
+		vr.list_audio = DelCellArr(vr.list_audio,vr.selected_item)
+		vr.list_name_audio = DelCellArr(vr.list_name_audio,vr.selected_item)
+		vr.current_item = 1
+		vr.audio_list_window = false
+		vr.audio_change_window = true
+	end
+end
+
+function audio(last_id)
+	if vr.selected_item == 2 then
+		if vr.list_audio[vr.current_audio]['Audio_Data']['Type'] == 1 then
+			vr.list_audio[vr.current_audio]['Audio_Data']['Target'] = 1
+			vr.list_audio[vr.current_audio]['Audio_Data']['To_target'] = 1
+			vr.list_audio[vr.current_audio]['Audio_Data']['3daudioW'] = false
+		elseif vr.list_audio[vr.current_audio]['Audio_Data']['Type'] == 2 then
+			vr.list_audio[vr.current_audio]['Audio_Data']['Actor'] = 1
+			vr.list_audio[vr.current_audio]['Audio_Data']['Actor_act'] = 1
+		elseif vr.list_audio[vr.current_audio]['Audio_Data']['Type'] == 3 then
+			vr.list_audio[vr.current_audio]['Audio_Data']['Car'] = 1
+			vr.list_audio[vr.current_audio]['Audio_Data']['Car_act'] = 1
+		elseif vr.list_audio[vr.current_audio]['Audio_Data']['Type'] == 4 then
+			vr.list_audio[vr.current_audio]['Audio_Data']['Object'] = 1
+			vr.list_audio[vr.current_audio]['Audio_Data']['Object_act'] = 1
+		end
+	elseif vr.selected_item == 11 then
+		vr.list_audio[vr.current_audio]['Audio_Data']['Place'] = 1
+		vr.list_audio[vr.current_audio]['Audio_Data']['Place_type'] = 1
+		if vr.list_audio[vr.current_audio]['Audio_Data']['3daudioW'] then
+			local xx,yy,zz = getCharCoordinates(PLAYER_PED)
+			vr.list_audio[vr.current_audio]['Audio_Data']['Pos'] = {xx,yy,zz}
+			requestModel(2231)
+			while not hasModelLoaded(2231) do
+				wait(0)
+			end
+			vr.list_audio[vr.current_audio]['Audio_Data']['Obj'] = createObject(2231,xx,yy,zz)
+			setObjectCollision(vr.list_audio[vr.current_audio]['Audio_Data']['Obj'],false)
+		else
+			deleteObject(vr.list_audio[vr.current_audio]['Audio_Data']['Obj'])
+		end
+	elseif vr.selected_item == 12 then
+		if vr.list_audio[vr.current_audio]['Audio_Data']['Place_type'] == 1 then
+			local xx,yy,zz = getCharCoordinates(PLAYER_PED)
+			vr.list_audio[vr.current_audio]['Audio_Data']['Pos'] = {xx,yy,zz}
+			requestModel(2231)
+			while not hasModelLoaded(2231) do
+				wait(0)
+			end
+			vr.list_audio[vr.current_audio]['Audio_Data']['Obj'] = createObject(2231,xx,yy,zz)
+			setObjectCollision(vr.list_audio[vr.current_audio]['Audio_Data']['Obj'],false)
+		else
+			deleteObject(vr.list_audio[vr.current_audio]['Audio_Data']['Obj'])
+		end
+		vr.list_audio[vr.current_audio]['Audio_Data']['Place'] = 1
+	elseif vr.selected_item == 13 then
+		local names = decodeJson(langt['vector3_arr'])
+		vr.vector3_items = {
+			{'int_slider',names[1],vr.list_audio[vr.current_audio]['Audio_Data']['Pos'],1,_,_,0.01,1},
+			{'int_slider',names[2],vr.list_audio[vr.current_audio]['Audio_Data']['Pos'],2,_,_,0.01,2},
+			{'int_slider',names[3],vr.list_audio[vr.current_audio]['Audio_Data']['Pos'],3,_,_,0.01,3},
+			{'button',names[4],4}
+		}
+		vr.vector3_items[0] = decodeJson(langt['actor_arr'])[1]
+		vr.previous_window = 'audio_window'
+		vr.current_item = 1
+		vr.vector3_window = true
+		vr.audio_window = false
+	elseif vr.selected_item == 18 then
+		if doesDirectoryExist(getWorkingDirectory()..'\\Audio\\'..tostring(vr.Fast_data.CurPack-1)) then
+			vr.Audios_pack = {}
+			vr.Audios_pack_name = {}
+			for line in io.popen("dir \""..getWorkingDirectory() .. '\\Audio\\'..tostring(vr.Fast_data.CurPack-1).."\" /a:-d /b", "r"):lines() do
+				if string.sub(line, -3) == 'mp3' then
+					vr.Audios_pack[#vr.Audios_pack+1] = getWorkingDirectory() .. '\\Audio\\'..tostring(vr.Fast_data.CurPack-1)..'\\'..line
+					vr.Audios_pack_name[#vr.Audios_pack_name+1] = line
+					print(line)
+				end
+			end
+		end
 	end
 end
 
@@ -2278,6 +2987,10 @@ function DrawLineBy3dCoords(posX, posY, posZ, posX2, posY2, posZ2, width, color)
 		local SposX2, SposY2 = convert3DCoordsToScreen(posX2, posY2, posZ2)
 		renderDrawLine(SposX, SposY, SposX2, SposY2, width, color)
 	end
+end
+
+function calc(operation)
+    return load("return " .. operation)()
 end
 
 -- Перемещение ячейки
@@ -2532,6 +3245,9 @@ function load_mission()
 	for p = 1,#vr.list_particle do
 		removePickup(vr.list_pickup[p]['Pickup_Data']['Prtcl'])
 	end
+	for a = 1,#vr.list_audio do
+		deleteObject(vr.list_audio[a]['Audio_Data']['Obj'])
+	end
 	vr.list_targets = vr.list_missions[vr.current_missions]['Mission_Data']['Targets']
 	vr.list_actors = vr.list_missions[vr.current_missions]['Mission_Data']['Actors']
 	vr.list_cars = vr.list_missions[vr.current_missions]['Mission_Data']['Cars']
@@ -2541,8 +3257,9 @@ function load_mission()
 	vr.list_explosion = vr.list_missions[vr.current_missions]['Mission_Data']['Explosion']
 	vr.mission_data = vr.list_missions[vr.current_missions]['Mission_Data']['Miss_data']
 	vr.Group_relationships = vr.list_missions[vr.current_missions]['Mission_Data']['Group_relationships']
+	vr.list_audio = vr.list_missions[vr.current_missions]['Mission_Data']['Audio']
 	vr.Fast_data['CurMiss'] = vr.current_missions
-	vr.list_name_actors,vr.list_name_objects,vr.list_name_cars,vr.list_name_pickup,vr.list_name_particle,vr.list_name_explosion = {},{},{},{},{},{}
+	vr.list_name_actors,vr.list_name_objects,vr.list_name_cars,vr.list_name_pickup,vr.list_name_particle,vr.list_name_explosion,vr.list_name_audio = {},{},{},{},{},{},{}
 	for a = 1, #vr.list_actors do
 		wait(0)
 		vr.list_name_actors[a] = vr.list_actors[a]['Name']
@@ -2576,6 +3293,10 @@ function load_mission()
 		wait(0)
 		vr.list_name_targets[t] = vr.list_targets[t]['Name']
 	end
+	for a = 1, #vr.list_audio do
+		wait(0)
+		vr.list_name_audio[a] = vr.list_audio[a]['Name']
+	end
 	setCharCoordinates(PLAYER_PED, vr.mission_data['Player']['Pos'][1], vr.mission_data['Player']['Pos'][2], vr.mission_data['Player']['Pos'][3])
 	setCharInterior(PLAYER_PED, vr.mission_data['Player']['Interior_id'])
 	setInteriorVisible(vr.mission_data['Player']['Interior_id'])
@@ -2599,6 +3320,7 @@ end
 
 function main()
 	local tl = {}
+	local last_id = 0
 	for line in io.popen("dir \""..getWorkingDirectory() .. '\\Language'.."\" /a:-d /b", "r"):lines() do
 		if string.sub(line, -3) == 'ini' then
 			LanguageArr[#LanguageArr+1] = inicfg.load(nil,getWorkingDirectory() .. '\\Language\\'..line)
@@ -2613,6 +3335,14 @@ function main()
 	lua_thread.create(timer)
 
 	langt = LanguageArr[vr.Data.Settings.curr_lang]['Keys']
+
+	if doesDirectoryExist(getWorkingDirectory()..'\\lib\\addons') then
+		for line in io.popen("dir \""..getWorkingDirectory() .. '\\lib\\addons'.."\" /a:d /b", "r"):lines() do
+			if doesFileExist(getWorkingDirectory()..'\\lib\\addons\\'..line..'\\init.lua') then
+				addons[#addons+1] = require('addons\\'..line)
+			end
+		end
+	end
 
 	setGxtEntry('HTARG', koder(u8:decode(langt['HTARG'])))
 	setGxtEntry('HACT', koder(u8:decode(langt['HACT'])))
@@ -2648,6 +3378,7 @@ function main()
 		vr.list_name_mission_pack[mp] = vr.list_mission_pack[mp]['Name']
 	end
 	print(vr.list_name_mission_pack[1])
+	vr.Fast_data.CurPack = #vr.list_mission_pack+1
 
 	upd_actor = lua_thread.create_suspended(update_actor)
 	upd_car = lua_thread.create_suspended(update_car)
@@ -2673,57 +3404,110 @@ function main()
 		{'button',names[12],12},
 		{'button',names[13],13},
 		{'button',names[14],14},
-		{'button',names[14],15},
+		{'button',names[15],15},
+		{'button',names[16],16},
 	}
+	last_id = 16
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].main_menu_items,vr.main_menu_items,last_id)
+	end
 	names = decodeJson(langt['actor_change_arr'])
 	vr.actor_change_items = {
 		{'button',names[1],1},
 		{'button',names[2],2},
-		{'button',names[3],3}
+		{'button',names[3],3},
+		{'button',names[4],4}
 	}
+	last_id = 4
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].actor_change_items,vr.actor_change_items,last_id)
+	end
 	names = decodeJson(langt['actor_anims_change_arr'])
 	vr.actor_anims_change_items = {
 		{'button',names[1],1},
 		{'button',names[2],2},
 		{'button',names[3],3}
 	}
+	last_id = 4
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].actor_anims_change_items,vr.actor_anims_change_items,last_id)
+	end
 	names = decodeJson(langt['targets_change_arr'])
 	vr.targets_change_items = {
 		{'button',names[1],1},
 		{'button',names[2],2},
 		{'button',names[3],3},
-		{'button',names[4],4}
+		{'button',names[4],4},
+		{'button',names[5],5},
 	}
+	last_id = 5
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].targets_change_items,vr.targets_change_items,last_id)
+	end
 	names = decodeJson(langt['cars_change_arr'])
 	vr.cars_change_items = {
 		{'button',names[1],1},
 		{'button',names[2],2},
-		{'button',names[3],3}
+		{'button',names[3],3},
+		{'button',names[4],4}
 	}
+	last_id = 4
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].cars_change_items,vr.cars_change_items,last_id)
+	end
 	names = decodeJson(langt['objects_change_arr'])
 	vr.objects_change_items = {
 		{'button',names[1],1},
 		{'button',names[2],2},
-		{'button',names[3],3}
+		{'button',names[3],3},
+		{'button',names[4],4},
 	}
+	last_id = 4
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].objects_change_items,vr.objects_change_items,last_id)
+	end
 	names = decodeJson(langt['particles_change_arr'])
 	vr.particles_change_items = {
 		{'button',names[1],1},
 		{'button',names[2],2},
-		{'button',names[3],3}
+		{'button',names[3],3},
+		{'button',names[4],4}
 	}
+	last_id = 4
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].particles_change_items,vr.particles_change_items,last_id)
+	end
 	names = decodeJson(langt['pickup_change_arr'])
 	vr.pickup_change_items = {
 		{'button',names[1],1},
 		{'button',names[2],2},
-		{'button',names[3],3}
+		{'button',names[3],3},
+		{'button',names[4],4}
 	}
+	last_id = 4
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].pickup_change_items,vr.pickup_change_items,last_id)
+	end
 	names = decodeJson(langt['explosion_change_arr'])
 	vr.explosion_change_items = {
 		{'button',names[1],1},
 		{'button',names[2],2},
-		{'button',names[3],3}
+		{'button',names[3],3},
+		{'button',names[4],4}
 	}
+	last_id = 4
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].explosion_change_items,vr.explosion_change_items,last_id)
+	end
 	names = decodeJson(langt['mission_pack_change_arr'])
 	vr.mission_pack_change_items = {
 		{'button',names[1],1},
@@ -2732,6 +3516,11 @@ function main()
 		{'button',names[4],4},
 		{'button',names[5],5}
 	}
+	last_id = 5
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].mission_pack_change_items,vr.mission_pack_change_items,last_id)
+	end
 	names = decodeJson(langt['missions_change_arr'])
 	vr.missions_change_items = {
 		{'button',names[1],1},
@@ -2740,6 +3529,23 @@ function main()
 		{'button',names[4],4},
 		{'button',names[5],5}
 	}
+	last_id = 5
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].missions_change_items,vr.missions_change_items,last_id)
+	end
+	names = decodeJson(langt['audio_change_arr'])
+	vr.audio_change_items = {
+		{'button',names[1],1},
+		{'button',names[2],2},
+		{'button',names[3],3},
+		{'button',names[4],4}
+	}
+	last_id = 4
+	for i = 1,#addons do
+		local _
+		_,last_id = pcall(addons[i].audio_change_items,vr.audio_change_items,last_id)
+	end
 	while true do
 		wait(0)
 		if vr.mpack == 7 then
@@ -2756,7 +3562,7 @@ function main()
 			printHelpString('~r~I LOVE TWENTY ONE PILOTS')
 		end
 
-		openMenu = vr.main_menu_window or vr.actor_change_window or vr.actor_window or vr.actor_anim_window or vr.actor_anims_change_window or vr.actor_anims_list_window or vr.targets_change_window or vr.targets_list_window or vr.target_list_dialog_window or vr.target_dialog_window or vr.target_window or vr.objects_change_window or vr.objects_list_window or vr.object_window or vr.object_anims_change_window or vr.object_anims_list_window or vr.object_anim_window or vr.pickup_window or vr.pack_mission_list_window or vr.missions_settings_window
+		openMenu = vr.main_menu_window or vr.actor_change_window or vr.actor_window or vr.actor_anim_window or vr.actor_anims_change_window or vr.actor_anims_list_window or vr.targets_change_window or vr.targets_list_window or vr.target_list_dialog_window or vr.target_dialog_window or vr.target_window or vr.objects_change_window or vr.objects_list_window or vr.object_window or vr.object_anims_change_window or vr.object_anims_list_window or vr.object_anim_window or vr.pickup_window or vr.pack_mission_list_window or vr.missions_settings_window or  vr.actor_list_window or vr.targets_list_window or vr.cars_list_window or vr.objects_list_window or vr.particles_list_window or vr.pickup_list_window or vr.explosion_list_window or vr.audio_list_window or vr.vector3_window
 
 		for i = 1, #vr.list_targets do
 			if vr.list_targets[i]['Type'] == 1 then
@@ -3618,7 +4424,7 @@ function main()
 							if modelId > #ID_Spec_Actors then
 								modelId = 1+modelId-#ID_Spec_Actors
 							end
-						
+
 							local modell_n = ID_Spec_Actors[modelId]
 							loadSpecialCharacter(modell_n,10)
 							while not hasSpecialCharacterLoaded(10) do
@@ -3645,7 +4451,7 @@ function main()
 							if modelId < 1 then
 								modelId = #ID_Spec_Actors-modelId
 							end
-						
+
 							local modell_n = ID_Spec_Actors[modelId]
 							loadSpecialCharacter(modell_n,10)
 							while not hasSpecialCharacterLoaded(10) do
@@ -3672,7 +4478,7 @@ function main()
 							if modelId > #ID_Spec_Actors then
 								modelId = 1+modelId-#ID_Spec_Actors
 							end
-						
+
 							local modell_n = ID_Spec_Actors[modelId]
 							loadSpecialCharacter(modell_n,10)
 							while not hasSpecialCharacterLoaded(10) do
@@ -3699,7 +4505,7 @@ function main()
 							if modelId < 1 then
 								modelId = #ID_Spec_Actors-modelId
 							end
-						
+
 							local modell_n = ID_Spec_Actors[modelId]
 							loadSpecialCharacter(modell_n,10)
 							while not hasSpecialCharacterLoaded(10) do
@@ -3793,7 +4599,7 @@ function main()
 				if modelId > #ID_Spec_Actors then
 					modelId = 1+modelId-#ID_Spec_Actors
 				end
-			
+
 				local modell_n = ID_Spec_Actors[modelId]
 				loadSpecialCharacter(modell_n,10)
 				while not hasSpecialCharacterLoaded(10) do
@@ -3856,7 +4662,7 @@ function main()
 							if modelId > #ID_Spec_Actors then
 								modelId = 1+modelId-#ID_Spec_Actors
 							end
-						
+
 							local modell_n = ID_Spec_Actors[modelId]
 							loadSpecialCharacter(modell_n,10)
 							while not hasSpecialCharacterLoaded(10) do
@@ -3883,7 +4689,7 @@ function main()
 							if modelId < 1 then
 								modelId = #ID_Spec_Actors-modelId
 							end
-						
+
 							local modell_n = ID_Spec_Actors[modelId]
 							loadSpecialCharacter(modell_n,10)
 							while not hasSpecialCharacterLoaded(10) do
@@ -3910,7 +4716,7 @@ function main()
 							if modelId > #ID_Spec_Actors then
 								modelId = 1+modelId-#ID_Spec_Actors
 							end
-						
+
 							local modell_n = ID_Spec_Actors[modelId]
 							loadSpecialCharacter(modell_n,10)
 							while not hasSpecialCharacterLoaded(10) do
@@ -3937,7 +4743,7 @@ function main()
 							if modelId < 1 then
 								modelId = #ID_Spec_Actors-modelId
 							end
-						
+
 							local modell_n = ID_Spec_Actors[modelId]
 							loadSpecialCharacter(modell_n,10)
 							while not hasSpecialCharacterLoaded(10) do
@@ -4077,8 +4883,11 @@ function main()
 				deleteObject(vr.list_explosion[p]['Explosion_Data']['Explosion'])
 				removeScriptFire(vr.list_explosion[p]['Explosion_Data']['Fire'])
 			end
+			for a = 1,#vr.list_audio do
+				deleteObject(vr.list_audio[a]['Audio_Data']['Obj'])
+			end
 			wait(0)
-			mp.start_mission(vr.list_targets,vr.list_actors,vr.list_cars,vr.list_objects,vr.list_pickup,vr.list_particle,vr.list_explosion,vr.mission_data)
+			mp.start_mission(vr.list_targets,vr.list_actors,vr.list_cars,vr.list_objects,vr.list_pickup,vr.list_particle,vr.list_explosion,vr.mission_data,vr.list_audio)
 			vr.miss_start = false
 		end
 
@@ -4093,9 +4902,6 @@ function main()
 				vr.main_menu_window = true
 				lockPlayerControl(true)
 			end
-		end
-		if wasKeyReleased(0x45) then
-			vr.editmode_input = true
 		end
 		if isKeyDown(vkeys.VK_CONTROL) and isKeyJustPressed(vkeys.VK_S) then
 			if vr.list_missions[vr.Fast_data['CurMiss']] == nil then
@@ -4112,7 +4918,8 @@ function main()
 						['Particle'] = vr.list_particle,
 						['Explosion'] = vr.list_explosion,
 						['Miss_data'] = vr.mission_data,
-						['Group_relationships'] = vr.Group_relationships
+						['Group_relationships'] = vr.Group_relationships,
+						['Audio'] = vr.list_audio
 					}
 				}
 				vr.list_name_missions[vr.Fast_data['CurMiss']] = vr.list_missions[vr.Fast_data['CurMiss']]['Name']
@@ -4126,7 +4933,8 @@ function main()
 					['Particle'] = vr.list_particle,
 					['Explosion'] = vr.list_explosion,
 					['Miss_data'] = vr.mission_data,
-					['Group_relationships'] = vr.Group_relationships
+					['Group_relationships'] = vr.Group_relationships,
+					['Audio'] = vr.list_audio
 				}
 			end
 			if vr.list_mission_pack[vr.Fast_data['CurPack']] == nil then
@@ -4145,7 +4953,7 @@ function main()
 
 		if vr.main_menu_window then
 			if drawMenu(langt['main_menu'],vr.main_menu_items,300,320) then
-				main_menu()
+				main_menu(16)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.main_menu_window = false
@@ -4153,7 +4961,7 @@ function main()
 			end
 		elseif vr.actor_change_window then
 			if drawMenu(langt['actors'],vr.actor_change_items,300,320) then
-				actor_change()
+				actor_change(4)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.actor_change_window = false
@@ -4165,7 +4973,7 @@ function main()
 				vr.actor_list_items[#vr.actor_list_items+1] = {'button',vr.list_name_actors[i],i}
 			end
 			if drawMenu(langt['actors'],vr.actor_list_items,300,320) then
-				actor_list()
+				actor_list(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.actor_list_window = false
@@ -4203,8 +5011,13 @@ function main()
 				{'arr_slider',names[11],vr.list_actors[vr.current_actor]['Actor_Data'],"StartC",vr.list_name_targets,13},
 				{'arr_slider',names[12],vr.list_actors[vr.current_actor]['Actor_Data'],"EndC",list_tg_m,14}
 			})
+			last_id = 12
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].actor_items,vr.actor_items,last_id)
+			end
 			if drawMenu(langt['actors'],vr.actor_items,360,320) then
-				actor()
+				actor(12)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.actor_window = false
@@ -4220,7 +5033,7 @@ function main()
 			end
 		elseif vr.actor_anims_change_window then
 			if drawMenu(decodeJson(langt['actor_arr'])[7],vr.actor_anims_change_items,300,320) then
-				actor_anims_change()
+				actor_anims_change(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.actor_anims_change_window = false
@@ -4232,7 +5045,7 @@ function main()
 				vr.actor_anims_list_items[#vr.actor_anims_list_items+1] = {'button',i,i}
 			end
 			if drawMenu(langt['actors'],vr.actor_anims_list_items,300,320) then
-				actor_anims_list()
+				actor_anims_list(2)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.actor_anims_list_window = false
@@ -4257,7 +5070,7 @@ function main()
 			if vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 1 then
 				table.merge(vr.actor_anim_items,{
 					{'arr_slider',langt['pack'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Pack_anim",Anims['Anim_name'],5},
-					{'arr_slider',langt['anim'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Anim",Anims['Anim_list'][vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Pack_anim']],6},	
+					{'arr_slider',langt['anim'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Anim",Anims['Anim_list'][vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Pack_anim']],6},
 					{'int_slider',langt['time_anim'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Time",0,_,0.05,7},
 					{'checkbox',langt['looped'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Loop",8},
 					{'checkbox',langt['unbreak'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Unbreakable",9},
@@ -4304,9 +5117,37 @@ function main()
 					{'arr_slider',langt['seat'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"place_in_car",place_in_car,30},
 					{'checkbox',langt['wait_end'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"wait_end",31},
 				})
+			elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 7 then
+				local upd_actor = {langt['player']}
+				for i = 1,#vr.list_name_actors do
+					upd_actor[#upd_actor+1] = vr.list_name_actors[i]
+				end
+				table.merge(vr.actor_anim_items,{
+					{'arr_slider',langt['actor'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Target_actor_id",upd_actor,32},
+					{'int_slider',langt['radius'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Radius",0,_,0.1,32},
+					{'arr_slider',langt['to_target'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"To_target",vr.list_name_targets,33},
+				})
+				local xp,yp,zp = getCharCoordinates(vr.list_actors[vr.current_actor]['Actor_Data']['Char'])
+				local radius = vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Radius']
+				local old_x,old_y = xp+math.cos(math.rad(0))*radius,yp+math.sin(math.rad(0))*radius
+				for a = 1,9 do
+					DrawLineBy3dCoords(old_x,old_y,zp,xp+math.cos(math.rad(a*40))*radius,yp+math.sin(math.rad(a*40))*radius,zp,1,rgba_to_int(255,255,255,255))
+					old_x,old_y = xp+math.cos(math.rad(a*40))*radius,yp+math.sin(math.rad(a*40))*radius
+				end
+			elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 8 then
+				local weap_names = decodeJson(langt['weap_names'])
+				table.merge(vr.actor_anim_items,{
+					{'arr_slider',langt['weapon'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Weapon",weap_names,34},
+					{'int_slider',langt['countAmmo'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Ammo",0,_,_,35},
+				})
+			end
+			last_id = 35
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].actor_anim_items,vr.actor_anim_items,last_id)
 			end
 			if drawMenu(langt['actors'],vr.actor_anim_items,540,320) then
-				actor_anim()
+				actor_anim(35)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.actor_anim_window = false
@@ -4314,7 +5155,7 @@ function main()
 			end
 		elseif vr.targets_change_window then
 			if drawMenu(decodeJson(langt['main_menu_arr'])[1],vr.targets_change_items,300,320) then
-				targets_change()
+				targets_change(5)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.targets_change_window = false
@@ -4336,7 +5177,7 @@ function main()
 				namet = langt['paste']
 			end
 			if drawMenu(namet,vr.targets_list_items,300,320) then
-				targets_list()
+				targets_list(5)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.targets_list_window = false
@@ -4362,11 +5203,12 @@ function main()
 				table.merge(vr.target_items,{
 					{'arr_slider',langt['car'],vr.list_targets[vr.current_target]['Target_Data'],"Target_car_id",vr.list_name_cars,8},
 					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color,9},
-					{'button',langt['text'],10},	
+					{'button',langt['text'],10},
 				})
 			elseif vr.list_targets[vr.current_target]['Type'] == 3 then
 				table.merge(vr.target_items,{
 					{'arr_slider',langt['actor'],vr.list_targets[vr.current_target]['Target_Data'],"Target_actor_id",vr.list_name_actors,11},
+					{'checkbox',langt['kill_groupW'],vr.list_targets[vr.current_target]['Target_Data'],"Kill_group",56},
 					{'arr_slider',langt['colorMarker'],vr.list_targets[vr.current_target]['Target_Data'],"Color_blip",targets_marker_color,12},
 					{'button',langt['text'],13},
 				})
@@ -4412,7 +5254,7 @@ function main()
 				local target_type = decodeJson(langt['target_type_obj'])
 				table.merge(vr.target_items,{
 					{'arr_slider',langt['object'],vr.list_targets[vr.current_target]['Target_Data'],"Target_object_id",vr.list_name_objects,28},
-					{'arr_slider',langt['type'],vr.list_targets[vr.current_target]['Target_Data'],"Target_type",target_type,29},	
+					{'arr_slider',langt['type'],vr.list_targets[vr.current_target]['Target_Data'],"Target_type",target_type,29},
 				})
 				if vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 4 then
 					table.merge(vr.target_items,{
@@ -4475,7 +5317,7 @@ function main()
 					table.merge(vr.target_items,{
 						{'button',names[1],52},
 						{'button',names[2],53},
-						{'button',names[3]},54,
+						{'button',names[3],54},
 					})
 				elseif vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 7 then
 					table.merge(vr.target_items,{
@@ -4483,8 +5325,13 @@ function main()
 					})
 				end
 			end
+			last_id = 56
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].target_items,vr.target_items,last_id)
+			end
 			if drawMenu(langt['target'],vr.target_items,360,320) then
-				target()
+				target(56)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.target_window = false
@@ -4496,8 +5343,13 @@ function main()
 				{'int_slider',langt['time'],vr.list_targets[vr.current_target]['Target_Data']['Dialog'][vr.current_dialog_target],"Text_time",0,_,0.1,2},
 				{'button',langt['back'],3},
 			}
+			last_id = 3
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].target_dialog_items,vr.target_dialog_items,last_id)
+			end
 			if drawMenu(langt['replica'],vr.target_dialog_items,360,320) then
-				target_dialog()
+				target_dialog(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.target_dialog_window = false
@@ -4509,7 +5361,7 @@ function main()
 				vr.target_list_dialog_items[#vr.target_list_dialog_items+1] = {'button',i,i}
 			end
 			if drawMenu(langt['replicas'],vr.target_list_dialog_items,300,320) then
-				target_list_dialog()
+				target_list_dialog(2)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.target_list_dialog_window = false
@@ -4517,7 +5369,7 @@ function main()
 			end
 		elseif vr.cars_change_window then
 			if drawMenu(langt['cars'],vr.cars_change_items,300,320) then
-				cars_change()
+				cars_change(4)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.cars_change_window = false
@@ -4529,7 +5381,7 @@ function main()
 				vr.cars_list_items[#vr.cars_list_items+1] = {'button',vr.list_name_cars[i],i}
 			end
 			if drawMenu(langt['cars'],vr.cars_list_items,300,320) then
-				cars_list()
+				cars_list(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.cars_list_window = false
@@ -4546,7 +5398,7 @@ function main()
 				{'int_slider',langt['model'], vr.list_cars[vr.current_car]['Car_Data'],"ModelId",400,ID_Cars[#ID_Cars],_,2},
 				{'int_slider',langt['color_car']..' 1', vr.list_cars[vr.current_car]['Car_Data'],"Color_primary",0,126,_,3},
 				{'int_slider',langt['color_car']..' 2', vr.list_cars[vr.current_car]['Car_Data'],"Color_secondary",0,126,_,4},
-				{'int_slider',langt['countlive'], vr.list_cars[vr.current_car]['Car_Data'],"Health",0,5},
+				{'int_slider',langt['countlive'], vr.list_cars[vr.current_car]['Car_Data'],"Health",0,_,_,5},
 				{'checkbox',car_unbreak[1],vr.list_cars[vr.current_car]['Car_Data'],"Bulletproof",6},
 				{'checkbox',car_unbreak[2],vr.list_cars[vr.current_car]['Car_Data'],"Fireproof",7},
 				{'checkbox',car_unbreak[3],vr.list_cars[vr.current_car]['Car_Data'],"Explosionproof",8},
@@ -4559,8 +5411,13 @@ function main()
 				{'arr_slider',langt['app_on'],vr.list_cars[vr.current_car]['Car_Data'],"StartC",vr.list_name_targets,15},
 				{'arr_slider',langt['dis_after'],vr.list_cars[vr.current_car]['Car_Data'],"EndC",list_tg_m,16}
 			}
+			last_id = 16
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].cars_items,vr.cars_items,last_id)
+			end
 			if drawMenu(langt['car'],vr.cars_items,320,320) then
-				car()
+				car(16)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.car_window = false
@@ -4568,7 +5425,7 @@ function main()
 			end
 		elseif vr.car_anims_change_window then
 			if drawMenu(langt['actions'],vr.actor_anims_change_items,300,320) then
-				car_anims_change()
+				car_anims_change(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.car_anims_change_window = false
@@ -4580,7 +5437,7 @@ function main()
 				vr.car_anims_list_items[#vr.car_anims_list_items+1] = {'button',i,i}
 			end
 			if drawMenu(langt['cars'],vr.car_anims_list_items,300,320) then
-				car_anims_list()
+				car_anims_list(2)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.car_anims_list_window = false
@@ -4622,12 +5479,16 @@ function main()
 				end
 				local open_close = decodeJson(langt['open_close'])
 				table.merge(vr.car_anim_items,{
-					{'arr_slider',langt['doors'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Door_lock",open_close,12},	
+					{'arr_slider',langt['doors'],vr.list_cars[vr.current_car]['Car_Data']['Anims'][vr.list_cars[vr.current_car]['Car_Data']['Anim_id']],"Door_lock",open_close,12},
 				})
 			end
-
+			last_id = 12
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].car_anim_items,vr.car_anim_items,last_id)
+			end
 			if drawMenu(langt['action'],vr.car_anim_items,320,320) then
-				car_anim()
+				car_anim(12)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.car_anim_window = false
@@ -4635,7 +5496,7 @@ function main()
 			end
 		elseif vr.objects_change_window then
 			if drawMenu(langt['objects'],vr.objects_change_items,300,320) then
-				objects_change()
+				objects_change(4)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.objects_change_window = false
@@ -4647,7 +5508,7 @@ function main()
 				vr.objects_list_items[#vr.objects_list_items+1] = {'button',vr.list_name_objects[i],i}
 			end
 			if drawMenu(langt['objects'],vr.objects_list_items,300,320) then
-				objects_list()
+				objects_list(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.objects_list_window = false
@@ -4667,8 +5528,13 @@ function main()
 				{'arr_slider',langt['app_on'],vr.list_objects[vr.current_object]['Object_Data'],"StartC",vr.list_name_targets,6},
 				{'arr_slider',langt['dis_after'],vr.list_objects[vr.current_object]['Object_Data'],"EndC",list_tg_m,7}
 			}
+			last_id = 7
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].object_items,vr.object_items,last_id)
+			end
 			if drawMenu(langt['object'],vr.object_items,320,320) then
-				object()
+				object(7)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.object_window = false
@@ -4676,7 +5542,7 @@ function main()
 			end
 		elseif vr.object_anims_change_window then
 			if drawMenu(langt['actions'],vr.actor_anims_change_items,300,320) then
-				object_anims_change()
+				object_anims_change(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.object_anims_change_window = false
@@ -4688,7 +5554,7 @@ function main()
 				vr.object_anims_list_items[#vr.object_anims_list_items+1] = {'button',i,i}
 			end
 			if drawMenu(langt['objects'],vr.object_anims_list_items,300,320) then
-				object_anims_list()
+				object_anims_list(2)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.object_anims_list_window = false
@@ -4711,8 +5577,13 @@ function main()
 				{'int_slider',langt['time_anim'],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']],"Time",0,_,0.1,5},
 				{'button',langt['edithand'],6},
 			})
+			last_id = 6
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].object_anim_items,vr.object_anim_items,last_id)
+			end
 			if drawMenu(langt['object'],vr.object_anim_items,300,320) then
-				object_anim()
+				object_anim(6)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.object_anim_window = false
@@ -4720,7 +5591,7 @@ function main()
 			end
 		elseif vr.particles_change_window then
 			if drawMenu(langt['particles'],vr.particles_change_items,300,320) then
-				particles_change()
+				particles_change(4)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.particles_change_window = false
@@ -4732,7 +5603,7 @@ function main()
 				vr.particles_list_items[#vr.particles_list_items+1] = {'button',vr.list_name_particle[i],i}
 			end
 			if drawMenu(langt['particles'],vr.particles_list_items,300,320) then
-				particles_list()
+				particles_list(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.particles_list_window = false
@@ -4751,8 +5622,13 @@ function main()
 				{'arr_slider',langt['app_on'],vr.list_particle[vr.current_particle]['Particle_Data'],"StartC",vr.list_name_targets,5},
 				{'arr_slider',langt['dis_after'],vr.list_particle[vr.current_particle]['Particle_Data'],"EndC",list_tg_m,6}
 			}
+			last_id = 6
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].particle_items,vr.particle_items,last_id)
+			end
 			if drawMenu(langt['particle'],vr.particle_items,320,320) then
-				particle()
+				particle(6)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.particle_window = false
@@ -4760,7 +5636,7 @@ function main()
 			end
 		elseif vr.pickup_change_window then
 			if drawMenu(langt['pickup'],vr.pickup_change_items,300,320) then
-				pickup_change()
+				pickup_change(4)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.pickup_change_window = false
@@ -4772,7 +5648,7 @@ function main()
 				vr.pickup_list_items[#vr.pickup_list_items+1] = {'button',vr.list_name_pickup[i],i}
 			end
 			if drawMenu(langt['pickup'],vr.pickup_list_items,300,320) then
-				pickup_list()
+				pickup_list(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.pickup_list_window = false
@@ -4808,8 +5684,13 @@ function main()
 				{'arr_slider',langt['app_on'],vr.list_pickup[vr.current_pickup]['Pickup_Data'],"StartC",vr.list_name_targets,7},
 				{'arr_slider',langt['dis_after'],vr.list_pickup[vr.current_pickup]['Pickup_Data'],"EndC",list_tg_m,8}
 			})
+			last_id = 8
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].pickup_items,vr.pickup_items,last_id)
+			end
 			if drawMenu(langt['pickup'],vr.pickup_items,340,320) then
-				pickup()
+				pickup(8)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.pickup_window = false
@@ -4817,7 +5698,7 @@ function main()
 			end
 		elseif vr.explosion_change_window then
 			if drawMenu(langt['explosions'],vr.explosion_change_items,300,320) then
-				explosion_change()
+				explosion_change(4)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.explosion_change_window = false
@@ -4829,7 +5710,7 @@ function main()
 				vr.explosion_list_items[#vr.explosion_list_items+1] = {'button',vr.list_name_explosion[i],i}
 			end
 			if drawMenu(langt['explosions'],vr.explosion_list_items,300,320) then
-				explosion_list()
+				explosion_list(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.explosion_list_window = false
@@ -4865,9 +5746,13 @@ function main()
 				{'arr_slider',langt['app_on'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"StartC",vr.list_name_targets,7},
 				{'arr_slider',langt['dis_after'],vr.list_explosion[vr.current_explosion]['Explosion_Data'],"EndC",list_tg_m,8},
 			})
-
+			last_id = 8
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].explosion_items,vr.explosion_items,last_id)
+			end
 			if drawMenu(langt['explosion'],vr.explosion_items,320,320) then
-				explosion()
+				explosion(8)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.explosion_window = false
@@ -4875,7 +5760,7 @@ function main()
 			end
 		elseif vr.pack_mission_change_window then
 			if drawMenu(langt['packsMissions'],vr.mission_pack_change_items,300,320) then
-				pack_mission_change()
+				pack_mission_change(5)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.pack_mission_change_window = false
@@ -4887,7 +5772,7 @@ function main()
 				vr.pack_mission_list_items[#vr.pack_mission_list_items+1] = {'button',vr.list_name_mission_pack[i],i}
 			end
 			if drawMenu(langt['packsMissions'],vr.pack_mission_list_items,460,320) then
-				pack_mission_list()
+				pack_mission_list(4)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.pack_mission_list_window = false
@@ -4895,7 +5780,7 @@ function main()
 			end
 		elseif vr.missions_change_window then
 			if drawMenu(langt['missions'],vr.missions_change_items,300,320) then
-				missions_change()
+				missions_change(5)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.missions_change_window = false
@@ -4907,7 +5792,7 @@ function main()
 				vr.missions_list_items[#vr.missions_list_items+1] = {'button',vr.list_name_missions[i],i}
 			end
 			if drawMenu(langt['missions'],vr.missions_list_items,460,320) then
-				missions_list()
+				missions_list(4)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.missions_list_window = false
@@ -4921,8 +5806,13 @@ function main()
 				{'checkbox',langt['modeRiot'],vr.mission_data,"Riot",4},
 
 			}
+			last_id = 3
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].missions_settings_items,vr.missions_settings_items,last_id)
+			end
 			if drawMenu(langt['missions'],vr.missions_settings_items,460,320) then
-				missions_settings()
+				missions_settings(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.missions_settings_window = false
@@ -4933,8 +5823,13 @@ function main()
 				{'button',langt['tool_tp_marker'],1},
 				{'button',langt['jetpack'],2},
 			}
+			last_id = 2
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].tools_items,vr.tools_items,last_id)
+			end
 			if drawMenu(langt['tools'],vr.tools_items,300,320) then
-				tools()
+				tools(2)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.tools_window = false
@@ -4953,8 +5848,13 @@ function main()
 			vr.settings_items =  {
 				{'arr_slider',langt['lang'],vr.Data.Settings,'curr_lang',LanguageList,1},
 			}
+			last_id = 1
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].settings_items,vr.settings_items,last_id)
+			end
 			if drawMenu(langt['settings'],vr.settings_items,300,320) then
-				settings()
+				settings(1)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.settings_window = false
@@ -4962,7 +5862,7 @@ function main()
 			end
 		elseif vr.Group_relationships_list_window then
 			if drawMenu(langt['groups'],vr.Group_relationships_list_items,300,320) then
-				Group_relationships_list()
+				Group_relationships_list(9)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.Group_relationships_list_window = false
@@ -4970,10 +5870,121 @@ function main()
 			end
 		elseif vr.Group_relationships_window then
 			if drawMenu(langt['Relationship_to_groups'],vr.Group_relationships_items,340,320) then
-				Group_relationships()
 			end
 			if isKeyJustPressed(0x46) then
 				vr.Group_relationships_window = false
+				lockPlayerControl(false)
+			end
+		elseif vr.audio_change_window then
+			if drawMenu(langt['sound'],vr.audio_change_items,300,320) then
+				audio_change(4)
+			end
+			if isKeyJustPressed(0x46) then
+				vr.audio_change_window = false
+				lockPlayerControl(false)
+			end
+		elseif vr.audio_list_window then
+			vr.audio_list_items =  {}
+			for i = 1,#vr.list_name_audio do
+				vr.audio_list_items[#vr.audio_list_items+1] = {'button',vr.list_name_audio[i],i}
+			end
+			if drawMenu(langt['sound'],vr.audio_list_items,300,320) then
+				audio_list(3)
+			end
+			if isKeyJustPressed(0x46) then
+				vr.audio_list_window = false
+				lockPlayerControl(false)
+			end
+		elseif vr.audio_window then
+			local typeAudio = decodeJson(langt['typeAudio'])
+			vr.audio_items = {
+				{'arr_slider',langt['sound'],vr.list_audio[vr.current_audio]['Audio_Data'],"Audio",vr.Audios_pack_name,1},
+				{'button',langt['update'],18},
+				{'arr_slider',langt['type'],vr.list_audio[vr.current_audio]['Audio_Data'],"Type",typeAudio,2}
+			}
+			if vr.list_audio[vr.current_audio]['Audio_Data']['Type'] == 1 then
+				local list_tg_m = {langt['toend']}
+				for ltg = 1,#vr.list_name_targets do
+					list_tg_m[#list_tg_m+1] = vr.list_name_targets[ltg]
+				end
+				table.merge(vr.audio_items,{
+					{'arr_slider',langt['target'],vr.list_audio[vr.current_audio]['Audio_Data'],"Target",vr.list_name_targets,3},
+					{'arr_slider',langt['to_target'],vr.list_audio[vr.current_audio]['Audio_Data'],"To_target",list_tg_m,4},
+				})
+			elseif vr.list_audio[vr.current_audio]['Audio_Data']['Type'] == 2 then
+				local acts = {}
+				if #vr.list_actors > 0 then
+					for i = 1,#vr.list_actors[vr.list_audio[vr.current_audio]['Audio_Data']['Actor']]['Actor_Data']['Anims'] do
+						acts[#acts+1] = i
+					end
+				end
+				table.merge(vr.audio_items,{
+					{'arr_slider',langt['actor'],vr.list_audio[vr.current_audio]['Audio_Data'],"Actor",vr.list_name_actors,5},
+					{'arr_slider',langt['action'],vr.list_audio[vr.current_audio]['Audio_Data'],"Actor_act",acts,6},
+				})
+			elseif vr.list_audio[vr.current_audio]['Audio_Data']['Type'] == 3 then
+				local acts = {}
+				if #vr.list_cars > 0 then
+					for i = 1,#vr.list_cars[vr.list_audio[vr.current_audio]['Audio_Data']['Car']]['Car_Data']['Anims'] do
+						acts[#acts+1] = i
+					end
+				end
+				table.merge(vr.audio_items,{
+					{'arr_slider',langt['car'],vr.list_audio[vr.current_audio]['Audio_Data'],"Car",vr.list_name_cars,7},
+					{'arr_slider',langt['action'],vr.list_audio[vr.current_audio]['Audio_Data'],"Car_act",acts,6},
+				})
+			elseif vr.list_audio[vr.current_audio]['Audio_Data']['Type'] == 4 then
+				local acts = {}
+				if #vr.list_objects > 0 then
+					for i = 1,#vr.list_objects[vr.list_audio[vr.current_audio]['Audio_Data']['Object']]['Object_Data']['Anims'] do
+						acts[#acts+1] = i
+					end
+				end
+				table.merge(vr.audio_items,{
+					{'arr_slider',langt['object'],vr.list_audio[vr.current_audio]['Audio_Data'],"Object",vr.list_name_objects,9},
+					{'arr_slider',langt['action'],vr.list_audio[vr.current_audio]['Audio_Data'],"Object_act",acts,6},
+				})
+			end
+			table.merge(vr.audio_items,{
+				{'checkbox',langt['3daudioW'],vr.list_audio[vr.current_audio]['Audio_Data'],"3daudioW",11},
+			})
+			if vr.list_audio[vr.current_audio]['Audio_Data']['3daudioW'] then
+				local place_type = decodeJson(langt['place_type'])
+				table.merge(vr.audio_items,{
+					{'arr_slider',langt['place'],vr.list_audio[vr.current_audio]['Audio_Data'],"Place_type",place_type,12},
+				})
+				if vr.list_audio[vr.current_audio]['Audio_Data']['Place_type'] == 1 then
+					table.merge(vr.audio_items,{
+						{'button',langt['position'],13}
+					})
+				elseif vr.list_audio[vr.current_audio]['Audio_Data']['Place_type'] == 2 then
+					table.merge(vr.audio_items,{
+						{'arr_slider',langt['actor'],vr.list_audio[vr.current_audio]['Audio_Data'],"Place",vr.list_name_actors,14},
+					})
+				elseif vr.list_audio[vr.current_audio]['Audio_Data']['Place_type'] == 3 then
+					table.merge(vr.audio_items,{
+						{'arr_slider',langt['car'],vr.list_audio[vr.current_audio]['Audio_Data'],"Place",vr.list_name_cars,15},
+					})
+				elseif vr.list_audio[vr.current_audio]['Audio_Data']['Place_type'] == 4 then
+					table.merge(vr.audio_items,{
+						{'arr_slider',langt['object'],vr.list_audio[vr.current_audio]['Audio_Data'],"Place",vr.list_name_objects,16},
+					})
+				end
+			end
+			table.merge(vr.audio_items,{
+				{'checkbox',langt['repeat'],vr.list_audio[vr.current_audio]['Audio_Data'],"Repeat",17},
+			})
+
+			last_id = 18
+			for i = 1,#addons do
+				local e
+				e,last_id = pcall(addons[i].audio_items,vr.audio_items,last_id)
+			end
+			if drawMenu(langt['sound'],vr.audio_items,340,320) then
+				audio(18)
+			end
+			if isKeyJustPressed(0x46) then
+				vr.audio_window = false
 				lockPlayerControl(false)
 			end
 		end
