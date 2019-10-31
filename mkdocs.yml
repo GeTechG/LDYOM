@@ -7,4 +7,4 @@ markdown_extensions:
   - codehilite
 
 theme:
-  name: 'material'
+  name: 'readthedocs'
