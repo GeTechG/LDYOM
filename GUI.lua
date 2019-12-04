@@ -1,5 +1,5 @@
 script_authors('SKIC','SIZZZ')
-script_version('Beta 0.6.2')
+script_version('Beta 0.6.3')
 
 require 'libstd.deps' {
 	'fyp:mimgui'
@@ -23,7 +23,7 @@ u8 = encoding.UTF8
 
 ID_Actors = {0, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288}
 
-ID_Spec_Actors = {'andre','bbthin','bb','cat','cesar','copgrl1', 'copgrl2','claude','crogrl1', 'crogrl2','dwayne','emmet','forelli','janitor','jethro','jizzy','hern','gangrl2','gungrl1','gungrl2','kendl','maccer','maddogg','mecgrl2','nurgrl2','ogloc','paul','pulaski','rose','ryder','ryder2','ryder3','sindaco','smoke','smokev','suzie','sweet','tbone','tenpen','torino','wuzimu','zero'}
+ID_Spec_Actors = {'andre','bbthin','bb','cat','cesar','copgrl1', 'copgrl2','claude','crogrl1', 'crogrl2','dwayne','emmet','forelli','janitor','jethro','jizzy','hern','gangrl2','gungrl1','gungrl2','kendl','maccer','maddogg','mecgrl2','nurgrl2','ogloc','paul','pulaski','rose','ryder','ryder2','ryder3','sindaco','smoke','smokev','suzie','sweet','tbone','tenpen','torino','wuzimu','zero','cdeput','sfpdm1','lvpdm1','csbmydj','psycho','csmech','csomost','wmycd2'}
 
 ID_Cars = {400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611}
 
@@ -108,7 +108,8 @@ vr = {
 			['Weap_ammo'] = 0,
 			['Interior_id'] = 0,
 			['ped_type'] = true
-		}
+		},
+		['enex_markers'] = false
 	},
 	['Data'] = {
 		['Settings'] = {
@@ -123,6 +124,7 @@ vr = {
 	['Chalet_font'] = renderCreateFont('Chalet-LondonNineteenSixty',14),
 	['SignPainter_font'] = renderCreateFont('SignPainter HouseScript',32),
 	['Pricedown_font'] = renderCreateFont('Pricedown Rus',32,0),
+	['Verdana_font'] = renderCreateFont('Verdana',12),
 	['awsome'] = renderCreateFont('FontAwesome',32),
 	['main_menu_window'] = false,
 	['actor_change_window'] = false,
@@ -404,7 +406,6 @@ function drawMenu(title_name,arr_menu,width,height)
 					renderDrawBox(10,25+(renderGetFontDrawHeight(vr.Chalet_font)+10)*(i),width,renderGetFontDrawHeight(vr.Chalet_font)+(i),rgba_to_int(67, 35, 153, 255))
 					renderFontDrawText(vr.Chalet_font,u8:decode(arr_menu[g][2]),20,25+5+(renderGetFontDrawHeight(vr.Chalet_font)+10)*i,rgba_to_int(0,0,0,255))
 					if wasKeyPressed(0x20) or wasKeyPressed(0x0D) then
-						setAudioStreamVolume(resource.sounds.enter,10)
 						setAudioStreamState(resource.sounds.enter,1)
 						vr.selected_item = arr_menu[g][3]
 						return true
@@ -502,7 +503,7 @@ function drawMenu(title_name,arr_menu,width,height)
 					if isKeyDown(0x10) then
 						multy = 10
 					end
-					if isKeyDown(0x41) and vr.timer_time == 0 then
+					if (isKeyDown(0x41) or isKeyDown(0x25)) and vr.timer_time == 0 then
 						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] - 1*multy
 						if arr_menu[g][3][arr_menu[g][4]] < 1 then
 							arr_menu[g][3][arr_menu[g][4]] = #arr_menu[g][5]
@@ -511,7 +512,7 @@ function drawMenu(title_name,arr_menu,width,height)
 						vr.selected_item = arr_menu[g][6]
 						return true
 					end
-					if isKeyDown(0x44) and vr.timer_time == 0 then
+					if (isKeyDown(0x44) or isKeyDown(0x27)) and vr.timer_time == 0 then
 						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] + 1*multy
 						if arr_menu[g][3][arr_menu[g][4]] > #arr_menu[g][5] then
 							arr_menu[g][3][arr_menu[g][4]] = 1
@@ -633,7 +634,7 @@ function drawMenu(title_name,arr_menu,width,height)
 					if isKeyDown(0x10) then
 						multy = 10
 					end
-					if isKeyDown(0x41) and vr.timer_time == 0 then
+					if (isKeyDown(0x41) or isKeyDown(0x25)) and vr.timer_time == 0 then
 						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] - 1*multy
 						if arr_menu[g][3][arr_menu[g][4]] < 1 then
 							arr_menu[g][3][arr_menu[g][4]] = #arr_menu[g][5]
@@ -642,7 +643,7 @@ function drawMenu(title_name,arr_menu,width,height)
 						vr.selected_item = arr_menu[g][6]
 						return true
 					end
-					if isKeyDown(0x44) and vr.timer_time == 0 then
+					if (isKeyDown(0x44) or isKeyDown(0x27)) and vr.timer_time == 0 then
 						arr_menu[g][3][arr_menu[g][4]] = arr_menu[g][3][arr_menu[g][4]] + 1*multy
 						if arr_menu[g][3][arr_menu[g][4]] > #arr_menu[g][5] then
 							arr_menu[g][3][arr_menu[g][4]] = 1
@@ -796,7 +797,8 @@ function actor_change(last_id)
 				['Health'] = 100,
 				['Group'] = 2,
 				['Model_type'] = 1,
-				['Slot_model'] = 1
+				['Slot_model'] = 1,
+				['Random_spawn'] = false
 			}
 		}
 		upd_actor:run(#vr.list_actors)
@@ -923,6 +925,7 @@ function actor_anims_change(last_id)
 		vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Time'] = 1.0
 		vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Condition'] = 1
 		vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Unbreakable'] = false
+		vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['stopEndFrame'] = false
 		vr.current_item = 1
 		vr.actor_anims_change_window = false
 		vr.actor_anim_window = true
@@ -975,6 +978,7 @@ function actor_anim(last_id)
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Loop'] = false
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Time'] = 1.0
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Unbreakable'] = false
+			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['stopEndFrame'] = false
 		elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 2 then
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Path'] = {}
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type_move'] = 1
@@ -1007,6 +1011,7 @@ function actor_anim(last_id)
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Car'] = 1
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['speed_walk'] = 1
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['wait_end'] = false
+			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['teleport'] = false
 		elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 7 then
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Target_actor_id'] = 1
 			vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Radius'] = 1
@@ -1164,6 +1169,11 @@ function targets_change(last_id)
 		vr.current_item = 1
 		vr.targets_change_window = false
 		vr.targets_list_window = true
+	elseif vr.selected_item == 6 then
+		vr.targets_list_toggle = 6
+		vr.current_item = 1
+		vr.targets_change_window = false
+		vr.targets_list_window = true
 	end
 end
 
@@ -1192,18 +1202,26 @@ function targets_list(last_id)
 		vr.list_targets[vr.selected_item]['Name'] = ffi.string(vr.buffer_input)
 		vr.list_name_targets[vr.selected_item] = ffi.string(vr.buffer_input)
 	elseif vr.targets_list_toggle == 3 then
-		vr.list_targets = DelCellArr(vr.list_targets,vr.current_target)
-      	vr.list_name_targets = DelCellArr(vr.list_name_targets,vr.current_target)
+		vr.list_targets = DelCellArr(vr.list_targets,vr.current_item)
+      	vr.list_name_targets = DelCellArr(vr.list_name_targets,vr.current_item)
 		vr.current_item = 1
 		vr.targets_list_window = false
 		vr.targets_change_window = true
 	elseif vr.targets_list_toggle == 4 then
 		vr.buffer_target = vr.current_item
-		vr.targets_list_toggle = 4
+		vr.targets_list_toggle = 5
 	elseif vr.targets_list_toggle == 5 then
 		vr.list_targets = MoveCellArr(vr.list_targets,vr.buffer_target,vr.current_item)
      	vr.list_name_targets = MoveCellArr(vr.list_name_targets,vr.buffer_target,vr.current_item)
 		vr.buffer_target = -1
+		vr.current_item = 1
+		vr.targets_list_window = false
+		vr.targets_change_window = true
+	elseif vr.targets_list_toggle == 6 then
+		local new_slot = #vr.list_targets+1
+		vr.list_targets[new_slot] = deepcopy(vr.list_targets[vr.current_item])
+		vr.list_targets[new_slot]['Name'] = langt['target']..' #' .. tostring(#vr.list_targets)
+		vr.list_name_targets[new_slot] = vr.list_targets[new_slot]['Name']
 		vr.current_item = 1
 		vr.targets_list_window = false
 		vr.targets_change_window = true
@@ -1226,7 +1244,6 @@ function target(last_id)
 			vr.list_targets[vr.current_target]['Target_Data']['Text'] = ''
 			vr.list_targets[vr.current_target]['Target_Data']['Text_time'] = 2
 			vr.list_targets[vr.current_target]['Target_Data']['Color_blip'] = 1
-
 		elseif vr.list_targets[vr.current_target]['Type'] == 2 then
 			vr.list_targets[vr.current_target]['Target_Data']['Target_car_id'] = 1
 			vr.list_targets[vr.current_target]['Target_Data']['Color_blip'] = 1
@@ -1238,6 +1255,10 @@ function target(last_id)
 			vr.list_targets[vr.current_target]['Target_Data']['Text'] = ''
 		elseif vr.list_targets[vr.current_target]['Type'] == 4 then
 			vr.list_targets[vr.current_target]['Target_Data']['Target_type'] = 1
+			vr.list_targets[vr.current_target]['Target_Data']['Cutscene_pos'] = 1
+			vr.list_targets[vr.current_target]['Target_Data']['Cutscene_look'] = 1
+			vr.list_targets[vr.current_target]['Target_Data']['Look_at'] = 1
+			vr.list_targets[vr.current_target]['Target_Data']['Pos_tied'] = 1
 			vr.list_targets[vr.current_target]['Target_Data']['Pos'] = {xx,xy,xz}
 			vr.list_targets[vr.current_target]['Target_Data']['Rotates'] = {0,0,0}
 			vr.list_targets[vr.current_target]['Target_Data']['Text'] = ''
@@ -1807,9 +1828,9 @@ function object(last_id)
 	elseif vr.selected_item == 2 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
-			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],3,-360,360,1},
-			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],2,-360,360,2},
-			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],1,-360,360,3},
+			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],3,-360,360,_,1},
+			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],2,-360,360,_,2},
+			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Rotates'],1,-360,360,_,3},
 			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = langt['rotate']
@@ -1852,12 +1873,13 @@ function object_anims_change(last_id)
 	end
 	if vr.selected_item == 1 then
 		local xx,xy,xz = getCharCoordinates(PLAYER_PED)
-			vr.list_objects[vr.current_object]['Object_Data']['Anims'][#vr.list_objects[vr.current_object]['Object_Data']['Anims']+1] = {
-				['Pos'] = {xx,xy,xz},
-				['Rotates'] = {0,0,0},
-				['Time'] = 1,
-				['Condition'] = 1,
-			}
+		vr.list_objects[vr.current_object]['Object_Data']['Anims'][#vr.list_objects[vr.current_object]['Object_Data']['Anims']+1] = {
+			['Pos'] = {xx,xy,xz},
+			['Rotates'] = {0,0,0},
+			['Time'] = 1,
+			['Condition'] = 1,
+		}
+		vr.list_objects[vr.current_object]['Object_Data']['Anim_id'] = #vr.list_objects[vr.current_object]['Object_Data']['Anims']
 		vr.current_item = 1
 		vr.object_anims_change_window = false
 		vr.object_anim_window = true
@@ -1888,7 +1910,7 @@ function object_anims_list(last_id)
 		vr.object_anims_list_window = false
 		vr.object_anim_window = true
 	elseif vr.object_anims_list_toggle == 2 then
-		vr.list_objects[vr.current_object]['Object_Data']['Anim_id'] = DelCellArr(vr.list_objects[vr.current_object]['bject_Data']['Anims'],vr.selected_item)
+		vr.list_objects[vr.current_object]['Object_Data']['Anim_id'] = DelCellArr(vr.list_objects[vr.current_object]['Object_Data']['Anims'],vr.selected_item)
 		vr.current_item = 1
 		vr.object_anims_list_window = false
 		vr.object_anims_change_window = true
@@ -1903,7 +1925,9 @@ function object_anim(last_id)
 			return
 		end
 	end
-	if vr.selected_item == 3 then
+	if vr.selected_item == 1 then
+		vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Target'] = 1
+	elseif vr.selected_item == 3 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
 			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Pos'],1,_,_,0.01,1},
@@ -1919,9 +1943,9 @@ function object_anim(last_id)
 	elseif vr.selected_item == 4 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
-			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],1,-360,360,1},
-			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],2,-360,360,2},
-			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],3,-360,360,3},
+			{'int_slider',names[1],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],1,-360,360,_,1},
+			{'int_slider',names[2],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],2,-360,360,_,2},
+			{'int_slider',names[3],vr.list_objects[vr.current_object]['Object_Data']['Anims'][vr.list_objects[vr.current_object]['Object_Data']['Anim_id']]['Rotates'],3,-360,360,_,3},
 			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = langt['rotate']
@@ -2044,9 +2068,9 @@ function particle(last_id)
 	elseif vr.selected_item == 2 then
 		local names = decodeJson(langt['vector3_arr'])
 		vr.vector3_items = {
-			{'int_slider',names[1],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],1,-360,360,1},
-			{'int_slider',names[2],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],2,-360,360,2},
-			{'int_slider',names[3],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],3,-360,360,3},
+			{'int_slider',names[1],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],1,-360,360,_,1},
+			{'int_slider',names[2],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],2,-360,360,_,2},
+			{'int_slider',names[3],vr.list_particle[vr.current_particle]['Particle_Data']['Rotates'],3,-360,360,_,3},
 			{'button',names[4],4}
 		}
 		vr.vector3_items[0] = langt['rotate']
@@ -2559,6 +2583,8 @@ function tools(last_id)
 		setCharCoordinates(PLAYER_PED,xx,xy,xz)
 	elseif vr.selected_item == 2 then
 		taskJetpack(PLAYER_PED)
+	elseif vr.selected_item == 3 then
+		disableAllEntryExits(vr.mission_data['enex_markers'])
 	end
 end
 
@@ -3007,23 +3033,16 @@ function MoveCellArr(arr,i,j)
 	return array
 end
 
-function deepcopy(object)
-  local orig_type = type(orig)
+function deepcopy(orig)
+    local orig_type = type(orig)
     local copy
     if orig_type == 'table' then
         copy = {}
         for orig_key, orig_value in next, orig, nil do
-            copy[manager.sorterTable2(orig_key)] = manager.sorterTable2(orig_value)
+            copy[deepcopy(orig_key)] = deepcopy(orig_value)
         end
-		setmetatable(copy, manager.sorterTable2(getmetatable(orig)))
-	elseif orig_type == 'userdata' then
-		if type(orig) == 'userdata' then
-			copy = {orig[1],orig[2],orig[3]}
-		else
-			copy = orig
-		end
-
-    else
+        setmetatable(copy, deepcopy(getmetatable(orig)))
+    else -- number, string, boolean, etc
         copy = orig
     end
     return copy
@@ -3077,7 +3096,7 @@ function update_actor_animation(actorr,anim)
 	end
 	local animm = Anims['Anim_list'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim']]
 	animm = animm[vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Anim']]
-	taskPlayAnimNonInterruptable(vr.list_actors[actorr]['Actor_Data']['Char'], animm, Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim']], 1, vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Loop'], false, false, false, -1)
+	taskPlayAnimNonInterruptable(vr.list_actors[actorr]['Actor_Data']['Char'], animm, Anims['Anim_name'][vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Pack_anim']], 1, vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['Loop'], false, true, vr.list_actors[actorr]['Actor_Data']['Anims'][anim]['stopEndFrame'], -1)
 	while not isCharPlayingAnim(vr.list_actors[actorr]['Actor_Data']['Char'],animm) do
 		wait(0)
 	end
@@ -3085,14 +3104,13 @@ function update_actor_animation(actorr,anim)
 end
 
 function update_car(carr)
-	local modell
-	local modell = 400
-		for v = 1,#ID_Cars do
-			if vr.list_cars[vr.current_car]['Car_Data']['ModelId'] <= ID_Cars[v] then
-				modell = ID_Cars[v]
-				break
-			end
+	local modell = vr.list_cars[carr]['Car_Data']['ModelId']
+	for v = 1,#ID_Cars do
+		if vr.list_cars[carr]['Car_Data']['ModelId'] <= ID_Cars[v] then
+			modell = ID_Cars[v]
+			break
 		end
+	end
 	local xx,xy,xz = vr.list_cars[carr]['Car_Data']['Pos'][1], vr.list_cars[carr]['Car_Data']['Pos'][2], vr.list_cars[carr]['Car_Data']['Pos'][3]
 	local angle = vr.list_cars[carr]['Car_Data']['Angle']
 
@@ -3100,14 +3118,6 @@ function update_car(carr)
 	while not hasModelLoaded(modell) do
 		wait(0)
 	end
-	local last_id = 611
-	for v = 1,#ID_Cars do
-		if modell == ID_Cars[v] then
-			last_id = ID_Cars[v-1]
-			break
-		end
-	end
-	markModelAsNoLongerNeeded(last_id)
 
 	deleteCar(vr.list_cars[carr]['Car_Data']['Car'])
 	vr.list_cars[carr]['Car_Data']['Car'] = createCar(modell, xx, xy, xz)
@@ -3116,6 +3126,7 @@ function update_car(carr)
 	freezeCarPosition(vr.list_cars[carr]['Car_Data']['Car'], true)
 	setCarCanBeDamaged(vr.list_cars[carr]['Car_Data']['Car'], false)
 	changeCarColour(vr.list_cars[carr]['Car_Data']['Car'], vr.list_cars[carr]['Car_Data']['Color_primary'],vr.list_cars[carr]['Car_Data']['Color_secondary'])
+	markModelAsNoLongerNeeded(modell)
 end
 
 function update_object(objj)
@@ -3132,6 +3143,7 @@ function update_object(objj)
 	vr.list_objects[objj]['Object_Data']['Obj'] = createObject(modell, xx, xy, xz)
 	setObjectCoordinates(vr.list_objects[objj]['Object_Data']['Obj'], xx, xy, xz)
 	setObjectRotation(vr.list_objects[objj]['Object_Data']['Obj'], rxx, rxy, rxz)
+	setObjectCollision(vr.list_objects[objj]['Object_Data']['Obj'],false)
 end
 
 function update_pickup(pickk)
@@ -3260,6 +3272,7 @@ function load_mission()
 	vr.list_audio = vr.list_missions[vr.current_missions]['Mission_Data']['Audio']
 	vr.Fast_data['CurMiss'] = vr.current_missions
 	vr.list_name_actors,vr.list_name_objects,vr.list_name_cars,vr.list_name_pickup,vr.list_name_particle,vr.list_name_explosion,vr.list_name_audio = {},{},{},{},{},{},{}
+	disableAllEntryExits(vr.mission_data['enex_markers'])
 	for a = 1, #vr.list_actors do
 		wait(0)
 		vr.list_name_actors[a] = vr.list_actors[a]['Name']
@@ -3331,6 +3344,28 @@ function main()
 
 	vr.Data = inicfg.load(nil,getWorkingDirectory()..'\\LDYOM_data.ini')
 	for k,v in pairs(decodeJson(vr.Data.Data.ID_Spec_Actors)) do table.insert(ID_Spec_Actors, v) end
+	for k,v in pairs(decodeJson(vr.Data.Data.Actor_anims)) do 
+		local exist = -1
+		for o,j in ipairs(Anims['Anim_name']) do
+			if j == k then
+				exist = o
+			end
+		end
+		if exist ~= -1 then
+			for u = 1,#v do
+				table.insert(Anims['Anim_list'][exist],v[u])
+				print(v[u])
+			end
+		else
+			exist = #Anims['Anim_name']+1
+			Anims['Anim_name'][exist] = k
+			Anims['Anim_list'][exist] = {}
+			for u = 1,#v do
+				table.insert(Anims['Anim_list'][exist],v[u])
+				print(v[u])
+			end
+		end
+	end
 
 	lua_thread.create(timer)
 
@@ -3441,9 +3476,10 @@ function main()
 		{'button',names[2],2},
 		{'button',names[3],3},
 		{'button',names[4],4},
+		{'button',langt['targetDubl'],6},
 		{'button',names[5],5},
 	}
-	last_id = 5
+	last_id = 6
 	for i = 1,#addons do
 		local _
 		_,last_id = pcall(addons[i].targets_change_items,vr.targets_change_items,last_id)
@@ -4204,89 +4240,109 @@ function main()
 		if vr.editmode_camera then
 			displayRadar(false)
 			displayHud(false)
-		end
-		while vr.editmode_camera do
-			wait(0)
-			--Переменная замедления
-			local multy = 1
-			if isKeyDown(vkeys.VK_CONTROL) then
-				multy = 0.5
-			else
-				multy = 1
-			end
 
-			if isKeyDown(vkeys.VK_A) and not isKeyDown(vkeys.VK_SHIFT) then
-				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]+90))
-				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]+90))
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] - 0.2 *sinn * multy
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] - 0.2 *coss * multy
-			end
-			if isKeyDown(vkeys.VK_D) and not isKeyDown(vkeys.VK_SHIFT) then
-				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]-90))
-				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]-90))
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] - 0.2 *sinn * multy
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] - 0.2 *coss * multy
-			end
-			if isKeyDown(vkeys.VK_W) and not isKeyDown(vkeys.VK_SHIFT) then
-				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]))
-				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]))
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] + 0.2 *sinn * multy
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] + 0.2 *coss * multy
-			end
-			if isKeyDown(vkeys.VK_S) and not isKeyDown(vkeys.VK_SHIFT)  then
-				local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]))
-				local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]))
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] - 0.2 *sinn * multy
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] - 0.2 *coss * multy
-			end
-			if isKeyDown(vkeys.VK_Q) and not isKeyDown(vkeys.VK_SHIFT)  then
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'][3] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][3] + 0.2 * multy
-			end
-			if isKeyDown(vkeys.VK_E) and not isKeyDown(vkeys.VK_SHIFT)  then
-				vr.list_targets[vr.id_target]['Target_Data']['Pos'][3] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][3] - 0.2 * multy
-			end
-			if isKeyDown(vkeys.VK_SHIFT) then
-				if isKeyDown(vkeys.VK_A) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] - 2 * multy
-				end
-				if isKeyDown(vkeys.VK_D) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] + 2 * multy
-				end
-				if isKeyDown(vkeys.VK_W) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] - 2 * multy
-				end
-				if isKeyDown(vkeys.VK_S) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] + 2 * multy
-				end
-				if isKeyDown(vkeys.VK_E) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][3] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][3] - 2 * multy
-				end
-				if isKeyDown(vkeys.VK_Q) then
-					vr.list_targets[vr.id_target]['Target_Data']['Rotates'][3] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][3] + 2 * multy
-				end
-			end
+			local lines = false
 
-			local xx,xy,xz = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1],vr.list_targets[vr.id_target]['Target_Data']['Pos'][2],vr.list_targets[vr.id_target]['Target_Data']['Pos'][3]
-			local rxx,rxy,rxz = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1],vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2],vr.list_targets[vr.id_target]['Target_Data']['Rotates'][3]
-			local x1,y1,z1 = xx,xy,xz
-			x1 = x1 + 2*math.sin(math.rad(rxy)) * math.sin(math.rad(rxx))
-			y1 = y1 + 2*math.cos(math.rad(rxy)) * math.sin(math.rad(rxx))
-			z1 = z1 + 2*math.cos(math.rad(rxx))
+			while vr.editmode_camera do
+				wait(0)
+				--Переменная замедления
+				local multy = 1
+				if isKeyDown(vkeys.VK_CONTROL) then
+					multy = 0.5
+				else
+					multy = 1
+				end
 
-			--setObjectCoordinates(chr, x1, y1, z1)
-			setFixedCameraPosition(xx, xy, xz,0,rxz,0)
-			pointCameraAtPoint(x1, y1, z1, 2)
-			setCinemaCamera(false)
+				if isKeyDown(vkeys.VK_A) and not isKeyDown(vkeys.VK_SHIFT) then
+					local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]+90))
+					local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]+90))
+					vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] - 0.2 *sinn * multy
+					vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] - 0.2 *coss * multy
+				end
+				if isKeyDown(vkeys.VK_D) and not isKeyDown(vkeys.VK_SHIFT) then
+					local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]-90))
+					local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]-90))
+					vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] - 0.2 *sinn * multy
+					vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] - 0.2 *coss * multy
+				end
+				if isKeyDown(vkeys.VK_W) and not isKeyDown(vkeys.VK_SHIFT) then
+					local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]))
+					local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]))
+					vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] + 0.2 *sinn * multy
+					vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] + 0.2 *coss * multy
+				end
+				if isKeyDown(vkeys.VK_S) and not isKeyDown(vkeys.VK_SHIFT)  then
+					local sinn = math.sin(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]))
+					local coss = math.cos(math.rad(vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2]))
+					vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1] - 0.2 *sinn * multy
+					vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][2] - 0.2 *coss * multy
+				end
+				if isKeyDown(vkeys.VK_Q) and not isKeyDown(vkeys.VK_SHIFT)  then
+					vr.list_targets[vr.id_target]['Target_Data']['Pos'][3] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][3] + 0.2 * multy
+				end
+				if isKeyDown(vkeys.VK_E) and not isKeyDown(vkeys.VK_SHIFT)  then
+					vr.list_targets[vr.id_target]['Target_Data']['Pos'][3] = vr.list_targets[vr.id_target]['Target_Data']['Pos'][3] - 0.2 * multy
+				end
+				if wasKeyReleased(vkeys.VK_R) then
+					if lines then
 
-			--Закрытие редактора
-			if wasKeyReleased(vkeys.VK_F) then
-				lockPlayerControl(true)
-				clearHelp()
-				restoreCamera()
-				vr.editmode_camera = false
-				displayRadar(true)
-				displayHud(true)
-				openMenu = true
+						lines = false
+					else
+						lines = true
+					end
+				end
+
+				if lines then
+					local wieght_line,height_line = getScreenResolution()
+					for i = 1, 2 do
+						renderDrawLine(0,(height_line/3)*i,wieght_line,(height_line/3)*i,1,rgba_to_int(255,255,255,255))
+						renderDrawLine((wieght_line/3)*i,0,(wieght_line/3)*i,height_line,1,rgba_to_int(255,255,255,255))
+					end
+				end
+
+				if isKeyDown(vkeys.VK_SHIFT) then
+					if isKeyDown(vkeys.VK_A) then
+						vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] - 2 * multy
+					end
+					if isKeyDown(vkeys.VK_D) then
+						vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2] + 2 * multy
+					end
+					if isKeyDown(vkeys.VK_W) then
+						vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] - 2 * multy
+					end
+					if isKeyDown(vkeys.VK_S) then
+						vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1] + 2 * multy
+					end
+					if isKeyDown(vkeys.VK_E) then
+						vr.list_targets[vr.id_target]['Target_Data']['Rotates'][3] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][3] - 2 * multy
+					end
+					if isKeyDown(vkeys.VK_Q) then
+						vr.list_targets[vr.id_target]['Target_Data']['Rotates'][3] = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][3] + 2 * multy
+					end
+				end
+
+				local xx,xy,xz = vr.list_targets[vr.id_target]['Target_Data']['Pos'][1],vr.list_targets[vr.id_target]['Target_Data']['Pos'][2],vr.list_targets[vr.id_target]['Target_Data']['Pos'][3]
+				local rxx,rxy,rxz = vr.list_targets[vr.id_target]['Target_Data']['Rotates'][1],vr.list_targets[vr.id_target]['Target_Data']['Rotates'][2],vr.list_targets[vr.id_target]['Target_Data']['Rotates'][3]
+				local x1,y1,z1 = xx,xy,xz
+				x1 = x1 + 2*math.sin(math.rad(rxy)) * math.sin(math.rad(rxx))
+				y1 = y1 + 2*math.cos(math.rad(rxy)) * math.sin(math.rad(rxx))
+				z1 = z1 + 2*math.cos(math.rad(rxx))
+
+				--setObjectCoordinates(chr, x1, y1, z1)
+				setFixedCameraPosition(xx, xy, xz,0,rxz,0)
+				pointCameraAtPoint(x1, y1, z1, 2)
+				setCinemaCamera(false)
+
+				--Закрытие редактора
+				if wasKeyReleased(vkeys.VK_F) then
+					lockPlayerControl(true)
+					clearHelp()
+					restoreCamera()
+					vr.editmode_camera = false
+					displayRadar(true)
+					displayHud(true)
+					openMenu = true
+				end
 			end
 		end
 
@@ -5005,19 +5061,20 @@ function main()
 				{'int_slider',names[5],vr.list_actors[vr.current_actor]['Actor_Data'],"Ammo",0,_,_,7},
 				{'int_slider',names[6],vr.list_actors[vr.current_actor]['Actor_Data'],"Health",0,_,_,8},
 				{'arr_slider',names[7],vr.list_actors[vr.current_actor]['Actor_Data'],"Group",decodeJson(langt['name_groups']),9},
+				{'checkbox',langt['randomSpawnW'],vr.list_actors[vr.current_actor]['Actor_Data'],"Random_spawn",13},
 				{'checkbox',names[8],vr.list_actors[vr.current_actor]['Actor_Data'],"Should_not_die",10},
 				{'button',names[9],11},
 				{'button',names[10],12},
 				{'arr_slider',names[11],vr.list_actors[vr.current_actor]['Actor_Data'],"StartC",vr.list_name_targets,13},
 				{'arr_slider',names[12],vr.list_actors[vr.current_actor]['Actor_Data'],"EndC",list_tg_m,14}
 			})
-			last_id = 12
+			last_id = 13
 			for i = 1,#addons do
 				local e
 				e,last_id = pcall(addons[i].actor_items,vr.actor_items,last_id)
 			end
 			if drawMenu(langt['actors'],vr.actor_items,360,320) then
-				actor(12)
+				actor(13)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.actor_window = false
@@ -5071,7 +5128,14 @@ function main()
 				table.merge(vr.actor_anim_items,{
 					{'arr_slider',langt['pack'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Pack_anim",Anims['Anim_name'],5},
 					{'arr_slider',langt['anim'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Anim",Anims['Anim_list'][vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Pack_anim']],6},
-					{'int_slider',langt['time_anim'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Time",0,_,0.05,7},
+				})
+				if not vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Loop'] then
+					table.merge(vr.actor_anim_items,{
+						{'int_slider',langt['time_anim'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Time",0,_,0.05,7},
+						{'checkbox',langt['stopEndFrameW'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"stopEndFrame",37},
+					})
+				end
+				table.merge(vr.actor_anim_items,{
 					{'checkbox',langt['looped'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Loop",8},
 					{'checkbox',langt['unbreak'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Unbreakable",9},
 					{'button',langt['preview'],10}
@@ -5115,6 +5179,7 @@ function main()
 					{'arr_slider',langt['speed_walk'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"speed_walk",speed_walk_to_car,28},
 					{'arr_slider',langt['car'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Car",vr.list_name_cars,29},
 					{'arr_slider',langt['seat'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"place_in_car",place_in_car,30},
+					{'checkbox',langt['teleportW'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"teleport",36},
 					{'checkbox',langt['wait_end'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"wait_end",31},
 				})
 			elseif vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']]['Type'] == 7 then
@@ -5141,13 +5206,13 @@ function main()
 					{'int_slider',langt['countAmmo'],vr.list_actors[vr.current_actor]['Actor_Data']['Anims'][vr.list_actors[vr.current_actor]['Actor_Data']['Anim_id']],"Ammo",0,_,_,35},
 				})
 			end
-			last_id = 35
+			last_id = 37
 			for i = 1,#addons do
 				local e
 				e,last_id = pcall(addons[i].actor_anim_items,vr.actor_anim_items,last_id)
 			end
 			if drawMenu(langt['actors'],vr.actor_anim_items,540,320) then
-				actor_anim(35)
+				actor_anim(37)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.actor_anim_window = false
@@ -5171,10 +5236,12 @@ function main()
 				namet = decodeJson(langt['main_menu_arr'])[1]
 			elseif vr.targets_list_toggle == 2 then
 				namet = decodeJson(langt['main_menu_arr'])[1]
-			elseif vr.targets_list_toggle == 3 then
-				namet = langt['cut']
 			elseif vr.targets_list_toggle == 4 then
+				namet = langt['cut']
+			elseif vr.targets_list_toggle == 5 then
 				namet = langt['paste']
+			elseif vr.targets_list_toggle == 6 then
+				namet = decodeJson(langt['main_menu_arr'])[1]
 			end
 			if drawMenu(namet,vr.targets_list_items,300,320) then
 				targets_list(5)
@@ -5218,6 +5285,52 @@ function main()
 					{'arr_slider',langt['type'],vr.list_targets[vr.current_target]['Target_Data'],"Target_type",target_type,14},
 				})
 				if vr.list_targets[vr.current_target]['Target_Data']['Target_type'] == 1 then
+					local CutscenePos = decodeJson(langt['CutscenePos'])
+					local CutsceneLook = decodeJson(langt['CutsceneLook'])
+					table.merge(vr.target_items,{
+						{'arr_slider',langt['tied'],vr.list_targets[vr.current_target]['Target_Data'],"Cutscene_pos",CutscenePos,57},
+					})
+					if vr.list_targets[vr.current_target]['Target_Data']['Cutscene_pos'] == 2 then
+						table.merge(vr.target_items,{
+							{'arr_slider',langt['actor'],vr.list_targets[vr.current_target]['Target_Data'],"Pos_tied", vr.list_name_actors,58}
+						})
+						if #vr.list_actors > 0 then
+							local ax,ay,az = getCharCoordinates(vr.list_actors[vr.list_targets[vr.current_target]['Target_Data']['Pos_tied']]['Actor_Data']['Char'])
+							local dx,dy = convert3DCoordsToScreen(ax,ay+0.2,az+1)
+							renderFontDrawText(vr.Verdana_font,u8:decode(vr.list_actors[vr.list_targets[vr.current_target]['Target_Data']['Pos_tied']]['Name']),dx,dy,rgba_to_int(0,0,255,255))
+						end
+					elseif vr.list_targets[vr.current_target]['Target_Data']['Cutscene_pos'] == 3 then
+						table.merge(vr.target_items,{
+							{'arr_slider',langt['car'],vr.list_targets[vr.current_target]['Target_Data'],"Pos_tied", vr.list_name_cars,58}
+						})
+						if #vr.list_cars > 0 then
+							local ax,ay,az = getCarCoordinates(vr.list_cars[vr.list_targets[vr.current_target]['Target_Data']['Pos_tied']]['Car_Data']['Car'])
+							local dx,dy = convert3DCoordsToScreen(ax,ay+0.2,az+1)
+							renderFontDrawText(vr.Verdana_font,u8:decode(vr.list_cars[vr.list_targets[vr.current_target]['Target_Data']['Pos_tied']]['Name']),dx,dy,rgba_to_int(0,0,255,255))
+						end
+					end
+					table.merge(vr.target_items,{
+						{'arr_slider',langt['follow'],vr.list_targets[vr.current_target]['Target_Data'],"Cutscene_look",CutsceneLook,59}
+					})
+					if vr.list_targets[vr.current_target]['Target_Data']['Cutscene_look'] == 2 then
+						table.merge(vr.target_items,{
+							{'arr_slider',langt['actor'],vr.list_targets[vr.current_target]['Target_Data'],"Look_at", vr.list_name_actors,58}
+						})
+						if #vr.list_actors > 0 then
+							local ax,ay,az = getCharCoordinates(vr.list_actors[vr.list_targets[vr.current_target]['Target_Data']['Look_at']]['Actor_Data']['Char'])
+							local dx,dy = convert3DCoordsToScreen(ax,ay+0.2,az+1)
+							renderFontDrawText(vr.Verdana_font,u8:decode(vr.list_actors[vr.list_targets[vr.current_target]['Target_Data']['Look_at']]['Name']),dx,dy,rgba_to_int(255,0,0,255))
+						end
+					elseif vr.list_targets[vr.current_target]['Target_Data']['Cutscene_look'] == 3 then
+						table.merge(vr.target_items,{
+							{'arr_slider',langt['car'],vr.list_targets[vr.current_target]['Target_Data'],"Look_at", vr.list_name_cars,58}
+						})
+						if #vr.list_cars > 0 then
+							local ax,ay,az = getCarCoordinates(vr.list_cars[vr.list_targets[vr.current_target]['Target_Data']['Look_at']]['Car_Data']['Car'])
+							local dx,dy = convert3DCoordsToScreen(ax,ay+0.2,az+1)
+							renderFontDrawText(vr.Verdana_font,u8:decode(vr.list_cars[vr.list_targets[vr.current_target]['Target_Data']['Look_at']]['Name']),dx,dy,rgba_to_int(255,0,0,255))
+						end
+					end
 					table.merge(vr.target_items,{
 						{'button',langt['position'],15},
 						{'button',langt['rotate'],16},
@@ -5325,13 +5438,13 @@ function main()
 					})
 				end
 			end
-			last_id = 56
+			last_id = 58
 			for i = 1,#addons do
 				local e
 				e,last_id = pcall(addons[i].target_items,vr.target_items,last_id)
 			end
 			if drawMenu(langt['target'],vr.target_items,360,320) then
-				target(56)
+				target(58)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.target_window = false
@@ -5822,14 +5935,15 @@ function main()
 			vr.tools_items =  {
 				{'button',langt['tool_tp_marker'],1},
 				{'button',langt['jetpack'],2},
+				{'checkbox',langt['enexMarker'],vr.mission_data,"enex_markers",3},
 			}
-			last_id = 2
+			last_id = 3
 			for i = 1,#addons do
 				local e
 				e,last_id = pcall(addons[i].tools_items,vr.tools_items,last_id)
 			end
 			if drawMenu(langt['tools'],vr.tools_items,300,320) then
-				tools(2)
+				tools(3)
 			end
 			if isKeyJustPressed(0x46) then
 				vr.tools_window = false

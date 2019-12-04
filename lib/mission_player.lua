@@ -101,7 +101,7 @@ function audio_player(list_a,list_c,list_o,list_au)
 			end
 		elseif list_au[a]['Audio_Data']['Type'] == 2 then
 			if list_au[a]['Audio_Data']['Actor_act'] == list_a[list_au[a]['Audio_Data']['Actor']]['Actor_Data']['curr_anim']+1 and getAudioStreamState(mp.audio[a]) == -1 then
-			
+
 				setAudioStreamState(mp.audio[a],1)
 			end
 		elseif list_au[a]['Audio_Data']['Type'] == 3 then
@@ -118,7 +118,7 @@ end
 
 
 function char_is_not_dead(ped)
-	lua_thread.create(function() 
+	lua_thread.create(function()
 	while not isCharDead(ped) do
 		wait(0)
 	end
@@ -144,9 +144,9 @@ function mp.play_char_anims(ped,actr)
 				local animm = Anims['Anim_list'][actr['Anims'][curr_anim]['Pack_anim']]
 				animm = animm[actr['Anims'][curr_anim]['Anim']]
 				if not actr['Anims'][curr_anim]['Unbreakable'] then
-					taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim']], 1.0, actr['Anims'][curr_anim]['Loop'], false, false, false, -1)
+					taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim']], 1.0, actr['Anims'][curr_anim]['Loop'], true, true, actr['Anims'][curr_anim]['stopEndFrame'], ternar(actr['Anims'][curr_anim]['Loop'],-1,actr['Anims'][curr_anim]['Time']*1000))
 				else
-					taskPlayAnimWithFlags(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim']], 1.0, actr['Anims'][curr_anim]['Loop'], false, false, false, -1,false,false)
+					taskPlayAnimWithFlags(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim']], 1.0, actr['Anims'][curr_anim]['Loop'], true, true, actr['Anims'][curr_anim]['stopEndFrame'], ternar(actr['Anims'][curr_anim]['Loop'],-1,actr['Anims'][curr_anim]['Time']*1000),false,false)
 				end
 				if not actr['Anims'][curr_anim]['Loop'] then
 					wait(actr['Anims'][curr_anim]['Time'] * 1000.0)
@@ -163,9 +163,9 @@ function mp.play_char_anims(ped,actr)
 					local animm = Anims['Anim_list'][actr['Anims'][curr_anim]['Pack_anim']]
 					animm = animm[actr['Anims'][curr_anim]['Anim']]
 					if not actr['Anims'][curr_anim]['Unbreakable'] then
-						taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim']], 1.0, actr['Anims'][curr_anim]['Loop'], false, false, false, -1)
+						taskPlayAnim(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim']], 1.0, actr['Anims'][curr_anim]['Loop'], true, true, actr['Anims'][curr_anim]['stopEndFrame'], ternar(actr['Anims'][curr_anim]['Loop'],-1,actr['Anims'][curr_anim]['Time']*1000))
 					else
-						taskPlayAnimWithFlags(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim']], 1.0, actr['Anims'][curr_anim]['Loop'], false, false, false, -1,false,false)
+						taskPlayAnimWithFlags(ped, animm, Anims['Anim_name'][actr['Anims'][curr_anim]['Pack_anim']], 1.0, actr['Anims'][curr_anim]['Loop'], true, true, actr['Anims'][curr_anim]['stopEndFrame'], ternar(actr['Anims'][curr_anim]['Loop'],-1,actr['Anims'][curr_anim]['Time']*1000),false,false)
 					end
 					wait(actr['Anims'][curr_anim]['Time'] * 1000.0)
 					curr_anim = curr_anim + 1
@@ -249,7 +249,7 @@ function mp.play_char_anims(ped,actr)
 				end
 			end
 			curr_anim = curr_anim + 1
-		
+
 		elseif actr['Anims'][curr_anim]['Type'] == 5 then
 			if actr['Anims'][curr_anim]['Condition'] == 2 then
 				while not (curr_target == actr['Anims'][curr_anim]['Target']) do
@@ -266,10 +266,18 @@ function mp.play_char_anims(ped,actr)
 			end
 			if actr['Anims'][curr_anim]['place_in_car'] == 1 then
 				setNextDesiredMoveState(actr['Anims'][curr_anim]['speed_walk']+4)
-				taskEnterCarAsDriver(ped,mp.cars[actr['Anims'][curr_anim]['Car']],-1)
+				if actr['Anims'][curr_anim]['teleport'] then
+					taskEnterCarAsDriver(ped,mp.cars[actr['Anims'][curr_anim]['Car']],0)
+				else
+					taskEnterCarAsDriver(ped,mp.cars[actr['Anims'][curr_anim]['Car']],-1)
+				end
 			else
 				setNextDesiredMoveState(actr['Anims'][curr_anim]['speed_walk']+4)
-				taskEnterCarAsPassenger(ped,mp.cars[actr['Anims'][curr_anim]['Car']],-1,actr['Anims'][curr_anim]['place_in_car']-1)
+				if actr['Anims'][curr_anim]['teleport'] then
+					taskEnterCarAsPassenger(ped,mp.cars[actr['Anims'][curr_anim]['Car']],0,actr['Anims'][curr_anim]['place_in_car']-1)
+				else
+					taskEnterCarAsPassenger(ped,mp.cars[actr['Anims'][curr_anim]['Car']],-1,actr['Anims'][curr_anim]['place_in_car']-1)
+				end
 			end
 			if actr['Anims'][curr_anim]['wait_end'] then
 				while not isCharInAnyCar(ped) do
@@ -483,44 +491,46 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 		curr_target = i
 		for a = 1,#list_a do
 			if list_a[a]['Actor_Data']['StartC'] == i then
-				local xx,xy,xz = list_a[a]['Actor_Data']['Pos'][1], list_a[a]['Actor_Data']['Pos'][2], list_a[a]['Actor_Data']['Pos'][3]
-				local modell
-				if list_a[a]['Actor_Data']['Model_type'] == 1 then
-					modell = ID_Actors[list_a[a]['Actor_Data']['ModelId']]
-					requestModel(modell)
-					while not hasModelLoaded(modell) do
+				if (not list_a[a]['Actor_Data']['Random_spawn']) or (math.random(0,100) > 50) then
+					local xx,xy,xz = list_a[a]['Actor_Data']['Pos'][1], list_a[a]['Actor_Data']['Pos'][2], list_a[a]['Actor_Data']['Pos'][3]
+					local modell
+					if list_a[a]['Actor_Data']['Model_type'] == 1 then
+						modell = ID_Actors[list_a[a]['Actor_Data']['ModelId']]
+						requestModel(modell)
+						while not hasModelLoaded(modell) do
+							wait(0)
+						end
+					elseif list_a[a]['Actor_Data']['Model_type'] == 2 then
+						local modell_n = ID_Spec_Actors[list_a[a]['Actor_Data']['ModelId']]
+						loadSpecialCharacter(modell_n,list_a[a]['Actor_Data']['Slot_model'])
+						while not hasSpecialCharacterLoaded(list_a[a]['Actor_Data']['Slot_model']) do
+							wait(0)
+						end
+						modell = 290 + list_a[a]['Actor_Data']['Slot_model']-1
+					end
+					if list_a[a]['Actor_Data']['Group'] == 1 then
+						mp.actors[a] = createChar(23, modell, xx, xy, xz)
+						local g = getPlayerGroup(PLAYER_HANDLE)
+						setGroupMember(g,mp.actors[a])
+					else
+						mp.actors[a] = createChar(24 + list_a[a]['Actor_Data']['Group']-2, modell, xx, xy, xz)
+					end
+					setCharHealth(mp.actors[a],list_a[a]['Actor_Data']['Health'])
+					setCharHeading(mp.actors[a], list_a[a]['Actor_Data']['Angle'])
+					requestModel(getWeapontypeModel(ID_Weapons[list_a[a]['Actor_Data']['Weapon']]))
+					while not hasModelLoaded(getWeapontypeModel(ID_Weapons[list_a[a]['Actor_Data']['Weapon']])) do
 						wait(0)
 					end
-				elseif list_a[a]['Actor_Data']['Model_type'] == 2 then
-					local modell_n = ID_Spec_Actors[list_a[a]['Actor_Data']['ModelId']]
-					loadSpecialCharacter(modell_n,list_a[a]['Actor_Data']['Slot_model'])
-					while not hasSpecialCharacterLoaded(list_a[a]['Actor_Data']['Slot_model']) do
-						wait(0)
-					end
-					modell = 290 + list_a[a]['Actor_Data']['Slot_model']-1
-				end
-				if list_a[a]['Actor_Data']['Group'] == 1 then
-					mp.actors[a] = createChar(23, modell, xx, xy, xz)
-					local g = getPlayerGroup(PLAYER_HANDLE)
-					setGroupMember(g,mp.actors[a])
-				else
-					mp.actors[a] = createChar(24 + list_a[a]['Actor_Data']['Group']-2, modell, xx, xy, xz)
-				end
-				setCharHealth(mp.actors[a],list_a[a]['Actor_Data']['Health'])
-				setCharHeading(mp.actors[a], list_a[a]['Actor_Data']['Angle'])
-				requestModel(getWeapontypeModel(ID_Weapons[list_a[a]['Actor_Data']['Weapon']]))
-				while not hasModelLoaded(getWeapontypeModel(ID_Weapons[list_a[a]['Actor_Data']['Weapon']])) do
+					giveWeaponToChar(mp.actors[a], ID_Weapons[list_a[a]['Actor_Data']['Weapon']], list_a[a]['Actor_Data']['Ammo'])
+					setCurrentCharWeapon(mp.actors[a],1)
+					markModelAsNoLongerNeeded(getWeapontypeModel(ID_Weapons[list_a[a]['Actor_Data']['Weapon']]))
 					wait(0)
-				end
-				giveWeaponToChar(mp.actors[a], ID_Weapons[list_a[a]['Actor_Data']['Weapon']], list_a[a]['Actor_Data']['Ammo'])
-				setCurrentCharWeapon(mp.actors[a],1)
-				markModelAsNoLongerNeeded(getWeapontypeModel(ID_Weapons[list_a[a]['Actor_Data']['Weapon']]))
-				wait(0)
-				if #list_a[a]['Actor_Data']['Anims'] > 0 then
-					mp.thread[#mp.thread+1] = lua_thread.create(mp.play_char_anims,mp.actors[a], list_a[a]['Actor_Data'])
-				end
-				if list_a[a]['Actor_Data']['Should_not_die'] == true then
-					mp.thread[#mp.thread+1] = lua_thread.create(char_is_not_dead,mp.actors[a])
+					if #list_a[a]['Actor_Data']['Anims'] > 0 then
+						mp.thread[#mp.thread+1] = lua_thread.create(mp.play_char_anims,mp.actors[a], list_a[a]['Actor_Data'])
+					end
+					if list_a[a]['Actor_Data']['Should_not_die'] == true then
+						mp.thread[#mp.thread+1] = lua_thread.create(char_is_not_dead,mp.actors[a])
+					end
 				end
 			end
 			if list_a[a]['Actor_Data']['EndC'] ~= 1 and list_a[a]['Actor_Data']['EndC'] == i then
@@ -633,7 +643,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 		for e = 1,#list_e do
 			if list_e[e]['Explosion_Data']['StartC'] == i then
 				local xx,xy,xz = list_e[e]['Explosion_Data']['Pos'][1], list_e[e]['Explosion_Data']['Pos'][2], list_e[e]['Explosion_Data']['Pos'][3]
-				
+
 				if list_e[e]['Explosion_Data']['Type'] == 1 then
 					mp.explosion[e] = startScriptFire(xx,xy,xz,list_e[e]['Explosion_Data']['Propagation_fire'],list_e[e]['Explosion_Data']['Size_fire'])
 				end
@@ -747,29 +757,162 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 					end
 					skip = 0
 					end)
-				local xx,xy,xz = list[i]['Target_Data']['Pos'][1],list[i]['Target_Data']['Pos'][2],list[i]['Target_Data']['Pos'][3]
-				local rxx,rxy,rxz = list[i]['Target_Data']['Rotates'][1],list[i]['Target_Data']['Rotates'][2],list[i]['Target_Data']['Rotates'][3]
-				local x1,y1,z1 = xx,xy,xz
-				x1 = x1 + 2*math.sin(math.rad(rxy)) * math.sin(math.rad(rxx))
-				y1 = y1 + 2*math.cos(math.rad(rxy)) * math.sin(math.rad(rxx))
-				z1 = z1 + 2*math.cos(math.rad(rxx))
-				if list[i]['Target_Data']['Smooth'] then
-					setInterpolationParameters(0,list[i]['Target_Data']['Text_time']*1000)
-					setFixedCameraPosition(xx, xy, xz)
-					pointCameraAtPoint(x1, y1, z1, 1)
-				else
-					setFixedCameraPosition(xx, xy, xz)
-					pointCameraAtPoint(x1, y1, z1, 2)
-				end
+				if list[i]['Target_Data']['Cutscene_pos'] == 1 then
+					if list[i]['Target_Data']['Cutscene_look'] == 1 then
+						local xx,xy,xz = list[i]['Target_Data']['Pos'][1],list[i]['Target_Data']['Pos'][2],list[i]['Target_Data']['Pos'][3]
+						local rxx,rxy,rxz = list[i]['Target_Data']['Rotates'][1],list[i]['Target_Data']['Rotates'][2],list[i]['Target_Data']['Rotates'][3]
+						local x1,y1,z1 = xx,xy,xz
+						x1 = x1 + 2*math.sin(math.rad(rxy)) * math.sin(math.rad(rxx))
+						y1 = y1 + 2*math.cos(math.rad(rxy)) * math.sin(math.rad(rxx))
+						z1 = z1 + 2*math.cos(math.rad(rxx))
+						if list[i]['Target_Data']['Smooth'] then
+							setInterpolationParameters(0,list[i]['Target_Data']['Text_time']*1000)
+							setFixedCameraPosition(xx, xy, xz)
+							pointCameraAtPoint(x1, y1, z1, 1)
+						else
+							setFixedCameraPosition(xx, xy, xz)
+							pointCameraAtPoint(x1, y1, z1, 2)
+						end
+						printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
+						wait(list[i]['Target_Data']['Text_time']*1000*skip)
+					elseif list[i]['Target_Data']['Cutscene_look'] == 2 then
+						local xx,xy,xz = list[i]['Target_Data']['Pos'][1],list[i]['Target_Data']['Pos'][2],list[i]['Target_Data']['Pos'][3]
+						local x1,y1,z1 = getCharCoordinates(mp.actors[list[i]['Target_Data']['Look_at']])
+						if list[i]['Target_Data']['Smooth'] then
+							setInterpolationParameters(0,list[i]['Target_Data']['Text_time']*1000)
+							setFixedCameraPosition(xx, xy, xz)
+							pointCameraAtChar(mp.actors[list[i]['Target_Data']['Look_at']],15,1)
+						else
+							setFixedCameraPosition(xx, xy, xz)
+							pointCameraAtChar(mp.actors[list[i]['Target_Data']['Look_at']],15,2)
+							print('hs')
+						end
+						printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
+						wait(list[i]['Target_Data']['Text_time']*1000*skip)
+					elseif list[i]['Target_Data']['Cutscene_look'] == 3 then
+						local xx,xy,xz = list[i]['Target_Data']['Pos'][1],list[i]['Target_Data']['Pos'][2],list[i]['Target_Data']['Pos'][3]
+						local x1,y1,z1 = getCharCoordinates(mp.actors[list[i]['Target_Data']['Look_at']])
+						if list[i]['Target_Data']['Smooth'] then
+							setInterpolationParameters(0,list[i]['Target_Data']['Text_time']*1000)
+							setFixedCameraPosition(xx, xy, xz)
+							pointCameraAtCar(mp.cars[list[i]['Target_Data']['Look_at']],15,1)
+						else
+							setFixedCameraPosition(xx, xy, xz)
+							pointCameraAtCar(mp.cars[list[i]['Target_Data']['Look_at']],15,2)
+						end
+						printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
+						wait(list[i]['Target_Data']['Text_time']*1000*skip)
+					end
+				elseif list[i]['Target_Data']['Cutscene_pos'] == 2 then
+					if list[i]['Target_Data']['Cutscene_look'] == 1 then
+						local x1,y1,z1 = getCharCoordinates(mp.actors[list[i]['Target_Data']['Pos_tied']])
+						local xx,xy,xz = list[i]['Target_Data']['Pos'][1],list[i]['Target_Data']['Pos'][2],list[i]['Target_Data']['Pos'][3]
+						local rxx,rxy,rxz = list[i]['Target_Data']['Rotates'][1],list[i]['Target_Data']['Rotates'][2],list[i]['Target_Data']['Rotates'][3]
+						local timer = 0.0
+						local last_time = os.clock()
+						printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
+						while timer < list[i]['Target_Data']['Text_time']*skip do
+							wait(0)
+							local cur_x,cur_y,cur_z = getCharCoordinates(mp.actors[list[i]['Target_Data']['Pos_tied']])
+							local rx,ry,rz = cur_x+(xx-x1),cur_y+(xy-y1),cur_z+(xz-z1)
+							rx = rx + 2*math.sin(math.rad(rxy)) * math.sin(math.rad(rxx))
+							ry = ry + 2*math.cos(math.rad(rxy)) * math.sin(math.rad(rxx))
+							rz = rz + 2*math.cos(math.rad(rxx))
+							setFixedCameraPosition(cur_x+(xx-x1),cur_y+(xy-y1),cur_z+(xz-z1))
+							pointCameraAtPoint(rx,ry,rz,2)
+							timer = timer + (os.clock()-last_time)
+							last_time = os.clock()
+						end
+					elseif list[i]['Target_Data']['Cutscene_look'] == 2 then
+						local x1,y1,z1 = getCharCoordinates(mp.actors[list[i]['Target_Data']['Pos_tied']])
+						local xx,xy,xz = list[i]['Target_Data']['Pos'][1],list[i]['Target_Data']['Pos'][2],list[i]['Target_Data']['Pos'][3]
+						local timer = 0.0
+						local last_time = os.clock()
+						printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
+						while timer < list[i]['Target_Data']['Text_time']*skip do
+							wait(0)
+							local cur_x,cur_y,cur_z = getCharCoordinates(mp.actors[list[i]['Target_Data']['Pos_tied']])
+							local rx,ry,rz = getCharCoordinates(mp.actors[list[i]['Target_Data']['Look_at']])
+							setFixedCameraPosition(cur_x+(xx-x1),cur_y+(xy-y1),cur_z+(xz-z1))
+							pointCameraAtPoint(rx,ry,rz,2)
+							timer = timer + (os.clock()-last_time)
+							last_time = os.clock()
+						end
+					elseif list[i]['Target_Data']['Cutscene_look'] == 3 then
+						local x1,y1,z1 = getCharCoordinates(mp.actors[list[i]['Target_Data']['Pos_tied']])
+						local xx,xy,xz = list[i]['Target_Data']['Pos'][1],list[i]['Target_Data']['Pos'][2],list[i]['Target_Data']['Pos'][3]
+						local timer = 0.0
+						local last_time = os.clock()
+						printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
+						while timer < list[i]['Target_Data']['Text_time']*skip do
+							wait(0)
+							local cur_x,cur_y,cur_z = getCharCoordinates(mp.actors[list[i]['Target_Data']['Pos_tied']])
+							local rx,ry,rz = getCarCoordinates(mp.cars[list[i]['Target_Data']['Look_at']])
+							setFixedCameraPosition(cur_x+(xx-x1),cur_y+(xy-y1),cur_z+(xz-z1))
+							pointCameraAtPoint(rx,ry,rz,2)
+							timer = timer + (os.clock()-last_time)
+							last_time = os.clock()
+						end
+					end
+				elseif list[i]['Target_Data']['Cutscene_pos'] == 3 then
+					if list[i]['Target_Data']['Cutscene_look'] == 1 then
+						local x1,y1,z1 = getCarCoordinates(mp.cars[list[i]['Target_Data']['Pos_tied']])
+						local xx,xy,xz = list[i]['Target_Data']['Pos'][1],list[i]['Target_Data']['Pos'][2],list[i]['Target_Data']['Pos'][3]
+						local rxx,rxy,rxz = list[i]['Target_Data']['Rotates'][1],list[i]['Target_Data']['Rotates'][2],list[i]['Target_Data']['Rotates'][3]
+						local timer = 0.0
+						local last_time = os.clock()
+						printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
+						while timer < list[i]['Target_Data']['Text_time']*skip do
+							wait(0)
+							local cur_x,cur_y,cur_z = getCarCoordinates(mp.cars[list[i]['Target_Data']['Pos_tied']])
+							local rx,ry,rz = cur_x+(xx-x1),cur_y+(xy-y1),cur_z+(xz-z1)
+							rx = rx + 2*math.sin(math.rad(rxy)) * math.sin(math.rad(rxx))
+							ry = ry + 2*math.cos(math.rad(rxy)) * math.sin(math.rad(rxx))
+							rz = rz + 2*math.cos(math.rad(rxx))
+							setFixedCameraPosition(cur_x+(xx-x1),cur_y+(xy-y1),cur_z+(xz-z1))
+							pointCameraAtPoint(rx,ry,rz,2)
+							timer = timer + (os.clock()-last_time)
+							last_time = os.clock()
+						end
+					elseif list[i]['Target_Data']['Cutscene_look'] == 2 then
+						local x1,y1,z1 = getCarCoordinates(mp.actors[list[i]['Target_Data']['Pos_tied']])
+						local xx,xy,xz = list[i]['Target_Data']['Pos'][1],list[i]['Target_Data']['Pos'][2],list[i]['Target_Data']['Pos'][3]
+						local timer = 0.0
+						local last_time = os.clock()
+						printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
+						while timer < list[i]['Target_Data']['Text_time']*skip do
+							wait(0)
+							local cur_x,cur_y,cur_z = getCarCoordinates(mp.cars[list[i]['Target_Data']['Pos_tied']])
+							local rx,ry,rz = getCharCoordinates(mp.actors[list[i]['Target_Data']['Look_at']])
+							setFixedCameraPosition(cur_x+(xx-x1),cur_y+(xy-y1),cur_z+(xz-z1))
+							pointCameraAtPoint(rx,ry,rz,2)
+							timer = timer + (os.clock()-last_time)
+							last_time = os.clock()
+						end
+					elseif list[i]['Target_Data']['Cutscene_look'] == 3 then
+						local x1,y1,z1 = getCarCoordinates(mp.cars[list[i]['Target_Data']['Pos_tied']])
+						local xx,xy,xz = list[i]['Target_Data']['Pos'][1],list[i]['Target_Data']['Pos'][2],list[i]['Target_Data']['Pos'][3]
+						local timer = 0.0
+						local last_time = os.clock()
+						printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
+						while timer < list[i]['Target_Data']['Text_time']*skip do
+							wait(0)
+							local cur_x,cur_y,cur_z = getCarCoordinates(mp.cars[list[i]['Target_Data']['Pos_tied']])
+							local rx,ry,rz = getCarCoordinates(mp.cars[list[i]['Target_Data']['Look_at']])
+							setFixedCameraPosition(cur_x+(xx-x1),cur_y+(xy-y1),cur_z+(xz-z1))
+							pointCameraAtPoint(rx,ry,rz,2)
+							timer = timer + (os.clock()-last_time)
+							last_time = os.clock()
+						end
+					end
 
-				printString(koder(u8:decode(list[i]['Target_Data']['Text'])), list[i]['Target_Data']['Text_time']*1000)
-       			wait(list[i]['Target_Data']['Text_time']*1000*skip)
+				end
 				if i < #list and not (list[i+1]['Target_Data']['Target_type'] == 1 and list[i+1]['Type'] == 4) then
 					doFade(false, 500)
 					wait(1000)
 					doFade(true, 500)
 				end
-				skipp:terminate()   
+				skipp:terminate()
 				displayRadar(true)
 				displayHud(true)
 				lockPlayerControl(false)
