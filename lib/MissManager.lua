@@ -6,6 +6,7 @@ encoding.default = 'CP1251'
 json = require 'json'
 u8 = encoding.UTF8
 path = getWorkingDirectory() .. "\\Missions_pack\\"
+path_s = getWorkingDirectory() .. "\\Stories\\"
 path_backup = getWorkingDirectory() .. "\\Backup\\"
 
 local CountMPacks = 0
@@ -26,8 +27,31 @@ function manager.save(pack,num)
 	f:close()
 end
 
+function manager.save_s(story,num)
+	createDirectory(path_backup)
+	local old_save
+	if doesFileExist(path_s .. 'STORY' .. tostring(num) .. '.json') then
+		local f = io.open(path_s .. 'STORY' .. tostring(num) .. '.json',"r")
+		old_save = f:read()
+		f:close()
+		local f = io.open(path_backup .. 'STORY' .. tostring(num) .. '_' .. os.time() .. '.json',"w")
+		f:write(old_save)
+		f:close()
+	end
+	local f = io.open(path_s .. 'STORY' .. tostring(num) .. '.json',"w")
+	f:write(json.encode(story))
+	f:close()
+end
+
 function manager.load(num)
 	local f = io.open(path .. 'LDYOM' .. tostring(num) .. '.json',"r")
+	local packk = json.decode(f:read())
+	f:close()
+	return packk
+end
+
+function manager.load_s(num)
+	local f = io.open(path_s .. 'STORY' .. tostring(num) .. '.json',"r")
 	local packk = json.decode(f:read())
 	f:close()
 	return packk
@@ -388,12 +412,23 @@ function manager.loadMPack()
 	createDirectory(path)
 	while doesFileExist(path .. 'LDYOM' .. tostring(c) .. '.json') do
 		wait(0)
-		mpack[c+1] = manager.load(c)
+		mpack[c+1] = manager.load(c)['Name']
 		c = c + 1
 	end
 	return mpack
 end
 
+function manager.loadStories()
+	local c = 0
+	stories = {}
+	createDirectory(path_s)
+	while doesFileExist(path_s .. 'STORY' .. tostring(c) .. '.json') do
+		wait(0)
+		stories[c+1] = manager.load_s(c)['Name']
+		c = c + 1
+	end
+	return stories
+end
 
 function ternar(condition,truee,falses)
 	if condition then

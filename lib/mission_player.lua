@@ -208,25 +208,20 @@ function mp.play_char_anims(ped,actr)
 					wait(0)
 				end
 			end
-			flushRoute()
-			local c = 0
-			local px,py,pz = getCarCoordinates(mp.cars[actr['Anims'][curr_anim]['Car']])
-			for i = 1,#actr['Anims'][curr_anim]['Path'] do
-			  local x1,y1,z1 = actr['Anims'][curr_anim]['Path'][i][1],actr['Anims'][curr_anim]['Path'][i][2],actr['Anims'][curr_anim]['Path'][i][3]
-			  extendRoute(x1,y1,z1)
-			  c = c + 1
-			  px,py,pz = getCarCoordinates(mp.cars[actr['Anims'][curr_anim]['Car']])
-			  if c == 7 then
-				taskDrivePointRoute(ped,mp.cars[actr['Anims'][curr_anim]['Car']],actr['Anims'][curr_anim]['Speed'])
-				while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][i][1],actr['Anims'][curr_anim]['Path'][i][2],actr['Anims'][curr_anim]['Path'][i][3],px,py,pz) > 1 do
-				  wait(0)
-				  px,py,pz = getCarCoordinates(mp.cars[actr['Anims'][curr_anim]['Car']])
+			local px,py,pz = getCharCoordinates(ped)
+			repeat
+				for i = 1,#actr['Anims'][curr_anim]['Path'] do
+					local x1,y1,z1 = actr['Anims'][curr_anim]['Path'][i][1],actr['Anims'][curr_anim]['Path'][i][2],actr['Anims'][curr_anim]['Path'][i][3]
+					taskCarDriveToCoord(ped,mp.cars[actr['Anims'][curr_anim]['Car']],x1,y1,z1,actr['Anims'][curr_anim]['Speed'],0,0,0)
+					px,py,pz = getCharCoordinates(ped)
+					while getDistanceBetweenCoords3d(px,py,pz,x1,y1,z1) > 5 do
+						wait(0)
+						px,py,pz = getCharCoordinates(ped)
+					end
 				end
-				flushRoute()
-				c = 0
-			  end
-			end
-			taskDrivePointRoute(ped,mp.cars[actr['Anims'][curr_anim]['Car']],actr['Anims'][curr_anim]['Speed'])
+				wait(0)
+			until not actr['Anims'][curr_anim]['loop']
+
 			if actr['Anims'][curr_anim]['wait_end'] then
 				while getDistanceBetweenCoords3d(actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][1],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][2],actr['Anims'][curr_anim]['Path'][#actr['Anims'][curr_anim]['Path']][3],px,py,pz) > 1 do
 					wait(0)
@@ -432,6 +427,10 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,miss_da
 	setLaRiots(miss_data['Riot'])
 	setCharCoordinates(PLAYER_PED, miss_data['Player']['Pos'][1], miss_data['Player']['Pos'][2], miss_data['Player']['Pos'][3])
 	setCharHeading(PLAYER_PED, miss_data['Player']['Angle'])
+	if miss_data['Player']['Health'] > 100 then
+		setCharMaxHealth(PLAYER_PED,1000)
+	end
+	setCharHealth(PLAYER_PED,miss_data['Player']['Health'])
 	setMaxWantedLevel(6)
 	setCharInterior(PLAYER_PED, miss_data['Player']['Interior_id'])
 	setInteriorVisible(miss_data['Player']['Interior_id'])
@@ -1118,6 +1117,8 @@ function mp.endmiss()
 	setPlayerModel(PLAYER_HANDLE, model.NULL)
 	removeAllCharWeapons(PLAYER_PED)
 	alterWantedLevel(PLAYER_HANDLE, 0)
+	setCharMaxHealth(PLAYER_PED,100)
+	setCharHealth(PLAYER_PED,100)
 	setPedDensityMultiplier(0)
 	setCarDensityMultiplier(0)
 	local allchar = getAllChars()
