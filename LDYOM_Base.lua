@@ -7,7 +7,7 @@ require 'libstd.deps' {
 imgui = require 'mimgui'
 new = imgui.new
 bitser = require 'ldyom.bitser'
-class = require 'ldyom.middleclass'
+class = require 'middleclass'
 nodes = require 'ldyom.nodes'
 ffi = require 'ffi'
 inicfg = require 'inicfg'
