@@ -1,6 +1,7 @@
 require 'libstd.deps' {
     'fyp:mimgui',
     'kikito:middleclass',
+    'fyp:moonadditions'
  }
 
 imgui = require 'mimgui'
