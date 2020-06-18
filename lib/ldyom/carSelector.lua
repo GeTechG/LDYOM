@@ -562,7 +562,7 @@ function quick_vehicle_spawner(e)
     vr.list_cars[vr.current_car[0]+1]['data'].modelId[0] = model
     show = false
     vr.cars[0] = true
-    upd_car:run(vr.current_car[0]+1)
+    upd_car:run(vr.current_car[0]+1,true)
 end
 
 function localGetTrailerInVehicle(car)

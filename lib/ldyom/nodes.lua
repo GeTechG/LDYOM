@@ -178,7 +178,7 @@ function()
     local colors = style.Colors
     local clr = imgui.Col
 
-    --imgui.ShowDemoWindow(new.bool(true))
+    imgui.ShowDemoWindow(new.bool(true))
 
     io = imgui.GetIO()
     imgui.SetNextWindowSize(imgui.ImVec2(700,600),imgui.Cond.FirstUseEver)
