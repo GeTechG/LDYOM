@@ -180,7 +180,7 @@ function()
 
     imgui.ShowDemoWindow(new.bool(true))
 
-    io = imgui.GetIO()
+    local io = imgui.GetIO()
     imgui.SetNextWindowSize(imgui.ImVec2(700,600),imgui.Cond.FirstUseEver)
 
     imgui.Begin("Example: Custom Node Graph", nodes_s.show)

@@ -21,6 +21,7 @@ mad = require 'MoonAdditions'
 local memory = require 'memory'
 encoding = require 'encoding'
 require 'ldyom.TextToGTX'
+manager = require 'ldyom.MissManager'
 local mp = require 'ldyom.mission_player'
 cyr = encoding.CP1251
 encoding.default = 'UTF-8'
@@ -159,6 +160,7 @@ vr = {
     list_audios = {},
     missData = {
         groupRelations = {},
+        name = new.char[65](),
         player = {
             ['pos'] = new.float[3](884,-1221,16),
             ['angle'] = new.int(0),
@@ -299,6 +301,15 @@ imgui.OnInitialize(function ()
     local theme = require('Theme\\'..vr.Data.Settings.curr_theme)
     theme.apply_custom_style()
 
+    local rg = {0x0020,0xf000,0xf959,0xFFFF,0}
+    local ab = new.ImWchar[#rg](rg)
+	imgui.GetIO().Fonts:Clear() -- очистим шрифты
+    local font_config = imgui.ImFontConfig() -- у каждого шрифта есть свой конфиг
+    font_config.SizePixels = 14.0;
+    font_config.GlyphExtraSpacing.x = 0.1
+    -- основной шрифт
+    imgui.GetIO().Fonts:AddFontFromFileTTF(getFolderPath(0x14) .. '\\arialbd.ttf', font_config.SizePixels, font_config, ab)
+
     pedsSkinAtlas = imgui.CreateTextureFromFile(getWorkingDirectory().."\\lib\\ldyom\\images\\peds.jpg")
     weaponsAtlas = imgui.CreateTextureFromFile(getWorkingDirectory().."\\lib\\ldyom\\images\\weapons.png")
 
@@ -319,7 +330,7 @@ local res = {}
 res.x,res.y = getScreenResolution()
 
 --Main menu
-imgui.OnFrame(function() return vr.mainMenu[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.mainMenu[0] end,
 function()
     imgui.SetNextWindowSize(imgui.ImVec2(200,400),imgui.Cond.Appearing)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x/2-100,res.y/2-200),imgui.Cond.Always)
@@ -398,7 +409,7 @@ function()
 end)
 
 --target
-imgui.OnFrame(function() return vr.targets[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.targets[0] end,
 function()
 
     local isWindow = false
@@ -1009,7 +1020,7 @@ function()
 end)
 
 --actor
-imgui.OnFrame(function() return vr.actors[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.actors[0] end,
 function()
 
     local isWindow = false
@@ -1339,7 +1350,7 @@ function()
 end)
 
 --car
-imgui.OnFrame(function() return vr.cars[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.cars[0] end,
 function()
 
     local isWindow = false
@@ -1627,7 +1638,7 @@ function()
 end)
 
 --object
-imgui.OnFrame(function() return vr.objects[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.objects[0] end,
 function()
     lockPlayerControl(true)
     local isWindow = false
@@ -1799,7 +1810,7 @@ function()
 end)
 
 --particle
-imgui.OnFrame(function() return vr.particles[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.particles[0] end,
 function()
     lockPlayerControl(true)
     local isWindow = false
@@ -1983,7 +1994,7 @@ function()
 end)
 
 --pickup
-imgui.OnFrame(function() return vr.pickups[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.pickups[0] end,
 function()
     lockPlayerControl(true)
     local isWindow = false
@@ -2188,7 +2199,7 @@ function()
 end)
 
 --explosion
-imgui.OnFrame(function() return vr.explosions[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.explosions[0] end,
 function()
     lockPlayerControl(true)
     local isWindow = false
@@ -2370,7 +2381,7 @@ function()
 end)
 
 --audio
-imgui.OnFrame(function() return vr.audios[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.audios[0] end,
 function()
     lockPlayerControl(true)
     local isWindow = false
@@ -2577,7 +2588,7 @@ function()
 end)
 
 --player
-imgui.OnFrame(function() return vr.player[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.player[0] end,
 function()
     -- player render
     imgui.SetNextWindowSize(imgui.ImVec2(400,360),imgui.Cond.Always)
@@ -2716,19 +2727,20 @@ function()
 end)
 
 --mission_pack
-imgui.OnFrame(function() return vr.mission_packs[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.mission_packs[0] end,
 function()
     imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x-270,0),imgui.Cond.Appearing)
     imgui.Begin(faicons.ICON_MALE..' '..langt['missionPacks'],nil, imgui.WindowFlags.AlwaysAutoResize)
 
     --List
-    imgui.SetNextItemWidth(255)
+    imgui.SetNextItemWidth(260)
     imgui.ListBoxStr_arr('', vr.current_mission_pack,new('const char* const [?]', #vr.temp_var.list_name_mission_packs, vr.temp_var.list_name_mission_packs),#vr.temp_var.list_name_mission_packs,15)
 
-    if imgui.Button(langt['add']) then
+    if imgui.Button(langt['create']) then
         local name = langt['missionPack'].." #"..#vr.temp_var.list_name_mission_packs
         vr.temp_var.list_name_mission_packs[#vr.temp_var.list_name_mission_packs+1] = new.char[65](name)
+        vr.temp_var.list_name_missions[#vr.temp_var.list_name_missions+1] = {}
         lfs.mkdir(getWorkingDirectory().."\\Missions_pack\\"..name)
         lfs.mkdir(getWorkingDirectory().."\\Missions_pack\\"..name..'\\audio')
         vr.current_mission_pack[0] = #vr.temp_var.list_name_mission_packs-1
@@ -2782,21 +2794,39 @@ function()
 
     -- mission render
     if #vr.temp_var.list_name_mission_packs > 0 then
-        imgui.SetNextWindowSize(imgui.ImVec2(400,360),imgui.Cond.Always)
-        imgui.SetNextWindowPos(imgui.ImVec2(res.x-670,0),imgui.Cond.Appearing)
+        imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
+        imgui.SetNextWindowPos(imgui.ImVec2(res.x-540,0),imgui.Cond.Appearing)
         imgui.Begin(faicons.ICON_ARCHIVE..' '..langt['missions'],nil, imgui.WindowFlags.AlwaysAutoResize)
     
         --List
-        imgui.SetNextItemWidth(255)
-        imgui.ListBoxStr_arr('', vr.current_mission,new('const char* const [?]', #vr.temp_var.list_name_missions, vr.temp_var.list_name_missions),#vr.temp_var.list_name_missions,15)
+        imgui.SetNextItemWidth(260)
+        imgui.ListBoxStr_arr('', vr.current_mission,new('const char* const [?]', #vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1], vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]),#vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1],15)
 
-        if imgui.Button(langt['add']) then
-            local name = langt['mission'].." #"..#vr.temp_var.list_name_mission_packs
-            vr.temp_var.list_name_missions[#vr.temp_var.list_name_missions+1] = name
-            lfs.mkdir(getWorkingDirectory().."\\Missions_pack\\"..name)
-            vr.current_mission[0] = #vr.temp_var.list_name_missions-1
+        if imgui.Button(langt['create']) then
+            local name = vr.missData.name
+            local mission = {
+                missData = vr.missData,
+                list_actors = vr.list_actors,
+                list_cars = vr.list_cars,
+                list_objects = vr.list_objects,
+                list_particles = vr.list_particles,
+                list_pickups = vr.list_pickups,
+                list_explosions = vr.list_explosions,
+                list_audios = vr.list_audios,
+            }
+            if doesFileExist(getWorkingDirectory().."\\Missions_pack\\"..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]).."\\"..ffi.string(name)..".bin") then
+                name = imgui.StrCopy(name, ffi.string(name)..os.time())
+            end
+            vr.current_mission[0] = #vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]
+            vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1] = vr.missData.name
+            manager.save(mission)
+            manager.saveListMiss()
         end
         if #vr.temp_var.list_name_missions > 0 then
+            imgui.SameLine()
+            if imgui.Button(langt['save']) then
+                printHelpString(koder(cyr(langt['saved'])))
+            end
             imgui.SameLine()
             if imgui.Button(langt['rename']) then
                 imgui.OpenPopup("rename")
@@ -2847,7 +2877,7 @@ function()
 end)
 
 --settings
-imgui.OnFrame(function() return vr.settings[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.settings[0] end,
 function ()
     imgui.SetNextWindowSize(imgui.ImVec2(200,400),imgui.Cond.Always)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x/2-100,res.y/2-200),imgui.Cond.Always)
@@ -2891,7 +2921,7 @@ function ()
 end)
 
 --tools
-imgui.OnFrame(function() return vr.tools[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.tools[0] end,
 function ()
     imgui.SetNextWindowSize(imgui.ImVec2(420,200),imgui.Cond.Always)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x/2-210,res.y/2-100),imgui.Cond.Always)
@@ -2931,10 +2961,10 @@ function ()
 end)
 
 --info
-imgui.OnFrame(function() return vr.info[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.info[0] end,
 function ()
-    imgui.SetNextWindowSize(imgui.ImVec2(200,400),imgui.Cond.Always)
-    imgui.SetNextWindowPos(imgui.ImVec2(res.x/2-100,res.y/2-200),imgui.Cond.Always)
+    imgui.SetNextWindowSize(imgui.ImVec2(210,400),imgui.Cond.Always)
+    imgui.SetNextWindowPos(imgui.ImVec2(res.x/2-105,res.y/2-200),imgui.Cond.Always)
     imgui.Begin(faicons.ICON_TOOLS..' '..langt['info'],vr.mainMenu, imgui.WindowFlags.AlwaysAutoResize)
 
     local scr = thisScript()
@@ -2946,16 +2976,18 @@ function ()
     imgui.Text(vr.temp_var.info_t[6]..' '..langt['nameLoc'])
     imgui.Spacing()
     imgui.Text(vr.temp_var.info_t[7])
-    local namesHelpers = "Alexey Generalov, Ivan Kogotko"
+    local namesHelpers = "Alexey Generalov, Ivan Kogotko, Jasmijn Wellner (gvx), Um Geek"
     imgui.TextWrapped(namesHelpers)
     imgui.Text('')
-    imgui.Button(faicons.ICON_BOOK..' '..vr.temp_var.info_t[8])
+    if imgui.Button(faicons.ICON_BOOK..' '..vr.temp_var.info_t[8]) then
+        
+    end
 
     imgui.End()
 end)
 
 --group relations
-imgui.OnFrame(function() return vr.groupRelations[0] end,
+imgui.OnFrame(function() return (not isGamePaused()) and vr.groupRelations[0] end,
 function ()
     imgui.SetNextWindowSize(imgui.ImVec2(250,300),imgui.Cond.Always)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x/2-125,res.y/2-150),imgui.Cond.Always)
@@ -3319,6 +3351,7 @@ function main()
     wait(1)
     updLang()
 
+    imgui.StrCopy(vr.missData.name, langt['newMiss'].."_"..os.time())
 
     --Load Theme
     local theme_list = {}
@@ -3358,6 +3391,15 @@ function main()
     upd_explosion = lua_thread.create_suspended(update_explosion)
     upd_audio = lua_thread.create_suspended(update_audio)
 
+    for file in lfs.dir(getWorkingDirectory() .. '\\Missions_pack\\') do
+        if lfs.attributes(getWorkingDirectory() .. '\\Missions_pack\\'..file,"mode") == "directory" then
+            if doesFileExist(getWorkingDirectory() .. '\\Missions_pack\\'..file..'\\list.bin') then
+                vr.temp_var.list_name_mission_packs[#vr.temp_var.list_name_mission_packs+1] = new.char[65](file)
+                vr.current_mission_pack[0] = #vr.temp_var.list_name_mission_packs-1
+                vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1] = manager.loadListMiss()
+            end
+        end
+    end
     nodes_s.show[0] = true
     while true do
         wait(0)

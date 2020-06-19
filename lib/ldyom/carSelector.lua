@@ -18,7 +18,7 @@ show = false
 
 local path = string.format('%s\\moonloader\\lib\\ldyom\\resource\\call vehicle by image\\',getGameDirectory())
 local texts = {
-    tittle = '',
+    tittle = 'by Um Geek',
     readme = '', -- load file
     text_1 = 'Marcar veiculo como indiscartavel',
     text_2 = '',
