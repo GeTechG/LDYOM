@@ -138,6 +138,7 @@ vr = {
         selTypeTarget = new.int(0),
         updateSphere = false,
         moveTarget = -1,
+        moveMission = -1,
         enexMarker = new.bool(true)
     },
     current_target = new.int(0),
@@ -2767,6 +2768,7 @@ function()
         if imgui.Button(langt['yes'],size_b) then
             deletedir(getWorkingDirectory()..'\\Missions_pack\\'..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]))
             table.remove(vr.temp_var.list_name_mission_packs,vr.current_mission_pack[0]+1)
+            table.remove(vr.temp_var.list_name_missions,vr.current_mission_pack[0]+1)
             if vr.current_mission_pack[0] > 0 then
                 vr.current_mission_pack[0] = vr.current_mission_pack[0] - 1
             end
@@ -2800,11 +2802,12 @@ function()
     
         --List
         imgui.SetNextItemWidth(260)
-        imgui.ListBoxStr_arr('', vr.current_mission,new('const char* const [?]', #vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1], vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]),#vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1],15)
+        imgui.ListBoxStr_arr('', vr.current_mission,new('const char* const ['..#vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]..']', vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]),#vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1],15)
 
         if imgui.Button(langt['create']) then
             local name = vr.missData.name
             local mission = {
+                list_targets = vr.list_targets,
                 missData = vr.missData,
                 list_actors = vr.list_actors,
                 list_cars = vr.list_cars,
@@ -2815,21 +2818,47 @@ function()
                 list_audios = vr.list_audios,
             }
             if doesFileExist(getWorkingDirectory().."\\Missions_pack\\"..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]).."\\"..ffi.string(name)..".bin") then
-                name = imgui.StrCopy(name, ffi.string(name)..os.time())
+                name = imgui.StrCopy(name, ffi.string(name)..'c')
             end
             vr.current_mission[0] = #vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]
-            vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1] = vr.missData.name
+            vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1] = new.char[65](ffi.string(vr.missData.name))
             manager.save(mission)
             manager.saveListMiss()
         end
         if #vr.temp_var.list_name_missions > 0 then
             imgui.SameLine()
             if imgui.Button(langt['save']) then
+                local name = vr.missData.name
+                local mission = {
+                    list_targets = vr.list_targets,
+                    missData = vr.missData,
+                    list_actors = vr.list_actors,
+                    list_cars = vr.list_cars,
+                    list_objects = vr.list_objects,
+                    list_particles = vr.list_particles,
+                    list_pickups = vr.list_pickups,
+                    list_explosions = vr.list_explosions,
+                    list_audios = vr.list_audios,
+                }
+                imgui.StrCopy(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1], ffi.string(vr.missData.name))
+                manager.save(mission)
+                manager.saveListMiss()
                 printHelpString(koder(cyr(langt['saved'])))
             end
+            if imgui.Button(langt['load']) then
+                imgui.OpenPopup(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['load'])
+            end
             imgui.SameLine()
-            if imgui.Button(langt['rename']) then
-                imgui.OpenPopup("rename")
+            if imgui.Button(langt['cut']) then
+                vr.temp_var.moveMission = vr.current_mission[0]+1
+            end
+            if vr.temp_var.moveMission ~= -1 then
+                imgui.SameLine()
+                if imgui.Button(langt['paste']) then
+                    vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1] = table.moveCell(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1],vr.temp_var.moveMission,vr.current_mission[0]+1)
+                    vr.temp_var.moveMission = -1
+                end
+                manager.saveListMiss()
             end
             imgui.SameLine()
             if imgui.Button(langt['delete']) then
@@ -2846,8 +2875,12 @@ function()
             local size_b = imgui.ImVec2(100,0)
 
             if imgui.Button(langt['yes'],size_b) then
-                os.remove(getWorkingDirectory()..'\\Missions_pack\\'..vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1].."\\"..vr.temp_var.list_name_missions[vr.current_mission[0]+1]..'.bin')
-                table.remove(vr.temp_var.list_name_missions,vr.current_mission[0]+1)
+                local path = getWorkingDirectory() .. "\\Missions_pack\\"
+                local path_pack = ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'
+	            local name_miss = ffi.string(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1])
+                os.remove(path..path_pack..name_miss..'.bin')
+                table.remove(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1],vr.current_mission[0]+1)
+                manager.saveListMiss()
                 if vr.current_mission[0] > 0 then
                     vr.current_mission[0] = vr.current_mission[0] - 1
                 end
@@ -2859,15 +2892,98 @@ function()
             end
         end
 
-        --Rename popup
-        if imgui.BeginPopup("rename") then
-            local old_name = vr.temp_var.list_name_missions[vr.current_mission[0]+1]
-            if imgui.InputText('',vr.temp_var.list_name_missions[vr.current_mission[0]+1],ffi.sizeof(vr.temp_var.list_name_missions[vr.current_mission[0]+1])) then
-                os.rename(getWorkingDirectory()..'\\Missions_pack\\'..vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1].."\\"..old_name..'.bin',getWorkingDirectory()..'\\Missions_pack\\'..vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1].."\\"..vr.temp_var.list_name_missions[vr.current_mission[0]+1]..'.bin')
+        if imgui.BeginPopupModal(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['load'], nil,imgui.WindowFlags.AlwaysAutoResize) then
+
+            imgui.Text(vr.temp_var.reloadQues[2])
+    
+            local size_b = imgui.ImVec2(160,0)
+    
+            if imgui.Button(langt['yes'],size_b) then
+                for i = 1,#vr.list_actors do
+                    deleteChar(vr.list_actors[i]['data']['char'])
+                end
+                for c = 1,#vr.list_cars do
+                    deleteCar(vr.list_cars[c]['data']['car'])
+                end
+                for o = 1,#vr.list_objects do
+                    deleteObject(vr.list_objects[o]['data']['obj'])
+                end
+                for p = 1,#vr.list_pickups do
+                    removePickup(vr.list_pickups[p]['data']['pick'])
+                end
+                for p = 1,#vr.list_particles do
+                    killFxSystem(vr.list_particles[p]['data']['prtcl'][1])
+                    deleteObject(vr.list_particles[p]['data']['prtcl'][2])
+                end
+                for p = 1,#vr.list_explosions do
+                    if vr.list_explosions[p]['data']['fire'] then
+                        removeScriptFire(vr.list_explosions[p]['data']['fire'])
+                    end
+                    if vr.list_explosions[p]['data']['explosion'] then
+                        deleteObject(vr.list_explosions[p]['data']['explosion'])
+                    end
+                end
+                for a = 1,#vr.list_audios do
+                    if vr.list_audios[a]['data']['obj'] then
+                        deleteObject(vr.list_audios[a]['data']['obj'])
+                    end
+                end
+
+                local mission = manager.load()
+                vr.missData = mission.missData
+                vr.list_targets = mission.list_targets
+                vr.list_actors = mission.list_actors
+                vr.list_cars = mission.list_cars
+                vr.list_objects = mission.list_objects
+                vr.list_particles = mission.list_particles
+                vr.list_pickups = mission.list_pickups
+                vr.list_explosions = mission.list_explosions
+                vr.list_audios = mission.list_audios
+
+                setCharCoordinates(PLAYER_PED, vr.missData['player']['pos'][0], vr.missData['player']['pos'][1], vr.missData['player']['pos'][2])
+                setCharInterior(PLAYER_PED, vr.missData['player']['interiorId'][0])
+                setInteriorVisible(vr.missData['player']['interiorId'][0])
+                lockPlayerControl(false)
+                lua_thread.create(function()
+                    for j = 1,#vr.list_targets do
+                        vr.temp_var.list_name_targets[j] = vr.list_targets[j].name
+                        vr.temp_var.updateSphere = true
+                    end
+                    for j = 1,#vr.list_actors do
+                        vr.temp_var.list_name_actors[j] = vr.list_actors[j].name
+                        update_actor(j)
+                    end
+                    for j = 1,#vr.list_cars do
+                        vr.temp_var.list_name_cars[j] = vr.list_cars[j].name
+                        update_car(j)
+                    end
+                    for j = 1,#vr.list_objects do
+                        vr.temp_var.list_name_objects[j] = vr.list_objects[j].name
+                        update_object(j)
+                    end
+                    for j = 1,#vr.list_pickups do
+                        vr.temp_var.list_name_pickups[j] = vr.list_pickups[j].name
+                        update_pickup(j)
+                    end
+                    for j = 1,#vr.list_particles do
+                        vr.temp_var.list_name_particles[j] = vr.list_particles[j].name
+                        update_particle(j)
+                    end
+                    for j = 1,#vr.list_explosions do
+                        vr.temp_var.list_name_explosions[j] = vr.list_explosions[j].name
+                        update_explosion(j)
+                    end
+                    for j = 1,#vr.list_audios do
+                        vr.temp_var.list_name_audios[j] = vr.list_audios[j].name
+                        update_audio(j)
+                    end
+                end)
             end
-
-            if imgui.Button(langt['close']) then imgui.CloseCurrentPopup() end
-
+            imgui.SameLine()
+            if imgui.Button(langt['no'],size_b) then
+                imgui.CloseCurrentPopup()
+            end
+    
             imgui.EndPopup()
         end
 
@@ -2938,6 +3054,7 @@ function ()
     if imgui.Button(langt['enexMarker']) then
         disableAllEntryExits(vr.temp_var['enexMarker'][0])
     end
+    imgui.PushItemWidth(170)
     imgui.Combo(langt['tool_tp_actor'],vr.temp_var.tools_var['tp_actor'],new('const char* const [?]', #vr.temp_var.list_name_actors, vr.temp_var.list_name_actors),#vr.temp_var.list_name_actors)
     imgui.SameLine()
     if imgui.Button(langt['teleport']) then
@@ -3314,19 +3431,8 @@ function update_audio(aud)
     end
 end
 
+
 function main()
-
-    bitser.register('my_ctype', ffi.typeof(ffi.new("int",1)))
-    bitser.register('my_ctype1', ffi.typeof(ffi.new("int",67)))
-    
-    local var = {new.int(23),5,new.bool(true)}
-    local str = bitser.dumps(var)
-    print(str)
-    local var1 = bitser.loads(str)
-    print(var1[1],var1[3][0])
-    print(var1[1],var1[3][0])
-
-    
 
     vr.Data = inicfg.load(nil,getWorkingDirectory()..'\\LDYOM_data.ini')
 
@@ -3400,6 +3506,8 @@ function main()
             end
         end
     end
+
+
     nodes_s.show[0] = true
     while true do
         wait(0)

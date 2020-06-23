@@ -1,9 +1,12 @@
 manager = {}
 --debtab = require 'debug_table'
 json = require 'ldyom.json'
+lzw = require 'ldyom.lualzw'
 local path = getWorkingDirectory() .. "\\Missions_pack\\"
 local path_s = getWorkingDirectory() .. "\\Stories\\"
 local path_backup = getWorkingDirectory() .. "\\Backup\\"
+cyr = encoding.CP1251
+u8 = encoding.UTF8
 
 local CountMPacks = 0
 
@@ -13,15 +16,16 @@ function manager.save(pack)
 	local name_miss = ffi.string(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1])
 	local old_save
 	if doesFileExist(path..path_pack..name_miss..'.bin') then
-		local f = io.open(path..path_pack..name_miss..'.bin',"r")
+		local f = io.open(path..path_pack..name_miss..'.bin',"rb")
 		old_save = f:read()
 		f:close()
-		local f = io.open(path_backup .. path_pack .. name_miss .. '_' .. os.time() .. '.bin',"w")
+		local f = io.open(path_backup .. name_miss .. '_' .. os.time() .. '.bin',"wb")
 		f:write(old_save)
 		f:close()
 	end
-	local f = io.open(path..path_pack..name_miss..'.bin',"w")
-	f:write(bitser.dumps(pack))
+	local f = io.open(path..path_pack..name_miss..'.bin',"wb")
+	local save = lzw.compress(bitser.dumps(pack))
+	f:write(save)
 	f:close()
 end
 
@@ -43,22 +47,25 @@ end
 
 function manager.saveListMiss()
 	local path_pack = ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'
-	local f = io.open(path..path_pack..'list.bin','w')
-	f:write(bitser.dumps(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]))
+	local f = io.open(path..path_pack..'list.bin','wb')
+	local save = bitser.dumps(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1])
+	f:write(save)
 	f:close()
 end
 
 function manager.loadListMiss()
 	local path_pack = ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'
-	local f = io.open(path..path_pack..'list.bin','r')
-	local list = bitser.loads(f:read())
+	local f = io.open(path..path_pack..'list.bin','rb')
+	local list = bitser.loads(f:read("*all"))
 	f:close()
 	return list
 end
 
 function manager.load()
-	local f = io.open(path..path_pack..name_miss..'.bin',"r")
-	local packk = bitser.loads(f:read())
+	local path_pack = ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'
+	local name_miss = ffi.string(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1])
+	local f = io.open(path..path_pack..name_miss..'.bin',"rb")
+	local packk = bitser.loads(lzw.decompress(f:read("*all")))
 	f:close()
 	return packk
 end
