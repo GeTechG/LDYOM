@@ -13,7 +13,7 @@ function stylel.apply_custom_style()
     style.WindowRounding = 1.5
     style.FramePadding = imgui.ImVec2(5, 5)
     style.FrameRounding = 4.0
-    style.ItemSpacing = imgui.ImVec2(12, 8)
+    style.ItemSpacing = imgui.ImVec2(12, 4)
     style.ItemInnerSpacing = imgui.ImVec2(8, 6)
     style.IndentSpacing = 25.0
     style.ScrollbarSize = 15.0

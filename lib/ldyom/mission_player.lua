@@ -14,6 +14,9 @@ mp.pickups = {}
 mp.particles = {}
 mp.explosions = {}
 mp.audio = {}
+mp.storyCheck = {}
+mp.missEnd = 0
+mp.packMiss = nil
 local thread_miss
 local skip = 1
 curr_target = 0
@@ -35,32 +38,37 @@ function mp.start()
 	misflag = mp.flagmis()
 	if misflag == 0 then
 		doFade(false, 200)
-    setPlayerControl(PLAYER_HANDLE, false)
-    wait(500)
-    doFade(true, 200)
-    setGameGlobal(glob.ONMISSION, 1)
-    setPlayerControl(PLAYER_HANDLE, true)
-    misflag = mp.flagmis()
-    mp.miss = 1
-    mp.defeat()
+		setPlayerControl(PLAYER_HANDLE, false)
+		wait(500)
+		doFade(true, 200)
+		setGameGlobal(glob.ONMISSION, 1)
+		setPlayerControl(PLAYER_HANDLE, true)
+		misflag = mp.flagmis()
+		mp.miss = 1
+		mp.defeat()
 	end
 	return mp.miss
 end
 
 function mp.defeat()
-  lua_thread.create(function()
-    wait(0)
-    while isPlayerPlaying(PLAYER_HANDLE) do
-      wait(0)
+	mp.thread[#mp.thread+1] = lua_thread.create(
+	function()
+		while isPlayerPlaying(PLAYER_HANDLE) do
+			wait(0)
 		end
 		setPlayerModel(PLAYER_HANDLE,model.NULL)
 		while not isPlayerPlaying(PLAYER_HANDLE) do
-      wait(0)
+			wait(0)
 		end
-		thread_miss:terminate()
+		mp.missEnd = 2
 		mp.fall()
-		mp.endmiss()
-  end)
+		thread_miss:terminate()
+		if not mp.storylineOn then
+			mp.endmiss()
+		else
+			mp.clearMiss()
+		end
+	end)
 end
 
 function mp.pass(money)
@@ -69,6 +77,7 @@ function mp.pass(money)
   playMissionPassedTune(1)
   givePlayerMoney(PlayerPed, money, 200)
   mp.miss = 0
+  mp.missEnd = 1
 end
 
 function mp.respect()
@@ -77,6 +86,7 @@ function mp.respect()
   printBig("M_PASSR", 4000, 1)
   playMissionPassedTune(1)
   mp.miss = 0
+  mp.missEnd = 1
 end
 
 function mp.fall()
@@ -85,19 +95,19 @@ function mp.fall()
   mp.miss = 0
 end
 
-function audio_player(a)
-	local pathAudio = getWorkingDirectory()..'\\Missions_pack\\Pack missions ya\\audio\\'..vr.temp_var.list_audios_name[vr.list_audios[a]['data']['sound'][0]+1]..'.mp3'
-	if vr.list_audios[a]['data']['audio3d'][0] then
+function audio_player(a,aud)
+	local pathAudio = getWorkingDirectory()..'\\Missions_pack\\'..ffi.string(mp.packMiss)..'\\audio\\'..vr.temp_var.list_audios_name[aud[a]['data']['sound'][0]+1]..'.mp3'
+	if aud[a]['data']['audio3d'][0] then
 		mp.audio[a] = load3dAudioStream(pathAudio)
-		if vr.list_audios[a]['data']['audio3dType'][0] == 0 then
-			local xx,yy,zz = vr.list_audios[a]['data']['pos'][0],vr.list_audios[a]['data']['pos'][1],vr.list_audios[a]['data']['pos'][2]
+		if aud[a]['data']['audio3dType'][0] == 0 then
+			local xx,yy,zz = aud[a]['data']['pos'][0],aud[a]['data']['pos'][1],aud[a]['data']['pos'][2]
 			setPlay3dAudioStreamAtCoordinates(mp.audio[a],xx,yy,zz)
-		elseif vr.list_audios[a]['data']['audio3dType'][0] == 1 then
-			setPlay3dAudioStreamAtChar(mp.audio[a],mp.actors[vr.list_audios[a]['data']['audio3dAttach'][0]+1])
-		elseif vr.list_audios[a]['data']['audio3dType'][0] == 2 then
-			setPlay3dAudioStreamAtCar(mp.audio[a],mp.cars[vr.list_audios[a]['data']['audio3dAttach'][0]+1])
-		elseif vr.list_audios[a]['data']['audio3dType'][0] == 3 then
-			setPlay3dAudioStreamAtObject(mp.audio[a],mp.objects[vr.list_audios[a]['data']['audio3dAttach'][0]+1])
+		elseif aud[a]['data']['audio3dType'][0] == 1 then
+			setPlay3dAudioStreamAtChar(mp.audio[a],mp.actors[aud[a]['data']['audio3dAttach'][0]+1])
+		elseif aud[a]['data']['audio3dType'][0] == 2 then
+			setPlay3dAudioStreamAtCar(mp.audio[a],mp.cars[aud[a]['data']['audio3dAttach'][0]+1])
+		elseif aud[a]['data']['audio3dType'][0] == 3 then
+			setPlay3dAudioStreamAtObject(mp.audio[a],mp.objects[aud[a]['data']['audio3dAttach'][0]+1])
 		end
 	else
 		mp.audio[a] = loadAudioStream(pathAudio)
@@ -410,7 +420,7 @@ function mp.play_obj_anims(obj,obj_data)
 end
 
 function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au)
-	--printStyledString(koder(u8:decode(miss_data['Name'])), 2000, 2)
+	printStyledString(koder(cyr(ffi.string(vr.missData['name']))), 2000, 2)
 	--setTimeOfDay(miss_data['time'][0][1], miss_data['time'][0][2])
 	--forceWeatherNow(miss_data['weather'][0])
 	--setLaRiots(miss_data['Riot'])
@@ -517,7 +527,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 				local md = list_c[c]['data']['modelId'][0]
 				local xx,xy,xz = list_c[c]['data']['pos'][0], list_c[c]['data']['pos'][1], list_c[c]['data']['pos'][2]
 				requestModel(md)
-				while not isModelAvailable(md) do
+				while not hasModelLoaded(md) do
 					wait(0)
 				end
 				mp.cars[c] = createCar(md, xx, xy, xz)
@@ -675,7 +685,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 		for a = 1,#list_au do
 			if list_au[a]['data'].useTarget[0] then
 				if list_au[a]['data'].startC[0]+1 == i then
-					audio_player(a)
+					audio_player(a,list_au)
 				end
 				if list_au[a]['data']['endC'][0]+1 ~= 1 and list_au[a]['data']['endC'][0]+1 == i then
 					setAudioStreamState(mp.audio[a],0)
@@ -691,8 +701,8 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 			--sph[i] = addSphere(xx,xy,xz,rad)
 			printString(koder(cyr(ffi.string(list[i]['data']['text']))),list[i]['data']['textTime'][0] * 1000)
 			local check = addBlipForCoord(xx,xy,xz)
-			if list[i]['data']['colorBlip'][0] > 1 then
-				changeBlipColour(check,list[i]['data']['colorBlip'][0]-2)
+			if list[i]['data']['colorBlip'][0] ~= 5 then
+				changeBlipColour(check,list[i]['data']['colorBlip'][0])
 			else
 				setBlipAsFriendly(check, 1)
 			end
@@ -705,8 +715,8 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 		if list[i]['type'][0] == 1 then
 			lockPlayerControl(false)
 			local check = addBlipForCar(mp.cars[list[i]['data']['car'][0]+1])
-			if list[i]['data']['colorBlip'][0] > 1 then
-				changeBlipColour(check,list[i]['data']['colorBlip'][0]-2)
+			if list[i]['data']['colorBlip'][0] ~= 5 then
+				changeBlipColour(check,list[i]['data']['colorBlip'][0])
 			else
 				setBlipAsFriendly(check, 1)
 			end
@@ -727,8 +737,8 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 						if getPedType(mp.actors[a]) == getPedType(mp.actors[list[i]['data']['actor'][0]+1]) then
 							peds[#peds+1] = mp.actors[a]
 							check[#peds] = addBlipForChar(peds[#peds])
-							if list[i]['data']['colorBlip'][0] > 1 then
-								changeBlipColour(check[#peds],list[i]['data']['colorBlip'][0]-2)
+							if list[i]['data']['colorBlip'][0] ~= 5 then
+								changeBlipColour(check[#peds],list[i]['data']['colorBlip'][0])
 							else
 								setBlipAsFriendly(check[#peds], 1)
 							end
@@ -751,14 +761,20 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 				end
 			else
 				local check = addBlipForChar(mp.actors[list[i]['data']['actor'][0]+1])
-				if list[i]['data']['colorBlip'][0] > 1 then
-					changeBlipColour(check,list[i]['data']['colorBlip'][0]-2)
+				if list[i]['data']['colorBlip'][0] ~= 5 then
+					changeBlipColour(check,list[i]['data']['colorBlip'][0])
 				else
 					setBlipAsFriendly(check, 1)
+					setBlipAsFriendly(check, true)
 				end
-				setBlipAsFriendly(check, true)
-				while not isCharDead(mp.actors[list[i]['data']['actor'][0]+1]) do
-					wait(0)
+				if list[i]['data']['hit'][0] then
+					while not hasCharBeenDamagedByChar(mp.actors[list[i]['data']['actor'][0]+1],PLAYER_PED) do
+						wait(0)
+					end
+				else
+					while not isCharDead(mp.actors[list[i]['data']['actor'][0]+1]) do
+						wait(0)
+					end
 				end
 				removeBlip(check)
 			end
@@ -1013,28 +1029,28 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 		if list[i]['type'][0] == 4 then
 			lockPlayerControl(false)
 			local check = addBlipForObject(mp.objects[list[i]['data']['object'][0]+1])
-			if list[i]['data']['colorBlip'][0] > 1 then
-			  changeBlipColour(check,list[i]['data']['colorBlip'][0]-2)
+			if list[i]['data']['colorBlip'][0] ~= 5 then
+			  changeBlipColour(check,list[i]['data']['colorBlip'][0])
 			else
-			  setBlipAsFriendly(check, 0)
+			  setBlipAsFriendly(check, true)
 			end
 			printString(koder(cyr(ffi.string(list[i]['data']['text']))),list[i]['data']['textTime'][0] * 1000)
-			if list[i]['data']['type'] == 0 then
+			if list[i]['data']['type'][0] == 0 then
 				while not isCharTouchingObject(PLAYER_PED, mp.objects[list[i]['data']['object'][0]+1]) do
 					wait(0)
 				end
 			end
-			if list[i]['data']['type'] == 1 then
+			if list[i]['data']['type'][0] == 1 then
 				while not hasObjectBeenDamaged(mp.objects[list[i]['data']['object'][0]+1]) do
 					wait(0)
 				end
 			end
-			if list[i]['data']['type'] == 2 then
+			if list[i]['data']['type'][0] == 2 then
 				while not hasObjectBeenPhotographed(mp.objects[list[i]['data']['object'][0]+1]) do
 					wait(0)
 				end
 			end
-			if list[i]['data']['type'] == 3 then
+			if list[i]['data']['type'][0] == 3 then
 				while not hasObjectBeenDamagedByWeapon(mp.objects[list[i]['data']['object'][0]+1],list[i]['data']['Weap']) do
 					wait(0)
 				end
@@ -1044,8 +1060,8 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 		if list[i]['type'][0] == 5 then
 			lockPlayerControl(false)
 			local check = addBlipForPickup(mp.pickups[list[i]['data']['pickup'][0]+1])
-			if list[i]['data']['colorBlip'][0] > 1 then
-				changeBlipColour(check,list[i]['data']['colorBlip'][0]-2)
+			if list[i]['data']['colorBlip'][0] ~= 5 then
+				changeBlipColour(check,list[i]['data']['colorBlip'][0])
 			else
 				setBlipAsFriendly(check, 1)
 			end
@@ -1163,7 +1179,41 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 		end
 	end
 	mp.respect()
-	mp.endmiss()
+	if not mp.storylineOn then
+		mp.endmiss()
+	end
+	collectgarbage("collect")
+end
+
+function mp.clearMiss()
+	for i = 1,#mp.audio do
+		setAudioStreamState(mp.audio[i],0)
+	end
+	for v,h in pairs(mp.actors) do
+		deleteChar(mp.actors[v])
+	end
+	mp.actors = {}
+	for v,h in pairs(mp.cars) do
+		deleteCar(mp.cars[v])
+	end
+	mp.cars = {}
+	for v,h in pairs(mp.objects) do
+		deleteObject(mp.objects[v])
+	end
+	mp.objects = {}
+	for v,h in pairs(mp.pickups) do
+		removePickup(mp.pickups[v])
+	end
+	mp.pickups = {}
+	for v,h in pairs(mp.particles) do
+		killFxSystem(mp.particles[v][1])
+		if mp.particles[v][2] then deleteObject(mp.particles[v][2]) end
+	end
+	mp.particles = {}
+	for v,h in pairs(mp.explosions) do
+		killFxSystem(mp.explosions[v])
+	end
+	mp.explosion = {}
 end
 
 function mp.endmiss()
@@ -1171,6 +1221,7 @@ function mp.endmiss()
 	for t = 1, #mp.thread do
 		mp.thread[t]:terminate()
 	end
+	mp.thread = {}
 	wait(0)
 	if isCharInAnyCar(PLAYER_PED) then
 		taskLeaveAnyCar(PLAYER_PED)
@@ -1197,28 +1248,7 @@ function mp.endmiss()
 	setInteriorVisible(vr.missData['player']['interiorId'][0])
 	lockPlayerControl(false)
 	setMaxWantedLevel(0)
-	for i = 1,#mp.audio do
-		setAudioStreamState(mp.audio[i],0)
-	end
-	for v,h in pairs(mp.actors) do
-		deleteChar(mp.actors[v])
-	end
-	for v,h in pairs(mp.cars) do
-		deleteCar(mp.cars[v])
-	end
-	for v,h in pairs(mp.objects) do
-		deleteObject(mp.objects[v])
-	end
-	for v,h in pairs(mp.pickups) do
-		removePickup(mp.pickups[v])
-	end
-	for v,h in pairs(mp.particles) do
-		killFxSystem(mp.particles[v][1])
-		if mp.particles[v][2] then deleteObject(mp.particles[v][2]) end
-	end
-	for v,h in pairs(mp.explosions) do
-		killFxSystem(mp.explosions[v])
-	end
+	mp.clearMiss()
 	for j = 1,#vr.list_actors do
 		update_actor(j)
 	end
@@ -1241,6 +1271,140 @@ function mp.endmiss()
 		update_audio(j)
 	end
 	mp.mission_work = false
+end
+
+function mp.playMission(name)
+	local path = getWorkingDirectory() .. "\\Missions_pack\\"
+	local f = io.open(path..ffi.string(vr.storyline.missPack)..'\\'..ffi.string(name)..'.bin',"rb")
+	local miss = bitser.loads(lzw.decompress(f:read("*all")))
+	f:close()
+
+	for i = 1,#vr.list_actors do
+		deleteChar(vr.list_actors[i]['data']['char'])
+	end
+	for c = 1,#vr.list_cars do
+		deleteCar(vr.list_cars[c]['data']['car'])
+	end
+	for o = 1,#vr.list_objects do
+		deleteObject(vr.list_objects[o]['data']['obj'])
+	end
+	for p = 1,#vr.list_pickups do
+		removePickup(vr.list_pickups[p]['data']['pick'])
+	end
+	for p = 1,#vr.list_particles do
+		killFxSystem(vr.list_particles[p]['data']['prtcl'][1])
+		deleteObject(vr.list_particles[p]['data']['prtcl'][2])
+	end
+	for p = 1,#vr.list_explosions do
+		if vr.list_explosions[p]['data']['fire'] then
+			removeScriptFire(vr.list_explosions[p]['data']['fire'])
+		end
+		if vr.list_explosions[p]['data']['explosion'] then
+			deleteObject(vr.list_explosions[p]['data']['explosion'])
+		end
+	end
+	for a = 1,#vr.list_audios do
+		if vr.list_audios[a]['data']['obj'] then
+			deleteObject(vr.list_audios[a]['data']['obj'])
+		end
+	end
+
+	vr.missData = miss.missData
+
+	misflag = mp.flagmis()
+	mp.miss = mp.start()
+	mp.mission_work = true
+	repeat
+		mp.missEnd = 0
+		thread_miss = lua_thread.create(mp.main_mission,miss.list_targets,miss.list_actors,miss.list_cars,miss.list_objects,miss.list_pickups,miss.list_particles,miss.list_explosions,miss.list_audios)
+		while mp.missEnd == 0 do
+			wait(0)
+		end
+		print("reload")
+	until mp.missEnd == 1
+end
+
+mp.storylineOn = false
+function mp.playStoryline()
+	local num_pack
+	for i,v in ipairs(vr.temp_var.list_name_mission_packs) do
+		if ffi.string(v) == ffi.string(vr.storyline.missPack) then
+			num_pack = i
+		end
+	end
+	local missions_list = vr.temp_var.list_name_missions[num_pack]
+	mp.storylineOn = true
+
+	if vr.storyline.startMission[0] > 0 then
+		local start_mission = missions_list[vr.storyline.startMission[0]]
+		mp.playMission(start_mission)
+		mp.last_miss = vr.storyline.startMission[0]
+	end
+	for k,v in pairs(nodes2.nodes) do
+		if v.class.name == 'Start' then
+			v:play()
+		end
+	end
+	local thread_main
+	for k,v in pairs(nodes2.nodes) do
+		if v.class.name == 'MainCycle' then
+			thread_main = lua_thread.create(function(v)
+				v:play() 
+			end,v)
+		end
+	end
+	while mp.storylineOn do
+		wait(0)
+		if testCheat("help") then
+			printHelpString("HELPING!")
+			mp.storylineOn = false
+		end
+		for i = 1,#vr.storyline.list_checkpoints do
+			local xx,yy,zz = vr.storyline.list_checkpoints[i].data.pos[0],vr.storyline.list_checkpoints[i].data.pos[1],vr.storyline.list_checkpoints[i].data.pos[2]
+			if vr.storyline.list_checkpoints[i].data.useMission[0] then
+				if vr.storyline.list_checkpoints[i].data.startC[0]+1 == mp.last_miss then
+					if not mp.storyCheck[i] then
+						mp.storyCheck[i] = addSpriteBlipForCoord(xx,yy,zz,vr.storyline.list_checkpoints[i].data.iconMarker[0])
+						changeBlipColour(mp.storyCheck[i],vr.storyline.list_checkpoints[i].data.colorBlip[0])
+					end
+				end
+			end
+			if mp.storyCheck[i] then
+				if locateCharOnFoot3d(PLAYER_PED,xx,yy,zz,2,2,2,false) then
+					local time = vr.storyline.list_checkpoints[i].data.timeStart[0]
+					local times = {{20,6},{12,5},{9,17},{7,18},{22,6},{12,20}}
+					local hours,mins = getTimeOfDay()
+					if time > 0 and not (hours >= times[time][1] and hours < times[time][2]) then
+						printHelp("MTIME"..vr.storyline.list_checkpoints[i].data.timeStart[0])
+					else
+						removeBlip(mp.storyCheck[i])
+						local miss = missions_list[vr.storyline.list_checkpoints[i].data.gotoMission[0]+1]
+						mp.playMission(miss)
+						mp.last_miss = vr.storyline.list_checkpoints[i].data.gotoMission[0]+1
+						for k,v in pairs(nodes2.nodes) do
+							if v.class.name == 'MissionComplete' then
+								if v:getInputValue(1)[0] == vr.storyline.list_checkpoints[i].data.gotoMission[0] then
+									mp.thread[#mp.thread+1] = lua_thread.create(function(v)
+									v:play()
+									end,v)
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+		if vr.storyline.endMission[0] > 0 then
+			if vr.storyline.endMission[0] == mp.last_miss then
+				mp.storylineOn = false
+			end
+		end
+	end
+	if thread_main then
+		thread_main:terminate()
+	end
+	mp.endmiss()
+	collectgarbage("collect")
 end
 
 return mp

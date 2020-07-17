@@ -59,14 +59,7 @@ function style.apply_custom_style()
     colors[clr.PlotHistogramHovered]   = ImVec4(1.00, 0.60, 0.00, 1.00)
     colors[clr.TextSelectedBg]         = ImVec4(0.26, 0.59, 0.98, 0.35)
 
-    local rg = {0x0020,0xf000,0xf959,0xFFFF,0}
-    local ab = new.ImWchar[#rg](rg)
-	  imgui.GetIO().Fonts:Clear() -- очистим шрифты
-    local font_config = imgui.ImFontConfig() -- у каждого шрифта есть свой конфиг
-    font_config.SizePixels = 14.0;
-    font_config.GlyphExtraSpacing.x = 0.1
-    -- основной шрифт
-    imgui.GetIO().Fonts:AddFontFromFileTTF(getFolderPath(0x14) .. '\\arialbd.ttf', font_config.SizePixels, font_config, ab)
+    
     imgui.GetIO().ConfigWindowsMoveFromTitleBarOnly = true
   end
 

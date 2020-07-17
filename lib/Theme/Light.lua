@@ -32,7 +32,7 @@ function stylel.apply_custom_style()
     colors[clr.TextDisabled]          = ImVec4(0.600, 0.600, 0.600, 1.000);
     colors[clr.WindowBg]              = ImVec4(0.860, 0.860, 0.860, 1.000);
     --colors[clr.ChildWindowBg]         = ImVec4(0.000, 0.000, 0.000, 0.000);
-    colors[clr.ChildBg]                = ImVec4(0.000, 0.000, 0.000, 0.000);
+    colors[clr.ChildBg]                = ImVec4(0.000, 0.000, 0.000, 0.090);
     colors[clr.PopupBg]                = ImVec4(0.930, 0.930, 0.930, 0.980);
     colors[clr.Border]                = ImVec4(0.710, 0.710, 0.710, 0.080);
     colors[clr.BorderShadow]          = ImVec4(0.000, 0.000, 0.000, 0.040);

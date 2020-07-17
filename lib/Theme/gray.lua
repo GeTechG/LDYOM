@@ -12,7 +12,7 @@ function stylel.apply_custom_style()
     style.WindowPadding = ImVec2(15, 15)
     style.WindowRounding = 15.0
     style.FramePadding = ImVec2(5, 5)
-    style.ItemSpacing = ImVec2(12, 8)
+    style.ItemSpacing = ImVec2(12, 4)
     style.ItemInnerSpacing = ImVec2(8, 6)
     style.IndentSpacing = 25.0
     style.ScrollbarSize = 15.0

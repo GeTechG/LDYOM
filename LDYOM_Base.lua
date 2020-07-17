@@ -5,24 +5,25 @@ require 'libstd.deps' {
     'kikito:middleclass',
  }
 
+ffi = require 'ffi'
 imgui = require 'mimgui'
 new = imgui.new
 bitser = require 'ldyom.bitser'
-class = require 'middleclass'
-nodes = require 'ldyom.nodes'
-ffi = require 'ffi'
+class = require 'ldyom.middleclass'
 inicfg = require 'inicfg'
 vkeys = require 'vkeys'
 mimgui_addons = require "ldyom.mimgui_addons"
 lfs = require 'ldyom.lfs_ffi'
 faicons = require 'ldyom.fAwesome5'
 carSelector = require 'ldyom.carSelector'
+fe = require 'ldyom.ffi-enum'
 mad = require 'MoonAdditions'
 local memory = require 'memory'
 encoding = require 'encoding'
 require 'ldyom.TextToGTX'
 manager = require 'ldyom.MissManager'
 local mp = require 'ldyom.mission_player'
+nodes2 = require 'ldyom.nodes2'
 cyr = encoding.CP1251
 encoding.default = 'UTF-8'
 
@@ -113,8 +114,13 @@ vr = {
     player = new.bool(),
     groupRelations = new.bool(),
     mission_packs = new.bool(),
+    storylineList = new.bool(),
+    missionSettings = new.bool(),
     tools = new.bool(),
     info = new.bool(),
+    StorylineMainMenu = new.bool(),
+    StorylineCheckpoints = new.bool(),
+    nodeEditor = new.bool(),
     temp_var = {
         theme_curr = new.int(0),
         curr_lang = new.int(0),
@@ -128,6 +134,8 @@ vr = {
         list_name_audios = {},
         list_audios_name = {},
         list_name_mission_packs = {},
+        list_name_storylines = {},
+        list_name_storylineCheckpoints = {},
         list_name_missions = {},
         tools_var = {
             tp_actor = new.int(),
@@ -136,6 +144,7 @@ vr = {
         },
         selTarget = new.int(0),
         selTypeTarget = new.int(0),
+        selMissPack = new.int(0),
         updateSphere = false,
         moveTarget = -1,
         moveMission = -1,
@@ -152,6 +161,8 @@ vr = {
     current_audio = new.int(0),
     current_mission_pack = new.int(0),
     current_mission = new.int(0),
+    current_storyline = new.int(0),
+    current_storylineCheckpoint = new.int(0),
     list_actors = {},
     list_cars = {},
     list_objects = {},
@@ -162,6 +173,9 @@ vr = {
     missData = {
         groupRelations = {},
         name = new.char[65](),
+        time = new.int[2](0,0),
+        weather = new.int(0),
+        riot = new.bool(false),
         player = {
             ['pos'] = new.float[3](884,-1221,16),
             ['angle'] = new.int(0),
@@ -174,7 +188,8 @@ vr = {
         }
     },
     camera_zoom = 5,
-    camera_angle = {45,0}
+    camera_angle = {45,0},
+    storylineMode = false
 }
 LanguageList = {}
 langt = {}
@@ -228,6 +243,15 @@ function imgui.TextColoredRGB(text)
         end
     end
     render_text(text)
+end
+
+function ifInTable(value,table)
+    for k,v in pairs(table) do
+        if value == v then
+            return true
+        end
+    end
+    return false
 end
 
 function rgba_to_int(r,g,b,a)
@@ -298,11 +322,29 @@ function deletedir(dir)
     lfs.rmdir(dir)
 end
 
+function deepcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[deepcopy(orig_key)] = deepcopy(orig_value)
+        end
+		setmetatable(copy, deepcopy(getmetatable(orig)))
+	elseif orig_type == 'cdata' then
+		copy = new(ffi.typeof(orig))
+		ffi.copy(copy,orig,ffi.sizeof(orig))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
 imgui.OnInitialize(function ()
     local theme = require('Theme\\'..vr.Data.Settings.curr_theme)
     theme.apply_custom_style()
 
-    local rg = {0x0020,0xf000,0xf959,0xFFFF,0}
+    local rg = {0x0020,0xFFFF,0}
     local ab = new.ImWchar[#rg](rg)
 	imgui.GetIO().Fonts:Clear() -- очистим шрифты
     local font_config = imgui.ImFontConfig() -- у каждого шрифта есть свой конфиг
@@ -313,6 +355,7 @@ imgui.OnInitialize(function ()
 
     pedsSkinAtlas = imgui.CreateTextureFromFile(getWorkingDirectory().."\\lib\\ldyom\\images\\peds.jpg")
     weaponsAtlas = imgui.CreateTextureFromFile(getWorkingDirectory().."\\lib\\ldyom\\images\\weapons.png")
+    blipsAtlas = imgui.CreateTextureFromFile(getWorkingDirectory().."\\lib\\ldyom\\images\\blips.png")
 
     local config = imgui.ImFontConfig()
     config.MergeMode = true
@@ -325,19 +368,19 @@ imgui.OnInitialize(function ()
     local faicon = imgui.GetIO().Fonts:AddFontFromMemoryCompressedBase85TTF(faicons.get_font_data_base85(), config.SizePixels, config, fa_glyph_ranges)
 end)
 
-
-
 local res = {}
 res.x,res.y = getScreenResolution()
 
 --Main menu
 imgui.OnFrame(function() return (not isGamePaused()) and vr.mainMenu[0] end,
 function()
+    --vr.nodeEditor[0] = true
+
     imgui.SetNextWindowSize(imgui.ImVec2(200,400),imgui.Cond.Appearing)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x/2-100,res.y/2-200),imgui.Cond.Always)
     imgui.Begin(langt['mainMenu'],vr.mainMenu, imgui.WindowFlags.AlwaysAutoResize)
 
-
+    
     local size_b = imgui.ImVec2(160,0)
     if imgui.Button(faicons.ICON_RUNNING..' '..langt['targets'],size_b) then
         vr.mainMenu[0] = false
@@ -376,15 +419,21 @@ function()
         vr.audios[0] = true
         vr.mainMenu[0] = false
     end
-    if imgui.Button(faicons.ICON_PARKING..' '..langt['player'],size_b) then
-      vr.player[0] = true
-      vr.mainMenu[0] = false
-      lockPlayerControl(true)
-    end
     imgui.Separator()
     if imgui.Button(faicons.ICON_THEATER_MASKS..' '..langt['missionPacks'],size_b) then
       vr.mission_packs[0] = not vr.mission_packs[0]
       vr.mainMenu[0] = false
+    end
+    if imgui.Button(faicons.ICON_SLIDERS_H..' '..langt['settingsMiss'],size_b) then
+        vr.missionSettings[0] = not vr.missionSettings[0]
+        vr.mainMenu[0] = false
+      end
+    if imgui.Button(faicons.ICON_BROOM..' '..langt['clearAll'],size_b) then
+        imgui.OpenPopup(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['clearAll'])
+    end
+    if imgui.Button(faicons.ICON_SCROLL..' '..langt['storylines'],size_b) then
+        vr.storylineList[0] = not vr.storylineList[0]
+        vr.mainMenu[0] = false
     end
     imgui.Separator()
     if imgui.Button(faicons.ICON_PLAY..' '..langt['missionStart'],size_b) then
@@ -404,6 +453,55 @@ function()
     if imgui.Button(faicons.ICON_CONGS..' '..langt['settings'],size_b) then
         vr.mainMenu[0] = false
         vr.settings[0] = true
+    end
+
+    if imgui.BeginPopupModal(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['clearAll'], nil,imgui.WindowFlags.AlwaysAutoResize) then
+
+        imgui.Text(vr.temp_var.reloadQues[2])
+
+        local size_b = imgui.ImVec2(160,0)
+
+        if imgui.Button(langt['yes'],size_b) then
+            for i = 1,#vr.list_actors do
+                deleteChar(vr.list_actors[i]['data']['char'])
+            end
+            for c = 1,#vr.list_cars do
+                deleteCar(vr.list_cars[c]['data']['car'])
+            end
+            for o = 1,#vr.list_objects do
+                deleteObject(vr.list_objects[o]['data']['obj'])
+            end
+            for p = 1,#vr.list_pickups do
+                removePickup(vr.list_pickups[p]['data']['pick'])
+            end
+            for p = 1,#vr.list_particles do
+                killFxSystem(vr.list_particles[p]['data']['prtcl'][1])
+                deleteObject(vr.list_particles[p]['data']['prtcl'][2])
+            end
+            for p = 1,#vr.list_explosions do
+                if vr.list_explosions[p]['data']['fire'] then
+                    removeScriptFire(vr.list_explosions[p]['data']['fire'])
+                end
+                if vr.list_explosions[p]['data']['explosion'] then
+                    deleteObject(vr.list_explosions[p]['data']['explosion'])
+                end
+            end
+            for a = 1,#vr.list_audios do
+                if vr.list_audios[a]['data']['obj'] then
+                    deleteObject(vr.list_audios[a]['data']['obj'])
+                end
+            end
+            
+            script.this:reload()
+
+            imgui.CloseCurrentPopup()
+        end
+        imgui.SameLine()
+        if imgui.Button(langt['no'],size_b) then
+            imgui.CloseCurrentPopup()
+        end
+
+        imgui.EndPopup()
     end
 
     imgui.End()
@@ -427,6 +525,19 @@ function()
         imgui.OpenPopup("addT")
     end
     if #vr.list_targets > 0 then
+        imgui.SameLine()
+        if imgui.Button(langt['duplicate']) then
+            local new_target = #vr.list_targets+1
+            vr.list_targets[new_target] = deepcopy(vr.list_targets[vr.current_target[0]+1])
+            vr.list_targets[new_target]['name'] = new.char[65](ffi.string(vr.list_targets[new_target].name)..'c')
+
+            local targets_name = {}
+            for i = 1,#vr.list_targets do
+                targets_name[#targets_name+1] = vr.list_targets[i].name
+            end
+            vr.temp_var.list_name_targets = targets_name
+            vr.current_target[0] = new_target-1
+        end
         imgui.SameLine()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
@@ -505,6 +616,7 @@ function()
                     ['textTime'] = new.float(2),
                     ['colorBlip'] = new.int(0),
                     ['killGroup'] = new.bool(false),
+                    ['hit'] = new.bool(false),
                 }
             elseif vr.temp_var.selTarget[0] == 3 then
                 vr.list_targets[#vr.list_targets].targetType = new.int(vr.temp_var.selTypeTarget[0])
@@ -672,7 +784,7 @@ function()
             if imgui.DragFloat(langt['radiusCheckpoint'],vr.list_targets[vr.current_target[0]+1]['data']['radius'],0.05,0,100) then
                 vr.updateSphere = true
             end
-            imgui.Combo(langt['colorMarker'],vr.list_targets[vr.current_target[0]+1]['data']['colorBlip'],new('const char* const [?]', #vr.temp_var.targets_marker_color, vr.temp_var.targets_marker_color),#vr.temp_var.targets_marker_color)
+            imgui.Combo(langt['colorMarker'],vr.list_targets[vr.current_target[0]+1]['data']['colorBlip'],new('const char* const [?]', #vr.temp_var.targets_marker_color, vr.temp_var.targets_marker_color),#vr.temp_var.targets_marker_color-1)
             imgui.InputText(langt['textTarget'],vr.list_targets[vr.current_target[0]+1]['data']['text'],ffi.sizeof(vr.list_targets[vr.current_target[0]+1]['data']['text']))
             imgui.InputFloat(langt['timeText'],vr.list_targets[vr.current_target[0]+1]['data']['textTime'])
         
@@ -726,7 +838,12 @@ function()
         elseif vr.list_targets[vr.current_target[0]+1].type[0] == 2 then
 
             imgui.Combo(langt['actor'],vr.list_targets[vr.current_target[0]+1]['data']['actor'],new('const char* const [?]', #vr.temp_var.list_name_actors, vr.temp_var.list_name_actors),#vr.temp_var.list_name_actors)
-            mimgui_addons.ToggleButton(langt['killGroup'],vr.list_targets[vr.current_target[0]+1]['data'].killGroup)
+            if mimgui_addons.ToggleButton(langt['hitActor'],vr.list_targets[vr.current_target[0]+1]['data'].hit) then
+                vr.list_targets[vr.current_target[0]+1]['data'].killGroup[0] = false
+            end
+            if mimgui_addons.ToggleButton(langt['killGroup'],vr.list_targets[vr.current_target[0]+1]['data'].killGroup) then
+                vr.list_targets[vr.current_target[0]+1]['data'].hit[0] = false
+            end
             imgui.Combo(langt['colorMarker'],vr.list_targets[vr.current_target[0]+1]['data']['colorBlip'],new('const char* const [?]', #vr.temp_var.targets_marker_color, vr.temp_var.targets_marker_color),#vr.temp_var.targets_marker_color)
             imgui.InputText(langt['textTarget'],vr.list_targets[vr.current_target[0]+1]['data']['text'],ffi.sizeof(vr.list_targets[vr.current_target[0]+1]['data']['text']))
             imgui.InputFloat(langt['timeText'],vr.list_targets[vr.current_target[0]+1]['data']['textTime'])
@@ -828,13 +945,13 @@ function()
                 end
 
             end
-            imgui.Combo(langt['colorMarker'],vr.list_targets[vr.current_target[0]+1]['data']['colorBlip'],new('const char* const [?]', #vr.temp_var.targets_marker_color, vr.temp_var.targets_marker_color),#vr.temp_var.targets_marker_color)
+            imgui.Combo(langt['colorMarker'],vr.list_targets[vr.current_target[0]+1]['data']['colorBlip'],new('const char* const [?]', #vr.temp_var.targets_marker_color, vr.temp_var.targets_marker_color),#vr.temp_var.targets_marker_color-1)
             imgui.InputText(langt['text'],vr.list_targets[vr.current_target[0]+1]['data']['text'],ffi.sizeof(vr.list_targets[vr.current_target[0]+1]['data']['text']))
             imgui.InputFloat(langt['timeText'],vr.list_targets[vr.current_target[0]+1]['data']['textTime'])
 
         elseif vr.list_targets[vr.current_target[0]+1].type[0] == 5 then
             imgui.Combo(langt['pickup'],vr.list_targets[vr.current_target[0]+1]['data']['pickup'],new('const char* const [?]', #vr.temp_var.list_name_pickups, vr.temp_var.list_name_pickups),#vr.temp_var.list_name_pickups)
-            imgui.Combo(langt['colorMarker'],vr.list_targets[vr.current_target[0]+1]['data']['colorBlip'],new('const char* const [?]', #vr.temp_var.targets_marker_color, vr.temp_var.targets_marker_color),#vr.temp_var.targets_marker_color)
+            imgui.Combo(langt['colorMarker'],vr.list_targets[vr.current_target[0]+1]['data']['colorBlip'],new('const char* const [?]', #vr.temp_var.targets_marker_color, vr.temp_var.targets_marker_color),#vr.temp_var.targets_marker_color-1)
             imgui.InputText(langt['text'],vr.list_targets[vr.current_target[0]+1]['data']['text'],ffi.sizeof(vr.list_targets[vr.current_target[0]+1]['data']['text']))
             imgui.InputFloat(langt['timeText'],vr.list_targets[vr.current_target[0]+1]['data']['textTime'])
         elseif vr.list_targets[vr.current_target[0]+1].type[0] == 6 then
@@ -1068,6 +1185,21 @@ function()
             upd_actor:run(vr.current_actor[0]+1)
         end
         if #vr.list_actors > 0 then
+            imgui.SameLine()
+            if imgui.Button(langt['duplicate']) then
+                local new_actor = #vr.list_actors+1
+                vr.list_actors[new_actor] = deepcopy(vr.list_actors[vr.current_actor[0]+1])
+                vr.list_actors[new_actor]['data'].char = nil
+                vr.list_actors[new_actor]['name'] = new.char[65](ffi.string(vr.list_actors[new_actor].name)..'c')
+
+                local actors_name = {}
+                for i = 1,#vr.list_actors do
+                    actors_name[#actors_name+1] = vr.list_actors[i].name
+                end
+                vr.temp_var.list_name_actors = actors_name
+                vr.current_actor[0] = new_actor-1
+                upd_actor:run(vr.current_actor[0]+1)
+            end
             imgui.SameLine()
             if imgui.Button(langt['rename']) then
                 imgui.OpenPopup("rename")
@@ -1403,6 +1535,21 @@ function()
         end
         if #vr.list_cars > 0 then
             imgui.SameLine()
+            if imgui.Button(langt['duplicate']) then
+                local new_car = #vr.list_cars+1
+                vr.list_cars[new_car] = deepcopy(vr.list_cars[vr.current_car[0]+1])
+                vr.list_cars[new_car]['data'].car = nil
+                vr.list_cars[new_car]['name'] = new.char[65](ffi.string(vr.list_cars[new_car].name)..'c')
+
+                local cars_name = {}
+                for i = 1,#vr.list_cars do
+                    cars_name[#cars_name+1] = vr.list_cars[i].name
+                end
+                vr.temp_var.list_name_cars = cars_name
+                vr.current_car[0] = new_car-1
+                upd_car:run(vr.current_car[0]+1)
+            end
+            imgui.SameLine()
             if imgui.Button(langt['rename']) then
                 imgui.OpenPopup("rename")
             end
@@ -1676,6 +1823,21 @@ function()
     end
     if #vr.list_objects > 0 then
         imgui.SameLine()
+        if imgui.Button(langt['duplicate']) then
+            local new_object = #vr.list_objects+1
+            vr.list_objects[new_object] = deepcopy(vr.list_objects[vr.current_object[0]+1])
+            vr.list_objects[new_object]['data'].obj = nil
+            vr.list_objects[new_object]['name'] = new.char[65](ffi.string(vr.list_objects[new_object].name)..'c')
+
+            local objects_name = {}
+            for i = 1,#vr.list_objects do
+                objects_name[#objects_name+1] = vr.list_objects[i].name
+            end
+            vr.temp_var.list_name_objects = objects_name
+            vr.current_object[0] = new_object-1
+            upd_object:run(vr.current_object[0]+1)
+        end
+        imgui.SameLine()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
         end
@@ -1851,6 +2013,21 @@ function()
     end
     if #vr.list_particles > 0 then
         imgui.SameLine()
+        if imgui.Button(langt['duplicate']) then
+            local new_particle = #vr.list_particles+1
+            vr.list_particles[new_particle] = deepcopy(vr.list_particles[vr.current_particle[0]+1])
+            vr.list_particles[new_particle]['data'].prtcl = {}
+            vr.list_particles[new_particle]['name'] = new.char[65](ffi.string(vr.list_particles[new_particle].name)..'c')
+
+            local particles_name = {}
+            for i = 1,#vr.list_particles do
+                particles_name[#particles_name+1] = vr.list_particles[i].name
+            end
+            vr.temp_var.list_name_particles = particles_name
+            vr.current_particle[0] = new_particle-1
+            upd_particle:run(vr.current_particle[0]+1)
+        end
+        imgui.SameLine()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
         end
@@ -1928,7 +2105,7 @@ function()
         if imgui.Combo(langt['particle'],vr.list_particles[vr.current_particle[0]+1]['data'].modelId,new('const char* const [?]',#Particle_name,Particle_name),#Particle_name) then
             upd_particle:run(vr.current_particle[0]+1)
         end
-        if imgui.SliderInt(langt['tied'], vr.list_particles[vr.current_particle[0]+1]['data'].tied, 0, 2, vr.temp_var.CutscenePos[vr.list_particles[vr.current_particle[0]+1]['data'].tied[0]+1]) then
+        if imgui.SliderInt(langt['tied'], vr.list_particles[vr.current_particle[0]+1]['data'].tied, 0, 3, vr.temp_var.CutscenePos[vr.list_particles[vr.current_particle[0]+1]['data'].tied[0]+1]) then
             vr.list_particles[vr.current_particle[0]+1]['data'].tiedId[0] = 0
         end
         if vr.list_particles[vr.current_particle[0]+1]['data'].tied[0] == 1 then
@@ -2034,6 +2211,21 @@ function()
         upd_pickup:run(vr.current_pickup[0]+1)
     end
     if #vr.list_pickups > 0 then
+        imgui.SameLine()
+        if imgui.Button(langt['duplicate']) then
+            local new_pickup = #vr.list_pickups+1
+            vr.list_pickups[new_pickup] = deepcopy(vr.list_pickups[vr.current_pickup[0]+1])
+            vr.list_pickups[new_pickup]['data'].pick = nil
+            vr.list_pickups[new_pickup]['name'] = new.char[65](ffi.string(vr.list_pickups[new_pickup].name)..'c')
+
+            local pickups_name = {}
+            for i = 1,#vr.list_pickups do
+                pickups_name[#pickups_name+1] = vr.list_pickups[i].name
+            end
+            vr.temp_var.list_name_pickups = pickups_name
+            vr.current_pickup[0] = new_pickup-1
+            upd_pickup:run(vr.current_pickup[0]+1)
+        end
         imgui.SameLine()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
@@ -2239,6 +2431,22 @@ function()
     end
     if #vr.list_explosions > 0 then
         imgui.SameLine()
+        if imgui.Button(langt['duplicate']) then
+            local new_explosion = #vr.list_explosions+1
+            vr.list_explosions[new_explosion] = deepcopy(vr.list_explosions[vr.current_explosion[0]+1])
+            vr.list_explosions[new_explosion]['data'].explosion = nil
+            vr.list_explosions[new_explosion]['data'].fire = nil
+            vr.list_explosions[new_explosion]['name'] = new.char[65](ffi.string(vr.list_explosions[new_explosion].name)..'c')
+
+            local explosions_name = {}
+            for i = 1,#vr.list_explosions do
+                explosions_name[#explosions_name+1] = vr.list_explosions[i].name
+            end
+            vr.temp_var.list_name_explosions = explosions_name
+            vr.current_explosion[0] = new_explosion-1
+            upd_explosion:run(vr.current_explosion[0]+1)
+        end
+        imgui.SameLine()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
         end
@@ -2409,7 +2617,7 @@ function()
             ['audio3dType'] = new.ImU8(0),
             ['audio3dAttach'] = new.int(0),
             ['repeat'] = new.bool(false),
-            ['useTarget'] = new.bool(false),
+            ['useTarget'] = new.bool(true),
             ['startC'] = new.int(0),
             ['endC'] = new.int(0),
         }
@@ -2422,6 +2630,21 @@ function()
         upd_audio:run(vr.current_audio[0]+1)
     end
     if #vr.list_audios > 0 then
+        imgui.SameLine()
+        if imgui.Button(langt['duplicate']) then
+            local new_audio = #vr.list_audios+1
+            vr.list_audios[new_audio] = deepcopy(vr.list_audios[vr.current_audio[0]+1])
+            vr.list_audios[new_audio]['data'].obj = nil
+            vr.list_audios[new_audio]['name'] = new.char[65](ffi.string(vr.list_audios[new_audio].name)..'c')
+
+            local audios_name = {}
+            for i = 1,#vr.list_audios do
+                audios_name[#audios_name+1] = vr.list_audios[i].name
+            end
+            vr.temp_var.list_name_audios = audios_name
+            vr.current_audio[0] = new_audio-1
+            upd_audio:run(vr.current_audio[0]+1)
+        end
         imgui.SameLine()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
@@ -2489,7 +2712,7 @@ function()
         end
 
         if mimgui_addons.ToggleButton(langt['audio3d'],vr.list_audios[vr.current_audio[0]+1]['data'].audio3d) then
-            upd_audio:run(vr.current_audio[0]+1)
+            upd_audio:run(vr.current_audio[0]+1,true)
             vr.list_audios[vr.current_audio[0]+1]['data'].audio3dAttach[0] = 0
         end
         if vr.list_audios[vr.current_audio[0]+1]['data'].audio3d[0] then
@@ -2802,7 +3025,7 @@ function()
     
         --List
         imgui.SetNextItemWidth(260)
-        imgui.ListBoxStr_arr('', vr.current_mission,new('const char* const ['..#vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]..']', vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]),#vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1],15)
+        imgui.ListBoxStr_arr('', vr.current_mission,new('const char* const [?]', #vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1], vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]),#vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1],15)
 
         if imgui.Button(langt['create']) then
             local name = vr.missData.name
@@ -2817,13 +3040,18 @@ function()
                 list_explosions = vr.list_explosions,
                 list_audios = vr.list_audios,
             }
-            if doesFileExist(getWorkingDirectory().."\\Missions_pack\\"..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]).."\\"..ffi.string(name)..".bin") then
+            while doesFileExist(getWorkingDirectory().."\\Missions_pack\\"..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]).."\\"..ffi.string(name)..".bin") do
                 name = imgui.StrCopy(name, ffi.string(name)..'c')
             end
             vr.current_mission[0] = #vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]
             vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1] = new.char[65](ffi.string(vr.missData.name))
             manager.save(mission)
             manager.saveListMiss()
+            mp.packMiss = vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]
+            local path = getWorkingDirectory() .. "\\Missions_pack\\"
+            local f = io.open(path..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]).."\\"..'vars.bin','wb')
+            f:write(bitser.dumps(nodes2.vars))
+            f:close()
         end
         if #vr.temp_var.list_name_missions > 0 then
             imgui.SameLine()
@@ -2840,15 +3068,27 @@ function()
                     list_explosions = vr.list_explosions,
                     list_audios = vr.list_audios,
                 }
+                local path = getWorkingDirectory() .. "\\Missions_pack\\"
+                local path_pack = ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'
+	            local name_miss = ffi.string(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1])
+                os.rename(path..path_pack..name_miss..'.bin',path..path_pack..ffi.string(name)..'.bin')
                 imgui.StrCopy(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1], ffi.string(vr.missData.name))
                 manager.save(mission)
                 manager.saveListMiss()
+
+
+                local f = io.open(path..path_pack..'\\'..'vars.bin','wb')
+                f:write(bitser.dumps(nodes2.vars))
+                f:close()
+
+                mp.packMiss = vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]
+
                 printHelpString(koder(cyr(langt['saved'])))
             end
+            imgui.SameLine()
             if imgui.Button(langt['load']) then
                 imgui.OpenPopup(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['load'])
             end
-            imgui.SameLine()
             if imgui.Button(langt['cut']) then
                 vr.temp_var.moveMission = vr.current_mission[0]+1
             end
@@ -2978,6 +3218,20 @@ function()
                         update_audio(j)
                     end
                 end)
+
+                local path = getWorkingDirectory() .. "\\Missions_pack\\"
+                if doesFileExist(path..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'..'vars.bin') then
+                    local f = io.open(path..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'..'vars.bin','rb')
+                    nodes2.vars = bitser.loads(f:read("*all"))
+                    f:close()
+                    for i = 1,#nodes2.vars do
+                        nodes2.names_vars[i] = nodes2.vars[i].name
+                    end
+                end
+
+                mp.packMiss = vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]
+
+                imgui.CloseCurrentPopup()
             end
             imgui.SameLine()
             if imgui.Button(langt['no'],size_b) then
@@ -2990,6 +3244,615 @@ function()
         imgui.End()
     end
 
+end)
+
+--Mission settings
+imgui.OnFrame(function() return (not isGamePaused()) and vr.missionSettings[0] end,
+function()
+    imgui.SetNextWindowSize(imgui.ImVec2(200,400),imgui.Cond.Appearing)
+    imgui.SetNextWindowPos(imgui.ImVec2(res.x/2-100,res.y/2-200),imgui.Cond.Always)
+    imgui.Begin(langt['settingsMiss'],vr.missionSettings, imgui.WindowFlags.AlwaysAutoResize)
+
+    local size_b = imgui.ImVec2(160,0)
+    
+    imgui.InputText(langt['nameMission'], vr.missData.name, ffi.sizeof(vr.missData.name))
+    imgui.Separator()
+    imgui.Combo(langt['weather'],vr.missData.weather,new('const char* const [?]', #vr.temp_var.Weather_arr, vr.temp_var.Weather_arr),#vr.temp_var.Weather_arr)
+    if imgui.Button(langt['preview']) then
+        forceWeatherNow(vr.missData.weather[0])
+    end
+    if imgui.Button(langt['unPreview']) then
+        forceWeatherNow(0)
+    end
+    imgui.Separator()
+    if imgui.Button(langt['timeGameMiss']) then
+        printHelpForever("HMTIM")
+        vr.temp_var.editmodeTimemiss = true
+        vr.missionSettings[0] = false
+    end
+    imgui.Separator()
+    if imgui.Button(faicons.ICON_PARKING..' '..langt['player']) then
+        vr.player[0] = true
+        vr.missionSettings[0] = false
+        lockPlayerControl(true)
+    end
+
+    imgui.End()
+end)
+
+--StorylineList
+imgui.OnFrame(function() return (not isGamePaused()) and vr.storylineList[0] end,
+function()
+    lockPlayerControl(true)
+    local isWindow = false
+
+    imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
+    imgui.SetNextWindowPos(imgui.ImVec2(res.x-270,0),imgui.Cond.Appearing)
+    imgui.Begin(faicons.ICON_SCROLL..' '..langt['storylines'],nil, imgui.WindowFlags.AlwaysAutoResize)
+
+    --List
+    imgui.SetNextItemWidth(255)
+    imgui.ListBoxStr_arr('', vr.current_storyline,new('const char* const [?]', #vr.temp_var.list_name_storylines, vr.temp_var.list_name_storylines),#vr.temp_var.list_name_storylines,15)
+
+    if imgui.Button(langt['add']) then
+        imgui.CloseCurrentPopup()
+        imgui.OpenPopup('addT')
+    end
+    if #vr.temp_var.list_name_storylines > 0 then
+        -- imgui.SameLine()
+        -- if imgui.Button(langt['duplicate']) then
+        --     local new_storyline = #vr.list_storylines+1
+        --     vr.list_storylines[new_storyline] = deepcopy(vr.list_storylines[vr.current_storyline[0]+1])
+        --     vr.list_storylines[new_storyline]['data'].pick = nil
+        --     vr.list_storylines[new_storyline]['name'] = new.char[65](ffi.string(vr.list_storylines[new_storyline].name)..'c')
+
+        --     local storylines_name = {}
+        --     for i = 1,#vr.list_storylines do
+        --         storylines_name[#storylines_name+1] = vr.list_storylines[i].name
+        --     end
+        --     vr.temp_var.list_name_storylines = storylines_name
+        --     vr.current_storyline[0] = new_storyline-1
+        --     upd_storyline:run(vr.current_storyline[0]+1)
+        -- end
+        imgui.SameLine()
+        if vr.storylineMode then
+            if imgui.Button(langt['save']) then
+                local storyline = {
+                    storyline = vr.storyline,
+                    nodes = nodes2.nodes,
+                    links = nodes2.links
+                }
+                manager.save_s(storyline)
+                local path = getWorkingDirectory() .. "\\Missions_pack\\"
+                local f = io.open(path..ffi.string(vr.storyline.missPack)..'\\'..'vars.bin','wb')
+                f:write(bitser.dumps(nodes2.vars))
+                f:close()
+                printHelpString(koder(cyr(langt['saved'])))
+            end
+        end
+        imgui.SameLine()
+        if imgui.Button(langt['load']) then
+            imgui.OpenPopup(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['load'])
+        end
+        imgui.SameLine()
+        if imgui.Button(langt['rename']) then
+            imgui.OpenPopup("rename")
+        end
+        if #vr.temp_var.list_name_storylines > 1 or not vr.storylineMode then
+            imgui.SameLine()
+            if imgui.Button(langt['delete']) then
+                imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
+            end
+        end
+    end
+
+    isWindow = isWindow or imgui.IsWindowHovered() or imgui.IsAnyItemHovered()
+
+    if imgui.BeginPopup('addT') then
+        imgui.Combo(langt['missionPack'],vr.temp_var.selMissPack,new('const char* const [?]', #vr.temp_var.list_name_mission_packs, vr.temp_var.list_name_mission_packs),#vr.temp_var.list_name_mission_packs)
+        if #vr.temp_var.list_name_mission_packs > 0 then
+            if imgui.Button(langt['create']) then
+                imgui.OpenPopup(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['create'])
+            end
+        end
+    end
+
+    if imgui.BeginPopupModal(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['create'], nil,imgui.WindowFlags.AlwaysAutoResize) then
+
+        imgui.Text(vr.temp_var.reloadQues[2])
+
+        local size_b = imgui.ImVec2(160,0)
+
+        if imgui.Button(langt['yes'],size_b) then
+
+            for i = 1,#vr.list_actors do
+                deleteChar(vr.list_actors[i]['data']['char'])
+            end
+            for c = 1,#vr.list_cars do
+                deleteCar(vr.list_cars[c]['data']['car'])
+            end
+            for o = 1,#vr.list_objects do
+                deleteObject(vr.list_objects[o]['data']['obj'])
+            end
+            for p = 1,#vr.list_pickups do
+                removePickup(vr.list_pickups[p]['data']['pick'])
+            end
+            for p = 1,#vr.list_particles do
+                killFxSystem(vr.list_particles[p]['data']['prtcl'][1])
+                deleteObject(vr.list_particles[p]['data']['prtcl'][2])
+            end
+            for p = 1,#vr.list_explosions do
+                if vr.list_explosions[p]['data']['fire'] then
+                    removeScriptFire(vr.list_explosions[p]['data']['fire'])
+                end
+                if vr.list_explosions[p]['data']['explosion'] then
+                    deleteObject(vr.list_explosions[p]['data']['explosion'])
+                end
+            end
+            for a = 1,#vr.list_audios do
+                if vr.list_audios[a]['data']['obj'] then
+                    deleteObject(vr.list_audios[a]['data']['obj'])
+                end
+            end
+            vr.list_targets = {}
+            vr.list_actors = {}
+            vr.list_cars = {}
+            vr.list_objects = {}
+            vr.list_pickups = {}
+            vr.list_particles = {}
+            vr.list_explosions = {}
+            vr.list_audios = {}
+
+            local name = ffi.string(vr.temp_var.list_name_mission_packs[vr.temp_var.selMissPack[0]+1])
+            if not doesDirectoryExist(getWorkingDirectory()..'\\Storylines') then
+                createDirectory(getWorkingDirectory()..'\\Storylines')
+            end
+            while doesFileExist(getWorkingDirectory()..'\\Storylines\\'..name..'.bin') do
+                name = name..'c'
+            end
+            local storyline = {}
+            vr.storyline = {
+                missPack = vr.temp_var.list_name_mission_packs[vr.temp_var.selMissPack[0]+1],
+                startMission = new.int(0),
+                endMission = new.int(0),
+                list_checkpoints = {}
+            }
+            storyline.storyline = vr.storyline
+            vr.temp_var.list_name_storylines[#vr.temp_var.list_name_storylines+1] = new.char[65](name)
+            vr.current_storyline[0] = #vr.temp_var.list_name_storylines-1
+            manager.save_s(storyline)
+
+            vr.storylineList[0] = false
+            vr.storylineMode = true
+
+            mp.packMiss = vr.temp_var.list_name_mission_packs[vr.temp_var.selMissPack[0]+1]
+
+            collectgarbage("collect")
+
+            imgui.CloseCurrentPopup()
+        end
+        imgui.SameLine()
+        if imgui.Button(langt['no'],size_b) then
+            imgui.CloseCurrentPopup()
+        end
+
+        imgui.EndPopup()
+    end
+
+    if imgui.BeginPopupModal(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['load'], nil,imgui.WindowFlags.AlwaysAutoResize) then
+
+        imgui.Text(vr.temp_var.reloadQues[2])
+
+        local size_b = imgui.ImVec2(160,0)
+
+        if imgui.Button(langt['yes'],size_b) then
+
+            for i = 1,#vr.list_actors do
+                deleteChar(vr.list_actors[i]['data']['char'])
+            end
+            for c = 1,#vr.list_cars do
+                deleteCar(vr.list_cars[c]['data']['car'])
+            end
+            for o = 1,#vr.list_objects do
+                deleteObject(vr.list_objects[o]['data']['obj'])
+            end
+            for p = 1,#vr.list_pickups do
+                removePickup(vr.list_pickups[p]['data']['pick'])
+            end
+            for p = 1,#vr.list_particles do
+                killFxSystem(vr.list_particles[p]['data']['prtcl'][1])
+                deleteObject(vr.list_particles[p]['data']['prtcl'][2])
+            end
+            for p = 1,#vr.list_explosions do
+                if vr.list_explosions[p]['data']['fire'] then
+                    removeScriptFire(vr.list_explosions[p]['data']['fire'])
+                end
+                if vr.list_explosions[p]['data']['explosion'] then
+                    deleteObject(vr.list_explosions[p]['data']['explosion'])
+                end
+            end
+            for a = 1,#vr.list_audios do
+                if vr.list_audios[a]['data']['obj'] then
+                    deleteObject(vr.list_audios[a]['data']['obj'])
+                end
+            end
+            vr.list_targets = {}
+            vr.list_actors = {}
+            vr.list_cars = {}
+            vr.list_objects = {}
+            vr.list_pickups = {}
+            vr.list_particles = {}
+            vr.list_explosions = {}
+            vr.list_audios = {}
+
+            local storyline = manager.load_s()
+            vr.storyline = storyline.storyline
+            for i = 1,#vr.storyline.list_checkpoints do
+                upd_storyCheck:run(i)
+                vr.temp_var.list_name_storylineCheckpoints[i] = vr.storyline.list_checkpoints[i].name
+            end
+            nodes2.nodes = storyline.nodes or {}
+            nodes2.links = storyline.links or {}
+            local path = getWorkingDirectory() .. "\\Missions_pack\\"
+            if doesFileExist(path..ffi.string(vr.storyline.missPack)..'\\'..'vars.bin') then
+                local f = io.open(path..ffi.string(vr.storyline.missPack)..'\\'..'vars.bin','rb')
+                nodes2.vars = bitser.loads(f:read("*all"))
+                f:close()
+                for i = 1,#nodes2.vars do
+                    nodes2.names_vars[i] = nodes2.vars[i].name
+                end
+            end
+
+            vr.storylineList[0] = false
+            vr.storylineMode = true
+
+            mp.packMiss = vr.storyline.missPack
+
+            imgui.CloseCurrentPopup()
+        end
+        imgui.SameLine()
+        if imgui.Button(langt['no'],size_b) then
+            imgui.CloseCurrentPopup()
+        end
+
+        imgui.EndPopup()
+    end
+
+    if imgui.BeginPopupModal(faicons.ICON_TRASH_ALT.." "..langt['delete'], nil,imgui.WindowFlags.AlwaysAutoResize) then
+        imgui.Text(langt['deleteQues'])
+
+        local size_b = imgui.ImVec2(100,0)
+
+        if imgui.Button(langt['yes'],size_b) then
+            os.remove(getWorkingDirectory()..'\\Storylines\\'..ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])..'.bin')
+            table.remove(vr.temp_var.list_name_storylines,vr.current_storyline[0]+1)
+            imgui.CloseCurrentPopup()
+        end
+        imgui.SameLine()
+        if imgui.Button(langt['no'],size_b) then
+            imgui.CloseCurrentPopup()
+        end
+    end
+
+    --Rename popup
+    if imgui.BeginPopup("rename") then
+        local old_name = ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])
+        if imgui.InputText('',vr.temp_var.list_name_storylines[vr.current_storyline[0]+1],ffi.sizeof(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])) then
+            os.rename(getWorkingDirectory()..'\\Storylines\\'..old_name..'.bin',getWorkingDirectory()..'\\Storylines\\'..ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])..'.bin')
+        end
+
+        if imgui.Button(langt['close']) then imgui.CloseCurrentPopup() end
+
+        imgui.EndPopup()
+    end
+
+    imgui.End()
+end)
+
+--Main menu storyline
+imgui.OnFrame(function() return (not isGamePaused()) and vr.StorylineMainMenu[0] end,
+function()
+    imgui.SetNextWindowSize(imgui.ImVec2(200,400),imgui.Cond.Appearing)
+    imgui.SetNextWindowPos(imgui.ImVec2(res.x/2-100,res.y/2-200),imgui.Cond.Always)
+    imgui.Begin(langt['menuStoryline'],vr.StorylineMainMenu, imgui.WindowFlags.AlwaysAutoResize)
+
+    if imgui.TreeNodeStr(faicons.ICON_FLAG..' '..langt['initEndMiss']) then
+        local pack_idx
+        for i,v in ipairs(vr.temp_var.list_name_mission_packs) do
+            if ffi.string(vr.storyline.missPack) == ffi.string(v) then
+                pack_idx = i
+            end
+        end
+        local list = {langt['nothing']}
+        for i = 1,#vr.temp_var.list_name_missions[pack_idx] do
+            list[#list+1] = vr.temp_var.list_name_missions[pack_idx][i]
+        end
+        imgui.Text(langt['startMiss'])
+        imgui.PushIDStr(langt['startMiss'])
+        imgui.Combo('',vr.storyline.startMission,new('const char* const [?]', #list, list),#list)
+        imgui.PopID()
+        imgui.Text(langt['endMiss'])
+        imgui.PushIDStr(langt['endMiss'])
+        imgui.Combo('',vr.storyline.endMission,new('const char* const [?]', #list, list),#list)
+        imgui.PopID()
+        imgui.TreePop()
+    end
+
+    imgui.Separator()
+    local size_b = imgui.ImVec2(250,0)
+    if imgui.Button(faicons.ICON_MAP_MARKER_ALT..' '..langt['checkpoints'],size_b) then
+        vr.StorylineCheckpoints[0] = true
+        vr.StorylineMainMenu[0] = false
+    end
+    if imgui.Button(faicons.ICON_PROJECT_DIAGRAM..' '..langt['nodeEditor'],size_b) then
+        nodes2.white_list = {"main","storyline"}
+        vr.nodeEditor[0] = true
+        vr.StorylineMainMenu[0] = false
+    end
+    if imgui.Button(faicons.ICON_PLAY..' '..langt['storylineStart'],size_b) then
+        vr.StorylineMainMenu[0] = false
+        for i = 1,#vr.storyline.list_checkpoints do
+            removeBlip(vr.storyline.list_checkpoints[i].marker)
+        end
+        lua_thread.create(mp.playStoryline)
+    end
+    if imgui.Button(faicons.ICON_SCROLL..' '..langt['storylines'],size_b) then
+        vr.storylineList[0] = not vr.storylineList[0]
+        vr.StorylineMainMenu[0] = false
+    end
+    if imgui.Button(faicons.ICON_DOOR_OPEN..' '..langt['exitStoryline'],size_b) then
+        imgui.OpenPopup(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['exitStoryline'])
+    end
+
+    if imgui.BeginPopupModal(faicons.ICON_EXCLAMATION_TRIANGLE.." "..langt['exitStoryline'], nil,imgui.WindowFlags.AlwaysAutoResize) then
+
+        imgui.Text(vr.temp_var.reloadQues[2])
+
+        local size_b = imgui.ImVec2(160,0)
+
+        if imgui.Button(langt['yes'],size_b) then
+            for i = 1,#vr.storyline.list_checkpoints do
+                removeBlip(vr.storyline.list_checkpoints[i].data.marker)
+            end
+            vr.temp_var.list_name_storylineCheckpoints = {}
+            vr.storyline = nil
+            nodes2.nodes = {}
+            nodes2.links = {}
+            vr.StorylineMainMenu[0] = false
+            vr.storylineMode = false
+            imgui.CloseCurrentPopup()
+        end
+        imgui.SameLine()
+        if imgui.Button(langt['no'],size_b) then
+            imgui.CloseCurrentPopup()
+        end
+
+        imgui.EndPopup()
+    end
+
+    imgui.End()
+end)
+
+--Storyline checkpoints
+imgui.OnFrame(function() return (not isGamePaused()) and vr.StorylineCheckpoints[0] end,
+function()
+
+    local isWindow = false
+
+    imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
+    imgui.SetNextWindowPos(imgui.ImVec2(res.x-270,0),imgui.Cond.Appearing)
+    imgui.Begin(faicons.ICON_MAP_MARKER_ALT..' '..langt['checkpoints'],nil, imgui.WindowFlags.AlwaysAutoResize)
+
+    --List
+    imgui.SetNextItemWidth(255)
+    imgui.ListBoxStr_arr('', vr.current_storylineCheckpoint,new('const char* const [?]', #vr.temp_var.list_name_storylineCheckpoints, vr.temp_var.list_name_storylineCheckpoints),#vr.temp_var.list_name_storylineCheckpoints,15)
+
+    if imgui.Button(langt['add']) then
+        local px,py,pz = getCharCoordinates(PLAYER_PED)
+        vr.storyline.list_checkpoints[#vr.storyline.list_checkpoints+1] = {
+            ['name'] = new.char[65](langt['checkpoint'].." #"..tostring(#vr.list_targets+1)),
+            ['data'] = {
+                ['pos'] = new.float[3](px,py,pz),
+                ['iconMarker'] = new.ImU8(0),
+                ['colorBlip'] = new.int(0),
+                ['useMission'] = new.bool(true),
+                ['startC'] = new.int(0),
+                ['gotoMission'] = new.int(0),
+                ['timeStart'] = new.int(0),
+            }
+        }
+        local checkpoints_name = {}
+        for i = 1,#vr.storyline.list_checkpoints do
+            checkpoints_name[#checkpoints_name+1] = vr.storyline.list_checkpoints[i].name
+        end
+        vr.temp_var.list_name_storylineCheckpoints = checkpoints_name
+        vr.current_storylineCheckpoint[0] = #vr.storyline.list_checkpoints-1
+
+        upd_storyCheck:run(vr.current_storylineCheckpoint[0]+1)
+    end
+    if #vr.storyline.list_checkpoints > 0 then
+        imgui.SameLine()
+        if imgui.Button(langt['duplicate']) then
+            local new_checkpoint = #vr.storyline.list_checkpoints+1
+            vr.storyline.list_checkpoints[new_checkpoint] = deepcopy(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1])
+            vr.storyline.list_checkpoints[new_checkpoint]['name'] = new.char[65](ffi.string(vr.storyline.list_checkpoints[new_checkpoint].name)..'c')
+
+            local checkpoints_name = {}
+            for i = 1,#vr.storyline.list_checkpoints do
+                checkpoints_name[#checkpoints_name+1] = vr.storyline.list_checkpoints[i].name
+            end
+            vr.temp_var.list_name_storylineCheckpoints = checkpoints_name
+            vr.current_storylineCheckpoint[0] = new_checkpoint-1
+        end
+        imgui.SameLine()
+        if imgui.Button(langt['rename']) then
+            imgui.OpenPopup("rename")
+        end
+        imgui.SameLine()
+        if imgui.Button(langt['delete']) then
+            imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
+        end
+    end
+
+    isWindow = isWindow or imgui.IsWindowHovered() or imgui.IsAnyItemHovered()
+
+    --delete
+    if imgui.BeginPopupModal(faicons.ICON_TRASH_ALT.." "..langt['delete'], nil,imgui.WindowFlags.AlwaysAutoResize) then
+        imgui.Text(langt['deleteQues'])
+
+        local size_b = imgui.ImVec2(100,0)
+
+        if imgui.Button(langt['yes'],size_b) then
+            removeBlip(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1].data.marker)
+            table.remove(vr.storyline.list_checkpoints,vr.current_storylineCheckpoint[0]+1)
+            table.remove(vr.temp_var.list_name_storylineCheckpoints,vr.current_storylineCheckpoint[0]+1)
+            if vr.current_storylineCheckpoint[0] > 0 then 
+                vr.current_storylineCheckpoint[0] = vr.current_storylineCheckpoint[0] - 1
+            end
+            imgui.CloseCurrentPopup()
+        end
+        imgui.SameLine()
+        if imgui.Button(langt['no'],size_b) then
+            imgui.CloseCurrentPopup()
+        end
+    end
+
+    --Rename popup
+    if imgui.BeginPopup("rename") then
+
+        imgui.InputText('',vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1].name,ffi.sizeof(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1].name))
+
+        if imgui.Button(langt['close']) then imgui.CloseCurrentPopup() end
+
+        imgui.EndPopup()
+    end
+
+    imgui.End()
+
+    -- checkpoint render
+    if #vr.storyline.list_checkpoints > 0 then
+        imgui.SetNextWindowSize(imgui.ImVec2(400,360),imgui.Cond.Always)
+        imgui.SetNextWindowPos(imgui.ImVec2(res.x-670,0),imgui.Cond.Appearing)
+        imgui.Begin(faicons.ICON_MAP_MARKER_ALT..' '..langt['checkpoint'],nil, imgui.WindowFlags.AlwaysAutoResize)
+
+        --Checkpoint
+        lockPlayerControl(true)
+
+        if imgui.Button(faicons.ICON_STREET_VIEW) then
+            local px,py,pz = getCharCoordinates(PLAYER_PED)
+            vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0] = px
+            vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1] = py
+            vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[2] = pz
+        end
+        if imgui.IsItemHovered() then
+            imgui.SetTooltip(langt['playerCoordinates'])
+        end
+        imgui.SameLine()
+        imgui.PushItemWidth(270)
+        imgui.InputFloat3(langt['position'],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data']['pos'],"%.6f")
+        imgui.PushItemWidth(-130)
+        if imgui.Combo(langt['colorMarker'],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data']['colorBlip'],new('const char* const [?]', #vr.temp_var.targets_marker_color, vr.temp_var.targets_marker_color),#vr.temp_var.targets_marker_color-1) then
+            if vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data']['colorBlip'][0] ~= 5 then
+				changeBlipColour(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].marker,vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data']['colorBlip'][0])
+			else
+                setBlipAsFriendly(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].marker, true)
+            end
+        end
+        if imgui.ImageButton(blipsAtlas, imgui.ImVec2(32,32),imgui.ImVec2(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].iconMarker[0]*0.015625,0), imgui.ImVec2((vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].iconMarker[0]+1)*0.015625,1)) then
+            imgui.OpenPopup('blips')
+        end
+
+        --skin popup
+        if imgui.BeginPopup('blips') then
+            imgui.BeginChild('blipsc',imgui.ImVec2(180,450))
+
+            for i = 0,63 do
+                imgui.PushIDStr(tostring(i))
+                if imgui.ImageButton(blipsAtlas,imgui.ImVec2(32,32),imgui.ImVec2(i*0.015625,0),imgui.ImVec2((i+1)*0.015625,1)) then
+                    vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data']['iconMarker'][0] = i
+                    upd_storyCheck:run(vr.current_storylineCheckpoint[0]+1)
+                end
+                imgui.PopID()
+                if (i+1) % 4 ~= 0 then
+                    imgui.SameLine()
+                end
+            end
+    
+            imgui.EndChild()
+            imgui.EndPopup()
+        end
+
+        imgui.SameLine()
+        imgui.SetCursorPosY(imgui.GetCursorPosY() + imgui.GetItemRectSize().y/2-10)
+        imgui.Text(langt['icon'])
+        imgui.Combo(langt['startTime'],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].timeStart,new('const char* const [?]', #vr.temp_var.timeForStart, vr.temp_var.timeForStart),#vr.temp_var.timeForStart)
+        mimgui_addons.ToggleButton(langt['startEndCheck'],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].useMission)
+        local pack_idx
+        for i,v in ipairs(vr.temp_var.list_name_mission_packs) do
+            if ffi.string(vr.storyline.missPack) == ffi.string(v) then
+                pack_idx = i
+            end
+        end
+        if vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].useMission[0] then
+            imgui.Text(langt['app_after'])
+            imgui.PushIDStr(langt['app_after'])
+            imgui.Combo('',vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].startC,new('const char* const [?]', #vr.temp_var.list_name_missions[pack_idx], vr.temp_var.list_name_missions[pack_idx]),#vr.temp_var.list_name_missions[pack_idx])
+        end
+        imgui.PopID()
+        imgui.Text(langt['startCheckMiss'])
+        imgui.PushIDStr(langt['startCheckMiss'])
+        imgui.Combo('',vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].gotoMission,new('const char* const [?]', #vr.temp_var.list_name_missions[pack_idx], vr.temp_var.list_name_missions[pack_idx]),#vr.temp_var.list_name_missions[pack_idx])
+        imgui.PopID()
+
+        imgui.SetNextWindowBgAlpha(0.50)
+        imgui.SetNextWindowPos(imgui.ImVec2(0, 0), imgui.Cond.Always)
+        imgui.SetNextWindowSize(imgui.ImVec2(220,60),imgui.Cond.Always)
+        imgui.Begin("info",nil,imgui.WindowFlags.NoDecoration + imgui.WindowFlags.AlwaysAutoResize + imgui.WindowFlags.NoSavedSettings + imgui.WindowFlags.NoMove + imgui.WindowFlags.NoInputs)
+
+        imgui.Text(vr.temp_var.infoOverlay[1])
+        imgui.Text(vr.temp_var.infoOverlay[2])
+        imgui.Text(vr.temp_var.infoOverlay[3])
+
+        imgui.End()
+
+        isWindow = isWindow or imgui.IsWindowHovered() or imgui.IsAnyItemHovered()
+
+        --edit
+        local cx,cy,cz = vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[2]
+        cx = cx + (vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
+        cy = cy + (vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
+        cz = cz + (vr.camera_zoom*math.sin(math.rad(vr.camera_angle[2])))
+        setFixedCameraPosition(cx,cy,cz)
+        pointCameraAtPoint(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[2],2)
+        if not isWindow then
+            if imgui.IsMouseDragging(2) then
+                local dt = imgui.GetIO().MouseDelta
+                vr.camera_angle[1],vr.camera_angle[2] = vr.camera_angle[1] + dt.x, vr.camera_angle[2] + dt.y
+            end
+            if imgui.GetIO().MouseWheel ~= 0 then
+                vr.camera_zoom = vr.camera_zoom + (vr.camera_zoom * imgui.GetIO().MouseWheel)/4
+                if vr.camera_zoom < 1 then vr.camera_zoom = 1 end
+            end
+        end
+        if isKeyDown(vkeys.VK_UP) then
+            vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0] = vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0] + 0.1
+            local xx,yy,zz = vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[2]
+            setBlipCoordinates(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].marker, xx,yy,zz)
+        elseif isKeyDown(vkeys.VK_DOWN) then
+            vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0] = vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0] - 0.1
+            local xx,yy,zz = vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[2]
+            setBlipCoordinates(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].marker, xx,yy,zz)
+        end
+        if isKeyDown(vkeys.VK_LEFT) then
+            vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1] = vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1] + 0.1
+            local xx,yy,zz = vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[2]
+            setBlipCoordinates(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].marker, xx,yy,zz)
+        elseif isKeyDown(vkeys.VK_RIGHT) then
+            vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1] = vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1] - 0.1
+            local xx,yy,zz = vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[0],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[1],vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].pos[2]
+            setBlipCoordinates(vr.storyline.list_checkpoints[vr.current_storylineCheckpoint[0]+1]['data'].marker, xx,yy,zz)
+        end
+    end
 end)
 
 --settings
@@ -3178,6 +4041,10 @@ function updLang()
     vr.temp_var.Relationship_types = decodeJson(langt['Relationship_types'])
     
     vr.temp_var.info_t = decodeJson(langt['info_t'])
+    
+      vr.temp_var.typesValue = decodeJson(langt['typesValue'])
+      
+      vr.temp_var.timeForStart = decodeJson(langt['timeForStart'])
 
 end
 
@@ -3412,12 +4279,16 @@ function update_explosion(expl)
 	end
 end
 
-function update_audio(aud)
+function update_audio(aud,new)
     if vr.list_audios[aud]['data']['audio3d'][0] and vr.list_audios[aud]['data']['audio3dType'][0] == 0 then
-        local xx,yy,zz = getCharCoordinates(PLAYER_PED)
-        vr.list_audios[aud]['data']['pos'][0] = xx
-        vr.list_audios[aud]['data']['pos'][1] = yy
-        vr.list_audios[aud]['data']['pos'][2] = zz
+        local xx,yy,zz = vr.list_audios[vr.current_audio[0]+1]['data']['pos'][0],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][1],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][2]
+        if new then
+            xx,yy,zz = getCharCoordinates(PLAYER_PED)
+            vr.list_audios[vr.current_audio[0]+1]['data']['pos'][0] = xx
+            vr.list_audios[vr.current_audio[0]+1]['data']['pos'][1] = yy
+            vr.list_audios[vr.current_audio[0]+1]['data']['pos'][2] = zz
+        end
+        wait(0)
         requestModel(2231)
         while not hasModelLoaded(2231) do
             wait(0)
@@ -3431,8 +4302,32 @@ function update_audio(aud)
     end
 end
 
+function update_storylineCheckpoint(check)
+    if vr.storyline.list_checkpoints[check].data.marker then
+        removeBlip(vr.storyline.list_checkpoints[check].data.marker)
+    end
+    vr.storyline.list_checkpoints[check].data.marker = addSpriteBlipForContactPoint(vr.storyline.list_checkpoints[check]['data'].pos[0],vr.storyline.list_checkpoints[check]['data'].pos[1],vr.storyline.list_checkpoints[check]['data'].pos[2],vr.storyline.list_checkpoints[check]['data'].iconMarker[0])
+    changeBlipScale(vr.storyline.list_checkpoints[check].data.marker,3)
+    if vr.storyline.list_checkpoints[check]['data']['colorBlip'][0] ~= 5 then
+        changeBlipColour(vr.storyline.list_checkpoints[check]['data'].marker,vr.storyline.list_checkpoints[check]['data']['colorBlip'][0])
+    else
+        setBlipAsFriendly(vr.storyline.list_checkpoints[check]['data'].marker, true)
+    end
+end
+
+function onStartNewGame(missionPackNumber)
+    vr.mpack = missionPackNumber
+    print(vr.mpack)
+	if missionPackNumber ~= 7 then
+		thisScript():pause()
+	else
+		thisScript():resume()
+	end
+end
 
 function main()
+
+    --print(loadstring('return var1.gena.holop')())
 
     vr.Data = inicfg.load(nil,getWorkingDirectory()..'\\LDYOM_data.ini')
 
@@ -3496,21 +4391,44 @@ function main()
     upd_pickup = lua_thread.create_suspended(update_pickup)
     upd_explosion = lua_thread.create_suspended(update_explosion)
     upd_audio = lua_thread.create_suspended(update_audio)
-
-    for file in lfs.dir(getWorkingDirectory() .. '\\Missions_pack\\') do
-        if lfs.attributes(getWorkingDirectory() .. '\\Missions_pack\\'..file,"mode") == "directory" then
-            if doesFileExist(getWorkingDirectory() .. '\\Missions_pack\\'..file..'\\list.bin') then
-                vr.temp_var.list_name_mission_packs[#vr.temp_var.list_name_mission_packs+1] = new.char[65](file)
-                vr.current_mission_pack[0] = #vr.temp_var.list_name_mission_packs-1
-                vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1] = manager.loadListMiss()
+    upd_storyCheck = lua_thread.create_suspended(update_storylineCheckpoint)
+    if doesDirectoryExist(getWorkingDirectory() .. '\\Missions_pack') then
+        for file in lfs.dir(getWorkingDirectory() .. '\\Missions_pack\\') do
+            if lfs.attributes(getWorkingDirectory() .. '\\Missions_pack\\'..file,"mode") == "directory" then
+                if doesFileExist(getWorkingDirectory() .. '\\Missions_pack\\'..file..'\\list.bin') then
+                    vr.temp_var.list_name_mission_packs[#vr.temp_var.list_name_mission_packs+1] = new.char[65](file)
+                    vr.current_mission_pack[0] = #vr.temp_var.list_name_mission_packs-1
+                    vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1] = manager.loadListMiss()
+                end
+            end
+        end
+    end
+    if doesDirectoryExist(getWorkingDirectory() .. '\\Storylines') then
+        for file in lfs.dir(getWorkingDirectory() .. '\\Storylines\\') do
+            if lfs.attributes(getWorkingDirectory() .. '\\Storylines\\'..file,"mode") == "file" then
+                vr.temp_var.list_name_storylines[#vr.temp_var.list_name_storylines+1] = new.char[65](string.sub(file, 0,-5))
             end
         end
     end
 
-
-    nodes_s.show[0] = true
+    --nodes_s.show[0] = true
     while true do
         wait(0)
+
+        if vr.mpack == 7 then
+            wait(500)
+			local welcome_t = decodeJson(langt['welcome_t'])
+			printHelpString(koder(cyr(welcome_t[1]) .. tostring(thisScript().version) .. cyr(welcome_t[2])))
+			vr.mpack = nil
+		end
+		if vr.mpack ~= nil then
+			break
+        end
+        
+        if isKeyDown(vkeys.VK_Q) then
+            print(collectgarbage("count"))
+            --collectgarbage("collect")
+        end
 
         if testCheat('top2009') then
 			printHelpString('~r~I LOVE TWENTY ONE PILOTS')
@@ -3691,6 +4609,47 @@ function main()
 				openMenu = true
 			end
         end
+
+        while vr.temp_var.editmodeTimemiss do
+			wait(0)
+			if isKeyDown(vkeys.VK_I) then
+				wait(100)
+				vr.missData['time'][0] = vr.missData['time'][0] + 1
+			end
+			if isKeyDown(vkeys.VK_O) then
+				wait(100)
+				vr.missData['time'][0] = vr.missData['time'][0] - 1
+			end
+			if isKeyDown(vkeys.VK_K) then
+				wait(100)
+				vr.missData['time'][1] = vr.missData['time'][1] + 1
+			end
+			if isKeyDown(vkeys.VK_L) then
+				wait(100)
+				vr.missData['time'][1] = vr.missData['time'][1] - 1
+			end
+			if vr.missData['time'][1] == 60 then
+				vr.missData['time'][0] = vr.missData['time'][0] + 1
+				vr.missData['time'][1] = 0
+			elseif vr.missData['time'][1] == -1 then
+				vr.missData['time'][0] = vr.missData['time'][0] - 1
+				vr.missData['time'][1] = 59
+			end
+			if vr.missData['time'][0] == 24 then
+				vr.missData['time'][0] = 0
+			elseif vr.missData['time'][0] == -1 then
+				vr.missData['time'][0] = 23
+			end
+			setTimeOfDay(vr.missData['time'][0], vr.missData['time'][1])
+            --Закрытие редактора
+			if wasKeyReleased(vkeys.VK_F) then
+				clearHelp()
+                vr.temp_var.editmodeTimemiss = false
+                setTimeOfDay(8,0)
+                vr.missionSettings[0] = true
+				openMenu = true
+			end
+        end
         
         if vr.temp_var.editmodeTeleportPlayer then
             printHelpForever("HVIEW")
@@ -3839,7 +4798,7 @@ function main()
             vr.miss_start = false
 		end
         
-        if not mp.mission_work then
+        if not mp.mission_work and not mp.storylineOn then
             if vr.updateSphere then
                 wait(0)
                 vr.updateSphere = false
@@ -3851,7 +4810,7 @@ function main()
                 end
             end
             if isKeyJustPressed(vkeys.VK_R) then
-                if vr.mainMenu[0] or vr.settings[0] or vr.targets[0] or vr.actors[0] or vr.cars[0] or carSelector.show or vr.objects[0] or vr.particles[0] or vr.pickups[0] or vr.explosions[0] or vr.audios[0] or vr.player[0] or vr.groupRelations[0] or vr.mission_packs[0] or vr.tools[0] or vr.info[0] then
+                if vr.mainMenu[0] or vr.settings[0] or vr.targets[0] or vr.actors[0] or vr.cars[0] or carSelector.show or vr.objects[0] or vr.particles[0] or vr.pickups[0] or vr.explosions[0] or vr.audios[0] or vr.player[0] or vr.groupRelations[0] or vr.mission_packs[0] or vr.tools[0] or vr.info[0] or vr.missionSettings[0] or vr.storylineList[0] or vr.StorylineMainMenu[0] or vr.StorylineCheckpoints[0] or vr.nodeEditor[0] then
                     vr.mainMenu[0] = false
                     vr.settings[0] = false
                     vr.targets[0] = false
@@ -3868,9 +4827,16 @@ function main()
                     vr.mission_packs[0] = false
                     vr.tools[0] = false
                     vr.info[0] = false
+                    vr.missionSettings[0] = false
+                    vr.storylineList[0] = false
+                    vr.StorylineMainMenu[0] = false
+                    vr.StorylineCheckpoints[0] = false
+                    vr.nodeEditor[0] = false
                     wait(0)
                     lockPlayerControl(false)
                     restoreCamera()
+                elseif vr.storylineMode then
+                    vr.StorylineMainMenu[0] = true
                 else
                     vr.mainMenu[0] = true
                 end
