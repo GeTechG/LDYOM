@@ -1,7 +1,7 @@
 function koder(text)
   local words = ""
-  local ru = stringToArray('ΠΠ‘Π’Π“Π”Π•ΠΠ–Π—ΠΠ™ΠΠ›ΠΠΠΠΠ Π΅ΠΆΠ£Π¤Π¥Π¦Π§Π¨Π©ΠªΠ«Π¬Π­Π®Π―Π°Π±Π²Π³Π΄ΠµΡ‘Π¶Π·ΠΈΠΉΠΊΠ»ΠΌΠ½ΠΎΠΏΡ€ΡΡ‚ΡƒΡ„Ρ…Ρ†Ρ‡ΡΡ‰ΡΡ‹ΡΡΡΡ')
-	local sl = stringToArray('AΠ‚β€Ήβ€Ρ“EEβ€β‚¬β€¦β€ Kβ€΅β€“Β­OΠPCΠYΠƒXβ€°ΠΠ‹Π‰Ρ’β€β€™β€β€β€Άaβ€”Ρβ„ΆΡ™eeβ€ΊΡΡΡkΡ›Π‡Β®oΠpcΒ¦yοΏ½xΒ Β¤ÒΠΒ§ΠΒ©Π„Β«Β¬')
+  local ru = stringToArray('ΐΑΒΓΔΕ¨ΖΗΘΙΚΛΜΝΞΟΠΡÒΣΤΥΦΧΨΩΪΫάέήίΰαβγδεΈζηθικλμνξοπρςστυφχψωϊϋόύώÿ')
+	local sl = stringToArray('A€‹‚ƒEE„…†K‡–­OPCYX‰‘’“”•a—Ά™ee›k―®o£pc¦yx ¤¥΅§¨©ª«¬')
 	words = text
   for l = 1,#ru do
 		words = string.gsub(words, ru[l], sl[l])
