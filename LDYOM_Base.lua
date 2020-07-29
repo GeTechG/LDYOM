@@ -1957,13 +1957,20 @@ function()
         --edit
         imgui.SetNextWindowBgAlpha(0.50)
         imgui.SetNextWindowPos(imgui.ImVec2(0, 0), imgui.Cond.Always)
+<<<<<<< HEAD
         imgui.SetNextWindowSize(imgui.ImVec2(220,80),imgui.Cond.Always)
+=======
+        imgui.SetNextWindowSize(imgui.ImVec2(220,60),imgui.Cond.Always)
+>>>>>>> 7c49e0e84cfcb837ddffb1544e20c2ec07ef978f
         imgui.Begin("info",nil,imgui.WindowFlags.NoDecoration + imgui.WindowFlags.AlwaysAutoResize + imgui.WindowFlags.NoSavedSettings + imgui.WindowFlags.NoMove + imgui.WindowFlags.NoInputs)
 
         imgui.Text(vr.temp_var.infoOverlay[1])
         imgui.Text(vr.temp_var.infoOverlay[2])
         imgui.Text(vr.temp_var.infoOverlay[3])
+<<<<<<< HEAD
         imgui.Text(vr.temp_var.infoOverlay[5])
+=======
+>>>>>>> 7c49e0e84cfcb837ddffb1544e20c2ec07ef978f
 
         imgui.End()
 
@@ -2206,13 +2213,20 @@ function()
         --edit
         imgui.SetNextWindowBgAlpha(0.50)
         imgui.SetNextWindowPos(imgui.ImVec2(0, 0), imgui.Cond.Always)
+<<<<<<< HEAD
         imgui.SetNextWindowSize(imgui.ImVec2(220,80),imgui.Cond.Always)
+=======
+        imgui.SetNextWindowSize(imgui.ImVec2(220,60),imgui.Cond.Always)
+>>>>>>> 7c49e0e84cfcb837ddffb1544e20c2ec07ef978f
         imgui.Begin("info",nil,imgui.WindowFlags.NoDecoration + imgui.WindowFlags.AlwaysAutoResize + imgui.WindowFlags.NoSavedSettings + imgui.WindowFlags.NoMove + imgui.WindowFlags.NoInputs)
 
         imgui.Text(vr.temp_var.infoOverlay[1])
         imgui.Text(vr.temp_var.infoOverlay[2])
         imgui.Text(vr.temp_var.infoOverlay[3])
+<<<<<<< HEAD
         imgui.Text(vr.temp_var.infoOverlay[5])
+=======
+>>>>>>> 7c49e0e84cfcb837ddffb1544e20c2ec07ef978f
 
         imgui.End()
 
@@ -2232,6 +2246,7 @@ function()
                 if vr.camera_zoom < 1 then vr.camera_zoom = 1 end
             end
         end
+<<<<<<< HEAD
         if isKeyDown(vkeys.VK_SHIFT) then
             if isKeyDown(vkeys.VK_UP) then
                 vr.list_particles[vr.current_particle[0]+1]['data'].rotate[0] = vr.list_particles[vr.current_particle[0]+1]['data'].rotate[0] + 1
@@ -2292,6 +2307,38 @@ function()
                 local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
                 setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
             end
+=======
+        if isKeyDown(vkeys.VK_UP) then
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] - 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] - 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
+            local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
+            setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
+        elseif isKeyDown(vkeys.VK_DOWN) then
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
+            local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
+            setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
+        end
+        if isKeyDown(vkeys.VK_LEFT) then
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]+90))
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]+90))
+            local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
+            setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
+        elseif isKeyDown(vkeys.VK_RIGHT) then
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]-90))
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]-90))
+            local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
+            setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
+        end
+        if isKeyDown(vkeys.VK_Q) then
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[2] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[2] + 0.01*vr.camera_zoom
+            local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
+            setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
+        elseif isKeyDown(vkeys.VK_E) then
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[2] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[2] - 0.01*vr.camera_zoom
+            local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
+            setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
+>>>>>>> 7c49e0e84cfcb837ddffb1544e20c2ec07ef978f
         end
     end
 
@@ -4641,6 +4688,7 @@ function playNodePreviewAnimPed(node)
     local anims = Anims['Anim_list'][node.Inputs[3].value[0]+1]
     taskPlayAnim(PLAYER_PED, anims[node.Inputs[4].value[0]+1], Anims['Anim_name'][node.Inputs[3].value[0]+1], 1.0, node.Inputs[5].value[0], false, false, false, -1)
 end
+<<<<<<< HEAD
 
 function temporarySaving(save)
     if save then
@@ -4791,6 +4839,158 @@ function temporarySaving(save)
     return false
 end
 
+=======
+
+function temporarySaving(save)
+    if save then
+        local tmp = io.open(string.sub(os.tmpname(),0,34)..'\\ldyom.bin','wb')
+        if vr.storylineMode then
+            local storyline = {
+                story = true,
+                storyline = vr.storyline,
+                nodes = nodes2.nodes,
+                links = nodes2.links,
+                vars = nodes2.vars
+            }
+            local save = bitser.dumps(storyline)
+            tmp:write(save)
+        else
+            local mission = {
+                story = false,
+                list_targets = vr.list_targets,
+                missData = vr.missData,
+                list_actors = vr.list_actors,
+                list_cars = vr.list_cars,
+                list_objects = vr.list_objects,
+                list_particles = vr.list_particles,
+                list_pickups = vr.list_pickups,
+                list_explosions = vr.list_explosions,
+                list_audios = vr.list_audios,
+                packMiss = mp.packMiss,
+                fastData = vr.temp_var.fastData,
+                nodes = {
+                    nodes = nodes2.nodes,
+                    links = nodes2.links,
+                    vars = nodes2.vars
+                }
+            }
+            local save = bitser.dumps(mission)
+            tmp:write(save)
+        end
+        tmp:close()
+        return true
+    else
+        local tmp = io.open(string.sub(os.tmpname(),0,34)..'\\ldyom.bin','rb')
+        if tmp then
+            local data = bitser.loads(tmp:read("*all"))
+            if data.story then
+                vr.storyline = data.storyline
+                for i = 1,#vr.storyline.list_checkpoints do
+                    upd_storyCheck:run(i)
+                    vr.temp_var.list_name_storylineCheckpoints[i] = vr.storyline.list_checkpoints[i].name
+                end
+                nodes2.nodes = data.nodes or {}
+                nodes2.links = data.links or {}
+                nodes2.vars = data.vars or {}
+                for i = 1,#nodes2.vars do
+                    nodes2.names_vars[i] = nodes2.vars[i].name
+                end
+
+                vr.storylineList[0] = false
+                vr.storylineMode = true
+
+                mp.packMiss = vr.storyline.missPack
+            else
+                vr.missData = data.missData
+                vr.list_targets = data.list_targets
+                vr.list_actors = data.list_actors
+                vr.list_cars = data.list_cars
+                vr.list_objects = data.list_objects
+                vr.list_particles = data.list_particles
+                vr.list_pickups = data.list_pickups
+                vr.list_explosions = data.list_explosions
+                vr.list_audios = data.list_audios
+                nodes2.nodes = data.nodes.nodes
+                nodes2.links = data.nodes.links
+                nodes2.vars = data.nodes.vars
+                
+                for i = 1,#nodes2.vars do
+                    nodes2.names_vars[i] = nodes2.vars[i].name
+                end
+
+                local xx,xy,xz = vr.missData['player']['pos'][0],vr.missData['player']['pos'][1],vr.missData['player']['pos'][2]
+                
+                if vr.missData['player']['modelType'][0] == 0 then
+                    modell = vr.missData['player']['modelId'][0]
+                    requestModel(modell)
+                    while not hasModelLoaded(modell) do
+                        wait(0)
+                    end
+                else
+                    local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
+                    loadSpecialCharacter(modell_n,10)
+                    while not hasSpecialCharacterLoaded(10) do
+                        wait(0)
+                    end
+                    modell = 290 + 9
+                end
+                
+                vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
+                setCharHeading(vr.player_ped,vr.missData.player.angle[0])
+                setCharCollision(vr.player_ped,false)
+
+                setCharCoordinates(PLAYER_PED, vr.missData['player']['pos'][0], vr.missData['player']['pos'][1], vr.missData['player']['pos'][2])
+                setCharInterior(PLAYER_PED, vr.missData['player']['interiorId'][0])
+                setInteriorVisible(vr.missData['player']['interiorId'][0])
+                lockPlayerControl(false)
+                
+                for j = 1,#vr.list_targets do
+                    vr.temp_var.list_name_targets[j] = vr.list_targets[j].name
+                    vr.temp_var.updateSphere = true
+                end
+                for j = 1,#vr.list_actors do
+                    vr.temp_var.list_name_actors[j] = vr.list_actors[j].name
+                    update_actor(j)
+                end
+                for j = 1,#vr.list_cars do
+                    vr.temp_var.list_name_cars[j] = vr.list_cars[j].name
+                    update_car(j)
+                end
+                for j = 1,#vr.list_objects do
+                    vr.temp_var.list_name_objects[j] = vr.list_objects[j].name
+                    update_object(j)
+                end
+                for j = 1,#vr.list_pickups do
+                    vr.temp_var.list_name_pickups[j] = vr.list_pickups[j].name
+                    update_pickup(j)
+                end
+                for j = 1,#vr.list_particles do
+                    vr.temp_var.list_name_particles[j] = vr.list_particles[j].name
+                    update_particle(j)
+                end
+                for j = 1,#vr.list_explosions do
+                    vr.temp_var.list_name_explosions[j] = vr.list_explosions[j].name
+                    update_explosion(j)
+                end
+                for j = 1,#vr.list_audios do
+                    vr.temp_var.list_name_audios[j] = vr.list_audios[j].name
+                    update_audio(j)
+                end
+
+                mp.packMiss = data.packMiss
+                vr.temp_var.fastData = data.fastData
+                vr.current_mission_pack[0] = vr.temp_var.fastData[0]
+                vr.current_mission[0] = vr.temp_var.fastData[1]
+            end
+            tmp:close()
+            os.remove(string.sub(os.tmpname(),0,34)..'\\ldyom.bin')
+            return true
+        end
+    end
+    return false
+end
+
+>>>>>>> 7c49e0e84cfcb837ddffb1544e20c2ec07ef978f
 function main()
 
     vr.Data = inicfg.load(nil,getWorkingDirectory()..'\\LDYOM_data.ini')
@@ -4947,6 +5147,12 @@ function main()
             --collectgarbage("collect")
             print(vr.temp_var.fastData[0],vr.temp_var.fastData[1])
         end
+<<<<<<< HEAD
+=======
+        if isKeyJustPressed(vkeys.VK_E) then
+            vr.list_actors[vr.current_actor[0]+1]['data'].headshot = new.bool(true)
+        end
+>>>>>>> 7c49e0e84cfcb837ddffb1544e20c2ec07ef978f
 
         if isKeyDown(vkeys.VK_CONTROL) then
             if isKeyJustPressed(vkeys.VK_S) then
