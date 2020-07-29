@@ -1,13 +1,6 @@
 # LDYOM
-Если кратко это фанатский DYOM на Lua (с меньшим функцианалом на данный момент) но с открытым кодом. 
-Для работы понадобиться:
-* [Moonloader 0.27+](https://blast.hk/threads/13305/post-367131)
-* [json.lua](https://github.com/rxi/json.lua)
+Modification for the game Grand Theft Auto: San Andreas. It was created as a logical continuation of the modification [DYOM](https://dyom.gtagames.nl/).
 
-Установка:
-1. Установить Moonloader
-2. Перекинуть GUI.lua и папку lib в папку moonloader (она в папке игры)
-3. json.lua перекинуть в lib
-3. При запуске игры выйдет окно с установкой доп.библиотек, согласитесь.
-
-Активация на U
+## Links
+* Site LDYOM - https://ldyom.000webhostapp.com/
+* Documentation - https://mgeymer.github.io/LDYOM_DOC/
