@@ -79,6 +79,8 @@ function getTypeValue(value)
         return 0
     elseif value == 'ctype<bool [1]>' then
         return 1
+    elseif value == 'ctype<unsigned char [1]>' then
+        return 0
     elseif string.sub(value,7,10) == 'char' then
         return 2
     end
@@ -101,6 +103,23 @@ local curr_var = new.int(0)
 sNodes.white_list = {"main"}
 
 -- Dummy
+
+local Socket = class('Socket')
+function Socket:initialize(name, type, value, ext, notEditable)
+    self.name = new.char[65](name)
+    self.type = type
+    self.link = nil
+    self.ext = ext
+    if type ~= 'wire' then
+        self.value = value
+        self.notEditable = new.bool(notEditable or false)
+    else
+        self.notEditable = new.bool(false) 
+        self.value = new('void*')
+    end
+end
+bitser.registerClass(Socket)
+
 local Node = class('Node')
 Node.static.Name = new.char[65]('Node')
 Node.static.Type = new.ImU16(node_types.event)
@@ -123,6 +142,11 @@ function Node:Overlaps(rMin,rMax)
     return rMin.y <  Max.y and rMax.y >  self.Pos.y and rMin.x <  Max.x and rMax.x >  self.Pos.x
 end
 function Node:renderSocket(socket)
+    vr.temp_var.upd_actor = {langt['player']}
+    for i = 1,#vr.temp_var.list_name_actors do
+        vr.temp_var.upd_actor[#vr.temp_var.upd_actor+1] = vr.temp_var.list_name_actors[i]
+    end
+
     local value
     if self.class.Type[0] == node_types.var and not socket.value then
         value = self.class.static.value
@@ -139,11 +163,44 @@ function Node:renderSocket(socket)
     elseif socket.type == 'Combo' then
         imgui.PushIDStr(langt[ffi.string(socket.name)] or '')
         imgui.Text(langt[ffi.string(socket.name)] or '')
-        local ext = loadstring('return '..socket.ext)()
+        local ext = loadstring('return function(self) return '..socket.ext..' end')()(self)
         imgui[socket.type]('',value,new('const char* const [?]',#ext,ext),#ext)
         imgui.PopID()
     elseif socket.type == 'Bool' then
         mimgui_addons.ToggleButton(langt[ffi.string(socket.name)] or '',value)
+    elseif socket.type == 'Button' then
+        if imgui.Button(langt[ffi.string(socket.name)] or '') then
+            loadstring('return function(self) '..socket.ext..' end')()(self)
+        end
+    elseif socket.type == 'ButtonSelecter' then
+        if imgui.ImageButton(loadstring('return '..socket.ext[1])(), socket.ext[2], imgui.ImVec2((socket.value[0]-1)*socket.ext[3],0), imgui.ImVec2(socket.value[0]*socket.ext[3],1)) then
+            loadstring('return function(self) '..socket.ext[4]..' end')()(self)
+        end
+        if imgui.BeginPopup('weapon') then
+            imgui.BeginChild('weapon',imgui.ImVec2(200,450))
+            for i = 1,#ID_Weapons do
+                imgui.PushIDStr(tostring(i))
+                if imgui.ImageButton(weaponsAtlas,imgui.ImVec2(52,52),imgui.ImVec2((i-1)*0.02272727272,0),imgui.ImVec2(i*0.02272727272,1)) then
+                    self.Inputs[3].value[0] = i
+                end
+                if imgui.IsItemHovered() then
+                    imgui.SetTooltip(vr.temp_var.weap_names[i])
+                end
+                imgui.PopID()
+                if i % 3 ~= 0 then
+                    imgui.SameLine()
+                end
+            end
+    
+            imgui.EndChild()
+            imgui.EndPopup()
+        end
+    elseif socket.type == 'SliderScalar' then
+        imgui.PushIDStr(langt[ffi.string(socket.name)] or '')
+        imgui.Text(langt[ffi.string(socket.name)] or ffi.string(socket.name))
+        local ext = loadstring('return function(self) return '..socket.ext[4]..' end')()(self)
+        imgui.SliderScalar('', socket.ext[1], socket.value, socket.ext[2], socket.ext[3], ext[socket.value[0]+1])
+        imgui.PopID()
     else
         imgui.PushIDStr(langt[ffi.string(socket.name)] or '')
         imgui.Text(langt[ffi.string(socket.name)] or '')
@@ -175,14 +232,14 @@ function Node:deleteConnections()
         end
     end
 end
-function Node:getInputValue(idx)
+function Node:getInputValue(idx,data)
     if self.Inputs[idx].link then
-        local link = sNodes.links[self.Inputs[idx].link].OutputIdx
-        local node = sNodes.nodes[link.OutputIdx]
-        if node.Type == node_types.var then
-            return sNodes.real_vars[node.class.name]
+        local link = data.links[self.Inputs[idx].link]
+        local node = data.nodes[link.OutputIdx]
+        if node.class.Type[0] == node_types.var then
+            return nodes2.real_vars[node.var]
         else
-            return sNodes.nodes[link.OutputIdx].Outputs[link.OutputSlot].value
+            return data.nodes[link.OutputIdx].Outputs[link.OutputSlot].value
         end
     else
         return self.Inputs[idx].value
@@ -201,22 +258,6 @@ ffi.cdef[[
 ]]
 bitser.register('NodeLink',ffi.typeof(ffi.new('struct NodeLink')))
 
-local Socket = class('Socket')
-function Socket:initialize(name, type, value, ext, notEditable)
-    self.name = new.char[65](name)
-    self.type = type
-    self.link = nil
-    self.ext = ext
-    if type ~= 'wire' then
-        self.value = value
-        self.notEditable = new.bool(notEditable or false)
-    else
-        self.notEditable = new.bool(false) 
-        self.value = new('void*')
-    end
-end
-bitser.registerClass(Socket)
-
 local classVar = class('Variable')
 function classVar:initialize()
     self.name = new.char[65](langt['variable']..' #'..#sNodes.names_vars+1)
@@ -227,7 +268,15 @@ bitser.registerClass(classVar)
 
 sNodes.Nodes = {
     main = {},
-    storyline = {}
+    storyline = {},
+    mission = {},
+    actor = {},
+    car = {},
+    object = {},
+    particle = {},
+    pickup = {},
+    explosion = {},
+    audio = {}
 }
 
 local node = Node:subclass('Start')
@@ -242,10 +291,10 @@ function node:initialize(pos)
         }
     )
 end
-function node:play()
+function node:play(data)
     if self.Outputs[1].link then
         for k,v in pairs(self.Outputs[1].link) do
-            sNodes.nodes[sNodes.links[v].InputIdx]:play()
+            data.nodes[data.links[v].InputIdx]:play(data)
         end
     end
 end
@@ -272,10 +321,10 @@ function node:initialize(pos)
         }
     )
 end
-function node:play()
+function node:play(data)
     if self.Outputs[1].link then
         for k,v in pairs(self.Outputs[1].link) do
-            sNodes.nodes[sNodes.links[v].InputIdx]:play()
+            data.nodes[data.links[v].InputIdx]:play(data)
         end
     end
 end
@@ -294,12 +343,12 @@ function node:initialize(pos)
         }
     )
 end
-function node:play()
-    while mp.storylineOn do
+function node:play(data)
+    while true do
         wait(0)
         if self.Outputs[1].link then
             for k,v in pairs(self.Outputs[1].link) do
-                sNodes.nodes[sNodes.links[v].InputIdx]:play()
+                data.nodes[data.links[v].InputIdx]:play(data)
             end
         end
     end
@@ -329,8 +378,8 @@ function node:initialize(pos)
         }
     )
 end
-function node:play()
-    local value = self:getInputValue(2)
+function node:play(data)
+    local value = self:getInputValue(2,data)
     local num_pack
 	for i,v in ipairs(vr.temp_var.list_name_mission_packs) do
 		if ffi.string(v) == ffi.string(vr.storyline.missPack) then
@@ -340,11 +389,11 @@ function node:play()
 	local missions_list = vr.temp_var.list_name_missions[num_pack]
     mp.playMission(missions_list[value[0]+1])
     mp.last_miss = value[0]+1
-    for k,v in pairs(sNodes.nodes) do
+    for k,v in pairs(data.nodes) do
         if v.class.name == 'MissionComplete' then
             if v:getInputValue(1)[0] == value[0] then
                 mp.thread[#mp.thread+1] = lua_thread.create(function(v)
-                v:play()
+                v:play(data)
                 end,v)
             end
         end
@@ -352,7 +401,7 @@ function node:play()
     self.Outputs[2].value[0] = value[0]
     if self.Outputs[1].link then
         for k,v in pairs(self.Outputs[1].link) do
-            sNodes.nodes[sNodes.links[v].InputIdx]:play()
+            data.nodes[data.links[v].InputIdx]:play(data)
         end
     end
 end
@@ -371,7 +420,7 @@ function node:initialize(pos)
         {}
     )
 end
-function node:play()
+function node:play(data)
     mp.storylineOn = false
 end
 sNodes.Nodes.storyline[#sNodes.Nodes.storyline+1] = node
@@ -380,27 +429,26 @@ bitser.registerClass(node)
 node = Node:subclass('ActivateСheckpoint')
 node.static.Name = new.char[65]('nodeActivСheck')
 node.static.Type = new.ImU16(node_types.func)
-node.static.Ext = 'vr.temp_var.list_name_storylineCheckpoints'
 function node:initialize(pos)
     Node.initialize(self,
         pos,
         {
             Socket('','wire'),
-            Socket('checkpoint','Combo', new.int(0)),
+            Socket('checkpoint','Combo', new.int(0), 'vr.temp_var.list_name_storylineCheckpoints'),
         },
         {
             Socket('','wire')
         }
     )
 end
-function node:play()
-    local check = self:getInputValue(2)[0]+1
+function node:play(data)
+    local check = self:getInputValue(2,data)[0]+1
     local xx,yy,zz = vr.storyline.list_checkpoints[check].data.pos[0],vr.storyline.list_checkpoints[check].data.pos[1],vr.storyline.list_checkpoints[check].data.pos[2]
     mp.storyCheck[check] = addSpriteBlipForCoord(xx,yy,zz,vr.storyline.list_checkpoints[check].data.iconMarker[0])
     changeBlipColour(mp.storyCheck[check],vr.storyline.list_checkpoints[check].data.colorBlip[0])
     if self.Outputs[1].link then
         for k,v in pairs(self.Outputs[1].link) do
-            sNodes.nodes[sNodes.links[v].InputIdx]:play()
+            data.nodes[data.links[v].InputIdx]:play(data)
         end
     end
 end
@@ -445,7 +493,1738 @@ function classNodeVar:initialize(var,pos,set)
         )
     end
 end
+function classNodeVar:play(data)
+    if self.set then
+        data.real_vars[self.var] = self:getInputValue(2,data)[0]+1
+    end
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
 bitser.registerClass(classNodeVar)
+
+node = Node:subclass('runSignal')
+node.static.Name = new.char[65]('nodeRunSignal')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire')
+        },
+        {
+            Socket('','wire'),
+        }
+    )
+end
+function node:play(data)
+
+    mp.signal = true
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.mission[#sNodes.Nodes.mission+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('сheckTarget')
+node.static.Name = new.char[65]('nodeCheckTarget')
+node.static.Type = new.ImU16(node_types.fork)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('target','Combo', new.int(0), 'vr.temp_var.list_name_targets'),
+        },
+        {
+            Socket('truee','wire'),
+            Socket('falsee','wire'),
+            Socket('','',new.bool(false),nil,true),
+        }
+    )
+end
+function node:play(data)
+    local target = self:getInputValue(2,data)[0]+1
+
+    if target == mp.curr_target then
+        if self.Outputs[1].link then
+            for k,v in pairs(self.Outputs[1].link) do
+                data.nodes[data.links[v].InputIdx]:play(data)
+            end
+        end
+    else
+        if self.Outputs[2].link then
+            for k,v in pairs(self.Outputs[1].link) do
+                data.nodes[data.links[v].InputIdx]:play(data)
+            end
+        end
+    end
+    self.Outputs[3].value[0] = target == mp.curr_target
+end
+sNodes.Nodes.mission[#sNodes.Nodes.mission+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('startTarget')
+node.static.Name = new.char[65]('nodeStartTarget')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('target','Combo', new.int(0), 'vr.temp_var.list_name_targets'),
+        },
+        {
+            Socket('','wire'),
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.mission[#sNodes.Nodes.mission+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('setTarget')
+node.static.Name = new.char[65]('nodeSetTarget')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('target','Combo', new.int(0), 'vr.temp_var.list_name_targets'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    mp.curr_target = self:getInputValue(2,data)[0]+1
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+
+end
+sNodes.Nodes.mission[#sNodes.Nodes.mission+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('showActor')
+node.static.Name = new.char[65]('nodeShowActor')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local actor = self:getInputValue(2,data)[0]+1
+
+    mp.thread[#mp.thread+1] = lua_thread.create(function(actor)
+        if (not vr.list_actors[actor]['data']["randomSpawn"][0]) or (math.random(0,100) > 50) then
+            local xx,xy,xz = vr.list_actors[actor]['data']['pos'][0], vr.list_actors[actor]['data']['pos'][1], vr.list_actors[actor]['data']['pos'][2]
+            local modell
+            if vr.list_actors[actor]['data']['modelType'][0] == 0 then
+                modell = vr.list_actors[actor]['data']['modelId'][0]
+                requestModel(modell)
+                while not hasModelLoaded(modell) do
+                    wait(0)
+                end
+            elseif vr.list_actors[actor]['data']['modelType'][0] == 1 then
+                local modell_n = ID_Spec_Actors[vr.list_actors[actor]['data']['modelId'][0]+1]
+                loadSpecialCharacter(modell_n,vr.list_actors[actor]['data']['slotSkin'][0])
+                while not hasSpecialCharacterLoaded(vr.list_actors[actor]['data']['slotSkin'][0]) do
+                    wait(0)
+                end
+                modell = 290 + vr.list_actors[actor]['data']['slotSkin'][0]-1
+            end
+            if vr.list_actors[actor]['data']['group'][0] == 0 then
+                mp.actors[actor] = createChar(23, modell, xx, xy, xz)
+                local g = getPlayerGroup(PLAYER_HANDLE)
+                setGroupMember(g,mp.actors[actor])
+            else
+                mp.actors[actor] = createChar(24 + vr.list_actors[actor]['data']['group'][0]-1, modell, xx, xy, xz)
+            end
+            setCharCollision(mp.actors[actor],false)
+            while getDistanceBetweenCoords3d(cx,cy,cz,xx,xy,xz) > 100 do
+                wait(0)
+                cx,cy,cz = getActiveCameraCoordinates()
+            end
+            setCharCollision(mp.actors[actor],true)
+            setCharHealth(mp.actors[actor],vr.list_actors[actor]['data']['health'][0])
+            setCharHeading(mp.actors[actor], vr.list_actors[actor]['data']['angle'][0])
+            setCharAccuracy(mp.actors[actor],vr.list_actors[actor]['data'].accuracy[0])
+            setCharSuffersCriticalHits(mp.actors[actor],vr.list_actors[actor]['data'].headshot[0])
+            requestModel(getWeapontypeModel(ID_Weapons[vr.list_actors[actor]['data']['weapon'][0]]))
+            while not hasModelLoaded(getWeapontypeModel(ID_Weapons[vr.list_actors[actor]['data']['weapon'][0]])) do
+                wait(0)
+            end
+            giveWeaponToChar(mp.actors[actor], ID_Weapons[vr.list_actors[actor]['data']['weapon'][0]], vr.list_actors[actor]['data']['ammo'][0])
+            setCurrentCharWeapon(mp.actors[actor],1)
+            markModelAsNoLongerNeeded(getWeapontypeModel(ID_Weapons[vr.list_actors[actor]['data']['weapon'][0]]))
+            wait(0)
+            if vr.list_actors[actor]['data']['shouldNotDie'][0] == true then
+                mp.thread[#mp.thread+1] = lua_thread.create(mp.char_is_not_dead,mp.actors[actor])
+            end
+        end
+    end,actor)
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'apperActor' and actor == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('apperActor')
+node.static.Name = new.char[65]('nodeApperActor')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('hideActor')
+node.static.Name = new.char[65]('nodeHideActor')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local actor = self:getInputValue(2,data)[0]+1
+
+    deleteChar(mp.actors[actor])
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'disapperActor' and actor == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('disapperActor')
+node.static.Name = new.char[65]('nodeDisapperActor')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('showCar')
+node.static.Name = new.char[65]('nodeShowCar')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('car','Combo', new.int(0), 'vr.temp_var.list_name_cars'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local car = self:getInputValue(2,data)[0]+1
+
+    mp.thread[#mp.thread+1] =lua_thread.create(function(car)
+        local md = vr.list_cars[car]['data']['modelId'][0]
+        local xx,xy,xz = vr.list_cars[car]['data']['pos'][0], vr.list_cars[car]['data']['pos'][1], vr.list_cars[car]['data']['pos'][2]
+        requestModel(md)
+        while not hasModelLoaded(md) do
+            wait(0)
+        end
+        mp.cars[car] = createCar(md, xx, xy, xz)
+        freezeCarPosition(mp.cars[car],true)
+        local cx,cy,cz = getActiveCameraCoordinates()
+        while getDistanceBetweenCoords3d(cx,cy,cz,xx,xy,xz) > 100 do
+            wait(0)
+            cx,cy,cz = getActiveCameraCoordinates()
+        end
+        freezeCarPosition(mp.cars[car],false)
+        setCarCoordinates(mp.cars[car],xx,xy,xz)
+        setCarHealth(mp.cars[car],vr.list_cars[car]['data']['health'][0])
+        setCarHeading(mp.cars[car], vr.list_cars[car]['data']['angle'][0])
+        lockCarDoors(mp.cars[car],fif(vr.list_cars[car]['data'].locked[0],0,1))
+        setCarProofs(mp.cars[car],vr.list_cars[car]['data']['bulletproof'][0],vr.list_cars[car]['data']['fireproof'][0],vr.list_cars[car]['data']['explosionproof'][0],vr.list_cars[car]['data']['collisionproof'][0],vr.list_cars[car]['data']['meleeproof'][0])
+        setCanBurstCarTires(mp.cars[car], not vr.list_cars[car]['data']['tiresVulnerability'][0])
+        for_each_vehicle_material(mp.cars[car],function(i,mat, comp, obj)
+            local new_r, new_g, new_b, a = vr.list_cars[car]['data'].colors[i][2][0],vr.list_cars[car]['data'].colors[i][2][1],vr.list_cars[car]['data'].colors[i][2][2],vr.list_cars[car]['data'].colors[i][2][3]
+            mat:set_color(new_r*255, new_g*255, new_b*255, a*255)
+        end)
+        if vr.list_cars[car]['data']['shouldNotDie'][0] == true then
+            mp.thread[#mp.thread+1] = lua_thread.create(car_is_not_dead,mp.cars[car])
+        end
+    end,car)
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'apperCar' and car == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.car[#sNodes.Nodes.car+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('apperCar')
+node.static.Name = new.char[65]('nodeApperCar')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('car','Combo', new.int(0), 'vr.temp_var.list_name_cars'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.car[#sNodes.Nodes.car+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('hideCar')
+node.static.Name = new.char[65]('nodeHideCar')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('car','Combo', new.int(0), 'vr.temp_var.list_name_cars'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local car = self:getInputValue(2,data)[0]+1
+
+    deleteCar(mp.cars[car])
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'disapperCar' and car == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.car[#sNodes.Nodes.car+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('disapperCar')
+node.static.Name = new.char[65]('nodeDisapperCar')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('car','Combo', new.int(0), 'vr.temp_var.list_name_cars'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.car[#sNodes.Nodes.car+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('showObject')
+node.static.Name = new.char[65]('nodeShowObject')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('object','Combo', new.int(0), 'vr.temp_var.list_name_objects'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local object = self:getInputValue(2,data)[0]+1
+
+    local md = vr.list_objects[object]['data']['modelId'][0]
+    local xx,xy,xz = vr.list_objects[object]['data']['pos'][0], vr.list_objects[object]['data']['pos'][1], vr.list_objects[object]['data']['pos'][2]
+    local rxx,rxy,rxz = vr.list_objects[object]['data']['rotate'][0], vr.list_objects[object]['data']['rotate'][1], vr.list_objects[object]['data']['rotate'][2]
+    requestModel(md)
+    while not isModelAvailable(md) do
+        wait(0)
+    end
+    mp.objects[object] = createObject(md, xx, xy, xz)
+    setObjectCoordinates(mp.objects[object], xx, xy, xz)
+    setObjectRotation(mp.objects[object], rxx, rxy, rxz)
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'apperObject' and object == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.object[#sNodes.Nodes.object+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('apperObject')
+node.static.Name = new.char[65]('nodeApperObject')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('object','Combo', new.int(0), 'vr.temp_var.list_name_objects'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.object[#sNodes.Nodes.object+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('hideObject')
+node.static.Name = new.char[65]('nodeHideObject')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('object','Combo', new.int(0), 'vr.temp_var.list_name_objects'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local object = self:getInputValue(2,data)[0]+1
+
+    deleteObject(mp.objects[object])
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'disapperObject' and object == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.object[#sNodes.Nodes.object+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('disapperObject')
+node.static.Name = new.char[65]('nodeDisapperObject')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('object','Combo', new.int(0), 'vr.temp_var.list_name_objects'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.object[#sNodes.Nodes.object+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('showParticle')
+node.static.Name = new.char[65]('nodeShowParticle')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('particle','Combo', new.int(0), 'vr.temp_var.list_name_particles'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local particle = self:getInputValue(2,data)[0]+1
+
+    local md = Particle_name[vr.list_particles[particle]['data']['modelId'][0]+1]
+    local xx,xy,xz = vr.list_particles[particle]['data']['pos'][0], vr.list_particles[particle]['data']['pos'][1], vr.list_particles[particle]['data']['pos'][2]
+    local rxx,rxy,rxz = vr.list_particles[particle]['data']['rotate'][0], vr.list_particles[particle]['data']['rotate'][1], vr.list_particles[particle]['data']['rotate'][2]
+
+    mp.particles[particle] = {}
+    if vr.list_particles[particle]['data'].tied[0] == 0 then
+        if not hasModelLoaded(327) then
+            requestModel(327)
+            while not hasModelLoaded(327) do
+                wait(0)
+            end
+        end
+        mp.particles[particle][2] = createObject(327, xx, xy, xz)
+        mp.particles[particle][1] = createFxSystemOnObjectWithDirection(md,mp.particles[particle][2],0,0,0,rxx,rxy,rxz, 1)
+        playFxSystem(mp.particles[particle][1])
+        wait(0)
+        setObjectVisible(mp.particles[particle][2],false)
+        setObjectCoordinates(mp.particles[particle][2], xx, xy, xz)
+    elseif vr.list_particles[particle]['data'].tied[0] == 1 then
+        local xt,yt,zt = getCharCoordinates(mp.actors[vr.list_particles[particle]['data']['tiedId'][0]+1])
+        local angleTied = getCharHeading(mp.actors[vr.list_particles[particle]['data']['tiedId'][0]+1])
+        xx,xy,xz = xx-xt,xy-yt,xz-zt
+        xx,xy = rotateVec2(xx,xy,-angleTied)
+        local xt,yt,zt = getCharCoordinates(mp.actors[vr.list_particles[particle]['data']['tiedId'][0]+1])
+        xx,xy,xz = xx-xt,xy-yt,xz-zt
+        mp.particles[particle][1] = createFxSystemOnCharWithDirection(md,mp.actors[vr.list_particles[particle]['data']['tiedId'][0]+1],xx,xy,xz,rxx,rxy,rxz, 1)
+        playFxSystem(mp.particles[particle][1])
+    elseif vr.list_particles[particle]['data'].tied[0] == 2 then
+        local xt,yt,zt = getCarCoordinates(mp.cars[vr.list_particles[particle]['data']['tiedId'][0]+1])
+        local angleTied = getCarHeading(mp.cars[vr.list_particles[particle]['data']['tiedId'][0]+1])
+        xx,xy,xz = xx-xt,xy-yt,xz-zt
+        xx,xy = rotateVec2(xx,xy,-angleTied)
+        mp.particles[particle][1] = createFxSystemOnCarWithDirection(md,mp.cars[vr.list_particles[particle]['data']['tiedId'][0]+1],xx,xy,xz,rxx,angleTied-rxy,rxz, 1)
+        playFxSystem(mp.particles[particle][1])
+    elseif vr.list_particles[particle]['data'].tied[0] == 3 then
+        local xt,yt,zt = getObjectCoordinates(mp.objects[vr.list_particles[particle]['data']['tiedId'][0]+1])
+        local angleTied = getObjectHeading(mp.objects[vr.list_particles[particle]['data']['tiedId'][0]+1])
+        xx,xy,xz = xx-xt,xy-yt,xz-zt
+        xx,xy = rotateVec2(xx,xy,-angleTied)
+        mp.particles[particle][1] = createFxSystemOnObjectWithDirection(md,mp.objects[vr.list_particles[particle]['data']['tiedId'][0]+1],xx,xy,xz,rxx,angleTied-rxy,rxz, 1)
+        playFxSystem(mp.particles[particle][1])
+    end
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'apperParticle' and particle == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.particle[#sNodes.Nodes.particle+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('apperParticle')
+node.static.Name = new.char[65]('nodeApperParticle')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('particle','Combo', new.int(0), 'vr.temp_var.list_name_particles'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.particle[#sNodes.Nodes.particle+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('hideParticle')
+node.static.Name = new.char[65]('nodeHideParticle')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('particle','Combo', new.int(0), 'vr.temp_var.list_name_particles'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local particle = self:getInputValue(2,data)[0]+1
+
+    killFxSystemNow(mp.particles[particle][1])
+	if mp.particles[particle][2] then deleteObject(mp.particles[particle][2]) end
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'disapperParticle' and particle == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.particle[#sNodes.Nodes.particle+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('disapperParticle')
+node.static.Name = new.char[65]('nodeDisapperParticle')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('particle','Combo', new.int(0), 'vr.temp_var.list_name_particles'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.particle[#sNodes.Nodes.particle+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('showPickup')
+node.static.Name = new.char[65]('nodeShowPickup')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('pickup','Combo', new.int(0), 'vr.temp_var.list_name_pickups'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local pickup = self:getInputValue(2,data)[0]+1
+
+    local xx,xy,xz = vr.list_pickups[pickup]['data']['pos'][0], vr.list_pickups[pickup]['data']['pos'][1], vr.list_pickups[pickup]['data']['pos'][2]
+    local spawn_t = 3
+    if vr.list_pickups[pickup]['data']['spawnType'][0] == 1 then
+        spawn_t = 2
+    elseif vr.list_pickups[pickup]['data']['spawnType'][0] == 2 then
+        spawn_t = 15
+    end
+
+    if vr.list_pickups[pickup]['data']['type'][0] == 0 then
+        local md = getWeapontypeModel(ID_Weapons[vr.list_pickups[pickup]['data']['weapon'][0]])
+        if not isModelAvailable(md) then
+            requestModel(md)
+            while not isModelAvailable(md) do
+                wait(0)
+            end
+        end
+        mp.pickups[pickup] = createPickupWithAmmo(md, spawn_t, vr.list_pickups[pickup]['data']['ammo'][0], xx, xy, xz)
+    end
+    if vr.list_pickups[pickup]['data']['type'][0] >= 1 then
+        local md = 1240
+        if vr.list_pickups[pickup]['data']['type'][0] == 2 then
+            md = 1242
+        elseif vr.list_pickups[pickup]['data']['type'][0] == 3 then
+            md = 1247
+        elseif vr.list_pickups[pickup]['data']['type'][0] == 4 then
+            md = 1241
+        elseif vr.list_pickups[pickup]['data']['type'][0] == 5 then
+            md = vr.list_pickups[pickup]['data']['modelId'][0]
+        end
+
+        if not isModelAvailable(md) then
+            requestModel(md)
+            while not isModelAvailable(md) do
+                wait(0)
+            end
+        end
+        mp.pickups[pickup] = select(2,createPickup(md, spawn_t, xx, xy, xz))
+    end
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'apperPickup' and pickup == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.pickup[#sNodes.Nodes.pickup+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('apperPickup')
+node.static.Name = new.char[65]('nodeApperPickup')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('pickup','Combo', new.int(0), 'vr.temp_var.list_name_pickups'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.pickup[#sNodes.Nodes.pickup+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('hidePickup')
+node.static.Name = new.char[65]('nodeHidePickup')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('pickup','Combo', new.int(0), 'vr.temp_var.list_name_pickups'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local pickup = self:getInputValue(2,data)[0]+1
+
+    removePickup(mp.pickups[pickup])
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'disapperPickup' and pickup == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.pickup[#sNodes.Nodes.pickup+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('disapperPickup')
+node.static.Name = new.char[65]('nodeDisapperPickup')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('pickup','Combo', new.int(0), 'vr.temp_var.list_name_pickups'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.pickup[#sNodes.Nodes.pickup+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('showExplosion')
+node.static.Name = new.char[65]('nodeShowExplosion')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('explosion','Combo', new.int(0), 'vr.temp_var.list_name_explosions'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local explosion = self:getInputValue(2,data)[0]+1
+
+    local xx,xy,xz = vr.list_explosions[explosion]['data']['pos'][0], vr.list_explosions[explosion]['data']['pos'][1], vr.list_explosions[explosion]['data']['pos'][2]
+
+    if vr.list_explosions[explosion]['data']['type'][0] == 0 then
+        mp.explosions[explosion] = startScriptFire(xx,xy,xz,vr.list_explosions[explosion]['data']['propagationFire'][0],vr.list_explosions[explosion]['data']['sizeFire'][0])
+    end
+    if vr.list_explosions[explosion]['data']['type'][0] == 1 then
+        addExplosion(xx,xy,xz,vr.list_explosions[explosion]['data']['typeExplosion'][0])
+    end
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'apperExplosion' and explosion == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.explosion[#sNodes.Nodes.explosion+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('apperExplosion')
+node.static.Name = new.char[65]('nodeApperExplosion')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('explosion','Combo', new.int(0), 'vr.temp_var.list_name_explosions'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.explosion[#sNodes.Nodes.explosion+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('hideExplosion')
+node.static.Name = new.char[65]('nodeHideExplosion')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('explosion','Combo', new.int(0), 'vr.temp_var.list_name_explosions'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local explosion = self:getInputValue(2,data)[0]+1
+
+    if vr.list_explosions[explosion]['data']['type'][0] == 0 then
+        removeScriptFire(mp.explosions[explosion])
+    end
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'disapperExplosion' and explosion == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.explosion[#sNodes.Nodes.explosion+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('disapperExplosion')
+node.static.Name = new.char[65]('nodeDisapperExplosion')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('explosion','Combo', new.int(0), 'vr.temp_var.list_name_explosions'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.explosion[#sNodes.Nodes.explosion+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('showAudio')
+node.static.Name = new.char[65]('nodeShowAudio')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('audio','Combo', new.int(0), 'vr.temp_var.list_name_audios'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local audio = self:getInputValue(2,data)[0]+1
+
+    audio_player(audio,vr.list_audio)
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'apperAudio' and audio == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.audio[#sNodes.Nodes.audio+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('apperAudio')
+node.static.Name = new.char[65]('nodeApperAudio')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('audio','Combo', new.int(0), 'vr.temp_var.list_name_audios'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.audio[#sNodes.Nodes.audio+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('hideAudio')
+node.static.Name = new.char[65]('nodeHideAudio')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('audio','Combo', new.int(0), 'vr.temp_var.list_name_audios'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local audio = self:getInputValue(2,data)[0]+1
+
+    setAudioStreamState(mp.audio[audio],0)
+	releaseAudioStream(mp.audio[audio])
+    
+    for k,v in pairs(data.nodes) do
+        if v.class.name == 'disapperAudio' and audio == v:getInputValue(1,data)[0]+1 then
+            mp.thread[#mp.thread+1] = lua_thread.create(function(v,data)
+                v:play(data)
+            end,v,data)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.audio[#sNodes.Nodes.audio+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('disapperAudio')
+node.static.Name = new.char[65]('nodeDisapperAudio')
+node.static.Type = new.ImU16(node_types.event)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('audio','Combo', new.int(0), 'vr.temp_var.list_name_audios'),
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.audio[#sNodes.Nodes.audio+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('animActor')
+node.static.Name = new.char[65]('nodeAnimActor')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+            Socket('pack','Combo', new.int(0), 'Anims.Anim_name'),
+            Socket('anim','Combo', new.int(0), "Anims.Anim_list[self.Inputs[3].value[0]+1]"),
+            Socket('looped','Bool', new.bool(false)),
+            Socket('unbreak','Bool', new.bool(false)),
+            Socket('stopEndFrameW','Bool', new.bool(false)),
+            Socket('useAnimMove','Bool', new.bool(false)),
+            Socket('time','InputFloat', new.float(0)),
+            Socket('preview','Button', nil, "playNodePreviewAnimPed(self)"),
+            Socket('previewPos','Button', nil, "vr.editmodeNodeAnimActor = true;vr.nodeEditmode = self"),
+            Socket('unPreview','Button', nil, "taskPlayAnim(PLAYER_PED, 'WALK_START', 'PED', 1.0, false, false, false, false, -1)"),
+        },
+        {
+            Socket('','wire'),
+            Socket('whenItsDone','wire')
+        }
+    )
+end
+function node:play(data)
+    mp.thread[#mp.thread+1] = lua_thread.create(function(self,data)
+        local ped = mp.actors[self:getInputValue(2,data)[0]+1]
+        local pack = self:getInputValue(3,data)[0]+1
+        local anim = self:getInputValue(4,data)[0]+1
+        local looped = self:getInputValue(5,data)[0]
+        local unbreak = self:getInputValue(6,data)[0]
+        local stopEndFrame = self:getInputValue(7,data)[0]
+        local useAnimMove = self:getInputValue(8,data)[0]
+        local time = self:getInputValue(9,data)[0]
+
+        if not hasAnimationLoaded(Anims['Anim_name'][pack]) then
+            requestAnimation(Anims['Anim_name'][pack])
+            while not hasAnimationLoaded(Anims['Anim_name'][pack]) do
+                wait(0)
+            end
+        end
+        local animm = Anims['Anim_list'][pack]
+        animm = animm[anim]
+        if not unbreak then
+            taskPlayAnim(ped, animm, Anims['Anim_name'][pack], 1.0, looped, useAnimMove, useAnimMove, stopEndFrame, fif(time > 0,time*1000,-1))
+        else
+            taskPlayAnimWithFlags(ped, animm, Anims['Anim_name'][pack], 1.0, looped, useAnimMove, useAnimMove, stopEndFrame, fif(time > 0,time*1000,-1),false,false)
+        end
+        if time > 0 then
+            wait(time * 1000)
+        else
+            while not isCharPlayingAnim(ped,animm) do
+                wait(0)
+            end
+            wait(getCharAnimTotalTime(ped,animm))
+            if not doesCharExist(ped) then
+                return
+            end
+        end
+
+        if self.Outputs[2].link then
+            for k,v in pairs(self.Outputs[2].link) do
+                data.nodes[data.links[v].InputIdx]:play(data)
+            end
+        end
+    end,self,data)
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('pathActor')
+node.static.Name = new.char[65]('nodePathActor')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    self.points = {}
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+            Socket('type_move_ped','Combo', new.int(0), 'vr.temp_var.move_type_ped'),
+            Socket('type_route_ped','Combo', new.int(0), 'vr.temp_var.move_route_ped'),
+            Socket('add_enter','Button', nil, "vr.editmodeNodePathActor = true;vr.nodeEditmode = self")
+        },
+        {
+            Socket('','wire'),
+            Socket('whenItsDone','wire')
+        }
+    )
+end
+function node:play(data)
+    mp.thread[#mp.thread+1] = lua_thread.create(function(self,data)
+        local ped = mp.actors[self:getInputValue(2,data)[0]+1]
+        local type_move_ped = self:getInputValue(3,data)[0]
+        local type_route_ped = self:getInputValue(4,data)[0]+1
+
+        local type_walk = 4
+        if type_move_ped == 3 then type_walk = 6
+        elseif type_move_ped == 4 then type_walk = 7 end
+        taskToggleDuck(ped, fif(type_move_ped == 0,true,false))
+        repeat
+            for i = 1,#self.points do
+                if not  doesCharExist(ped) then
+                    return
+                end
+                local x1,y1,z1 = self.points[i][0],self.points[i][1],self.points[i][2]
+                taskGoStraightToCoord(ped,x1,y1,z1,type_walk,-1)
+                local px,py,pz = getCharCoordinates(ped)
+                while getDistanceBetweenCoords3d(x1,y1,z1,px,py,pz) > 1 do
+                    wait(0)
+                    if doesCharExist(ped) then
+                        px,py,pz = getCharCoordinates(ped)
+                    else
+                        return
+                    end
+                end
+            end
+            wait(0)
+        until type_route_ped == 1
+        taskToggleDuck(ped, false)
+            
+        while getDistanceBetweenCoords3d(self.points[#self.points][0],self.points[#self.points][1],self.points[#self.points][2],px,py,pz) > 0.1 do
+            wait(0)
+            if doesCharExist(ped) then
+                px,py,pz = getCharCoordinates(ped)
+            else
+                return
+            end
+        end
+
+        if self.Outputs[2].link then
+            for k,v in pairs(self.Outputs[2].link) do
+                data.nodes[data.links[v].InputIdx]:play(data)
+            end
+        end
+    end,self,data)
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('pathActorCar')
+node.static.Name = new.char[65]('nodePathActorCar')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    self.points = {}
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+            Socket('car','Combo', new.int(0), 'vr.temp_var.list_name_cars'),
+            Socket('speed','InputFloat', new.float(60)),
+            Socket('type_route_ped','Combo', new.int(0), 'vr.temp_var.move_route_ped'),
+            Socket('add_enter','Button', nil, "vr.editmodeNodePathActorCar = true;vr.nodeEditmode = self")
+        },
+        {
+            Socket('','wire'),
+            Socket('whenItsDone','wire')
+        }
+    )
+end
+function node:play(data)
+    mp.thread[#mp.thread+1] = lua_thread.create(function(self,data)
+        local ped = mp.actors[self:getInputValue(2,data)[0]+1]
+        local car = mp.cars[self:getInputValue(3,data)[0]+1]
+        local speed = self:getInputValue(4,data)[0]
+        local type_route_ped = self:getInputValue(5,data)[0]+1
+
+        local px,py,pz = getCharCoordinates(ped)
+        repeat
+            for i = 1,#self.points do
+                if not  doesCharExist(ped) then
+                    return
+                end
+                local x1,y1,z1 = self.points[i][0],self.points[i][1],self.points[i][2]
+                taskCarDriveToCoord(ped,car,x1,y1,z1,speed,0,0,0)
+                px,py,pz = getCharCoordinates(ped)
+                while getDistanceBetweenCoords3d(px,py,pz,x1,y1,z1) > 5 do
+                    wait(0)
+                    if not  doesCharExist(ped) then
+                        return
+                    end
+                    px,py,pz = getCharCoordinates(ped)
+                end
+            end
+            wait(0)
+        until type_route_ped == 1
+
+        while getDistanceBetweenCoords3d(self.points[#self.points][0],self.points[#self.points][1],self.points[#self.points][2],px,py,pz) > 1 do
+            wait(0)
+            if doesCharExist(ped) then
+                px,py,pz = getCarCoordinates(car)
+            else
+                return
+            end
+        end
+
+        if self.Outputs[2].link then
+            for k,v in pairs(self.Outputs[2].link) do
+                data.nodes[data.links[v].InputIdx]:play(data)
+            end
+        end
+    end,self,data)
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('exitActorCar')
+node.static.Name = new.char[65]('nodeExitActorCar')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    self.points = {}
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+        },
+        {
+            Socket('','wire'),
+            Socket('whenItsDone','wire')
+        }
+    )
+end
+function node:play(data)
+    mp.thread[#mp.thread+1] = lua_thread.create(function(self,data)
+        local ped = mp.actors[self:getInputValue(2,data)[0]+1]
+
+        if isCharInAnyCar(ped) then
+            taskLeaveAnyCar(ped)
+            while isCharInAnyCar(ped) do
+                wait(0)
+            end
+        end
+
+        if self.Outputs[2].link then
+            for k,v in pairs(self.Outputs[2].link) do
+                data.nodes[data.links[v].InputIdx]:play(data)
+            end
+        end
+    end,self,data)
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('сhaseCar')
+node.static.Name = new.char[65]('nodeChaseCar')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    self.points = {}
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+            Socket('car_actr','Combo', new.int(0), 'vr.temp_var.list_name_cars'),
+            Socket('max_speed','InputFloat', new.float(60)),
+            Socket('beh_transp','InputInt', new.int(1)),
+            Socket('beh_driver','Combo', new.int(0), 'vr.temp_var.driver_beh'),
+            Socket('car_target','Combo', new.int(0), 'vr.temp_var.list_name_cars')
+        },
+        {
+            Socket('','wire')
+        }
+    )
+end
+function node:play(data)
+    local ped = mp.actors[self:getInputValue(2,data)[0]+1]
+    local car_actr = mp.cars[self:getInputValue(3,data)[0]+1]
+    local max_speed = self:getInputValue(4,data)[0]
+    local beh_transp = self:getInputValue(5,data)[0]
+    local beh_driver = self:getInputValue(6,data)[0]
+    local car_target = mp.cars[self:getInputValue(7,data)[0]+1]
+
+    taskCarMission(ped,car_actr,car_target,beh_driver-1,max_speed,beh_transp)
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('enterActorCar')
+node.static.Name = new.char[65]('nodeEnterActorCar')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    self.points = {}
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+            Socket('car','Combo', new.int(0), 'vr.temp_var.list_name_cars'),
+            Socket('speed_walk','Combo', new.int(0), 'vr.temp_var.speed_walk_to_car'),
+            Socket('seat','Combo', new.int(0), 'vr.temp_var.place_in_car'),
+            Socket('teleport','Bool', new.bool(false)),
+        },
+        {
+            Socket('','wire'),
+            Socket('whenItsDone','wire')
+        }
+    )
+end
+function node:play(data)
+    mp.thread[#mp.thread+1] = lua_thread.create(function(self,data)
+        local ped = mp.actors[self:getInputValue(2,data)[0]+1]
+        local car = mp.cars[self:getInputValue(3,data)[0]+1]
+        local speed_walk = self:getInputValue(4,data)[0]+1
+        local seat = self:getInputValue(5,data)[0]+1
+        local teleport = self:getInputValue(6,data)[0]
+
+        if seat == 1 then
+            setNextDesiredMoveState(speed_walk+4)
+            if teleport then
+                taskEnterCarAsDriver(ped,car,0)
+            else
+                taskEnterCarAsDriver(ped,car,-1)
+            end
+        else
+            setNextDesiredMoveState(speed_walk+4)
+            if teleport then
+                taskEnterCarAsPassenger(ped,car,0,seat-1)
+            else
+                taskEnterCarAsPassenger(ped,car,-1,seat-1)
+            end
+        end
+
+        while not isCharInAnyCar(ped) do
+            wait(0)
+            if not doesCharExist(ped) then
+                return
+            end
+        end
+
+        if self.Outputs[2].link then
+            for k,v in pairs(self.Outputs[2].link) do
+                data.nodes[data.links[v].InputIdx]:play(data)
+            end
+        end
+    end,self,data)
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('goActorToActor')
+node.static.Name = new.char[65]('nodeGoActorToActor')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    self.points = {}
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+            Socket('target','Combo', new.int(0), 'vr.temp_var.upd_actor'),
+            Socket('radius','InputInt', new.int(1)),
+            Socket('executeUntil','', new.bool(false),nil,true),
+        },
+        {
+            Socket('','wire'),
+        }
+    )
+end
+function node:play(data)
+    mp.thread[#mp.thread+1] = lua_thread.create(function(self,data)
+        local ped = mp.actors[self:getInputValue(2,data)[0]+1]
+        local ped2 = self:getInputValue(3,data)[0]
+        local radius = self:getInputValue(4,data)[0]
+        local executeUntil = self:getInputValue(5,data)[0]
+
+        repeat
+            wait(0)
+            if not doesCharExist(ped) then
+                return
+            end
+
+            executeUntil = self:getInputValue(5,data)[0]
+            local xa,ya,za = getCharCoordinates(ped)
+            if ped2 == 0 then
+                local xp,yp,zp = getCharCoordinates(PLAYER_PED)
+                if getDistanceBetweenCoords2d(xa,ya,xp,yp) > radius then
+                    taskGotoChar(ped,PLAYER_PED,-1,radius)
+                end
+            else
+                local xp,yp,zp = getCharCoordinates(mp.actors[ped2])
+                if getDistanceBetweenCoords2d(xa,ya,xp,yp) > radius then
+                    taskGotoChar(ped,mp.actors[ped2],-1,radius)
+                end
+            end
+        until executeUntil
+    end,self,data)
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('giveWeapActor')
+node.static.Name = new.char[65]('nodeGiveWeapActor')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    self.points = {}
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+            Socket('weapon','ButtonSelecter', new.int(1), {'weaponsAtlas',imgui.ImVec2(52,52),0.02272727272,'imgui.OpenPopup("weapon")'}),
+            Socket('countAmmo','InputInt', new.int(0))
+        },
+        {
+            Socket('','wire'),
+        }
+    )
+end
+function node:play(data)
+    local ped = mp.actors[self:getInputValue(2,data)[0]+1]
+    local weapon = self:getInputValue(3,data)[0]
+    local ammo = self:getInputValue(4,data)[0]
+
+    requestModel(getWeapontypeModel(ID_Weapons[weapon]))
+    while not hasModelLoaded(getWeapontypeModel(ID_Weapons[weapon])) do
+        wait(0)
+    end
+    giveWeaponToChar(ped, ID_Weapons[weapon], ammo)
+    setCurrentCharWeapon(ped,1)
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('takeAllWeapActor')
+node.static.Name = new.char[65]('nodeTakeAllWeapActor')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    self.points = {}
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('actor','Combo', new.int(0), 'vr.temp_var.list_name_actors'),
+        },
+        {
+            Socket('','wire'),
+        }
+    )
+end
+function node:play(data)
+    local ped = mp.actors[self:getInputValue(2,data)[0]+1]
+
+    removeAllCharWeapons(ped)
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.actor[#sNodes.Nodes.actor+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('openDoorsCar')
+node.static.Name = new.char[65]('nodeOpenDoorsCar')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    self.points = {}
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('car','Combo', new.int(0), 'vr.temp_var.list_name_cars'),
+            Socket('door_car_1','Bool', new.bool(false)),
+            Socket('door_car_2','Bool', new.bool(false)),
+            Socket('door_car_3','Bool', new.bool(false)),
+            Socket('door_car_4','Bool', new.bool(false)),
+            Socket('door_car_5','Bool', new.bool(false)),
+            Socket('door_car_6','Bool', new.bool(false)),
+        },
+        {
+            Socket('','wire'),
+        }
+    )
+end
+function node:play(data)
+    local car = mp.cars[self:getInputValue(2,data)[0]+1]
+
+    closeAllCarDoors(car)
+    for g = 1,6 do
+        if self:getInputValue(g+2,data)[0] then
+            openCarDoor(car,g-1)
+        end
+    end
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.car[#sNodes.Nodes.car+1] = node
+bitser.registerClass(node)
+
+node = Node:subclass('lockDoorsCar')
+node.static.Name = new.char[65]('nodeLockDoorsCar')
+node.static.Type = new.ImU16(node_types.func)
+function node:initialize(pos)
+    self.points = {}
+    Node.initialize(self,
+        pos,
+        {
+            Socket('','wire'),
+            Socket('car','Combo', new.int(0), 'vr.temp_var.list_name_cars'),
+            Socket('doors','SliderScalar', new.ImU8(0),{imgui.DataType.U8,new.ImU8(0),new.ImU8(1),'vr.temp_var.open_close'}),
+        },
+        {
+            Socket('','wire'),
+        }
+    )
+end
+function node:play(data)
+    local car = mp.cars[self:getInputValue(2,data)[0]+1]
+    local doors = self:getInputValue(3,data)[0]+1
+
+    lockCarDoors(car,doors)
+
+    if self.Outputs[1].link then
+        for k,v in pairs(self.Outputs[1].link) do
+            data.nodes[data.links[v].InputIdx]:play(data)
+        end
+    end
+end
+sNodes.Nodes.car[#sNodes.Nodes.car+1] = node
+bitser.registerClass(node)
 
 imgui.OnFrame(function() return (not isGamePaused()) and vr.nodeEditor[0] end,
 function()
@@ -533,7 +2312,6 @@ function()
     end
 
     imgui.EndChild()
-
     imgui.SameLine();
     imgui.BeginGroup();
 
@@ -545,7 +2323,7 @@ function()
     imgui.PushStyleVarVec2(imgui.StyleVar.FramePadding, imgui.ImVec2(1, 1));
     imgui.PushStyleVarVec2(imgui.StyleVar.WindowPadding, imgui.ImVec2(0, 0));
     imgui.PushStyleColor(imgui.Col.ChildBg, PlusVec4(imgui.GetStyle().Colors[imgui.Col.ChildBg] , imgui.ImVec4(0,0,0,0)));
-    imgui.BeginChild("scrolling_region", imgui.ImVec2(0, 0), true, imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoMove);
+    imgui.BeginChild("scrolling_region", imgui.ImVec2(0, 0), true, imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoMove + imgui.WindowFlags.NoScrollWithMouse);
     imgui.PopStyleVar()
     imgui.PushItemWidth(120.0);
 
@@ -566,13 +2344,11 @@ function()
     end
 
     draw_list:ChannelsSplit(2);
-
     -- Display sNodes.nodes
     for node_idx,node in pairs(sNodes.nodes) do
         if node:Overlaps(-scrolling,-scrolling+canvas_sz) then
             imgui.PushIDInt(node.ID[0]);
             node_rect_min = offset + imgui.ImVec2(magnit(node.Pos.x),magnit(node.Pos.y));
-
             -- Display node contents first
             draw_list:ChannelsSetCurrent(1); -- Foreground
             old_any_active = imgui.IsAnyItemActive();
@@ -606,7 +2382,6 @@ function()
             imgui.EndGroup();
             imgui.EndGroup();
             --local inputs_size = imgui.GetItemRectSize()
-
             -- Save the size of what we have emitted and whether any of the widgets are being used
             node_widgets_active = not old_any_active and imgui.IsAnyItemActive()
             node.Size = imgui.GetItemRectSize() + NODE_WINDOW_PADDING + NODE_WINDOW_PADDING + NODE_TITLE_PADDING + imgui.ImVec2(0,NODE_WINDOW_PADDING.y);
@@ -617,7 +2392,6 @@ function()
             end
             local node_rect_max = node_rect_min + node.Size + imgui.ImVec2(NODE_SLOT_RADIUS*6,0);
             local title_rect_max = node_rect_min + imgui.ImVec2(node.Size.x,NODE_TITLE_PADDING.y) + imgui.ImVec2(0,NODE_WINDOW_PADDING.y) + imgui.ImVec2(NODE_SLOT_RADIUS*6,0);
-
             -- Display node box
             draw_list:ChannelsSetCurrent(0); -- Background
             imgui.SetCursorScreenPos(node_rect_min+imgui.ImVec2(NODE_SLOT_RADIUS*3,0));
@@ -646,39 +2420,41 @@ function()
                 draw_list:AddRect(node_rect_min, node_rect_max, imgui.ColorConvertFloat4ToU32(imgui.GetStyle().Colors[imgui.Col.Border]), imgui.GetStyle().FrameRounding);
             end
             for slot_idx = 1,#node.Inputs do
-                imgui.PushIDInt(slot_idx)
-                local size_dot_area = imgui.ImVec2(NODE_SLOT_RADIUS,NODE_SLOT_RADIUS)
-                imgui.SetCursorScreenPos(offset + node:GetInputSlotPos(node.Inputs[slot_idx].socketY) - size_dot_area);
-                imgui.InvisibleButton(tostring(slot_idx), size_dot_area * 2)
-                if imgui.IsItemHovered() and state_mouse == STATE_NONE then
-                    state_mouse = STATE_INPUT
-                    node_dragging = node_idx
-                    slot_dragging = slot_idx
-                    if imgui.IsMouseReleased(1) and node.Inputs[slot_idx].link then
-                        local link = sNodes.links[node.Inputs[slot_idx].link]
-                        local node2 = sNodes.nodes[link.OutputIdx]
-                        local socket = node2.Outputs[link.OutputSlot]
-                        socket.link[link.OutputSlotNum] = nil
-                        sNodes.links[node.Inputs[slot_idx].link] = nil
-                        node.Inputs[slot_idx].link = nil
+                if node.Inputs[slot_idx].type ~= 'Button' then
+                    imgui.PushIDInt(slot_idx)
+                    local size_dot_area = imgui.ImVec2(NODE_SLOT_RADIUS,NODE_SLOT_RADIUS)
+                    imgui.SetCursorScreenPos(offset + node:GetInputSlotPos(node.Inputs[slot_idx].socketY) - size_dot_area);
+                    imgui.InvisibleButton(tostring(slot_idx), size_dot_area * 2)
+                    if imgui.IsItemHovered() and state_mouse == STATE_NONE then
+                        state_mouse = STATE_INPUT
+                        node_dragging = node_idx
+                        slot_dragging = slot_idx
+                        if imgui.IsMouseReleased(1) and node.Inputs[slot_idx].link then
+                            local link = sNodes.links[node.Inputs[slot_idx].link]
+                            local node2 = sNodes.nodes[link.OutputIdx]
+                            local socket = node2.Outputs[link.OutputSlot]
+                            socket.link[link.OutputSlotNum] = nil
+                            sNodes.links[node.Inputs[slot_idx].link] = nil
+                            node.Inputs[slot_idx].link = nil
+                        end
                     end
-                end
-                local color
-                if node.Inputs[slot_idx].type == 'wire' then
-                    color = getTypeSocket('wire')
-                else
-                    if node.class.Type[0] == node_types.var and not node.Inputs[slot_idx].value then
-                        color = getTypeSocket(ffi.typeof(sNodes.vars[node.var].value))
+                    local color
+                    if node.Inputs[slot_idx].type == 'wire' then
+                        color = getTypeSocket('wire')
                     else
-                        color = getTypeSocket(ffi.typeof(node.Inputs[slot_idx].value))
+                        if node.class.Type[0] == node_types.var and not node.Inputs[slot_idx].value then
+                            color = getTypeSocket(ffi.typeof(sNodes.vars[node.var].value))
+                        else
+                            color = getTypeSocket(ffi.typeof(node.Inputs[slot_idx].value))
+                        end
                     end
+                    if node.Inputs[slot_idx].link then
+                        draw_list:AddCircleFilled(offset + node:GetInputSlotPos(node.Inputs[slot_idx].socketY), NODE_SLOT_RADIUS, imgui.ColorConvertFloat4ToU32(color));
+                    else
+                        draw_list:AddCircle(offset + node:GetInputSlotPos(node.Inputs[slot_idx].socketY), NODE_SLOT_RADIUS, imgui.ColorConvertFloat4ToU32(color),12,3);
+                    end
+                    imgui.PopID()
                 end
-                if node.Inputs[slot_idx].link then
-                    draw_list:AddCircleFilled(offset + node:GetInputSlotPos(node.Inputs[slot_idx].socketY), NODE_SLOT_RADIUS, imgui.ColorConvertFloat4ToU32(color));
-                else
-                    draw_list:AddCircle(offset + node:GetInputSlotPos(node.Inputs[slot_idx].socketY), NODE_SLOT_RADIUS, imgui.ColorConvertFloat4ToU32(color),12,3);
-                end
-                imgui.PopID()
             end
             for slot_idx = 1,#node.Outputs do
                 imgui.PushIDInt(slot_idx)
@@ -766,37 +2542,39 @@ function()
                 local find_socket = false
                 for i,n in pairs(sNodes.nodes) do
                     for socket_idx = 1,#n.Inputs do
-                        local socket_pos = n:GetInputSlotPos(n.Inputs[socket_idx].socketY)
-                        local mouse_pos = imgui.GetMousePos() - offset
-                        local type1
-                        local type2
-                        if sNodes.nodes[node_dragging].class.Type[0] == node_types.var and not sNodes.nodes[node_dragging].Outputs[slot_dragging].value then
-                            type1 = sNodes.vars[sNodes.nodes[node_dragging].var].value
-                        else
-                            type1 = sNodes.nodes[node_dragging].Outputs[slot_dragging].value
-                        end
-                        if n.class.Type[0] == node_types.var and not n.Inputs[socket_idx].value then
-                            type2 = sNodes.vars[n.var].value
-                        else
-                            type2 = n.Inputs[socket_idx].value
-                        end
-                        if getTypeValue(tostring(ffi.typeof(type1))) == getTypeValue(tostring(ffi.typeof(type2))) then
-                            if getDistanceBetweenCoords2d(socket_pos.x,socket_pos.y,mouse_pos.x,mouse_pos.y) < 4 then
-                                if n.Inputs[socket_idx].link ~= nil then
-                                    local link = sNodes.links[n.Inputs[socket_idx].link]
-                                    local node2 = sNodes.nodes[link.OutputIdx]
-                                    local socket = node2.Outputs[link.OutputSlot]
-                                    socket.link[link.OutputSlotNum] = nil
-                                    sNodes.links[n.Inputs[socket_idx].link] = nil
+                        if n.Inputs[socket_idx].type ~= 'Button' then
+                            local socket_pos = n:GetInputSlotPos(n.Inputs[socket_idx].socketY)
+                            local mouse_pos = imgui.GetMousePos() - offset
+                            local type1
+                            local type2
+                            if sNodes.nodes[node_dragging].class.Type[0] == node_types.var and not sNodes.nodes[node_dragging].Outputs[slot_dragging].value then
+                                type1 = sNodes.vars[sNodes.nodes[node_dragging].var].value
+                            else
+                                type1 = sNodes.nodes[node_dragging].Outputs[slot_dragging].value
+                            end
+                            if n.class.Type[0] == node_types.var and not n.Inputs[socket_idx].value then
+                                type2 = sNodes.vars[n.var].value
+                            else
+                                type2 = n.Inputs[socket_idx].value
+                            end
+                            if getTypeValue(tostring(ffi.typeof(type1))) == getTypeValue(tostring(ffi.typeof(type2))) then
+                                if getDistanceBetweenCoords2d(socket_pos.x,socket_pos.y,mouse_pos.x,mouse_pos.y) < 4 then
+                                    if n.Inputs[socket_idx].link ~= nil then
+                                        local link = sNodes.links[n.Inputs[socket_idx].link]
+                                        local node2 = sNodes.nodes[link.OutputIdx]
+                                        local socket = node2.Outputs[link.OutputSlot]
+                                        socket.link[link.OutputSlotNum] = nil
+                                        sNodes.links[n.Inputs[socket_idx].link] = nil
+                                    end
+                                    local new_link = #sNodes.links+1
+                                    sNodes.nodes[node_dragging].Outputs[slot_dragging].link = sNodes.nodes[node_dragging].Outputs[slot_dragging].link or {}
+                                    local new_out = #sNodes.nodes[node_dragging].Outputs[slot_dragging].link+1
+                                    sNodes.links[new_link] = ffi.new('struct NodeLink',i,socket_idx,node_dragging,slot_dragging,new_out)
+                                    n.Inputs[socket_idx].link = new_link
+                                    sNodes.nodes[node_dragging].Outputs[slot_dragging].link[new_out] = new_link
+                                    find_socket = true
+                                    break
                                 end
-                                local new_link = #sNodes.links+1
-                                sNodes.nodes[node_dragging].Outputs[slot_dragging].link = sNodes.nodes[node_dragging].Outputs[slot_dragging].link or {}
-                                local new_out = #sNodes.nodes[node_dragging].Outputs[slot_dragging].link+1
-                                sNodes.links[new_link] = ffi.new('struct NodeLink',i,socket_idx,node_dragging,slot_dragging,new_out)
-                                n.Inputs[socket_idx].link = new_link
-                                sNodes.nodes[node_dragging].Outputs[slot_dragging].link[new_out] = new_link
-                                find_socket = true
-                                break
                             end
                         end
                     end
@@ -850,7 +2628,6 @@ function()
         end
     end
     draw_list:ChannelsMerge();
-
     -- Open context menu
     if imgui.IsMouseReleased(1) and imgui.IsMouseHoveringRect(win_pos,win_pos+imgui.GetWindowSize()) and imgui.IsWindowHovered(imgui.HoveredFlags.AllowWhenOverlapped) then
         if not imgui.IsAnyItemHovered() then
@@ -859,9 +2636,9 @@ function()
             imgui.OpenPopup('menuNode')
         end
     end
-
     -- Draw context menu
     imgui.PushStyleVarVec2(imgui.StyleVar.WindowPadding, imgui.ImVec2(8, 8));
+    imgui.SetNextWindowSize(imgui.ImVec2(0,200))
     if imgui.BeginPopup("createNode") then
         local scene_pos = imgui.GetMousePosOnOpeningCurrentPopup() - offset;
         for k,v in pairs(sNodes.Nodes) do
@@ -907,7 +2684,6 @@ function()
     end
 
     imgui.PopStyleVar();
-
     -- Scrolling
     if (imgui.IsWindowHovered() and not imgui.IsAnyItemActive() and imgui.IsMouseDragging(2, 0.0)) then
         scrolling = scrolling + io.MouseDelta;

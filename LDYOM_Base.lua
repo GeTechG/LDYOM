@@ -27,8 +27,9 @@ nodes2 = require 'ldyom.nodes2'
 cyr = encoding.CP1251
 encoding.default = 'UTF-8'
 
-local pedsSkinAtlas
-local weaponsAtlas
+pedsSkinAtlas = nil
+weaponsAtlas = nil
+blipsAtlas = nil
 
 ID_Actors = {0, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288}
 
@@ -148,7 +149,8 @@ vr = {
         updateSphere = false,
         moveTarget = -1,
         moveMission = -1,
-        enexMarker = new.bool(true)
+        enexMarker = new.bool(true),
+        fastData = new.int[2](-1,-1)
     },
     current_target = new.int(0),
     list_targets = {},
@@ -176,6 +178,11 @@ vr = {
         time = new.int[2](0,0),
         weather = new.int(0),
         riot = new.bool(false),
+        version = thisScript().version,
+        traffic_ped = new.ImU8(1),
+        traffic_car = new.ImU8(1),
+        wanted_min = new.ImU8(0),
+        wanted_max = new.ImU8(6),
         player = {
             ['pos'] = new.float[3](884,-1221,16),
             ['angle'] = new.int(0),
@@ -187,9 +194,14 @@ vr = {
             ['modelType'] = new.ImU8(0)
         }
     },
+    player_ped = nil,
     camera_zoom = 5,
     camera_angle = {45,0},
-    storylineMode = false
+    storylineMode = false,
+    editmodeNodeAnimActor = false,
+    editmodeNodePathActor = false,
+    editmodeNodePathActorCar = false,
+    nodeEditmode = nil
 }
 LanguageList = {}
 langt = {}
@@ -252,6 +264,14 @@ function ifInTable(value,table)
         end
     end
     return false
+end
+
+function DrawLineBy3dCoords(posX, posY, posZ, posX2, posY2, posZ2, width, color)
+	if isPointOnScreen(posX, posY, posZ,1) and isPointOnScreen(posX2, posY2, posZ2,1) then
+		local SposX, SposY = convert3DCoordsToScreen(posX, posY, posZ)
+		local SposX2, SposY2 = convert3DCoordsToScreen(posX2, posY2, posZ2)
+		renderDrawLine(SposX, SposY, SposX2, SposY2, width, color)
+	end
 end
 
 function rgba_to_int(r,g,b,a)
@@ -419,6 +439,11 @@ function()
         vr.audios[0] = true
         vr.mainMenu[0] = false
     end
+    if imgui.Button(faicons.ICON_PROJECT_DIAGRAM..' '..langt['nodeEditor'],size_b) then
+        nodes2.white_list = {"main","mission","actor","car","object","particle","pickup","explosion","audio"}
+        vr.nodeEditor[0] = true
+        vr.mainMenu[0] = false
+    end
     imgui.Separator()
     if imgui.Button(faicons.ICON_THEATER_MASKS..' '..langt['missionPacks'],size_b) then
       vr.mission_packs[0] = not vr.mission_packs[0]
@@ -542,7 +567,6 @@ function()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
         end
-        imgui.SameLine()
         if imgui.Button(langt['delete']) then
             imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
         end
@@ -1068,7 +1092,7 @@ function()
 
                 --skin popup
                 if imgui.BeginPopup('skins') then
-                    imgui.BeginChild('skins',imgui.ImVec2(210,450))
+                    imgui.BeginChild('skins',imgui.ImVec2(330,450))
             
 
                     for i = 1,#ID_Actors do
@@ -1077,7 +1101,7 @@ function()
                             vr.list_targets[vr.current_target[0]+1]['data']['modelId'][0] = ID_Actors[i]
                         end
                         imgui.PopID()
-                        if i % 3 ~= 0 then
+                        if i % 5 ~= 0 then
                             imgui.SameLine()
                         end
                     end
@@ -1175,6 +1199,8 @@ function()
                 ['group'] = new.int(1),
                 ["randomSpawn"] = new.bool(false),
                 ["accuracy"] = new.int(false),
+                ['useTarget'] = new.bool(true),
+                ['headshot'] = new.bool(true),
             }
             local actors_name = {}
             for i = 1,#vr.list_actors do
@@ -1204,7 +1230,6 @@ function()
             if imgui.Button(langt['rename']) then
                 imgui.OpenPopup("rename")
             end
-            imgui.SameLine()
             if imgui.Button(langt['delete']) then
                 imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
             end
@@ -1327,7 +1352,8 @@ function()
 
             if imgui.TreeNodeStr(langt['сhartics']) then
                 imgui.InputInt(langt['countlive'],vr.list_actors[vr.current_actor[0]+1]['data']['health'])
-                
+                mimgui_addons.ToggleButton(langt['headshot'],vr.list_actors[vr.current_actor[0]+1]['data'].headshot)
+
                 if imgui.ImageButton(weaponsAtlas, imgui.ImVec2(52,52),imgui.ImVec2((vr.list_actors[vr.current_actor[0]+1]['data'].weapon[0]-1)*0.02272727272,0), imgui.ImVec2(vr.list_actors[vr.current_actor[0]+1]['data'].weapon[0]*0.02272727272,1)) then
                     imgui.OpenPopup('weapon')
                 end
@@ -1406,13 +1432,15 @@ function()
             imgui.PushItemWidth(150)
             imgui.Separator()
             
-            local list_tg_m = {langt['toend']}
-            for ltg = 1,#vr.temp_var.list_name_targets do
-                list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
+            mimgui_addons.ToggleButton(langt['useTarget'],vr.list_actors[vr.current_actor[0]+1]['data']['useTarget'])
+            if vr.list_actors[vr.current_actor[0]+1]['data'].useTarget[0] then
+                local list_tg_m = {langt['toend']}
+                for ltg = 1,#vr.temp_var.list_name_targets do
+                    list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
+                end
+                imgui.Combo(langt['app_on'],vr.list_actors[vr.current_actor[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
+                imgui.Combo(langt['dis_after'],vr.list_actors[vr.current_actor[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
             end
-            imgui.Combo(langt['app_on'],vr.list_actors[vr.current_actor[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
-            imgui.Combo(langt['dis_after'],vr.list_actors[vr.current_actor[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
-            
 
             --edit
             imgui.SetNextWindowBgAlpha(0.50)
@@ -1447,7 +1475,7 @@ function()
 
             --skin popup
             if imgui.BeginPopup('skins') then
-                imgui.BeginChild('skins',imgui.ImVec2(210,450))
+                imgui.BeginChild('skins',imgui.ImVec2(330,450))
         
 
                 for i = 1,#ID_Actors do
@@ -1457,7 +1485,7 @@ function()
                         upd_actor:run(vr.current_actor[0]+1)
                     end
                     imgui.PopID()
-                    if i % 3 ~= 0 then
+                    if i % 5 ~= 0 then
                         imgui.SameLine()
                     end
                 end
@@ -1492,7 +1520,7 @@ function()
 
         imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
         imgui.SetNextWindowPos(imgui.ImVec2(res.x-270,0),imgui.Cond.Appearing)
-        imgui.Begin(faicons.ICON_MALE..' '..langt['cars'],nil, imgui.WindowFlags.AlwaysAutoResize)
+        imgui.Begin(faicons.ICON_CARS..' '..langt['cars'],nil, imgui.WindowFlags.AlwaysAutoResize)
 
         --List
         imgui.SetNextItemWidth(255)
@@ -1523,6 +1551,8 @@ function()
                 ['extendedColor'] = new.bool(false),
                 ['primaryColor'] = new.float[4](),
                 ['secondaryColor'] = new.float[4](),
+                ['useTarget'] = new.bool(true),
+                ['locked'] = new.bool(true),
 
             }
             local cars_name = {}
@@ -1553,7 +1583,6 @@ function()
             if imgui.Button(langt['rename']) then
                 imgui.OpenPopup("rename")
             end
-            imgui.SameLine()
             if imgui.Button(langt['delete']) then
                 imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
             end
@@ -1598,7 +1627,7 @@ function()
         if #vr.list_cars > 0 then
             imgui.SetNextWindowSize(imgui.ImVec2(400,360),imgui.Cond.Always)
             imgui.SetNextWindowPos(imgui.ImVec2(res.x-670,0),imgui.Cond.Appearing)
-            imgui.Begin(faicons.ICON_MALE..' '..langt['car'],nil, imgui.WindowFlags.AlwaysAutoResize)
+            imgui.Begin(faicons.ICON_CAR..' '..langt['car'],nil, imgui.WindowFlags.AlwaysAutoResize)
 
 
             lockPlayerControl(true)
@@ -1714,7 +1743,7 @@ function()
 
 
             end
-
+            mimgui_addons.ToggleButton(langt['nodeLockDoorsCar'],vr.list_cars[vr.current_car[0]+1]['data']['locked'])
             mimgui_addons.ToggleButton(langt['should_live'],vr.list_cars[vr.current_car[0]+1]['data']['shouldNotDie'])
             
 
@@ -1732,13 +1761,15 @@ function()
             imgui.PushItemWidth(150)
             imgui.Separator()
             
-            local list_tg_m = {langt['toend']}
-            for ltg = 1,#vr.temp_var.list_name_targets do
-                list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
-            end
-            imgui.Combo(langt['app_on'],vr.list_cars[vr.current_car[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
-            imgui.Combo(langt['dis_after'],vr.list_cars[vr.current_car[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
-            
+            mimgui_addons.ToggleButton(langt['useTarget'],vr.list_cars[vr.current_car[0]+1]['data']['useTarget'])
+            if vr.list_cars[vr.current_car[0]+1]['data'].useTarget[0] then
+                local list_tg_m = {langt['toend']}
+                for ltg = 1,#vr.temp_var.list_name_targets do
+                    list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
+                end
+                imgui.Combo(langt['app_on'],vr.list_cars[vr.current_car[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
+                imgui.Combo(langt['dis_after'],vr.list_cars[vr.current_car[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+            end    
 
             --edit
             imgui.SetNextWindowBgAlpha(0.50)
@@ -1793,7 +1824,7 @@ function()
 
     imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x-270,0),imgui.Cond.Appearing)
-    imgui.Begin(faicons.ICON_MALE..' '..langt['objects'],nil, imgui.WindowFlags.AlwaysAutoResize)
+    imgui.Begin(faicons.ICON_ARCHIVE..' '..langt['objects'],nil, imgui.WindowFlags.AlwaysAutoResize)
 
     --List
     imgui.SetNextItemWidth(255)
@@ -1812,6 +1843,7 @@ function()
             ['modelId'] = new.int(),
             ['startC'] = new.int(0),
             ['endC'] = new.int(0),
+            ['useTarget'] = new.bool(true),
         }
         local objects_name = {}
         for i = 1,#vr.list_objects do
@@ -1841,7 +1873,6 @@ function()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
         end
-        imgui.SameLine()
         if imgui.Button(langt['delete']) then
             imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
         end
@@ -1908,7 +1939,7 @@ function()
             local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
             setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
         end
-        if imgui.DragInt3(langt['rotate'],vr.list_objects[vr.current_object[0]+1]['data']['rotate'],0.3,-360,360,"%d°") then
+        if imgui.DragInt3(langt['rotate'],vr.list_objects[vr.current_object[0]+1]['data']['rotate'],0.3,-360.0,360.0,"%d°") then
             local xr,yr,zr = vr.list_objects[vr.current_object[0]+1]['data']['rotate'][0],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][1],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][2]
             setObjectRotation(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xr,yr,zr)
         end
@@ -1916,21 +1947,36 @@ function()
         if imgui.Button(langt['apply']) then
             upd_object:run(vr.current_object[0]+1)
         end
-        local list_tg_m = {langt['toend']}
-        for ltg = 1,#vr.temp_var.list_name_targets do
-            list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
-        end
-        imgui.Combo(langt['app_on'],vr.list_objects[vr.current_object[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
-        imgui.Combo(langt['dis_after'],vr.list_objects[vr.current_object[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
-        
+
+        mimgui_addons.ToggleButton(langt['useTarget'],vr.list_objects[vr.current_object[0]+1]['data']['useTarget'])
+        if vr.list_objects[vr.current_object[0]+1]['data'].useTarget[0] then
+            local list_tg_m = {langt['toend']}
+            for ltg = 1,#vr.temp_var.list_name_targets do
+                list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
+            end
+            imgui.Combo(langt['app_on'],vr.list_objects[vr.current_object[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
+            imgui.Combo(langt['dis_after'],vr.list_objects[vr.current_object[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+        end    
 
         --edit
+        imgui.SetNextWindowBgAlpha(0.50)
+        imgui.SetNextWindowPos(imgui.ImVec2(0, 0), imgui.Cond.Always)
+        imgui.SetNextWindowSize(imgui.ImVec2(220,60),imgui.Cond.Always)
+        imgui.Begin("info",nil,imgui.WindowFlags.NoDecoration + imgui.WindowFlags.AlwaysAutoResize + imgui.WindowFlags.NoSavedSettings + imgui.WindowFlags.NoMove + imgui.WindowFlags.NoInputs)
+
+        imgui.Text(vr.temp_var.infoOverlay[1])
+        imgui.Text(vr.temp_var.infoOverlay[2])
+        imgui.Text(vr.temp_var.infoOverlay[3])
+
+        imgui.End()
+
         local cx,cy,cz = vr.list_objects[vr.current_object[0]+1]['data'].pos[0],vr.list_objects[vr.current_object[0]+1]['data'].pos[1],vr.list_objects[vr.current_object[0]+1]['data'].pos[2]
         cx = cx + (vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
         cy = cy + (vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
         cz = cz + (vr.camera_zoom*math.sin(math.rad(vr.camera_angle[2])))
         setFixedCameraPosition(cx,cy,cz)
         pointCameraAtPoint(vr.list_objects[vr.current_object[0]+1]['data'].pos[0],vr.list_objects[vr.current_object[0]+1]['data'].pos[1],vr.list_objects[vr.current_object[0]+1]['data'].pos[2],2)
+        --print(vr.camera_angle[1])
         if not isWindow then
             if imgui.IsMouseDragging(2) then
                 local dt = imgui.GetIO().MouseDelta
@@ -1941,32 +1987,66 @@ function()
                 if vr.camera_zoom < 1 then vr.camera_zoom = 1 end
             end
         end
-        if isKeyDown(vkeys.VK_UP) then
-            vr.list_objects[vr.current_object[0]+1]['data'].pos[0] = vr.list_objects[vr.current_object[0]+1]['data'].pos[0] + 0.1
-            local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
-            setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
-        elseif isKeyDown(vkeys.VK_DOWN) then
-            vr.list_objects[vr.current_object[0]+1]['data'].pos[0] = vr.list_objects[vr.current_object[0]+1]['data'].pos[0] - 0.1
-            local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
-            setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
-        end
-        if isKeyDown(vkeys.VK_LEFT) then
-            vr.list_objects[vr.current_object[0]+1]['data'].pos[1] = vr.list_objects[vr.current_object[0]+1]['data'].pos[1] + 0.1
-            local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
-            setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
-        elseif isKeyDown(vkeys.VK_RIGHT) then
-            vr.list_objects[vr.current_object[0]+1]['data'].pos[1] = vr.list_objects[vr.current_object[0]+1]['data'].pos[1] - 0.1
-            local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
-            setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
-        end
-        if isKeyDown(vkeys.VK_Q) then
-            vr.list_objects[vr.current_object[0]+1]['data'].pos[2] = vr.list_objects[vr.current_object[0]+1]['data'].pos[2] + 0.1
-            local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
-            setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
-        elseif isKeyDown(vkeys.VK_E) then
-            vr.list_objects[vr.current_object[0]+1]['data'].pos[2] = vr.list_objects[vr.current_object[0]+1]['data'].pos[2] - 0.1
-            local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
-            setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+        if isKeyDown(vkeys.VK_SHIFT) then
+            if isKeyDown(vkeys.VK_UP) then
+                vr.list_objects[vr.current_object[0]+1]['data'].rotate[0] = vr.list_objects[vr.current_object[0]+1]['data'].rotate[0] + 1
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['rotate'][0],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][1],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][2]
+                setObjectRotation(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            elseif isKeyDown(vkeys.VK_DOWN) then
+                vr.list_objects[vr.current_object[0]+1]['data'].rotate[0] = vr.list_objects[vr.current_object[0]+1]['data'].rotate[0] - 1
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['rotate'][0],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][1],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][2]
+                setObjectRotation(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            end
+            if isKeyDown(vkeys.VK_LEFT) then
+                vr.list_objects[vr.current_object[0]+1]['data'].rotate[1] = vr.list_objects[vr.current_object[0]+1]['data'].rotate[1] + 1
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['rotate'][0],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][1],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][2]
+                setObjectRotation(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            elseif isKeyDown(vkeys.VK_RIGHT) then
+                vr.list_objects[vr.current_object[0]+1]['data'].rotate[1] = vr.list_objects[vr.current_object[0]+1]['data'].rotate[1] - 1
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['rotate'][0],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][1],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][2]
+                setObjectRotation(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            end
+            if isKeyDown(vkeys.VK_Q) then
+                vr.list_objects[vr.current_object[0]+1]['data'].rotate[2] = vr.list_objects[vr.current_object[0]+1]['data'].rotate[2] + 1
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['rotate'][0],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][1],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][2]
+                setObjectRotation(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            elseif isKeyDown(vkeys.VK_E) then
+                vr.list_objects[vr.current_object[0]+1]['data'].rotate[2] = vr.list_objects[vr.current_object[0]+1]['data'].rotate[2] - 1
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['rotate'][0],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][1],vr.list_objects[vr.current_object[0]+1]['data']['rotate'][2]
+                setObjectRotation(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            end
+        else
+            if isKeyDown(vkeys.VK_UP) then
+                vr.list_objects[vr.current_object[0]+1]['data'].pos[0] = vr.list_objects[vr.current_object[0]+1]['data'].pos[0] - 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+                vr.list_objects[vr.current_object[0]+1]['data'].pos[1] = vr.list_objects[vr.current_object[0]+1]['data'].pos[1] - 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
+                setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            elseif isKeyDown(vkeys.VK_DOWN) then
+                vr.list_objects[vr.current_object[0]+1]['data'].pos[0] = vr.list_objects[vr.current_object[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+                vr.list_objects[vr.current_object[0]+1]['data'].pos[1] = vr.list_objects[vr.current_object[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
+                setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            end
+            if isKeyDown(vkeys.VK_LEFT) then
+                vr.list_objects[vr.current_object[0]+1]['data'].pos[0] = vr.list_objects[vr.current_object[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]+90))
+                vr.list_objects[vr.current_object[0]+1]['data'].pos[1] = vr.list_objects[vr.current_object[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]+90))
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
+                setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            elseif isKeyDown(vkeys.VK_RIGHT) then
+                vr.list_objects[vr.current_object[0]+1]['data'].pos[0] = vr.list_objects[vr.current_object[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]-90))
+                vr.list_objects[vr.current_object[0]+1]['data'].pos[1] = vr.list_objects[vr.current_object[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]-90))
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
+                setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            end
+            if isKeyDown(vkeys.VK_Q) then
+                vr.list_objects[vr.current_object[0]+1]['data'].pos[2] = vr.list_objects[vr.current_object[0]+1]['data'].pos[2] + 0.01*vr.camera_zoom
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
+                setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            elseif isKeyDown(vkeys.VK_E) then
+                vr.list_objects[vr.current_object[0]+1]['data'].pos[2] = vr.list_objects[vr.current_object[0]+1]['data'].pos[2] - 0.01*vr.camera_zoom
+                local xx,xy,xz = vr.list_objects[vr.current_object[0]+1]['data']['pos'][0],vr.list_objects[vr.current_object[0]+1]['data']['pos'][1],vr.list_objects[vr.current_object[0]+1]['data']['pos'][2]
+                setObjectCoordinates(vr.list_objects[vr.current_object[0]+1]['data']['obj'],xx,xy,xz)
+            end
         end
     end
 
@@ -2001,6 +2081,7 @@ function()
             ['tiedId'] = new.int(0),
             ['startC'] = new.int(0),
             ['endC'] = new.int(0),
+            ['useTarget'] = new.bool(true),
             ['prtcl'] = {}
         }
         local particles_name = {}
@@ -2031,7 +2112,6 @@ function()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
         end
-        imgui.SameLine()
         if imgui.Button(langt['delete']) then
             imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
         end
@@ -2077,7 +2157,7 @@ function()
     if #vr.list_particles > 0 then
         imgui.SetNextWindowSize(imgui.ImVec2(400,360),imgui.Cond.Always)
         imgui.SetNextWindowPos(imgui.ImVec2(res.x-670,0),imgui.Cond.Appearing)
-        imgui.Begin(faicons.ICON_ARCHIVE..' '..langt['particle'],nil, imgui.WindowFlags.AlwaysAutoResize)
+        imgui.Begin(faicons.ICON_STARS..' '..langt['particle'],nil, imgui.WindowFlags.AlwaysAutoResize)
     
         imgui.PushIDStr("position")
         if imgui.Button(faicons.ICON_STREET_VIEW) then
@@ -2115,15 +2195,29 @@ function()
         elseif vr.list_particles[vr.current_particle[0]+1]['data'].tied[0] == 3 then
             imgui.Combo(langt['object'],vr.list_particles[vr.current_particle[0]+1]['data']['tiedId'],new('const char* const [?]', #vr.temp_var.list_name_objects, vr.temp_var.list_name_objects),#vr.temp_var.list_name_objects)
         end
-        local list_tg_m = {langt['toend']}
-        for ltg = 1,#vr.temp_var.list_name_targets do
-            list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
-        end
-        imgui.Combo(langt['app_on'],vr.list_particles[vr.current_particle[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
-        imgui.Combo(langt['dis_after'],vr.list_particles[vr.current_particle[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
-        
+
+        mimgui_addons.ToggleButton(langt['useTarget'],vr.list_particles[vr.current_particle[0]+1]['data']['useTarget'])
+        if vr.list_particles[vr.current_particle[0]+1]['data'].useTarget[0] then
+            local list_tg_m = {langt['toend']}
+            for ltg = 1,#vr.temp_var.list_name_targets do
+                list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
+            end
+            imgui.Combo(langt['app_on'],vr.list_particles[vr.current_particle[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
+            imgui.Combo(langt['dis_after'],vr.list_particles[vr.current_particle[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+        end    
 
         --edit
+        imgui.SetNextWindowBgAlpha(0.50)
+        imgui.SetNextWindowPos(imgui.ImVec2(0, 0), imgui.Cond.Always)
+        imgui.SetNextWindowSize(imgui.ImVec2(220,60),imgui.Cond.Always)
+        imgui.Begin("info",nil,imgui.WindowFlags.NoDecoration + imgui.WindowFlags.AlwaysAutoResize + imgui.WindowFlags.NoSavedSettings + imgui.WindowFlags.NoMove + imgui.WindowFlags.NoInputs)
+
+        imgui.Text(vr.temp_var.infoOverlay[1])
+        imgui.Text(vr.temp_var.infoOverlay[2])
+        imgui.Text(vr.temp_var.infoOverlay[3])
+
+        imgui.End()
+
         local cx,cy,cz = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0],vr.list_particles[vr.current_particle[0]+1]['data'].pos[1],vr.list_particles[vr.current_particle[0]+1]['data'].pos[2]
         cx = cx + (vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
         cy = cy + (vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
@@ -2141,20 +2235,24 @@ function()
             end
         end
         if isKeyDown(vkeys.VK_UP) then
-            vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] - 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] - 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
             local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
             setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
         elseif isKeyDown(vkeys.VK_DOWN) then
-            vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] - 0.01*vr.camera_zoom
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
             local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
             setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
         end
         if isKeyDown(vkeys.VK_LEFT) then
-            vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]+90))
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]+90))
             local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
             setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
         elseif isKeyDown(vkeys.VK_RIGHT) then
-            vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] - 0.01*vr.camera_zoom
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]-90))
+            vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] = vr.list_particles[vr.current_particle[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]-90))
             local xx,xy,xz = vr.list_particles[vr.current_particle[0]+1]['data']['pos'][0],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][1],vr.list_particles[vr.current_particle[0]+1]['data']['pos'][2]
             setObjectCoordinates(vr.list_particles[vr.current_particle[0]+1]['data']['prtcl'][2],xx,xy,xz)
         end
@@ -2179,7 +2277,7 @@ function()
 
     imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x-270,0),imgui.Cond.Appearing)
-    imgui.Begin(faicons.ICON_STARS..' '..langt['pickups'],nil, imgui.WindowFlags.AlwaysAutoResize)
+    imgui.Begin(faicons.ICON_HEART..' '..langt['pickups'],nil, imgui.WindowFlags.AlwaysAutoResize)
 
     --List
     imgui.SetNextItemWidth(255)
@@ -2201,6 +2299,7 @@ function()
             ['modelId'] = new.int(0),
             ['startC'] = new.int(0),
             ['endC'] = new.int(0),
+            ['useTarget'] = new.bool(true),
         }
         local pickups_name = {}
         for i = 1,#vr.list_pickups do
@@ -2230,7 +2329,6 @@ function()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
         end
-        imgui.SameLine()
         if imgui.Button(langt['delete']) then
             imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
         end
@@ -2275,7 +2373,7 @@ function()
     if #vr.list_pickups > 0 then
         imgui.SetNextWindowSize(imgui.ImVec2(400,360),imgui.Cond.Always)
         imgui.SetNextWindowPos(imgui.ImVec2(res.x-670,0),imgui.Cond.Appearing)
-        imgui.Begin(faicons.ICON_ARCHIVE..' '..langt['pickup'],nil, imgui.WindowFlags.AlwaysAutoResize)
+        imgui.Begin(faicons.ICON_HEART..' '..langt['pickup'],nil, imgui.WindowFlags.AlwaysAutoResize)
     
         imgui.PushIDStr("position")
         if imgui.Button(faicons.ICON_STREET_VIEW) then
@@ -2344,15 +2442,29 @@ function()
             end
         end
         imgui.Separator()
-        local list_tg_m = {langt['toend']}
-        for ltg = 1,#vr.temp_var.list_name_targets do
-            list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
-        end
-        imgui.Combo(langt['app_on'],vr.list_pickups[vr.current_pickup[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
-        imgui.Combo(langt['dis_after'],vr.list_pickups[vr.current_pickup[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
-        
+
+        mimgui_addons.ToggleButton(langt['useTarget'],vr.list_pickups[vr.current_pickup[0]+1]['data']['useTarget'])
+        if vr.list_pickups[vr.current_pickup[0]+1]['data'].useTarget[0] then
+            local list_tg_m = {langt['toend']}
+            for ltg = 1,#vr.temp_var.list_name_targets do
+                list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
+            end
+            imgui.Combo(langt['app_on'],vr.list_pickups[vr.current_pickup[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
+            imgui.Combo(langt['dis_after'],vr.list_pickups[vr.current_pickup[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+        end    
 
         --edit
+        imgui.SetNextWindowBgAlpha(0.50)
+        imgui.SetNextWindowPos(imgui.ImVec2(0, 0), imgui.Cond.Always)
+        imgui.SetNextWindowSize(imgui.ImVec2(220,60),imgui.Cond.Always)
+        imgui.Begin("info",nil,imgui.WindowFlags.NoDecoration + imgui.WindowFlags.AlwaysAutoResize + imgui.WindowFlags.NoSavedSettings + imgui.WindowFlags.NoMove + imgui.WindowFlags.NoInputs)
+
+        imgui.Text(vr.temp_var.infoOverlay[1])
+        imgui.Text(vr.temp_var.infoOverlay[2])
+        imgui.Text(vr.temp_var.infoOverlay[3])
+
+        imgui.End()
+
         local cx,cy,cz = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0],vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1],vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[2]
         cx = cx + (vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
         cy = cy + (vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
@@ -2370,20 +2482,33 @@ function()
             end
         end
         if isKeyDown(vkeys.VK_UP) then
-            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom
+            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] - 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] - 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
             local xx,xy,xz = vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][0],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][1],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][2]
             upd_pickup:run(vr.current_pickup[0]+1)
         elseif isKeyDown(vkeys.VK_DOWN) then
-            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] - 0.01*vr.camera_zoom
+            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
             local xx,xy,xz = vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][0],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][1],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][2]
             upd_pickup:run(vr.current_pickup[0]+1)
         end
         if isKeyDown(vkeys.VK_LEFT) then
-            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom
+            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]+90))
+            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]+90))
             local xx,xy,xz = vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][0],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][1],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][2]
             upd_pickup:run(vr.current_pickup[0]+1)
         elseif isKeyDown(vkeys.VK_RIGHT) then
-            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] - 0.01*vr.camera_zoom
+            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]-90))
+            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]-90))
+            local xx,xy,xz = vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][0],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][1],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][2]
+            upd_pickup:run(vr.current_pickup[0]+1)
+        end
+        if isKeyDown(vkeys.VK_Q) then
+            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[2] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[2] + 0.01*vr.camera_zoom
+            local xx,xy,xz = vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][0],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][1],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][2]
+            upd_pickup:run(vr.current_pickup[0]+1)
+        elseif isKeyDown(vkeys.VK_E) then
+            vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[2] = vr.list_pickups[vr.current_pickup[0]+1]['data'].pos[2] - 0.01*vr.camera_zoom
             local xx,xy,xz = vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][0],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][1],vr.list_pickups[vr.current_pickup[0]+1]['data']['pos'][2]
             upd_pickup:run(vr.current_pickup[0]+1)
         end
@@ -2399,7 +2524,7 @@ function()
 
     imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x-270,0),imgui.Cond.Appearing)
-    imgui.Begin(faicons.ICON_MALE..' '..langt['explosions'],nil, imgui.WindowFlags.AlwaysAutoResize)
+    imgui.Begin(faicons.ICON_BOMB..' '..langt['explosions'],nil, imgui.WindowFlags.AlwaysAutoResize)
 
     --List
     imgui.SetNextItemWidth(255)
@@ -2420,6 +2545,7 @@ function()
             ['propagationFire'] = new.ImU8(0),
             ['startC'] = new.int(0),
             ['endC'] = new.int(0),
+            ['useTarget'] = new.bool(true),
         }
         local explosions_name = {}
         for i = 1,#vr.list_explosions do
@@ -2450,7 +2576,6 @@ function()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
         end
-        imgui.SameLine()
         if imgui.Button(langt['delete']) then
             imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
         end
@@ -2500,7 +2625,7 @@ function()
     if #vr.list_explosions > 0 then
         imgui.SetNextWindowSize(imgui.ImVec2(400,360),imgui.Cond.Always)
         imgui.SetNextWindowPos(imgui.ImVec2(res.x-670,0),imgui.Cond.Appearing)
-        imgui.Begin(faicons.ICON_ARCHIVE..' '..langt['explosion'],nil, imgui.WindowFlags.AlwaysAutoResize)
+        imgui.Begin(faicons.ICON_BOMB..' '..langt['explosion'],nil, imgui.WindowFlags.AlwaysAutoResize)
     
         imgui.PushIDStr("position")
         if imgui.Button(faicons.ICON_STREET_VIEW) then
@@ -2533,15 +2658,29 @@ function()
         elseif vr.list_explosions[vr.current_explosion[0]+1]['data'].type[0] == 1 then
             imgui.DragScalar(langt['type_explosion'], imgui.DataType.U8, vr.list_explosions[vr.current_explosion[0]+1]['data'].typeExplosion, 0.1)
         end
-        local list_tg_m = {langt['toend']}
-        for ltg = 1,#vr.temp_var.list_name_targets do
-            list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
-        end
-        imgui.Combo(langt['app_on'],vr.list_explosions[vr.current_explosion[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
-        imgui.Combo(langt['dis_after'],vr.list_explosions[vr.current_explosion[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
-        
+
+        mimgui_addons.ToggleButton(langt['useTarget'],vr.list_explosions[vr.current_explosion[0]+1]['data']['useTarget'])
+        if vr.list_explosions[vr.current_explosion[0]+1]['data'].useTarget[0] then
+            local list_tg_m = {langt['toend']}
+            for ltg = 1,#vr.temp_var.list_name_targets do
+                list_tg_m[#list_tg_m+1] = vr.temp_var.list_name_targets[ltg]
+            end
+            imgui.Combo(langt['app_on'],vr.list_explosions[vr.current_explosion[0]+1]['data']['startC'],new('const char* const [?]',#vr.temp_var.list_name_targets,vr.temp_var.list_name_targets),#vr.temp_var.list_name_targets)
+            imgui.Combo(langt['dis_after'],vr.list_explosions[vr.current_explosion[0]+1]['data']['endC'],new('const char* const [?]',#list_tg_m,list_tg_m),#list_tg_m)
+        end    
 
         --edit
+        imgui.SetNextWindowBgAlpha(0.50)
+        imgui.SetNextWindowPos(imgui.ImVec2(0, 0), imgui.Cond.Always)
+        imgui.SetNextWindowSize(imgui.ImVec2(220,60),imgui.Cond.Always)
+        imgui.Begin("info",nil,imgui.WindowFlags.NoDecoration + imgui.WindowFlags.AlwaysAutoResize + imgui.WindowFlags.NoSavedSettings + imgui.WindowFlags.NoMove + imgui.WindowFlags.NoInputs)
+
+        imgui.Text(vr.temp_var.infoOverlay[1])
+        imgui.Text(vr.temp_var.infoOverlay[2])
+        imgui.Text(vr.temp_var.infoOverlay[3])
+
+        imgui.End()
+
         local cx,cy,cz = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0],vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1],vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[2]
         cx = cx + (vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
         cy = cy + (vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
@@ -2559,29 +2698,33 @@ function()
             end
         end
         if isKeyDown(vkeys.VK_UP) then
-            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] + 0.1
+            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] - 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] - 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
             local xx,xy,xz = vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][0],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][1],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][2]
             upd_explosion:run(vr.current_explosion[0]+1)
         elseif isKeyDown(vkeys.VK_DOWN) then
-            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] - 0.1
+            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
             local xx,xy,xz = vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][0],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][1],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][2]
             upd_explosion:run(vr.current_explosion[0]+1)
         end
         if isKeyDown(vkeys.VK_LEFT) then
-            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] + 0.1
+            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]+90))
+            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]+90))
             local xx,xy,xz = vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][0],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][1],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][2]
             upd_explosion:run(vr.current_explosion[0]+1)
         elseif isKeyDown(vkeys.VK_RIGHT) then
-            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] - 0.1
+            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]-90))
+            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]-90))
             local xx,xy,xz = vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][0],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][1],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][2]
             upd_explosion:run(vr.current_explosion[0]+1)
         end
         if isKeyDown(vkeys.VK_Q) then
-            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[2] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[2] + 0.1
+            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[2] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[2] + 0.01*vr.camera_zoom
             local xx,xy,xz = vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][0],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][1],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][2]
             upd_explosion:run(vr.current_explosion[0]+1)
         elseif isKeyDown(vkeys.VK_E) then
-            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[2] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[2] - 0.1
+            vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[2] = vr.list_explosions[vr.current_explosion[0]+1]['data'].pos[2] - 0.01*vr.camera_zoom
             local xx,xy,xz = vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][0],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][1],vr.list_explosions[vr.current_explosion[0]+1]['data']['pos'][2]
             upd_explosion:run(vr.current_explosion[0]+1)
         end
@@ -2597,7 +2740,7 @@ function()
 
     imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x-270,0),imgui.Cond.Appearing)
-    imgui.Begin(faicons.ICON_MALE..' '..langt['audio'],nil, imgui.WindowFlags.AlwaysAutoResize)
+    imgui.Begin(faicons.ICON_VOLUME_UP..' '..langt['audio'],nil, imgui.WindowFlags.AlwaysAutoResize)
 
     --List
     imgui.SetNextItemWidth(255)
@@ -2649,7 +2792,6 @@ function()
         if imgui.Button(langt['rename']) then
             imgui.OpenPopup("rename")
         end
-        imgui.SameLine()
         if imgui.Button(langt['delete']) then
             imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
         end
@@ -2696,7 +2838,7 @@ function()
     if #vr.list_audios > 0 then
         imgui.SetNextWindowSize(imgui.ImVec2(400,360),imgui.Cond.Always)
         imgui.SetNextWindowPos(imgui.ImVec2(res.x-670,0),imgui.Cond.Appearing)
-        imgui.Begin(faicons.ICON_ARCHIVE..' '..langt['audio'],nil, imgui.WindowFlags.AlwaysAutoResize)
+        imgui.Begin(faicons.ICON_VOLUME_UP..' '..langt['audio'],nil, imgui.WindowFlags.AlwaysAutoResize)
     
         imgui.Combo(langt['sound'],vr.list_audios[vr.current_audio[0]+1]['data'].sound,new('const char* const [?]',#vr.temp_var.list_audios_name,vr.temp_var.list_audios_name),#vr.temp_var.list_audios_name)
         
@@ -2743,6 +2885,17 @@ function()
                 end
 
                 --edit
+                imgui.SetNextWindowBgAlpha(0.50)
+                imgui.SetNextWindowPos(imgui.ImVec2(0, 0), imgui.Cond.Always)
+                imgui.SetNextWindowSize(imgui.ImVec2(220,60),imgui.Cond.Always)
+                imgui.Begin("info",nil,imgui.WindowFlags.NoDecoration + imgui.WindowFlags.AlwaysAutoResize + imgui.WindowFlags.NoSavedSettings + imgui.WindowFlags.NoMove + imgui.WindowFlags.NoInputs)
+
+                imgui.Text(vr.temp_var.infoOverlay[1])
+                imgui.Text(vr.temp_var.infoOverlay[2])
+                imgui.Text(vr.temp_var.infoOverlay[3])
+
+                imgui.End()
+
                 local cx,cy,cz = vr.list_audios[vr.current_audio[0]+1]['data'].pos[0],vr.list_audios[vr.current_audio[0]+1]['data'].pos[1],vr.list_audios[vr.current_audio[0]+1]['data'].pos[2]
                 cx = cx + (vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
                 cy = cy + (vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))*math.cos(math.rad(vr.camera_angle[2])))
@@ -2760,29 +2913,33 @@ function()
                     end
                 end
                 if isKeyDown(vkeys.VK_UP) then
-                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] + 0.1
+                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] - 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] - 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
                     local xx,xy,xz = vr.list_audios[vr.current_audio[0]+1]['data']['pos'][0],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][1],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][2]
                     setObjectCoordinates(vr.list_audios[vr.current_audio[0]+1]['data'].obj,xx,xy,xz)
                 elseif isKeyDown(vkeys.VK_DOWN) then
-                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] - 0.1
+                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]))
+                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]))
                     local xx,xy,xz = vr.list_audios[vr.current_audio[0]+1]['data']['pos'][0],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][1],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][2]
                     setObjectCoordinates(vr.list_audios[vr.current_audio[0]+1]['data'].obj,xx,xy,xz)
                 end
                 if isKeyDown(vkeys.VK_LEFT) then
-                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] + 0.1
+                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]+90))
+                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]+90))
                     local xx,xy,xz = vr.list_audios[vr.current_audio[0]+1]['data']['pos'][0],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][1],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][2]
                     setObjectCoordinates(vr.list_audios[vr.current_audio[0]+1]['data'].obj,xx,xy,xz)
                 elseif isKeyDown(vkeys.VK_RIGHT) then
-                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] - 0.1
+                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[0] + 0.01*vr.camera_zoom*math.sin(math.rad(vr.camera_angle[1]-90))
+                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[1] + 0.01*vr.camera_zoom*math.cos(math.rad(vr.camera_angle[1]-90))
                     local xx,xy,xz = vr.list_audios[vr.current_audio[0]+1]['data']['pos'][0],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][1],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][2]
                     setObjectCoordinates(vr.list_audios[vr.current_audio[0]+1]['data'].obj,xx,xy,xz)
                 end
                 if isKeyDown(vkeys.VK_Q) then
-                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[2] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[2] + 0.1
+                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[2] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[2] + 0.01*vr.camera_zoom
                     local xx,xy,xz = vr.list_audios[vr.current_audio[0]+1]['data']['pos'][0],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][1],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][2]
                     setObjectCoordinates(vr.list_audios[vr.current_audio[0]+1]['data'].obj,xx,xy,xz)
                 elseif isKeyDown(vkeys.VK_E) then
-                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[2] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[2] - 0.1
+                    vr.list_audios[vr.current_audio[0]+1]['data'].pos[2] = vr.list_audios[vr.current_audio[0]+1]['data'].pos[2] - 0.01*vr.camera_zoom
                     local xx,xy,xz = vr.list_audios[vr.current_audio[0]+1]['data']['pos'][0],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][1],vr.list_audios[vr.current_audio[0]+1]['data']['pos'][2]
                     setObjectCoordinates(vr.list_audios[vr.current_audio[0]+1]['data'].obj,xx,xy,xz)
                 end
@@ -2817,7 +2974,7 @@ function()
     -- player render
     imgui.SetNextWindowSize(imgui.ImVec2(400,360),imgui.Cond.Always)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x-400,0),imgui.Cond.Appearing)
-    imgui.Begin(faicons.ICON_MALE..' '..langt['player'],nil, imgui.WindowFlags.AlwaysAutoResize)
+    imgui.Begin(faicons.ICON_PARKING..' '..langt['player'],nil, imgui.WindowFlags.AlwaysAutoResize)
 
     imgui.PushIDStr("position")
     if imgui.Button(faicons.ICON_STREET_VIEW) then
@@ -2826,30 +2983,35 @@ function()
         vr.missData['player'].pos[0] = px
         vr.missData['player'].pos[1] = py
         vr.missData['player'].pos[2] = pz
+        setCharCoordinates(vr.player_ped,px,py,pz)
     end
     imgui.PopID()
     if imgui.IsItemHovered() then
         imgui.SetTooltip(langt['playerCoordinates'])
     end
-
+    
     imgui.SameLine()
     imgui.PushItemWidth(270)
     if imgui.InputFloat3(langt['position'],vr.missData['player']['pos'],"%.6f") then
         local xx,xy,xz = vr.missData['player']['pos'][0],vr.missData['player']['pos'][1],vr.missData['player']['pos'][2]
+        setCharCoordinates(vr.player_ped,xx,xy,xz)
     end
 
     imgui.PushIDStr("angle")
     if imgui.Button(faicons.ICON_STREET_VIEW) then
         local angle = getCharHeading(PLAYER_PED)
         vr.missData['player'].angle[0] = angle
+        setCharHeading(vr.player_ped,angle)
     end
     imgui.PopID()
     if imgui.IsItemHovered() then
         imgui.SetTooltip(langt['playerAngle'])
     end
-
+    
     imgui.SameLine()
-    imgui.DragInt(langt['angle'], vr.missData['player'].angle,1,0,360)
+    if imgui.DragInt(langt['angle'], vr.missData['player'].angle,1,0,360) then
+        setCharHeading(vr.player_ped,vr.missData['player'].angle[0])
+    end
 
     imgui.Separator()
 
@@ -2876,6 +3038,30 @@ function()
                 end
             end
             vr.missData['player']['modelId'][0] = id_a
+            lua_thread.create(function()
+                deleteChar(vr.player_ped)
+                wait(0)
+                local xx,xy,xz = vr.missData['player']['pos'][0],vr.missData['player']['pos'][1],vr.missData['player']['pos'][2]
+                
+                if vr.missData['player']['modelType'][0] == 0 then
+                    modell = vr.missData['player']['modelId'][0]
+                    requestModel(modell)
+                    while not hasModelLoaded(modell) do
+                        wait(0)
+                    end
+                else
+                    local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
+                    loadSpecialCharacter(modell_n,10)
+                    while not hasSpecialCharacterLoaded(10) do
+                        wait(0)
+                    end
+                    modell = 290 + 9
+                end
+                
+                vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
+                setCharHeading(vr.player_ped,vr.missData.player.angle[0])
+                setCharCollision(vr.player_ped,false)
+            end)
         end
     else
         imgui.Combo(langt['model'], vr.missData['player']['modelId'], new('const char* const [?]', #ID_Spec_Actors, ID_Spec_Actors),#ID_Spec_Actors)
@@ -2931,16 +3117,40 @@ function()
 
     --skin popup
     if imgui.BeginPopup('skins') then
-        imgui.BeginChild('skins',imgui.ImVec2(210,450))
+        imgui.BeginChild('skins',imgui.ImVec2(330,450))
 
 
         for i = 1,#ID_Actors do
             imgui.PushIDStr(tostring(i))
             if imgui.ImageButton(pedsSkinAtlas,imgui.ImVec2(55,100),imgui.ImVec2(((i-1)*55)/14630,0),imgui.ImVec2((i*55)/14630,1)) then
                 vr.missData['player']['modelId'][0] = ID_Actors[i]
+                lua_thread.create(function()
+                    deleteChar(vr.player_ped)
+                    wait(0)
+                    local xx,xy,xz = vr.missData['player']['pos'][0],vr.missData['player']['pos'][1],vr.missData['player']['pos'][2]
+                    
+                    if vr.missData['player']['modelType'][0] == 0 then
+                        modell = vr.missData['player']['modelId'][0]
+                        requestModel(modell)
+                        while not hasModelLoaded(modell) do
+                            wait(0)
+                        end
+                    else
+                        local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
+                        loadSpecialCharacter(modell_n,10)
+                        while not hasSpecialCharacterLoaded(10) do
+                            wait(0)
+                        end
+                        modell = 290 + 9
+                    end
+
+                    vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
+                    setCharHeading(vr.player_ped,vr.missData.player.angle[0])
+                    setCharCollision(vr.player_ped,false)
+                end)
             end
             imgui.PopID()
-            if i % 3 ~= 0 then
+            if i % 5 ~= 0 then
                 imgui.SameLine()
             end
         end
@@ -2955,7 +3165,7 @@ imgui.OnFrame(function() return (not isGamePaused()) and vr.mission_packs[0] end
 function()
     imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x-270,0),imgui.Cond.Appearing)
-    imgui.Begin(faicons.ICON_MALE..' '..langt['missionPacks'],nil, imgui.WindowFlags.AlwaysAutoResize)
+    imgui.Begin(faicons.ICON_THEATER_MASKS..' '..langt['missionPacks'],nil, imgui.WindowFlags.AlwaysAutoResize)
 
     --List
     imgui.SetNextItemWidth(260)
@@ -3005,9 +3215,9 @@ function()
 
     --Rename popup
     if imgui.BeginPopup("rename") then
-        local old_name = ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])
+        local old_name = cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]))
         if imgui.InputText('',vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1],ffi.sizeof(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])) then
-            os.rename(getWorkingDirectory()..'\\Missions_pack\\'..old_name,getWorkingDirectory()..'\\Missions_pack\\'..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]))
+            os.rename(getWorkingDirectory()..'\\Missions_pack\\'..old_name,getWorkingDirectory()..'\\Missions_pack\\'..cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])))
         end
 
         if imgui.Button(langt['close']) then imgui.CloseCurrentPopup() end
@@ -3021,7 +3231,7 @@ function()
     if #vr.temp_var.list_name_mission_packs > 0 then
         imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
         imgui.SetNextWindowPos(imgui.ImVec2(res.x-540,0),imgui.Cond.Appearing)
-        imgui.Begin(faicons.ICON_ARCHIVE..' '..langt['missions'],nil, imgui.WindowFlags.AlwaysAutoResize)
+        imgui.Begin(faicons.ICON_THEATER_MASKS..' '..langt['missions'],nil, imgui.WindowFlags.AlwaysAutoResize)
     
         --List
         imgui.SetNextItemWidth(260)
@@ -3039,8 +3249,12 @@ function()
                 list_pickups = vr.list_pickups,
                 list_explosions = vr.list_explosions,
                 list_audios = vr.list_audios,
+                nodes = {
+                    nodes = nodes2.nodes,
+                    links = nodes2.links
+                }
             }
-            while doesFileExist(getWorkingDirectory().."\\Missions_pack\\"..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]).."\\"..ffi.string(name)..".bin") do
+            while doesFileExist(getWorkingDirectory().."\\Missions_pack\\"..cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]).."\\"..ffi.string(name))..".bin") do
                 name = imgui.StrCopy(name, ffi.string(name)..'c')
             end
             vr.current_mission[0] = #vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]
@@ -3049,11 +3263,14 @@ function()
             manager.saveListMiss()
             mp.packMiss = vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]
             local path = getWorkingDirectory() .. "\\Missions_pack\\"
-            local f = io.open(path..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]).."\\"..'vars.bin','wb')
+            local f = io.open(path..cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])).."\\"..'vars.bin','wb')
             f:write(bitser.dumps(nodes2.vars))
             f:close()
+
+            vr.temp_var.fastData[0] = vr.current_mission_pack[0]
+            vr.temp_var.fastData[1] = vr.current_mission[0]
         end
-        if #vr.temp_var.list_name_missions > 0 then
+        if #vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1] > 0 then
             imgui.SameLine()
             if imgui.Button(langt['save']) then
                 local name = vr.missData.name
@@ -3067,11 +3284,15 @@ function()
                     list_pickups = vr.list_pickups,
                     list_explosions = vr.list_explosions,
                     list_audios = vr.list_audios,
+                    nodes = {
+                        nodes = nodes2.nodes,
+                        links = nodes2.links
+                    }
                 }
                 local path = getWorkingDirectory() .. "\\Missions_pack\\"
-                local path_pack = ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'
-	            local name_miss = ffi.string(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1])
-                os.rename(path..path_pack..name_miss..'.bin',path..path_pack..ffi.string(name)..'.bin')
+                local path_pack = cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\')
+	            local name_miss = cyr(ffi.string(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1]))
+                os.rename(path..path_pack..name_miss..'.bin',path..path_pack..cyr(ffi.string(name))..'.bin')
                 imgui.StrCopy(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1], ffi.string(vr.missData.name))
                 manager.save(mission)
                 manager.saveListMiss()
@@ -3168,7 +3389,8 @@ function()
                         deleteObject(vr.list_audios[a]['data']['obj'])
                     end
                 end
-
+                deleteChar(vr.player_ped)
+                
                 local mission = manager.load()
                 vr.missData = mission.missData
                 vr.list_targets = mission.list_targets
@@ -3179,6 +3401,31 @@ function()
                 vr.list_pickups = mission.list_pickups
                 vr.list_explosions = mission.list_explosions
                 vr.list_audios = mission.list_audios
+                nodes2.nodes = mission.nodes.nodes
+                nodes2.links = mission.nodes.links
+                lua_thread.create(function()
+                    wait(0)
+                    local xx,xy,xz = vr.missData['player']['pos'][0],vr.missData['player']['pos'][1],vr.missData['player']['pos'][2]
+                    
+                    if vr.missData['player']['modelType'][0] == 0 then
+                        modell = vr.missData['player']['modelId'][0]
+                        requestModel(modell)
+                        while not hasModelLoaded(modell) do
+                            wait(0)
+                        end
+                    else
+                        local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
+                        loadSpecialCharacter(modell_n,10)
+                        while not hasSpecialCharacterLoaded(10) do
+                            wait(0)
+                        end
+                        modell = 290 + 9
+                    end
+                    
+                    vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
+                    setCharHeading(vr.player_ped,vr.missData.player.angle[0])
+                    setCharCollision(vr.player_ped,false)
+                end)
 
                 setCharCoordinates(PLAYER_PED, vr.missData['player']['pos'][0], vr.missData['player']['pos'][1], vr.missData['player']['pos'][2])
                 setCharInterior(PLAYER_PED, vr.missData['player']['interiorId'][0])
@@ -3228,8 +3475,10 @@ function()
                         nodes2.names_vars[i] = nodes2.vars[i].name
                     end
                 end
-
                 mp.packMiss = vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]
+
+                vr.temp_var.fastData[0] = vr.current_mission_pack[0]
+                vr.temp_var.fastData[1] = vr.current_mission[0]
 
                 imgui.CloseCurrentPopup()
             end
@@ -3270,6 +3519,14 @@ function()
         vr.temp_var.editmodeTimemiss = true
         vr.missionSettings[0] = false
     end
+    imgui.Separator()
+    imgui.SliderScalar(langt['countPed'],imgui.DataType.U8,vr.missData.traffic_ped,new.ImU8(0),new.ImU8(2),vr.temp_var.countTraffic[vr.missData.traffic_ped[0]+1])
+    imgui.SliderScalar(langt['countCar'],imgui.DataType.U8,vr.missData.traffic_car,new.ImU8(0),new.ImU8(2),vr.temp_var.countTraffic[vr.missData.traffic_car[0]+1])
+    imgui.Separator()
+    imgui.SliderScalar(langt['minWanted'],imgui.DataType.U8,vr.missData.wanted_min,new.ImU8(0),new.ImU8(6))
+    imgui.SliderScalar(langt['maxWanted'],imgui.DataType.U8,vr.missData.wanted_max,new.ImU8(0),new.ImU8(6))
+    imgui.Separator()
+    mimgui_addons.ToggleButton(langt['modeRiot'],vr.missData.riot)
     imgui.Separator()
     if imgui.Button(faicons.ICON_PARKING..' '..langt['player']) then
         vr.player[0] = true
@@ -3324,7 +3581,7 @@ function()
                 }
                 manager.save_s(storyline)
                 local path = getWorkingDirectory() .. "\\Missions_pack\\"
-                local f = io.open(path..ffi.string(vr.storyline.missPack)..'\\'..'vars.bin','wb')
+                local f = io.open(path..cyr(ffi.string(vr.storyline.missPack))..'\\'..'vars.bin','wb')
                 f:write(bitser.dumps(nodes2.vars))
                 f:close()
                 printHelpString(koder(cyr(langt['saved'])))
@@ -3339,7 +3596,6 @@ function()
             imgui.OpenPopup("rename")
         end
         if #vr.temp_var.list_name_storylines > 1 or not vr.storylineMode then
-            imgui.SameLine()
             if imgui.Button(langt['delete']) then
                 imgui.OpenPopup(faicons.ICON_TRASH_ALT.." "..langt['delete'])
             end
@@ -3394,6 +3650,7 @@ function()
                     deleteObject(vr.list_audios[a]['data']['obj'])
                 end
             end
+            deleteChar(vr.player_ped)
             vr.list_targets = {}
             vr.list_actors = {}
             vr.list_cars = {}
@@ -3402,8 +3659,10 @@ function()
             vr.list_particles = {}
             vr.list_explosions = {}
             vr.list_audios = {}
+            nodes2.nodes = {}
+            nodes2.links = {}
 
-            local name = ffi.string(vr.temp_var.list_name_mission_packs[vr.temp_var.selMissPack[0]+1])
+            local name = cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.temp_var.selMissPack[0]+1]))
             if not doesDirectoryExist(getWorkingDirectory()..'\\Storylines') then
                 createDirectory(getWorkingDirectory()..'\\Storylines')
             end
@@ -3476,6 +3735,7 @@ function()
                     deleteObject(vr.list_audios[a]['data']['obj'])
                 end
             end
+            deleteChar(vr.player_ped)
             vr.list_targets = {}
             vr.list_actors = {}
             vr.list_cars = {}
@@ -3484,6 +3744,8 @@ function()
             vr.list_particles = {}
             vr.list_explosions = {}
             vr.list_audios = {}
+            nodes2.nodes = {}
+            nodes2.links = {}
 
             local storyline = manager.load_s()
             vr.storyline = storyline.storyline
@@ -3494,8 +3756,8 @@ function()
             nodes2.nodes = storyline.nodes or {}
             nodes2.links = storyline.links or {}
             local path = getWorkingDirectory() .. "\\Missions_pack\\"
-            if doesFileExist(path..ffi.string(vr.storyline.missPack)..'\\'..'vars.bin') then
-                local f = io.open(path..ffi.string(vr.storyline.missPack)..'\\'..'vars.bin','rb')
+            if doesFileExist(path..cyr(ffi.string(vr.storyline.missPack))..'\\'..'vars.bin') then
+                local f = io.open(path..cyr(ffi.string(vr.storyline.missPack))..'\\'..'vars.bin','rb')
                 nodes2.vars = bitser.loads(f:read("*all"))
                 f:close()
                 for i = 1,#nodes2.vars do
@@ -3524,7 +3786,7 @@ function()
         local size_b = imgui.ImVec2(100,0)
 
         if imgui.Button(langt['yes'],size_b) then
-            os.remove(getWorkingDirectory()..'\\Storylines\\'..ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])..'.bin')
+            os.remove(getWorkingDirectory()..'\\Storylines\\'..cyr(ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1]))..'.bin')
             table.remove(vr.temp_var.list_name_storylines,vr.current_storyline[0]+1)
             imgui.CloseCurrentPopup()
         end
@@ -3536,9 +3798,9 @@ function()
 
     --Rename popup
     if imgui.BeginPopup("rename") then
-        local old_name = ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])
+        local old_name = cyr(ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1]))
         if imgui.InputText('',vr.temp_var.list_name_storylines[vr.current_storyline[0]+1],ffi.sizeof(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])) then
-            os.rename(getWorkingDirectory()..'\\Storylines\\'..old_name..'.bin',getWorkingDirectory()..'\\Storylines\\'..ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])..'.bin')
+            os.rename(getWorkingDirectory()..'\\Storylines\\'..old_name..'.bin',getWorkingDirectory()..'\\Storylines\\'..cyr(ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1]))..'.bin')
         end
 
         if imgui.Button(langt['close']) then imgui.CloseCurrentPopup() end
@@ -3920,22 +4182,28 @@ function ()
     imgui.PushItemWidth(170)
     imgui.Combo(langt['tool_tp_actor'],vr.temp_var.tools_var['tp_actor'],new('const char* const [?]', #vr.temp_var.list_name_actors, vr.temp_var.list_name_actors),#vr.temp_var.list_name_actors)
     imgui.SameLine()
+    imgui.PushIDStr(langt['tool_tp_actor'])
     if imgui.Button(langt['teleport']) then
         local xx,yy,zz = vr.list_actors[vr.temp_var.tools_var['tp_actor'][0]+1]['data'].pos[0],vr.list_actors[vr.temp_var.tools_var['tp_actor'][0]+1]['data'].pos[1],vr.list_actors[vr.temp_var.tools_var['tp_actor'][0]+1]['data'].pos[2]
         setCharCoordinates(PLAYER_PED,xx,yy,zz)
     end
+    imgui.PopID()
     imgui.Combo(langt['tool_tp_car'],vr.temp_var.tools_var['tp_car'],new('const char* const [?]', #vr.temp_var.list_name_cars, vr.temp_var.list_name_cars),#vr.temp_var.list_name_cars)
     imgui.SameLine()
+    imgui.PushIDStr(langt['tool_tp_car'])
     if imgui.Button(langt['teleport']) then
         local xx,yy,zz = vr.list_cars[vr.temp_var.tools_var['tp_car'][0]+1]['data'].pos[0],vr.list_cars[vr.temp_var.tools_var['tp_car'][0]+1]['data'].pos[1],vr.list_cars[vr.temp_var.tools_var['tp_car'][0]+1]['data'].pos[2]
         setCharCoordinates(PLAYER_PED,xx,yy,zz)
     end
+    imgui.PopID()
     imgui.Combo(langt['tool_tp_object'],vr.temp_var.tools_var['tp_object'],new('const char* const [?]', #vr.temp_var.list_name_objects, vr.temp_var.list_name_objects),#vr.temp_var.list_name_objects)
     imgui.SameLine()
+    imgui.PushIDStr(langt['tool_tp_object'])
     if imgui.Button(langt['teleport']) then
         local xx,yy,zz = vr.list_objects[vr.temp_var.tools_var['tp_object'][0]+1]['data'].pos[0],vr.list_objects[vr.temp_var.tools_var['tp_object'][0]+1]['data'].pos[1],vr.list_objects[vr.temp_var.tools_var['tp_object'][0]+1]['data'].pos[2]
         setCharCoordinates(PLAYER_PED,xx,yy,zz)
     end
+    imgui.PopID()
 
     imgui.End()
 end)
@@ -3945,7 +4213,7 @@ imgui.OnFrame(function() return (not isGamePaused()) and vr.info[0] end,
 function ()
     imgui.SetNextWindowSize(imgui.ImVec2(210,400),imgui.Cond.Always)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x/2-105,res.y/2-200),imgui.Cond.Always)
-    imgui.Begin(faicons.ICON_TOOLS..' '..langt['info'],vr.mainMenu, imgui.WindowFlags.AlwaysAutoResize)
+    imgui.Begin(faicons.ICON_INFO..' '..langt['info'],vr.mainMenu, imgui.WindowFlags.AlwaysAutoResize)
 
     local scr = thisScript()
 
@@ -3956,7 +4224,7 @@ function ()
     imgui.Text(vr.temp_var.info_t[6]..' '..langt['nameLoc'])
     imgui.Spacing()
     imgui.Text(vr.temp_var.info_t[7])
-    local namesHelpers = "Alexey Generalov, Ivan Kogotko, Jasmijn Wellner (gvx), Um Geek"
+    local namesHelpers = "Jasmijn Wellner (gvx), Um Geek, Alexey Generalov, Ivan Kogotko"
     imgui.TextWrapped(namesHelpers)
     imgui.Text('')
     if imgui.Button(faicons.ICON_BOOK..' '..vr.temp_var.info_t[8]) then
@@ -4001,6 +4269,8 @@ function updLang()
     setGxtEntry("HOBJ",koder(cyr(langt['HOBJ'])))
     setGxtEntry("HMTIM",koder(cyr(langt['HMTIM'])))
     setGxtEntry("HVIEW",koder(cyr(langt['HVIEW'])))
+    setGxtEntry("HENAA",koder(cyr(langt['HENAA'])))
+    setGxtEntry("HAPA",koder(cyr(langt['HAPA'])))
 
     vr.temp_var.type_targets_name = decodeJson(langt['targets_list_arr'])
 
@@ -4042,9 +4312,23 @@ function updLang()
     
     vr.temp_var.info_t = decodeJson(langt['info_t'])
     
-      vr.temp_var.typesValue = decodeJson(langt['typesValue'])
+    vr.temp_var.typesValue = decodeJson(langt['typesValue'])
       
-      vr.temp_var.timeForStart = decodeJson(langt['timeForStart'])
+    vr.temp_var.timeForStart = decodeJson(langt['timeForStart'])
+    
+    vr.temp_var.move_type_ped = decodeJson(langt['move_type_ped'])
+
+    vr.temp_var.move_route_ped = decodeJson(langt['move_route_ped'])
+
+    vr.temp_var.driver_beh = decodeJson(langt['driver_beh'])
+    
+    vr.temp_var.driver_beh = decodeJson(langt['driver_beh'])
+    
+    vr.temp_var.speed_walk_to_car = decodeJson(langt['speed_walk_to_car'])
+    
+    vr.temp_var.place_in_car = decodeJson(langt['place_in_car'])
+    
+    vr.temp_var.open_close = decodeJson(langt['open_close'])
 
 end
 
@@ -4166,7 +4450,6 @@ function update_object(objj)
 
 	setObjectCoordinates(vr.list_objects[objj]['data']['obj'], xx, xy, xz)
 	setObjectRotation(vr.list_objects[objj]['data']['obj'], rxx, rxy, rxz)
-	setObjectCollision(vr.list_objects[objj]['data']['obj'],false)
 end
 
 function update_particle(prtcl)
@@ -4192,12 +4475,9 @@ function update_particle(prtcl)
 end
 
 function update_pickup(pickk)
-	removePickup(vr.list_pickups[pickk]['data']['pick'])
-	wait(1)
+    removePickup(vr.list_pickups[pickk]['data']['pick'])
+    wait(0)
 	local xx,xy,xz = vr.list_pickups[pickk]['data']['pos'][0],vr.list_pickups[pickk]['data']['pos'][1],vr.list_pickups[pickk]['data']['pos'][2]
-    vr.list_pickups[pickk]['data']['pos'][2] = getGroundZFor3dCoord(xx, xy, xz+1) + 1
-	xz = vr.list_pickups[pickk]['data']['pos'][2]
-
 	if vr.list_pickups[pickk]['data']['type'][0] == 0 then
 		if not hasModelLoaded(getWeapontypeModel(ID_Weapons[vr.list_pickups[pickk]['data']['weapon'][0]])) then
 			requestModel(getWeapontypeModel(ID_Weapons[vr.list_pickups[pickk]['data']['weapon'][0]]))
@@ -4325,11 +4605,193 @@ function onStartNewGame(missionPackNumber)
 	end
 end
 
+function playNodePreviewAnimPed(node)
+    if not hasAnimationLoaded(Anims['Anim_name'][node.Inputs[3].value[0]+1]) then
+        requestAnimation(Anims['Anim_name'][node.Inputs[3].value[0]+1])
+    end
+    lockPlayerControl(true)
+    local anims = Anims['Anim_list'][node.Inputs[3].value[0]+1]
+    taskPlayAnim(PLAYER_PED, anims[node.Inputs[4].value[0]+1], Anims['Anim_name'][node.Inputs[3].value[0]+1], 1.0, node.Inputs[5].value[0], false, false, false, -1)
+end
+
+function temporarySaving(save)
+    if save then
+        local tmp = io.open(string.sub(os.tmpname(),0,34)..'\\ldyom.bin','wb')
+        if vr.storylineMode then
+            local storyline = {
+                story = true,
+                storyline = vr.storyline,
+                nodes = nodes2.nodes,
+                links = nodes2.links,
+                vars = nodes2.vars
+            }
+            local save = bitser.dumps(storyline)
+            tmp:write(save)
+        else
+            local mission = {
+                story = false,
+                list_targets = vr.list_targets,
+                missData = vr.missData,
+                list_actors = vr.list_actors,
+                list_cars = vr.list_cars,
+                list_objects = vr.list_objects,
+                list_particles = vr.list_particles,
+                list_pickups = vr.list_pickups,
+                list_explosions = vr.list_explosions,
+                list_audios = vr.list_audios,
+                packMiss = mp.packMiss,
+                fastData = vr.temp_var.fastData,
+                nodes = {
+                    nodes = nodes2.nodes,
+                    links = nodes2.links,
+                    vars = nodes2.vars
+                }
+            }
+            local save = bitser.dumps(mission)
+            tmp:write(save)
+        end
+        tmp:close()
+        return true
+    else
+        local tmp = io.open(string.sub(os.tmpname(),0,34)..'\\ldyom.bin','rb')
+        if tmp then
+            local data = bitser.loads(tmp:read("*all"))
+            if data.story then
+                vr.storyline = data.storyline
+                for i = 1,#vr.storyline.list_checkpoints do
+                    upd_storyCheck:run(i)
+                    vr.temp_var.list_name_storylineCheckpoints[i] = vr.storyline.list_checkpoints[i].name
+                end
+                nodes2.nodes = data.nodes or {}
+                nodes2.links = data.links or {}
+                nodes2.vars = data.vars or {}
+                for i = 1,#nodes2.vars do
+                    nodes2.names_vars[i] = nodes2.vars[i].name
+                end
+
+                vr.storylineList[0] = false
+                vr.storylineMode = true
+
+                mp.packMiss = vr.storyline.missPack
+            else
+                vr.missData = data.missData
+                vr.list_targets = data.list_targets
+                vr.list_actors = data.list_actors
+                vr.list_cars = data.list_cars
+                vr.list_objects = data.list_objects
+                vr.list_particles = data.list_particles
+                vr.list_pickups = data.list_pickups
+                vr.list_explosions = data.list_explosions
+                vr.list_audios = data.list_audios
+                nodes2.nodes = data.nodes.nodes
+                nodes2.links = data.nodes.links
+                nodes2.vars = data.nodes.vars
+                
+                for i = 1,#nodes2.vars do
+                    nodes2.names_vars[i] = nodes2.vars[i].name
+                end
+
+                local xx,xy,xz = vr.missData['player']['pos'][0],vr.missData['player']['pos'][1],vr.missData['player']['pos'][2]
+                
+                if vr.missData['player']['modelType'][0] == 0 then
+                    modell = vr.missData['player']['modelId'][0]
+                    requestModel(modell)
+                    while not hasModelLoaded(modell) do
+                        wait(0)
+                    end
+                else
+                    local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
+                    loadSpecialCharacter(modell_n,10)
+                    while not hasSpecialCharacterLoaded(10) do
+                        wait(0)
+                    end
+                    modell = 290 + 9
+                end
+                
+                vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
+                setCharHeading(vr.player_ped,vr.missData.player.angle[0])
+                setCharCollision(vr.player_ped,false)
+
+                setCharCoordinates(PLAYER_PED, vr.missData['player']['pos'][0], vr.missData['player']['pos'][1], vr.missData['player']['pos'][2])
+                setCharInterior(PLAYER_PED, vr.missData['player']['interiorId'][0])
+                setInteriorVisible(vr.missData['player']['interiorId'][0])
+                lockPlayerControl(false)
+                
+                for j = 1,#vr.list_targets do
+                    vr.temp_var.list_name_targets[j] = vr.list_targets[j].name
+                    vr.temp_var.updateSphere = true
+                end
+                for j = 1,#vr.list_actors do
+                    vr.temp_var.list_name_actors[j] = vr.list_actors[j].name
+                    update_actor(j)
+                end
+                for j = 1,#vr.list_cars do
+                    vr.temp_var.list_name_cars[j] = vr.list_cars[j].name
+                    update_car(j)
+                end
+                for j = 1,#vr.list_objects do
+                    vr.temp_var.list_name_objects[j] = vr.list_objects[j].name
+                    update_object(j)
+                end
+                for j = 1,#vr.list_pickups do
+                    vr.temp_var.list_name_pickups[j] = vr.list_pickups[j].name
+                    update_pickup(j)
+                end
+                for j = 1,#vr.list_particles do
+                    vr.temp_var.list_name_particles[j] = vr.list_particles[j].name
+                    update_particle(j)
+                end
+                for j = 1,#vr.list_explosions do
+                    vr.temp_var.list_name_explosions[j] = vr.list_explosions[j].name
+                    update_explosion(j)
+                end
+                for j = 1,#vr.list_audios do
+                    vr.temp_var.list_name_audios[j] = vr.list_audios[j].name
+                    update_audio(j)
+                end
+
+                mp.packMiss = data.packMiss
+                vr.temp_var.fastData = data.fastData
+                vr.current_mission_pack[0] = vr.temp_var.fastData[0]
+                vr.current_mission[0] = vr.temp_var.fastData[1]
+            end
+            tmp:close()
+            os.remove(string.sub(os.tmpname(),0,34)..'\\ldyom.bin')
+            return true
+        end
+    end
+    return false
+end
+
 function main()
 
-    --print(loadstring('return var1.gena.holop')())
-
     vr.Data = inicfg.load(nil,getWorkingDirectory()..'\\LDYOM_data.ini')
+    for k,v in pairs(decodeJson(vr.Data.Data.ID_Spec_Actors)) do 
+        table.insert(ID_Spec_Actors, v) 
+    end
+    for k,v in pairs(decodeJson(vr.Data.Data.Actor_anims)) do 
+        local exist = -1
+        for o,j in ipairs(Anims['Anim_name']) do
+            if j == k then
+                exist = o
+            end
+        end
+        if exist ~= -1 then
+            for u = 1,#v do
+                table.insert(Anims['Anim_list'][exist],v[u])
+                print(v[u])
+            end
+        else
+            exist = #Anims['Anim_name']+1
+            Anims['Anim_name'][exist] = k
+            Anims['Anim_list'][exist] = {}
+            for u = 1,#v do
+                table.insert(Anims['Anim_list'][exist],v[u])
+                print(v[u])
+            end
+        end
+    end
+
 
     --Load lang
     local lang_list = {}
@@ -4382,7 +4844,23 @@ function main()
 				vr.missData.groupRelations[i][y] = 'NULL'
 			end
 		end
-	end
+    end
+    local xp,yp,zp = vr.missData.player.pos[0],vr.missData.player.pos[1],vr.missData.player.pos[2]
+    
+    if vr.missData['player']['modelType'][0] == 0 then
+        modell = vr.missData['player']['modelId'][0]
+        requestModel(modell)
+        while not hasModelLoaded(modell) do
+            wait(0)
+        end
+    else
+        local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
+        loadSpecialCharacter(modell_n,10)
+        while not hasSpecialCharacterLoaded(10) do
+            wait(0)
+        end
+        modell = 290 + 9
+    end
     
     upd_actor = lua_thread.create_suspended(update_actor)
     upd_car = lua_thread.create_suspended(update_car)
@@ -4395,13 +4873,15 @@ function main()
     if doesDirectoryExist(getWorkingDirectory() .. '\\Missions_pack') then
         for file in lfs.dir(getWorkingDirectory() .. '\\Missions_pack\\') do
             if lfs.attributes(getWorkingDirectory() .. '\\Missions_pack\\'..file,"mode") == "directory" then
-                if doesFileExist(getWorkingDirectory() .. '\\Missions_pack\\'..file..'\\list.bin') then
+                if doesFileExist(getWorkingDirectory() .. '\\Missions_pack\\'..cyr(file)..'\\list.bin') then
                     vr.temp_var.list_name_mission_packs[#vr.temp_var.list_name_mission_packs+1] = new.char[65](file)
                     vr.current_mission_pack[0] = #vr.temp_var.list_name_mission_packs-1
                     vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1] = manager.loadListMiss()
                 end
             end
         end
+    else
+        createDirectory(getWorkingDirectory() .. '\\Missions_pack')
     end
     if doesDirectoryExist(getWorkingDirectory() .. '\\Storylines') then
         for file in lfs.dir(getWorkingDirectory() .. '\\Storylines\\') do
@@ -4409,6 +4889,15 @@ function main()
                 vr.temp_var.list_name_storylines[#vr.temp_var.list_name_storylines+1] = new.char[65](string.sub(file, 0,-5))
             end
         end
+    else
+        createDirectory(getWorkingDirectory() .. '\\Missions_pack')
+    end
+
+    --Tempory load
+    if not temporarySaving(false) then
+        vr.player_ped = createChar(4,vr.missData.player.modelId[0],xp,yp,zp)
+        setCharCollision(vr.player_ped,false)
+        setCharHeading(vr.player_ped,vr.missData.player.angle[0])
     end
 
     --nodes_s.show[0] = true
@@ -4428,6 +4917,47 @@ function main()
         if isKeyDown(vkeys.VK_Q) then
             print(collectgarbage("count"))
             --collectgarbage("collect")
+            print(vr.temp_var.fastData[0],vr.temp_var.fastData[1])
+        end
+        if isKeyJustPressed(vkeys.VK_E) then
+            vr.list_actors[vr.current_actor[0]+1]['data'].headshot = new.bool(true)
+        end
+
+        if isKeyDown(vkeys.VK_CONTROL) then
+            if isKeyJustPressed(vkeys.VK_S) then
+                if vr.temp_var.fastData[0] ~= -1 and vr.temp_var.fastData[1] ~= -1 then
+                    local name = vr.missData.name
+                    local mission = {
+                        list_targets = vr.list_targets,
+                        missData = vr.missData,
+                        list_actors = vr.list_actors,
+                        list_cars = vr.list_cars,
+                        list_objects = vr.list_objects,
+                        list_particles = vr.list_particles,
+                        list_pickups = vr.list_pickups,
+                        list_explosions = vr.list_explosions,
+                        list_audios = vr.list_audios,
+                        nodes = {
+                            nodes = nodes2.nodes,
+                            links = nodes2.links
+                        }
+                    }
+                    local path = getWorkingDirectory() .. "\\Missions_pack\\"
+                    local path_pack = cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.temp_var.fastData[0]+1])..'\\')
+                    local name_miss = cyr(ffi.string(vr.temp_var.list_name_missions[vr.temp_var.fastData[0]+1][vr.temp_var.fastData[1]+1]))
+                    os.rename(path..path_pack..name_miss..'.bin',path..path_pack..cyr(ffi.string(name))..'.bin')
+                    imgui.StrCopy(vr.temp_var.list_name_missions[vr.temp_var.fastData[0]+1][vr.temp_var.fastData[1]+1], ffi.string(vr.missData.name))
+                    manager.save(mission)
+                    manager.saveListMiss()
+
+
+                    local f = io.open(path..path_pack..'\\'..'vars.bin','wb')
+                    f:write(bitser.dumps(nodes2.vars))
+                    f:close()
+
+                    printHelpString(koder(cyr(langt['saved'])))
+                end
+            end
         end
 
         if testCheat('top2009') then
@@ -4697,7 +5227,8 @@ function main()
             printHelpForever("HVIEW")
             lockPlayerControl(false)
 			setCharCoordinates(PLAYER_PED, vr.missData['player']['pos'][0], vr.missData['player']['pos'][1], vr.missData['player']['pos'][2])
-			local modell
+            deleteChar(vr.player_ped)
+            local modell
 			if vr.missData['player']['modelType'][0] == 0 then
 				modell = vr.missData['player'].modelId[0]
 				requestModel(modell)
@@ -4733,9 +5264,122 @@ function main()
                     vr.missData['player']['pos'][2] = xz
                     vr.missData['player']['angle'][0] = angle
                     vr.missData['player']['interiorId'][0] = getActiveInterior()
+                    
+                    if vr.missData['player']['modelType'][0] == 0 then
+                        modell = vr.missData['player']['modelId'][0]
+                        requestModel(modell)
+                        while not hasModelLoaded(modell) do
+                            wait(0)
+                        end
+                    else
+                        local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
+                        loadSpecialCharacter(modell_n,10)
+                        while not hasSpecialCharacterLoaded(10) do
+                            wait(0)
+                        end
+                        modell = 290 + 9
+                    end
+                    
+                    vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
+                    setCharHeading(vr.player_ped,vr.missData.player.angle[0])
+                    setCharCollision(vr.player_ped,false)
 				end
 			end
-		end
+        end
+        
+        if vr.editmodeNodeAnimActor then
+            vr.nodeEditor[0] = false
+            lockPlayerControl(false)
+            printHelpForever("HENAA")
+            while not isKeyJustPressed(vkeys.VK_Y) do
+                wait(0)
+            end
+            clearHelp()
+            playNodePreviewAnimPed(vr.nodeEditmode)
+            printHelpForever("HVIEW")
+            while not isKeyJustPressed(vkeys.VK_F) do
+                wait(0)
+            end
+            taskPlayAnim(PLAYER_PED, "WALK_START", 'PED', 1.0, false, false, false, false, -1)
+            clearHelp()
+            vr.nodeEditor[0] = true
+            lockPlayerControl(true)
+            vr.editmodeNodeAnimActor = false
+        end
+
+        if vr.editmodeNodePathActor then
+            vr.nodeEditor[0] = false
+            lockPlayerControl(false)
+            printHelpForever('HAPA')
+            vr.nodeEditmode.points = {}
+            while not isKeyJustPressed(vkeys.VK_N) do
+                wait(0)
+
+                local font = renderCreateFont('Verdana',12)
+                for i = 2, #vr.nodeEditmode.points do
+                    local x1,y1,z1 = vr.nodeEditmode.points[i][0],vr.nodeEditmode.points[i][1],vr.nodeEditmode.points[i][2]
+                    local x2,y2,z2 = vr.nodeEditmode.points[i-1][0],vr.nodeEditmode.points[i-1][1],vr.nodeEditmode.points[i-1][2]
+                    local font_pos_x1,font_pos_y1 = convert3DCoordsToScreen(x1,y1,z1+0.1)
+                    local font_pos_x2,font_pos_y2 = convert3DCoordsToScreen(x2,y2,z2+0.1)
+                    DrawLineBy3dCoords(x1,y1,z1,x2,y2,z2,2,0xFFFFFFFF)
+                    if isPointOnScreen(x1, y1, z1,1) then
+                        renderFontDrawText(font,tostring(x1)..' '..tostring(y1) ..' '..tostring(z1),font_pos_x1,font_pos_y1,0xFFFFFFFF)
+                    end
+                    if isPointOnScreen(x2, y2, z2,1) then
+                        renderFontDrawText(font,tostring(x2)..' '..tostring(y2) ..' '..tostring(z2),font_pos_x2,font_pos_y2,0xFFFFFFFF)
+                    end
+                end
+                renderReleaseFont(font)
+
+                if isKeyJustPressed(vkeys.VK_Y) then
+                    local xx,yy,zz = getCharCoordinates(PLAYER_PED)
+                    vr.nodeEditmode.points[#vr.nodeEditmode.points+1] = new.float[3](xx,yy,zz)
+                    printString(koder(cyr(langt['added_point']..#vr.nodeEditmode.points)),1000)
+                end
+            end
+            clearHelp()
+            vr.nodeEditor[0] = true
+            lockPlayerControl(true)
+            vr.editmodeNodePathActor = false
+        end
+
+        if vr.editmodeNodePathActorCar then
+            vr.nodeEditor[0] = false
+            lockPlayerControl(false)
+            printHelpForever('HAPA')
+            taskJetpack(PLAYER_PED)
+            vr.nodeEditmode.points = {}
+            while not isKeyJustPressed(vkeys.VK_N) do
+                wait(0)
+
+                local font = renderCreateFont('Verdana',12)
+                for i = 2, #vr.nodeEditmode.points do
+                    local x1,y1,z1 = vr.nodeEditmode.points[i][0],vr.nodeEditmode.points[i][1],vr.nodeEditmode.points[i][2]
+                    local x2,y2,z2 = vr.nodeEditmode.points[i-1][0],vr.nodeEditmode.points[i-1][1],vr.nodeEditmode.points[i-1][2]
+                    local font_pos_x1,font_pos_y1 = convert3DCoordsToScreen(x1,y1,z1+0.1)
+                    local font_pos_x2,font_pos_y2 = convert3DCoordsToScreen(x2,y2,z2+0.1)
+                    DrawLineBy3dCoords(x1,y1,z1,x2,y2,z2,2,0xFFFFFFFF)
+                    if isPointOnScreen(x1, y1, z1,1) then
+                        renderFontDrawText(font,tostring(x1)..' '..tostring(y1) ..' '..tostring(z1),font_pos_x1,font_pos_y1,0xFFFFFFFF)
+                    end
+                    if isPointOnScreen(x2, y2, z2,1) then
+                        renderFontDrawText(font,tostring(x2)..' '..tostring(y2) ..' '..tostring(z2),font_pos_x2,font_pos_y2,0xFFFFFFFF)
+                    end
+                end
+                renderReleaseFont(font)
+
+                if isKeyJustPressed(vkeys.VK_Y) then
+                    local xx,yy,zz = getCharCoordinates(PLAYER_PED)
+                    vr.nodeEditmode.points[#vr.nodeEditmode.points+1] = new.float[3](xx,yy,zz)
+                    printString(koder(cyr(langt['added_point']..#vr.nodeEditmode.points)),1000)
+                end
+            end
+            clearHelp()
+            removeAllCharWeapons(PLAYER_PED)
+            vr.nodeEditor[0] = true
+            lockPlayerControl(true)
+            vr.editmodeNodePathActorCar = false
+        end
 
         if vr.temp_var.editmodeCar then
             lockPlayerControl(false)
@@ -4764,6 +5408,7 @@ function main()
 		end
 
         if vr.miss_start then
+            temporarySaving(true)
 			for i = 1,#vr.list_actors do
 				deleteChar(vr.list_actors[i]['data']['char'])
 			end
@@ -4792,9 +5437,11 @@ function main()
                 if vr.list_audios[a]['data']['obj'] then
                     deleteObject(vr.list_audios[a]['data']['obj'])
                 end
-			end
+            end
+            deleteChar(vr.player_ped)
+            vr.player_ped = nil
 			wait(0)
-			mp.start_mission(vr.list_targets,vr.list_actors,vr.list_cars,vr.list_objects,vr.list_pickups,vr.list_particles,vr.list_explosions,vr.list_audios)
+			mp.start_mission(vr.list_targets,vr.list_actors,vr.list_cars,vr.list_objects,vr.list_pickups,vr.list_particles,vr.list_explosions,vr.list_audios,nodes2)
             vr.miss_start = false
 		end
         
@@ -4809,7 +5456,7 @@ function main()
                     end
                 end
             end
-            if isKeyJustPressed(vkeys.VK_R) then
+            if isKeyJustPressed(vkeys.VK_U) then
                 if vr.mainMenu[0] or vr.settings[0] or vr.targets[0] or vr.actors[0] or vr.cars[0] or carSelector.show or vr.objects[0] or vr.particles[0] or vr.pickups[0] or vr.explosions[0] or vr.audios[0] or vr.player[0] or vr.groupRelations[0] or vr.mission_packs[0] or vr.tools[0] or vr.info[0] or vr.missionSettings[0] or vr.storylineList[0] or vr.StorylineMainMenu[0] or vr.StorylineCheckpoints[0] or vr.nodeEditor[0] then
                     vr.mainMenu[0] = false
                     vr.settings[0] = false
