@@ -4646,6 +4646,8 @@ function playNodePreviewAnimPed(node)
 end
 
 function temporarySaving(save)
+    print(string.sub(os.tmpname(),0,34))
+    createDirectory(string.sub(os.tmpname(),0,34))
     if save then
         local tmp = io.open(string.sub(os.tmpname(),0,34)..'\\ldyom.bin','wb')
         if vr.storylineMode then
