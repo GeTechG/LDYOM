@@ -1,6 +1,0 @@
-Leiame  [Pt-Br]
-
-Segure a tecla R e clique em um nome na lista lateral para renomear veiculos em jogo.
-Segure a tecla F para adicionar veiculos da lista lateral aos favoritos.Tambem pode adiconar favoritos segurando F clicando na imagem do veiculo.
-Um favorito pode ser removido estando nos favoritos segurando F e clicando na imagem do mesmo.
-Veja as configuracoes disponiveis no menu 'Settings', incluindo algumas funcoes do mod que vem desligadas.
