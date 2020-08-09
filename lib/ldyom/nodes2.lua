@@ -815,6 +815,7 @@ function node:play(data)
         while not hasModelLoaded(md) do
             wait(0)
         end
+        setCarModelComponents(md, 1, 0)
         mp.cars[car] = createCar(md, xx, xy, xz)
         freezeCarPosition(mp.cars[car],true)
         local cx,cy,cz = getActiveCameraCoordinates()
@@ -831,7 +832,10 @@ function node:play(data)
         setCanBurstCarTires(mp.cars[car], not vr.list_cars[car]['data']['tiresVulnerability'][0])
         for_each_vehicle_material(mp.cars[car],function(i,mat, comp, obj)
             local new_r, new_g, new_b, a = vr.list_cars[car]['data'].colors[i][2][0],vr.list_cars[car]['data'].colors[i][2][1],vr.list_cars[car]['data'].colors[i][2][2],vr.list_cars[car]['data'].colors[i][2][3]
-            mat:set_color(new_r*255, new_g*255, new_b*255, a*255)
+            local old_r, old_g, old_b, old_a = mat:get_color()
+            if not (math.floor(new_r*255) == old_r and math.floor(new_g*255) == old_g and math.floor(new_b*255) == old_b and math.floor(a*255) == old_a) then
+                mat:set_color(new_r*255, new_g*255, new_b*255, a*255)
+            end
         end)
         if vr.list_cars[car]['data']['shouldNotDie'][0] == true then
             mp.thread[#mp.thread+1] = lua_thread.create(car_is_not_dead,mp.cars[car])
@@ -1777,7 +1781,7 @@ function node:play(data)
         until type_route_ped == 1
         taskToggleDuck(ped, false)
             
-        while getDistanceBetweenCoords3d(self.points[#self.points][0],self.points[#self.points][1],self.points[#self.points][2],px,py,pz) > 0.1 do
+        while getDistanceBetweenCoords3d(self.points[#self.points][0],self.points[#self.points][1],self.points[#self.points][2],px,py,pz) > 1 do
             wait(0)
             if doesCharExist(ped) then
                 px,py,pz = getCharCoordinates(ped)

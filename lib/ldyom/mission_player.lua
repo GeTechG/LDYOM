@@ -7,6 +7,7 @@ encoding.default = 'CP1251'
 model = require 'lib.game.models'
 u8 = encoding.UTF8
 mp.thread = {}
+mp.def_thread = nil
 mp.actors = {}
 mp.cars = {}
 mp.objects = {}
@@ -33,7 +34,8 @@ function mp.start_mission(listt,lista,listc,listo,listp,listpa,liste,listau,node
 		ffi.copy(nodes2.real_vars[i],nodes2.vars[i].value,ffi.sizeof(nodes2.vars[i].value))
 	end
 	mp.storylineOn = false
-	thread_miss = lua_thread.create(mp.main_mission,listt,lista,listc,listo,listp,listpa,liste,listau,nodess2)
+	mp.main_mission(listt,lista,listc,listo,listp,listpa,liste,listau,nodess2)
+	print('misie')
 end
 
 function mp.flagmis()
@@ -58,7 +60,7 @@ function mp.start()
 end
 
 function mp.defeat()
-	mp.thread[1] = lua_thread.create(
+	mp.def_thread = lua_thread.create(
 	function()
 		while isPlayerPlaying(PLAYER_HANDLE) do
 			wait(0)
@@ -69,7 +71,6 @@ function mp.defeat()
 		end
 		mp.missEnd = 2
 		mp.fall()
-		thread_miss:terminate()
 		if thread_main_miss then
 			thread_main_miss:terminate()
 		end
@@ -78,6 +79,7 @@ function mp.defeat()
 		else
 			mp.clearMiss()
 		end
+		script.this:reload()
 	end)
 end
 
@@ -126,13 +128,13 @@ function audio_player(a,aud)
 end
 
 function mp.char_is_not_dead(ped)
-	lua_thread.create(function()
+	print('pedend')
+	mp.thread[#mp.thread+1] = lua_thread.create(function()
 	while not isCharDead(ped) do
 		wait(0)
 	end
 	mp.missEnd = 2
 	mp.fall()
-	thread_miss:terminate()
 	if thread_main_miss then
 		thread_main_miss:terminate()
 	end
@@ -381,13 +383,13 @@ function mp.play_car_anims(car,vehic)
 end
 
 function car_is_not_dead(car)
-	lua_thread.create(function()
+	print('carend')
+	mp.thread[#mp.thread+1] = lua_thread.create(function()
 	while not isCarDead(car) do
 		wait(0)
 	end
 	mp.missEnd = 2
 	mp.fall()
-	thread_miss:terminate()
 	if thread_main_miss then
 		thread_main_miss:terminate()
 	end
@@ -460,8 +462,8 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 	end
 	setCharHealth(PLAYER_PED,vr.missData['player']['health'][0])
 	-- setMaxWantedLevel(6)
-	setCharInterior(PLAYER_PED, vr.missData['player']['interiorId'][0])
 	setInteriorVisible(vr.missData['player']['interiorId'][0])
+	setCharInterior(PLAYER_PED, vr.missData['player']['interiorId'][0])
 	local modell
 	if vr.missData['player']['modelType'][0] == 0 then
 		modell = vr.missData['player']['modelId'][0]
@@ -603,6 +605,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 						while not hasModelLoaded(md) do
 							wait(0)
 						end
+						setCarModelComponents(md, 1, 0)
 						mp.cars[c] = createCar(md, xx, xy, xz)
 						freezeCarPosition(mp.cars[c],true)
 						local cx,cy,cz = getActiveCameraCoordinates()
@@ -619,7 +622,10 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 						setCanBurstCarTires(mp.cars[c], not list_c[c]['data']['tiresVulnerability'][0])
 						for_each_vehicle_material(mp.cars[c],function(i,mat, comp, obj)
 							local new_r, new_g, new_b, a = list_c[c]['data'].colors[i][2][0],list_c[c]['data'].colors[i][2][1],list_c[c]['data'].colors[i][2][2],list_c[c]['data'].colors[i][2][3]
-							mat:set_color(new_r*255, new_g*255, new_b*255, a*255)
+							local old_r, old_g, old_b, old_a = mat:get_color()
+							if not (math.floor(new_r*255) == old_r and math.floor(new_g*255) == old_g and math.floor(new_b*255) == old_b and math.floor(a*255) == old_a) then
+								mat:set_color(new_r*255, new_g*255, new_b*255, a*255)
+							end
 						end)
 						if list_c[c]['data']['shouldNotDie'][0] == true then
 							mp.thread[#mp.thread+1] = lua_thread.create(car_is_not_dead,mp.cars[c])
@@ -993,7 +999,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 				displayHud(false)
 				lockPlayerControl(true)
         		switchWidescreen(true)
-				if mp.curr_target > 1 and not (list[mp.curr_target-1]['type'][0] == 3 and list[mp.curr_target-1]['targetType'][0] == 0) then
+				if mp.curr_target > 1 and not ((list[mp.curr_target-1]['type'][0] == 3 and list[mp.curr_target-1]['targetType'][0] == 0) or (list[mp.curr_target-1]['type'][0] == 6 and list[mp.curr_target-1]['targetType'][0] == 1)) then
 					doFade(false, 500)
 					wait(1000)
 					doFade(true, 500)
@@ -1197,7 +1203,7 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 					end
 
 				end
-				if mp.curr_target < #list and not (list[mp.curr_target+1]['type'][0] == 3 and list[mp.curr_target+1]['targetType'][0] == 0) then
+				if mp.curr_target < #list and not ((list[mp.curr_target+1]['type'][0] == 3 and list[mp.curr_target+1]['targetType'][0] == 0) or (list[mp.curr_target+1]['type'][0] == 6 and list[mp.curr_target+1]['targetType'][0] == 1)) then
 					doFade(false, 500)
 					wait(1000)
 					doFade(true, 500)
@@ -1318,14 +1324,14 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 					wait(0)
 
 				end
-				giveWeaponToChar(PLAYER_PED, ID_Weapons[list[mp.curr_target]['data']['weapon'][0]], list[mp.curr_target]['data']['Weap_ammo'])
+				giveWeaponToChar(PLAYER_PED, ID_Weapons[list[mp.curr_target]['data']['weapon'][0]], list[mp.curr_target]['data']['ammo'][0])
 				setCharHeading(PLAYER_PED, list[mp.curr_target]['data']['angle'][0])
 			end
 			if list[mp.curr_target]['targetType'][0] == 1 then
 				lockPlayerControl(true)
-				if not hasAnimationLoaded(Anims['Anim_name'][list[mp.curr_target]['data'].pack[0]]) then
-					requestAnimation(Anims['Anim_name'][list[mp.curr_target]['data'].pack[0]])
-					while not hasAnimationLoaded(Anims['Anim_name'][list[mp.curr_target]['data'].pack[0]]) do
+				if not  hasAnimationLoaded(Anims['Anim_name'][list[mp.curr_target]['data'].pack[0]+1]) then
+					requestAnimation(Anims['Anim_name'][list[mp.curr_target]['data'].pack[0]+1])
+					while not hasAnimationLoaded(Anims['Anim_name'][list[mp.curr_target]['data'].pack[0]+1]) do
 						wait(0)
 					end
 				end
@@ -1398,10 +1404,14 @@ function mp.main_mission(list,list_a,list_c,list_o,list_p,list_pa,list_e,list_au
 		end
 		mp.curr_target = mp.curr_target + 1
 	end
+	print('da')
 	if thread_main_miss then
 		thread_main_miss:terminate()
 	end
+	print('net')
+	mp.def_thread:terminate()
 	mp.respect()
+	print('go')
 	if not mp.storylineOn then
 		mp.endmiss()
 	end
@@ -1445,6 +1455,13 @@ function mp.clearMiss()
 end
 
 function mp.endmiss()
+	for i = 1,#mp.thread do
+		mp.thread[i]:terminate()
+		while mp.thread[i]:status() ~= 'dead' do
+			wait(0)
+		end
+	end
+	print('ha1')
 	local miss_data = vr.mission_data
 	wait(0)
 	if isCharInAnyCar(PLAYER_PED) then
@@ -1461,19 +1478,20 @@ function mp.endmiss()
 	setCharHealth(PLAYER_PED,100)
 	setPedDensityMultiplier(0)
 	setCarDensityMultiplier(0)
+	print('kapt')
 	local allchar = getAllChars()
 	for c = 1,#allchar do
 		if allchar[c] ~= PLAYER_PED then
 			deleteChar(allchar[c])
 		end
 	end
-	setCharCoordinates(PLAYER_PED, vr.missData['player']['pos'][0], vr.missData['player']['pos'][1], vr.missData['player']['pos'][2])
-	setCharInterior(PLAYER_PED, vr.missData['player']['interiorId'][0])
-	setInteriorVisible(vr.missData['player']['interiorId'][0])
+	print('jio')
+	--setCharCoordinates(PLAYER_PED, vr.missData['player']['pos'][0], vr.missData['player']['pos'][1], vr.missData['player']['pos'][2])
+	--setInteriorVisible(vr.missData['player']['interiorId'][0])
+	--setCharInterior(PLAYER_PED, vr.missData['player']['interiorId'][0])
 	lockPlayerControl(false)
 	setMaxWantedLevel(0)
 	mp.clearMiss()
-	thisScript():reload()
 end
 
 function mp.playMission(name)

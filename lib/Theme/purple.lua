@@ -11,14 +11,16 @@ function stylel.apply_custom_style()
     style.WindowTitleAlign = imgui.ImVec2(0.5, 0.5)
     style.ChildRounding = 2.0
     style.FrameRounding = 3
-    style.ItemSpacing = imgui.ImVec2(5.0, 4.0)
     style.ScrollbarSize = 13.0
     style.ScrollbarRounding = 0
     style.GrabMinSize = 8.0
     style.GrabRounding = 1.0
     style.WindowPadding = imgui.ImVec2(4.0, 4.0)
-    style.FramePadding = imgui.ImVec2(3.5, 3.5)
     style.ButtonTextAlign = imgui.ImVec2(0.0, 0.5)
+
+    style.ItemSpacing = imgui.ImVec2(4.0, 4.0)
+    style.FramePadding = imgui.ImVec2(2.5, 3.5)
+
     colors[clr.WindowBg]              = ImVec4(0.14, 0.12, 0.16, 1.00);
     colors[clr.ChildBg]         = ImVec4(0.30, 0.20, 0.39, 0.00);
     colors[clr.PopupBg]               = ImVec4(0.05, 0.05, 0.10, 0.90);

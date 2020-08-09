@@ -9,6 +9,8 @@ function stylel.apply_custom_style()
     local ImVec2 = imgui.ImVec2
     local colors = style.Colors
     local clr = imgui.Col
+    style.ItemSpacing = imgui.ImVec2(4.0, 4.0)
+    style.FramePadding = imgui.ImVec2(2.5, 3.5)
 
     colors[clr.Text]                              = ImVec4(1.000, 1.000, 1.000, 1.000);
     colors[clr.TextDisabled]              = ImVec4(0.500, 0.500, 0.500, 1.000);

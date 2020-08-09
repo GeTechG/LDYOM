@@ -20,13 +20,12 @@ function stylel.apply_custom_style()
     style.ScrollbarSize     = 16;
     style.ScrollbarRounding = 3;
     style.GrabRounding      = 2;
-    style.ItemSpacing.x     = 10;
-    style.ItemSpacing.y     = 4;
     style.IndentSpacing     = 22;
-    style.FramePadding.x    = 6;
-    style.FramePadding.y    = 4;
     style.Alpha             = 1.00;
     style.FrameRounding     = 3.00;
+
+    style.ItemSpacing = imgui.ImVec2(4.0, 4.0)
+    style.FramePadding = imgui.ImVec2(2.5, 3.5)
 
     colors[clr.Text]                   = ImVec4(0.000, 0.000, 0.000, 1.000);
     colors[clr.TextDisabled]          = ImVec4(0.600, 0.600, 0.600, 1.000);
