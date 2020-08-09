@@ -270,6 +270,14 @@ function DrawLineBy3dCoords(posX, posY, posZ, posX2, posY2, posZ2, width, color)
 	end
 end
 
+function replace_symb(str)
+    local symb = {[[\]],[[/]],[[:]],[[*]],[[?]],[["]],[[<]],[[>]],[[|]]}
+    for i = 1,#symb do
+        str = string.gsub(str,symb[i],'')
+    end
+    return str
+end
+
 function rgba_to_int(r,g,b,a)
 	local argb = b  -- b
 	argb = bit.bor(argb, bit.lshift(g, 8))  -- g
@@ -431,7 +439,7 @@ function()
       vr.explosions[0] = true
       vr.mainMenu[0] = false
     end
-    if imgui.Button(faicons.ICON_VOLUME_UP..' '..langt['audio'],size_b) then
+    if imgui.Button(faicons.ICON_VOLUME_UP..' '..langt['audios'],size_b) then
         vr.audios[0] = true
         vr.mainMenu[0] = false
     end
@@ -2768,7 +2776,7 @@ function()
 
     imgui.SetNextWindowSize(imgui.ImVec2(270,410),imgui.Cond.Appearing)
     imgui.SetNextWindowPos(imgui.ImVec2(res.x-270,0),imgui.Cond.Appearing)
-    imgui.Begin(faicons.ICON_VOLUME_UP..' '..langt['audio'],nil, imgui.WindowFlags.AlwaysAutoResize)
+    imgui.Begin(faicons.ICON_VOLUME_UP..' '..langt['audios'],nil, imgui.WindowFlags.AlwaysAutoResize)
 
     --List
     imgui.SetNextItemWidth(255)
@@ -2871,14 +2879,7 @@ function()
         imgui.Combo(langt['sound'],vr.list_audios[vr.current_audio[0]+1]['data'].sound,new('const char* const [?]',#vr.temp_var.list_audios_name,vr.temp_var.list_audios_name),#vr.temp_var.list_audios_name)
         
         if imgui.Button(langt['update']) then
-            vr.temp_var.list_audios_name = {}
-            for file in lfs.dir(getWorkingDirectory() .. '\\Missions_pack\\Pack missions ya\\audio') do
-                if lfs.attributes(getWorkingDirectory() .. '\\Missions_pack\\Pack missions ya\\audio\\'..file,"mode") == "file" then
-                    if string.sub(file, -3) == 'mp3' then
-                        vr.temp_var.list_audios_name[#vr.temp_var.list_audios_name+1] = string.sub(file, 0, -5)
-                    end
-                end
-            end
+            load_audio()
         end
 
         if mimgui_addons.ToggleButton(langt['audio3d'],vr.list_audios[vr.current_audio[0]+1]['data'].audio3d) then
@@ -3066,33 +3067,12 @@ function()
                 end
             end
             vr.missData['player']['modelId'][0] = id_a
-            lua_thread.create(function()
-                deleteChar(vr.player_ped)
-                wait(0)
-                local xx,xy,xz = vr.missData['player']['pos'][0],vr.missData['player']['pos'][1],vr.missData['player']['pos'][2]
-                
-                if vr.missData['player']['modelType'][0] == 0 then
-                    modell = vr.missData['player']['modelId'][0]
-                    requestModel(modell)
-                    while not hasModelLoaded(modell) do
-                        wait(0)
-                    end
-                else
-                    local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
-                    loadSpecialCharacter(modell_n,10)
-                    while not hasSpecialCharacterLoaded(10) do
-                        wait(0)
-                    end
-                    modell = 290 + 9
-                end
-                
-                vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
-                setCharHeading(vr.player_ped,vr.missData.player.angle[0])
-                setCharCollision(vr.player_ped,false)
-            end)
+            upd_player:run()
         end
     else
-        imgui.Combo(langt['model'], vr.missData['player']['modelId'], new('const char* const [?]', #ID_Spec_Actors, ID_Spec_Actors),#ID_Spec_Actors)
+        if imgui.Combo(langt['model'], vr.missData['player']['modelId'], new('const char* const [?]', #ID_Spec_Actors, ID_Spec_Actors),#ID_Spec_Actors) then
+            upd_player:run()
+        end
     end
     imgui.Separator()
 
@@ -3153,28 +3133,7 @@ function()
             if imgui.ImageButton(pedsSkinAtlas,imgui.ImVec2(55,100),imgui.ImVec2(((i-1)*55)/14630,0),imgui.ImVec2((i*55)/14630,1)) then
                 vr.missData['player']['modelId'][0] = ID_Actors[i]
                 lua_thread.create(function()
-                    deleteChar(vr.player_ped)
-                    wait(0)
-                    local xx,xy,xz = vr.missData['player']['pos'][0],vr.missData['player']['pos'][1],vr.missData['player']['pos'][2]
                     
-                    if vr.missData['player']['modelType'][0] == 0 then
-                        modell = vr.missData['player']['modelId'][0]
-                        requestModel(modell)
-                        while not hasModelLoaded(modell) do
-                            wait(0)
-                        end
-                    else
-                        local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
-                        loadSpecialCharacter(modell_n,10)
-                        while not hasSpecialCharacterLoaded(10) do
-                            wait(0)
-                        end
-                        modell = 290 + 9
-                    end
-
-                    vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
-                    setCharHeading(vr.player_ped,vr.missData.player.angle[0])
-                    setCharCollision(vr.player_ped,false)
                 end)
             end
             imgui.PopID()
@@ -3203,8 +3162,8 @@ function()
         local name = langt['missionPack'].." #"..#vr.temp_var.list_name_mission_packs
         vr.temp_var.list_name_mission_packs[#vr.temp_var.list_name_mission_packs+1] = new.char[65](name)
         vr.temp_var.list_name_missions[#vr.temp_var.list_name_missions+1] = {}
-        lfs.mkdir(getWorkingDirectory().."\\Missions_pack\\"..name)
-        lfs.mkdir(getWorkingDirectory().."\\Missions_pack\\"..name..'\\audio')
+        lfs.mkdir(getWorkingDirectory().."\\Missions_pack\\"..replace_symb(name))
+        lfs.mkdir(getWorkingDirectory().."\\Missions_pack\\"..replace_symb(name)..'\\audio')
         vr.current_mission_pack[0] = #vr.temp_var.list_name_mission_packs-1
     end
     if #vr.temp_var.list_name_mission_packs > 0 then
@@ -3227,7 +3186,7 @@ function()
         local size_b = imgui.ImVec2(100,0)
 
         if imgui.Button(langt['yes'],size_b) then
-            deletedir(getWorkingDirectory()..'\\Missions_pack\\'..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]))
+            deletedir(getWorkingDirectory()..'\\Missions_pack\\'..ffi.string(replace_symb(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])))
             table.remove(vr.temp_var.list_name_mission_packs,vr.current_mission_pack[0]+1)
             table.remove(vr.temp_var.list_name_missions,vr.current_mission_pack[0]+1)
             if vr.current_mission_pack[0] > 0 then
@@ -3243,9 +3202,9 @@ function()
 
     --Rename popup
     if imgui.BeginPopup("rename") then
-        local old_name = cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]))
+        local old_name = cyr(replace_symb(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])))
         if imgui.InputText('',vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1],ffi.sizeof(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])) then
-            os.rename(getWorkingDirectory()..'\\Missions_pack\\'..old_name,getWorkingDirectory()..'\\Missions_pack\\'..cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])))
+            os.rename(getWorkingDirectory()..'\\Missions_pack\\'..old_name,getWorkingDirectory()..'\\Missions_pack\\'..cyr(replace_symb(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]))))
         end
 
         if imgui.Button(langt['close']) then imgui.CloseCurrentPopup() end
@@ -3282,18 +3241,20 @@ function()
                     links = nodes2.links
                 }
             }
-            while doesFileExist(getWorkingDirectory().."\\Missions_pack\\"..cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]).."\\"..ffi.string(name))..".bin") do
-                name = imgui.StrCopy(name, ffi.string(name)..'c')
-            end
             vr.current_mission[0] = #vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1]
+            while doesFileExist(getWorkingDirectory().."\\Missions_pack\\"..cyr(replace_symb(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])).."\\"..replace_symb(ffi.string(name)))..".bin") do
+                imgui.StrCopy(name, ffi.string(name)..'c')
+            end
             vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1] = new.char[65](ffi.string(vr.missData.name))
             manager.save(mission)
             manager.saveListMiss()
             mp.packMiss = vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]
             local path = getWorkingDirectory() .. "\\Missions_pack\\"
-            local f = io.open(path..cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])).."\\"..'vars.bin','wb')
+            local f = io.open(path .. replace_symb(cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]))).."\\"..'vars.bin','wb')
             f:write(bitser.dumps(nodes2.vars))
             f:close()
+
+            load_audio()
 
             vr.temp_var.fastData[0] = vr.current_mission_pack[0]
             vr.temp_var.fastData[1] = vr.current_mission[0]
@@ -3318,9 +3279,9 @@ function()
                     }
                 }
                 local path = getWorkingDirectory() .. "\\Missions_pack\\"
-                local path_pack = cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\')
-	            local name_miss = cyr(ffi.string(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1]))
-                os.rename(path..path_pack..name_miss..'.bin',path..path_pack..cyr(ffi.string(name))..'.bin')
+                local path_pack = cyr(replace_symb(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]))..'\\')
+	            local name_miss = cyr(replace_symb(ffi.string(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1])))
+                os.rename(path..path_pack..name_miss..'.bin',path..path_pack..cyr(replace_symb(ffi.string(name)))..'.bin')
                 imgui.StrCopy(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1], ffi.string(vr.missData.name))
                 manager.save(mission)
                 manager.saveListMiss()
@@ -3331,6 +3292,11 @@ function()
                 f:close()
 
                 mp.packMiss = vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]
+
+                load_audio()
+
+                vr.temp_var.fastData[0] = vr.current_mission_pack[0]
+                vr.temp_var.fastData[1] = vr.current_mission[0]
 
                 printHelpString(koder(cyr(langt['saved'])))
             end
@@ -3365,8 +3331,8 @@ function()
 
             if imgui.Button(langt['yes'],size_b) then
                 local path = getWorkingDirectory() .. "\\Missions_pack\\"
-                local path_pack = ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'
-	            local name_miss = ffi.string(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1])
+                local path_pack = cyr(replace_symb(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])))..'\\'
+	            local name_miss = replace_symb(ffi.string(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1][vr.current_mission[0]+1]))
                 os.remove(path..path_pack..name_miss..'.bin')
                 table.remove(vr.temp_var.list_name_missions[vr.current_mission_pack[0]+1],vr.current_mission[0]+1)
                 manager.saveListMiss()
@@ -3422,38 +3388,24 @@ function()
                 local mission = manager.load()
                 vr.missData = mission.missData
                 vr.list_targets = mission.list_targets
+                vr.temp_var.list_name_targets = {}
                 vr.list_actors = mission.list_actors
+                vr.temp_var.list_name_actors = {}
                 vr.list_cars = mission.list_cars
+                vr.temp_var.list_name_cars = {}
                 vr.list_objects = mission.list_objects
+                vr.temp_var.list_name_objects = {}
                 vr.list_particles = mission.list_particles
+                vr.temp_var.list_name_particles = {}
                 vr.list_pickups = mission.list_pickups
+                vr.temp_var.list_name_pickups = {}
                 vr.list_explosions = mission.list_explosions
+                vr.temp_var.list_name_explosions = {}
                 vr.list_audios = mission.list_audios
+                vr.temp_var.list_name_audios = {}
                 nodes2.nodes = mission.nodes.nodes
                 nodes2.links = mission.nodes.links
-                lua_thread.create(function()
-                    wait(0)
-                    local xx,xy,xz = vr.missData['player']['pos'][0],vr.missData['player']['pos'][1],vr.missData['player']['pos'][2]
-                    
-                    if vr.missData['player']['modelType'][0] == 0 then
-                        modell = vr.missData['player']['modelId'][0]
-                        requestModel(modell)
-                        while not hasModelLoaded(modell) do
-                            wait(0)
-                        end
-                    else
-                        local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
-                        loadSpecialCharacter(modell_n,10)
-                        while not hasSpecialCharacterLoaded(10) do
-                            wait(0)
-                        end
-                        modell = 290 + 9
-                    end
-                    
-                    vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
-                    setCharHeading(vr.player_ped,vr.missData.player.angle[0])
-                    setCharCollision(vr.player_ped,false)
-                end)
+                upd_player:run()
 
                 setCharCoordinates(PLAYER_PED, vr.missData['player']['pos'][0], vr.missData['player']['pos'][1], vr.missData['player']['pos'][2])
                 setCharInterior(PLAYER_PED, vr.missData['player']['interiorId'][0])
@@ -3495,8 +3447,8 @@ function()
                 end)
 
                 local path = getWorkingDirectory() .. "\\Missions_pack\\"
-                if doesFileExist(path..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'..'vars.bin') then
-                    local f = io.open(path..ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1])..'\\'..'vars.bin','rb')
+                if doesFileExist(path..replace_symb(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]))..'\\'..'vars.bin') then
+                    local f = io.open(path..replace_symb(ffi.string(vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]))..'\\'..'vars.bin','rb')
                     nodes2.vars = bitser.loads(f:read("*all"))
                     f:close()
                     for i = 1,#nodes2.vars do
@@ -3504,6 +3456,8 @@ function()
                     end
                 end
                 mp.packMiss = vr.temp_var.list_name_mission_packs[vr.current_mission_pack[0]+1]
+
+                load_audio()
 
                 vr.temp_var.fastData[0] = vr.current_mission_pack[0]
                 vr.temp_var.fastData[1] = vr.current_mission[0]
@@ -3609,7 +3563,7 @@ function()
                 }
                 manager.save_s(storyline)
                 local path = getWorkingDirectory() .. "\\Missions_pack\\"
-                local f = io.open(path..cyr(ffi.string(vr.storyline.missPack))..'\\'..'vars.bin','wb')
+                local f = io.open(path..cyr(replace_symb(ffi.string(vr.storyline.missPack)))..'\\'..'vars.bin','wb')
                 f:write(bitser.dumps(nodes2.vars))
                 f:close()
                 printHelpString(koder(cyr(langt['saved'])))
@@ -3694,7 +3648,7 @@ function()
             if not doesDirectoryExist(getWorkingDirectory()..'\\Storylines') then
                 createDirectory(getWorkingDirectory()..'\\Storylines')
             end
-            while doesFileExist(getWorkingDirectory()..'\\Storylines\\'..name..'.bin') do
+            while doesFileExist(getWorkingDirectory()..'\\Storylines\\'..replace_symb(name)..'.bin') do
                 name = name..'c'
             end
             local storyline = {}
@@ -3784,8 +3738,8 @@ function()
             nodes2.nodes = storyline.nodes or {}
             nodes2.links = storyline.links or {}
             local path = getWorkingDirectory() .. "\\Missions_pack\\"
-            if doesFileExist(path..cyr(ffi.string(vr.storyline.missPack))..'\\'..'vars.bin') then
-                local f = io.open(path..cyr(ffi.string(vr.storyline.missPack))..'\\'..'vars.bin','rb')
+            if doesFileExist(path..cyr(replace_symb(ffi.string(vr.storyline.missPack)))..'\\'..'vars.bin') then
+                local f = io.open(path..cyr(replace_symb(ffi.string(vr.storyline.missPack)))..'\\'..'vars.bin','rb')
                 nodes2.vars = bitser.loads(f:read("*all"))
                 f:close()
                 for i = 1,#nodes2.vars do
@@ -3816,7 +3770,7 @@ function()
         local size_b = imgui.ImVec2(100,0)
 
         if imgui.Button(langt['yes'],size_b) then
-            os.remove(getWorkingDirectory()..'\\Storylines\\'..cyr(ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1]))..'.bin')
+            os.remove(getWorkingDirectory()..'\\Storylines\\'..cyr(replace_symb(ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])))..'.bin')
             table.remove(vr.temp_var.list_name_storylines,vr.current_storyline[0]+1)
             imgui.CloseCurrentPopup()
         end
@@ -3828,9 +3782,9 @@ function()
 
     --Rename popup
     if imgui.BeginPopup("rename") then
-        local old_name = cyr(ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1]))
+        local old_name = cyr(replace_symb(ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])))
         if imgui.InputText('',vr.temp_var.list_name_storylines[vr.current_storyline[0]+1],ffi.sizeof(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])) then
-            os.rename(getWorkingDirectory()..'\\Storylines\\'..old_name..'.bin',getWorkingDirectory()..'\\Storylines\\'..cyr(ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1]))..'.bin')
+            os.rename(getWorkingDirectory()..'\\Storylines\\'..old_name..'.bin',getWorkingDirectory()..'\\Storylines\\'..cyr(replace_symb(ffi.string(vr.temp_var.list_name_storylines[vr.current_storyline[0]+1])))..'.bin')
         end
 
         if imgui.Button(langt['close']) then imgui.CloseCurrentPopup() end
@@ -4259,7 +4213,7 @@ function ()
     imgui.TextWrapped(namesHelpers)
     imgui.Text('')
     if imgui.Button(faicons.ICON_BOOK..' '..vr.temp_var.info_t[8]) then
-        
+        os.execute('start https://mgeymer.github.io/LDYOM_DOC/')
     end
 
     imgui.End()
@@ -4419,16 +4373,16 @@ function update_car(carr,recolor)
 	end
 
 	deleteCar(vr.list_cars[carr]['data']['car'])
+    setCarModelComponents(modell, 1, 0)
 	vr.list_cars[carr]['data']['car'] = createCar(modell, xx, xy, xz)
 	setCarHeading(vr.list_cars[carr]['data']['car'], angle)
 	setCarCollision(vr.list_cars[carr]['data']['car'],false)
 	freezeCarPosition(vr.list_cars[carr]['data']['car'], true)
-	setCarCanBeDamaged(vr.list_cars[carr]['data']['car'], false)
+    setCarCanBeDamaged(vr.list_cars[carr]['data']['car'], false)
 	--changeCarColour(vr.list_cars[carr]['data']['car'], vr.list_cars[carr]['data']['Color_primary'],vr.list_cars[carr]['Car_Data']['Color_secondary'])
     markModelAsNoLongerNeeded(modell)
     if recolor then
         vr.list_cars[carr]['data'].colors = {}
-        local comps = mad.get_all_vehicle_components(tonumber(vr.list_cars[carr]['data']['car']))
         for_each_vehicle_material(vr.list_cars[carr]['data'].car,function(i,mat, comp, obj)
             local r,g,b,a = mat:get_color()
             local colorr
@@ -4453,13 +4407,16 @@ function update_car(carr,recolor)
                 colorr = imgui.ImColor.ImColorInt(r, g, b, a)
                 typee = 2
             end
-            vr.list_cars[carr]['data'].colors[#vr.list_cars[carr]['data'].colors+1] = {typee,new.float[4](colorr.Value.x,colorr.Value.y,colorr.Value.z,colorr.Value.w)}
+            vr.list_cars[carr]['data'].colors[i] = {typee,new.float[4](colorr.Value.x,colorr.Value.y,colorr.Value.z,colorr.Value.w)}
 
         end)
     else
-        for_each_vehicle_material(vr.list_cars[carr]['data']['car'],function(i,mat, comp, obj)
+        for_each_vehicle_material(vr.list_cars[carr]['data'].car,function(i,mat, comp, obj)
             local new_r, new_g, new_b, a = vr.list_cars[carr]['data'].colors[i][2][0],vr.list_cars[carr]['data'].colors[i][2][1],vr.list_cars[carr]['data'].colors[i][2][2],vr.list_cars[carr]['data'].colors[i][2][3]
-            mat:set_color(new_r*255, new_g*255, new_b*255, a*255)
+            local old_r, old_g, old_b, old_a = mat:get_color()
+            if not (math.floor(new_r*255) == old_r and math.floor(new_g*255) == old_g and math.floor(new_b*255) == old_b and math.floor(a*255) == old_a) then
+                mat:set_color(new_r*255, new_g*255, new_b*255, a*255)
+            end
         end)
     end
 end
@@ -4497,6 +4454,7 @@ function update_particle(prtcl)
             wait(0)
         end
     end
+    vr.list_particles[prtcl]['data']['prtcl'] = {}
     vr.list_particles[prtcl]['data']['prtcl'][2] = createObject(327,xx, xy, xz)
     vr.list_particles[prtcl]['data']['prtcl'][1] = createFxSystemOnObjectWithDirection(modell,vr.list_particles[prtcl]['data']['prtcl'][2],0,0,0,rxx,rxy,rxz, 1)
     playFxSystem(vr.list_particles[prtcl]['data']['prtcl'][1])
@@ -4645,11 +4603,47 @@ function playNodePreviewAnimPed(node)
     taskPlayAnim(PLAYER_PED, anims[node.Inputs[4].value[0]+1], Anims['Anim_name'][node.Inputs[3].value[0]+1], 1.0, node.Inputs[5].value[0], false, false, false, -1)
 end
 
+function update_player()
+    if vr.player_ped then deleteChar(vr.player_ped) end
+    wait(0)
+    local xx,xy,xz = vr.missData['player']['pos'][0],vr.missData['player']['pos'][1],vr.missData['player']['pos'][2]
+    local modell
+    if vr.missData['player']['modelType'][0] == 0 then
+        modell = vr.missData['player']['modelId'][0]
+        requestModel(modell)
+        while not hasModelLoaded(modell) do
+            wait(0)
+        end
+    else
+        local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
+        loadSpecialCharacter(modell_n,10)
+        while not hasSpecialCharacterLoaded(10) do
+            wait(0)
+        end
+        modell = 290 + 9
+    end
+
+    vr.player_ped = createChar(4,modell,xx,xy,xz)
+    setCharHeading(vr.player_ped,vr.missData.player.angle[0])
+    setCharCollision(vr.player_ped,false)
+end
+
+function load_audio()
+    local pathAudio = getWorkingDirectory()..'\\Missions_pack\\'..replace_symb(ffi.string(mp.packMiss))..'\\audio\\'
+    vr.temp_var.list_audios_name = {}
+    for file in lfs.dir(pathAudio) do
+        if lfs.attributes(pathAudio..file,"mode") == "file" then
+            if string.sub(file, -3) == 'mp3' then
+                vr.temp_var.list_audios_name[#vr.temp_var.list_audios_name+1] = string.sub(file, 0, -5)
+            end
+        end
+    end
+end
+
 function temporarySaving(save)
-    print(string.sub(os.tmpname(),0,34))
-    createDirectory(string.sub(os.tmpname(),0,34))
+    local path_tmp = getGameDirectory()
     if save then
-        local tmp = io.open(string.sub(os.tmpname(),0,34)..'\\ldyom.bin','wb')
+        local tmp = io.open(path_tmp..'\\ldyom.bin','wb')
         if vr.storylineMode then
             local storyline = {
                 story = true,
@@ -4687,7 +4681,7 @@ function temporarySaving(save)
         tmp:close()
         return true
     else
-        local tmp = io.open(string.sub(os.tmpname(),0,34)..'\\ldyom.bin','rb')
+        local tmp = io.open(path_tmp..'\\ldyom.bin','rb')
         if tmp then
             local data = bitser.loads(tmp:read("*all"))
             if data.story then
@@ -4707,6 +4701,7 @@ function temporarySaving(save)
                 vr.storylineMode = true
                 
                 vr.temp_var.fastData = data.fastData
+                if vr.temp_var.fastData[0] ~= -1 then vr.current_storyline[0] = vr.temp_var.fastData[0] end
                 mp.packMiss = vr.storyline.missPack
             else
                 vr.missData = data.missData
@@ -4743,9 +4738,7 @@ function temporarySaving(save)
                     modell = 290 + 9
                 end
                 
-                vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
-                setCharHeading(vr.player_ped,vr.missData.player.angle[0])
-                setCharCollision(vr.player_ped,false)
+                upd_player:run()
 
                 setCharCoordinates(PLAYER_PED, vr.missData['player']['pos'][0], vr.missData['player']['pos'][1], vr.missData['player']['pos'][2])
                 setCharInterior(PLAYER_PED, vr.missData['player']['interiorId'][0])
@@ -4787,11 +4780,13 @@ function temporarySaving(save)
 
                 mp.packMiss = data.packMiss
                 vr.temp_var.fastData = data.fastData
-                vr.current_mission_pack[0] = vr.temp_var.fastData[0]
-                vr.current_mission[0] = vr.temp_var.fastData[1]
+                if vr.temp_var.fastData[0] ~= -1 and vr.temp_var.fastData[1] ~= -1 then
+                    vr.current_mission_pack[0] = vr.temp_var.fastData[0]
+                    vr.current_mission[0] = vr.temp_var.fastData[1]
+                end
             end
             tmp:close()
-            os.remove(string.sub(os.tmpname(),0,34)..'\\ldyom.bin')
+            os.remove(path_tmp..'\\ldyom.bin')
             return true
         end
     end
@@ -4905,6 +4900,7 @@ function main()
     upd_explosion = lua_thread.create_suspended(update_explosion)
     upd_audio = lua_thread.create_suspended(update_audio)
     upd_storyCheck = lua_thread.create_suspended(update_storylineCheckpoint)
+    upd_player = lua_thread.create_suspended(update_player)
     if doesDirectoryExist(getWorkingDirectory() .. '\\Missions_pack') then
         for file in lfs.dir(getWorkingDirectory() .. '\\Missions_pack\\') do
             if lfs.attributes(getWorkingDirectory() .. '\\Missions_pack\\'..file,"mode") == "directory" then
@@ -4930,9 +4926,7 @@ function main()
 
     --Tempory load
     if not temporarySaving(false) then
-        vr.player_ped = createChar(4,vr.missData.player.modelId[0],xp,yp,zp)
-        setCharCollision(vr.player_ped,false)
-        setCharHeading(vr.player_ped,vr.missData.player.angle[0])
+        upd_player:run()
     end
 
     --nodes_s.show[0] = true
@@ -4967,7 +4961,7 @@ function main()
                         }
                         manager.save_s(storyline)
                         local path = getWorkingDirectory() .. "\\Missions_pack\\"
-                        local f = io.open(path..cyr(ffi.string(vr.storyline.missPack))..'\\'..'vars.bin','wb')
+                        local f = io.open(path..cyr(replace_symb(ffi.string(vr.storyline.missPack)))..'\\'..'vars.bin','wb')
                         f:write(bitser.dumps(nodes2.vars))
                         f:close()
                         printHelpString(koder(cyr(langt['saved'])))
@@ -4993,9 +4987,9 @@ function main()
                             }
                         }
                         local path = getWorkingDirectory() .. "\\Missions_pack\\"
-                        local path_pack = cyr(ffi.string(vr.temp_var.list_name_mission_packs[vr.temp_var.fastData[0]+1])..'\\')
-                        local name_miss = cyr(ffi.string(vr.temp_var.list_name_missions[vr.temp_var.fastData[0]+1][vr.temp_var.fastData[1]+1]))
-                        os.rename(path..path_pack..name_miss..'.bin',path..path_pack..cyr(ffi.string(name))..'.bin')
+                        local path_pack = cyr(replace_symb(ffi.string(vr.temp_var.list_name_mission_packs[vr.temp_var.fastData[0]+1]))..'\\')
+                        local name_miss = cyr(replace_symb(ffi.string(vr.temp_var.list_name_missions[vr.temp_var.fastData[0]+1][vr.temp_var.fastData[1]+1])))
+                        os.rename(path..path_pack..name_miss..'.bin',path..path_pack..cyr(replace_symb(ffi.string(name)))..'.bin')
                         imgui.StrCopy(vr.temp_var.list_name_missions[vr.temp_var.fastData[0]+1][vr.temp_var.fastData[1]+1], ffi.string(vr.missData.name))
                         manager.save(mission)
                         manager.saveListMiss()
@@ -5316,24 +5310,7 @@ function main()
                     vr.missData['player']['angle'][0] = angle
                     vr.missData['player']['interiorId'][0] = getActiveInterior()
                     
-                    if vr.missData['player']['modelType'][0] == 0 then
-                        modell = vr.missData['player']['modelId'][0]
-                        requestModel(modell)
-                        while not hasModelLoaded(modell) do
-                            wait(0)
-                        end
-                    else
-                        local modell_n = ID_Spec_Actors[vr.missData['player']['modelId'][0]+1]
-                        loadSpecialCharacter(modell_n,10)
-                        while not hasSpecialCharacterLoaded(10) do
-                            wait(0)
-                        end
-                        modell = 290 + 9
-                    end
-                    
-                    vr.player_ped = createChar(4,vr.missData.player.modelId[0],xx,xy,xz)
-                    setCharHeading(vr.player_ped,vr.missData.player.angle[0])
-                    setCharCollision(vr.player_ped,false)
+                    upd_player:run()
 				end
 			end
         end

@@ -11,8 +11,6 @@ function stylel.apply_custom_style()
 
     style.WindowPadding = ImVec2(15, 15)
     style.WindowRounding = 15.0
-    style.FramePadding = ImVec2(5, 5)
-    style.ItemSpacing = ImVec2(12, 4)
     style.ItemInnerSpacing = ImVec2(8, 6)
     style.IndentSpacing = 25.0
     style.ScrollbarSize = 15.0
@@ -21,6 +19,9 @@ function stylel.apply_custom_style()
     style.GrabRounding = 7.0
     style.ChildRounding = 8.0
     style.FrameRounding = 6.0
+
+    style.ItemSpacing = imgui.ImVec2(4.0, 4.0)
+    style.FramePadding = imgui.ImVec2(2.5, 3.5)
 
 
     colors[clr.Text] = ImVec4(0.95, 0.96, 0.98, 1.00)

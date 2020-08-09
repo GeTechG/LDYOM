@@ -54,9 +54,11 @@ function stylel.apply_custom_style()
     colors[clr.TextSelectedBg] = ImVec4(0.260, 0.590, 0.980, 0.350);
     colors[clr.ModalWindowDimBg] = ImVec4(0.200, 0.200, 0.200, 0.350);
 
-    style.ItemSpacing = ImVec2(10, 8); --ItemSpacing(ImVec2(7.0));
-    style.FramePadding = ImVec2(6, 4); --ItemSpacing(ImVec2(7.0));
     style.ItemInnerSpacing = ImVec2(5, 4); --ItemSpacing(ImVec2(7.0));
+    
+    style.ItemSpacing = imgui.ImVec2(4.0, 4.0)
+    style.FramePadding = imgui.ImVec2(2.5, 3.5)
+    style.WindowPadding = imgui.ImVec2(4.0, 4.0)
 
     style.ScrollbarSize = 16.0; --ItemSpacing(ImVec2(7.0));
     style.GrabMinSize = 8.0; --ItemSpacing(ImVec2(7.0));
