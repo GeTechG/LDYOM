@@ -1,2 +1,0 @@
-os filtros devem ser coloados com numeros de 1 a 30 e são escritos no formato lua
-erros nos filtros podem ocasionar a parada do spawner ao selecionar o filtro
