@@ -185,6 +185,7 @@
     <ResourceCompile Include="LDYOM_ASI.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="bitmap1.bmp" />
     <Image Include="images\blips.png" />
     <Image Include="images\peds.jpg" />
     <Image Include="images\weapons.png" />

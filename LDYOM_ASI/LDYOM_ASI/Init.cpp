@@ -1,4 +1,10 @@
 #include "Init.h"
+
+
+#include <CClock.h>
+#include <CHud.h>
+#include <CRadar.h>
+
 #include "libs/coro_wait.h"
 #include "CCamera.h"
 #include "CMessages.h"
@@ -17,6 +23,7 @@ extern bool updateSphere;
 extern std::string UTF8_to_CP1251(std::string const& utf8);
 extern void GXTEncode(std::string& str);
 extern bool mission_started;
+extern bool storyline_started;
 extern bool is_utf8(const char* string);
 void rotateVec2(float& x, float& y, int angle);
 
@@ -35,6 +42,7 @@ bool editPlayer = false;
 bool editmodeTimemiss = false;
 PDIRECT3DTEXTURE9 weaponsAtlas;
 PDIRECT3DTEXTURE9 pedsSkinAtlas;
+PDIRECT3DTEXTURE9 blipsAtlas;
 //nodeEditmode = nil,
 const int ID_Cars[212] = { 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611 };
 const int ID_Weapons[44] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46 };
@@ -891,14 +899,14 @@ void Particle::updateMissionParticle(void* void_mission) {
 	}
 }
 
-void Particle::removeEditorParticle() {
-	if (this->editorParticle.first != NULL) {
-		CWorld::Remove(this->editorParticle.second);
-		this->editorParticle.second->Remove();
-		Command<Commands::KILL_FX_SYSTEM>(this->editorParticle.first);
-		delete this->editorParticle.second;
-		this->editorParticle.first = NULL;
-		this->editorParticle.second = nullptr;
+void Particle::removeMissionParticle() {
+	if (this->missionParticle.first != NULL) {
+		CWorld::Remove(this->missionParticle.second);
+		this->missionParticle.second->Remove();
+		Command<Commands::KILL_FX_SYSTEM>(this->missionParticle.first);
+		delete this->missionParticle.second;
+		this->missionParticle.first = NULL;
+		this->missionParticle.second = nullptr;
 	}
 }
 
@@ -936,35 +944,30 @@ void Pickup::updateEditorPickup() {
 		}
 		editorPickup = CPickups::GenerateNewOne_WeaponType(CVector(pos[0], pos[1], pos[2]), (eWeaponType)ID_Weapons[this->weapon], 9, 1, false, nullptr);
 	} 
-	else if (type == 1) {
-		CStreaming::RequestModel(1240, 0);
+	else {
+		int md;
+		switch (type)
+		{
+		case 1:
+			md = 1240;
+			break;
+		case 2:
+			md = 1242;
+			break;
+		case 3:
+			md = 1247;
+			break;
+		case 4:
+			md = 1241;
+			break;
+		default:
+			md = modelID;
+		}
+		
+		CStreaming::RequestModel(md, 0);
 		CStreaming::LoadAllRequestedModels(false);
 
-		editorPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), 1240, 9, 0, 0, false, nullptr);
-	}
-	else if (type == 2) {
-		CStreaming::RequestModel(1242, 0);
-		CStreaming::LoadAllRequestedModels(false);
-
-		editorPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), 1242, 9, 0, 0, false, nullptr);
-	}
-	else if (type == 3) {
-		CStreaming::RequestModel(1247, 0);
-		CStreaming::LoadAllRequestedModels(false);
-
-		editorPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), 1247, 9, 0, 0, false, nullptr);
-	}
-	else if (type == 4) {
-		CStreaming::RequestModel(1241, 0);
-		CStreaming::LoadAllRequestedModels(false);
-
-		editorPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), 1241, 9, 0, 0, false, nullptr);
-	}
-	else if (type == 5) {
-		CStreaming::RequestModel(modelID, 0);
-		CStreaming::LoadAllRequestedModels(false);
-
-		editorPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), modelID, 9, 0, 0, false, nullptr);
+		editorPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), md, 9, 0, 0, false, nullptr);
 	}
 	CStreaming::RemoveAllUnusedModels();
 }
@@ -995,35 +998,30 @@ void Pickup::updateMissionPickup() {
 		}
 		missionPickup = CPickups::GenerateNewOne_WeaponType(CVector(pos[0], pos[1], pos[2]), (eWeaponType)ID_Weapons[this->weapon], spawn_t, 1, false, nullptr);
 	}
-	else if (type == 1) {
-		CStreaming::RequestModel(1240, 0);
+	else {
+		int md;
+		switch (type)
+		{
+		case 1:
+			md = 1240;
+			break;
+		case 2:
+			md = 1242;
+			break;
+		case 3:
+			md = 1247;
+			break;
+		case 4:
+			md = 1241;
+			break;
+		default:
+			md = modelID;
+		}
+
+		CStreaming::RequestModel(md, 0);
 		CStreaming::LoadAllRequestedModels(false);
 
-		missionPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), 1240, spawn_t, 0, 0, false, nullptr);
-	}
-	else if (type == 2) {
-		CStreaming::RequestModel(1242, 0);
-		CStreaming::LoadAllRequestedModels(false);
-
-		missionPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), 1242, spawn_t, 0, 0, false, nullptr);
-	}
-	else if (type == 3) {
-		CStreaming::RequestModel(1247, 0);
-		CStreaming::LoadAllRequestedModels(false);
-
-		missionPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), 1247, spawn_t, 0, 0, false, nullptr);
-	}
-	else if (type == 4) {
-		CStreaming::RequestModel(1241, 0);
-		CStreaming::LoadAllRequestedModels(false);
-
-		missionPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), 1241, spawn_t, 0, 0, false, nullptr);
-	}
-	else if (type == 5) {
-		CStreaming::RequestModel(modelID, 0);
-		CStreaming::LoadAllRequestedModels(false);
-
-		missionPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), modelID, spawn_t, 0, 0, false, nullptr);
+		missionPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), md, spawn_t, 0, 0, false, nullptr);
 	}
 	CStreaming::RemoveAllUnusedModels();
 }
@@ -1088,6 +1086,22 @@ void Explosion::removeEditorExplosion() {
 	}
 }
 
+void Explosion::updateMissionExplosion() {
+
+	if (type == 0) {
+		Command<Commands::START_SCRIPT_FIRE>(pos[0], pos[1], pos[2], 0, sizeFire, &missionFire);
+	}
+	else {
+		Command<Commands::ADD_EXPLOSION>(pos[0], pos[1], pos[2], typeExplosion);
+	}
+}
+
+void Explosion::removeMissionExplosion() {
+	if (this->missionFire != NULL) {
+		Command<Commands::REMOVE_SCRIPT_FIRE>(this->missionFire);
+		this->missionFire = NULL;
+	}
+}
 
 Audio::Audio(const char* name, float x, float y, float z, int lastTarget) {
 	strcpy(this->name, name);
@@ -1133,11 +1147,59 @@ void Audio::updateEditorAudio(bool _new) {
 	}
 }
 
-void Audio::loadAudio() {
+void Audio::loadAudiosList() {
 	std::stringstream path;
 	path << "LDYOM//Missions_packs//" << replace_symb(UTF8_to_CP1251(*nameCurrPack)) << "//audio";
 	//path << "LDYOM//Missions_packs//" << "test" << "//audio";
 	namesAudioFiles = get_filename_list(path.str(), ".mp3");
+}
+
+void Audio::loadAudio()
+{
+	std::stringstream path;
+	path << "LDYOM//Missions_packs//" << replace_symb(UTF8_to_CP1251(*nameCurrPack)) << "//audio//" << namesAudioFiles[sound] << ".mp3";
+
+	if (audio3D) {
+		Command<0x0AC1>(path.str().c_str(), &missionAudio); //load3dAudioStream
+	}
+	else {
+		Command<0x0AAC>(path.str().c_str(), &missionAudio); //loadAudioStream
+	}
+}
+
+void Audio::unloadAudio() {
+	Command<0x0AAE>(missionAudio);
+}
+
+void Audio::play(void* void_mission)
+{
+	Mission* mission = static_cast<Mission*>(void_mission);
+	if (audio3D)
+	{
+		switch (audio3DType)
+		{
+		case 0:
+			Command<0x0AC2>(missionAudio, pos[0], pos[1], pos[2]);
+			break;
+		case 1:
+			Command<0x0AC4>(missionAudio, mission->list_actors[audio3DAttach]->missionPed);
+			break;
+		case 2:
+			Command<0x0AC5>(missionAudio, mission->list_cars[audio3DAttach]->missionCar);
+			break;
+		case 3:
+			Command<0x0AC3>(missionAudio, mission->list_objects[audio3DAttach]->missionObject);
+			break;
+		default:
+			break;
+		}
+	}
+	Command<0x0AAD>(missionAudio, 1);
+}
+
+void Audio::stop()
+{
+	Command<0x0AAD>(missionAudio, 0);
 }
 
 void Audio::removeEditorAudio() {
@@ -1318,4 +1380,103 @@ void Mission::updateEditorEntity()
 		i->updateEditorAudio();
 	}
 	player.updateEditorPed();
+}
+
+void Mission::removeMissionEntity()
+{
+	for (auto i : list_actors)
+	{
+		i->removeMissionPed();
+	}
+	for (auto i : list_cars)
+	{
+		i->removeMissionCar();
+	}
+	for (auto i : list_objects)
+	{
+		i->removeMissionObject();
+	}
+	for (auto i : list_pickups)
+	{
+		i->removeMissionPickup();
+	}
+	for (auto i : list_particles)
+	{
+		i->removeMissionParticle();
+	}
+	for (auto i : list_explosions)
+	{
+		i->removeMissionExplosion();
+	}
+}
+
+CheckpointStoryline::CheckpointStoryline(const char* name, float x, float y, float z)
+{
+	strcpy(this->name, name);
+	this->pos[0] = x;
+	this->pos[1] = y;
+	this->pos[2] = z;
+}
+
+CheckpointStoryline::CheckpointStoryline(const CheckpointStoryline& checkpoint)
+{
+	strcpy(this->name, checkpoint.name);
+	memcpy(pos, checkpoint.pos, 3 * sizeof(float));
+	colorBlip = checkpoint.colorBlip;
+	iconMarker = checkpoint.iconMarker;
+	indexSphere = checkpoint.indexSphere;
+	useMission = checkpoint.useMission;
+	startC = checkpoint.startC;
+	gotoMission = checkpoint.gotoMission;
+	timeStart = checkpoint.timeStart;
+}
+
+void CheckpointStoryline::updateEditorCheckpoint()
+{
+	this->removeEditorCheckpoint();
+	Command<Commands::ADD_SPRITE_BLIP_FOR_CONTACT_POINT>(pos[0], pos[1], pos[2], iconMarker, &marker);
+	Command<Commands::CHANGE_BLIP_SCALE>(marker, 3);
+	if (colorBlip > 0)
+	{
+		Command<Commands::CHANGE_BLIP_DISPLAY>(marker, 3);
+		CRadar::ChangeBlipColour(marker, this->colorBlip - 1);
+	} else
+		Command<Commands::CHANGE_BLIP_DISPLAY>(marker, 1);
+}
+
+void CheckpointStoryline::removeEditorCheckpoint()
+{
+	if (this->marker != NULL)
+	{
+		CRadar::ClearBlip(marker);
+		marker = NULL;
+	}
+}
+
+Storyline::Storyline(std::string& missPack)
+{
+	this->missPack = missPack;
+}
+
+Storyline::~Storyline()
+{
+	for (auto v : this->list_checkpoints) {
+		delete v;
+	}
+}
+
+void Storyline::updateEditorEntity()
+{
+	for (auto checkpoint_storyline : this->list_checkpoints)
+	{
+		checkpoint_storyline->updateEditorCheckpoint();
+	}
+}
+
+void Storyline::removeEditorEntity()
+{
+	for (auto checkpoint_storyline : this->list_checkpoints)
+	{
+		checkpoint_storyline->removeEditorCheckpoint();
+	}
 }

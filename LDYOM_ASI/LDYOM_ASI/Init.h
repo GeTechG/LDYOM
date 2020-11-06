@@ -51,6 +51,7 @@ extern bool editPlayer;
 extern bool editmodeTimemiss;
 extern PDIRECT3DTEXTURE9 weaponsAtlas;
 extern PDIRECT3DTEXTURE9 pedsSkinAtlas;
+extern PDIRECT3DTEXTURE9 blipsAtlas;
 extern const int ID_Cars[212];
 extern const int ID_Weapons[44];
 extern vector<std::string> Particle_name;
@@ -716,7 +717,6 @@ public:
 class Explosion {
 public:
 	CObject* editorExplosion = nullptr;
-	CObject* missionExplosion = nullptr;
 	int editorFire = NULL;
 	int missionFire = NULL;
 	char name[65];
@@ -733,8 +733,10 @@ public:
 	Explosion(const Explosion& particle);
 	Explosion() = default;
 	void updateEditorExplosion();
+	void updateMissionExplosion();
 
 	void removeEditorExplosion();
+	void removeMissionExplosion();
 
 	template <typename Archive>
 	void serialize(Archive & ar, const unsigned int version)
@@ -771,8 +773,11 @@ public:
 	Audio(const Audio& particle);
 	Audio() = default;
 	void updateEditorAudio(bool _new = false);
-
-	static void loadAudio();
+	static void loadAudiosList();
+	void loadAudio();
+	void unloadAudio();
+	void play(void* void_mission);
+	void stop();
 
 	void removeEditorAudio();
 
@@ -851,6 +856,8 @@ struct Mission {
 	void removeEditorEntity();
 	void updateEditorEntity();
 
+	void removeMissionEntity();
+
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
 	{
@@ -895,5 +902,68 @@ struct Mission {
 		ar & weather;
 		ar & riot;
 		ar & player;
+	}
+};
+
+class CheckpointStoryline
+{
+	friend class boost::serialization::access;
+public:
+	char name[65];
+	float pos[3];
+	int colorBlip = 1;
+	ImU8 iconMarker = 0;
+	unsigned int indexSphere;
+	bool useMission = true;
+	int startC = 0;
+	int gotoMission = 0;
+	int timeStart = 0;
+	int marker;
+	int markerPlay = NULL;
+	
+	CheckpointStoryline(const char* name, float x, float y, float z);
+	CheckpointStoryline() = default;
+	CheckpointStoryline(const CheckpointStoryline& checkpoint);
+
+	void updateEditorCheckpoint();
+	void removeEditorCheckpoint();
+
+	void checkpoint();
+	
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & name;
+		ar & pos;
+		ar & colorBlip;
+		ar & iconMarker;
+		ar & useMission;
+		ar & startC;
+		ar & gotoMission;
+		ar & timeStart;
+	}
+};
+
+struct Storyline
+{
+	friend class boost::serialization::access;
+	std::string missPack;
+	int startMission = 0;
+	int endMission = 0;
+	vector<CheckpointStoryline*> list_checkpoints;
+	
+	Storyline(std::string& missPack);
+	Storyline() = default;
+	~Storyline();
+	void updateEditorEntity();
+	void removeEditorEntity();
+
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & missPack;
+		ar & startMission;
+		ar & endMission;
+		ar & list_checkpoints;
 	}
 };

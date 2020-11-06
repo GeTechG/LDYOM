@@ -99,6 +99,7 @@ int curr_lang;
 #include "libs/MyFuncs.h"
 #include "Init.h"
 Mission* currentMissionPtr;
+Storyline* currentStorylinePtr;
 
 void beginThread(void* __startAddress) { 
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)__startAddress, NULL, NULL, NULL);

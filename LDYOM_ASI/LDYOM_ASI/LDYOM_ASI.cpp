@@ -1,5 +1,7 @@
 #include "LDYOM_ASI.h"
 
+extern bool mission_started;
+
 void MainThread()
 {
 	bool initialized = false;
@@ -91,6 +93,9 @@ void MainThread()
 			}
 		}
 	}
+	//load names storyline
+	namesStorylines.clear();
+	namesStorylines = get_filename_list("LDYOM//Storylines//", ".bin");
 
 	playerPed = FindPlayerPed();
 }
@@ -121,6 +126,7 @@ void loadArrayMenu()
 	langMenu["reloadQues"] = parseJsonArray<std::string>(langt("reloadQues"));
 	langMenu["Weather_arr"] = parseJsonArray<std::string>(langt("Weather_arr"));
 	langMenu["info_t"] = parseJsonArray<std::string>(langt("info_t"));
+	langMenu["timeForStart"] = parseJsonArray<std::string>(langt("timeForStart"));
 }
 
 void createDirsLDYOM()
@@ -579,30 +585,32 @@ public:
 					CHud::DrawHelpText();
 				}
 
-				if (updateSphere)
-					updateSphere = false;
-				else
-				{
-					vector<unsigned int> sphereIdx;
-					for (auto v : currentMissionPtr->list_targets)
+				if (!storylineMode && !mission_started) {
+					if (updateSphere)
+						updateSphere = false;
+					else
 					{
-						if (v->type == 0)
+						vector<unsigned int> sphereIdx;
+						for (auto v : currentMissionPtr->list_targets)
 						{
-							TargetCheckpoint* v_ptr = static_cast<TargetCheckpoint*>(v);
-							if (DistanceBetweenPoints(CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
-							                          TheCamera.GetPosition()) < 100.0f)
-								sphereIdx.push_back(CTheScripts::AddScriptSphere(
-									sphereIdx.size(), CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
-									v_ptr->radius));
+							if (v->type == 0)
+							{
+								TargetCheckpoint* v_ptr = static_cast<TargetCheckpoint*>(v);
+								if (DistanceBetweenPoints(CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
+									TheCamera.GetPosition()) < 100.0f)
+									sphereIdx.push_back(CTheScripts::AddScriptSphere(
+										sphereIdx.size(), CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
+										v_ptr->radius));
+							}
+						}
+						CTheScripts::DrawScriptSpheres();
+						for (auto v : sphereIdx)
+						{
+							CTheScripts::RemoveScriptSphere(v);
 						}
 					}
-					CTheScripts::DrawScriptSpheres();
-					for (auto v : sphereIdx)
-					{
-						CTheScripts::RemoveScriptSphere(v);
-					}
-					instance.process();
 				}
+				instance.process();
 			}
 		};
 		Events::vehicleRenderEvent.before += [](CVehicle* veh)
@@ -657,6 +665,7 @@ public:
 				MainThread();
 				loadArrayMenu();
 				currentMissionPtr = new Mission;
+				currentMissionPtr->player.updateEditorPed();
 				printLog("start");
 				init = true;
 				printLog("reini");
@@ -675,6 +684,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReasonForCall, LPVOID lpReserved)
 	case DLL_PROCESS_DETACH:
 		DeleteHooks();
 		delete currentMissionPtr;
+		delete currentStorylinePtr;
 		break;
 	}
 	return TRUE;

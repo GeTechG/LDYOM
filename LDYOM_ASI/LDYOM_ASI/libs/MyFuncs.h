@@ -40,6 +40,36 @@ void printLog(std::string print_text) {
 
 }
 
+std::string cp1251_to_utf8(const char *str)
+{
+	std::string res;
+	WCHAR *ures = NULL;
+	char *cres = NULL;
+
+	int result_u = MultiByteToWideChar(1251, 0, str, -1, 0, 0);
+	if (result_u != 0)
+	{
+		ures = new WCHAR[result_u];
+		if (MultiByteToWideChar(1251, 0, str, -1, ures, result_u))
+		{
+			int result_c = WideCharToMultiByte(CP_UTF8, 0, ures, -1, 0, 0, 0, 0);
+			if (result_c != 0)
+			{
+				cres = new char[result_c];
+				if (WideCharToMultiByte(CP_UTF8, 0, ures, -1, cres, result_c, 0, 0))
+				{
+					res = cres;
+				}
+			}
+		}
+	}
+
+	delete[] ures;
+	delete[] cres;
+
+	return res;
+}
+
 std::vector<std::string> get_filename_list(const std::string& path) {
 	std::vector <std::string> m_file_list;
 	if (!path.empty()) {
@@ -48,7 +78,7 @@ std::vector<std::string> get_filename_list(const std::string& path) {
 
 		BOOST_FOREACH(boost::filesystem::path const& i, make_pair(iter, eod)) {
 			if (is_regular_file(i)) {
-				m_file_list.push_back(i.stem().string());
+				m_file_list.push_back(cp1251_to_utf8(i.stem().string().c_str()));
 			}
 		}
 	}
@@ -64,7 +94,7 @@ std::vector<std::string> get_filename_list(const std::string& path, const std::s
 		BOOST_FOREACH(boost::filesystem::path const& i, make_pair(iter, eod)) {
 			if (is_regular_file(i)) {
 				if (i.extension() == extension) {
-					m_file_list.push_back(i.stem().string());
+					m_file_list.push_back(cp1251_to_utf8(i.stem().string().c_str()));
 				}
 			}
 		}
@@ -104,10 +134,94 @@ void GXTEncode(std::string& str) {
 	}
 }
 
+bool is_utf8(const char* string)
+{
+	if (!string)
+		return false;
+
+	const unsigned char* bytes = (const unsigned char*)string;
+	while (*bytes)
+	{
+		if ((bytes[0] == 0x09 || bytes[0] == 0x0A || bytes[0] == 0x0D ||
+			(0x20 <= bytes[0] && bytes[0] <= 0x7E)
+			)
+			)
+		{
+			bytes += 1;
+			continue;
+		}
+
+		if (( // non-overlong 2-byte
+			(0xC2 <= bytes[0] && bytes[0] <= 0xDF) &&
+			(0x80 <= bytes[1] && bytes[1] <= 0xBF)
+			)
+			)
+		{
+			bytes += 2;
+			continue;
+		}
+
+		if (( // excluding overlongs
+			bytes[0] == 0xE0 &&
+			(0xA0 <= bytes[1] && bytes[1] <= 0xBF) &&
+			(0x80 <= bytes[2] && bytes[2] <= 0xBF)
+			) ||
+			( // straight 3-byte
+			((0xE1 <= bytes[0] && bytes[0] <= 0xEC) ||
+				bytes[0] == 0xEE ||
+				bytes[0] == 0xEF) &&
+				(0x80 <= bytes[1] && bytes[1] <= 0xBF) &&
+				(0x80 <= bytes[2] && bytes[2] <= 0xBF)
+				) ||
+				( // excluding surrogates
+					bytes[0] == 0xED &&
+					(0x80 <= bytes[1] && bytes[1] <= 0x9F) &&
+					(0x80 <= bytes[2] && bytes[2] <= 0xBF)
+					)
+			)
+		{
+			bytes += 3;
+			continue;
+		}
+
+		if (( // planes 1-3
+			bytes[0] == 0xF0 &&
+			(0x90 <= bytes[1] && bytes[1] <= 0xBF) &&
+			(0x80 <= bytes[2] && bytes[2] <= 0xBF) &&
+			(0x80 <= bytes[3] && bytes[3] <= 0xBF)
+			) ||
+			( // planes 4-15
+			(0xF1 <= bytes[0] && bytes[0] <= 0xF3) &&
+				(0x80 <= bytes[1] && bytes[1] <= 0xBF) &&
+				(0x80 <= bytes[2] && bytes[2] <= 0xBF) &&
+				(0x80 <= bytes[3] && bytes[3] <= 0xBF)
+				) ||
+				( // plane 16
+					bytes[0] == 0xF4 &&
+					(0x80 <= bytes[1] && bytes[1] <= 0x8F) &&
+					(0x80 <= bytes[2] && bytes[2] <= 0xBF) &&
+					(0x80 <= bytes[3] && bytes[3] <= 0xBF)
+					)
+			)
+		{
+			bytes += 4;
+			continue;
+		}
+
+		return false;
+	}
+
+	return true;
+}
+
 std::string UTF8_to_CP1251(std::string const& utf8)
 {
 	if (!utf8.empty())
 	{
+		if (!is_utf8(utf8.c_str()))
+		{
+			return utf8;
+		}
 		int wchlen = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.size(), NULL, 0);
 		if (wchlen > 0 && wchlen != 0xFFFD)
 		{
@@ -120,36 +234,6 @@ std::string UTF8_to_CP1251(std::string const& utf8)
 		}
 	}
 	return std::string();
-}
-
-std::string cp1251_to_utf8(const char *str)
-{
-	std::string res;
-	WCHAR *ures = NULL;
-	char *cres = NULL;
-
-	int result_u = MultiByteToWideChar(1251, 0, str, -1, 0, 0);
-	if (result_u != 0)
-	{
-		ures = new WCHAR[result_u];
-		if (MultiByteToWideChar(1251, 0, str, -1, ures, result_u))
-		{
-			int result_c = WideCharToMultiByte(CP_UTF8, 0, ures, -1, 0, 0, 0, 0);
-			if (result_c != 0)
-			{
-				cres = new char[result_c];
-				if (WideCharToMultiByte(CP_UTF8, 0, ures, -1, cres, result_c, 0, 0))
-				{
-					res = cres;
-				}
-			}
-		}
-	}
-
-	delete[] ures;
-	delete[] cres;
-
-	return res;
 }
 
 template <typename T>
@@ -170,6 +254,7 @@ void moveCellVector(std::vector<T>* vec, int* in, int* out) {
 }
 
 bool Combo(const char* label, int& current_item, vector<std::string>* items) {
+	current_item = clamp(current_item, 0, (int)items->size() - 1);
 	if (ImGui::BeginCombo(label, items->empty() ? "" : items->at(current_item).c_str())) {
 		for (int i = 0; i < items->size(); i++) {
 			const bool is_selected = (i == current_item);
@@ -190,7 +275,7 @@ bool Combo(const char* label, int& current_item, vector<std::string>* items) {
 }
 
 bool Combo(const char* label, int& current_item, vector<const char*>* items) {
-
+	current_item = clamp(current_item, 0, (int)items->size() - 1);
 	if (ImGui::BeginCombo(label, items->empty() ? "" : items->at(current_item))) {
 		for (int i = 0; i < items->size(); i++) {
 			const bool is_selected = (i == current_item);
@@ -390,87 +475,8 @@ bool InputText(const char* label, size_t length, std::string* str, ImGuiInputTex
 	return ImGui::InputText(label, (char*)str->c_str(), length == 0? str->capacity() + 1 : length, flags, InputTextCallback, &cb_user_data);
 }
 
-bool is_utf8(const char* string)
-{
-	if (!string)
-		return false;
-
-	const unsigned char* bytes = (const unsigned char*)string;
-	while (*bytes)
-	{
-		if ((bytes[0] == 0x09 || bytes[0] == 0x0A || bytes[0] == 0x0D ||
-				(0x20 <= bytes[0] && bytes[0] <= 0x7E)
-			)
-		)
-		{
-			bytes += 1;
-			continue;
-		}
-
-		if (( // non-overlong 2-byte
-				(0xC2 <= bytes[0] && bytes[0] <= 0xDF) &&
-				(0x80 <= bytes[1] && bytes[1] <= 0xBF)
-			)
-		)
-		{
-			bytes += 2;
-			continue;
-		}
-
-		if (( // excluding overlongs
-				bytes[0] == 0xE0 &&
-				(0xA0 <= bytes[1] && bytes[1] <= 0xBF) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF)
-			) ||
-			( // straight 3-byte
-				((0xE1 <= bytes[0] && bytes[0] <= 0xEC) ||
-					bytes[0] == 0xEE ||
-					bytes[0] == 0xEF) &&
-				(0x80 <= bytes[1] && bytes[1] <= 0xBF) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF)
-			) ||
-			( // excluding surrogates
-				bytes[0] == 0xED &&
-				(0x80 <= bytes[1] && bytes[1] <= 0x9F) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF)
-			)
-		)
-		{
-			bytes += 3;
-			continue;
-		}
-
-		if (( // planes 1-3
-				bytes[0] == 0xF0 &&
-				(0x90 <= bytes[1] && bytes[1] <= 0xBF) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF) &&
-				(0x80 <= bytes[3] && bytes[3] <= 0xBF)
-			) ||
-			( // planes 4-15
-				(0xF1 <= bytes[0] && bytes[0] <= 0xF3) &&
-				(0x80 <= bytes[1] && bytes[1] <= 0xBF) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF) &&
-				(0x80 <= bytes[3] && bytes[3] <= 0xBF)
-			) ||
-			( // plane 16
-				bytes[0] == 0xF4 &&
-				(0x80 <= bytes[1] && bytes[1] <= 0x8F) &&
-				(0x80 <= bytes[2] && bytes[2] <= 0xBF) &&
-				(0x80 <= bytes[3] && bytes[3] <= 0xBF)
-			)
-		)
-		{
-			bytes += 4;
-			continue;
-		}
-
-		return false;
-	}
-
-	return true;
-}
-
 void rotateVec2(float& x, float& y, int angle) {
 	x = x * static_cast<float>(cos(rad(angle))) - y * static_cast<float>(sin(rad(angle)));
 	y = x * static_cast<float>(sin(rad(angle))) + y * static_cast<float>(cos(rad(angle)));
 }
+

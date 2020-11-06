@@ -230,5 +230,6 @@
     <Image Include="images\weapons.png" />
     <Image Include="images\blips.png" />
     <Image Include="images\peds.jpg" />
+    <Image Include="bitmap1.bmp" />
   </ItemGroup>
 </Project>

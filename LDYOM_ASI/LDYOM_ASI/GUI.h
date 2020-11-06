@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <CRadar.h>
+
 #include "Manager.h"
 #include "MissionPlayer.h"
 
@@ -22,6 +24,8 @@ bool bStorylines = false;
 bool bTools = false;
 bool bInfo = false;
 bool bSettings = false;
+bool bStorylineMainMenu = false;
+bool bStorylineCheckpoints = false;
 
 ImVec2 resolution;
 int currentTarget;
@@ -35,6 +39,7 @@ int currentAudio;
 int currentMissionPack;
 int currentMission;
 int currentStoryline;
+int currentStorylineCheckpoint;
 vector<const char*> namesTargets;
 vector<const char*> namesCars;
 vector<const char*> namesActors;
@@ -43,6 +48,7 @@ vector<const char*> namesParticles;
 vector<const char*> namesPickups;
 vector<const char*> namesExplosions;
 vector<const char*> namesAudios;
+vector<const char*> namesStorylineCheckpoints;
 vector<std::string> namesMissionPacks;
 vector<vector<std::string>> namesMissions;
 vector<std::string> namesStorylines;
@@ -212,7 +218,7 @@ void fMainMenu()
 		bMainMenu = false;
 		// open mission
 		currentMissionPtr->removeEditorEntity();
-		instance.add_to_queue(std::bind(MissionPlayer::start_mission, currentMissionPtr));
+		instance.add_to_queue(std::bind(MissionPlayer::start_mission, currentMissionPtr, true));
 	}
 	name.clear();
 	name.append(ICON_FA_TOOLS);
@@ -644,8 +650,7 @@ void fTargets()
 			//Checkpoint
 		case 0:
 			{
-				TargetCheckpoint* targetPtr = static_cast<TargetCheckpoint*>(currentMissionPtr->list_targets[currentTarget]
-				);
+				TargetCheckpoint* targetPtr = static_cast<TargetCheckpoint*>(currentMissionPtr->list_targets[currentTarget]);
 				if (ImGui::Button(ICON_FA_STREET_VIEW))
 				{
 					CVector playerPos = playerPed->GetPosition();
@@ -1317,7 +1322,7 @@ void fActors()
 	if (ImGui::BeginPopup("rename"))
 	{
 		ImGui::InputText("", &currentMissionPtr->list_actors[currentActor]->name[0],
-		                 IM_ARRAYSIZE(currentMissionPtr->list_targets[currentActor]->name));
+		                 IM_ARRAYSIZE(currentMissionPtr->list_actors[currentActor]->name));
 
 		if (ImGui::Button(langt("close")))
 			ImGui::CloseCurrentPopup();
@@ -1729,7 +1734,7 @@ void fCars()
 	if (ImGui::BeginPopup("rename"))
 	{
 		ImGui::InputText("", &currentMissionPtr->list_cars[currentCar]->name[0],
-		                 IM_ARRAYSIZE(currentMissionPtr->list_targets[currentCar]->name));
+		                 IM_ARRAYSIZE(currentMissionPtr->list_cars[currentCar]->name));
 
 		if (ImGui::Button(langt("close")))
 			ImGui::CloseCurrentPopup();
@@ -2097,7 +2102,7 @@ void fObjects()
 	if (ImGui::BeginPopup("rename"))
 	{
 		ImGui::InputText("", &currentMissionPtr->list_objects[currentObject]->name[0],
-		                 IM_ARRAYSIZE(currentMissionPtr->list_targets[currentObject]->name));
+		                 IM_ARRAYSIZE(currentMissionPtr->list_objects[currentObject]->name));
 
 		if (ImGui::Button(langt("close")))
 			ImGui::CloseCurrentPopup();
@@ -2405,7 +2410,7 @@ void fParticles()
 	if (ImGui::BeginPopup("rename"))
 	{
 		ImGui::InputText("", &currentMissionPtr->list_particles[currentParticle]->name[0],
-		                 IM_ARRAYSIZE(currentMissionPtr->list_targets[currentParticle]->name));
+		                 IM_ARRAYSIZE(currentMissionPtr->list_particles[currentParticle]->name));
 
 		if (ImGui::Button(langt("close")))
 			ImGui::CloseCurrentPopup();
@@ -2723,7 +2728,7 @@ void fPickups()
 	if (ImGui::BeginPopup("rename"))
 	{
 		ImGui::InputText("", &currentMissionPtr->list_pickups[currentPickup]->name[0],
-		                 IM_ARRAYSIZE(currentMissionPtr->list_targets[currentPickup]->name));
+		                 IM_ARRAYSIZE(currentMissionPtr->list_pickups[currentPickup]->name));
 
 		if (ImGui::Button(langt("close")))
 			ImGui::CloseCurrentPopup();
@@ -3020,7 +3025,7 @@ void fExplosions()
 	if (ImGui::BeginPopup("rename"))
 	{
 		ImGui::InputText("", &currentMissionPtr->list_explosions[currentExplosion]->name[0],
-		                 IM_ARRAYSIZE(currentMissionPtr->list_targets[currentExplosion]->name));
+		                 IM_ARRAYSIZE(currentMissionPtr->list_explosions[currentExplosion]->name));
 
 		if (ImGui::Button(langt("close")))
 			ImGui::CloseCurrentPopup();
@@ -3272,7 +3277,7 @@ void fAudios()
 	if (ImGui::BeginPopup("rename"))
 	{
 		ImGui::InputText("", &currentMissionPtr->list_audios[currentAudio]->name[0],
-		                 IM_ARRAYSIZE(currentMissionPtr->list_targets[currentAudio]->name));
+		                 IM_ARRAYSIZE(currentMissionPtr->list_audios[currentAudio]->name));
 
 		if (ImGui::Button(langt("close")))
 			ImGui::CloseCurrentPopup();
@@ -3300,7 +3305,7 @@ void fAudios()
 
 		if (ImGui::Button(langt("update")))
 		{
-			audioPtr->loadAudio();
+			audioPtr->loadAudiosList();
 		}
 
 		if (ToggleButton(langt("audio3d"), &audioPtr->audio3D))
@@ -3812,7 +3817,7 @@ void fMissionPacks()
 		{
 			currentMission = namesMissions[currentMissionPack].size();
 			std::stringstream path;
-			path << "LDYOM//Missions_packs//" << replace_symb(namesMissionPacks[currentMissionPack]) << "//" << replace_symb(currentMissionPtr->name);
+			path << "LDYOM//Missions_packs//" << UTF8_to_CP1251(replace_symb(namesMissionPacks[currentMissionPack])) << "//" << replace_symb(currentMissionPtr->name);
 			while (boost::filesystem::exists(UTF8_to_CP1251(path.str()))) {
 				currentMissionPtr->name += "c";
 			}
@@ -3821,7 +3826,7 @@ void fMissionPacks()
 			Manager::SaveListMission(currentMissionPack);
 			nameCurrPack = &namesMissionPacks[currentMissionPack];
 
-			Audio::loadAudio();
+			Audio::loadAudiosList();
 
 			fastdata_pack = currentMissionPack;
 			fastdata_miss = currentMission;
@@ -3841,7 +3846,7 @@ void fMissionPacks()
 				Manager::SaveListMission(currentMissionPack);
 				nameCurrPack = &namesMissionPacks[currentMissionPack];
 
-				Audio::loadAudio();
+				Audio::loadAudiosList();
 
 				fastdata_pack = currentMissionPack;
 				fastdata_miss = currentMission;
@@ -3974,7 +3979,7 @@ void fMissionPacks()
 
 				nameCurrPack = &namesMissionPacks[currentMissionPack];
 
-				Audio::loadAudio();
+				Audio::loadAudiosList();
 
 				fastdata_pack = currentMissionPack;
 				fastdata_miss = currentMission;
@@ -4061,19 +4066,24 @@ void fStorylineList()
 
 	if (ImGui::Button(langt("add")))
 	{
-		ImGui::OpenPopup(langt("addT"));
+		ImGui::OpenPopup("addT");
 	}
 
 	if (!namesStorylines.empty()) {
 		if (storylineMode)
 		{
 			if (ImGui::Button(langt("save"))) {
-				
+				Manager::SaveStoryline(currentStoryline);
+				CHud::SetHelpMessage("Saved!", false, false, false);
 			}
 		}
 		ImGui::SameLine();
 		if (ImGui::Button(langt("load"))) {
-
+			name.clear();
+			name.append(ICON_FA_EXCLAMATION_TRIANGLE);
+			name.append(" ");
+			name.append(langt("load"));
+			ImGui::OpenPopup(name.c_str());
 		}
 		ImGui::SameLine();
 		if (ImGui::Button(langt("rename"))) {
@@ -4103,29 +4113,54 @@ void fStorylineList()
 				ImGui::OpenPopup(name.c_str());
 			}
 		}
+
+		name.clear();
+		name.append(ICON_FA_EXCLAMATION_TRIANGLE);
+		name.append(" ");
+		name.append(langt("create"));
+		if (ImGui::BeginPopupModal(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+			ImGui::Text(langMenu["reloadQues"][1].c_str());
+
+			ImVec2 size_b = ImVec2(160, 0);
+
+			if (ImGui::Button(langt("yes"), size_b))
+			{
+				currentMissionPtr->removeEditorEntity();
+				if (currentMissionPtr != nullptr) {
+					delete currentMissionPtr;
+					currentMissionPtr = nullptr;
+				}
+
+				std::string name = namesMissionPacks[selMissPack];
+				std::stringstream path;
+				path << "LDYOM//Storylines//" << UTF8_to_CP1251(replace_symb(name)) << ".bin";
+				while (boost::filesystem::exists(path.str()))
+				{
+					path.str("");
+					name += "c";
+					path << "LDYOM//Storylines//" << UTF8_to_CP1251(replace_symb(name)) << ".bin";
+				}
+				currentStoryline = namesStorylines.size();
+				namesStorylines.push_back(name);
+				if (currentStorylinePtr == nullptr) {
+					delete currentStorylinePtr;
+					currentStorylinePtr = nullptr;
+				}
+				currentStorylinePtr = new Storyline(namesMissionPacks[selMissPack]);
+				Manager::SaveStoryline(currentStoryline);
+				storylineMode = true;
+				ImGui::CloseCurrentPopup();
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button(langt("no"), size_b))
+			{
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
 		
-		ImGui::EndPopup();
-	}
-
-	name.clear();
-	name.append(ICON_FA_EXCLAMATION_TRIANGLE);
-	name.append(" ");
-	name.append(langt("create"));
-	if (ImGui::BeginPopupModal(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-		ImGui::Text(langMenu["reloadQues"][2].c_str());
-
-		ImVec2 size_b = ImVec2(160, 0);
-
-		if (ImGui::Button(langt("yes")))
-		{
-			
-		}
-		ImGui::SameLine();
-		if (ImGui::Button(langt("no")))
-		{
-			ImGui::CloseCurrentPopup();
-		}
-
 		ImGui::EndPopup();
 	}
 
@@ -4134,16 +4169,35 @@ void fStorylineList()
 	name.append(" ");
 	name.append(langt("load"));
 	if (ImGui::BeginPopupModal(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-		ImGui::Text(langMenu["reloadQues"][2].c_str());
+		ImGui::Text(langMenu["reloadQues"][1].c_str());
 
 		ImVec2 size_b = ImVec2(160, 0);
 
-		if (ImGui::Button(langt("yes")))
+		if (ImGui::Button(langt("yes"), size_b))
 		{
+			if (currentMissionPtr != nullptr) {
+				currentMissionPtr->removeEditorEntity();
+				delete currentMissionPtr;
+				currentMissionPtr = nullptr;
+			}
+			if (currentStorylinePtr != nullptr) {
+				delete currentStorylinePtr;
+				currentStorylinePtr = nullptr;
+			}
+			Manager::LoadStoryline(currentStoryline);
 
+			namesStorylineCheckpoints.clear();
+			for (auto checkpoint : currentStorylinePtr->list_checkpoints)
+			{
+				namesStorylineCheckpoints.push_back(checkpoint->name);
+			}
+			
+			currentStorylinePtr->updateEditorEntity();
+			storylineMode = true;
+			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button(langt("no")))
+		if (ImGui::Button(langt("no"), size_b))
 		{
 			ImGui::CloseCurrentPopup();
 		}
@@ -4167,13 +4221,11 @@ void fStorylineList()
 		if (ImGui::Button(langt("yes"), size_b))
 		{
 			std::stringstream path;
-			path << "LDYOM//Storylines//" << replace_symb(namesStorylines[currentStoryline]);
-			boost::filesystem::remove_all(UTF8_to_CP1251(path.str()));
-			namesMissionPacks.erase(namesMissionPacks.begin() + currentStoryline);
+			path << "LDYOM//Storylines//" << replace_symb(UTF8_to_CP1251(namesStorylines[currentStoryline])) << ".bin";
+			boost::filesystem::remove_all(path.str());
+			namesStorylines.erase(namesStorylines.begin() + currentStoryline);
 			if (currentStoryline > 0)
-			{
-				currentStoryline -= 1;
-			}
+				currentStoryline--;
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -4191,11 +4243,11 @@ void fStorylineList()
 
 		if (ImGui::Button(langt("apply"))) {
 			std::stringstream old_path;
-			old_path << "LDYOM//Missions_packs//" << replace_symb(namesStorylines[currentStoryline]);
+			old_path << "LDYOM//Storylines//" << replace_symb(UTF8_to_CP1251(namesStorylines[currentStoryline])) << ".bin";
 			std::stringstream new_path;
-			new_path << "LDYOM//Missions_packs//" << replace_symb(string(temp_nameStoryline));
-			boost::filesystem::rename(UTF8_to_CP1251(old_path.str()), UTF8_to_CP1251(new_path.str()));
-			namesMissionPacks[currentMissionPack] = temp_nameMissionPack;
+			new_path << "LDYOM//Storylines//" << replace_symb(UTF8_to_CP1251(string(temp_nameStoryline))) << ".bin";
+			boost::filesystem::rename(old_path.str(), new_path.str());
+			namesStorylines[currentStoryline] = temp_nameStoryline;
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -4400,4 +4452,412 @@ void fInfo()
 	}
 	
 	ImGui::End();
+}
+
+void fStorylineMainMenu()
+{
+	ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(ImVec2(resolution.x / 2 - 100, resolution.y / 2 - 200), ImGuiCond_Appearing);
+	ImGui::Begin(langt("menuStoryline"), nullptr, ImGuiWindowFlags_AlwaysAutoResize + ImGuiWindowFlags_NoCollapse);
+
+	const ImVec2 size_b(250, 0);
+	std::string name;
+
+	name.clear();
+	name.append(ICON_FA_FLAG);
+	name.append(" ");
+	name.append(langt("initEndMiss"));
+	if (ImGui::TreeNode(name.c_str()))
+	{
+		int pack_idx = 0;
+		for (int i = 0; i < namesMissionPacks.size(); ++i)
+		{
+			if (namesMissionPacks[i] == currentStorylinePtr->missPack)
+			{
+				pack_idx = i;
+				break;
+			}
+		}
+		vector<std::string> list{ langt("nothing") };
+		for (auto mission : namesMissions[pack_idx])
+		{
+			list.push_back(mission);
+		}
+		ImGui::Text(langt("startMiss"));
+		ImGui::PushID(langt("startMiss"));
+		Combo("", currentStorylinePtr->startMission, &list);
+		ImGui::PopID();
+		ImGui::Text(langt("endMiss"));
+		ImGui::PushID(langt("endMiss"));
+		Combo("", currentStorylinePtr->endMission, &list);
+		ImGui::PopID();
+		ImGui::TreePop();
+	}
+	ImGui::Separator();
+
+	name.clear();
+	name.append(ICON_FA_MAP_MARKER_ALT);
+	name.append(" ");
+	name.append(langt("checkpoints"));
+	if (ImGui::Button(name.c_str(), size_b))
+	{
+		bStorylineMainMenu = false;
+		bStorylineCheckpoints = true;
+	}
+	name.clear();
+	name.append(ICON_FA_PROJECT_DIAGRAM);
+	name.append(" ");
+	name.append(langt("nodeEditor"));
+	if (ImGui::Button(name.c_str(), size_b))
+	{
+		bStorylineMainMenu = false;
+		//bStorylineCheckpoints = true;
+	}
+	name.clear();
+	name.append(ICON_FA_PLAY);
+	name.append(" ");
+	name.append(langt("storylineStart"));
+	if (ImGui::Button(name.c_str(), size_b))
+	{
+		bStorylineMainMenu = false;
+		instance.add_to_queue(MissionPlayer::start_storyline);
+	}
+	name.clear();
+	name.append(ICON_FA_SCROLL);
+	name.append(" ");
+	name.append(langt("storylines"));
+	if (ImGui::Button(name.c_str(), size_b))
+	{
+		bStorylineMainMenu = false;
+		bStorylines = true;
+	}
+	name.clear();
+	name.append(ICON_FA_DOOR_OPEN);
+	name.append(" ");
+	name.append(langt("exitStoryline"));
+	if (ImGui::Button(name.c_str(), size_b))
+	{
+		name.clear();
+		name.append(ICON_FA_EXCLAMATION_TRIANGLE);
+		name.append(" ");
+		name.append(langt("exitStoryline"));
+		ImGui::OpenPopup(name.c_str());
+	}
+
+	name.clear();
+	name.append(ICON_FA_EXCLAMATION_TRIANGLE);
+	name.append(" ");
+	name.append(langt("exitStoryline"));
+	if (ImGui::BeginPopupModal(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		ImGui::Text(langMenu["reloadQues"][1].c_str());
+
+		ImVec2 size_b = ImVec2(160, 0);
+
+		if (ImGui::Button(langt("yes"), size_b))
+		{
+			currentStorylinePtr->removeEditorEntity();
+			if (currentStorylinePtr != nullptr) {
+				delete currentStorylinePtr;
+				currentStorylinePtr = nullptr;
+			}
+			currentMissionPtr = new Mission;
+			currentMissionPtr->player.updateEditorPed();
+			bStorylineMainMenu = false;
+			storylineMode = false;
+			fastdata_pack = -1;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(langt("no"), size_b))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+	
+	
+	ImGui::End();
+}
+
+void fStorylineCheckpoints()
+{
+	bool isWindow = false;
+	std::string name;
+	ImGui::SetNextWindowSize(ImVec2(270, 410), ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(ImVec2(resolution.x - 270, 0), ImGuiCond_Appearing);
+	name.clear();
+	name.append(ICON_FA_MAP_MARKER_ALT);
+	name.append(" ");
+	name.append(langt("checkpoints"));
+	ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+	//List
+	ImGui::SetNextItemWidth(255.0f);
+	ListBox("", currentStoryline, &namesStorylineCheckpoints);
+
+	if (ImGui::Button(langt("add")))
+	{
+		CVector playerPos = playerPed->GetPosition();
+
+		std::string name(langt("checkpoint"));
+		name.append(" #");
+		name.append(std::to_string(currentStorylinePtr->list_checkpoints.size()));
+		currentStorylinePtr->list_checkpoints.push_back(new CheckpointStoryline(name.c_str(), playerPos.x, playerPos.y, playerPos.z));
+		currentStorylineCheckpoint = currentStorylinePtr->list_checkpoints.size() - 1;
+		namesStorylineCheckpoints.push_back(currentStorylinePtr->list_checkpoints[currentStorylineCheckpoint]->name);
+		currentStorylinePtr->list_checkpoints[currentStorylinePtr->list_checkpoints.size() - 1]->updateEditorCheckpoint();
+	}
+	if (!currentStorylinePtr->list_checkpoints.empty())
+	{
+		ImGui::SameLine();
+
+		if (ImGui::Button(langt("duplicate")))
+		{
+			int new_audio = currentStorylinePtr->list_checkpoints.size();
+			CheckpointStoryline* audio = new CheckpointStoryline(*currentStorylinePtr->list_checkpoints[currentStorylineCheckpoint]);
+			currentStorylinePtr->list_checkpoints.push_back(audio);
+			string str;
+			str.append(currentStorylinePtr->list_checkpoints[new_audio]->name);
+			str.append("c");
+			strcpy(audio->name, str.c_str());
+
+			namesStorylineCheckpoints.push_back(audio->name);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(langt("rename")))
+		{
+			ImGui::OpenPopup("rename");
+		}
+		if (ImGui::Button(langt("delete")))
+		{
+			name.clear();
+			name.append(ICON_FA_TRASH_ALT);
+			name.append(" ");
+			name.append(langt("delete"));
+			ImGui::OpenPopup(name.c_str());
+		}
+	}
+
+	isWindow |= ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered();
+
+	//delete
+	ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	name.clear();
+	name.append(ICON_FA_TRASH_ALT);
+	name.append(" ");
+	name.append(langt("delete"));
+	if (ImGui::BeginPopupModal(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text(langt("deleteQues"));
+
+		ImVec2 size_b = ImVec2(100, 0);
+
+		if (ImGui::Button(langt("yes"), size_b))
+		{
+			currentStorylinePtr->list_checkpoints[currentStorylineCheckpoint]->removeEditorCheckpoint();
+			delete currentStorylinePtr->list_checkpoints[currentStorylineCheckpoint];
+			currentStorylinePtr->list_checkpoints.erase(currentStorylinePtr->list_checkpoints.begin() + currentStorylineCheckpoint);
+			namesStorylineCheckpoints.erase(namesStorylineCheckpoints.begin() + currentStorylineCheckpoint);
+			if (currentStorylineCheckpoint > 0)
+				currentStorylineCheckpoint--;
+
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(langt("no"), size_b))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	//Rename popup
+	if (ImGui::BeginPopup("rename"))
+	{
+		ImGui::InputText("", &currentStorylinePtr->list_checkpoints[currentStorylineCheckpoint]->name[0],
+			IM_ARRAYSIZE(currentStorylinePtr->list_checkpoints[currentStorylineCheckpoint]->name));
+
+		if (ImGui::Button(langt("close")))
+			ImGui::CloseCurrentPopup();
+
+		ImGui::EndPopup();
+	}
+
+	ImGui::End();
+
+	//checkpoint render
+	if (!currentStorylinePtr->list_checkpoints.empty())
+	{
+		CheckpointStoryline* checkPtr = currentStorylinePtr->list_checkpoints[currentStorylineCheckpoint];
+		ImGui::SetNextWindowSize(ImVec2(400, 360), ImGuiCond_Always);
+		ImGui::SetNextWindowPos(ImVec2(resolution.x - 670, 0), ImGuiCond_Appearing);
+		name.clear();
+		name.append(ICON_FA_MALE);
+		name.append(" ");
+		name.append(langt("audio"));
+		ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+		Command<Commands::FREEZE_CHAR_POSITION>(playerPed, true);
+
+		if (ImGui::Button(ICON_FA_STREET_VIEW))
+		{
+			CVector playerPos = playerPed->GetPosition();
+			checkPtr->pos[0] = playerPos.x;
+			checkPtr->pos[1] = playerPos.y;
+			checkPtr->pos[2] = playerPos.z;
+			checkPtr->updateEditorCheckpoint();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip(langt("playerCoordinates"));
+		}
+		ImGui::SameLine();
+		ImGui::PushItemWidth(270);
+		ImGui::InputFloat3(langt("position"), checkPtr->pos, "%.6f");
+		ImGui::PushItemWidth(-130);
+		auto& colorsL = langMenu["targets_marker_color"];
+		vector<std::string> cut_colors(colorsL.begin(), colorsL.end() - 1);
+		if (Combo(langt("colorMarker"), checkPtr->colorBlip, &cut_colors))
+		{
+			if (checkPtr->colorBlip > 0)
+			{
+				Command<Commands::CHANGE_BLIP_DISPLAY>(checkPtr->marker, 3);
+				Command<Commands::CHANGE_BLIP_COLOUR>(checkPtr->marker, checkPtr->colorBlip - 1);
+			} else
+				Command<Commands::CHANGE_BLIP_DISPLAY>(checkPtr->marker, 1);
+		}
+
+		if (ImGui::ImageButton(blipsAtlas, ImVec2(32, 32), ImVec2(checkPtr->iconMarker * 0.015625f, 0),ImVec2((checkPtr->iconMarker + 1) * 0.015625f, 1)))
+		{
+			ImGui::OpenPopup("blips");
+		}
+
+		//blip popup
+		if (ImGui::BeginPopup("blips"))
+		{
+			ImGui::BeginChild("blipsc", ImVec2(180, 450));
+
+
+			for (int i = 0; i < 64; i++)
+			{
+				ImGui::PushID(i);
+				if (ImGui::ImageButton(blipsAtlas, ImVec2(32, 32), ImVec2(i * 0.015625f, 0),ImVec2((i + 1) * 0.015625f, 1)))
+				{
+					checkPtr->iconMarker = i;
+					checkPtr->updateEditorCheckpoint();
+				}
+				ImGui::PopID();
+				if ((i + 1) % 4 != 0)
+				{
+					ImGui::SameLine();
+				}
+			}
+
+			ImGui::EndChild();
+			ImGui::EndPopup();
+		}
+
+		ImGui::SameLine();
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetItemRectSize().y / 2 - 10);
+		ImGui::Text(langt("icon"));
+		Combo(langt("startTime"), checkPtr->timeStart, &langMenu["timeForStart"]);
+		ToggleButton(langt("startEndCheck"), &checkPtr->useMission);
+		int pack_idx = 0;
+		for (int i = 0; i < namesMissionPacks.size(); ++i)
+		{
+			if (namesMissionPacks[i] == currentStorylinePtr->missPack)
+			{
+				pack_idx = i;
+				break;
+			}
+		}
+		if (checkPtr->useMission)
+		{
+			ImGui::Text(langt("app_after"));
+			ImGui::PushID(langt("app_after"));
+			Combo("", checkPtr->startC, &namesMissions[pack_idx]);
+			ImGui::PopID();
+		}
+		ImGui::Text(langt("startCheckMiss"));
+		ImGui::PushID(langt("startCheckMiss"));
+		Combo("", checkPtr->gotoMission, &namesMissions[pack_idx]);
+		ImGui::PopID();
+
+		ImGui::End();
+		
+		ImGui::SetNextWindowBgAlpha(0.50);
+		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(240, 60), ImGuiCond_Always);
+		ImGui::Begin("info", nullptr,
+			ImGuiWindowFlags_NoDecoration + ImGuiWindowFlags_AlwaysAutoResize +
+			ImGuiWindowFlags_NoSavedSettings + ImGuiWindowFlags_NoMove + ImGuiWindowFlags_NoInputs);
+
+		ImGui::Text(langMenu["infoOverlay"][0].c_str());
+		ImGui::Text(langMenu["infoOverlay"][1].c_str());
+		ImGui::Text(langMenu["infoOverlay"][2].c_str());
+
+		ImGui::End();
+
+		isWindow |= ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered();
+
+		//edit
+		float cx = checkPtr->pos[0], cy = checkPtr->pos[1], cz = checkPtr->pos[2];
+		cx = cx + (camera_zoom * sin(static_cast<float>(rad(camera_angle[0]))) * cos(
+			static_cast<float>(rad(camera_angle[1]))));
+		cy = cy + (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
+			static_cast<float>(rad(camera_angle[1]))));
+		cz = cz + (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+		Command<Commands::POINT_CAMERA_AT_POINT>(checkPtr->pos[0], checkPtr->pos[1], checkPtr->pos[2], 2);
+
+		if (!isWindow)
+		{
+			if (ImGui::IsMouseDragging(2))
+			{
+				ImVec2 dt = ImGui::GetIO().MouseDelta;
+				camera_angle[0] += dt.x;
+				camera_angle[1] += dt.y;
+			}
+			if (ImGui::GetIO().MouseWheel != 0.0f && KeyPressed(VK_SHIFT))
+			{
+				camera_zoom += (camera_zoom * ImGui::GetIO().MouseWheel) / 4;
+				if (camera_zoom < 1)
+					camera_zoom = 1;
+			}
+		}
+		if (KeyPressed(VK_UP))
+		{
+			checkPtr->pos[0] -= 0.01f * camera_zoom * static_cast<float>(sin(
+				static_cast<float>(rad(camera_angle[0]))));
+			checkPtr->pos[1] -= 0.01f * camera_zoom * static_cast<float>(cos(
+				static_cast<float>(rad(camera_angle[0]))));
+			checkPtr->updateEditorCheckpoint();
+		}
+		else if (KeyPressed(VK_DOWN))
+		{
+			checkPtr->pos[0] += 0.01f * camera_zoom * static_cast<float>(sin(
+				static_cast<float>(rad(camera_angle[0]))));
+			checkPtr->pos[1] += 0.01f * camera_zoom * static_cast<float>(cos(
+				static_cast<float>(rad(camera_angle[0]))));
+			checkPtr->updateEditorCheckpoint();
+		}
+		if (KeyPressed(VK_LEFT))
+		{
+			checkPtr->pos[0] += 0.01f * camera_zoom * static_cast<float>(sin(
+				static_cast<float>(rad(camera_angle[0] + 90))));
+			checkPtr->pos[1] += 0.01f * camera_zoom * static_cast<float>(cos(
+				static_cast<float>(rad(camera_angle[0] + 90))));
+			checkPtr->updateEditorCheckpoint();
+		}
+		else if (KeyPressed(VK_RIGHT))
+		{
+			checkPtr->pos[0] += 0.01f * camera_zoom * static_cast<float>(sin(
+				static_cast<float>(rad(camera_angle[0] - 90))));
+			checkPtr->pos[1] += 0.01f * camera_zoom * static_cast<float>(cos(
+				static_cast<float>(rad(camera_angle[0] - 90))));
+			checkPtr->updateEditorCheckpoint();
+		}
+	}
 }

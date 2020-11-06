@@ -25,6 +25,8 @@ extern vector<vector<std::string>> namesMissions;
 extern const unsigned int VERSION;
 extern std::string UTF8_to_CP1251(std::string const& utf8);
 extern std::string replace_symb(std::string& str);
+extern vector<std::string> namesStorylines;
+extern Storyline* currentStorylinePtr;
 
 #define LDYOM_VER 71;
 
@@ -78,6 +80,21 @@ void Manager::LoadMission(int curr_pack, int curr_miss)
 	ia >> currentMissionPtr;
 }
 
+Mission* Manager::LoadMission(std::string& path)
+{
+	Mission* return_miss;
+
+	ifstream save_file(path, ios::binary);
+	std::stringstream encoded_save;
+	encoded_save << save_file.rdbuf();
+	save_file.close();
+	std::stringstream save;
+	save << gzip::decompress(encoded_save.str().data(), encoded_save.str().size());
+	boost::archive::binary_iarchive ia(save);
+	ia >> return_miss;
+	return return_miss;
+}
+
 void Manager::LoadListMission(int curr_pack)
 {
 	const std::string full_path = path + UTF8_to_CP1251(replace_symb(namesMissionPacks[curr_pack])) + "//list.bin";
@@ -85,6 +102,41 @@ void Manager::LoadListMission(int curr_pack)
 	boost::archive::binary_iarchive ia(save_file);
 	ia >> namesMissions[curr_pack];
 	save_file.close();
+}
+
+void Manager::SaveStoryline(int curr_storyline)
+{
+	std::string name_storyline = replace_symb(UTF8_to_CP1251(namesStorylines[curr_storyline]));
+	std::stringstream old_save;
+	std::string full_path = path_s + name_storyline + ".bin";
+	if (boost::filesystem::exists(full_path))
+	{
+		std::string full_path_buckup = path_backup + name_storyline + "_s" + std::to_string(std::time(nullptr)) + ".bin";
+		boost::filesystem::copy_file(full_path, full_path_buckup);
+	}
+	std::stringstream save;
+	boost::archive::binary_oarchive oa(save);
+	oa << currentStorylinePtr;
+	ofstream save_file(full_path, ios::binary);
+	save_file << gzip::compress(save.str().data(), save.str().size(), Z_BEST_COMPRESSION);
+	save_file.close();
+}
+
+void Manager::LoadStoryline(int curr_storyline)
+{
+	std::string name_storyline = replace_symb(UTF8_to_CP1251(namesStorylines[curr_storyline]));
+	std::string full_path = path_s + name_storyline + ".bin";
+
+	ifstream save_file(full_path, ios::binary);
+	std::stringstream encoded_save;
+	encoded_save << save_file.rdbuf();
+	save_file.close();
+	std::stringstream save;
+	save << gzip::decompress(encoded_save.str().data(), encoded_save.str().size());
+	boost::archive::binary_iarchive ia(save);
+	if (currentStorylinePtr != nullptr)
+		delete currentStorylinePtr;
+	ia >> currentStorylinePtr;
 }
 
 namespace boost {

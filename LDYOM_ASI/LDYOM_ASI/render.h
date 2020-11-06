@@ -7,6 +7,7 @@
 #include "GUI.h"
 
 extern bool mission_started;
+extern bool storyline_started;
 
 VMTHookManager *vmtHooks;
 
@@ -55,6 +56,7 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 
 		IM_ASSERT(LoadTextureFromResource(IDB_PNG1, &weaponsAtlas, nullptr, nullptr));
 		IM_ASSERT(LoadTextureFromResource(IDB_PNG2, &pedsSkinAtlas, nullptr, nullptr));
+		IM_ASSERT(LoadTextureFromResource(IDB_PNG3, &blipsAtlas, nullptr, nullptr));
 
 		init_ImGui = true;
 	}
@@ -64,7 +66,7 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 		if (memsafe::read<int>((void*)0xBA67A4) == 0) {
-			if (openFrame && !mission_started) {
+			if (openFrame && !mission_started && !storyline_started) {
 				if (bMainMenu) { fMainMenu(); }
 				if (bTargets) { fTargets(); }
 				if (bActors) { fActors(); }
@@ -83,6 +85,8 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 				if (bTools) { fTools(); }
 				if (bSettings) { fSettings(); }
 				if (bInfo) { fInfo(); }
+				if (bStorylineMainMenu) { fStorylineMainMenu(); }
+				if (bStorylineCheckpoints) { fStorylineCheckpoints(); }
 			}
 		}
 		ImGui::EndFrame();
@@ -121,10 +125,15 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			bTools = false;
 			bSettings = false;
 			bInfo = false;
+			bStorylineMainMenu = false;
+			bStorylineCheckpoints = false;
 			Command<Commands::FREEZE_CHAR_POSITION>(playerPed, false);
 			TheCamera.Restore();
 		} else {
-			bMainMenu = true;
+			if (!storylineMode)
+				bMainMenu = true;
+			else
+				bStorylineMainMenu = true;
 			Command<0x0AB3>(700, 1);
 
 			resolution.x = plugin::screen::GetScreenWidth();
@@ -132,9 +141,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	openFrame = bMainMenu || bTargets || bActors || bCars || carSelector::bShow || bGroupRelations || bObjects || bParticles || bPickups || bExplosions || bAudios || bMissionPacks || bPlayer || bMissionSettings || bStorylines || bTools || bSettings || bInfo;
+	openFrame = bMainMenu || bTargets || bActors || bCars || carSelector::bShow || bGroupRelations || bObjects || bParticles || bPickups || bExplosions || bAudios || bMissionPacks || bPlayer || bMissionSettings || bStorylines || bTools || bSettings || bInfo || bStorylineMainMenu || bStorylineCheckpoints;
 
-	if (openFrame && !mission_started) {
+	if (openFrame && !mission_started && !storyline_started) {
 		Command<0x0AB3>(700, 1);
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 	} else
