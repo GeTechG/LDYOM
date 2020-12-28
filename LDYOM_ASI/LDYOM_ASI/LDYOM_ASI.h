@@ -39,16 +39,20 @@
 #include "CObject.h"
 #include "CExplosion.h"
 #include "CPickup.h"
-#include "LuaBridge/LuaBridge.h"
-extern "C" {
-# include "lua.h"
-# include "lauxlib.h"
-# include "lualib.h"
-}
+
+// Link to lua library
+#ifdef _WIN32
+#pragma comment(lib, "lua51.lib")
+#pragma comment(lib, "luajit.lib")
+#pragma comment(lib, "buildvm.lib")
+#endif
+#include <lua.hpp>
+#include <sol/sol.hpp>
 
 
 #include "libs/coro_wait.h"
 
+class NodeGraph;
 using namespace std::chrono_literals;
 
 #include "ImGUI/imgui.h"
@@ -80,7 +84,7 @@ bool runningThreads = true;
 
 #include "libs/ini.h"
 
-static mINI::INIStructure lang_file;
+mINI::INIStructure lang_file;
 std::string curr_lang_string;
 std::string curr_theme_string;
 vector <std::string> names_langs;
@@ -99,7 +103,9 @@ int curr_lang;
 #include "libs/MyFuncs.h"
 #include "Init.h"
 Mission* currentMissionPtr;
+NodeGraph* currentNodeGraphPtr;
 Storyline* currentStorylinePtr;
+map<std::string, std::vector<sol::table>> map_nodes_class;
 
 void beginThread(void* __startAddress) { 
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)__startAddress, NULL, NULL, NULL);

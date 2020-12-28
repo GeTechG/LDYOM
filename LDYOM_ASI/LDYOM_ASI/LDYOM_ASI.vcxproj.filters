@@ -85,6 +85,12 @@
       <Filter>gzip</Filter>
     </ClCompile>
     <ClCompile Include="MissionPlayer.cpp" />
+    <ClCompile Include="imnodes.cpp" />
+    <ClCompile Include="ScriptManager.cpp" />
+    <ClCompile Include="NodeGraph.cpp" />
+    <ClCompile Include="libs\ScriptCommands.cpp">
+      <Filter>libs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LDYOM_ASI.h" />
@@ -208,6 +214,9 @@
       <Filter>gzip</Filter>
     </ClInclude>
     <ClInclude Include="MissionPlayer.h" />
+    <ClInclude Include="imnodes.h" />
+    <ClInclude Include="ScriptManager.h" />
+    <ClInclude Include="NodeGraph.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ImGui">

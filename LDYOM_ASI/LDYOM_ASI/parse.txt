@@ -1,0 +1,16 @@
+t_imgui.set_function("IsMouseDown", ImGui::IsMouseDown);
+t_imgui.set_function("IsMouseClicked", ImGui::IsMouseClicked);
+t_imgui.set_function("IsMouseReleased", ImGui::IsMouseReleased);
+t_imgui.set_function("IsMouseDoubleClicked", ImGui::IsMouseDoubleClicked);
+t_imgui.set_function("IsMouseHoveringRect", ImGui::IsMouseHoveringRect);
+t_imgui.set_function("IsMousePosValid", ImGui::IsMousePosValid);
+t_imgui.set_function("IsAnyMouseDown", ImGui::IsAnyMouseDown);
+t_imgui.set_function("GetMousePos", ImGui::GetMousePos);
+t_imgui.set_function("GetMousePosOnOpeningCurrentPopup", ImGui::GetMousePosOnOpeningCurrentPopup);
+t_imgui.set_function("IsMouseDragging", ImGui::IsMouseDragging);
+t_imgui.set_function("GetMouseDragDelta", ImGui::GetMouseDragDelta);
+t_imgui.set_function("ResetMouseDragDelta", ImGui::ResetMouseDragDelta);
+t_imgui.set_function("GetMouseCursor", ImGui::GetMouseCursor);
+t_imgui.set_function("SetMouseCursor", ImGui::SetMouseCursor);
+t_imgui.set_function("CaptureMouseFromApp", ImGui::CaptureMouseFromApp);
+t_imgui.set_function("", ImGui::);

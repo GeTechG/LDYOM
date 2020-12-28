@@ -5,6 +5,8 @@
 
 #include "libs/fa.h"
 #include "GUI.h"
+#include "imnodes.h"
+#include "NodeGraph.h"
 
 extern bool mission_started;
 extern bool storyline_started;
@@ -23,6 +25,7 @@ static bool openFrame = false;
 
 bool demo = true;
 bool init_ImGui = false;
+bool load_theme = false;
 HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hdest, const RGNDATA* pDirtyRegion)
 {
 	
@@ -33,11 +36,8 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 		ImGui_ImplWin32_Init(GetActiveWindow());
 		ImGui_ImplDX9_Init(pDevice);
 
-		std::string lang;
-		lang.append("LDYOM/Themes/");
-		lang.append(curr_theme_string);
-		lang.append(".toml");
-		ImGui::StyleLoader::LoadFile(lang);
+		imnodes::Initialize();
+		imnodes::SetNodeGridSpacePos(1, ImVec2(200.0f, 200.0f));
 
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -87,12 +87,25 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 				if (bInfo) { fInfo(); }
 				if (bStorylineMainMenu) { fStorylineMainMenu(); }
 				if (bStorylineCheckpoints) { fStorylineCheckpoints(); }
+				if (bScriptsSettings) { fScriptsSettings(); }
+				if (bNodeEditor) { NodeGraph::render(); }
+				ImGui::ShowDemoWindow(&openFrame);
 			}
 		}
 		ImGui::EndFrame();
 		ImGui::Render();
 		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 	}
+
+	if (!load_theme) {
+		std::string lang;
+		lang.append("LDYOM/Themes/");
+		lang.append(curr_theme_string);
+		lang.append(".toml");
+		ImGui::StyleLoader::LoadFile(lang);
+		load_theme = true;
+	}
+	
 	return oPresent(pDevice, pSourceRect, pDestRect, hdest, pDirtyRegion);
 }
 
@@ -127,6 +140,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			bInfo = false;
 			bStorylineMainMenu = false;
 			bStorylineCheckpoints = false;
+			bScriptsSettings = false;
+			bNodeEditor = false;
 			Command<Commands::FREEZE_CHAR_POSITION>(playerPed, false);
 			TheCamera.Restore();
 		} else {
@@ -141,7 +156,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	openFrame = bMainMenu || bTargets || bActors || bCars || carSelector::bShow || bGroupRelations || bObjects || bParticles || bPickups || bExplosions || bAudios || bMissionPacks || bPlayer || bMissionSettings || bStorylines || bTools || bSettings || bInfo || bStorylineMainMenu || bStorylineCheckpoints;
+	openFrame = bMainMenu || bTargets || bActors || bCars || carSelector::bShow || bGroupRelations || bObjects || bParticles || bPickups || bExplosions || bAudios || bMissionPacks || bPlayer || bMissionSettings || bStorylines || bTools || bSettings || bInfo || bStorylineMainMenu || bStorylineCheckpoints || bScriptsSettings || bNodeEditor;
 
 	if (openFrame && !mission_started && !storyline_started) {
 		Command<0x0AB3>(700, 1);

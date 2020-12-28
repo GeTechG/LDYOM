@@ -14,6 +14,7 @@
 #include "CRadar.h"
 #include "CPool.h"
 #include "Manager.h"
+#include "NodeGraph.h"
 
 using namespace std::chrono_literals;
 
@@ -78,6 +79,8 @@ void testDefeat()
 }
 
 int current_mission_target = 0;
+
+extern NodeGraph* currentNodeGraphPtr;
 
 void MissionPlayer::start_mission(Mission* mission, bool clearSelf)
 {
@@ -171,6 +174,11 @@ void MissionPlayer::start_mission(Mission* mission, bool clearSelf)
 	
 	instance.add_to_queue(testDefeat);
 
+	//call start node
+	std::string name_node = NodeGraph::getNodeIcon("event") + " " + langt("CoreNodeStart");
+	NodeGraph::callAllNodeName(name_node, currentNodeGraphPtr, mission);
+	
+	
 	unsigned char skip = 1;
 	
 	//targets loop

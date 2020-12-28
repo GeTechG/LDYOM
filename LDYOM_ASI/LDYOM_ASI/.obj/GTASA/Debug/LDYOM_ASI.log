@@ -1,0 +1,211 @@
+﻿  LDYOM_ASI.cpp
+  c:\local\boost_1_74_0\boost\bind.hpp(41): note: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\libs\ini.h(340): warning C4244: аргумент: преобразование "std::streamoff" в "const unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\libs\myfuncs.h(261): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\libs\myfuncs.h(282): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\libs\myfuncs.h(481): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\libs\myfuncs.h(482): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1040): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1123): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1187): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1203): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1253): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1418): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1575): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1587): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1665): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1836): warning C4244: аргумент: преобразование "float" в "unsigned char", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1875): warning C4244: аргумент: преобразование "float" в "unsigned char", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(1904): warning C4244: аргумент: преобразование "float" в "unsigned char", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2006): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2033): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2161): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2161): warning C4305: аргумент: усечение из "double" в "float"
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2220): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2280): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2281): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2287): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2288): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2294): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2295): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2301): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2302): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2308): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2314): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2341): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2467): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2467): warning C4305: аргумент: усечение из "double" в "float"
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2544): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2604): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2605): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2610): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2611): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2616): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2617): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2622): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2623): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2628): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2633): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2659): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2895): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2902): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2903): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2908): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2909): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2914): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2915): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2920): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2921): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2926): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2931): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(2956): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3147): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3154): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3155): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3160): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3161): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3166): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3167): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3172): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3173): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3178): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3183): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3208): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3393): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3400): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3401): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3406): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3407): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3412): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3413): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3418): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3419): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3424): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3429): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3536): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3672): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(3684): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(4484): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(4779): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(62): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(69): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(200): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(201): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(202): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(203): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(207): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(208): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(209): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(210): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(214): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(215): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(216): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(217): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(221): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(222): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(223): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(224): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(228): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(232): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(259): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(263): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(267): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(271): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(275): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(279): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(284): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(338): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(356): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(439): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(455): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(467): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\ldyom_asi.cpp(497): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\libs\myfuncs.h(245): warning C4018: <: несоответствие типов со знаком и без знака
+  c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\gui.h(470): note: выполняется компиляция ссылки на экземпляр шаблон функции "void moveCellVector<Target*>(std::vector<Target *,std::allocator<_Ty>> *,int *,int *)"
+          with
+          [
+              _Ty=Target *
+          ]
+  c:\local\boost_1_74_0\boost\bind\placeholders.hpp(54): note: выполняется компиляция ссылки на экземпляр шаблон класс "boost::arg<9>"
+  c:\local\boost_1_74_0\boost\bind\placeholders.hpp(53): note: выполняется компиляция ссылки на экземпляр шаблон класс "boost::arg<8>"
+  c:\local\boost_1_74_0\boost\bind\placeholders.hpp(52): note: выполняется компиляция ссылки на экземпляр шаблон класс "boost::arg<7>"
+  c:\local\boost_1_74_0\boost\bind\placeholders.hpp(51): note: выполняется компиляция ссылки на экземпляр шаблон класс "boost::arg<6>"
+  c:\local\boost_1_74_0\boost\bind\placeholders.hpp(50): note: выполняется компиляция ссылки на экземпляр шаблон класс "boost::arg<5>"
+  c:\local\boost_1_74_0\boost\bind\placeholders.hpp(49): note: выполняется компиляция ссылки на экземпляр шаблон класс "boost::arg<4>"
+  c:\local\boost_1_74_0\boost\bind\placeholders.hpp(48): note: выполняется компиляция ссылки на экземпляр шаблон класс "boost::arg<3>"
+  c:\local\boost_1_74_0\boost\bind\placeholders.hpp(47): note: выполняется компиляция ссылки на экземпляр шаблон класс "boost::arg<2>"
+  c:\local\boost_1_74_0\boost\bind\placeholders.hpp(46): note: выполняется компиляция ссылки на экземпляр шаблон класс "boost::arg<1>"
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\type_traits(616): note: выполняется компиляция ссылки на экземпляр шаблон класс "std::basic_string_view<char,std::char_traits<char>>"
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\xstring(2124): note: выполняется компиляция ссылки на экземпляр шаблон класс "std::is_convertible<const _StringViewIsh (&),std::basic_string_view<char,std::char_traits<char>>>"
+          with
+          [
+              _StringViewIsh=char [2]
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\xstring(2122): note: выполняется компиляция ссылки на шаблон переменной "const bool conjunction_v<std::is_convertible<char const (&)[2],std::basic_string_view<char,std::char_traits<char> > >,std::negation<std::is_convertible<char const (&)[2],char const *> > >"
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\xstring(3774): note: выполняется компиляция ссылки на экземпляр универсальный класс "std::basic_string<char,std::char_traits<char>,std::allocator<char>>::_Is_string_view_ish<_StringViewIsh>"
+          with
+          [
+              _StringViewIsh=char [2]
+          ]
+  MissionPlayer.cpp
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(103): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(105): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(185): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(187): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(200): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(213): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(226): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(240): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(253): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(266): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(291): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(323): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(352): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(382): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(473): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(493): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(494): warning C4244: аргумент: преобразование "double" в "this_coro::DWORD", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(514): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(515): warning C4244: аргумент: преобразование "float" в "this_coro::DWORD", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(536): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(537): warning C4244: аргумент: преобразование "float" в "this_coro::DWORD", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(548): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(587): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(596): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(635): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(669): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(703): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(734): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(743): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(782): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(816): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(850): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(881): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(890): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(929): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(963): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(997): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1008): warning C4018: >=: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1044): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1045): warning C4244: аргумент: преобразование "float" в "this_coro::DWORD", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1095): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1145): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1210): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1280): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1281): warning C4244: аргумент: преобразование "float" в "this_coro::DWORD", возможна потеря данных
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1318): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1328): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1338): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1348): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1358): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1368): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1378): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\missionplayer.cpp(1473): warning C4018: <: несоответствие типов со знаком и без знака
+  NodeGraph.cpp
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\libs\ini.h(340): warning C4244: аргумент: преобразование "std::streamoff" в "const unsigned int", возможна потеря данных
+  ScriptManager.cpp
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\libs\ini.h(340): warning C4244: аргумент: преобразование "std::streamoff" в "const unsigned int", возможна потеря данных
+  Создание кода...
+c:\users\user\documents\source\repos\ldyom_asi\ldyom_asi\nodegraph.cpp(163): warning C4715: NodeGraph::getNodeIcon: значение возвращается не при всех путях выполнения
+     Создается библиотека C:\Games\Grand Theft Auto San Andreas\scripts\LDYOM_ASI.SA.lib и объект C:\Games\Grand Theft Auto San Andreas\scripts\LDYOM_ASI.SA.exp
+  LDYOM_ASI.vcxproj -> C:\Games\Grand Theft Auto San Andreas\scripts\LDYOM_ASI.SA.asi

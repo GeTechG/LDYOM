@@ -1,5 +1,9 @@
 #include "LDYOM_ASI.h"
 
+
+#include "NodeGraph.h"
+#include "ScriptManager.h"
+
 extern bool mission_started;
 
 void MainThread()
@@ -69,7 +73,7 @@ void MainThread()
 			curr_theme = i;
 		}
 	}
-	printLog(names_langs.at(1).c_str());
+	printLog(names_langs.at(1));
 
 
 	//load names missions packs
@@ -554,6 +558,13 @@ void foo()
 	}
 }
 
+void clearScripts()
+{
+	lang_file.clear();
+	loadArrayMenu();
+	map_nodes_class.clear();
+}
+
 #include "Manager.h"
 class LDYOM_ASI
 {
@@ -570,9 +581,87 @@ public:
 				InitHooks();
 				loadArrayMenu();
 				currentMissionPtr = new Mission;
+				currentNodeGraphPtr = new NodeGraph;
 				printLog("start");
 				instance.add_to_queue(foo);
+				ScriptManager::loadScripts();
 				init = true;
+			}
+
+			sol::state lua;
+			lua.open_libraries(sol::lib::base, sol::lib::jit, sol::lib::utf8, sol::lib::ffi, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string);
+			lua.set_function("print", &printLog);
+			auto result = lua.script_file("LDYOM//Scripts//baseNode.lua");
+			if (!result.valid())
+			{
+				sol::error err = result;
+				printLog(err.what());
+			} else
+			{
+				NodeGraph::baseNode = std::move(lua);
+			}
+			
+		};
+		Events::vehicleRenderEvent.before += [](CVehicle* veh)
+		{
+			if (veh)
+				VehicleRenderer::get()->processRender(veh);
+		};
+		Events::vehicleResetAfterRender += [](CVehicle* veh)
+		{
+			if (veh)
+				VehicleRenderer::get()->postRender(veh);
+		};
+		Events::reInitGameEvent += []
+		{
+			if (CGame::bMissionPackGame == 7)
+			{
+				if (init)
+				{
+					delete currentMissionPtr;
+					delete currentStorylinePtr;
+					delete currentNodeGraphPtr;
+					bMainMenu = false;
+					namesTargets.clear();
+					currentTarget = 0;
+					bTargets = false;
+					namesActors.clear();
+					currentActor = 0;
+					bActors = false;
+					namesCars.clear();
+					currentCar = 0;
+					bCars = false;
+					namesObjects.clear();
+					currentObject = 0;
+					bObjects = false;
+					namesPickups.clear();
+					currentPickup = 0;
+					bPickups = false;
+					namesParticles.clear();
+					currentParticle = 0;
+					bParticles = false;
+					namesExplosions.clear();
+					currentExplosion = 0;
+					bExplosions = false;
+					namesAudios.clear();
+					currentAudio = 0;
+					bAudios = false;
+					bMissionSettings = false;
+					bPlayer = false;
+					bMissionPacks = false;
+					carSelector::bShow = false;
+				}
+
+				startLog();
+				MainThread();
+				loadArrayMenu();
+				currentMissionPtr = new Mission;
+				currentNodeGraphPtr = new NodeGraph;
+				currentMissionPtr->player.updateEditorPed();
+				printLog("start");
+				init = true;
+				printLog("reini");
+				ScriptManager::loadScripts();
 			}
 		};
 		Events::processScriptsEvent += []
@@ -613,64 +702,6 @@ public:
 				instance.process();
 			}
 		};
-		Events::vehicleRenderEvent.before += [](CVehicle* veh)
-		{
-			if (veh)
-				VehicleRenderer::get()->processRender(veh);
-		};
-		Events::vehicleResetAfterRender += [](CVehicle* veh)
-		{
-			if (veh)
-				VehicleRenderer::get()->postRender(veh);
-		};
-		Events::reInitGameEvent += []
-		{
-			if (CGame::bMissionPackGame == 7)
-			{
-				if (init)
-				{
-					delete currentMissionPtr;
-					bMainMenu = false;
-					namesTargets.clear();
-					currentTarget = 0;
-					bTargets = false;
-					namesActors.clear();
-					currentActor = 0;
-					bActors = false;
-					namesCars.clear();
-					currentCar = 0;
-					bCars = false;
-					namesObjects.clear();
-					currentObject = 0;
-					bObjects = false;
-					namesPickups.clear();
-					currentPickup = 0;
-					bPickups = false;
-					namesParticles.clear();
-					currentParticle = 0;
-					bParticles = false;
-					namesExplosions.clear();
-					currentExplosion = 0;
-					bExplosions = false;
-					namesAudios.clear();
-					currentAudio = 0;
-					bAudios = false;
-					bMissionSettings = false;
-					bPlayer = false;
-					bMissionPacks = false;
-					carSelector::bShow = false;
-				}
-
-				startLog();
-				MainThread();
-				loadArrayMenu();
-				currentMissionPtr = new Mission;
-				currentMissionPtr->player.updateEditorPed();
-				printLog("start");
-				init = true;
-				printLog("reini");
-			}
-		};
 	}
 } lDYOM_ASI;
 
@@ -685,6 +716,9 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReasonForCall, LPVOID lpReserved)
 		DeleteHooks();
 		delete currentMissionPtr;
 		delete currentStorylinePtr;
+		delete currentNodeGraphPtr;
+		for (auto script : ScriptManager::lua_scripts)
+			delete &script.second;
 		break;
 	}
 	return TRUE;

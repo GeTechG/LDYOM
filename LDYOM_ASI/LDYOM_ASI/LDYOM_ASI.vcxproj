@@ -46,16 +46,18 @@
     <IntDir>$(ProjectDir).obj\GTASA\Release\</IntDir>
     <TargetName>LDYOM_ASI.SA</TargetName>
     <TargetExt>.asi</TargetExt>
-    <IncludePath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaBridge\Source;C:\local\boost_1_74_0;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src</IncludePath>
-    <LibraryPath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;C:\local\boost_1_74_0\lib32-msvc-14.1;$(LibraryPath);$(WindowsSDK_LibraryPath_x86);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <IncludePath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\include;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\inc;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaBridge\Source;C:\local\boost_1_74_0;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master\examples\application\include;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\ImGUI</IncludePath>
+    <LibraryPath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\lib;C:\local\boost_1_74_0\lib32-msvc-14.1;$(LibraryPath);$(WindowsSDK_LibraryPath_x86);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <SourcePath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GTASA zDebug|Win32'">
     <OutDir>$(GTA_SA_DIR)\scripts\</OutDir>
     <IntDir>$(ProjectDir).obj\GTASA\Debug\</IntDir>
     <TargetName>LDYOM_ASI.SA</TargetName>
     <TargetExt>.asi</TargetExt>
-    <IncludePath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaBridge\Source;C:\local\boost_1_74_0;$(IncludePath);$(DIRECTX9_SDK_DIR)\Include\.;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src</IncludePath>
-    <LibraryPath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;C:\local\boost_1_74_0\lib32-msvc-14.1;$(LibraryPath);$(DIRECTX9_SDK_DIR)\Lib\x86\</LibraryPath>
+    <IncludePath>C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\include;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\inc;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\LuaBridge\Source;C:\local\boost_1_74_0;$(IncludePath);$(DIRECTX9_SDK_DIR)\Include\.;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master\examples\application\include;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\ImGUI</IncludePath>
+    <LibraryPath>C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\lib;C:\local\boost_1_74_0\lib32-msvc-14.1;$(LibraryPath);$(DIRECTX9_SDK_DIR)\Lib\x86\</LibraryPath>
+    <SourcePath>C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GTASA Release|Win32'">
     <ClCompile>
@@ -121,14 +123,18 @@
     <ClCompile Include="ImGUI\imgui_impl_dx9.cpp" />
     <ClCompile Include="ImGUI\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="imnodes.cpp" />
     <ClCompile Include="Init.cpp" />
     <ClCompile Include="LDYOM_ASI.cpp" />
     <ClCompile Include="libs\additional_events.cpp" />
     <ClCompile Include="libs\coro_wait.cpp" />
     <ClCompile Include="libs\memsafe.cpp" />
     <ClCompile Include="libs\pch.cpp" />
+    <ClCompile Include="libs\ScriptCommands.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="MissionPlayer.cpp" />
+    <ClCompile Include="NodeGraph.cpp" />
+    <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="vehicle_renderer.cpp" />
     <ClCompile Include="VMTHooker\vmt.cpp" />
   </ItemGroup>
@@ -160,6 +166,7 @@
     <ClInclude Include="ImGUI\imstb_rectpack.h" />
     <ClInclude Include="ImGUI\imstb_textedit.h" />
     <ClInclude Include="ImGUI\imstb_truetype.h" />
+    <ClInclude Include="imnodes.h" />
     <ClInclude Include="Init.h" />
     <ClInclude Include="LDYOM_ASI.h" />
     <ClInclude Include="libs\additional_events.h" />
@@ -176,8 +183,10 @@
     <ClInclude Include="libs\singleton.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="MissionPlayer.h" />
+    <ClInclude Include="NodeGraph.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="vehicle_renderer.h" />
     <ClInclude Include="VMTHooker\vmt.h" />
   </ItemGroup>

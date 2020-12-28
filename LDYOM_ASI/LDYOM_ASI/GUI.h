@@ -4,6 +4,7 @@
 
 #include "Manager.h"
 #include "MissionPlayer.h"
+#include "ScriptManager.h"
 
 //bool frames
 bool bMainMenu = false;
@@ -26,6 +27,7 @@ bool bInfo = false;
 bool bSettings = false;
 bool bStorylineMainMenu = false;
 bool bStorylineCheckpoints = false;
+bool bScriptsSettings = false;
 
 ImVec2 resolution;
 int currentTarget;
@@ -68,7 +70,7 @@ int tp_object;
 
 extern bool editmodeTimemiss;
 extern void loadArrayMenu();
-extern bool init_ImGui;
+extern bool load_theme;
 
 void fMainMenu()
 {
@@ -228,6 +230,15 @@ void fMainMenu()
 	{
 		bMainMenu = false;
 		bTools = true;
+	}
+	name.clear();
+	name.append(ICON_FA_FILE_CODE);
+	name.append(" ");
+	name.append(langt("scriptsSettings"));
+	if (ImGui::Button(name.c_str(), size_b))
+	{
+		bMainMenu = false;
+		bScriptsSettings = true;
 	}
 	ImGui::Separator();
 	name.clear();
@@ -4333,7 +4344,7 @@ void fSettings()
 		name.append(ICON_FA_EXCLAMATION_TRIANGLE);
 		name.append(" ");
 		name.append(langt("reload"));
-		init_ImGui = false;
+		load_theme = false;
 		//ImGui::OpenPopup(name.c_str());
 	}
 
@@ -4860,4 +4871,52 @@ void fStorylineCheckpoints()
 			checkPtr->updateEditorCheckpoint();
 		}
 	}
+}
+
+extern void clearScripts();
+
+void fScriptsSettings()
+{
+	std::string name;
+	ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(ImVec2(resolution.x / 2 - 100, resolution.y / 2 - 200), ImGuiCond_Appearing);
+	name.clear();
+	name.append(ICON_FA_FILE_CODE);
+	name.append(" ");
+	name.append(langt("scriptsSettings"));
+	ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize + ImGuiWindowFlags_NoCollapse);
+
+	static bool update_scripts = false;
+	
+	if (ImGui::BeginChild("list_scripts", ImVec2(0,200),NULL,ImGuiWindowFlags_NoBackground)) {
+		for (unsigned int i = 0; i < ScriptManager::lua_scripts.size(); i++) {
+			ImGui::PushID(i);
+			sol::optional<std::string> name = ScriptManager::lua_scripts.at(i).second["info"]["name"];
+			if (name.has_value()) {
+				if (ToggleButton(name.value().c_str(), &ScriptManager::lua_scripts.at(i).first))
+				{
+					mINI::INIStructure config;
+					mINI::INIFile file("LDYOM//Scripts//config.ini");
+					file.read(config);
+					config["Scripts"][name.value()] = ScriptManager::lua_scripts.at(i).first? "true" : "false";
+					file.write(config);
+					update_scripts = true;
+				}
+			}
+			ImGui::PopID();
+		}
+		ImGui::EndChild();
+	}
+
+	if (ImGui::Button(langt("apply")))
+	{
+		if (update_scripts)
+		{
+			clearScripts();
+			ScriptManager::loadScripts();
+			bScriptsSettings = false;
+		}
+	}
+	
+	ImGui::End();
 }

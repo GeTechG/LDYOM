@@ -32,108 +32,6 @@ void startLog() {
 	}
 }
 
-void printLog(std::string print_text) {
-	ofstream logg("LDYOM/ldyom.log", ios_base::app);
-	print_text.append("\n");
-	logg << print_text;
-	logg.close();
-
-}
-
-std::string cp1251_to_utf8(const char *str)
-{
-	std::string res;
-	WCHAR *ures = NULL;
-	char *cres = NULL;
-
-	int result_u = MultiByteToWideChar(1251, 0, str, -1, 0, 0);
-	if (result_u != 0)
-	{
-		ures = new WCHAR[result_u];
-		if (MultiByteToWideChar(1251, 0, str, -1, ures, result_u))
-		{
-			int result_c = WideCharToMultiByte(CP_UTF8, 0, ures, -1, 0, 0, 0, 0);
-			if (result_c != 0)
-			{
-				cres = new char[result_c];
-				if (WideCharToMultiByte(CP_UTF8, 0, ures, -1, cres, result_c, 0, 0))
-				{
-					res = cres;
-				}
-			}
-		}
-	}
-
-	delete[] ures;
-	delete[] cres;
-
-	return res;
-}
-
-std::vector<std::string> get_filename_list(const std::string& path) {
-	std::vector <std::string> m_file_list;
-	if (!path.empty()) {
-		boost::filesystem::path apk_path(path);
-		boost::filesystem::directory_iterator iter(apk_path), eod;
-
-		BOOST_FOREACH(boost::filesystem::path const& i, make_pair(iter, eod)) {
-			if (is_regular_file(i)) {
-				m_file_list.push_back(cp1251_to_utf8(i.stem().string().c_str()));
-			}
-		}
-	}
-	return m_file_list;
-}
-
-std::vector<std::string> get_filename_list(const std::string& path, const std::string& extension) {
-	std::vector <std::string> m_file_list;
-	if (!path.empty()) {
-		boost::filesystem::path apk_path(path);
-		boost::filesystem::directory_iterator iter(apk_path), eod;
-
-		BOOST_FOREACH(boost::filesystem::path const& i, make_pair(iter, eod)) {
-			if (is_regular_file(i)) {
-				if (i.extension() == extension) {
-					m_file_list.push_back(cp1251_to_utf8(i.stem().string().c_str()));
-				}
-			}
-		}
-	}
-	return m_file_list;
-}
-
-const char* langt(const std::string& key) {
-	if (lang_file.size() == 0) {
-		std::string pathh = "LDYOM/Language/";
-		pathh.append(curr_lang_string);
-		pathh.append(".ini");
-		mINI::INIFile file(pathh);
-		assert(file.read(lang_file));
-	}
-	return lang_file["Keys"][key].c_str();
-}
-
-template <typename T>
-std::vector<T> parseJsonArray(std::string data) {
-	std::vector<T> arr;
-	boost::property_tree::ptree data_ptree;
-	std::stringstream data_strsream;
-	data_strsream << data;
-	boost::property_tree::read_json(data_strsream, data_ptree);
-	for (boost::property_tree::ptree::value_type &v : data_ptree) {
-		arr.push_back(static_cast<T>(v.second.data()));
-	}
-	return arr;
-}
-
-const char sym_ru[67] = "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿ";
-const char sym_sl[67] = "A€‹‚ƒEE„ˆ…†K‡–­OŒPCYX‰Š‘’“”•a—¢™šee›Ÿœk¯®o£pc¦y˜x ¤¥¡§¨©ª«¬";
-void GXTEncode(std::string& str) {
-	for (int i = 0; i < 67; i++) {
-		std::replace(str.begin(), str.end(), sym_ru[i], sym_sl[i]);
-	}
-}
-
 bool is_utf8(const char* string)
 {
 	if (!string)
@@ -236,6 +134,110 @@ std::string UTF8_to_CP1251(std::string const& utf8)
 	return std::string();
 }
 
+void printLog(std::string print_text) {
+	ofstream logg("LDYOM/ldyom.log", ios_base::app);
+	print_text.append("\n");
+	logg << UTF8_to_CP1251(print_text);
+	logg.close();
+
+}
+
+std::string cp1251_to_utf8(const char *str)
+{
+	std::string res;
+	WCHAR *ures = NULL;
+	char *cres = NULL;
+
+	int result_u = MultiByteToWideChar(1251, 0, str, -1, 0, 0);
+	if (result_u != 0)
+	{
+		ures = new WCHAR[result_u];
+		if (MultiByteToWideChar(1251, 0, str, -1, ures, result_u))
+		{
+			int result_c = WideCharToMultiByte(CP_UTF8, 0, ures, -1, 0, 0, 0, 0);
+			if (result_c != 0)
+			{
+				cres = new char[result_c];
+				if (WideCharToMultiByte(CP_UTF8, 0, ures, -1, cres, result_c, 0, 0))
+				{
+					res = cres;
+				}
+			}
+		}
+	}
+
+	delete[] ures;
+	delete[] cres;
+
+	return res;
+}
+
+std::vector<std::string> get_filename_list(const std::string& path) {
+	std::vector <std::string> m_file_list;
+	if (!path.empty()) {
+		boost::filesystem::path apk_path(path);
+		boost::filesystem::directory_iterator iter(apk_path), eod;
+
+		BOOST_FOREACH(boost::filesystem::path const& i, make_pair(iter, eod)) {
+			if (is_regular_file(i)) {
+				m_file_list.push_back(cp1251_to_utf8(i.stem().string().c_str()));
+			}
+		}
+	}
+	return m_file_list;
+}
+
+std::vector<std::string> get_filename_list(const std::string& path, const std::string& extension) {
+	std::vector <std::string> m_file_list;
+	if (!path.empty()) {
+		boost::filesystem::path apk_path(path);
+		boost::filesystem::directory_iterator iter(apk_path), eod;
+
+		BOOST_FOREACH(boost::filesystem::path const& i, make_pair(iter, eod)) {
+			if (is_regular_file(i)) {
+				if (i.extension() == extension) {
+					m_file_list.push_back(cp1251_to_utf8(i.stem().string().c_str()));
+				}
+			}
+		}
+	}
+	return m_file_list;
+}
+
+const char* langt(const std::string& key) {
+	if (lang_file.size() == 0) {
+		std::string pathh = "LDYOM/Language/";
+		pathh.append(curr_lang_string);
+		pathh.append(".ini");
+		mINI::INIFile file(pathh);
+		assert(file.read(lang_file));
+	}
+	return lang_file["Keys"][key].c_str();
+}
+
+template <typename T>
+std::vector<T> parseJsonArray(std::string data) {
+	std::vector<T> arr;
+	boost::property_tree::ptree data_ptree;
+	std::stringstream data_strsream;
+	data_strsream << data;
+	boost::property_tree::read_json(data_strsream, data_ptree);
+	for (boost::property_tree::ptree::value_type &v : data_ptree) {
+		arr.push_back(static_cast<T>(v.second.data()));
+	}
+	return arr;
+}
+
+const char sym_ru[67] = "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿ";
+const char sym_sl[67] = "A€‹‚ƒEE„ˆ…†K‡–­OŒPCYX‰Š‘’“”•a—¢™šee›Ÿœk¯®o£pc¦y˜x ¤¥¡§¨©ª«¬";
+void GXTEncode(std::string& str) {
+	for (int i = 0; i < 67; i++) {
+		std::replace(str.begin(), str.end(), sym_ru[i], sym_sl[i]);
+	}
+}
+
+
+
 template <typename T>
 void moveCellVector(std::vector<T>* vec, int* in, int* out) {
 	std::vector<T> new_vec(vec->size());
@@ -254,7 +256,7 @@ void moveCellVector(std::vector<T>* vec, int* in, int* out) {
 }
 
 bool Combo(const char* label, int& current_item, vector<std::string>* items) {
-	current_item = clamp(current_item, 0, (int)items->size() - 1);
+	current_item = clamp(current_item, 0, (int)items->size());
 	if (ImGui::BeginCombo(label, items->empty() ? "" : items->at(current_item).c_str())) {
 		for (int i = 0; i < items->size(); i++) {
 			const bool is_selected = (i == current_item);
@@ -275,7 +277,7 @@ bool Combo(const char* label, int& current_item, vector<std::string>* items) {
 }
 
 bool Combo(const char* label, int& current_item, vector<const char*>* items) {
-	current_item = clamp(current_item, 0, (int)items->size() - 1);
+	current_item = clamp(current_item, 0, (int)items->size());
 	if (ImGui::BeginCombo(label, items->empty() ? "" : items->at(current_item))) {
 		for (int i = 0; i < items->size(); i++) {
 			const bool is_selected = (i == current_item);

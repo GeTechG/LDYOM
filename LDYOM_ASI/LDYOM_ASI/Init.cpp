@@ -4,6 +4,8 @@
 #include <CClock.h>
 #include <CHud.h>
 #include <CRadar.h>
+#include <sol/sol.hpp>
+
 
 #include "libs/coro_wait.h"
 #include "CCamera.h"
@@ -1479,4 +1481,69 @@ void Storyline::removeEditorEntity()
 	{
 		checkpoint_storyline->removeEditorCheckpoint();
 	}
+}
+
+extern vector<std::string> namesMissionPacks;
+extern vector<vector<std::string>> namesMissions;
+extern Storyline* currentStorylinePtr;
+
+vector<std::string> getStorylineMissionsNames()
+{
+	int pack_idx = 0;
+	for (int i = 0; i < namesMissionPacks.size(); ++i)
+	{
+		if (namesMissionPacks[i] == currentStorylinePtr->missPack)
+		{
+			pack_idx = i;
+			break;
+		}
+	}
+	return namesMissions[pack_idx];
+}
+
+void addLDYOMClasses(sol::state& lua)
+{
+	auto mission_class = lua.new_usertype<Mission>("Mission", sol::no_constructor);
+
+	auto target_class = lua.new_usertype<Target>("Target", sol::no_constructor);
+	target_class["type"] = &Target::type;
+	target_class["name"] = &Target::name;
+	target_class["targetType"] = &Target::targetType;
+
+	auto actor_class = lua.new_usertype<Actor>("Actor", sol::no_constructor);
+	actor_class["updateMissionPed"] = &Actor::updateMissionPed;
+	actor_class["removeMissionPed"] = &Actor::removeMissionPed;
+
+	auto car_class = lua.new_usertype<Car>("Car", sol::no_constructor);
+	car_class["updateMissionCar"] = &Car::updateMissionCar;
+	car_class["removeMissionCar"] = &Car::removeMissionCar;
+
+	auto object_class = lua.new_usertype<Object>("Object", sol::no_constructor);
+	object_class["updateMissionObject"] = &Object::updateMissionObject;
+	object_class["removeMissionObject"] = &Object::removeMissionObject;
+
+	auto particle_class = lua.new_usertype<Particle>("Particle", sol::no_constructor);
+	particle_class["updateMissionParticle"] = &Particle::updateMissionParticle;
+	particle_class["removeMissionParticle"] = &Particle::removeMissionParticle;
+
+	auto pickup_class = lua.new_usertype<Pickup>("Pickup", sol::no_constructor);
+	pickup_class["updateMissionPickup"] = &Pickup::updateMissionPickup;
+	pickup_class["removeMissionPickup"] = &Pickup::removeMissionPickup;
+
+	auto explosion_class = lua.new_usertype<Explosion>("Explosion", sol::no_constructor);
+	explosion_class["updateMissionExplosion"] = &Explosion::updateMissionExplosion;
+	explosion_class["removeMissionExplosion"] = &Explosion::removeMissionExplosion;
+
+	auto audio_class = lua.new_usertype<Audio>("Audio", sol::no_constructor);
+	audio_class["play"] = &Audio::play;
+	audio_class["stop"] = &Audio::stop;
+
+	mission_class["list_targets"] = &Mission::list_targets;
+	mission_class["list_actors"] = &Mission::list_actors;
+	mission_class["list_cars"] = &Mission::list_cars;
+	mission_class["list_objects"] = &Mission::list_objects;
+	mission_class["list_particles"] = &Mission::list_particles;
+	mission_class["list_pickups"] = &Mission::list_pickups;
+	mission_class["list_explosions"] = &Mission::list_explosions;
+	mission_class["list_audios"] = &Mission::list_audios;
 }
