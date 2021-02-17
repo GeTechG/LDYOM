@@ -16,7 +16,7 @@
 #include <imgui_internal.h>
 
 // Check minimum ImGui version
-#define MINIMUM_COMPATIBLE_IMGUI_VERSION 16401
+#define MINIMUM_COMPATIBLE_IMGUI_VERSION 17400
 #if IMGUI_VERSION_NUM < MINIMUM_COMPATIBLE_IMGUI_VERSION
 #error "Minimum ImGui version requirement not met -- please use a newer version!"
 #endif
@@ -143,6 +143,8 @@ struct NodeData
           pin_indices(), draggable(true)
     {
     }
+
+    ~NodeData() { id = INT_MIN; }
 };
 
 struct PinData
@@ -864,8 +866,10 @@ void object_pool_update(ObjectPool<NodeData>& nodes)
         {
             const int previous_id = nodes.pool[i].id;
             const int previous_idx = nodes.id_map.GetInt(previous_id, -1);
+
             if (previous_idx != -1)
             {
+                assert(previous_idx == i);
                 // Remove node idx form depth stack the first time we detect that this idx slot is
                 // unused
                 ImVector<int>& depth_stack = editor_context_get().node_depth_order;
@@ -987,6 +991,11 @@ ImVec2 get_screen_space_pin_coordinates(const EditorContext& editor, const PinDa
 // as C-style free functions so that the code is not too much of a mish-mash of
 // C functions and C++ method definitions.
 
+bool mouse_in_canvas()
+{
+    return g.canvas_rect_screen_space.Contains(ImGui::GetMousePos()) && ImGui::IsWindowHovered();
+}
+
 void begin_node_selection(EditorContext& editor, const int node_idx)
 {
     // Don't start selecting a node if we are e.g. already creating and dragging
@@ -1095,10 +1104,10 @@ void begin_canvas_interaction(EditorContext& editor)
                                         g.hovered_link_idx.has_value() ||
                                         g.hovered_pin_idx.has_value() || ImGui::IsAnyItemHovered();
 
-    const bool mouse_not_in_canvas =
-        !(g.canvas_rect_screen_space.Contains(ImGui::GetMousePos()) && ImGui::IsWindowHovered());
+    const bool mouse_not_in_canvas = !mouse_in_canvas();
 
-    if (any_ui_element_hovered || mouse_not_in_canvas)
+    if (editor.click_interaction_type != ClickInteractionType_None || any_ui_element_hovered ||
+        mouse_not_in_canvas)
     {
         return;
     }
@@ -1108,11 +1117,13 @@ void begin_canvas_interaction(EditorContext& editor)
             ? (g.left_mouse_clicked && *g.io.emulate_three_button_mouse.modifier)
             : g.middle_mouse_clicked;
 
-    editor.click_interaction_type =
-        started_panning ? ClickInteractionType_Panning : ClickInteractionType_BoxSelection;
-
-    if (editor.click_interaction_type == ClickInteractionType_BoxSelection)
+    if (started_panning)
     {
+        editor.click_interaction_type = ClickInteractionType_Panning;
+    }
+    else if (g.left_mouse_clicked)
+    {
+        editor.click_interaction_type = ClickInteractionType_BoxSelection;
         editor.click_interaction_state.box_selector.rect.Min = g.mouse_pos;
     }
 }
@@ -1358,7 +1369,11 @@ void click_interaction_update(EditorContext& editor)
 
         const LinkBezierData link_data = get_link_renderable(
             start_pos, end_pos, start_pin.type, g.style.link_line_segments_per_length);
+#if IMGUI_VERSION_NUM < 18000
         g.canvas_draw_list->AddBezierCurve(
+#else
+        g.canvas_draw_list->AddBezierCubic(
+#endif
             link_data.bezier.p0,
             link_data.bezier.p1,
             link_data.bezier.p2,
@@ -1654,6 +1669,11 @@ void draw_pin_shape(const ImVec2& pin_pos, const PinData& pin, const ImU32 pin_c
     }
 }
 
+bool is_pin_hovered(const PinData& pin)
+{
+    return is_mouse_hovering_near_point(pin.pos, g.style.pin_hover_radius);
+}
+
 void draw_pin(EditorContext& editor, const int pin_idx, const bool left_mouse_clicked)
 {
     PinData& pin = editor.pins.pool[pin_idx];
@@ -1663,7 +1683,10 @@ void draw_pin(EditorContext& editor, const int pin_idx, const bool left_mouse_cl
 
     ImU32 pin_color = pin.color_style.background;
 
-    if (is_mouse_hovering_near_point(pin.pos, g.style.pin_hover_radius))
+    const bool pin_hovered = is_pin_hovered(pin) && mouse_in_canvas() &&
+                             editor.click_interaction_type != ClickInteractionType_BoxSelection;
+
+    if (pin_hovered)
     {
         g.hovered_pin_idx = pin_idx;
         g.hovered_pin_flags = pin.flags;
@@ -1678,6 +1701,24 @@ void draw_pin(EditorContext& editor, const int pin_idx, const bool left_mouse_cl
     draw_pin_shape(pin.pos, pin, pin_color);
 }
 
+// TODO: Separate hover code from drawing code to avoid this unpleasant divergent function
+// signature.
+bool is_node_hovered(const NodeData& node, const int node_idx, const ObjectPool<PinData> pins)
+{
+    // We render pins on top of nodes. In order to prevent node interaction when a pin is on top of
+    // a node, we just early out here if a pin is hovered.
+    for (int i = 0; i < node.pin_indices.size(); ++i)
+    {
+        const PinData& pin = pins.pool[node.pin_indices[i]];
+        if (is_pin_hovered(pin))
+        {
+            return false;
+        }
+    }
+
+    return g.hovered_node_idx.has_value() && node_idx == g.hovered_node_idx.value();
+}
+
 // TODO: It may be useful to make this an EditorContext method, since this uses
 // a lot of editor state. Currently that is just not clear, since we don't pass
 // the editor as a part of the function signature.
@@ -1686,8 +1727,8 @@ void draw_node(EditorContext& editor, const int node_idx)
     const NodeData& node = editor.nodes.pool[node_idx];
     ImGui::SetCursorPos(node.origin + editor.panning);
 
-    const bool node_hovered =
-        g.hovered_node_idx.has_value() && node_idx == g.hovered_node_idx.value();
+    const bool node_hovered = is_node_hovered(node, node_idx, editor.pins) && mouse_in_canvas() &&
+                              editor.click_interaction_type != ClickInteractionType_BoxSelection;
 
     ImU32 node_background = node.color_style.background;
     ImU32 titlebar_background = node.color_style.titlebar;
@@ -1751,9 +1792,9 @@ void draw_node(EditorContext& editor, const int node_idx)
 
 bool is_link_hovered(const LinkBezierData& link_data)
 {
-    // We render nodes on top of links. In order to prevent link interaction when a node is on top
-    // of a link, we just early out here if a node is hovered.
-    if (g.hovered_node_idx.has_value())
+    // We render pins and nodes on top of links. In order to prevent link interaction when a pin or
+    // node is on top of a link, we just early out here if a pin or node is hovered.
+    if (g.hovered_pin_idx.has_value() || g.hovered_node_idx.has_value())
     {
         return false;
     }
@@ -1770,7 +1811,9 @@ void draw_link(EditorContext& editor, const int link_idx)
     const LinkBezierData link_data = get_link_renderable(
         start_pin.pos, end_pin.pos, start_pin.type, g.style.link_line_segments_per_length);
 
-    const bool link_hovered = is_link_hovered(link_data);
+    const bool link_hovered = is_link_hovered(link_data) && mouse_in_canvas() &&
+                              editor.click_interaction_type != ClickInteractionType_BoxSelection;
+
     if (link_hovered)
     {
         g.hovered_link_idx = link_idx;
@@ -1800,7 +1843,11 @@ void draw_link(EditorContext& editor, const int link_idx)
         link_color = link.color_style.hovered;
     }
 
+#if IMGUI_VERSION_NUM < 18000
     g.canvas_draw_list->AddBezierCurve(
+#else
+    g.canvas_draw_list->AddBezierCubic(
+#endif
         link_data.bezier.p0,
         link_data.bezier.p1,
         link_data.bezier.p2,
@@ -2107,6 +2154,18 @@ void EndNodeEditor()
         }
     }
 
+    // In order to render the links underneath the nodes, we want to first select the bottom draw
+    // channel.
+    g.canvas_draw_list->ChannelsSetCurrent(0);
+
+    for (int link_idx = 0; link_idx < editor.links.pool.size(); ++link_idx)
+    {
+        if (editor.links.in_use[link_idx])
+        {
+            draw_link(editor, link_idx);
+        }
+    }
+
     // Render the click interaction UI elements (partial links, box selector) on top of everything
     // else.
 
@@ -2127,18 +2186,6 @@ void EndNodeEditor()
     object_pool_update(editor.pins);
 
     draw_list_sort_channels_by_depth(editor.node_depth_order);
-
-    // In order to render the links underneath the nodes, we want to first select the bottom draw
-    // channel.
-    g.canvas_draw_list->ChannelsSetCurrent(0);
-
-    for (int link_idx = 0; link_idx < editor.links.pool.size(); ++link_idx)
-    {
-        if (editor.links.in_use[link_idx])
-        {
-            draw_link(editor, link_idx);
-        }
-    }
 
     // After the links have been rendered, the link pool can be updated as well.
     object_pool_update(editor.links);
@@ -2466,10 +2513,7 @@ ImVec2 GetNodeGridSpacePos(int node_id)
     return node.origin;
 }
 
-bool IsEditorHovered()
-{
-    return g.canvas_rect_screen_space.Contains(ImGui::GetMousePos()) && ImGui::IsWindowHovered();
-}
+bool IsEditorHovered() { return mouse_in_canvas(); }
 
 bool IsNodeHovered(int* const node_id)
 {

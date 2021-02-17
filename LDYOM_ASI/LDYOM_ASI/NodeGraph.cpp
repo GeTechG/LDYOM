@@ -4,6 +4,8 @@
 
 #include "imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS 1
+#include <CMessages.h>
+
 #include "imgui_internal.h"
 #include "ScriptManager.h"
 #include "libs/coro_wait.h"
@@ -13,17 +15,47 @@ extern void printLog(std::string print_text);
 extern const char* langt(const std::string& key);
 extern bool storylineMode;
 extern NodeGraph* currentNodeGraphPtr;
+extern map <std::string, std::vector<std::string>> langMenu;
 sol::state NodeGraph::baseNode{};
 
 NodeGraph::NodeGraph()
 {
 	this->nodes = std::map<unsigned, sol::table>();
 	this->links = std::map<int, sol::table>();
+
+	this->luaGraph.open_libraries(sol::lib::base, sol::lib::utf8, sol::lib::jit, sol::lib::ffi, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string);
+	this->luaGraph.set_function("print", &printLog);
+	auto result = this->luaGraph.script_file("LDYOM//Scripts//nodeGraphLua.lua");
+	if (!result.valid())
+	{
+		sol::error err = result;
+		printLog(err.what());
+	}
+	else
+	{
+
+	}
+	
+	sol::state lua;
+	lua.open_libraries(sol::lib::base, sol::lib::jit, sol::lib::ffi, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string);
+	lua.set_function("print", &printLog);
+	sol::function func = this->luaGraph["addRegister"];
+	lua.set_function("addR", func);
+	result = lua.script_file("LDYOM//Scripts//baseNode.lua");
+	if (!result.valid())
+	{
+		sol::error err = result;
+		printLog(err.what());
+	}
+	else
+	{
+		baseNode = std::move(lua);
+	}
 }
 
-void NodeGraph::addNodeClass(const std::string& category, sol::table& class_)
+void NodeGraph::addNodeClass(const std::string& category, sol::table claz)
 {
-	map_nodes_class[category].emplace_back(class_);
+	map_nodes_class[category].emplace_back(claz);
 }
 
 unsigned NodeGraph::getID()
@@ -194,12 +226,121 @@ void removeLink(int link_id)
 	currentNodeGraphPtr->links.erase(link_id);
 }
 
+std::map<int, const char*> namesVars;
+
 void NodeGraph::render()
 {
 	bool editor_hover = false;
 	ImGui::Begin("my first node graph");
 	ImGui::Text(std::to_string(ImGui::GetIO().Framerate).c_str());
 
+	ImGui::BeginChild("Panel", ImVec2(150, 0));
+	ImGui::Text(langt("variables"));
+	ImGui::PushID(langt("variables"));
+	ImGui::SetNextItemWidth(150);
+	if (ImGui::ListBoxHeader("", namesVars.size(), 15)) {
+		for (auto names_var : namesVars) {
+			ImGui::PushID(names_var.first);
+			if (ImGui::Selectable(names_var.second, names_var.first == currentNodeGraphPtr->curr_var)) {
+				currentNodeGraphPtr->curr_var = names_var.first;
+			}
+			ImGui::PopID();
+		}
+		ImGui::ListBoxFooter();
+	}
+	ImGui::PopID();
+	if (ImGui::Button(langt("add"))) {
+		int id_var = currentNodeGraphPtr->vars.empty() ? 0 : (--currentNodeGraphPtr->vars.end())->first + 1;
+		for (auto lua_script : ScriptManager::lua_scripts) {
+			if (lua_script.first)
+			{
+				sol::optional<std::string> name = lua_script.second["info"]["name"];
+				if (name.value()._Equal("Main nodes")) {
+					sol::protected_function funcNew = lua_script.second["Variable"]["new"];
+					auto result = funcNew(lua_script.second["Variable"]);
+					if (ScriptManager::checkProtected(result)) {
+						currentNodeGraphPtr->vars.emplace(id_var, result);
+						sol::table var_node = result;
+						sol::object name_var = var_node["var_name"];
+						namesVars[id_var] = (const char*)name_var.pointer();
+					}
+				}
+			}
+		}
+	}
+	if (!currentNodeGraphPtr->vars.empty()) {
+		ImGui::SameLine();
+		if (ImGui::Button(langt("delete"))) {
+			bool find = false;
+			for (auto node : currentNodeGraphPtr->nodes) {
+				if (node.second["var"].valid()) {
+					if (node.second["var"] == currentNodeGraphPtr->curr_var) {
+						sol::table pins = node.second["Pins"];
+						for (auto value : pins) {
+							sol::table pin = value.second;
+							int pin_type = pin["pin_type"];
+							if (pin_type == 0) {
+								int link = pin["link"];
+								removeLink(link);
+							}
+							else {
+								sol::table links = pin["links"];
+								for (auto link : links)
+									removeLink(link.second.as<int>());
+							}
+						}
+						currentNodeGraphPtr->nodes.erase(node.first);
+						find = true;
+					}
+
+				}
+			}
+			currentNodeGraphPtr->vars.erase(currentNodeGraphPtr->curr_var);
+			namesVars.erase(currentNodeGraphPtr->curr_var);
+			if (!currentNodeGraphPtr->vars.empty())
+				currentNodeGraphPtr->curr_var = currentNodeGraphPtr->vars.begin()->first;
+			else
+				currentNodeGraphPtr->curr_var = 0;
+		}
+		else {
+			ImGui::Text(langt("settings"));
+			ImGui::BeginChild(langt("settings"), ImVec2(), true);
+			sol::object nm = currentNodeGraphPtr->vars[currentNodeGraphPtr->curr_var]["var_name"];
+			ImGui::InputText(langt("name"), (char*)nm.pointer(), 65);
+			sol::object typ = currentNodeGraphPtr->vars[currentNodeGraphPtr->curr_var]["typeValue"];
+			ImU8 min_s = 0, max_s = 2;
+			if (ImGui::SliderScalar(langt("type"), ImGuiDataType_U8, (void*)typ.pointer(), &min_s, &max_s, langMenu["typesValue"][*(unsigned char*)typ.pointer()].c_str())) {
+				for (auto node : currentNodeGraphPtr->nodes) {
+					if (node.second["var"].valid()) {
+						if (node.second["var"] == currentNodeGraphPtr->curr_var) {
+							sol::table pins = node.second["Pins"];
+							for (auto value : pins) {
+								sol::table pin = value.second;
+								int pin_type = pin["pin_type"];
+								if (pin_type == 0) {
+									int link = pin["link"];
+									removeLink(link);
+								}
+								else {
+									sol::table links = pin["links"];
+									for (auto link : links)
+										removeLink(link.second.as<int>());
+								}
+							}
+							sol::protected_function upd = node.second["update_value"];
+							auto res = upd(node.second);
+							ScriptManager::checkProtected(res);
+						}
+
+					}
+				}
+			}
+			ImGui::EndChild();
+		}
+	}
+	ImGui::EndChild();
+	ImGui::SameLine();
+	
 	imnodes::PushColorStyle(imnodes::ColorStyle_GridBackground, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_ChildBg]));
 	imnodes::PushColorStyle(imnodes::ColorStyle_GridLine, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_Text] + ImVec4(.0f, .0f, .0f, -0.84f)));
 	imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackground, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_WindowBg] + ImVec4(0.07f, 0.07f, 0.07f, .0f)));
@@ -360,13 +501,54 @@ void NodeGraph::render()
 			currentNodeGraphPtr->nodes[node_id_in]["Pins"][id_in]["link"] = link_id;
 			sol::table links_out = currentNodeGraphPtr->nodes[node_id_out]["Pins"][id_out]["links"];
 			links_out.add(link_id);
-			sol::protected_function funcNew = baseNode["BaseLink"]["new"];
-			auto result = funcNew(baseNode["BaseLink"], id_in, id_out);
-			if (ScriptManager::checkProtected(result))
-			{
-				currentNodeGraphPtr->links.emplace(link_id, result);
+			for (auto lua_script : ScriptManager::lua_scripts) {
+				if (lua_script.first)
+				{
+					sol::optional<std::string> name = lua_script.second["info"]["name"];
+					if (name.value()._Equal("Main nodes")) {
+						sol::protected_function funcNew = lua_script.second["BaseLink"]["new"];
+						auto result = funcNew(lua_script.second["BaseLink"], id_in, id_out);
+						if (ScriptManager::checkProtected(result))
+						{
+							currentNodeGraphPtr->links.emplace(link_id, result);
+						}
+					}
+				}
 			}
 		}
+	}
+
+	const int num_selected = imnodes::NumSelectedNodes();
+	if (num_selected > 0 && ImGui::IsKeyReleased(0x58))
+	{
+		static std::vector<int> selected_nodes;
+		selected_nodes.resize(static_cast<size_t>(num_selected));
+		imnodes::GetSelectedNodes(selected_nodes.data());
+		for (const int node_id : selected_nodes)
+		{
+			sol::table pins = currentNodeGraphPtr->nodes[node_id]["Pins"];
+			for (auto pin : pins)
+			{
+				sol::table pin_value = pin.second.as<sol::table>();
+				int pin_type = pin_value["pin_type"];
+				if (pin_type == 0)
+				{
+					sol::optional<int> link = pin_value["link"];
+					if (link.has_value())
+						removeLink(link.value());
+				} else
+				{
+					sol::table links = pin_value["links"];
+					for (auto link : links)
+					{
+						if (link.second.get_type() != sol::type::nil)
+							removeLink(link.second.as<int>());
+					}
+				}
+			}
+			currentNodeGraphPtr->nodes.erase(node_id);
+		}
+		imnodes::ClearNodeSelection();
 	}
 	
 	ImGui::End();
@@ -376,5 +558,10 @@ void NodeGraph::callNode(sol::table& node, NodeGraph* data, Mission* mission)
 {
 	const sol::protected_function play = node["play"];
 	auto result = play(node, data, mission);
-	ScriptManager::checkProtected(result);
+	if (!result.valid())
+	{
+		sol::error error = result;
+		printLog(error.what());
+		CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+	}
 }

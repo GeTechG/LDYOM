@@ -1,6 +1,9 @@
 #include "Manager.h"
 
-#include "Init.h"
+#include <CHud.h>
+
+
+#include "NodeGraph.h"
 #include "boost/filesystem.hpp"
 
 #include <boost/archive/binary_oarchive.hpp>
@@ -9,6 +12,8 @@
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/array.hpp>
 #include <boost/serialization/utility.hpp>
+
+#include "ScriptManager.h"
 #include "lzma/Lzma2Dec.h"
 #include "lzma/Lzma2Enc.h"
 #include "gzip/compress.hpp"
@@ -27,6 +32,7 @@ extern std::string UTF8_to_CP1251(std::string const& utf8);
 extern std::string replace_symb(std::string& str);
 extern vector<std::string> namesStorylines;
 extern Storyline* currentStorylinePtr;
+extern NodeGraph* currentNodeGraphPtr;
 
 #define LDYOM_VER 71;
 
@@ -46,12 +52,55 @@ void Manager::SaveMission(int curr_pack,int curr_miss)
 	std::stringstream save;
 	boost::archive::binary_oarchive oa(save);
 	oa << currentMissionPtr;
-	ofstream save_file(full_path, ios::binary);
-	/*uint32_t compressedSize;
-	auto compressedBlob = lzmaCompress(reinterpret_cast<const uint8_t*>(save.str().c_str()), save.str().capacity() + 1, &compressedSize);
-	std::string str(reinterpret_cast<const char*>(compressedBlob.get()),compressedSize);*/
-	save_file << gzip::compress(save.str().data(), save.str().size(), Z_BEST_COMPRESSION);
-	save_file.close();
+
+	bool scripts = true;
+
+	for (auto node : currentNodeGraphPtr->nodes) {
+		ImVec2 pos = imnodes::GetNodeEditorSpacePos(node.first);
+		node.second["pos"]["x"] = pos.x;
+		node.second["pos"]["y"] = pos.y;
+	}
+	
+	for (auto pair : ScriptManager::lua_scripts)
+	{
+		if (pair.first)
+		{
+			scripts = false;
+			sol::protected_function func = pair.second["serilize"];
+			if (func.valid())
+			{
+				
+				auto result = func(sol::as_table(currentNodeGraphPtr->nodes));
+				if (ScriptManager::checkProtected(result))
+				{
+					std::string nodes_bytes = result;
+					
+					result = func(sol::as_table(currentNodeGraphPtr->links));
+					if (ScriptManager::checkProtected(result)) {
+						std::string links_bytes = result;
+
+						oa << nodes_bytes;
+						oa << links_bytes;
+						scripts = true;
+					}
+				}
+				
+			}
+		}
+	}
+
+	if (scripts) {
+		ofstream save_file(full_path, ios::binary);
+		/*uint32_t compressedSize;
+		auto compressedBlob = lzmaCompress(reinterpret_cast<const uint8_t*>(save.str().c_str()), save.str().capacity() + 1, &compressedSize);
+		std::string str(reinterpret_cast<const char*>(compressedBlob.get()),compressedSize);*/
+		save_file << gzip::compress(save.str().data(), save.str().size(), Z_BEST_COMPRESSION);
+		save_file.close();
+	} else
+	{
+		CHud::SetHelpMessage("Error, see log.", false, false, false);
+		CHud::DrawHelpText();
+	}
 }
 
 void Manager::SaveListMission(int curr_pack)
@@ -78,6 +127,53 @@ void Manager::LoadMission(int curr_pack, int curr_miss)
 	boost::archive::binary_iarchive ia(save);
 	delete currentMissionPtr;
 	ia >> currentMissionPtr;
+
+	currentNodeGraphPtr->nodes.clear();
+	currentNodeGraphPtr->links.clear();
+	
+	for (auto pair : ScriptManager::lua_scripts)
+	{
+		if (pair.first)
+		{
+			std::string nodes_bytes;
+			std::string links_bytes;
+			ia >> nodes_bytes;
+			ia >> links_bytes;
+			
+			sol::protected_function func = pair.second["deserilize"];
+			if (func.valid())
+			{
+				auto result = func(nodes_bytes);				
+				if (ScriptManager::checkProtected(result))
+				{
+					sol::table nodes_result = result;
+					for (auto pair : nodes_result)
+					{
+						unsigned idx = pair.first.as<unsigned>();
+						currentNodeGraphPtr->nodes[idx] = pair.second;
+					}
+
+					result = func(links_bytes);
+					if (ScriptManager::checkProtected(result)) {
+						sol::table links_result = result;
+
+						for (auto pair : links_result)
+						{
+							unsigned idx = pair.first.as<unsigned>();
+							currentNodeGraphPtr->links[idx] = pair.second;
+						}
+					}
+				}
+
+			}
+		}
+	}
+
+	for (auto node : currentNodeGraphPtr->nodes) {
+		float x = node.second["pos"]["x"];
+		float y = node.second["pos"]["y"];
+		imnodes::SetNodeEditorSpacePos(node.first,ImVec2(x,y));
+	}
 }
 
 Mission* Manager::LoadMission(std::string& path)

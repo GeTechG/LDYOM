@@ -7,14 +7,21 @@
 #include "imgui.h"
 #include "imnodes.h"
 #include "Init.h"
+#include <boost/serialization/split_member.hpp>
 
-class NodeGraph
-{
+class NodeGraph {
 public:
 	std::map<unsigned, sol::table> nodes;
 	std::map<int, sol::table> links;
+	std::map<int, sol::table> vars;
 
 	static sol::state baseNode;
+
+	sol::state luaGraph;
+
+
+	int lastNode = -1;
+	int curr_var = 0;
 
 	NodeGraph();
 	
@@ -26,7 +33,7 @@ public:
 		void_
 	};
 	
-	static void addNodeClass(const std::string& category, sol::table& class_);
+	static void addNodeClass(const std::string& category, sol::table claz);
 	static unsigned int getID();
 
 	static void BeginInputAttribute(int id, sol::object shape);

@@ -31,8 +31,8 @@ local nmdc = {
 
 function AnsiToUtf8(s)
   local r, b = ''
-  for i = 1, s and s:len() or 0 do
-    b = s:byte(i)
+  for i = 1, s and string.len(s) or 0 do
+    b = string.byte(s,i)
     if b < 128 then
       r = r..string.char(b)
     else

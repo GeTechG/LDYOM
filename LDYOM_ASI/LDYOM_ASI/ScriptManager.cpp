@@ -38,6 +38,16 @@ bool ComboVecChars(std::string label, sol::object current_item, std::vector<cons
 	return result;
 }
 
+bool InputText(const char* name, sol::object buffer, unsigned int buffer_size)
+{
+	return ImGui::InputText(name, (char*)buffer.pointer(), buffer_size);
+}
+
+bool InputFloat(const char* name, sol::object value)
+{
+	return ImGui::InputFloat(name, (float*)value.pointer());
+}
+
 extern coro_wait instance;
 void addThread(sol::function func)
 {
@@ -60,18 +70,77 @@ extern std::vector<const char*> namesExplosions;
 extern std::vector<const char*> namesAudios;
 extern std::vector<const char*> namesStorylineCheckpoints;
 extern void addLDYOMClasses(sol::state& lua);
+extern void setNodeSignal(bool value);
+extern bool getMissionStarted();
+extern int current_mission_target;
+extern NodeGraph* currentNodeGraphPtr;
+extern bool ToggleButton(const char* str_id, bool* v);
+
+bool ToggleButtonLua(const char* str_id, sol::object v) {
+	return ToggleButton(str_id, (bool*)v.pointer());
+}
+
+void wait (int ms)
+{
+	this_coro::wait(ms);
+}
+
+void callNodeThread(sol::table& node, NodeGraph* data, Mission* mission)
+{
+	instance.add_to_queue(std::bind(NodeGraph::callNode, node, data, mission));
+}
+
+int getCurrTarget()
+{
+	return current_mission_target;
+}
+
+void setCurrTarget(int new_target)
+{
+	current_mission_target = new_target;
+}
+
+char* getPointer(sol::object obj)
+{
+	return (char*)obj.pointer();
+}
+
+void addR(sol::table clas)
+{
+	sol::protected_function_result result = currentNodeGraphPtr->luaGraph["addR"](clas);
+	if (!result.valid())
+	{
+		sol::error error = result;
+		printLog(error.what());
+	}
+}
+
+void setLastNode(int node_id)
+{
+	currentNodeGraphPtr->lastNode = node_id;
+}
+
+int getLastNode()
+{
+	return currentNodeGraphPtr->lastNode;
+}
 
 void setNamespaceLua(sol::state& lua)
 {
 	lua.set_function("print", &printLog);
-
+	
 	lua["callOpcode"] = &pluginmy::scripting::CallCommandByIdPtr;
 	lua["getPtrStr"] = &getStrPtr;
 	lua["addThread"] = &addThread;
+	lua["callNodeThread"] = &callNodeThread;
+	lua.set_function("wait", &wait);
+	lua.set_function("getPointer", &getPointer);
+	lua.set_function("getPedRef", CPools::GetPedRef);
 
 	auto nodeGraph_lua = lua.new_usertype<NodeGraph>("NodeGraph");
 	nodeGraph_lua.set("nodes", &NodeGraph::nodes);
 	nodeGraph_lua.set("links", &NodeGraph::links);
+	nodeGraph_lua.set("vars", &NodeGraph::vars);
 	
 	//ldyom
 	sol::table t_ldyom = lua["ldyom"].get_or_create<sol::table>();
@@ -87,12 +156,21 @@ void setNamespaceLua(sol::state& lua)
 	t_ldyom["namesExplosions"] = &namesExplosions;
 	t_ldyom["namesAudios"] = &namesAudios;
 	t_ldyom["namesStorylineCheckpoints"] = &namesStorylineCheckpoints;
+	t_ldyom.set_function("setNodeSignal", &setNodeSignal);
+	t_ldyom.set_function("getMissionStarted", &getMissionStarted);
+	t_ldyom.set_function("getCurrTarget", &getCurrTarget);
+	t_ldyom.set_function("setCurrTarget", &setCurrTarget);
+	t_ldyom.set("setLastNode", &setLastNode);
+	t_ldyom.set("getLastNode", &getLastNode);
+	t_ldyom.set("currentNodeGraph", currentNodeGraphPtr);
 
 	addLDYOMClasses(lua);
 	
 	//ldyom.nodeEditor
 	t_ldyom["nodeEditor"].get_or_create<sol::table>();
-	t_ldyom["nodeEditor"]["addNodeClass"] = NodeGraph::addNodeClass;
+	sol::function func = currentNodeGraphPtr->luaGraph["addRegister"];
+	lua.set_function("addR", func);
+	t_ldyom["nodeEditor"]["addNodeClass"] = &currentNodeGraphPtr->addNodeClass;
 	t_ldyom["nodeEditor"]["getID"] = NodeGraph::getID;
 	
 	//ImGui
@@ -299,10 +377,10 @@ void setNamespaceLua(sol::state& lua)
 	t_imgui.set_function("VSliderInt", ImGui::VSliderInt);
 	t_imgui.set_function("VSliderScalar", ImGui::VSliderScalar);
 
-	t_imgui.set_function("InputText", ImGui::InputText);
+	t_imgui.set_function("InputText", InputText);
 	t_imgui.set_function("InputTextMultiline", ImGui::InputTextMultiline);
 	t_imgui.set_function("InputTextWithHint", ImGui::InputTextWithHint);
-	//t_imgui.set_function("InputFloat", sol::resolve<const char*, float*, float, float, const char*, ImGuiInputTextFlags>(ImGui::InputFloat));
+	t_imgui.set_function("InputFloat", InputFloat);
 	//t_imgui.set_function("InputFloat2", sol::resolve<const char*, float[2], const char*, ImGuiInputTextFlags>(ImGui::InputFloat2));
 	//t_imgui.set_function("InputFloat3", sol::resolve<const char*, float[3], const char*, ImGuiInputTextFlags>(ImGui::InputFloat3));
 	//t_imgui.set_function("InputFloat4", sol::resolve<const char*, float[4], const char*, ImGuiInputTextFlags>(ImGui::InputFloat4));
@@ -364,6 +442,7 @@ void setNamespaceLua(sol::state& lua)
 	t_imgui.set_function("GetMouseCursor", ImGui::GetMouseCursor);
 	t_imgui.set_function("SetMouseCursor", ImGui::SetMouseCursor);
 	t_imgui.set_function("CaptureMouseFromApp", ImGui::CaptureMouseFromApp);
+	t_imgui.set_function("ToggleButton", ToggleButtonLua);
 
 	//imnodes
 	sol::table t_imnodes = t_imgui["imnodes"].get_or_create<sol::table>();
@@ -482,7 +561,8 @@ void ScriptManager::loadScripts()
 {
 	std::string path = "LDYOM//Scripts";
 	delete currentNodeGraphPtr;
-	currentNodeGraphPtr = new NodeGraph;
+	currentNodeGraphPtr = new NodeGraph();
+	
 	for (auto lua_script : lua_scripts)
 		delete &lua_script.second;
 	lua_scripts.clear();
@@ -507,10 +587,10 @@ void ScriptManager::loadScripts()
 				{
 					sol::state& lua = *(new sol::state);
 					
-					lua.open_libraries(sol::lib::base, sol::lib::jit, sol::lib::utf8, sol::lib::ffi, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string);
+					lua.open_libraries(sol::lib::base, sol::lib::jit, sol::lib::ffi, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string);
 					
 					setNamespaceLua(lua);
-					
+
 					auto script = lua.script_file(init_file);
 					
 					if (!script.valid())

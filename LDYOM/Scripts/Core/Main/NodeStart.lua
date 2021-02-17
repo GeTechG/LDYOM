@@ -1,9 +1,8 @@
 ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
-require "LDYOM.Scripts.utf8"
 
-Node = class("NodeStart", BaseNode);
+Node = bitser.registerClass(class("NodeStart", BaseNode));
 
 Node.static.name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeStart");
 
@@ -20,6 +19,10 @@ function Node:draw()
 	
 	imgui.imnodes.BeginNodeTitleBar();
 	imgui.Text(self.class.static.name);
+	if ldyom.getLastNode() == self.id then
+		imgui.SameLine(0,0);
+		imgui.TextColored(imgui.ImVec4.new(1.0,0.0,0.0,1.0)," \xef\x86\x88");
+	end
 	imgui.imnodes.EndNodeTitleBar();
 	
 	imgui.imnodes.BeginOutputAttribute(self.id+1);
@@ -31,16 +34,15 @@ function Node:draw()
 end
 
 function Node:play(data, mission)
+	ldyom.setLastNode(self.id);
 	if self.Pins[self.id+1].links ~= nil then
 		for k,v in pairs(self.Pins[self.id+1].links) do
-			print(tostring(data.links));
-			print(tostring(data.links[v]));
 			local link = data.links[v];
 			for k2,v2 in pairs(link) do
 				local strr = Utf8ToAnsi(k2);
 				if strr == "id_in" then
 					local node_num = math.floor(v2 / 100)*100;
-					data.nodes[node_num]:play(data);
+					data.nodes[node_num]:play(data,mission);
 					break;
 				end
 			end

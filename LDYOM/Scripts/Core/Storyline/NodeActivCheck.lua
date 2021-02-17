@@ -2,7 +2,7 @@ ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-Node = class("NodeActivateСheckpoint", BaseNode);
+Node = bitser.registerClass(class("NodeActivateСheckpoint", BaseNode));
 
 Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodeActivateСheckpoint");
 Node.static.storyline = true;
@@ -22,6 +22,10 @@ function Node:draw()
 	
 	imgui.imnodes.BeginNodeTitleBar();
 	imgui.Text(self.class.static.name);
+	if ldyom.getLastNode() == self.id then
+		imgui.SameLine(0,0);
+		imgui.TextColored(imgui.ImVec4.new(1.0,0.0,0.0,1.0)," \xef\x86\x88");
+	end
 	imgui.imnodes.EndNodeTitleBar();
 	
 	imgui.imnodes.BeginInputAttribute(self.id+1);

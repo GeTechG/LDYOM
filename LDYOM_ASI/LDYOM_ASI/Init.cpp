@@ -181,6 +181,7 @@ void Actor::removeEditorPed() {
 }
 
 void Actor::updateMissionPed() {
+	this->removeMissionPed();
 	int modell;
 	if (this->modelType == 0) {
 		modell = this->modelID;
@@ -1513,6 +1514,8 @@ void addLDYOMClasses(sol::state& lua)
 	auto actor_class = lua.new_usertype<Actor>("Actor", sol::no_constructor);
 	actor_class["updateMissionPed"] = &Actor::updateMissionPed;
 	actor_class["removeMissionPed"] = &Actor::removeMissionPed;
+	actor_class["missionPed"] = &Actor::missionPed;
+	actor_class["editorPed"] = &Actor::missionPed;
 
 	auto car_class = lua.new_usertype<Car>("Car", sol::no_constructor);
 	car_class["updateMissionCar"] = &Car::updateMissionCar;

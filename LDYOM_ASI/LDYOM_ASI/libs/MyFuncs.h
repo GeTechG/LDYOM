@@ -137,7 +137,8 @@ std::string UTF8_to_CP1251(std::string const& utf8)
 void printLog(std::string print_text) {
 	ofstream logg("LDYOM/ldyom.log", ios_base::app);
 	print_text.append("\n");
-	logg << UTF8_to_CP1251(print_text);
+	//logg << UTF8_to_CP1251(print_text);
+	logg << print_text;
 	logg.close();
 
 }

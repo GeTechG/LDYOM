@@ -1,8 +1,11 @@
 ffi = require "ffi"
-require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-TestNode = class("TestNode", BaseNode);
+TestNode = bitser.registerClass(class("TestNode", BaseNode));
+
+for k,v in pairs(TestNode) do
+	print(tostring(k == "name"));
+end
 
 TestNode.static.name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeTest");
 
@@ -10,10 +13,10 @@ function TestNode:initialize(id)
 	BaseNode.initialize(self,id);
 	self.type = 0;
 	self.Pins = {
-		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.number, 0,true),
-		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.boolean, 0,true),
-		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.number, 1,true),
-		[self.id+4] = BasePin:new(self.id+4,imgui.imnodes.PinType.boolean, 1,true),
+		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.number, 0),
+		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.boolean, 0),
+		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.number, 1),
+		[self.id+4] = BasePin:new(self.id+4,imgui.imnodes.PinType.boolean, 1),
 	};
 end
 

@@ -581,25 +581,14 @@ public:
 				InitHooks();
 				loadArrayMenu();
 				currentMissionPtr = new Mission;
-				currentNodeGraphPtr = new NodeGraph;
 				printLog("start");
 				instance.add_to_queue(foo);
 				ScriptManager::loadScripts();
 				init = true;
+				langMenu["typesValue"] = parseJsonArray<std::string>(langt("typesValue"));
 			}
 
-			sol::state lua;
-			lua.open_libraries(sol::lib::base, sol::lib::jit, sol::lib::utf8, sol::lib::ffi, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string);
-			lua.set_function("print", &printLog);
-			auto result = lua.script_file("LDYOM//Scripts//baseNode.lua");
-			if (!result.valid())
-			{
-				sol::error err = result;
-				printLog(err.what());
-			} else
-			{
-				NodeGraph::baseNode = std::move(lua);
-			}
+			
 			
 		};
 		Events::vehicleRenderEvent.before += [](CVehicle* veh)
