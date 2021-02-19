@@ -11,5 +11,7 @@ public:
 	static void LoadListMission(int curr_pack);
 	static void SaveStoryline(int curr_storyline);
 	static void LoadStoryline(int curr_storyline);
+	static void SaveVars(int curr_pack);
+	static void LoadVars(int curr_pack);
 };
 

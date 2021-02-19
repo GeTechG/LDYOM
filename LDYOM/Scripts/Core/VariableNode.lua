@@ -2,9 +2,9 @@ ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-Node = bitser.registerClass(class("NodeVariable", BaseNode));
+NodeVariable = bitser.registerClass(class("NodeVariable", BaseNode));
 
-function Node:initialize(id,var,setter)
+function NodeVariable:initialize(id,var,setter)
 	BaseNode.initialize(self,id);
 	self.type = 3;
 	self.var = var;
@@ -13,9 +13,9 @@ function Node:initialize(id,var,setter)
 	local data;
 	if ttype == 0 then
 		data = ffi.new("float[1]");
-	else if ttype == 1 then
+	elseif ttype == 1 then
 		data = ffi.new("char[128]");
-	else if ttype == 2 then
+	elseif ttype == 2 then
 		data = ffi.new("bool[1]");
 	end
 	if setter then
@@ -26,17 +26,17 @@ function Node:initialize(id,var,setter)
 	end
 end
 
-function Node:update_value()
+function NodeVariable:update_value()
 	local ttype = ldyom.currentNodeGraph.vars[self.var].typeValue[0];
 	local data;
 	if ttype == 0 then
 		data = ffi.new("float[1]");
-	else if ttype == 1 then
+	elseif ttype == 1 then
 		data = ffi.new("char[128]");
-	else if ttype == 2 then
+	elseif ttype == 2 then
 		data = ffi.new("bool[1]");
 	end
-	if setter then
+	if self.setter then
 		self.Pins[self.id+2].type = ttype;
 		self.Pins[self.id+2].value = data;
 	else
@@ -44,7 +44,7 @@ function Node:update_value()
 	end
 end
 
-function Node:draw()
+function NodeVariable:draw()
 	imgui.imnodes.BeginNode(self.id,self.type)
 	
 	imgui.imnodes.BeginNodeTitleBar();
@@ -63,12 +63,12 @@ function Node:draw()
 		imgui.imnodes.BeginInputAttribute(self.id+2);
 		imgui.Text(ldyom.langt("value"));
 		if (self.Pins[self.id+2].link == nil) then
-			--imgui.SetNextItemWidth(150);
+			imgui.SetNextItemWidth(150);
 			if self.Pins[self.id+2].type == 0 then
 				imgui.InputFloat("",self.Pins[self.id+2].value);
-			else if self.Pins[self.id+2].type == 1 then
+			elseif self.Pins[self.id+2].type == 1 then
 				imgui.InputText("",self.Pins[self.id+2].value, ffi.sizeof(self.Pins[self.id+2].value));
-			else if self.Pins[self.id+2].type == 2 then
+			elseif self.Pins[self.id+2].type == 2 then
 				imgui.ToggleButton("",self.Pins[self.id+2].value);
 			end
 		end
@@ -83,7 +83,7 @@ function Node:draw()
 	
 end
 
-function Node:play(data, mission)
+function NodeVariable:play(data, mission)
 	local self_target = self:getPinValue(self.id+2,data)[0];
 	ldyom.setLastNode(self.id);
 	assert(self_target < #mission.list_targets,"The ID of the objective exceeds the number of actors.");

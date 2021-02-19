@@ -25,6 +25,9 @@ function main()
 	bitser.registerClass(BaseNode);
 	bitser.registerClass(BasePin);
 	bitser.registerClass(BaseLink);
+	bitser.registerClass(Variable);
+	
+	require "LDYOM.Scripts.Core.VariableNode"
 	
 	require "LDYOM.Scripts.Core.test"
 	require "LDYOM.Scripts.Core.Main.NodeStart"

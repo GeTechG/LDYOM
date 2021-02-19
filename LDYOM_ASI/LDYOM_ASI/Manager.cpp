@@ -33,6 +33,7 @@ extern std::string replace_symb(std::string& str);
 extern vector<std::string> namesStorylines;
 extern Storyline* currentStorylinePtr;
 extern NodeGraph* currentNodeGraphPtr;
+extern std::map<int, const char*> namesVars;
 
 #define LDYOM_VER 71;
 
@@ -96,6 +97,8 @@ void Manager::SaveMission(int curr_pack,int curr_miss)
 		std::string str(reinterpret_cast<const char*>(compressedBlob.get()),compressedSize);*/
 		save_file << gzip::compress(save.str().data(), save.str().size(), Z_BEST_COMPRESSION);
 		save_file.close();
+
+		SaveVars(curr_pack);
 	} else
 	{
 		CHud::SetHelpMessage("Error, see log.", false, false, false);
@@ -174,6 +177,7 @@ void Manager::LoadMission(int curr_pack, int curr_miss)
 		float y = node.second["pos"]["y"];
 		imnodes::SetNodeEditorSpacePos(node.first,ImVec2(x,y));
 	}
+	LoadVars(curr_pack);
 }
 
 Mission* Manager::LoadMission(std::string& path)
@@ -233,6 +237,89 @@ void Manager::LoadStoryline(int curr_storyline)
 	if (currentStorylinePtr != nullptr)
 		delete currentStorylinePtr;
 	ia >> currentStorylinePtr;
+}
+
+void Manager::SaveVars(int curr_pack)
+{
+	std::string path_pack = replace_symb(UTF8_to_CP1251(namesMissionPacks[curr_pack])) + "//";
+	std::string full_path = path + path_pack + "vars.bin";
+
+	ofstream save_file(full_path, ios::binary);
+
+	bool scripts = true;
+	std::string vars_bytes;
+	
+	for (auto pair : ScriptManager::lua_scripts)
+	{
+		if (pair.first)
+		{
+			scripts = false;
+			sol::protected_function func = pair.second["serilize"];
+			if (func.valid())
+			{
+
+				auto result = func(sol::as_table(currentNodeGraphPtr->vars));
+				if (ScriptManager::checkProtected(result))
+				{
+					scripts = true;
+					vars_bytes = result;
+				}
+
+			}
+		}
+	}
+
+	if (scripts) {
+		save_file << vars_bytes;
+		save_file.close();
+	} else
+	{
+		CHud::SetHelpMessage("Error, see log.", false, false, false);
+		CHud::DrawHelpText();
+	}
+}
+
+void Manager::LoadVars(int curr_pack)
+{
+	std::string path_pack = replace_symb(UTF8_to_CP1251(namesMissionPacks[curr_pack])) + "//";
+	std::string full_path = path + path_pack + "vars.bin";
+	currentNodeGraphPtr->vars.clear();
+	namesVars.clear();
+
+	ifstream save_file(full_path, ios::binary);
+	std::stringstream vars;
+	vars << save_file.rdbuf();
+	save_file.close();
+
+	currentNodeGraphPtr->vars.clear();
+	namesVars.clear();
+	
+	for (auto pair : ScriptManager::lua_scripts)
+	{
+		if (pair.first)
+		{
+			std::string vars_bytes = vars.str();
+
+			sol::protected_function func = pair.second["deserilize"];
+			if (func.valid())
+			{
+				auto result = func(vars_bytes);
+				if (ScriptManager::checkProtected(result))
+				{
+					sol::table nodes_result = result;
+					for (auto pair : nodes_result)
+					{
+						unsigned idx = pair.first.as<unsigned>();
+						currentNodeGraphPtr->vars[idx] = pair.second;
+						sol::table var = pair.second;
+						sol::object name_var = var["var_name"];
+						namesVars[idx] = (const char*)name_var.pointer();
+					}
+				}
+
+			}
+		}
+	}
 }
 
 namespace boost {

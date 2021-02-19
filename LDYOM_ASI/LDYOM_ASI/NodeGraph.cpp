@@ -17,11 +17,15 @@ extern bool storylineMode;
 extern NodeGraph* currentNodeGraphPtr;
 extern map <std::string, std::vector<std::string>> langMenu;
 sol::state NodeGraph::baseNode{};
+std::map<int, const char*> namesVars;
+extern bool ToggleButton(const char* str_id, bool* v);
 
 NodeGraph::NodeGraph()
 {
 	this->nodes = std::map<unsigned, sol::table>();
 	this->links = std::map<int, sol::table>();
+	this->vars = std::map<int, sol::table>();
+	namesVars.clear();
 
 	this->luaGraph.open_libraries(sol::lib::base, sol::lib::utf8, sol::lib::jit, sol::lib::ffi, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string);
 	this->luaGraph.set_function("print", &printLog);
@@ -71,6 +75,9 @@ ImColor getPinColor(NodeGraph::PinType type)
 	{
 	case NodeGraph::number:
 		return ImColor(0.09f, 0.52f, 0.82f, 1.0f);
+		break;
+	case NodeGraph::string:
+		return ImColor(0.27f, 0.75f, 0.33f, 1.0f);
 		break;
 	case NodeGraph::boolean:
 		return ImColor(0.79f, 0.05f, 0.06f, 1.0f);
@@ -226,18 +233,16 @@ void removeLink(int link_id)
 	currentNodeGraphPtr->links.erase(link_id);
 }
 
-std::map<int, const char*> namesVars;
-
 void NodeGraph::render()
 {
 	bool editor_hover = false;
 	ImGui::Begin("my first node graph");
 	ImGui::Text(std::to_string(ImGui::GetIO().Framerate).c_str());
 
-	ImGui::BeginChild("Panel", ImVec2(150, 0));
+	ImGui::BeginChild("Panel", ImVec2(230, 0));
 	ImGui::Text(langt("variables"));
 	ImGui::PushID(langt("variables"));
-	ImGui::SetNextItemWidth(150);
+	ImGui::SetNextItemWidth(220);
 	if (ImGui::ListBoxHeader("", namesVars.size(), 15)) {
 		for (auto names_var : namesVars) {
 			ImGui::PushID(names_var.first);
@@ -271,17 +276,18 @@ void NodeGraph::render()
 	if (!currentNodeGraphPtr->vars.empty()) {
 		ImGui::SameLine();
 		if (ImGui::Button(langt("delete"))) {
-			bool find = false;
-			for (auto node : currentNodeGraphPtr->nodes) {
-				if (node.second["var"].valid()) {
-					if (node.second["var"] == currentNodeGraphPtr->curr_var) {
-						sol::table pins = node.second["Pins"];
+			std::vector<int> finds;
+			for (auto node_pair : currentNodeGraphPtr->nodes) {
+				if (node_pair.second["var"].valid()) {
+					if (node_pair.second["var"] == currentNodeGraphPtr->curr_var) {
+						sol::table pins = node_pair.second["Pins"];
 						for (auto value : pins) {
 							sol::table pin = value.second;
 							int pin_type = pin["pin_type"];
 							if (pin_type == 0) {
-								int link = pin["link"];
-								removeLink(link);
+								sol::optional<int> link = pin["link"];
+								if (link.has_value())
+									removeLink(link.value());
 							}
 							else {
 								sol::table links = pin["links"];
@@ -289,11 +295,13 @@ void NodeGraph::render()
 									removeLink(link.second.as<int>());
 							}
 						}
-						currentNodeGraphPtr->nodes.erase(node.first);
-						find = true;
+						finds.push_back(node_pair.first);
 					}
 
 				}
+			}
+			for (auto find : finds) {
+				currentNodeGraphPtr->nodes.erase(find);
 			}
 			currentNodeGraphPtr->vars.erase(currentNodeGraphPtr->curr_var);
 			namesVars.erase(currentNodeGraphPtr->curr_var);
@@ -310,6 +318,9 @@ void NodeGraph::render()
 			sol::object typ = currentNodeGraphPtr->vars[currentNodeGraphPtr->curr_var]["typeValue"];
 			ImU8 min_s = 0, max_s = 2;
 			if (ImGui::SliderScalar(langt("type"), ImGuiDataType_U8, (void*)typ.pointer(), &min_s, &max_s, langMenu["typesValue"][*(unsigned char*)typ.pointer()].c_str())) {
+				sol::protected_function updVarVal = currentNodeGraphPtr->vars[currentNodeGraphPtr->curr_var]["updateTypeValue"];
+				auto result_updVarVal = updVarVal(currentNodeGraphPtr->vars[currentNodeGraphPtr->curr_var]);
+				ScriptManager::checkProtected(result_updVarVal);
 				for (auto node : currentNodeGraphPtr->nodes) {
 					if (node.second["var"].valid()) {
 						if (node.second["var"] == currentNodeGraphPtr->curr_var) {
@@ -318,8 +329,9 @@ void NodeGraph::render()
 								sol::table pin = value.second;
 								int pin_type = pin["pin_type"];
 								if (pin_type == 0) {
-									int link = pin["link"];
-									removeLink(link);
+									sol::optional<int> link = pin["link"];
+									if (link.has_value())
+										removeLink(link.value());
 								}
 								else {
 									sol::table links = pin["links"];
@@ -334,6 +346,15 @@ void NodeGraph::render()
 
 					}
 				}
+			}
+			sol::object val_var = currentNodeGraphPtr->vars[currentNodeGraphPtr->curr_var]["value"];
+			if (*(unsigned char*)typ.pointer() == 0)
+			{
+				ImGui::InputFloat(langt("value"), (float*)val_var.pointer());
+			} else if (*(unsigned char*)typ.pointer() == 1) {
+				ImGui::InputText(langt("value"), (char*)val_var.pointer(),128);
+			} else if (*(unsigned char*)typ.pointer() == 2) {
+				ToggleButton(langt("value"), (bool*)val_var.pointer());
 			}
 			ImGui::EndChild();
 		}
@@ -441,7 +462,7 @@ void NodeGraph::render()
 		for (auto categories : map_nodes_class)
 		{
 			std::string nameC = langt(categories.first);
-			if (ImGui::TreeNode(nameC.empty() ? categories.first.c_str() : nameC.c_str()))
+			if (ImGui::BeginMenu(nameC.empty() ? categories.first.c_str() : nameC.c_str()))
 			{
 				for (auto node_class : categories.second)
 				{
@@ -462,7 +483,7 @@ void NodeGraph::render()
 							continue;
 						}
 					}
-					if (ImGui::Selectable(name_node.c_str()))
+					if (ImGui::MenuItem(name_node.c_str()))
 					{
 						int id_node = currentNodeGraphPtr->nodes.empty()? 0 : (--currentNodeGraphPtr->nodes.end())->first + 100;
 						sol::protected_function fNew = node_class["new"];
@@ -474,8 +495,60 @@ void NodeGraph::render()
 						ImGui::CloseCurrentPopup();
 					}
 				}
-				ImGui::TreePop();
+				ImGui::EndMenu();
 			}
+		}
+		if (ImGui::BeginMenu(langt("variables"))) {
+			static bool select_var = false;
+			int var_id;
+			bool setter;
+			if (ImGui::BeginMenu(langt("get"))) {
+				for (auto var_pair : currentNodeGraphPtr->vars) {
+					sol::object var_name = var_pair.second["var_name"];
+					if (ImGui::MenuItem((const char*)var_name.pointer())) {
+						select_var = true;
+						var_id = var_pair.first;
+						setter = false;
+						
+					}
+				}
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu(langt("set"))) {
+				for (auto var_pair : currentNodeGraphPtr->vars) {
+					sol::object var_name = var_pair.second["var_name"];
+					if (ImGui::MenuItem((const char*)var_name.pointer())) {
+						select_var = true;
+						var_id = var_pair.first;
+						setter = true;
+
+					}
+				}
+				ImGui::EndMenu();
+			}
+
+			if (select_var)
+			{
+				for (auto lua_script : ScriptManager::lua_scripts) {
+					if (lua_script.first)
+					{
+						sol::optional<std::string> name = lua_script.second["info"]["name"];
+						if (name.value()._Equal("Main nodes")) {
+							int id_node = currentNodeGraphPtr->nodes.empty() ? 0 : (--currentNodeGraphPtr->nodes.end())->first + 100;
+							sol::table nodeVarClass = lua_script.second["NodeVariable"];
+							sol::protected_function fNew = nodeVarClass["new"];
+							auto result = fNew(nodeVarClass, id_node, var_id, setter);
+							if (ScriptManager::checkProtected(result)) {
+								currentNodeGraphPtr->nodes[id_node] = result;
+								imnodes::SetNodeScreenSpacePos(id_node, ImGui::GetWindowPos());
+							}
+						}
+					}
+				}
+			}
+			
+			ImGui::EndMenu();
 		}
 		ImGui::EndPopup();
 	}

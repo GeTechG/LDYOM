@@ -89,5 +89,15 @@ function Variable:initialize()
 	--1 - string
 	--2 - boolean
     self.typeValue = ffi.new("unsigned char[1]",0);
-    self.value = nil
+    self.value = ffi.new("float[1]",0);
+end
+
+function Variable:updateTypeValue()
+	if self.typeValue[0] == 0 then
+		self.value = ffi.new("float[1]",0);
+	elseif self.typeValue[0] == 1 then
+		self.value = ffi.new("char[128]","");
+	elseif self.typeValue[0] == 2 then
+		self.value = ffi.new("bool[1]",false);
+	end
 end
