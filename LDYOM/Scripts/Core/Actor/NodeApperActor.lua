@@ -27,14 +27,14 @@ function Node:draw()
 	end
 	imgui.imnodes.EndNodeTitleBar();
 	
-	imgui.imnodes.BeginInputAttribute(self.id+1);
+	imgui.imnodes.BeginStaticAttribute(self.id+1);
 	local names = ldyom.namesActors;
 	imgui.Text(ldyom.langt("actor"));
 	if (self.Pins[self.id+1].link == nil) then
 		imgui.SetNextItemWidth(150);
 		imgui.ComboVecChars("",self.Pins[self.id+1].value,names);
 	end
-	imgui.imnodes.EndInputAttribute();
+	imgui.imnodes.EndStaticAttribute();
 	
 	imgui.imnodes.BeginOutputAttribute(self.id+2);
 	imgui.Dummy(imgui.ImVec2:new(0,10));

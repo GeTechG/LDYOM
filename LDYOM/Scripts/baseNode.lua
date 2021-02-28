@@ -18,12 +18,12 @@ function BaseNode:getPinValue(idx,data,mission)
 	if self.Pins[idx].link then
         local link = data.links[self.Pins[idx].link]
         local node = data.nodes[math.floor(link.id_out/100)*100]
-        if node.class.type == 3 then
-            --return nodes2.real_vars[node.var]
+        if node.type == 3 then
+            return ldyom.realVariable[node.var]
         else
 			if not node.runnable then
 				node:play(data,mission);
-				node.runnable = true;
+				--node.runnable = true;
 			end
             return node.Pins[link.id_out].value;
         end
@@ -32,7 +32,7 @@ function BaseNode:getPinValue(idx,data,mission)
     end
 end
 
-function BaseNode:callOutputLinks(mission,id_out)
+function BaseNode:callOutputLinks(data,mission,id_out)
 	if self.Pins[id_out].links ~= nil then
 		for k,v in pairs(self.Pins[id_out].links) do
 			local link = mission.nodeGraph.links[v];
@@ -40,7 +40,7 @@ function BaseNode:callOutputLinks(mission,id_out)
 				local strr = Utf8ToAnsi(k2);
 				if strr == "id_in" then
 					local node_num = math.floor(v2 / 100)*100;
-					mission.nodeGraph.nodes[node_num]:play(mission);
+					mission.nodeGraph.nodes[node_num]:play(data,mission);
 					break;
 				end
 			end

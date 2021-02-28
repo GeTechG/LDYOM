@@ -84,13 +84,12 @@ function NodeVariable:draw()
 end
 
 function NodeVariable:play(data, mission)
-	local self_target = self:getPinValue(self.id+2,data)[0];
-	ldyom.setLastNode(self.id);
-	assert(self_target < #mission.list_targets,"The ID of the objective exceeds the number of actors.");
-	if ldyom.getCurrTarget() == self_target then
-		self:callOutputLinks(data,mission,self.id+3);
-	else
-		self:callOutputLinks(data,mission,self.id+4);
+	local ttype = ldyom.currentNodeGraph.vars[self.var].typeValue[0];
+	if self.setter then
+		if ttype == 1 then
+			ffi.copy(ldyom.realVariable[self.var],self:getPinValue(self.id+2,data,mission));
+		else
+			ldyom.realVariable[self.var][0] = self:getPinValue(self.id+2,data,mission)[0];
+		end
 	end
-	self:callOutputLinks(data,mission,self.id+5);
 end

@@ -34,4 +34,9 @@ function Node:draw()
 	
 end
 
+function Node:play(data, storyline)
+	ldyom.setLastNode(self.id);
+	ldyom.stopStoryline();
+end
+
 ldyom.nodeEditor.addNodeClass("Storyline",Node);

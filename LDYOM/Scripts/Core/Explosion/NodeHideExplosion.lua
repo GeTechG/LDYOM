@@ -2,10 +2,10 @@ ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-Node = bitser.registerClass(class("NodeShowActor", BaseNode));
+Node = bitser.registerClass(class("NodeHideExplosion", BaseNode));
 Node.static.mission = true;
 
-Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodeShowActor");
+Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodeHideExplosion");
 
 function Node:initialize(id)
 	BaseNode.initialize(self,id);
@@ -33,8 +33,8 @@ function Node:draw()
 	imgui.imnodes.EndInputAttribute();
 	
 	imgui.imnodes.BeginInputAttribute(self.id+2);
-	local names = ldyom.namesActors;
-	imgui.Text(ldyom.langt("actor"));
+	local names = ldyom.namesExplosions;
+	imgui.Text(ldyom.langt("explosion"));
 	if (self.Pins[self.id+2].link == nil) then
 		imgui.SetNextItemWidth(150);
 		imgui.ComboVecChars("",self.Pins[self.id+2].value,names);
@@ -50,14 +50,14 @@ function Node:draw()
 end
 
 function Node:play(data, mission)
-	local actor = self:getPinValue(self.id+2,data,mission)[0];
+	local explosion = self:getPinValue(self.id+2,data,mission)[0];
 	ldyom.setLastNode(self.id);
-	assert(actor < #mission.list_actors,"The ID of the actor exceeds the number of actors.");
-	mission.list_actors[actor+1]:updateMissionPed();
+	assert(explosion < #mission.list_explosions,"The ID of the explosion exceeds the number of explosions.");
+	mission.list_explosions[explosion+1]:removeMissionExplosion();
 	for k,v in pairs(data.nodes) do
-		local name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeApperActor");
+		local name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeDisapperExplosion");
 		local name_node = v["class"]["static"]["name"];
-		if name == name_node and v["Pins"][v.id+1].value[0] == actor then
+		if name == name_node and v["Pins"][v.id+1].value[0] == explosion then
 			callNodeThread(v,data,mission);
 		end
 	end
@@ -76,4 +76,4 @@ function Node:play(data, mission)
 	end
 end
 
-ldyom.nodeEditor.addNodeClass("Actor",Node);
+ldyom.nodeEditor.addNodeClass("Explosion",Node);

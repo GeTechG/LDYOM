@@ -2,16 +2,16 @@ ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-Node = bitser.registerClass(class("NodeMissionComplete", BaseNode));
+Node = bitser.registerClass(class("NodeDisapperParticle", BaseNode));
+Node.static.mission = true;
 
-Node.static.name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeMissionComplete");
-Node.static.storyline = true;
+Node.static.name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeDisapperParticle");
 
 function Node:initialize(id)
 	BaseNode.initialize(self,id);
 	self.type = 0;
 	self.Pins = {
-		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.number, 0, ffi.new("int[1]",0)),
+		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
 		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.void, 1),
 	};
 end
@@ -28,23 +28,23 @@ function Node:draw()
 	imgui.imnodes.EndNodeTitleBar();
 	
 	imgui.imnodes.BeginStaticAttribute(self.id+1);
-	local names = ldyom.getStorylineMissionsNames();
-	imgui.Text(ldyom.langt("mission"));
+	local names = ldyom.namesParticles;
+	imgui.Text(ldyom.langt("particle"));
 	if (self.Pins[self.id+1].link == nil) then
 		imgui.SetNextItemWidth(150);
-		imgui.ComboVecStr('',self.Pins[self.id+1].value,names);
+		imgui.ComboVecChars("",self.Pins[self.id+1].value,names);
 	end
 	imgui.imnodes.EndStaticAttribute();
 	
 	imgui.imnodes.BeginOutputAttribute(self.id+2);
-	imgui.Dummy(imgui.ImVec2:new(0,20));
+	imgui.Dummy(imgui.ImVec2:new(0,10));
 	imgui.imnodes.EndOutputAttribute();
 	
 	imgui.imnodes.EndNode();
 	
 end
 
-function Node:play(data, storyline)
+function Node:play(data, mission)
 	ldyom.setLastNode(self.id);
 	if self.Pins[self.id+2].links ~= nil then
 		for k,v in pairs(self.Pins[self.id+2].links) do
@@ -53,7 +53,7 @@ function Node:play(data, storyline)
 				local strr = Utf8ToAnsi(k2);
 				if strr == "id_in" then
 					local node_num = math.floor(v2 / 100)*100;
-					data.nodes[node_num]:play(data,storyline);
+					data.nodes[node_num]:play(data,mission);
 					break;
 				end
 			end
@@ -61,4 +61,4 @@ function Node:play(data, storyline)
 	end
 end
 
-ldyom.nodeEditor.addNodeClass("Storyline",Node);
+ldyom.nodeEditor.addNodeClass("Particle",Node);

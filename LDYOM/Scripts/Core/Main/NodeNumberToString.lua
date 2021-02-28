@@ -2,17 +2,16 @@ ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-Node = bitser.registerClass(class("NodePrintLog", BaseNode));
+Node = bitser.registerClass(class("NodeNumberToString", BaseNode));
 
-Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodePrintLog");
+Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodeNumberToString");
 
 function Node:initialize(id)
 	BaseNode.initialize(self,id);
 	self.type = 4;
 	self.Pins = {
-		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.void, 0),
-		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.string, 0, ffi.new("char[128]","")),
-		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.void, 1)
+		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.number, 0, ffi.new("float[1]",0)),
+		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.string, 1, ffi.new("char[128]","")),
 	};
 end
 
@@ -28,18 +27,13 @@ function Node:draw()
 	imgui.imnodes.EndNodeTitleBar();
 	
 	imgui.imnodes.BeginInputAttribute(self.id+1);
-	imgui.Dummy(imgui.ImVec2:new(0,10));
-	imgui.imnodes.EndInputAttribute();
-	
-	imgui.imnodes.BeginInputAttribute(self.id+2);
-	imgui.Text(ldyom.langt("text"));
-	if (self.Pins[self.id+2].link == nil) then
+	if (self.Pins[self.id+1].link == nil) then
 		imgui.SetNextItemWidth(150);
-		imgui.InputText("",self.Pins[self.id+2].value,ffi.sizeof(self.Pins[self.id+2].value));
+		imgui.InputFloat("",self.Pins[self.id+1].value);
 	end
 	imgui.imnodes.EndInputAttribute();
 	
-	imgui.imnodes.BeginOutputAttribute(self.id+3);
+	imgui.imnodes.BeginOutputAttribute(self.id+2);
 	imgui.Dummy(imgui.ImVec2:new(0,10));
 	imgui.imnodes.EndOutputAttribute();
 	
@@ -48,10 +42,9 @@ function Node:draw()
 end
 
 function Node:play(data, mission)
-	local str = ffi.string(self:getPinValue(self.id+2,data,mission));
+	local value = self:getPinValue(self.id+1,data,mission)[0];
 	ldyom.setLastNode(self.id);
-	print(str);
-	self:callOutputLinks(data,mission,self.id+3);
+	ffi.copy(self.Pins[self.id+2].value, tostring(value));
 end
 
 ldyom.nodeEditor.addNodeClass("Main",Node);

@@ -2,17 +2,17 @@ ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-Node = bitser.registerClass(class("NodeDisapperActor", BaseNode));
+Node = bitser.registerClass(class("NodeExplosionToExplosion", BaseNode));
 Node.static.mission = true;
 
-Node.static.name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeDisapperActor");
+Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodeGetExplosionHandle");
 
 function Node:initialize(id)
 	BaseNode.initialize(self,id);
-	self.type = 0;
+	self.type = 4;
 	self.Pins = {
 		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
-		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.void, 1),
+		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.number, 1, ffi.new("int[1]")),
 	};
 end
 
@@ -28,16 +28,15 @@ function Node:draw()
 	imgui.imnodes.EndNodeTitleBar();
 	
 	imgui.imnodes.BeginStaticAttribute(self.id+1);
-	local names = ldyom.namesActors;
-	imgui.Text(ldyom.langt("actor"));
-	if (self.Pins[self.id+1].link == nil) then
-		imgui.SetNextItemWidth(150);
-		imgui.ComboVecChars("",self.Pins[self.id+1].value,names);
-	end
+	local names = ldyom.namesExplosions;
+	imgui.Text(ldyom.langt("explosion"));
+	imgui.SetNextItemWidth(150);
+	imgui.ComboVecChars("",self.Pins[self.id+1].value,names);
 	imgui.imnodes.EndStaticAttribute();
 	
 	imgui.imnodes.BeginOutputAttribute(self.id+2);
-	imgui.Dummy(imgui.ImVec2:new(0,10));
+	imgui.Indent(80);
+	imgui.Text(ldyom.langt("CoreHandleExplosion"));
 	imgui.imnodes.EndOutputAttribute();
 	
 	imgui.imnodes.EndNode();
@@ -45,20 +44,10 @@ function Node:draw()
 end
 
 function Node:play(data, mission)
+	local explosion = self.Pins[self.id+1].value[0];
 	ldyom.setLastNode(self.id);
-	if self.Pins[self.id+2].links ~= nil then
-		for k,v in pairs(self.Pins[self.id+2].links) do
-			local link = data.links[v];
-			for k2,v2 in pairs(link) do
-				local strr = Utf8ToAnsi(k2);
-				if strr == "id_in" then
-					local node_num = math.floor(v2 / 100)*100;
-					data.nodes[node_num]:play(data,mission);
-					break;
-				end
-			end
-		end
-	end
+	assert(mission.list_explosions[explosion+1].missionFire ~= 0, "The explosion is not yet established or has already disappeared.");
+	self.Pins[self.id+2].value[0] = mission.list_explosions[explosion+1].missionFire;
 end
 
-ldyom.nodeEditor.addNodeClass("Actor",Node);
+ldyom.nodeEditor.addNodeClass("Explosion",Node);

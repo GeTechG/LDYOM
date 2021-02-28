@@ -57,7 +57,7 @@ function Node:play(data, mission)
 	for k,v in pairs(data.nodes) do
 		local name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeDisapperActor");
 		local name_node = v["class"]["static"]["name"];
-		if name == name_node then
+		if name == name_node and v["Pins"][v.id+1].value[0] == actor then
 			callNodeThread(v,data,mission);
 		end
 	end
