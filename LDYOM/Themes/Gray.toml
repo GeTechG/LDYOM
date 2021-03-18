@@ -5,7 +5,7 @@
     value = 15.0
 
 [frame.padding]
-    value = [5, 5]
+    value = [2.5, 3.5]
 
 [frame.rounding]
     value = 6.0
@@ -14,7 +14,7 @@
     value = 8.0
 
 [item.spacing]
-    value = [12, 4]
+    value = [4, 4]
 
 [scrollbar.size]
     value = 15.0

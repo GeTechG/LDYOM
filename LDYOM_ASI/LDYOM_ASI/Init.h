@@ -77,7 +77,7 @@ public:
 	int health = 100;
 	int weapon = 0;
 	int ammo = 0;
-	int group = 0;
+	int group = 1;
 	bool randomSpawn = false;
 	int accuracy = 0;
 	bool useTarget = true;

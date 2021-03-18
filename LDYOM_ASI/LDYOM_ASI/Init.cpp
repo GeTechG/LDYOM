@@ -27,7 +27,7 @@ extern void GXTEncode(std::string& str);
 extern bool mission_started;
 extern bool storyline_started;
 extern bool is_utf8(const char* string);
-void rotateVec2(float& x, float& y, int angle);
+void rotateVec2(float& x, float& y, float angle);
 
 float camera_zoom = 5.0f;
 float camera_angle[2] = { 45.0f, 0.0f };
@@ -194,22 +194,22 @@ void Actor::updateMissionPed() {
 		CStreaming::LoadAllRequestedModels(false);
 		modell = 290 + this->slotSkin - 1;
 	}
-	int pedType = (this->group == 0)? 23 : 23 + this->group;
-	this->missionPed = new CCivilianPed(static_cast<ePedType>(pedType), modell);
-	if (this->group == 0)
-	{
-		unsigned g = CWorld::Players[0].m_PlayerData.m_nPlayerGroup;
-		Command<Commands::SET_GROUP_MEMBER>(g, this->missionPed);
-	}
+	int pedType = 23 + this->group;
+	int pedHandl;
+	Command<Commands::CREATE_CHAR>(pedType, modell, this->pos[0], this->pos[1], this->pos[2], &pedHandl);
+	this->missionPed = CPools::GetPed(pedHandl);
 	this->missionPed->SetPosn(this->pos[0], this->pos[1], this->pos[2]);
-	this->missionPed->SetHeading((float)rad(this->angle));
+	Command<Commands::SET_CHAR_HEADING>(this->missionPed, this->angle);
 	this->missionPed->m_bUsesCollision = false;
 	this->missionPed->m_fHealth = this->health;
 	this->missionPed->m_nWeaponAccuracy = this->accuracy;
 	this->missionPed->m_nPedFlags.bNoCriticalHits = static_cast<unsigned>(this->headshot);
-	this->missionPed->m_bStreamingDontDelete = 1;
-	this->missionPed->m_nCreatedBy = 2;
-	CWorld::Add(this->missionPed);
+	if (this->group == 0)
+	{
+		int g;
+		Command<Commands::GET_PLAYER_GROUP>(0, &g);
+		Command<Commands::SET_GROUP_MEMBER>(g, this->missionPed);
+	}
 	while (DistanceBetweenPoints(TheCamera.GetPosition(),missionPed->GetPosition()) > 100.0f)
 	{
 		this_coro::wait(0ms);
@@ -601,6 +601,7 @@ void Car::updateEditorCar(bool recolor) {
 	editorCar->m_nStatus = 4;
 	editorCar->m_bUsesCollision = false;
 	editorCar->m_nVehicleFlags.bEngineOn = 0;
+	Command<Commands::SET_CAR_AS_MISSION_CAR>(editorCar);
 	Command<Commands::FREEZE_CAR_POSITION>(editorCar, true);
 	editorCar->m_nVehicleFlags.bCanBeDamaged = false;
 	CStreaming::RemoveAllUnusedModels();
@@ -771,6 +772,7 @@ void Object::updateEditorObject() {
 	CStreaming::RemoveAllUnusedModels();
 	editorObject->SetPosn(pos[0], pos[1], pos[2]);
 	editorObject->SetOrientation(rad(rotation[0]), rad(rotation[1]), rad(rotation[2]));
+	editorObject->m_nObjectType = eObjectType::OBJECT_MISSION;
 	editorObject->m_bIsStatic = 1;
 	CWorld::Add(editorObject);
 }
@@ -795,6 +797,9 @@ void Object::updateMissionObject()
 	missionObject->SetOrientation(rad(rotation[0]), rad(rotation[1]), rad(rotation[2]));
 	missionObject->m_nColDamageEffect = 1;
 	CWorld::Add(missionObject);
+	missionObject->m_nObjectType = eObjectType::OBJECT_MISSION;
+	Command<Commands::DONT_REMOVE_OBJECT>(missionObject);
+	Command<0x0550>(missionObject, 1);
 }
 
 void Object::removeMissionObject()
@@ -834,12 +839,13 @@ void Particle::updateEditorParticle() {
 	CStreaming::LoadAllRequestedModels(false);
 
 	editorParticle.second = CObject::Create(327);
+	editorParticle.second->m_nObjectType = eObjectType::OBJECT_MISSION;
 	const std::string* modell = &Particle_name[modelID];
-	Command<Commands::CREATE_FX_SYSTEM_ON_OBJECT_WITH_DIRECTION>(modell->c_str(), editorParticle.second, 0, 0, 0, 0.1f, 0.1f, 0.1f, 1, &editorParticle.first);
+	Command<Commands::CREATE_FX_SYSTEM_ON_OBJECT_WITH_DIRECTION>(modell->c_str(), editorParticle.second, 0.0f, 0.0f, 0.0f, (float)rotation[0], (float)rotation[1], (float)rotation[2], 1, &editorParticle.first);
 	Command<Commands::PLAY_FX_SYSTEM>(editorParticle.first);
 	editorParticle.second->m_bIsVisible = false;
 	editorParticle.second->SetPosn(pos[0], pos[1], pos[2]);
-	Command<Commands::SET_OBJECT_ROTATION>(editorParticle.second, (float)rotation[0], (float)rotation[1], (float)rotation[2]);
+	//Command<Commands::SET_OBJECT_ROTATION>(editorParticle.second, (float)rotation[0], (float)rotation[1], (float)rotation[2]);
 	CStreaming::RemoveAllUnusedModels();
 	CWorld::Add(editorParticle.second);
 }
@@ -865,47 +871,50 @@ void Particle::updateMissionParticle(void* void_mission) {
 	if (tied == 0)
 	{
 		missionParticle.second = CObject::Create(327);
-		Command<Commands::CREATE_FX_SYSTEM_ON_OBJECT_WITH_DIRECTION>(modell->c_str(), missionParticle.second, 0, 0, 0, 0.1f, 0.1f, 0.1f, 1, &missionParticle.first);
+		missionParticle.second->m_nObjectType = eObjectType::OBJECT_MISSION;
+		Command<Commands::CREATE_FX_SYSTEM_ON_OBJECT_WITH_DIRECTION>(modell->c_str(), missionParticle.second, 0, 0, 0, (float)rotation[0], (float)rotation[1], (float)rotation[2], 1, &missionParticle.first);
 		Command<Commands::PLAY_FX_SYSTEM>(missionParticle.first);
 		missionParticle.second->m_bIsVisible = false;
 		missionParticle.second->SetPosn(pos[0], pos[1], pos[2]);
-		Command<Commands::SET_OBJECT_ROTATION>(missionParticle.second, (float)rotation[0], (float)rotation[1], (float)rotation[2]);
+		//Command<Commands::SET_OBJECT_ROTATION>(missionParticle.second, (float)rotation[0], (float)rotation[1], (float)rotation[2]);
 		CStreaming::RemoveAllUnusedModels();
 		CWorld::Add(missionParticle.second);
 	}
 	else if (tied == 1)
 	{
 		CVector& tiedPos = mission->list_actors[tiedID]->missionPed->GetPosition();
-		int angleTied = static_cast<int>(deg(mission->list_actors[tiedID]->missionPed->GetHeading()));
+		float angleTied = static_cast<float>(deg(mission->list_actors[tiedID]->missionPed->GetHeading()));
 		float xx = pos[0] - tiedPos.x, xy = pos[1] - tiedPos.y, xz = pos[2] - tiedPos.z;
-		rotateVec2(xx, xy, angleTied);
-		Command<Commands::CREATE_FX_SYSTEM_ON_CHAR_WITH_DIRECTION>(modell->c_str(), mission->list_actors[tiedID]->missionPed, xx, xy, xz, rotation[0], rotation[1], rotation[2], 1, &missionParticle.first);
+		rotateVec2(xx, xy, -angleTied);
+		Command<Commands::CREATE_FX_SYSTEM_ON_CHAR_WITH_DIRECTION>(modell->c_str(), mission->list_actors[tiedID]->missionPed, xx, xy, xz, (float)rotation[0], (float)rotation[1] - angleTied, (float)rotation[2], 1, &missionParticle.first);
 		Command<Commands::PLAY_FX_SYSTEM>(missionParticle.first);
 	}
 	else if (tied == 2)
 	{
 		CVector& tiedPos = mission->list_cars[tiedID]->missionCar->GetPosition();
-		int angleTied = static_cast<int>(deg(mission->list_cars[tiedID]->missionCar->GetHeading()));
+		float angleTied = static_cast<float>(deg(mission->list_cars[tiedID]->missionCar->GetHeading()));
 		float xx = pos[0] - tiedPos.x, xy = pos[1] - tiedPos.y, xz = pos[2] - tiedPos.z;
-		rotateVec2(xx, xy, angleTied);
-		Command<Commands::CREATE_FX_SYSTEM_ON_CAR_WITH_DIRECTION>(modell->c_str(), mission->list_cars[tiedID]->missionCar, xx, xy, xz, rotation[0], rotation[1], rotation[2], 1, &missionParticle.first);
+		rotateVec2(xx, xy, -angleTied);
+		Command<Commands::CREATE_FX_SYSTEM_ON_CAR_WITH_DIRECTION>(modell->c_str(), mission->list_cars[tiedID]->missionCar, xx, xy, xz, (float)rotation[0], (float)rotation[1] - angleTied, (float)rotation[2], 1, &missionParticle.first);
 		Command<Commands::PLAY_FX_SYSTEM>(missionParticle.first);
 	}
 	else if (tied == 3)
 	{
 		CVector& tiedPos = mission->list_objects[tiedID]->missionObject->GetPosition();
-		int angleTied = static_cast<int>(deg(mission->list_objects[tiedID]->missionObject->GetHeading()));
+		float angleTied = static_cast<float>(deg(mission->list_objects[tiedID]->missionObject->GetHeading()));
 		float xx = pos[0] - tiedPos.x, xy = pos[1] - tiedPos.y, xz = pos[2] - tiedPos.z;
-		rotateVec2(xx, xy, angleTied);
-		Command<Commands::CREATE_FX_SYSTEM_ON_OBJECT_WITH_DIRECTION>(modell->c_str(), mission->list_objects[tiedID]->missionObject, xx, xy, xz, rotation[0], rotation[1], rotation[2], 1, &missionParticle.first);
+		rotateVec2(xx, xy, -angleTied);
+		Command<Commands::CREATE_FX_SYSTEM_ON_OBJECT_WITH_DIRECTION>(modell->c_str(), mission->list_objects[tiedID]->missionObject, xx, xy, xz, (float)rotation[0], (float)rotation[1] - angleTied, (float)rotation[2], 1, &missionParticle.first);
 		Command<Commands::PLAY_FX_SYSTEM>(missionParticle.first);
 	}
 }
 
 void Particle::removeMissionParticle() {
 	if (this->missionParticle.first != NULL) {
-		CWorld::Remove(this->missionParticle.second);
-		this->missionParticle.second->Remove();
+		if (this->tied == 0) {
+			CWorld::Remove(this->missionParticle.second);
+			this->missionParticle.second->Remove();
+		}
 		Command<Commands::KILL_FX_SYSTEM>(this->missionParticle.first);
 		delete this->missionParticle.second;
 		this->missionParticle.first = NULL;
@@ -1159,6 +1168,9 @@ void Audio::loadAudiosList() {
 
 void Audio::loadAudio()
 {
+	if (namesAudioFiles.empty())
+		return;
+
 	std::stringstream path;
 	path << "LDYOM//Missions_packs//" << replace_symb(UTF8_to_CP1251(*nameCurrPack)) << "//audio//" << namesAudioFiles[sound] << ".mp3";
 
@@ -1171,11 +1183,16 @@ void Audio::loadAudio()
 }
 
 void Audio::unloadAudio() {
+	if (namesAudioFiles.empty())
+		return;
 	Command<0x0AAE>(missionAudio);
 }
 
-void Audio::play(void* void_mission)
-{
+void Audio::play(void* void_mission) {
+
+	if (namesAudioFiles.empty())
+		return;
+	
 	Mission* mission = static_cast<Mission*>(void_mission);
 	if (audio3D)
 	{
@@ -1202,6 +1219,9 @@ void Audio::play(void* void_mission)
 
 void Audio::stop()
 {
+	if (namesAudioFiles.empty())
+		return;
+	
 	Command<0x0AAD>(missionAudio, 0);
 }
 

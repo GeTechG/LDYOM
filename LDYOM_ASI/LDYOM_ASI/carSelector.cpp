@@ -33,7 +33,7 @@ void carSelector::fShow() {
 		fInitVehicles();
 		bInitVehicles = true;
 	}
-
+	ImGui::SetNextWindowSize(ImVec2(850,580), ImGuiCond_FirstUseEver);
 	ImGui::Begin(langt("carSelector"), NULL);
 
 	ImGui::SetNextItemWidth(120);
@@ -50,7 +50,7 @@ void carSelector::fShow() {
 	}
 	ImGui::SameLine();
 	ImGui::SetNextItemWidth(120);
-	ImGui::DragFloat("scale", &scale, 0.01f, 0.0001f);
+	ImGui::DragFloat("scale", &scale, 0.01f, 0.0001f, 100.0f);
 
 	if (ImGui::BeginPopup("filter")) {
 		
@@ -76,9 +76,10 @@ void carSelector::fShow() {
 		ImGui::EndPopup();
 	}
 
-	ImGui::BeginChild("vehs", ImVec2(ImGui::GetWindowWidth()-5, ImGui::GetWindowHeight() - ImGui::GetCursorPosY()-5), true);
+	ImGui::BeginChild("vehs", ImVec2(ImGui::GetWindowWidth() - 5.0f, ImGui::GetWindowHeight() - ImGui::GetCursorPosY()-5), true);
 	
 	int countWidth = (int)(ImGui::GetWindowWidth() / (224 * scale));
+	if (countWidth <= 0) { countWidth = 1; }
 	int i = 1;
 	for (VehicleInfo veh : vehicles) {
 		if (search[0] != '\0') {

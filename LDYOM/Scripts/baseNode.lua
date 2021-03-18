@@ -35,12 +35,12 @@ end
 function BaseNode:callOutputLinks(data,mission,id_out)
 	if self.Pins[id_out].links ~= nil then
 		for k,v in pairs(self.Pins[id_out].links) do
-			local link = mission.nodeGraph.links[v];
+			local link = data.links[v];
 			for k2,v2 in pairs(link) do
 				local strr = Utf8ToAnsi(k2);
 				if strr == "id_in" then
 					local node_num = math.floor(v2 / 100)*100;
-					mission.nodeGraph.nodes[node_num]:play(data,mission);
+					data.nodes[node_num]:play(data,mission);
 					break;
 				end
 			end

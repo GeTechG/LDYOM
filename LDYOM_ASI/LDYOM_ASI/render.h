@@ -26,6 +26,8 @@ static bool openFrame = false;
 bool demo = true;
 bool init_ImGui = false;
 bool load_theme = false;
+bool off_gui = false;
+bool draw_lines = false;
 HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hdest, const RGNDATA* pDirtyRegion)
 {
 	
@@ -66,7 +68,7 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 		if (memsafe::read<int>((void*)0xBA67A4) == 0) {
-			if (openFrame && !mission_started && !storyline_started) {
+			if (openFrame && !mission_started && !storyline_started && !off_gui) {
 				if (bMainMenu) { fMainMenu(); }
 				if (bTargets) { fTargets(); }
 				if (bActors) { fActors(); }
@@ -90,6 +92,15 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 				if (bScriptsSettings) { fScriptsSettings(); }
 				if (bNodeEditor) { NodeGraph::render(); }
 				ImGui::ShowDemoWindow(&openFrame);
+			}
+			if (draw_lines && editmodeCamera)
+			{
+				ImVec2& screenRes = ImGui::GetIO().DisplaySize;
+				for (float i = 1.0f; i < 3.0f; i++)
+				{
+					ImGui::GetBackgroundDrawList()->AddLine(ImVec2(0.0f, (screenRes.y / 3.0f) * i), ImVec2(screenRes.x, (screenRes.y / 3.0f) * i), ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f, 1.0f, 1.0f, 1.0f)));
+					ImGui::GetBackgroundDrawList()->AddLine(ImVec2((screenRes.x / 3.0f) * i, 0.0f), ImVec2((screenRes.x / 3) * i, screenRes.y), ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f, 1.0f, 1.0f, 1.0f)));
+				}
 			}
 		}
 		ImGui::EndFrame();
@@ -158,7 +169,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	openFrame = bMainMenu || bTargets || bActors || bCars || carSelector::bShow || bGroupRelations || bObjects || bParticles || bPickups || bExplosions || bAudios || bMissionPacks || bPlayer || bMissionSettings || bStorylines || bTools || bSettings || bInfo || bStorylineMainMenu || bStorylineCheckpoints || bScriptsSettings || bNodeEditor;
 
-	if (openFrame && !mission_started && !storyline_started) {
+	if (openFrame && !mission_started && !storyline_started && !off_gui) {
 		Command<0x0AB3>(700, 1);
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 	} else

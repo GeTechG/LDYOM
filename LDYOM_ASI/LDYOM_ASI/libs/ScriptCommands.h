@@ -120,19 +120,36 @@ static bool CallCommandByIdPtr(unsigned int commandId, sol::table params) {
 	for (auto param : params)
 	{
 		sol::table value = param.second;
-		std::string type = value[1];
+		std::string type = value[2];
 		if (type._Equal("int"))
 		{
-			int val = value[2];
+			int val = value[1];
 			code.Pack(val);
 		} else if (type._Equal("string"))
 		{
-			std::string val = value[2];
+			std::string val = value[1];
 			code.Pack(val.c_str());
+		}
+		else if (type._Equal("bool"))
+		{
+			bool val = value[1];
+			code.Pack((int)val);
 		} else if (type._Equal("float"))
 		{
-			float val = value[2];
+			float val = value[1];
 			code.Pack(val);
+		} else if (type._Equal("ped"))
+		{
+			CPed* val = value[1];
+			code.Pack(val);
+		} else if (type._Equal("int*"))
+		{
+			sol::object val = value[1];
+			code.Pack((int*)val.pointer());
+		} else if (type._Equal("float*"))
+		{
+			sol::object val = value[1];
+			code.Pack((float*)val.pointer());
 		}
 	}
 #ifdef GTASA

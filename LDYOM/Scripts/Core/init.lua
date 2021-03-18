@@ -21,6 +21,14 @@ function deserilize(data)
 	return bitser.loads(data);
 end
 
+function fif(cond,truee,falsee)
+	if cond then
+		return truee;
+	else
+		return falsee;
+	end
+end
+
 function main()
 	bitser.registerClass(BaseNode);
 	bitser.registerClass(BasePin);
@@ -28,6 +36,10 @@ function main()
 	bitser.registerClass(Variable);
 	
 	ldyom.langMenu["CoreCalcParam"] = ldyom.parseJsonArray(ldyom.langt("CoreCalcParam"));
+	
+	callOpcode(0x0ADF,{{"HENAA","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HENAA"))),"string"}});
+	callOpcode(0x0ADF,{{"HVIEW","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HVIEW"))),"string"}});
+	callOpcode(0x0ADF,{{"HAPA","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HAPA"))),"string"}});
 	
 	require "LDYOM.Scripts.Core.VariableNode"
 	
@@ -92,6 +104,19 @@ function main()
 	require "LDYOM.Scripts.Core.Audio.NodeApperAudio"
 	require "LDYOM.Scripts.Core.Audio.NodeHideAudio"
 	require "LDYOM.Scripts.Core.Audio.NodeDisapperAudio"
+	
+	require "LDYOM.Scripts.Core.Ped.NodePlayAnim"
+	require "LDYOM.Scripts.Core.Ped.NodePedPath"
+	require "LDYOM.Scripts.Core.Ped.NodePedPathOnCar"
+	require "LDYOM.Scripts.Core.Ped.NodePedExitCar"
+	require "LDYOM.Scripts.Core.Ped.NodePedChaseCar"
+	require "LDYOM.Scripts.Core.Ped.NodePedEnterCar"
+	require "LDYOM.Scripts.Core.Ped.NodePedGotoPed"
+	require "LDYOM.Scripts.Core.Ped.NodePedGiveWeapon"
+	require "LDYOM.Scripts.Core.Ped.NodePedTakeWeapons"
+	
+	require "LDYOM.Scripts.Core.Vehicle.NodeOpenDoors"
+	require "LDYOM.Scripts.Core.Vehicle.NodeLockVehicle"
 	
 	print("Core nodes loaded")
 end

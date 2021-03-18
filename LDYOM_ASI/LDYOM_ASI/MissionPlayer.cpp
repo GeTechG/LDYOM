@@ -117,7 +117,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 	this_coro::wait(200ms);
 
 	//set player
-	playerPed->m_fCurrentRotation = static_cast<float>(rad(mission->player.angle));
+	Command<Commands::SET_CHAR_HEADING>(playerPed, mission->player.angle);
 	playerPed->SetPosn(mission->player.pos[0], mission->player.pos[1], mission->player.pos[2]);
 	Command<Commands::REQUEST_COLLISION>(mission->player.pos[0], mission->player.pos[1]);
 	CWorld::Players[0].m_PlayerData.m_pWanted->SetWantedLevelNoDrop(mission->wanted_min);
@@ -151,7 +151,6 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 	playerPed->SetCurrentWeapon(static_cast<eWeaponType>(ID_Weapons[mission->player.weapon]));
 	CStreaming::RemoveAllUnusedModels();
 	
-	
 	//show name mission.
 	
 	std::string name_miss = is_utf8(mission->name.c_str())? UTF8_to_CP1251(mission->name) : mission->name;
@@ -172,13 +171,13 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 			{
 				if (j == 0)
 				{
-					Command<Commands::SET_RELATIONSHIP>(mission->groupRelations[i][j], 24 + i, 0);
-					Command<Commands::SET_RELATIONSHIP>(mission->groupRelations[i][j], 24 + i, 23);
-					Command<Commands::SET_RELATIONSHIP>(mission->groupRelations[i][j], 23, 24 + i);
+					Command<Commands::SET_RELATIONSHIP>((int)mission->groupRelations[i][j], 24 + i, 0);
+					Command<Commands::SET_RELATIONSHIP>((int)mission->groupRelations[i][j], 24 + i, 23);
+					Command<Commands::SET_RELATIONSHIP>((int)mission->groupRelations[i][j], 23, 24 + i);
 				} else
 				{
 					if (i != j - 1) {
-						Command<Commands::SET_RELATIONSHIP>(mission->groupRelations[i][j], 24 + i, 24 + j-1);
+						Command<Commands::SET_RELATIONSHIP>((int)mission->groupRelations[i][j], 24 + i, 24 + j-1);
 					}
 				}
 			}
@@ -603,7 +602,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							CRadar::SetBlipFriendly(blip, 1);
 						}
 					}
-					unsigned sphere = CTheScripts::AddScriptSphere(600, CVector(targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2]), 2.0f);
+					unsigned sphere = CTheScripts::AddScriptSphere(600, CVector(targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2]), targetPtr->radius);
 					while (!Command<Commands::LOCATE_CHAR_ANY_MEANS_3D>(playerPed, targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2], targetPtr->radius, targetPtr->radius, targetPtr->radius, false) && mission_started)
 					{
 						this_coro::wait(0ms);
@@ -614,6 +613,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 					{
 						CRadar::ClearBlip(blip);
 					}
+					CMessages::ClearMessages(true);
 					break;
 				}
 				case 1: {
@@ -643,6 +643,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 					{
 						CRadar::ClearBlip(blip);
 					}
+					CMessages::ClearMessages(true);
 					break;
 				}
 				case 2: {
@@ -732,6 +733,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							CRadar::ClearBlip(blip);
 						}
 					}
+					CMessages::ClearMessages(true);
 					break;
 				}
 				case 3: {
@@ -743,12 +745,13 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							CHud::bScriptDontDisplayRadar = true;
 							CHud::m_Wants_To_Draw_Hud = false;
 							TheCamera.m_bWideScreenOn = true;
+							Command<Commands::SET_PLAYER_CONTROL>(0, 0);
 
 							if (current_mission_target > 0 && !(mission->list_targets[current_mission_target - 1]->type == 3 && mission->list_targets[current_mission_target - 1]->targetType == 0))
 							{
-								TheCamera.Fade(500, 0);
+								TheCamera.Fade(0.5f, 0);
 								this_coro::wait(1s);
-								TheCamera.Fade(500, 1);
+								TheCamera.Fade(0.5f, 1);
 								skip = 1;
 							}
 
@@ -769,115 +772,117 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							switch (targetPtr->tied) {
 							case 0: {
 								switch (targetPtr->follow) {
-								case 0: {
-									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									float rxx = targetPtr->rotate[0], rxy = targetPtr->rotate[1], rxz = targetPtr->rotate[2];
-									float x1 = xx, y1 = xy, z1 = xz;
-									x1 = x1 + 2 * sin(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
-									y1 = y1 + 2 * cos(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
-									z1 = z1 + 2 * cos(static_cast<float>(rad(rxx)));
-									if (targetPtr->moveCam)
-									{
-										Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time*1000));
-										Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, rad(rxz), 0);
-										Command<Commands::POINT_CAMERA_AT_POINT>(x1, y1, z1, 1);
-									}
-									else
-									{
-										Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, rad(rxz), 0);
-										Command<Commands::POINT_CAMERA_AT_POINT>(x1, y1, z1, 2);
-									}
-
-									std::string str_text = targetPtr->text;
-									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
-									GXTEncode(str_text);
-									CMessages::AddMessage(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
-									this_coro::wait(targetPtr->time*1000.0*skip);
-									break;
-								}
-								case 1: {
-									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									if (targetPtr->moveCam)
-									{
-										Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
-										Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
-										Command<Commands::POINT_CAMERA_AT_CHAR>(mission->list_actors[targetPtr->followID]->missionPed, 15, 1);
-									}
-									else
-									{
-										Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
-										Command<Commands::POINT_CAMERA_AT_CHAR>(mission->list_actors[targetPtr->followID]->missionPed, 15, 2);
-									}
-
-									std::string str_text = targetPtr->text;
-									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
-									GXTEncode(str_text);
-									CMessages::AddMessage(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
-									this_coro::wait(targetPtr->time*1000.0f*skip);
-
-									break;
-								}
-								case 2: {
-									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									if (targetPtr->moveCam)
-									{
-										Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
-										Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
-										Command<Commands::POINT_CAMERA_AT_CAR>(mission->list_cars[targetPtr->followID]->missionCar, 15, 1);
-									}
-									else
-									{
-										Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
-										Command<Commands::POINT_CAMERA_AT_CAR>(mission->list_cars[targetPtr->followID]->missionCar, 15, 2);
-									}
-
-									std::string str_text = targetPtr->text;
-									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
-									GXTEncode(str_text);
-									CMessages::AddMessage(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
-									this_coro::wait(targetPtr->time*1000.0f*skip);
-
-									break;
-								}
-								case 3: {
-									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									CVector& pos = mission->list_objects[targetPtr->followID]->missionObject->GetPosition();
-
-									std::string str_text = targetPtr->text;
-									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
-									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
-
-									unsigned int timer = 0;
-									auto last_time = clock();
-									if (targetPtr->moveCam)
-									{
-
-										Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
-										Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
-
-										while (timer < targetPtr->time * 1000 * skip && mission_started)
+									case 0: {
+										float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
+										float rxx = targetPtr->rotate[0], rxy = targetPtr->rotate[1], rxz = targetPtr->rotate[2];
+										float x1 = xx, y1 = xy, z1 = xz;
+										x1 = x1 + 2 * sin(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
+										y1 = y1 + 2 * cos(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
+										z1 = z1 + 2 * cos(static_cast<float>(rad(rxx)));
+										if (targetPtr->moveCam)
 										{
-											Command<Commands::POINT_CAMERA_AT_POINT>(pos.x, pos.y, pos.z, 1);
-											timer += clock() - last_time;
-											this_coro::wait(0ms);
+											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time*1000));
+											Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, rad(rxz), 0);
+											Command<Commands::POINT_CAMERA_AT_POINT>(x1, y1, z1, 1);
 										}
-									}
-									else
-									{
-										Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
-
-										while (timer < targetPtr->time * 1000 * skip && mission_started)
+										else
 										{
-											Command<Commands::POINT_CAMERA_AT_POINT>(pos.x, pos.y, pos.z, 2);
-											timer += clock() - last_time;
-											last_time = clock();
-											this_coro::wait(0ms);
+											Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, rad(rxz), 0);
+											Command<Commands::POINT_CAMERA_AT_POINT>(x1, y1, z1, 2);
 										}
-									}
 
-									break;
-								}
+										std::string str_text = targetPtr->text;
+										str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
+										GXTEncode(str_text);
+										CMessages::AddMessage(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
+										this_coro::wait(targetPtr->time*1000.0*skip);
+										CMessages::ClearMessages(true);
+										break;
+									}
+									case 1: {
+										float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
+										if (targetPtr->moveCam)
+										{
+											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
+											Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
+											Command<Commands::POINT_CAMERA_AT_CHAR>(mission->list_actors[targetPtr->followID]->missionPed, 15, 1);
+										}
+										else
+										{
+											Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
+											Command<Commands::POINT_CAMERA_AT_CHAR>(mission->list_actors[targetPtr->followID]->missionPed, 15, 2);
+										}
+
+										std::string str_text = targetPtr->text;
+										str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
+										GXTEncode(str_text);
+										CMessages::AddMessage(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
+										this_coro::wait(targetPtr->time*1000*skip);
+										CMessages::ClearMessages(true);
+										break;
+									}
+									case 2: {
+										float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
+										if (targetPtr->moveCam)
+										{
+											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
+											Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
+											Command<Commands::POINT_CAMERA_AT_CAR>(mission->list_cars[targetPtr->followID]->missionCar, 15, 1);
+										}
+										else
+										{
+											Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
+											Command<Commands::POINT_CAMERA_AT_CAR>(mission->list_cars[targetPtr->followID]->missionCar, 15, 2);
+										}
+
+										std::string str_text = targetPtr->text;
+										str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
+										GXTEncode(str_text);
+										CMessages::AddMessage(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
+										this_coro::wait(targetPtr->time*1000*skip);
+										CMessages::ClearMessages(true);
+										break;
+									}
+									case 3: {
+										float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
+										CVector& pos = mission->list_objects[targetPtr->followID]->missionObject->GetPosition();
+
+										std::string str_text = targetPtr->text;
+										str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
+										GXTEncode(str_text);
+										CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
+
+										unsigned int timer = 0;
+										auto last_time = clock();
+										if (targetPtr->moveCam)
+										{
+
+											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
+											Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
+
+											while (timer < targetPtr->time * 1000 * skip && mission_started)
+											{
+												Command<Commands::POINT_CAMERA_AT_POINT>(pos.x, pos.y, pos.z, 1);
+												timer += clock() - last_time;
+												last_time = clock();
+												this_coro::wait(0ms);
+											}
+										}
+										else
+										{
+											Command<Commands::SET_FIXED_CAMERA_POSITION>(xx, xy, xz, 0, 0, 0);
+
+											while (timer < targetPtr->time * 1000 * skip && mission_started)
+											{
+												Command<Commands::POINT_CAMERA_AT_POINT>(pos.x, pos.y, pos.z, 2);
+												timer += clock() - last_time;
+												last_time = clock();
+												this_coro::wait(0ms);
+											}
+										}
+										CMessages::ClearMessages(true);
+										break;
+									}
 								}
 								break;
 							}
@@ -894,7 +899,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									std::string str_text = targetPtr->text;
 									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
+									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
 
 									CVector& curr_pos = mission->list_actors[targetPtr->tiedID]->missionPed->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
@@ -920,7 +925,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										last_time = clock();
 										this_coro::wait(0ms);
 									}
-
+									CMessages::ClearMessages(true);
 									break;
 								}
 								case 1: {
@@ -933,7 +938,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									std::string str_text = targetPtr->text;
 									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
+									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
 
 									CVector& curr_pos = mission->list_actors[targetPtr->tiedID]->missionPed->GetPosition();
 									CVector& actor_pos = mission->list_actors[targetPtr->followID]->missionPed->GetPosition();
@@ -942,19 +947,19 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(actor_pos.x, actor_pos.y, actor_pos.z, 1);
+											Command<Commands::POINT_CAMERA_AT_CHAR>(mission->list_actors[targetPtr->followID]->missionPed, 15, 1);
 										}
 										else
 										{
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(actor_pos.x, actor_pos.y, actor_pos.z, 2);
+											Command<Commands::POINT_CAMERA_AT_CHAR>(mission->list_actors[targetPtr->followID]->missionPed, 15, 2);
 										}
 
 										timer += clock() - last_time;
 										last_time = clock();
 										this_coro::wait(0ms);
 									}
-
+									CMessages::ClearMessages(true);
 									break;
 								}
 								case 2: {
@@ -967,7 +972,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									std::string str_text = targetPtr->text;
 									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
+									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
 
 									CVector& curr_pos = mission->list_actors[targetPtr->tiedID]->missionPed->GetPosition();
 									CVector& car_pos = mission->list_cars[targetPtr->followID]->missionCar->GetPosition();
@@ -976,19 +981,19 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(car_pos.x, car_pos.y, car_pos.z, 1);
+											Command<Commands::POINT_CAMERA_AT_CAR>(mission->list_cars[targetPtr->followID]->missionCar, 15, 1);
 										}
 										else
 										{
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(car_pos.x, car_pos.y, car_pos.z, 2);
+											Command<Commands::POINT_CAMERA_AT_CAR>(mission->list_cars[targetPtr->followID]->missionCar, 15, 2);
 										}
 
 										timer += clock() - last_time;
 										last_time = clock();
 										this_coro::wait(0ms);
 									}
-
+									CMessages::ClearMessages(true);
 									break;
 								}
 								case 3: {
@@ -1001,7 +1006,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									std::string str_text = targetPtr->text;
 									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
+									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
 
 									CVector& curr_pos = mission->list_actors[targetPtr->tiedID]->missionPed->GetPosition();
 									CVector& obj_pos = mission->list_objects[targetPtr->followID]->missionObject->GetPosition();
@@ -1022,7 +1027,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										last_time = clock();
 										this_coro::wait(0ms);
 									}
-
+									CMessages::ClearMessages(true);
 									break;
 								}
 								}
@@ -1033,7 +1038,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 								case 0: {
 									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
 									float rxx = targetPtr->rotate[0], rxy = targetPtr->rotate[1], rxz = targetPtr->rotate[2];
-									float x1 = mission->list_actors[targetPtr->tiedID]->pos[0], y1 = mission->list_actors[targetPtr->tiedID]->pos[1], z1 = mission->list_actors[targetPtr->tiedID]->pos[2];
+									float x1 = mission->list_cars[targetPtr->tiedID]->pos[0], y1 = mission->list_cars[targetPtr->tiedID]->pos[1], z1 = mission->list_cars[targetPtr->tiedID]->pos[2];
 
 									unsigned int timer = 0;
 									auto last_time = clock();
@@ -1041,7 +1046,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									std::string str_text = targetPtr->text;
 									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
+									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
 
 									CVector& curr_pos = mission->list_cars[targetPtr->tiedID]->missionCar->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
@@ -1067,12 +1072,12 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										last_time = clock();
 										this_coro::wait(0ms);
 									}
-
+									CMessages::ClearMessages(true);
 									break;
 								}
 								case 1: {
 									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									float x1 = mission->list_actors[targetPtr->tiedID]->pos[0], y1 = mission->list_actors[targetPtr->tiedID]->pos[1], z1 = mission->list_actors[targetPtr->tiedID]->pos[2];
+									float x1 = mission->list_cars[targetPtr->tiedID]->pos[0], y1 = mission->list_cars[targetPtr->tiedID]->pos[1], z1 = mission->list_cars[targetPtr->tiedID]->pos[2];
 
 									unsigned int timer = 0;
 									auto last_time = clock();
@@ -1080,7 +1085,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									std::string str_text = targetPtr->text;
 									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
+									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
 
 									CVector& curr_pos = mission->list_cars[targetPtr->tiedID]->missionCar->GetPosition();
 									CVector& actor_pos = mission->list_actors[targetPtr->followID]->missionPed->GetPosition();
@@ -1089,24 +1094,24 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(actor_pos.x, actor_pos.y, actor_pos.z, 1);
+											Command<Commands::POINT_CAMERA_AT_CHAR>(mission->list_actors[targetPtr->followID]->missionPed, 15, 1);
 										}
 										else
 										{
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(actor_pos.x, actor_pos.y, actor_pos.z, 2);
+											Command<Commands::POINT_CAMERA_AT_CHAR>(mission->list_actors[targetPtr->followID]->missionPed, 15, 2);
 										}
 
 										timer += clock() - last_time;
 										last_time = clock();
 										this_coro::wait(0ms);
 									}
-
+									CMessages::ClearMessages(true);
 									break;
 								}
 								case 2: {
 									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									float x1 = mission->list_actors[targetPtr->tiedID]->pos[0], y1 = mission->list_actors[targetPtr->tiedID]->pos[1], z1 = mission->list_actors[targetPtr->tiedID]->pos[2];
+									float x1 = mission->list_cars[targetPtr->tiedID]->pos[0], y1 = mission->list_cars[targetPtr->tiedID]->pos[1], z1 = mission->list_cars[targetPtr->tiedID]->pos[2];
 
 									unsigned int timer = 0;
 									auto last_time = clock();
@@ -1114,7 +1119,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									std::string str_text = targetPtr->text;
 									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
+									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
 
 									CVector& curr_pos = mission->list_cars[targetPtr->tiedID]->missionCar->GetPosition();
 									CVector& car_pos = mission->list_cars[targetPtr->followID]->missionCar->GetPosition();
@@ -1123,24 +1128,24 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(car_pos.x, car_pos.y, car_pos.z, 1);
+											Command<Commands::POINT_CAMERA_AT_CAR>(mission->list_cars[targetPtr->followID]->missionCar, 15, 1);
 										}
 										else
 										{
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(car_pos.x, car_pos.y, car_pos.z, 2);
+											Command<Commands::POINT_CAMERA_AT_CAR>(mission->list_cars[targetPtr->followID]->missionCar, 15, 2);
 										}
 
 										timer += clock() - last_time;
 										last_time = clock();
 										this_coro::wait(0ms);
 									}
-
+									CMessages::ClearMessages(true);
 									break;
 								}
 								case 3: {
 									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									float x1 = mission->list_actors[targetPtr->tiedID]->pos[0], y1 = mission->list_actors[targetPtr->tiedID]->pos[1], z1 = mission->list_actors[targetPtr->tiedID]->pos[2];
+									float x1 = mission->list_cars[targetPtr->tiedID]->pos[0], y1 = mission->list_cars[targetPtr->tiedID]->pos[1], z1 = mission->list_cars[targetPtr->tiedID]->pos[2];
 
 									unsigned int timer = 0;
 									auto last_time = clock();
@@ -1148,7 +1153,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									std::string str_text = targetPtr->text;
 									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
+									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
 
 									CVector& curr_pos = mission->list_cars[targetPtr->tiedID]->missionCar->GetPosition();
 									CVector& obj_pos = mission->list_objects[targetPtr->followID]->missionObject->GetPosition();
@@ -1169,7 +1174,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										last_time = clock();
 										this_coro::wait(0ms);
 									}
-
+									CMessages::ClearMessages(true);
 									break;
 								}
 								}
@@ -1177,144 +1182,165 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							}
 							case 3: {
 								switch (targetPtr->follow) {
-								case 0: {
-									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									float rxx = targetPtr->rotate[0], rxy = targetPtr->rotate[1], rxz = targetPtr->rotate[2];
-									float x1 = mission->list_actors[targetPtr->tiedID]->pos[0], y1 = mission->list_actors[targetPtr->tiedID]->pos[1], z1 = mission->list_actors[targetPtr->tiedID]->pos[2];
+									case 0: {
+										float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
+										float rxx = targetPtr->rotate[0], rxy = targetPtr->rotate[1], rxz = targetPtr->rotate[2];
+										float x1 = mission->list_objects[targetPtr->tiedID]->pos[0], y1 = mission->list_objects[targetPtr->tiedID]->pos[1], z1 = mission->list_objects[targetPtr->tiedID]->pos[2];
 
-									unsigned int timer = 0;
-									auto last_time = clock();
+										unsigned int timer = 0;
+										auto last_time = clock();
 
-									std::string str_text = targetPtr->text;
-									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
-									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
+										std::string str_text = targetPtr->text;
+										str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
+										GXTEncode(str_text);
+										CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
 
-									CVector& curr_pos = mission->list_objects[targetPtr->tiedID]->missionObject->GetPosition();
-									while (timer < targetPtr->time * 1000 * skip && mission_started)
-									{
-										float rx = curr_pos.x + (xx - x1), ry = curr_pos.y + (xy - y1), rz = curr_pos.z + (xz - z1);
-
-										rx = rx + 2 * sin(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
-										ry = ry + 2 * cos(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
-										rz = rz + 2 * cos(static_cast<float>(rad(rxx)));
-
-										if (targetPtr->moveCam) {
-											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
-											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(rx, ry, rz, 1);
-										}
-										else
+										CVector& curr_pos = mission->list_objects[targetPtr->tiedID]->missionObject->GetPosition();
+										while (timer < targetPtr->time * 1000 * skip && mission_started)
 										{
-											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(rx, ry, rz, 2);
+											float rx = curr_pos.x + (xx - x1), ry = curr_pos.y + (xy - y1), rz = curr_pos.z + (xz - z1);
+
+											rx = rx + 2 * sin(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
+											ry = ry + 2 * cos(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
+											rz = rz + 2 * cos(static_cast<float>(rad(rxx)));
+
+											if (targetPtr->moveCam) {
+												Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
+												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
+												Command<Commands::POINT_CAMERA_AT_POINT>(rx, ry, rz, 1);
+											}
+											else
+											{
+												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
+												Command<Commands::POINT_CAMERA_AT_POINT>(rx, ry, rz, 2);
+											}
+
+											timer += clock() - last_time;
+											last_time = clock();
+											this_coro::wait(0ms);
 										}
-
-										timer += clock() - last_time;
-										last_time = clock();
-										this_coro::wait(0ms);
-									}
-
-									break;
-								}
-								case 1: {
-									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									float x1 = mission->list_actors[targetPtr->tiedID]->pos[0], y1 = mission->list_actors[targetPtr->tiedID]->pos[1], z1 = mission->list_actors[targetPtr->tiedID]->pos[2];
-
-									unsigned int timer = 0;
-									auto last_time = clock();
-
-									std::string str_text = targetPtr->text;
-									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
-									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
-
-									CVector& curr_pos = mission->list_objects[targetPtr->tiedID]->missionObject->GetPosition();
-									CVector& actor_pos = mission->list_actors[targetPtr->followID]->missionPed->GetPosition();
-									while (timer < targetPtr->time * 1000 * skip && mission_started)
-									{
-										if (targetPtr->moveCam) {
-											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
-											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(actor_pos.x, actor_pos.y, actor_pos.z, 1);
-										}
-										else
-										{
-											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(actor_pos.x, actor_pos.y, actor_pos.z, 2);
-										}
-
-										timer += clock() - last_time;
-										last_time = clock();
-										this_coro::wait(0ms);
-									}
-
-									break;
-								}
-								case 2: {
-									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									float x1 = mission->list_actors[targetPtr->tiedID]->pos[0], y1 = mission->list_actors[targetPtr->tiedID]->pos[1], z1 = mission->list_actors[targetPtr->tiedID]->pos[2];
-
-									unsigned int timer = 0;
-									auto last_time = clock();
-
-									std::string str_text = targetPtr->text;
-									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
-									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
-
-									CVector& curr_pos = mission->list_objects[targetPtr->tiedID]->missionObject->GetPosition();
-									CVector& car_pos = mission->list_cars[targetPtr->followID]->missionCar->GetPosition();
-									while (timer < targetPtr->time * 1000 * skip && mission_started)
-									{
-										if (targetPtr->moveCam) {
-											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
-											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(car_pos.x, car_pos.y, car_pos.z, 1);
-										}
-										else
-										{
-											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
-											Command<Commands::POINT_CAMERA_AT_POINT>(car_pos.x, car_pos.y, car_pos.z, 2);
-										}
-
-										timer += clock() - last_time;
-										last_time = clock();
-										this_coro::wait(0ms);
-									}
-
-									break;
-								}
-								case 3: {
-									float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
-									float x1 = mission->list_actors[targetPtr->tiedID]->pos[0], y1 = mission->list_actors[targetPtr->tiedID]->pos[1], z1 = mission->list_actors[targetPtr->tiedID]->pos[2];
-
-									unsigned int timer = 0;
-									auto last_time = clock();
-
-									std::string str_text = targetPtr->text;
-									str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
-									GXTEncode(str_text);
-									CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
-
-									CVector& curr_pos = mission->list_cars[targetPtr->tiedID]->missionCar->GetPosition();
-								}
-
+										CMessages::ClearMessages(true);
 										break;
+									}
+									case 1: {
+										float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
+										float x1 = mission->list_objects[targetPtr->tiedID]->pos[0], y1 = mission->list_objects[targetPtr->tiedID]->pos[1], z1 = mission->list_objects[targetPtr->tiedID]->pos[2];
+
+										unsigned int timer = 0;
+										auto last_time = clock();
+
+										std::string str_text = targetPtr->text;
+										str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
+										GXTEncode(str_text);
+										CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
+
+										CVector& curr_pos = mission->list_objects[targetPtr->tiedID]->missionObject->GetPosition();
+										CVector& actor_pos = mission->list_actors[targetPtr->followID]->missionPed->GetPosition();
+										while (timer < targetPtr->time * 1000 * skip && mission_started)
+										{
+											if (targetPtr->moveCam) {
+												Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
+												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
+												Command<Commands::POINT_CAMERA_AT_CHAR>(mission->list_actors[targetPtr->followID]->missionPed, 15, 1);
+											}
+											else
+											{
+												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
+												Command<Commands::POINT_CAMERA_AT_CHAR>(mission->list_actors[targetPtr->followID]->missionPed, 15, 2);
+											}
+
+											timer += clock() - last_time;
+											last_time = clock();
+											this_coro::wait(0ms);
+										}
+										CMessages::ClearMessages(true);
+										break;
+									}
+									case 2: {
+										float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
+										float x1 = mission->list_actors[targetPtr->tiedID]->pos[0], y1 = mission->list_actors[targetPtr->tiedID]->pos[1], z1 = mission->list_actors[targetPtr->tiedID]->pos[2];
+
+										unsigned int timer = 0;
+										auto last_time = clock();
+
+										std::string str_text = targetPtr->text;
+										str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
+										GXTEncode(str_text);
+										CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
+
+										CVector& curr_pos = mission->list_objects[targetPtr->tiedID]->missionObject->GetPosition();
+										CVector& car_pos = mission->list_cars[targetPtr->followID]->missionCar->GetPosition();
+										while (timer < targetPtr->time * 1000 * skip && mission_started)
+										{
+											if (targetPtr->moveCam) {
+												Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
+												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
+												Command<Commands::POINT_CAMERA_AT_CAR>(mission->list_cars[targetPtr->followID]->missionCar, 15, 1);
+											}
+											else
+											{
+												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
+												Command<Commands::POINT_CAMERA_AT_CAR>(mission->list_cars[targetPtr->followID]->missionCar, 15, 2);
+											}
+
+											timer += clock() - last_time;
+											last_time = clock();
+											this_coro::wait(0ms);
+										}
+										CMessages::ClearMessages(true);
+										break;
+									}
+									case 3: {
+										float xx = targetPtr->pos[0], xy = targetPtr->pos[1], xz = targetPtr->pos[2];
+										float x1 = mission->list_objects[targetPtr->tiedID]->pos[0], y1 = mission->list_objects[targetPtr->tiedID]->pos[1], z1 = mission->list_objects[targetPtr->tiedID]->pos[2];
+
+										unsigned int timer = 0;
+										auto last_time = clock();
+
+										std::string str_text = targetPtr->text;
+										str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
+										GXTEncode(str_text);
+										CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
+
+										CVector& curr_pos = mission->list_objects[targetPtr->tiedID]->missionObject->GetPosition();
+										CVector& obj_pos = mission->list_objects[targetPtr->followID]->missionObject->GetPosition();
+										while (timer < targetPtr->time * 1000 * skip && mission_started)
+										{
+											if (targetPtr->moveCam) {
+												Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
+												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
+												Command<Commands::POINT_CAMERA_AT_POINT>(obj_pos.x, obj_pos.y, obj_pos.z, 1);
+											}
+											else
+											{
+												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
+												Command<Commands::POINT_CAMERA_AT_POINT>(obj_pos.x, obj_pos.y, obj_pos.z, 2);
+											}
+
+											timer += clock() - last_time;
+											last_time = clock();
+											this_coro::wait(0ms);
+										}
+										CMessages::ClearMessages(true);
+										break;
+									}
+									break;
 								}
 							}
 							break;
 							}
 
 							if (current_mission_target >= mission->list_targets.size()-1 || !(mission->list_targets[current_mission_target+1]->type == 3 && mission->list_targets[current_mission_target+1]->targetType == 0)) {
-								TheCamera.Fade(500, 0);
+								TheCamera.Fade(0.5f, 0);
 								this_coro::wait(0.5s);
 								CHud::bScriptDontDisplayRadar = false;
 								CHud::m_Wants_To_Draw_Hud = true;
 								TheCamera.m_bWideScreenOn = false;
 								TheCamera.RestoreWithJumpCut();
+								TheCamera.Fade(0.5f, 1);
+								Command<Commands::SET_PLAYER_CONTROL>(0, 1);
 								this_coro::wait(0.5s);
-								TheCamera.Fade(500, 1);
+								
 							}
 								
 							break;
@@ -1342,9 +1368,9 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							std::string str_text = targetPtr->text;
 							str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 							GXTEncode(str_text);
-							CMessages::AddMessage(const_cast<char*>(str_text.c_str()), targetPtr->time*1000.0f, 0, false);
+							CMessages::AddMessage(const_cast<char*>(str_text.c_str()), targetPtr->time*1000, 0, false);
 							this_coro::wait(targetPtr->time*1000);
-
+							CMessages::ClearMessages(true);
 							break;
 						}
 						case 3: {
@@ -1434,7 +1460,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 						CRadar::ClearBlip(blip);
 					}
 
-					
+					CMessages::ClearMessages(true);
 						
 					break;
 				}
@@ -1465,6 +1491,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 					{
 						CRadar::ClearBlip(blip);
 					}
+					CMessages::ClearMessages(true);
 					break;
 				}
 				case 6: {
@@ -1482,6 +1509,8 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									this_coro::wait(0ms);
 								}
 							}
+							TheCamera.Fade(0.5f, 0);
+							this_coro::wait(0.5s);
 							Command<Commands::SET_CHAR_AREA_VISIBLE>(playerPed, targetPtr->interiorID);
 							Command<Commands::SET_AREA_VISIBLE>(targetPtr->interiorID);
 
@@ -1508,21 +1537,21 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							playerPed->GiveWeapon(static_cast<eWeaponType>(ID_Weapons[targetPtr->weapon]), targetPtr->ammo, false);
 							playerPed->SetCurrentWeapon(static_cast<eWeaponType>(ID_Weapons[targetPtr->weapon]));
 							CStreaming::RemoveAllUnusedModels();
-							playerPed->SetHeading(rad(targetPtr->angle));
-								
+							Command<Commands::SET_CHAR_HEADING>(playerPed, targetPtr->angle);
+							Command<Commands::REQUEST_COLLISION>(targetPtr->pos[0], targetPtr->pos[1]);
+							TheCamera.Fade(0.5f, 1);
+							this_coro::wait(0.5s);
 							break;
 						}
 						case 1: {
 							TargetAnimation* targetPtr = static_cast<TargetAnimation*>(mission->list_targets[current_mission_target]);
 
-							Command<Commands::SET_PLAYER_CONTROL>(0, 0);
+							//Command<Commands::SET_PLAYER_CONTROL>(0, 0);
 								
 							if (!Command<Commands::HAS_ANIMATION_LOADED>(Anim_name[targetPtr->pack].c_str()))
 								Command<Commands::REQUEST_ANIMATION>(Anim_name[targetPtr->pack].c_str());
 							vector<std::string> anims = Anim_list[targetPtr->pack];
 							Command<Commands::TASK_PLAY_ANIM>(playerPed, anims[targetPtr->anim].c_str(), Anim_name[targetPtr->pack].c_str(), 1.0f, targetPtr->looped, false, false, false, -1);
-
-							Command<Commands::SET_PLAYER_CONTROL>(0, 1);
 								
 							break;
 						}
@@ -1578,7 +1607,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 								std::string str_text = dialog.text;
 								str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 								GXTEncode(str_text);
-								CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), dialog.textTime*1000, 0, false);
+								CMessages::AddMessageJumpQ(const_cast<char*>(str_text.c_str()), dialog.textTime*1000*skip, 0, false);
 								this_coro::wait(dialog.textTime*1000*skip);
 							}
 							useSkip = false;
@@ -1593,7 +1622,8 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							Command<Commands::REMOVE_OBJECT_ELEGANTLY>(phone2);
 							this_coro::wait(430ms);
 							Command<Commands::TASK_PICK_UP_SECOND_OBJECT>(playerPed, phone2, 0, 0, 0, 6, 16, "phone_out", "PED", -1);
-								
+
+							CMessages::ClearMessages(true);
 							break;
 						}
 						case 6: {
@@ -1965,6 +1995,34 @@ void MissionPlayer::start_storyline()
 	auto& missions_name_list = namesMissions[pack_idx];
 
 	std::string name_node;
+
+	realVariable.clear();
+	for (auto lua_script : ScriptManager::lua_scripts) {
+		if (lua_script.first)
+		{
+			sol::optional<std::string> name = lua_script.second["info"]["name"];
+			if (name.value()._Equal("Main nodes")) {
+				for (auto var_pair : currentNodeGraphPtr->vars) {
+					sol::object type_var = var_pair.second["typeValue"];
+					sol::object value_var = var_pair.second["value"];
+					if (*(unsigned char*)type_var.pointer() == 0) {
+						sol::protected_function func = lua_script.second["ffi"]["new"];
+						auto result = func("float[1]", *(float*)value_var.pointer());
+						ScriptManager::checkProtected(result);
+						realVariable[var_pair.first] = result;
+					}
+					else if (*(unsigned char*)type_var.pointer() == 1) {
+						sol::protected_function func = lua_script.second["ffi"]["new"];
+						realVariable[var_pair.first] = func("char[128]", (char*)value_var.pointer());
+					}
+					else if (*(unsigned char*)type_var.pointer() == 2) {
+						sol::protected_function func = lua_script.second["ffi"]["new"];
+						realVariable[var_pair.first] = func("bool[1]", *(bool*)value_var.pointer());
+					}
+				}
+			}
+		}
+	}
 	
 	if (currentStorylinePtr->startMission > 0)
 	{

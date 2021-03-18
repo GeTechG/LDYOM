@@ -478,8 +478,11 @@ bool InputText(const char* label, size_t length, std::string* str, ImGuiInputTex
 	return ImGui::InputText(label, (char*)str->c_str(), length == 0? str->capacity() + 1 : length, flags, InputTextCallback, &cb_user_data);
 }
 
-void rotateVec2(float& x, float& y, int angle) {
-	x = x * static_cast<float>(cos(rad(angle))) - y * static_cast<float>(sin(rad(angle)));
-	y = x * static_cast<float>(sin(rad(angle))) + y * static_cast<float>(cos(rad(angle)));
+void rotateVec2(float& x, float& y, float angle) {
+	float x1, y1;
+	x1 = x * static_cast<float>(cos(rad(angle))) - y * static_cast<float>(sin(rad(angle)));
+	y1 = x * static_cast<float>(sin(rad(angle))) + y * static_cast<float>(cos(rad(angle)));
+	x = x1;
+	y = y1;
 }
 

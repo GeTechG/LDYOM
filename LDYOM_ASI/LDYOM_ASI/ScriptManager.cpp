@@ -8,6 +8,8 @@
 #include "libs/ini.h"
 #include "imnodes.h"
 //#include "Init.h"
+#include <CMessages.h>
+
 #include "libs/coro_wait.h"
 #include "libs/ScriptCommands.h"
 #include <boost/property_tree/json_parser.hpp>
@@ -49,10 +51,32 @@ bool InputFloat(const char* name, sol::object value)
 	return ImGui::InputFloat(name, (float*)value.pointer());
 }
 
+bool InputInt(const char* name, sol::object value)
+{
+	return ImGui::InputInt(name, (int*)value.pointer());
+}
+
 extern coro_wait instance;
+void luaThreadFunc(sol::function func) {
+	auto result = func();
+	if (!ScriptManager::checkProtected(result))
+		CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+}
+
 void addThread(sol::function func)
 {
-	instance.add_to_queue(func);
+	instance.add_to_queue(std::bind(luaThreadFunc, func));
+}
+
+void luaThreadFuncObj(sol::function func, sol::table obj) {
+	auto result = func(obj);
+	if (!ScriptManager::checkProtected(result))
+		CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+}
+
+void addThreadObj(sol::function func, sol::table obj)
+{
+	instance.add_to_queue(std::bind(luaThreadFuncObj, func, obj));
 }
 
 const char* getStrPtr(std::string& str)
@@ -81,6 +105,10 @@ extern void start_storyline_mission(std::string& mission_name);
 extern int last_mission;
 extern map<unsigned, sol::object> realVariable;
 extern map <std::string, std::vector<std::string>> langMenu;
+extern CPed *playerPed;
+extern bool off_gui;
+extern bool KeyJustPressed(unsigned int key);
+extern std::string UTF8_to_CP1251(std::string const& utf8);
 
 bool ToggleButtonLua(const char* str_id, sol::object v) {
 	return ToggleButton(str_id, (bool*)v.pointer());
@@ -141,6 +169,11 @@ void set_last_mission(int last)
 	last_mission = last;
 }
 
+void set_off_gui(bool off)
+{
+	off_gui = off;
+;}
+
 std::vector<std::string> parseJsonArray(std::string data) {
 	std::vector<std::string> arr;
 	boost::property_tree::ptree data_ptree;
@@ -153,6 +186,55 @@ std::vector<std::string> parseJsonArray(std::string data) {
 	return arr;
 }
 
+std::string GXTEncode(std::string& str) {
+	static const char sym_ru[67] = "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿ";
+	static const char sym_sl[67] = "A€‹‚ƒEE„ˆ…†K‡–­OŒPCYX‰Š‘’“”•a—¢™šee›Ÿœk¯®o£pc¦y˜x ¤¥¡§¨©ª«¬";
+	for (int i = 0; i < 67; i++) {
+		std::replace(str.begin(), str.end(), sym_ru[i], sym_sl[i]);
+	}
+	return str;
+}
+
+void selectWeapon(const char* str_id, sol::object v)
+{
+	int* weap = (int*)v.pointer();
+	if (ImGui::ImageButton(static_cast<void*>(weaponsAtlas), ImVec2(52, 52), ImVec2(*weap * 0.02272727272f, 0), ImVec2((*weap + 1) * 0.02272727272f, 1)))
+	{
+		ImGui::OpenPopup("weapon");
+	}
+	ImGui::SameLine();
+	ImGui::Text(str_id);
+
+	//weapon popup
+	if (ImGui::BeginPopup("weapon"))
+	{
+		ImGui::BeginChild("weapon", ImVec2(200, 450));
+
+		for (int i = 1; i < IM_ARRAYSIZE(ID_Weapons); i++)
+		{
+			ImGui::PushID(i);
+			if (ImGui::ImageButton(weaponsAtlas, ImVec2(52, 52), ImVec2(i * 0.02272727272f, 0),
+				ImVec2((i + 1) * 0.02272727272f, 1)))
+			{
+				*weap = i;
+			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip(langMenu["weap_names"][i].c_str());
+			}
+			ImGui::PopID();
+			if (i % 3 != 0)
+			{
+				ImGui::SameLine();
+			}
+		}
+
+		ImGui::EndChild();
+		ImGui::EndPopup();
+	}
+	
+}
+
 void setNamespaceLua(sol::state& lua)
 {
 	lua.set_function("print", &printLog);
@@ -160,14 +242,19 @@ void setNamespaceLua(sol::state& lua)
 	lua["callOpcode"] = &pluginmy::scripting::CallCommandByIdPtr;
 	lua["getPtrStr"] = &getStrPtr;
 	lua["addThread"] = &addThread;
+	lua["addThreadObj"] = &addThreadObj;
 	lua["callNodeThread"] = &callNodeThread;
 	lua["callNodeThreadS"] = &callNodeThreadS;
+	lua["PLAYER_PED"] = playerPed;
 	lua.set_function("wait", &wait);
 	lua.set_function("getPointer", &getPointer);
 	lua.set_function("getPedRef", CPools::GetPedRef);
 	lua.set_function("getCarRef", CPools::GetVehicleRef);
 	lua.set_function("getCarRef", CPools::GetVehicleRef);
 	lua.set_function("getObjectRef", CPools::GetObjectRef);
+	lua.set_function("isKeyJustPressed", &KeyJustPressed);
+	lua.set_function("UTF8_to_CP1251", &UTF8_to_CP1251);
+	lua.set_function("GXTEncode", &GXTEncode);
 
 	auto nodeGraph_lua = lua.new_usertype<NodeGraph>("NodeGraph");
 	nodeGraph_lua.set("nodes", &NodeGraph::nodes);
@@ -200,6 +287,11 @@ void setNamespaceLua(sol::state& lua)
 	t_ldyom.set("realVariable", &realVariable);
 	t_ldyom.set_function("parseJsonArray", &parseJsonArray);
 	t_ldyom.set("langMenu", &langMenu);
+	t_ldyom.set("Anim_name", &Anim_name);
+	t_ldyom.set("Anim_list", &Anim_list);
+	t_ldyom.set_function("set_off_gui", &set_off_gui);
+	t_ldyom.set_function("selectWeapon", &selectWeapon);
+	t_ldyom.set("ID_Weapons", &ID_Weapons);
 
 	addLDYOMClasses(lua);
 	
@@ -421,7 +513,7 @@ void setNamespaceLua(sol::state& lua)
 	//t_imgui.set_function("InputFloat2", sol::resolve<const char*, float[2], const char*, ImGuiInputTextFlags>(ImGui::InputFloat2));
 	//t_imgui.set_function("InputFloat3", sol::resolve<const char*, float[3], const char*, ImGuiInputTextFlags>(ImGui::InputFloat3));
 	//t_imgui.set_function("InputFloat4", sol::resolve<const char*, float[4], const char*, ImGuiInputTextFlags>(ImGui::InputFloat4));
-	t_imgui.set_function("InputInt", ImGui::InputInt);
+	t_imgui.set_function("InputInt", InputInt);
 	t_imgui.set_function("InputInt2", ImGui::InputInt2);
 	t_imgui.set_function("InputInt3", ImGui::InputInt3);
 	t_imgui.set_function("InputInt4", ImGui::InputInt4);

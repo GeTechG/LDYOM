@@ -710,7 +710,7 @@ void fTargets()
 				cy = cy + (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
 					static_cast<float>(rad(camera_angle[1]))));
 				cz = cz + (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
-				Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+				Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
 				Command<Commands::POINT_CAMERA_AT_POINT>(targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2], 2);
 
 				if (!isWindow)
@@ -1273,6 +1273,7 @@ void fActors()
 		{
 			int new_actor = currentMissionPtr->list_actors.size();
 			Actor* actor = new Actor(*currentMissionPtr->list_actors[currentActor]);
+			actor->updateEditorPed();
 			currentMissionPtr->list_actors.push_back(actor);
 			string str;
 			str.append(currentMissionPtr->list_actors[new_actor]->name);
@@ -1523,7 +1524,7 @@ void fActors()
 			CStreaming::SetSpecialCharIsDeletable(actorPtr->slotSkin - 1);
 			Command<Commands::FREEZE_CHAR_POSITION>(playerPed, false);
 			playerPed->SetPosn(CVector(actorPtr->pos[0], actorPtr->pos[1], actorPtr->pos[2]));
-			playerPed->SetHeading(static_cast<float>(rad(actorPtr->angle)));
+			Command<Commands::SET_CHAR_HEADING>(playerPed, actorPtr->angle);
 			Command<Commands::SET_AREA_VISIBLE>(actorPtr->interiorID);
 		}
 
@@ -1562,7 +1563,7 @@ void fActors()
 		cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
 			static_cast<float>(rad(camera_angle[1]))));
 		cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
-		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
 		Command<Commands::POINT_CAMERA_AT_POINT>(actorPtr->pos[0], actorPtr->pos[1], actorPtr->pos[2] + 1, 2);
 		if (!isWindow)
 		{
@@ -1685,6 +1686,7 @@ void fCars()
 		{
 			int new_car = currentMissionPtr->list_cars.size();
 			Car* car = new Car(*currentMissionPtr->list_cars[currentCar]);
+			car->updateEditorCar(false);
 			currentMissionPtr->list_cars.push_back(car);
 			string str;
 			str.append(currentMissionPtr->list_cars[new_car]->name);
@@ -1993,7 +1995,7 @@ void fCars()
 		cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
 			static_cast<float>(rad(camera_angle[1]))));
 		cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
-		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
 		Command<Commands::POINT_CAMERA_AT_POINT>(carPtr->pos[0], carPtr->pos[1], carPtr->pos[2] + 1, 2);
 		if (!isWindow)
 		{
@@ -2005,7 +2007,7 @@ void fCars()
 			}
 			if (ImGui::GetIO().MouseWheel != 0.0f && KeyPressed(VK_SHIFT))
 			{
-				camera_zoom += (camera_zoom * ImGui::GetIO().MouseWheel) / 4.0;
+				camera_zoom += (camera_zoom * ImGui::GetIO().MouseWheel) / 4.0f;
 				if (camera_zoom < 1.0f)
 					camera_zoom = 1.0f;
 			}
@@ -2053,6 +2055,7 @@ void fObjects()
 		{
 			int new_object = currentMissionPtr->list_objects.size();
 			Object* object = new Object(*currentMissionPtr->list_objects[currentObject]);
+			object->updateEditorObject();
 			currentMissionPtr->list_objects.push_back(object);
 			string str;
 			str.append(currentMissionPtr->list_objects[new_object]->name);
@@ -2207,7 +2210,7 @@ void fObjects()
 		cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
 			static_cast<float>(rad(camera_angle[1]))));
 		cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
-		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
 		Command<Commands::POINT_CAMERA_AT_POINT>(objectPtr->pos[0], objectPtr->pos[1], objectPtr->pos[2], 2);
 		if (!isWindow)
 		{
@@ -2345,7 +2348,7 @@ void fParticles()
 		std::string name(langt("particle"));
 		name.append(" #");
 		name.append(std::to_string(currentMissionPtr->list_particles.size()));
-		currentMissionPtr->list_particles.push_back(new Particle(name.c_str(), playerPos.x, playerPos.y, playerPos.z,
+		currentMissionPtr->list_particles.push_back(new Particle(name.c_str(), playerPos.x, playerPos .y, playerPos.z,
 		                                                      currentMissionPtr->list_targets.empty()
 			                                                      ? 0
 			                                                      : currentMissionPtr->list_targets.size() - 1));
@@ -2361,6 +2364,7 @@ void fParticles()
 		{
 			int new_particle = currentMissionPtr->list_particles.size();
 			Particle* particle = new Particle(*currentMissionPtr->list_particles[currentParticle]);
+			particle->updateEditorParticle();
 			currentMissionPtr->list_particles.push_back(particle);
 			string str;
 			str.append(currentMissionPtr->list_particles[new_particle]->name);
@@ -2468,11 +2472,7 @@ void fParticles()
 
 		if (ImGui::DragInt3(langt("rotate"), particlePtr->rotation, 0.3, -360.0, 360.0, u8"%d°"))
 		{
-			Command<Commands::SET_OBJECT_ROTATION>(particlePtr->editorParticle.second,
-			                                       static_cast<float>(particlePtr->rotation[0]),
-			                                       static_cast<float>(particlePtr->rotation[1]),
-			                                       static_cast<float>(particlePtr->rotation[2]));
-			//particlePtr->updateEditorParticle();
+			particlePtr->updateEditorParticle();
 		}
 		if (Combo(langt("particle"), particlePtr->modelID, &Particle_name))
 		{
@@ -2531,7 +2531,7 @@ void fParticles()
 		cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
 			static_cast<float>(rad(camera_angle[1]))));
 		cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
-		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
 		Command<Commands::POINT_CAMERA_AT_POINT>(particlePtr->pos[0], particlePtr->pos[1], particlePtr->pos[2], 2);
 		if (!isWindow)
 		{
@@ -2553,50 +2553,32 @@ void fParticles()
 			if (KeyPressed(VK_UP))
 			{
 				particlePtr->rotation[0]++;
-				Command<Commands::SET_OBJECT_ROTATION>(particlePtr->editorParticle.second,
-				                                       static_cast<float>(particlePtr->rotation[0]),
-				                                       static_cast<float>(particlePtr->rotation[1]),
-				                                       static_cast<float>(particlePtr->rotation[2]));
+				particlePtr->updateEditorParticle();
 			}
 			else if (KeyPressed(VK_DOWN))
 			{
 				particlePtr->rotation[0]--;
-				Command<Commands::SET_OBJECT_ROTATION>(particlePtr->editorParticle.second,
-				                                       static_cast<float>(particlePtr->rotation[0]),
-				                                       static_cast<float>(particlePtr->rotation[1]),
-				                                       static_cast<float>(particlePtr->rotation[2]));
+				particlePtr->updateEditorParticle();
 			}
 			if (KeyPressed(VK_LEFT))
 			{
 				particlePtr->rotation[1]++;
-				Command<Commands::SET_OBJECT_ROTATION>(particlePtr->editorParticle.second,
-				                                       static_cast<float>(particlePtr->rotation[0]),
-				                                       static_cast<float>(particlePtr->rotation[1]),
-				                                       static_cast<float>(particlePtr->rotation[2]));
+				particlePtr->updateEditorParticle();
 			}
 			else if (KeyPressed(VK_RIGHT))
 			{
 				particlePtr->rotation[1]--;
-				Command<Commands::SET_OBJECT_ROTATION>(particlePtr->editorParticle.second,
-				                                       static_cast<float>(particlePtr->rotation[0]),
-				                                       static_cast<float>(particlePtr->rotation[1]),
-				                                       static_cast<float>(particlePtr->rotation[2]));
+				particlePtr->updateEditorParticle();
 			}
 			if (KeyPressed(VK_Q))
 			{
 				particlePtr->rotation[2]++;
-				Command<Commands::SET_OBJECT_ROTATION>(particlePtr->editorParticle.second,
-				                                       static_cast<float>(particlePtr->rotation[0]),
-				                                       static_cast<float>(particlePtr->rotation[1]),
-				                                       static_cast<float>(particlePtr->rotation[2]));
+				particlePtr->updateEditorParticle();
 			}
 			else if (KeyPressed(VK_E))
 			{
 				particlePtr->rotation[2]--;
-				Command<Commands::SET_OBJECT_ROTATION>(particlePtr->editorParticle.second,
-				                                       static_cast<float>(particlePtr->rotation[0]),
-				                                       static_cast<float>(particlePtr->rotation[1]),
-				                                       static_cast<float>(particlePtr->rotation[2]));
+				particlePtr->updateEditorParticle();
 			}
 		}
 		else
@@ -2679,6 +2661,7 @@ void fPickups()
 		{
 			int new_pickup = currentMissionPtr->list_pickups.size();
 			Pickup* pickup = new Pickup(*currentMissionPtr->list_pickups[currentPickup]);
+			pickup->updateEditorPickup();
 			currentMissionPtr->list_pickups.push_back(pickup);
 			string str;
 			str.append(currentMissionPtr->list_pickups[new_pickup]->name);
@@ -2882,7 +2865,7 @@ void fPickups()
 		cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
 			static_cast<float>(rad(camera_angle[1]))));
 		cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
-		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
 		Command<Commands::POINT_CAMERA_AT_POINT>(pickupPtr->pos[0], pickupPtr->pos[1], pickupPtr->pos[2], 2);
 		if (!isWindow)
 		{
@@ -2976,6 +2959,7 @@ void fExplosions()
 		{
 			int new_explosion = currentMissionPtr->list_explosions.size();
 			Explosion* explosion = new Explosion(*currentMissionPtr->list_explosions[currentExplosion]);
+			explosion->updateEditorExplosion();
 			currentMissionPtr->list_explosions.push_back(explosion);
 			string str;
 			str.append(currentMissionPtr->list_explosions[new_explosion]->name);
@@ -3088,7 +3072,9 @@ void fExplosions()
 		}
 		if (explosionPtr->type == 0)
 		{
-			if (ImGui::DragScalar(langt("size_fire"), ImGuiDataType_U8, &explosionPtr->sizeFire, 0.1f))
+			ImU8 min_fire = 0;
+			ImU8 max_fire = 5;
+			if (ImGui::SliderScalar(langt("size_fire"), ImGuiDataType_U8, &explosionPtr->sizeFire, &min_fire, &max_fire))
 			{
 				explosionPtr->updateEditorExplosion();
 			}
@@ -3134,7 +3120,7 @@ void fExplosions()
 		cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
 			static_cast<float>(rad(camera_angle[1]))));
 		cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
-		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
 		Command<Commands::POINT_CAMERA_AT_POINT>(explosionPtr->pos[0], explosionPtr->pos[1], explosionPtr->pos[2], 2);
 		if (!isWindow)
 		{
@@ -3228,6 +3214,7 @@ void fAudios()
 		{
 			int new_audio = currentMissionPtr->list_audios.size();
 			Audio* audio = new Audio(*currentMissionPtr->list_audios[currentAudio]);
+			audio->updateEditorAudio();
 			currentMissionPtr->list_audios.push_back(audio);
 			string str;
 			str.append(currentMissionPtr->list_audios[new_audio]->name);
@@ -3380,7 +3367,7 @@ void fAudios()
 				cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
 					static_cast<float>(rad(camera_angle[1]))));
 				cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
-				Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+				Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
 				Command<Commands::POINT_CAMERA_AT_POINT>(audioPtr->pos[0], audioPtr->pos[1], audioPtr->pos[2], 2);
 				if (!isWindow)
 				{
@@ -3632,7 +3619,7 @@ void fPlayer()
 		CStreaming::SetSpecialCharIsDeletable(9);
 		Command<Commands::FREEZE_CHAR_POSITION>(playerPed, false);
 		playerPed->SetPosn(CVector(playerPtr->pos[0], playerPtr->pos[1], playerPtr->pos[2]));
-		playerPed->SetHeading(static_cast<float>(rad(playerPtr->angle)));
+		Command<Commands::SET_CHAR_HEADING>(playerPed, playerPtr->angle);
 		Command<Commands::SET_AREA_VISIBLE>(playerPtr->interiorID);
 	}
 
@@ -3659,7 +3646,7 @@ void fPlayer()
 	cx += (camera_zoom * sin(static_cast<float>(rad(camera_angle[0]))) * cos(static_cast<float>(rad(camera_angle[1]))));
 	cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(static_cast<float>(rad(camera_angle[1]))));
 	cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
-	Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+	Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
 	Command<Commands::POINT_CAMERA_AT_POINT>(playerPtr->pos[0], playerPtr->pos[1], playerPtr->pos[2] + 1, 2);
 	if (!isWindow)
 	{
@@ -4319,6 +4306,10 @@ void fTools()
 	}
 	ImGui::PopID();
 
+	if (ImGui::Button(langt("antifreez"))) {
+		Command<Commands::SET_PLAYER_CONTROL>(0, 1);
+		playerPed->SetPosn(playerPed->GetPosition() + CVector(0, 1, 1));
+	}
 	ImGui::End();
 }
 
@@ -4634,14 +4625,15 @@ void fStorylineCheckpoints()
 		if (ImGui::Button(langt("duplicate")))
 		{
 			int new_audio = currentStorylinePtr->list_checkpoints.size();
-			CheckpointStoryline* audio = new CheckpointStoryline(*currentStorylinePtr->list_checkpoints[currentStorylineCheckpoint]);
-			currentStorylinePtr->list_checkpoints.push_back(audio);
+			CheckpointStoryline* checkpointStoryline = new CheckpointStoryline(*currentStorylinePtr->list_checkpoints[currentStorylineCheckpoint]);
+			checkpointStoryline->updateEditorCheckpoint();
+			currentStorylinePtr->list_checkpoints.push_back(checkpointStoryline);
 			string str;
 			str.append(currentStorylinePtr->list_checkpoints[new_audio]->name);
 			str.append("c");
-			strcpy(audio->name, str.c_str());
+			strcpy(checkpointStoryline->name, str.c_str());
 
-			namesStorylineCheckpoints.push_back(audio->name);
+			namesStorylineCheckpoints.push_back(checkpointStoryline->name);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button(langt("rename")))
@@ -4828,7 +4820,7 @@ void fStorylineCheckpoints()
 		cy = cy + (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
 			static_cast<float>(rad(camera_angle[1]))));
 		cz = cz + (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
-		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz);
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
 		Command<Commands::POINT_CAMERA_AT_POINT>(checkPtr->pos[0], checkPtr->pos[1], checkPtr->pos[2], 2);
 
 		if (!isWindow)

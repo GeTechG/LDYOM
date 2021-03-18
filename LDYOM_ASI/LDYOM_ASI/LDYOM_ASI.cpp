@@ -131,6 +131,12 @@ void loadArrayMenu()
 	langMenu["Weather_arr"] = parseJsonArray<std::string>(langt("Weather_arr"));
 	langMenu["info_t"] = parseJsonArray<std::string>(langt("info_t"));
 	langMenu["timeForStart"] = parseJsonArray<std::string>(langt("timeForStart"));
+	langMenu["move_type_ped"] = parseJsonArray<std::string>(langt("move_type_ped"));
+	langMenu["move_route_ped"] = parseJsonArray<std::string>(langt("move_route_ped"));
+	langMenu["driver_beh"] = parseJsonArray<std::string>(langt("driver_beh"));
+	langMenu["speed_walk_to_car"] = parseJsonArray<std::string>(langt("speed_walk_to_car"));
+	langMenu["place_in_car"] = parseJsonArray<std::string>(langt("place_in_car"));
+	langMenu["open_close"] = parseJsonArray<std::string>(langt("open_close"));
 }
 
 void createDirsLDYOM()
@@ -186,7 +192,6 @@ void foo()
 			CHud::bScriptDontDisplayRadar = true;
 			CHud::m_Wants_To_Draw_Hud = false;
 
-			bool lines = false;
 			TargetCutscene* targetPtr = static_cast<TargetCutscene*>(currentMissionPtr->list_targets[currentTarget]);
 			while (editmodeCamera)
 			{
@@ -234,22 +239,10 @@ void foo()
 
 				if (KeyJustPressed(VK_R))
 				{
-					if (lines)
-						lines = false;
+					if (draw_lines)
+						draw_lines = false;
 					else
-						lines = true;
-				}
-
-				if (lines)
-				{
-					ImVec2& screenRes = ImGui::GetIO().DisplaySize;
-					for (int i = 1; i < 2; i++)
-					{
-						Command<0x0B68>(0, (screenRes.y / 3) * i, screenRes.x, (screenRes.y / 3) * i, 1,
-						                rgba_to_int(255, 255, 255, 255));
-						Command<0x0B68>((screenRes.x / 3) * i, 0, (screenRes.x / 3) * i, screenRes.y, 1,
-						                rgba_to_int(255, 255, 255, 255));
-					}
+						draw_lines = true;
 				}
 
 				if (KeyPressed(VK_SHIFT))
@@ -335,7 +328,7 @@ void foo()
 			Command<Commands::SET_PLAYER_MODEL>(0, modell);
 			CStreaming::SetSpecialCharIsDeletable(9);
 			CStreaming::RemoveAllUnusedModels();
-			playerPed->SetHeading(rad(targetPtr->angle));
+			Command<Commands::SET_CHAR_HEADING>(playerPed, targetPtr->angle);
 			Command<Commands::SET_AREA_VISIBLE>(targetPtr->interiorID);
 			Command<Commands::SET_CHAR_AREA_VISIBLE>(playerPed, targetPtr->interiorID);
 			while (editmodeTeleportPlayer)
