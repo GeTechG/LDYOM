@@ -253,8 +253,9 @@ void removeLink(int link_id)
 void NodeGraph::render()
 {
 	bool editor_hover = false;
-	ImGui::Begin("my first node graph");
-	ImGui::Text(std::to_string(ImGui::GetIO().Framerate).c_str());
+	ImGui::SetNextWindowSize(ImVec2(800, 600));
+	ImGui::Begin(langt("CoreNodeSystem"));
+	//ImGui::Text(std::to_string(ImGui::GetIO().Framerate).c_str());
 
 	ImGui::BeginChild("Panel", ImVec2(230, 0));
 	ImGui::Text(langt("variables"));
@@ -559,6 +560,7 @@ void NodeGraph::render()
 							if (ScriptManager::checkProtected(result)) {
 								currentNodeGraphPtr->nodes[id_node] = result;
 								imnodes::SetNodeScreenSpacePos(id_node, ImGui::GetWindowPos());
+								select_var = false;
 							}
 						}
 					}

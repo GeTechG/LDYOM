@@ -2,17 +2,17 @@ ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-Node = bitser.registerClass(class("NodeCarToHandle", BaseNode));
+Node = bitser.registerClass(class("NodeDisapperTrain", BaseNode));
 Node.static.mission = true;
 
-Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodeGetCarHandle");
+Node.static.name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeDisapperTrain");
 
 function Node:initialize(id)
 	BaseNode.initialize(self,id);
-	self.type = 4;
+	self.type = 0;
 	self.Pins = {
 		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
-		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.number, 1, ffi.new("int[1]")),
+		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.void, 1),
 	};
 end
 
@@ -28,15 +28,16 @@ function Node:draw()
 	imgui.imnodes.EndNodeTitleBar();
 	
 	imgui.imnodes.BeginStaticAttribute(self.id+1);
-	local names = ldyom.namesCars;
-	imgui.Text(ldyom.langt("car"));
-	imgui.SetNextItemWidth(150);
-	imgui.ComboVecChars("",self.Pins[self.id+1].value,names);
+	local names = ldyom.namesTrains;
+	imgui.Text(ldyom.langt("train"));
+	if (self.Pins[self.id+1].link == nil) then
+		imgui.SetNextItemWidth(150);
+		imgui.ComboVecChars("",self.Pins[self.id+1].value,names);
+	end
 	imgui.imnodes.EndStaticAttribute();
 	
 	imgui.imnodes.BeginOutputAttribute(self.id+2);
-	imgui.Indent(80);
-	imgui.Text(ldyom.langt("CoreHandleCar"));
+	imgui.Dummy(imgui.ImVec2:new(0,10));
 	imgui.imnodes.EndOutputAttribute();
 	
 	imgui.imnodes.EndNode();
@@ -44,10 +45,20 @@ function Node:draw()
 end
 
 function Node:play(data, mission)
-	local car = self.Pins[self.id+1].value[0];
 	ldyom.setLastNode(self.id);
-	assert(mission.list_cars[car+1].missionCar, "The car is not yet established or has already disappeared.");
-	self.Pins[self.id+2].value[0] = getCarRef(mission.list_cars[car+1].missionCar);
+	if self.Pins[self.id+2].links ~= nil then
+		for k,v in pairs(self.Pins[self.id+2].links) do
+			local link = data.links[v];
+			for k2,v2 in pairs(link) do
+				local strr = Utf8ToAnsi(k2);
+				if strr == "id_in" then
+					local node_num = math.floor(v2 / 100)*100;
+					data.nodes[node_num]:play(data,mission);
+					break;
+				end
+			end
+		end
+	end
 end
 
-ldyom.nodeEditor.addNodeClass("Car",Node);
+ldyom.nodeEditor.addNodeClass("Train",Node);

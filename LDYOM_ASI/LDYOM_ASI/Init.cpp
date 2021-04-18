@@ -27,6 +27,9 @@ extern void GXTEncode(std::string& str);
 extern bool mission_started;
 extern bool storyline_started;
 extern bool is_utf8(const char* string);
+extern coro_wait instance;
+extern bool defeat;
+extern void failMission();
 void rotateVec2(float& x, float& y, float angle);
 
 float camera_zoom = 5.0f;
@@ -50,7 +53,7 @@ const int ID_Cars[212] = { 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410
 const int ID_Weapons[44] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46 };
 vector <std::string> Particle_name = { "blood_heli","boat_prop","camflash","carwashspray","cement","cloudfast","coke_puff","coke_trail","cigarette_smoke","explosion_barrel","explosion_crate","explosion_door","exhale","explosion_fuel_car","explosion_large","explosion_medium","explosion_molotov","explosion_small","explosion_tiny","extinguisher","flame","fire","fire_med","fire_large","flamethrower","fire_bike","fire_car","gunflash","gunsmoke","insects","heli_dust","jetpack","jetthrust","nitro","molotov_flame","overheat_car","overheat_car_electric","prt_boatsplash","prt_cardebris","prt_collisionsmoke","prt_glass","prt_gunshell","prt_sand","prt_sand2","prt_smokeII_3_expand","prt_smoke_huge","prt_spark","prt_spark_2","prt_splash","prt_wake","prt_watersplash","prt_wheeldirt","petrolcan","puke","riot_smoke","spraycan","smoke30lit","smoke30m","smoke50lit","shootlight","smoke_flare","tank_fire","teargas","teargasAD","tree_hit_fir","tree_hit_palm","vent","vent2","water_hydrant","water_ripples","water_speed","water_splash","water_splash_big","water_splsh_sml","water_swim","waterfall_end","water_fnt_tme","water_fountain","wallbust","WS_factorysmoke" };
 vector <int> ID_Actors = { 0, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288 };
-vector <std::string> ID_Spec_Actors = { "andre", "bbthin", "bb", "cat", "cesar", "claude", "dwayne", "emmet", "forelli", "janitor", "jethro", "jizzy", "hern", "kendl", "maccer", "maddogg", "ogloc", "paul", "pulaski", "rose", "ryder", "ryder3", "sindaco", "smoke", "smokev", "suzie", "sweet", "tbone", "tenpen", "torino", "truthy", "wuzimu", "zero", "gangrl2", "copgrl1", "copgrl2", "crogrl1", "crogrl2", "gungrl1", "gungrl2", "mecgrl2", "nurgrl2", "ryder2", "cdeput", "sfpdm1", "lvpdm1", "csbmydj", "psycho", "csmech", "csomost", "wmycd2" };
+vector <std::string> ID_Spec_Actors = { "andre", "bbthin", "bb", "cat", "cesar", "claude", "dwayne", "emmet", "forelli", "janitor", "jethro", "jizzy", "hern", "kendl", "maccer", "maddogg", "ogloc", "paul", "pulaski", "rose", "ryder", "ryder3", "sindaco", "smoke", "smokev", "suzie", "sweet", "tbone", "tenpen", "torino", "truth", "wuzimu", "zero", "gangrl2", "copgrl1", "copgrl2", "crogrl1", "crogrl2", "gungrl1", "gungrl2", "mecgrl2", "nurgrl2", "ryder2", "cdeput", "sfpdm1", "lvpdm1", "csbmydj", "psycho", "csmech", "csomost", "wmycd2" };
 vector <std::string> Anim_name = { "PED","BOMBER","POOL","ON_LOOKERS","GANGS","PAULNMAC","BOX","Attractors","BAR","BASEBALL","BD_FIRE","BEACH","benchpress","BLOWJOBZ","CAMERA","CAR","CAR_CHAT","CASINO","COP_AMBIENT","CRACK","CRIB","DAM_JUMP","DANCING","DEALER","DODGE","FOOD","Freeweights","GFUNK","HEIST9","INT_HOUSE","INT_OFFICE","INT_SHOP","KISSING","LOWRIDER","MEDIC","MISC","OTB","PARK","PLAYIDLES","POLICE","RAPPING","RIOT","ROB_BANK","RUNNINGMAN","SCRATCHING","SEX","SHOP","SMOKING","SnM","STRIP","SUNBATHE","SWAT","VENDING","WOP" };
 vector <vector <std::string>> Anim_list = { {"abseil","ARRESTgun","ATM","BIKE_elbowL","BIKE_elbowR","BIKE_fallR","BIKE_fall_off","BIKE_pickupL","BIKE_pickupR","BIKE_pullupL","BIKE_pullupR","bomber","CAR_alignHI_LHS","CAR_alignHI_RHS","CAR_align_LHS","CAR_align_RHS","CAR_closedoorL_LHS","CAR_closedoorL_RHS","CAR_closedoor_LHS","CAR_closedoor_RHS","CAR_close_LHS","CAR_close_RHS","CAR_crawloutRHS","CAR_dead_LHS","CAR_dead_RHS","CAR_doorlocked_LHS","CAR_doorlocked_RHS","CAR_fallout_LHS","CAR_fallout_RHS","CAR_getinL_LHS","CAR_getinL_RHS","CAR_getin_LHS","CAR_getin_RHS","CAR_getoutL_LHS","CAR_getoutL_RHS","CAR_getout_LHS","CAR_getout_RHS","car_hookertalk","CAR_jackedLHS","CAR_jackedRHS","CAR_jumpin_LHS","CAR_LB","CAR_LB_pro","CAR_LB_weak","CAR_LjackedLHS","CAR_LjackedRHS","CAR_Lshuffle_RHS","CAR_Lsit","CAR_open_LHS","CAR_open_RHS","CAR_pulloutL_LHS","CAR_pulloutL_RHS","CAR_pullout_LHS","CAR_pullout_RHS","CAR_Qjacked","CAR_rolldoor","CAR_rolldoorLO","CAR_rollout_LHS","CAR_rollout_RHS","CAR_shuffle_RHS","CAR_sit","CAR_sitp","CAR_sitpLO","CAR_sit_pro","CAR_sit_weak","CAR_tune_radio","CLIMB_idle","CLIMB_jump","CLIMB_jump2fall","CLIMB_jump_B","CLIMB_Pull","CLIMB_Stand","CLIMB_Stand_finish","cower","Crouch_Roll_L","Crouch_Roll_R","DAM_armL_frmBK","DAM_armL_frmFT","DAM_armL_frmLT","DAM_armR_frmBK","DAM_armR_frmFT","DAM_armR_frmRT","DAM_LegL_frmBK","DAM_LegL_frmFT","DAM_LegL_frmLT","DAM_LegR_frmBK","DAM_LegR_frmFT","DAM_LegR_frmRT","DAM_stomach_frmBK","DAM_stomach_frmFT","DAM_stomach_frmLT","DAM_stomach_frmRT","DOOR_LHinge_O","DOOR_RHinge_O","DrivebyL_L","DrivebyL_R","Driveby_L","Driveby_R","DRIVE_BOAT","DRIVE_BOAT_back","DRIVE_BOAT_L","DRIVE_BOAT_R","Drive_L","Drive_LO_l","Drive_LO_R","Drive_L_pro","Drive_L_pro_slow","Drive_L_slow","Drive_L_weak","Drive_L_weak_slow","Drive_R","Drive_R_pro","Drive_R_pro_slow","Drive_R_slow","Drive_R_weak","Drive_R_weak_slow","Drive_truck","DRIVE_truck_back","DRIVE_truck_L","DRIVE_truck_R","Drown","DUCK_cower","endchat_01","endchat_02","endchat_03","EV_dive","EV_step","facanger","facgum","facsurp","facsurpm","factalk","facurios","FALL_back","FALL_collapse","FALL_fall","FALL_front","FALL_glide","FALL_land","FALL_skyDive","Fight2Idle","FightA_1","FightA_2","FightA_3","FightA_block","FightA_G","FightA_M","FIGHTIDLE","FightShB","FightShF","FightSh_BWD","FightSh_FWD","FightSh_Left","FightSh_Right","flee_lkaround_01","FLOOR_hit","FLOOR_hit_f","fucku","gang_gunstand","gas_cwr","getup","getup_front","gum_eat","GunCrouchBwd","GunCrouchFwd","GunMove_BWD","GunMove_FWD","GunMove_L","GunMove_R","Gun_2_IDLE","GUN_BUTT","GUN_BUTT_crouch","Gun_stand","handscower","handsup","HitA_1","HitA_2","HitA_3","HIT_back","HIT_behind","HIT_front","HIT_GUN_BUTT","HIT_L","HIT_R","HIT_walk","HIT_wall","Idlestance_fat","idlestance_old","IDLE_armed","IDLE_chat","IDLE_csaw","Idle_Gang1","IDLE_HBHB","IDLE_ROCKET","IDLE_stance","IDLE_taxi","IDLE_tired","Jetpack_Idle","JOG_femaleA","JOG_maleA","JUMP_glide","JUMP_land","JUMP_launch","JUMP_launch_R","KART_drive","KART_L","KART_LB","KART_R","KD_left","KD_right","KO_shot_face","KO_shot_front","KO_shot_stom","KO_skid_back","KO_skid_front","KO_spin_L","KO_spin_R","pass_Smoke_in_car","phone_in","phone_out","phone_talk","Player_Sneak","Player_Sneak_walkstart","roadcross","roadcross_female","roadcross_gang","roadcross_old","run_1armed","run_armed","run_civi","run_csaw","run_fat","run_fatold","run_gang1","run_left","run_old","run_player","run_right","run_rocket","Run_stop","Run_stopR","Run_Wuzi","SEAT_down","SEAT_idle","SEAT_up","SHOT_leftP","SHOT_partial","SHOT_partial_B","SHOT_rightP","Shove_Partial","Smoke_in_car","sprint_civi","sprint_panic","Sprint_Wuzi","swat_run","Swim_Tread","Tap_hand","Tap_handP","turn_180","Turn_L","Turn_R","WALK_armed","WALK_civi","WALK_csaw","Walk_DoorPartial","WALK_drunk","WALK_fat","WALK_fatold","WALK_gang1","WALK_gang2","WALK_old","WALK_player","WALK_rocket","WALK_shuffle","WALK_start","WALK_start_armed","WALK_start_csaw","WALK_start_rocket","Walk_Wuzi","WEAPON_crouch","woman_idlestance","woman_run","WOMAN_runbusy","WOMAN_runfatold","woman_runpanic","WOMAN_runsexy","WOMAN_walkbusy","WOMAN_walkfatold","WOMAN_walknorm","WOMAN_walkold","WOMAN_walkpro","WOMAN_walksexy","WOMAN_walkshop"},
 	{"BOM_PLANT_IN","BOM_PLANT_LOOP","BOM_PLANT_CROUCH_IN","BOM_PLANT_CROUCH_OUT","BOM_PLANT_2IDLE"},
@@ -137,6 +140,8 @@ Actor::Actor(const Actor& actor) {
 	useTarget = actor.useTarget;
 	headshot = actor.headshot;
 	interiorID = actor.interiorID;
+	stayInSamePlace = actor.stayInSamePlace;
+	kindaStayInSamePlace = actor.kindaStayInSamePlace;
 }
 
 void Actor::updateEditorPed() {
@@ -166,7 +171,7 @@ void Actor::updateEditorPed() {
 		CStreaming::RequestModel(weap_modell, 0);
 		CStreaming::LoadAllRequestedModels(false);
 	}
-	this->editorPed->GiveWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]), 1, false);
+	this->editorPed->GiveWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]), ammo, false);
 	this->editorPed->SetCurrentWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]));
 	CStreaming::RemoveAllUnusedModels();
 }
@@ -198,8 +203,11 @@ void Actor::updateMissionPed() {
 	int pedHandl;
 	Command<Commands::CREATE_CHAR>(pedType, modell, this->pos[0], this->pos[1], this->pos[2], &pedHandl);
 	this->missionPed = CPools::GetPed(pedHandl);
+	this->missionPed->DisablePedSpeech(1);
 	this->missionPed->SetPosn(this->pos[0], this->pos[1], this->pos[2]);
 	Command<Commands::SET_CHAR_HEADING>(this->missionPed, this->angle);
+	Command<Commands::SET_CHAR_STAY_IN_SAME_PLACE>(this->missionPed, (int)stayInSamePlace);
+	Command<Commands::SET_CHAR_KINDA_STAY_IN_SAME_PLACE>(this->missionPed, (int)kindaStayInSamePlace);
 	this->missionPed->m_bUsesCollision = false;
 	this->missionPed->m_fHealth = this->health;
 	this->missionPed->m_nWeaponAccuracy = this->accuracy;
@@ -221,9 +229,24 @@ void Actor::updateMissionPed() {
 		CStreaming::RequestModel(weap_modell, 0);
 		CStreaming::LoadAllRequestedModels(false);
 	}
-	this->missionPed->GiveWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]), 1, false);
+	this->missionPed->GiveWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]), ammo, false);
 	this->missionPed->SetCurrentWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]));
 	CStreaming::RemoveAllUnusedModels();
+	if (this->shouldNotDie)
+		instance.add_to_queue([&]()
+		{
+			while (mission_started && missionPed != nullptr)
+			{
+				if (Command<Commands::IS_CHAR_DEAD>(missionPed))
+				{
+					defeat = true;
+					mission_started = false;
+					CMessages::ClearMessages(true);
+					failMission();
+				}
+				this_coro::wait(0ms);
+			}
+		});
 }
 
 void Actor::removeMissionPed() {
@@ -440,6 +463,7 @@ TargetAnimation::TargetAnimation(const TargetAnimation& target) {
 	pack = target.pack;
 	anim = target.anim;
 	looped = target.looped;
+	blend = target.blend;
 }
 
 TargetTeleportToVehicle::TargetTeleportToVehicle(const char* name) {
@@ -555,6 +579,8 @@ Car::Car(const Car& car) {
 	component_type_A = car.component_type_A;
 	component_type_B = car.component_type_B;
 	useTarget = car.useTarget;
+	strcpy(this->numberplate, car.numberplate);
+	numberplate_city = car.numberplate_city;
 	this->updateEditorCar();
 }
 
@@ -563,6 +589,9 @@ void Car::updateEditorCar(bool recolor) {
 	CStreaming::RequestModel(modelID, 0);
 	CStreaming::LoadAllRequestedModels(false);
 	Command<Commands::SET_CAR_MODEL_COMPONENTS>(modelID, component_type_A, component_type_B);
+	if (std::strcmp(numberplate,"") != 0)
+		Command<Commands::CUSTOM_PLATE_FOR_NEXT_CAR>(modelID, numberplate);
+	Command<Commands::CUSTOM_PLATE_DESIGN_FOR_NEXT_CAR>(modelID, numberplate_city);
 	switch (reinterpret_cast<CVehicleModelInfo *>(CModelInfo::ms_modelInfoPtrs[modelID])->m_nVehicleType) {
 	case VEHICLE_MTRUCK:
 		editorCar = new CMonsterTruck(modelID, 2);
@@ -665,9 +694,14 @@ void Car::removeEditorCar() {
 
 void Car::updateMissionCar()
 {
+	removeMissionCar();
+	
 	CStreaming::RequestModel(modelID, 0);
 	CStreaming::LoadAllRequestedModels(false);
 	Command<Commands::SET_CAR_MODEL_COMPONENTS>(modelID, component_type_A, component_type_B);
+	if (std::strcmp(numberplate, "") != 0)
+		Command<Commands::CUSTOM_PLATE_FOR_NEXT_CAR>(modelID, numberplate);
+	Command<Commands::CUSTOM_PLATE_DESIGN_FOR_NEXT_CAR>(modelID, numberplate_city);
 	switch (reinterpret_cast<CVehicleModelInfo *>(CModelInfo::ms_modelInfoPtrs[modelID])->m_nVehicleType) {
 	case VEHICLE_MTRUCK:
 		missionCar = new CMonsterTruck(modelID, 2);
@@ -732,6 +766,20 @@ void Car::updateMissionCar()
 			}
 		}
 	}
+	if (this->shouldNotDie)
+		instance.add_to_queue([&](){
+			while (mission_started && missionCar != nullptr)
+			{
+				if (Command<Commands::IS_CAR_DEAD>(missionCar))
+				{
+					defeat = true;
+					mission_started = false;
+					CMessages::ClearMessages(true);
+					failMission();
+				}
+				this_coro::wait(0ms);
+			}
+		});
 }
 
 void Car::removeMissionCar()
@@ -741,6 +789,153 @@ void Car::removeMissionCar()
 		this->missionCar->Remove();
 		delete this->missionCar;
 		this->missionCar = nullptr;
+	}
+}
+
+Train::Train(const char* name, float x, float y, float z, int lastTarget) {
+	strcpy(this->name, name);
+	this->pos[0] = x;
+	this->pos[1] = y;
+	this->pos[2] = z;
+	this->startC = lastTarget;
+}
+
+Train::Train(const Train& train) {
+	strcpy(this->name, train.name);
+	memcpy(pos, train.pos, 3 * sizeof(float));
+	this->rotation =  train.rotation;
+	modelID = train.modelID;
+	startC = train.startC;
+	endC = train.endC;
+	useTarget = train.useTarget;
+	speed = train.speed;
+	cruise_speed = train.cruise_speed;
+	this->updateEditorTrain();
+}
+
+void Train::updateEditorTrain() {
+	removeEditorTrain();
+
+	int trainModel = 0;
+	int carriageModel = 0;
+	switch (modelID)
+	{
+	case 0:
+	case 3:
+	case 6:
+	case 10:
+	case 12:
+	case 13:
+		trainModel = MODEL_FREIGHT;
+		carriageModel = MODEL_FREIFLAT;
+		break;
+	case 1:
+	case 2:
+	case 4:
+	case 5:
+	case 7:
+	case 11:
+	case 15:
+		trainModel = MODEL_STREAK;
+		carriageModel = MODEL_STREAKC;
+		break;
+	case 8:
+	case 9:
+	case 14:
+		trainModel = MODEL_TRAM;
+		carriageModel = MODEL_TRAM;
+		break;
+	default: break;
+	}
+	CStreaming::RequestModel(trainModel, 0);
+	CStreaming::RequestModel(carriageModel, 0);
+	CStreaming::LoadAllRequestedModels(false);
+	this_coro::wait(0);
+	
+	int trainHandle;
+	Command<Commands::CREATE_MISSION_TRAIN>(modelID, pos[0], pos[1], pos[2], static_cast<int>(rotation), &trainHandle);
+	editorTrain = static_cast<CTrain*>(CPools::GetVehicle(trainHandle));
+	editorTrain->m_bStreamingDontDelete = 1;
+	editorTrain->m_nStatus = 4;
+	editorTrain->m_nDoorLock = eCarLock::CARLOCK_LOCKED;
+	editorTrain->m_nVehicleFlags.bEngineOn = 0;
+	Command<Commands::SET_CAR_AS_MISSION_CAR>(editorTrain);
+	Command<Commands::FREEZE_CAR_POSITION>(editorTrain, true);
+	editorTrain->m_nVehicleFlags.bCanBeDamaged = false;
+	CStreaming::RemoveAllUnusedModels();
+}
+
+void Train::removeEditorTrain() {
+	if (this->editorTrain != nullptr) {
+		Command<Commands::DELETE_MISSION_TRAIN>(CPools::GetVehicleRef(editorTrain));
+		this->editorTrain = nullptr;
+	}
+}
+
+void Train::updateMissionTrain()
+{
+	removeMissionTrain();
+	
+	int trainModel = 0;
+	int carriageModel = 0;
+	switch (modelID)
+	{
+	case 0:
+	case 3:
+	case 6:
+	case 10:
+	case 12:
+	case 13:
+		trainModel = MODEL_FREIGHT;
+		carriageModel = MODEL_FREIFLAT;
+		break;
+	case 1:
+	case 2:
+	case 4:
+	case 5:
+	case 7:
+	case 11:
+	case 15:
+		trainModel = MODEL_STREAK;
+		carriageModel = MODEL_STREAKC;
+		break;
+	case 8:
+	case 9:
+	case 14:
+		trainModel = MODEL_TRAM;
+		carriageModel = MODEL_TRAM;
+		break;
+	default: break;
+	}
+	CStreaming::RequestModel(trainModel, 0);
+	CStreaming::RequestModel(carriageModel, 0);
+	CStreaming::LoadAllRequestedModels(false);
+	this_coro::wait(0);
+
+	int trainHandle;
+	Command<Commands::CREATE_MISSION_TRAIN>(modelID, pos[0], pos[1], pos[2], static_cast<int>(rotation), &trainHandle);
+	missionTrain = static_cast<CTrain*>(CPools::GetVehicle(trainHandle));
+	missionTrain->m_bStreamingDontDelete = 1;
+	missionTrain->m_nStatus = 4;
+	missionTrain->m_nVehicleFlags.bEngineOn = 0;
+	Command<Commands::SET_CAR_AS_MISSION_CAR>(missionTrain);
+	missionTrain->m_nVehicleFlags.bCanBeDamaged = false;
+	CStreaming::RemoveAllUnusedModels();
+	Command<Commands::FREEZE_CAR_POSITION>(missionTrain, true);
+	while (DistanceBetweenPoints(TheCamera.GetPosition(), missionTrain->GetPosition()) > 100.0f)
+	{
+		this_coro::wait(0ms);
+	}
+	Command<Commands::FREEZE_CAR_POSITION>(missionTrain, false);
+	Command<Commands::SET_TRAIN_CRUISE_SPEED>(trainHandle, cruise_speed);
+	Command<Commands::SET_TRAIN_SPEED>(trainHandle, speed);
+}
+
+void Train::removeMissionTrain()
+{
+	if (this->missionTrain != nullptr) {
+		Command<Commands::DELETE_MISSION_TRAIN>(CPools::GetVehicleRef(missionTrain));
+		this->missionTrain = nullptr;
 	}
 }
 
@@ -773,8 +968,8 @@ void Object::updateEditorObject() {
 	editorObject->SetPosn(pos[0], pos[1], pos[2]);
 	editorObject->SetOrientation(rad(rotation[0]), rad(rotation[1]), rad(rotation[2]));
 	editorObject->m_nObjectType = eObjectType::OBJECT_MISSION;
-	editorObject->m_bIsStatic = 1;
 	CWorld::Add(editorObject);
+	Command<Commands::SET_OBJECT_DYNAMIC>(editorObject, 0);
 }
 
 void Object::removeEditorObject() {
@@ -788,6 +983,8 @@ void Object::removeEditorObject() {
 
 void Object::updateMissionObject()
 {
+	removeMissionObject();
+	
 	CStreaming::RequestModel(modelID, 0);
 	CStreaming::LoadAllRequestedModels(false);
 
@@ -800,6 +997,7 @@ void Object::updateMissionObject()
 	missionObject->m_nObjectType = eObjectType::OBJECT_MISSION;
 	Command<Commands::DONT_REMOVE_OBJECT>(missionObject);
 	Command<0x0550>(missionObject, 1);
+	Command<Commands::SET_OBJECT_DYNAMIC>(missionObject, 0);
 }
 
 void Object::removeMissionObject()
@@ -862,6 +1060,8 @@ void Particle::removeEditorParticle() {
 }
 
 void Particle::updateMissionParticle(void* void_mission) {
+	removeMissionParticle();
+	
 	Mission* mission = static_cast<Mission*>(void_mission);
 	CStreaming::RequestModel(327, 0);
 	CStreaming::LoadAllRequestedModels(false);
@@ -954,7 +1154,7 @@ void Pickup::updateEditorPickup() {
 			CStreaming::RequestModel(weap_modell, 0);
 			CStreaming::LoadAllRequestedModels(false);
 		}
-		editorPickup = CPickups::GenerateNewOne_WeaponType(CVector(pos[0], pos[1], pos[2]), (eWeaponType)ID_Weapons[this->weapon], 9, 1, false, nullptr);
+		editorPickup = CPickups::GenerateNewOne_WeaponType(CVector(pos[0], pos[1], pos[2]), (eWeaponType)ID_Weapons[this->weapon], 9, ammo, false, nullptr);
 	} 
 	else {
 		int md;
@@ -992,7 +1192,8 @@ void Pickup::removeEditorPickup() {
 }
 
 void Pickup::updateMissionPickup() {
-
+	removeMissionPickup();
+	
 	int spawn_t = 3;
 	if (spawnType == 1)
 		spawn_t = 2;
@@ -1008,7 +1209,7 @@ void Pickup::updateMissionPickup() {
 			CStreaming::RequestModel(weap_modell, 0);
 			CStreaming::LoadAllRequestedModels(false);
 		}
-		missionPickup = CPickups::GenerateNewOne_WeaponType(CVector(pos[0], pos[1], pos[2]), (eWeaponType)ID_Weapons[this->weapon], spawn_t, 1, false, nullptr);
+		missionPickup = CPickups::GenerateNewOne_WeaponType(CVector(pos[0], pos[1], pos[2]), (eWeaponType)ID_Weapons[this->weapon], spawn_t, ammo, false, nullptr);
 	}
 	else {
 		int md;
@@ -1033,7 +1234,7 @@ void Pickup::updateMissionPickup() {
 		CStreaming::RequestModel(md, 0);
 		CStreaming::LoadAllRequestedModels(false);
 
-		missionPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), md, spawn_t, 0, 0, false, nullptr);
+		missionPickup = CPickups::GenerateNewOne(CVector(pos[0], pos[1], pos[2]), md, spawn_t, ammo, 0, false, nullptr);
 	}
 	CStreaming::RemoveAllUnusedModels();
 }
@@ -1099,7 +1300,8 @@ void Explosion::removeEditorExplosion() {
 }
 
 void Explosion::updateMissionExplosion() {
-
+	removeMissionExplosion();
+	
 	if (type == 0) {
 		Command<Commands::START_SCRIPT_FIRE>(pos[0], pos[1], pos[2], (int)propagationFire, sizeFire, &missionFire);
 	}
@@ -1180,6 +1382,8 @@ void Audio::loadAudio()
 	else {
 		Command<0x0AAC>(path.str().c_str(), &missionAudio); //loadAudioStream
 	}
+	if (repeat)
+		Command<0x0AC0>(missionAudio, 1);
 }
 
 void Audio::unloadAudio() {
@@ -1189,7 +1393,7 @@ void Audio::unloadAudio() {
 }
 
 void Audio::play(void* void_mission) {
-
+	
 	if (namesAudioFiles.empty())
 		return;
 	
@@ -1280,7 +1484,7 @@ void Player::updateEditorPed() {
 		CStreaming::RequestModel(weap_modell, 0);
 		CStreaming::LoadAllRequestedModels(false);
 	}
-	this->editorPed->GiveWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]), 1, false);
+	this->editorPed->GiveWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]), ammo, false);
 	this->editorPed->SetCurrentWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]));
 	CStreaming::RemoveAllUnusedModels();
 }
@@ -1320,6 +1524,9 @@ Mission::~Mission() {
 	for (auto v : this->list_cars) {
 		delete v;
 	}
+	for (auto v : this->list_trains) {
+		delete v;
+	}
 	for (auto v : this->list_objects) {
 		delete v;
 	}
@@ -1347,6 +1554,10 @@ void Mission::removeEditorEntity()
 	for (auto i : list_cars)
 	{
 		i->removeEditorCar();
+	}
+	for (auto i : list_trains)
+	{
+		i->removeEditorTrain();
 	}
 	for (auto i : list_objects)
 	{
@@ -1382,6 +1593,10 @@ void Mission::updateEditorEntity()
 	{
 		i->updateEditorCar();
 	}
+	for (auto i : list_trains)
+	{
+		i->updateEditorTrain();
+	}
 	for (auto i : list_objects)
 	{
 		i->updateEditorObject();
@@ -1414,6 +1629,10 @@ void Mission::removeMissionEntity()
 	for (auto i : list_cars)
 	{
 		i->removeMissionCar();
+	}
+	for (auto i : list_trains)
+	{
+		i->removeMissionTrain();
 	}
 	for (auto i : list_objects)
 	{
@@ -1535,14 +1754,20 @@ void addLDYOMClasses(sol::state& lua)
 	actor_class["updateMissionPed"] = &Actor::updateMissionPed;
 	actor_class["removeMissionPed"] = &Actor::removeMissionPed;
 	actor_class["missionPed"] = &Actor::missionPed;
-	actor_class["editorPed"] = &Actor::missionPed;
+	actor_class["editorPed"] = &Actor::editorPed;
 
 	auto car_class = lua.new_usertype<Car>("Car", sol::no_constructor);
 	car_class["updateMissionCar"] = &Car::updateMissionCar;
 	car_class["removeMissionCar"] = &Car::removeMissionCar;
 	car_class["missionCar"] = &Car::missionCar;
-	car_class["editorCar"] = &Car::missionCar;
+	car_class["editorCar"] = &Car::editorCar;
 
+	auto train_class = lua.new_usertype<Train>("Train", sol::no_constructor);
+	train_class["updateMissionTrain"] = &Train::updateMissionTrain;
+	train_class["removeMissionTrain"] = &Train::removeMissionTrain;
+	train_class["missionTrain"] = &Train::missionTrain;
+	train_class["editorTrain"] = &Train::editorTrain;
+	
 	auto object_class = lua.new_usertype<Object>("Object", sol::no_constructor);
 	object_class["updateMissionObject"] = &Object::updateMissionObject;
 	object_class["removeMissionObject"] = &Object::removeMissionObject;
@@ -1576,6 +1801,7 @@ void addLDYOMClasses(sol::state& lua)
 	mission_class["list_targets"] = &Mission::list_targets;
 	mission_class["list_actors"] = &Mission::list_actors;
 	mission_class["list_cars"] = &Mission::list_cars;
+	mission_class["list_trains"] = &Mission::list_trains;
 	mission_class["list_objects"] = &Mission::list_objects;
 	mission_class["list_particles"] = &Mission::list_particles;
 	mission_class["list_pickups"] = &Mission::list_pickups;

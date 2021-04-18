@@ -73,6 +73,7 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 				if (bTargets) { fTargets(); }
 				if (bActors) { fActors(); }
 				if (bCars) { fCars(); }
+				if (bTrains) { fTrains(); }
 				if (carSelector::bShow) { carSelector::fShow(); }
 				if (bGroupRelations) { fGroupRelations(); }
 				if (bObjects) { fObjects(); }
@@ -91,7 +92,7 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 				if (bStorylineCheckpoints) { fStorylineCheckpoints(); }
 				if (bScriptsSettings) { fScriptsSettings(); }
 				if (bNodeEditor) { NodeGraph::render(); }
-				ImGui::ShowDemoWindow(&openFrame);
+				//ImGui::ShowDemoWindow(&openFrame);
 			}
 			if (draw_lines && editmodeCamera)
 			{
@@ -136,6 +137,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			bTargets = false;
 			bActors = false;
 			bCars = false;
+			bTrains = false;
 			bGroupRelations = false;
 			bObjects = false;
 			bParticles = false;
@@ -153,8 +155,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			bStorylineCheckpoints = false;
 			bScriptsSettings = false;
 			bNodeEditor = false;
-			Command<Commands::FREEZE_CHAR_POSITION>(playerPed, false);
-			TheCamera.Restore();
+			if (!mission_started)
+			{
+				Command<Commands::FREEZE_CHAR_POSITION>(playerPed, false);
+				TheCamera.Restore();
+			}
 		} else {
 			if (!storylineMode)
 				bMainMenu = true;
@@ -167,7 +172,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	openFrame = bMainMenu || bTargets || bActors || bCars || carSelector::bShow || bGroupRelations || bObjects || bParticles || bPickups || bExplosions || bAudios || bMissionPacks || bPlayer || bMissionSettings || bStorylines || bTools || bSettings || bInfo || bStorylineMainMenu || bStorylineCheckpoints || bScriptsSettings || bNodeEditor;
+	openFrame = bMainMenu || bTargets || bActors || bCars || bTrains || carSelector::bShow || bGroupRelations || bObjects || bParticles || bPickups || bExplosions || bAudios || bMissionPacks || bPlayer || bMissionSettings || bStorylines || bTools || bSettings || bInfo || bStorylineMainMenu || bStorylineCheckpoints || bScriptsSettings || bNodeEditor;
 
 	if (openFrame && !mission_started && !storyline_started && !off_gui) {
 		Command<0x0AB3>(700, 1);

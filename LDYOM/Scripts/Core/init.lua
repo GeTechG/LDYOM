@@ -29,6 +29,12 @@ function fif(cond,truee,falsee)
 	end
 end
 
+function clamp(val, lower, upper)
+    assert(val and lower and upper, "not very useful error message here")
+    if lower > upper then lower, upper = upper, lower end -- swap if boundaries supplied the wrong way
+    return math.max(lower, math.min(upper, val))
+end
+
 function main()
 	bitser.registerClass(BaseNode);
 	bitser.registerClass(BasePin);
@@ -36,6 +42,7 @@ function main()
 	bitser.registerClass(Variable);
 	
 	ldyom.langMenu["CoreCalcParam"] = ldyom.parseJsonArray(ldyom.langt("CoreCalcParam"));
+	ldyom.langMenu["CoreTypeMovingObject"] = ldyom.parseJsonArray(ldyom.langt("CoreTypeMovingObject"));
 	
 	callOpcode(0x0ADF,{{"HENAA","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HENAA"))),"string"}});
 	callOpcode(0x0ADF,{{"HVIEW","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HVIEW"))),"string"}});
@@ -43,7 +50,6 @@ function main()
 	
 	require "LDYOM.Scripts.Core.VariableNode"
 	
-	require "LDYOM.Scripts.Core.test"
 	require "LDYOM.Scripts.Core.Main.NodeStart"
 	require "LDYOM.Scripts.Core.Main.NodeMainCycle"
 	require "LDYOM.Scripts.Core.Main.NodePrintLog"
@@ -75,11 +81,21 @@ function main()
 	require "LDYOM.Scripts.Core.Car.NodeHideCar"
 	require "LDYOM.Scripts.Core.Car.NodeDisapperCar"
 	
+	require "LDYOM.Scripts.Core.Train.NodeTrainToHandle"
+	require "LDYOM.Scripts.Core.Train.NodeShowTrain"
+	require "LDYOM.Scripts.Core.Train.NodeApperTrain"
+	require "LDYOM.Scripts.Core.Train.NodeHideTrain"
+	require "LDYOM.Scripts.Core.Train.NodeDisapperTrain"
+	
 	require "LDYOM.Scripts.Core.Object.NodeObjectToHandle"
 	require "LDYOM.Scripts.Core.Object.NodeShowObject"
 	require "LDYOM.Scripts.Core.Object.NodeApperObject"
 	require "LDYOM.Scripts.Core.Object.NodeHideObject"
 	require "LDYOM.Scripts.Core.Object.NodeDisapperObject"
+	require "LDYOM.Scripts.Core.Object.NodeMoveObject"
+	require "LDYOM.Scripts.Core.Object.NodeTriggerMove"
+	require "LDYOM.Scripts.Core.Object.NodeGetPosObject"
+	require "LDYOM.Scripts.Core.Object.NodeSlideObject"
 	
 	require "LDYOM.Scripts.Core.Particle.NodeParticleToHandle"
 	require "LDYOM.Scripts.Core.Particle.NodeShowParticle"
@@ -92,12 +108,14 @@ function main()
 	require "LDYOM.Scripts.Core.Pickup.NodeApperPickup"
 	require "LDYOM.Scripts.Core.Pickup.NodeHidePickup"
 	require "LDYOM.Scripts.Core.Pickup.NodeDisapperPickup"
+	require "LDYOM.Scripts.Core.Pickup.NodeGetPosPickup"
 	
 	require "LDYOM.Scripts.Core.Explosion.NodeExplosionToHandle"
 	require "LDYOM.Scripts.Core.Explosion.NodeShowExplosion"
 	require "LDYOM.Scripts.Core.Explosion.NodeApperExplosion"
 	require "LDYOM.Scripts.Core.Explosion.NodeHideExplosion"
 	require "LDYOM.Scripts.Core.Explosion.NodeDisapperExplosion"
+	require "LDYOM.Scripts.Core.Explosion.NodeGetPosFire"
 	
 	require "LDYOM.Scripts.Core.Audio.NodeAudioGet"
 	require "LDYOM.Scripts.Core.Audio.NodeShowAudio"
@@ -114,9 +132,17 @@ function main()
 	require "LDYOM.Scripts.Core.Ped.NodePedGotoPed"
 	require "LDYOM.Scripts.Core.Ped.NodePedGiveWeapon"
 	require "LDYOM.Scripts.Core.Ped.NodePedTakeWeapons"
+	require "LDYOM.Scripts.Core.Ped.NodePedChangeSkin"
+	require "LDYOM.Scripts.Core.Ped.NodeGetPosChar"
 	
 	require "LDYOM.Scripts.Core.Vehicle.NodeOpenDoors"
 	require "LDYOM.Scripts.Core.Vehicle.NodeLockVehicle"
+	require "LDYOM.Scripts.Core.Vehicle.NodeGetPosVehicle"
+	
+	require "LDYOM.Scripts.Core.Player.NodePlayerToPed"
+	
+	require "LDYOM.Scripts.Core.Camera.NodeGetPosActiveCam"
+	require "LDYOM.Scripts.Core.Camera.NodeStaticCutscene"
 	
 	print("Core nodes loaded")
 end

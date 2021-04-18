@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <CRadar.h>
+#include <CTrain.h>
 
 #include "Manager.h"
 #include "MissionPlayer.h"
@@ -12,6 +13,7 @@ bool bMainMenu = false;
 bool bTargets = false;
 bool bActors = false;
 bool bCars = false;
+bool bTrains = false;
 bool bObjects = false;
 bool bGroupRelations = false;
 bool bParticles = false;
@@ -34,6 +36,7 @@ ImVec2 resolution;
 int currentTarget;
 int currentActor;
 int currentCar;
+int currentTrain;
 int currentObject;
 int currentParticle;
 int currentPickup;
@@ -45,6 +48,7 @@ int currentStoryline;
 int currentStorylineCheckpoint;
 vector<const char*> namesTargets;
 vector<const char*> namesCars;
+vector<const char*> namesTrains;
 vector<const char*> namesActors;
 vector<const char*> namesObjects;
 vector<const char*> namesParticles;
@@ -73,11 +77,12 @@ extern bool editmodeTimemiss;
 extern void loadArrayMenu();
 extern bool load_theme;
 extern std::map<int, const char*> namesVars;
+extern void clearScripts();
 
 void fMainMenu()
 {
 	ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_Appearing);
-	ImGui::SetNextWindowPos(ImVec2(resolution.x / 2 - 100, resolution.y / 2 - 200), ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(ImVec2(resolution.x / 2 - 100, resolution.y / 2 - 300), ImGuiCond_Appearing);
 	ImGui::Begin(langt("mainMenu"), nullptr, ImGuiWindowFlags_AlwaysAutoResize + ImGuiWindowFlags_NoCollapse);
 
 	const ImVec2 size_b(160, 0);
@@ -117,6 +122,15 @@ void fMainMenu()
 	{
 		bMainMenu = false;
 		bCars = true;
+	}
+	name.clear();
+	name.append(ICON_FA_TRAIN);
+	name.append(" ");
+	name.append(langt("trains"));
+	if (ImGui::Button(name.c_str(), size_b))
+	{
+		bMainMenu = false;
+		bTrains = true;
 	}
 	name.clear();
 	name.append(ICON_FA_ARCHIVE);
@@ -274,6 +288,7 @@ void fMainMenu()
 			currentMissionPtr->removeEditorEntity();
 
 			delete currentMissionPtr;
+			
 			namesTargets.clear();
 			currentTarget = 0;
 			bTargets = false;
@@ -302,6 +317,10 @@ void fMainMenu()
 			bPlayer = false;
 			bMissionPacks = false;
 			carSelector::bShow = false;
+			currentNodeGraphPtr->links.clear();
+			currentNodeGraphPtr->nodes.clear();
+			currentNodeGraphPtr->vars.clear();
+			namesVars.clear();
 
 			currentMissionPtr = new Mission;
 			currentMissionPtr->player.updateEditorPed();
@@ -315,7 +334,6 @@ void fMainMenu()
 
 		ImGui::EndPopup();
 	}
-	
 	ImGui::End();
 }
 
@@ -817,7 +835,7 @@ void fTargets()
 							editmodeCamera = true;
 							bTargets = false;
 						}
-						if (ImGui::SliderInt(langt("tied"), &targetPtr->tied, 0, 3,
+						if (ImGui::SliderInt(langt("tied"), &targetPtr->tied, 0, 4,
 						                     langMenu["CutscenePos"][targetPtr->tied].c_str()))
 							targetPtr->tiedID = 0;
 
@@ -837,7 +855,7 @@ void fTargets()
 							ImGui::PopID();
 						}
 
-						if (ImGui::SliderInt(langt("follow"), &targetPtr->follow, 0, 3,
+						if (ImGui::SliderInt(langt("follow"), &targetPtr->follow, 0, 4,
 						                     langMenu["CutsceneLook"][targetPtr->follow].c_str()))
 							targetPtr->followID = 0;
 
@@ -993,6 +1011,7 @@ void fTargets()
 							targetPtr->pos[0] = playerPos.x;
 							targetPtr->pos[1] = playerPos.y;
 							targetPtr->pos[2] = playerPos.z;
+							targetPtr->interiorID = CGame::currArea;
 						}
 						if (ImGui::IsItemHovered())
 						{
@@ -1113,7 +1132,6 @@ void fTargets()
 						{
 							editmodeTeleportPlayer = true;
 							bTargets = false;
-							Command<Commands::FREEZE_CHAR_POSITION>(playerPed, false);
 						}
 
 						//skin popup
@@ -1140,6 +1158,76 @@ void fTargets()
 							ImGui::EndChild();
 							ImGui::EndPopup();
 						}
+
+						ImGui::SetNextWindowBgAlpha(0.50);
+						ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+						ImGui::SetNextWindowSize(ImVec2(240, 60), ImGuiCond_Always);
+						ImGui::Begin("info", nullptr,
+							ImGuiWindowFlags_NoDecoration + ImGuiWindowFlags_AlwaysAutoResize +
+							ImGuiWindowFlags_NoSavedSettings + ImGuiWindowFlags_NoMove + ImGuiWindowFlags_NoInputs);
+
+						ImGui::Text(langMenu["infoOverlay"][0].c_str());
+						ImGui::Text(langMenu["infoOverlay"][1].c_str());
+						ImGui::Text(langMenu["infoOverlay"][2].c_str());
+
+						ImGui::End();
+
+						isWindow |= ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered();
+
+						//edit
+						float cx = targetPtr->pos[0], cy = targetPtr->pos[1], cz = targetPtr->pos[2];
+						cx = cx + (camera_zoom * sin(static_cast<float>(rad(camera_angle[0]))) * cos(
+							static_cast<float>(rad(camera_angle[1]))));
+						cy = cy + (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
+							static_cast<float>(rad(camera_angle[1]))));
+						cz = cz + (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
+						Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
+						Command<Commands::POINT_CAMERA_AT_POINT>(targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2], 2);
+
+						if (!isWindow)
+						{
+							if (ImGui::IsMouseDragging(2))
+							{
+								ImVec2 dt = ImGui::GetIO().MouseDelta;
+								camera_angle[0] += dt.x;
+								camera_angle[1] += dt.y;
+							}
+							if (ImGui::GetIO().MouseWheel != 0.0f && KeyPressed(VK_SHIFT))
+							{
+								camera_zoom += (camera_zoom * ImGui::GetIO().MouseWheel) / 4;
+								if (camera_zoom < 1)
+									camera_zoom = 1;
+							}
+						}
+						if (KeyPressed(VK_UP))
+						{
+							targetPtr->pos[0] -= 0.01f * camera_zoom * static_cast<float>(sin(
+								static_cast<float>(rad(camera_angle[0]))));
+							targetPtr->pos[1] -= 0.01f * camera_zoom * static_cast<float>(cos(
+								static_cast<float>(rad(camera_angle[0]))));
+						}
+						else if (KeyPressed(VK_DOWN))
+						{
+							targetPtr->pos[0] += 0.01f * camera_zoom * static_cast<float>(sin(
+								static_cast<float>(rad(camera_angle[0]))));
+							targetPtr->pos[1] += 0.01f * camera_zoom * static_cast<float>(cos(
+								static_cast<float>(rad(camera_angle[0]))));
+						}
+						if (KeyPressed(VK_LEFT))
+						{
+							targetPtr->pos[0] += 0.01f * camera_zoom * static_cast<float>(sin(
+								static_cast<float>(rad(camera_angle[0] + 90))));
+							targetPtr->pos[1] += 0.01f * camera_zoom * static_cast<float>(cos(
+								static_cast<float>(rad(camera_angle[0] + 90))));
+						}
+						else if (KeyPressed(VK_RIGHT))
+						{
+							targetPtr->pos[0] += 0.01f * camera_zoom * static_cast<float>(sin(
+								static_cast<float>(rad(camera_angle[0] - 90))));
+							targetPtr->pos[1] += 0.01f * camera_zoom * static_cast<float>(cos(
+								static_cast<float>(rad(camera_angle[0] - 90))));
+						}
+						
 						break;
 					}
 				case 1:
@@ -1151,13 +1239,14 @@ void fTargets()
 
 						Combo(langt("anim"), targetPtr->anim, &Anim_list[targetPtr->pack]);
 						ToggleButton(langt("looped"), &targetPtr->looped);
+						ImGui::DragFloat(langt("smoothness"), &targetPtr->blend, 1.0f, 0.0f, 10000.0f);
 						if (ImGui::Button(langt("preview")))
 						{
 							if (!Command<Commands::HAS_ANIMATION_LOADED>(Anim_name[targetPtr->pack].c_str()))
 								Command<Commands::REQUEST_ANIMATION>(Anim_name[targetPtr->pack].c_str());
 							vector<std::string> anims = Anim_list[targetPtr->pack];
 							Command<Commands::TASK_PLAY_ANIM>(playerPed, anims[targetPtr->anim].c_str(),
-							                                  Anim_name[targetPtr->pack].c_str(), 1.0f,
+							                                  Anim_name[targetPtr->pack].c_str(), targetPtr->blend,
 							                                  targetPtr->looped, false, false, false, -1);
 						}
 						break;
@@ -1496,6 +1585,8 @@ void fActors()
 
 		ToggleButton(langt("randomSpawnW"), &actorPtr->randomSpawn);
 		ToggleButton(langt("should_live"), &actorPtr->shouldNotDie);
+		ToggleButton(langt("stayInSamePlace"), &actorPtr->stayInSamePlace);
+		ToggleButton(langt("kindaStayInSamePlace"), &actorPtr->kindaStayInSamePlace);
 
 
 		ImGui::Separator();
@@ -1678,7 +1769,7 @@ void fCars()
 		namesCars.push_back(currentMissionPtr->list_cars[currentCar]->name);
 		currentMissionPtr->list_cars[currentMissionPtr->list_cars.size() - 1]->updateEditorCar(true);
 	}
-	if (currentMissionPtr->list_cars.size() > 0)
+	if (!currentMissionPtr->list_cars.empty())
 	{
 		ImGui::SameLine();
 
@@ -1763,8 +1854,8 @@ void fCars()
 	if (!currentMissionPtr->list_cars.empty())
 	{
 		Car* carPtr = currentMissionPtr->list_cars[currentCar];
-		ImGui::SetNextWindowSize(ImVec2(400, 360), ImGuiCond_Always);
-		ImGui::SetNextWindowPos(ImVec2(resolution.x - 670, 0), ImGuiCond_Appearing);
+		ImGui::SetNextWindowSize(ImVec2(420, 360), ImGuiCond_Always);
+		ImGui::SetNextWindowPos(ImVec2(resolution.x - 690, 0), ImGuiCond_Appearing);
 		name.clear();
 		name.append(ICON_FA_MALE);
 		name.append(" ");
@@ -1937,6 +2028,14 @@ void fCars()
 				carPtr->updateEditorCar(true);
 			}
 
+			if (ImGui::InputText(langt("numberplate"), carPtr->numberplate, IM_ARRAYSIZE(carPtr->numberplate)))
+				carPtr->updateEditorCar();
+
+			const std::string cities_names[3] = { "Los Santos", "San Fierro", "Las Veturas" };
+			
+			if (ImGui::SliderInt(langt("city"), &carPtr->numberplate_city, -1, 1, cities_names[carPtr->numberplate_city + 1].c_str()))
+				carPtr->updateEditorCar();
+			
 			ImGui::Separator();
 
 			ToggleButton(langMenu["car_unbreak"][0].c_str(), &carPtr->bulletproof);
@@ -1948,7 +2047,7 @@ void fCars()
 
 			ImGui::TreePop();
 		}
-		ToggleButton(langt("CoreNodeLockDoorsCar"), &carPtr->locked);
+		ToggleButton(langt("CoreNodeLockVehicle"), &carPtr->locked);
 		ToggleButton(langt("should_live"), &carPtr->shouldNotDie);
 
 
@@ -2011,6 +2110,249 @@ void fCars()
 				if (camera_zoom < 1.0f)
 					camera_zoom = 1.0f;
 			}
+		}
+	}
+}
+
+void fTrains()
+{
+	bool isWindow = false;
+	std::string name;
+	ImGui::SetNextWindowSize(ImVec2(270, 410), ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(ImVec2(resolution.x - 270, 0), ImGuiCond_Appearing);
+	name.clear();
+	name.append(ICON_FA_CARS);
+	name.append(" ");
+	name.append(langt("trains"));
+	ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+	//List
+	ImGui::SetNextItemWidth(255.0f);
+	ListBox("", currentTrain, &namesTrains);
+
+	if (ImGui::Button(langt("create")))
+	{
+		CVector playerPos = playerPed->GetPosition();
+		float angle = deg(playerPed->GetHeading());
+
+		std::string name(langt("train"));
+		name.append(" #");
+		name.append(std::to_string(currentMissionPtr->list_trains.size()));
+		currentMissionPtr->list_trains.push_back(new Train(name.c_str(), playerPos.x, playerPos.y, playerPos.z,
+			currentMissionPtr->list_targets.empty()
+			? 0
+			: currentMissionPtr->list_targets.size() - 1));
+		currentTrain = currentMissionPtr->list_trains.size() - 1;
+		namesTrains.push_back(currentMissionPtr->list_trains[currentTrain]->name);
+		currentMissionPtr->list_trains[currentMissionPtr->list_trains.size() - 1]->updateEditorTrain();
+	}
+	if (currentMissionPtr->list_trains.size() > 0)
+	{
+		ImGui::SameLine();
+
+		if (ImGui::Button(langt("duplicate")))
+		{
+			int new_train = currentMissionPtr->list_trains.size();
+			Train* train = new Train(*currentMissionPtr->list_trains[currentTrain]);
+			train->updateEditorTrain();
+			currentMissionPtr->list_trains.push_back(train);
+			string str;
+			str.append(currentMissionPtr->list_trains[new_train]->name);
+			str.append("c");
+			strcpy(train->name, str.c_str());
+
+			namesTrains.push_back(train->name);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(langt("rename")))
+		{
+			ImGui::OpenPopup("rename");
+		}
+		if (ImGui::Button(langt("delete")))
+		{
+			name.clear();
+			name.append(ICON_FA_TRASH_ALT);
+			name.append(" ");
+			name.append(langt("delete"));
+			ImGui::OpenPopup(name.c_str());
+		}
+	}
+
+	isWindow |= ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered();
+
+	//delete
+	ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	name.clear();
+	name.append(ICON_FA_TRASH_ALT);
+	name.append(" ");
+	name.append(langt("delete"));
+	if (ImGui::BeginPopupModal(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text(langt("deleteQues"));
+
+		ImVec2 size_b = ImVec2(100, 0);
+
+		if (ImGui::Button(langt("yes"), size_b))
+		{
+			currentMissionPtr->list_trains[currentTrain]->removeEditorTrain();
+			delete currentMissionPtr->list_trains[currentTrain];
+			currentMissionPtr->list_trains.erase(currentMissionPtr->list_trains.begin() + currentTrain);
+			namesTrains.erase(namesTrains.begin() + currentTrain);
+			if (currentTrain > 0)
+			{
+				currentTrain -= 1;
+			}
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(langt("no"), size_b))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	//Rename popup
+	if (ImGui::BeginPopup("rename"))
+	{
+		ImGui::InputText("", &currentMissionPtr->list_trains[currentTrain]->name[0],
+			IM_ARRAYSIZE(currentMissionPtr->list_trains[currentTrain]->name));
+
+		if (ImGui::Button(langt("close")))
+			ImGui::CloseCurrentPopup();
+
+		ImGui::EndPopup();
+	}
+
+	ImGui::End();
+
+	//train render
+	if (!currentMissionPtr->list_trains.empty())
+	{
+		Train* trainPtr = currentMissionPtr->list_trains[currentTrain];
+		ImGui::SetNextWindowSize(ImVec2(400, 360), ImGuiCond_Always);
+		ImGui::SetNextWindowPos(ImVec2(resolution.x - 670, 0), ImGuiCond_Appearing);
+		name.clear();
+		name.append(ICON_FA_MALE);
+		name.append(" ");
+		name.append(langt("train"));
+		ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+		Command<Commands::FREEZE_CHAR_POSITION>(playerPed, true);
+
+		if (ImGui::Button(ICON_FA_STREET_VIEW))
+		{
+			CVector playerPos = playerPed->GetPosition();
+			trainPtr->pos[0] = playerPos.x;
+			trainPtr->pos[1] = playerPos.y;
+			trainPtr->pos[2] = playerPos.z;
+			trainPtr->editorTrain->SetPosn(CVector(trainPtr->pos[0], trainPtr->pos[1], trainPtr->pos[2]));
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip(langt("playerCoordinates"));
+		}
+		ImGui::SameLine();
+		ImGui::PushItemWidth(270);
+		if (ImGui::InputFloat3(langt("position"), trainPtr->pos, "%.6f"))
+		{
+			trainPtr->updateEditorTrain();
+		}
+
+		if (ToggleButton(langt("rotate"), &trainPtr->rotation) ||
+			ImGui::SliderInt(langt("model"), &trainPtr->modelID, 0, 15))
+			trainPtr->updateEditorTrain();
+
+		ImGui::InputFloat(langt("speed"), &trainPtr->speed);
+		ImGui::InputFloat(langt("cruise_speed"), &trainPtr->cruise_speed);
+		
+		ToggleButton(langt("useTarget"), &trainPtr->useTarget);
+		if (trainPtr->useTarget)
+		{
+			vector<const char*> list_tg_m = namesTargets;
+			list_tg_m.insert(list_tg_m.begin(), langt("toend"));
+			Combo(langt("app_on"), trainPtr->startC, &namesTargets);
+			Combo(langt("dis_after"), trainPtr->endC, &list_tg_m);
+		}
+
+		ImGui::End();
+
+		//edit
+		ImGui::SetNextWindowBgAlpha(0.50f);
+		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(240, 60), ImGuiCond_Always);
+		ImGui::Begin("info", nullptr,
+			ImGuiWindowFlags_NoDecoration + ImGuiWindowFlags_AlwaysAutoResize +
+			ImGuiWindowFlags_NoSavedSettings + ImGuiWindowFlags_NoMove + ImGuiWindowFlags_NoInputs);
+
+		ImGui::Text(langMenu["infoOverlay"][0].c_str());
+		ImGui::Text(langMenu["infoOverlay"][1].c_str());
+		ImGui::Text(langMenu["infoOverlay"][2].c_str());
+		ImGui::Text(langMenu["infoOverlay"][3].c_str());
+		ImGui::Text(langMenu["infoOverlay"][4].c_str());
+
+		ImGui::End();
+
+		isWindow |= ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered();
+
+		float cx = trainPtr->pos[0], cy = trainPtr->pos[1], cz = trainPtr->pos[2];
+		cx += (camera_zoom * sin(static_cast<float>(rad(camera_angle[0]))) * cos(
+			static_cast<float>(rad(camera_angle[1]))));
+		cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
+			static_cast<float>(rad(camera_angle[1]))));
+		cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
+		Command<Commands::POINT_CAMERA_AT_POINT>(trainPtr->pos[0], trainPtr->pos[1], trainPtr->pos[2], 2);
+		if (!isWindow)
+		{
+			if (ImGui::IsMouseDragging(2))
+			{
+				ImVec2 dt = ImGui::GetIO().MouseDelta;
+				camera_angle[0] += dt.x;
+				camera_angle[1] += dt.y;
+			}
+			if (ImGui::GetIO().MouseWheel != 0.0f && KeyPressed(VK_SHIFT))
+			{
+				camera_zoom += (camera_zoom * ImGui::GetIO().MouseWheel) / 4.0;
+				if (camera_zoom < 1.0f)
+					camera_zoom = 1.0f;
+			}
+		}
+
+		if (KeyPressed(VK_UP))
+		{
+			trainPtr->pos[0] -= 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0])));
+			trainPtr->pos[1] -= 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0])));
+			trainPtr->updateEditorTrain();
+		}
+		else if (KeyPressed(VK_DOWN))
+		{
+			trainPtr->pos[0] += 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0])));
+			trainPtr->pos[1] += 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0])));
+			trainPtr->updateEditorTrain();
+		}
+		if (KeyPressed(VK_LEFT))
+		{
+			trainPtr->pos[0] += 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0] + 90)));
+			trainPtr->pos[1] += 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0] + 90)));
+			trainPtr->updateEditorTrain();
+		}
+		else if (KeyPressed(VK_RIGHT))
+		{
+			trainPtr->pos[0] += 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0] - 90)));
+			trainPtr->pos[1] += 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0] - 90)));
+			trainPtr->updateEditorTrain();
+		}
+		if (KeyPressed(VK_Q))
+		{
+			trainPtr->pos[2] += 0.01 * camera_zoom;
+			trainPtr->updateEditorTrain();
+		}
+		else if (KeyPressed(VK_E))
+		{
+			trainPtr->pos[2] -= 0.01 * camera_zoom;
+			trainPtr->updateEditorTrain();
 		}
 	}
 }
@@ -3715,6 +4057,13 @@ void fMissionPacks()
 		name.append(langt("missionPack"));
 		name.append(" #");
 		name.append(std::to_string(namesMissionPacks.size()));
+		std::stringstream path;
+		path << "LDYOM//Missions_packs//" << UTF8_to_CP1251(replace_symb(name));
+		while (boost::filesystem::exists(UTF8_to_CP1251(path.str()))) {
+			name.append("c");
+			path.clear();
+			path << "LDYOM//Missions_packs//" << UTF8_to_CP1251(replace_symb(name));
+		}
 		char* name_c = new char[65];
 		strcpy(name_c, name.c_str());
 		namesMissionPacks.push_back(name_c);
@@ -3817,9 +4166,11 @@ void fMissionPacks()
 		{
 			currentMission = namesMissions[currentMissionPack].size();
 			std::stringstream path;
-			path << "LDYOM//Missions_packs//" << UTF8_to_CP1251(replace_symb(namesMissionPacks[currentMissionPack])) << "//" << replace_symb(currentMissionPtr->name);
+			path << "LDYOM//Missions_packs//" << UTF8_to_CP1251(replace_symb(namesMissionPacks[currentMissionPack])) << "//" << replace_symb(currentMissionPtr->name) << ".bin";
 			while (boost::filesystem::exists(UTF8_to_CP1251(path.str()))) {
-				currentMissionPtr->name += "c";
+				currentMissionPtr->name.append("c");
+				path.clear();
+				path << "LDYOM//Missions_packs//" << UTF8_to_CP1251(replace_symb(namesMissionPacks[currentMissionPack])) << "//" << replace_symb(currentMissionPtr->name) << ".bin";
 			}
 			namesMissions.at(currentMissionPack).push_back(currentMissionPtr->name);
 			Manager::SaveMission(currentMissionPack, currentMission);
@@ -4073,6 +4424,7 @@ void fStorylineList()
 		if (storylineMode)
 		{
 			if (ImGui::Button(langt("save"))) {
+				fastdata_pack = currentStoryline;
 				Manager::SaveStoryline(currentStoryline);
 				CHud::SetHelpMessage("Saved!", false, false, false);
 			}
@@ -4148,6 +4500,7 @@ void fStorylineList()
 				}
 				currentStorylinePtr = new Storyline(namesMissionPacks[selMissPack]);
 				Manager::SaveStoryline(currentStoryline);
+				fastdata_pack = currentStoryline;
 				storylineMode = true;
 				ImGui::CloseCurrentPopup();
 				ImGui::CloseCurrentPopup();
@@ -4185,7 +4538,7 @@ void fStorylineList()
 				currentStorylinePtr = nullptr;
 			}
 			Manager::LoadStoryline(currentStoryline);
-
+			fastdata_pack = currentStoryline;
 			namesStorylineCheckpoints.clear();
 			for (auto checkpoint : currentStorylinePtr->list_checkpoints)
 			{
@@ -4274,6 +4627,8 @@ void fTools()
 		Command<0x0AB6>(&x, &y, &z);
 		z = CWorld::FindGroundZForCoord(x, y);
 		playerPed->SetPosn(x, y, z);
+		Command<Commands::SET_CHAR_AREA_VISIBLE>(playerPed, 0);
+		Command<Commands::SET_AREA_VISIBLE>(0);
 	}
 	if (ImGui::Button(langt("jetpack"))) {
 		Command<Commands::TASK_JETPACK>(playerPed);
@@ -4523,6 +4878,7 @@ void fStorylineMainMenu()
 	name.append(langt("storylineStart"));
 	if (ImGui::Button(name.c_str(), size_b))
 	{
+		currentStorylinePtr->removeEditorEntity();
 		bStorylineMainMenu = false;
 		instance.add_to_queue(MissionPlayer::start_storyline);
 	}
@@ -4872,8 +5228,6 @@ void fStorylineCheckpoints()
 		}
 	}
 }
-
-extern void clearScripts();
 
 void fScriptsSettings()
 {

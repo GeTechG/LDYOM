@@ -10,7 +10,7 @@
 #include <vector>
 #include <ctime>
 #include <boost/serialization/base_object.hpp>
-
+#include <CTrain.h>
 
 
 #include "CBmx.h"
@@ -83,6 +83,8 @@ public:
 	bool useTarget = true;
 	bool headshot = true;
 	int interiorID = 0;
+	bool stayInSamePlace = false;
+	bool kindaStayInSamePlace = false;
 
 	Actor() = default;
 	Actor(const char* name, float x, float y, float z, float angle, int lastTarget);
@@ -115,6 +117,8 @@ public:
 		ar & useTarget;
 		ar & headshot;
 		ar & interiorID;
+		ar & stayInSamePlace;
+		ar & kindaStayInSamePlace;
 	}
 };
 
@@ -177,6 +181,7 @@ public:
 	void serialize(Archive & ar, const unsigned int version)
 	{
 		ar & boost::serialization::base_object<Target>(*this);
+		ar & car;
 		ar & text;
 		ar & textTime;
 		ar & colorBlip;
@@ -187,7 +192,7 @@ class TargetActor : public Target {
 	friend class boost::serialization::access;
 public:
 	int actor = 0;
-	char text[129] = {};
+	char text[129] = "";
 	float textTime = 2.0f;
 	int colorBlip = 0;
 	bool killGroup = false;
@@ -201,6 +206,7 @@ public:
 	void serialize(Archive & ar, const unsigned int version)
 	{
 		ar & boost::serialization::base_object<Target>(*this);
+		ar & actor;
 		ar & text;
 		ar & textTime;
 		ar & colorBlip;
@@ -261,7 +267,7 @@ public:
 
 class TargetTimeout : public Target {
 public:
-	char text[129] = {};
+	char text[129] = "";
 	float time = 2;
 
 	TargetTimeout(const char* name);
@@ -410,6 +416,7 @@ public:
 	int pack = 0;
 	int anim = 0;
 	bool looped = false;
+	float blend = 1.0f;
 
 	TargetAnimation(const char* name);
 	TargetAnimation() = default;
@@ -562,6 +569,8 @@ public:
 	vector<pair<unsigned char, std::array<float,4>>> colors;
 	int component_type_A = 0;
 	int component_type_B = 0;
+	int numberplate_city = -1;
+	char numberplate[9] = "";
 
 	Car(const char* name, float x, float y, float z, float angle, int lastTarget);
 	Car(const Car& car);
@@ -598,6 +607,48 @@ public:
 		ar & colors;
 		ar & component_type_A;
 		ar & component_type_B;
+		ar & numberplate;
+		ar & numberplate_city;
+	}
+};
+
+class Train {
+public:
+	CTrain* editorTrain = nullptr;
+	CTrain* missionTrain = nullptr;
+	char name[65];
+	float pos[3];
+	bool rotation = false;
+	int modelID = 0;
+	int startC;
+	int endC = 0;
+	bool useTarget = true;
+	float speed = 0.0f;
+	float cruise_speed = 0.0f;
+
+	Train(const char* name, float x, float y, float z, int lastTarget);
+	Train(const Train& train);
+	Train() = default;
+	void updateEditorTrain();
+
+	void removeEditorTrain();
+
+	void updateMissionTrain();
+
+	void removeMissionTrain();
+
+	template <typename Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & name;
+		ar & pos;
+		ar & rotation;
+		ar & modelID;
+		ar & startC;
+		ar & endC;
+		ar & useTarget;
+		ar & speed;
+		ar & cruise_speed;
 	}
 };
 
@@ -837,6 +888,7 @@ struct Mission {
 	vector <Target*> list_targets;
 	vector <Actor*> list_actors;
 	vector <Car*> list_cars;
+	vector <Train*> list_trains;
 	vector <Object*> list_objects;
 	vector <Particle*> list_particles;
 	vector <Pickup*> list_pickups;
@@ -889,6 +941,7 @@ struct Mission {
 		ar & list_targets;
 		ar & list_actors;
 		ar & list_cars;
+		ar & list_trains;
 		ar & list_objects;
 		ar & list_particles;
 		ar & list_pickups;

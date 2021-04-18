@@ -4,12 +4,14 @@ class = require "LDYOM.Scripts.middleclass"
 
 NodeVariable = bitser.registerClass(class("NodeVariable", BaseNode));
 
-function NodeVariable:initialize(id,var,setter)
+function NodeVariable:initialize(id,varr,setter)
 	BaseNode.initialize(self,id);
 	self.type = 3;
-	self.var = var;
+	self.var = varr;
 	self.setter = setter or false;
-	local ttype = ldyom.currentNodeGraph.vars[var].typeValue[0];
+	print(tostring(varr));
+	print(tostring(ldyom.currentNodeGraph.vars[varr]));
+	local ttype = ldyom.currentNodeGraph.vars[varr].typeValue[0];
 	local data;
 	if ttype == 0 then
 		data = ffi.new("float[1]");
@@ -21,6 +23,7 @@ function NodeVariable:initialize(id,var,setter)
 	if setter then
 		self.Pins[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.void, 0);
 		self.Pins[self.id+2] = BasePin:new(self.id+2,ttype, 0, data);
+		self.Pins[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.void, 1);
 	else
 		self.Pins[self.id+1] = BasePin:new(self.id+1,ttype, 1);
 	end
@@ -73,6 +76,10 @@ function NodeVariable:draw()
 			end
 		end
 		imgui.imnodes.EndInputAttribute();
+		
+		imgui.imnodes.BeginOutputAttribute(self.id+3);
+		imgui.Dummy(imgui.ImVec2:new(0,10));
+		imgui.imnodes.EndOutputAttribute();
 	else
 		imgui.imnodes.BeginOutputAttribute(self.id+1);
 		imgui.Dummy(imgui.ImVec2:new(0,10));
@@ -91,5 +98,6 @@ function NodeVariable:play(data, mission)
 		else
 			ldyom.realVariable[self.var][0] = self:getPinValue(self.id+2,data,mission)[0];
 		end
+		self:callOutputLinks(data, mission, self.id+3);
 	end
 end

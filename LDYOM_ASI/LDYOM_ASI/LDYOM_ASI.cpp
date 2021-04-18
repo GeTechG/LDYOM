@@ -302,11 +302,14 @@ void foo()
 		}
 		if (editmodeTeleportPlayer)
 		{
+			Command<Commands::FREEZE_CHAR_POSITION>(playerPed, false);
+			TheCamera.Restore();
 			std::string HVIEW = UTF8_to_CP1251(langt("HVIEW"));
 			GXTEncode(HVIEW);
 			TargetTeleport* targetPtr = static_cast<TargetTeleport*>(currentMissionPtr->list_targets[currentTarget]);
 			CHud::SetHelpMessage(HVIEW.c_str(), false, true, false);
 			playerPed->SetPosn(CVector(targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2]));
+			
 			int modell;
 			if (targetPtr->modelType == 0)
 			{
@@ -351,7 +354,8 @@ void foo()
 					targetPtr->pos[1] = xy;
 					targetPtr->pos[2] = xz;
 					targetPtr->angle = angle;
-					targetPtr->interiorID = Command<Commands::GET_AREA_VISIBLE>();
+					targetPtr->interiorID = CGame::currArea;
+					Command<Commands::FREEZE_CHAR_POSITION>(playerPed, true);
 				}
 			}
 		}
@@ -579,6 +583,7 @@ public:
 				ScriptManager::loadScripts();
 				init = true;
 				langMenu["typesValue"] = parseJsonArray<std::string>(langt("typesValue"));
+				playerPed->DisablePedSpeech(1);
 			}
 
 			
@@ -656,6 +661,23 @@ public:
 					CHud::DrawHelpText();
 				}
 
+				if (KeyPressed(0x11)) {
+					if (KeyJustPressed(0x53)) {
+						if (fastdata_pack != -1) {
+							if (storylineMode)
+							{
+								Manager::SaveStoryline(fastdata_pack);
+								CHud::SetHelpMessage("Saved!", false, false, false);
+							} else if (fastdata_miss != -1)
+							{
+								Manager::SaveMission(fastdata_pack, fastdata_miss);
+								Manager::SaveListMission(fastdata_pack);
+								CHud::SetHelpMessage("Saved!", false, false, false);
+							}
+						}
+					}
+				}
+				
 				if (!storylineMode && !mission_started) {
 					if (updateSphere)
 						updateSphere = false;

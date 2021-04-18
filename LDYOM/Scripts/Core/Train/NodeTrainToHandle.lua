@@ -2,10 +2,10 @@ ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-Node = bitser.registerClass(class("NodeCarToHandle", BaseNode));
+Node = bitser.registerClass(class("NodeTrainToTrain", BaseNode));
 Node.static.mission = true;
 
-Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodeGetCarHandle");
+Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodeGetTrainHandle");
 
 function Node:initialize(id)
 	BaseNode.initialize(self,id);
@@ -28,15 +28,15 @@ function Node:draw()
 	imgui.imnodes.EndNodeTitleBar();
 	
 	imgui.imnodes.BeginStaticAttribute(self.id+1);
-	local names = ldyom.namesCars;
-	imgui.Text(ldyom.langt("car"));
+	local names = ldyom.namesTrains;
+	imgui.Text(ldyom.langt("train"));
 	imgui.SetNextItemWidth(150);
 	imgui.ComboVecChars("",self.Pins[self.id+1].value,names);
 	imgui.imnodes.EndStaticAttribute();
 	
 	imgui.imnodes.BeginOutputAttribute(self.id+2);
 	imgui.Indent(80);
-	imgui.Text(ldyom.langt("CoreHandleCar"));
+	imgui.Text(ldyom.langt("CoreHandleTrain"));
 	imgui.imnodes.EndOutputAttribute();
 	
 	imgui.imnodes.EndNode();
@@ -44,10 +44,10 @@ function Node:draw()
 end
 
 function Node:play(data, mission)
-	local car = self.Pins[self.id+1].value[0];
+	local train = self.Pins[self.id+1].value[0];
 	ldyom.setLastNode(self.id);
-	assert(mission.list_cars[car+1].missionCar, "The car is not yet established or has already disappeared.");
-	self.Pins[self.id+2].value[0] = getCarRef(mission.list_cars[car+1].missionCar);
+	assert(mission.list_trains[train+1].missionTrain, "The train is not yet established or has already disappeared.");
+	self.Pins[self.id+2].value[0] = getTrainRef(mission.list_trains[train+1].missionTrain);
 end
 
-ldyom.nodeEditor.addNodeClass("Car",Node);
+ldyom.nodeEditor.addNodeClass("Train",Node);
