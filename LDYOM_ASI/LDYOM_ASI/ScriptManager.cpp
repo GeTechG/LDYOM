@@ -555,6 +555,7 @@ void getOrientationObject(CObject* obj,sol::object x_obj, sol::object y_obj, sol
 
 void staticCutscene(sol::object x_obj, sol::object y_obj, sol::object z_obj, sol::object rot_x_obj, sol::object rot_y_obj, sol::object rot_z_obj)
 {
+	
 	float& x = *(float*)x_obj.pointer();
 	float& y = *(float*)y_obj.pointer();
 	float& z = *(float*)z_obj.pointer();
@@ -667,6 +668,167 @@ void staticCutscene(sol::object x_obj, sol::object y_obj, sol::object z_obj, sol
 	}
 }
 
+// 0 - attach_camera_to_vehicle
+// 1 - attach_camera_to_char
+// 2 - attach_camera_to_vehicle_look_at_vehicle
+// 3 - attach_camera_to_vehicle_look_at_char
+// 4 - attach_camera_to_char_look_at_char
+void attachCameraToEntity(int opcode, int entity, int entity2, sol::object x_obj, sol::object y_obj, sol::object z_obj, sol::object rot_x_obj, sol::object rot_y_obj, sol::object rot_z_obj)
+{
+
+	float rot_x = 0, rot_y = 0, rot_z = 0;
+
+	
+	float& x = *(float*)x_obj.pointer();
+	float& y = *(float*)y_obj.pointer();
+	float& z = *(float*)z_obj.pointer();
+
+	if (opcode <= 1) {
+		rot_x = *(float*)rot_x_obj.pointer();
+		rot_y = *(float*)rot_y_obj.pointer();
+		rot_z = *(float*)rot_z_obj.pointer();
+	}
+
+	CHud::bScriptDontDisplayRadar = true;
+	CHud::m_Wants_To_Draw_Hud = false;
+
+	while (true)
+	{
+		this_coro::wait(0ms);
+		float multy = 1.0f;
+		if (KeyPressed(VK_CONTROL))
+			multy = 0.5f;
+
+		if (KeyPressed(VK_A) && !KeyPressed(VK_SHIFT))
+		{
+			float sinn = static_cast<float>(sin(rad(rot_y + 90)));
+			float coss = static_cast<float>(cos(rad(rot_y + 90)));
+			x = x - 0.2 * sinn * multy;
+			y = y - 0.2 * coss * multy;
+		}
+		if (KeyPressed(VK_D) && !KeyPressed(VK_SHIFT))
+		{
+			float sinn = static_cast<float>(sin(rad(rot_y - 90)));
+			float coss = static_cast<float>(cos(rad(rot_y - 90)));
+			x = x - 0.2 * sinn * multy;
+			y = y - 0.2 * coss * multy;
+		}
+		if (KeyPressed(VK_W) && !KeyPressed(VK_SHIFT))
+		{
+			float sinn = static_cast<float>(sin(rad(rot_y)));
+			float coss = static_cast<float>(cos(rad(rot_y)));
+			x = x + 0.2 * sinn * multy;
+			y = y + 0.2 * coss * multy;
+		}
+		if (KeyPressed(VK_S) && !KeyPressed(VK_SHIFT))
+		{
+			float sinn = static_cast<float>(sin(rad(rot_y)));
+			float coss = static_cast<float>(cos(rad(rot_y)));
+			x = x - 0.2 * sinn * multy;
+			y = y - 0.2 * coss * multy;
+		}
+		if (KeyPressed(VK_Q) && !KeyPressed(VK_SHIFT))
+		{
+			z = z + 0.2 * multy;
+		}
+		if (KeyPressed(VK_E) && !KeyPressed(VK_SHIFT))
+		{
+			z = z - 0.2 * multy;
+		}
+
+		if (KeyPressed(VK_SHIFT))
+		{
+			if (KeyPressed(VK_A))
+			{
+				rot_y = rot_y - 2 * multy;
+			}
+			if (KeyPressed(VK_D))
+			{
+				rot_y = rot_y + 2 * multy;
+			}
+			if (KeyPressed(VK_W))
+			{
+				rot_x = rot_x - 2 * multy;
+			}
+			if (KeyPressed(VK_S))
+			{
+				rot_x = rot_x + 2 * multy;
+			}
+			if (KeyPressed(VK_E))
+			{
+				rot_z = rot_z - 2 * multy;
+			}
+			if (KeyPressed(VK_Q))
+			{
+				rot_z = rot_z + 2 * multy;
+			}
+		}
+
+		CVehicle *veh1, *veh2;
+		CPed *ped1, *ped2;
+		
+		switch (opcode)
+		{
+		case 0:
+			veh1 = currentMissionPtr->list_cars.at(entity)->editorCar;
+			Command<Commands::ATTACH_CAMERA_TO_VEHICLE>(veh1, x, y, z, rot_x, rot_y, rot_z, 0.0f, 2);
+			break;
+		case 1:
+			ped1 = currentMissionPtr->list_actors.at(entity)->editorPed;
+			Command<Commands::ATTACH_CAMERA_TO_CHAR>(ped1, x, y, z, rot_x, rot_y, rot_z, 0.0f, 2);
+			break;
+		case 2:
+			veh1 = currentMissionPtr->list_cars.at(entity)->editorCar;
+			veh2 = currentMissionPtr->list_cars.at(entity2)->editorCar;
+			Command<Commands::ATTACH_CAMERA_TO_VEHICLE_LOOK_AT_VEHICLE>(veh1, x, y, z, veh2, 0.0f, 2);
+			break;
+		case 3:
+			veh1 = currentMissionPtr->list_cars.at(entity)->editorCar;
+			ped1 = currentMissionPtr->list_actors.at(entity2)->editorPed;
+			Command<Commands::ATTACH_CAMERA_TO_VEHICLE_LOOK_AT_CHAR>(veh1, x, y, z, ped1, 0.0f, 2);
+			break;
+		case 4:
+			ped1 = currentMissionPtr->list_actors.at(entity)->editorPed;
+			ped2 = currentMissionPtr->list_actors.at(entity2)->editorPed;
+			Command<Commands::ATTACH_CAMERA_TO_CHAR_LOOK_AT_CHAR>(ped1, x, y, z, ped2, 0.0f, 2);
+			break;
+		}
+
+		//Close editor
+		if (KeyPressed(VK_F))
+		{
+			CHud::m_bHelpMessagePermanent = false;
+			TheCamera.Restore();
+			editmodeCamera = false;
+
+			rot_x = (int)rot_x % 360;
+			rot_y = (int)rot_y % 360;
+			rot_z = (int)rot_z % 360;
+
+			if (opcode <= 1) {
+				*(float*)rot_x_obj.pointer() = rot_x;
+				*(float*)rot_y_obj.pointer() = rot_y;
+				*(float*)rot_z_obj.pointer() = rot_z;
+			}
+			
+			off_gui = false;
+			CHud::bScriptDontDisplayRadar = false;
+			CHud::m_Wants_To_Draw_Hud = true;
+			break;
+		}
+	}
+}
+
+std::tuple<float, float, float> getPos(float* pos)
+{
+	return std::make_tuple(pos[0], pos[1], pos[2]);
+}
+
+void setCameraLook(float x, float y, float z)
+{
+	TheCamera.m_vecAttachedCamLookAt.Set(x, y, z);
+}
+
 void setNamespaceLua(sol::state& lua)
 {
 	lua.set_function("print", &printLog);
@@ -736,8 +898,9 @@ void setNamespaceLua(sol::state& lua)
 	t_ldyom.set("slideObject", slideObject);
 	t_ldyom.set("setbNodeEditor", setbNodeEditor);
 	t_ldyom.set("staticCutscene", staticCutscene);
-	
-	
+	t_ldyom.set("getPos", &getPos);
+	t_ldyom.set("setCameraLook", setCameraLook);
+	t_ldyom.set("attachCameraToEntity", &attachCameraToEntity);
 
 	addLDYOMClasses(lua);
 	

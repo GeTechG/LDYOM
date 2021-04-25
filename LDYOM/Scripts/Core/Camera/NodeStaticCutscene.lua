@@ -9,6 +9,7 @@ Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNode
 function Node:initialize(id)
 	BaseNode.initialize(self,id);
 	self.type = 4;
+	self.pointPos = ffi.new("bool[1]",true);
 	local x = ffi.new("float[1]");
 	local y = ffi.new("float[1]");
 	local z = ffi.new("float[1]");
@@ -21,7 +22,8 @@ function Node:initialize(id)
 		[self.id+5] = BasePin:new(self.id+5,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
 		[self.id+6] = BasePin:new(self.id+6,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
 		[self.id+7] = BasePin:new(self.id+7,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
-		[self.id+9] = BasePin:new(self.id+9,imgui.imnodes.PinType.void, 1),
+		[self.id+8] = BasePin:new(self.id+8,imgui.imnodes.PinType.boolean, 0, ffi.new("bool[1]")),
+		[self.id+10] = BasePin:new(self.id+10,imgui.imnodes.PinType.void, 1),
 	};
 end
 
@@ -68,31 +70,46 @@ function Node:draw()
 	end
 	imgui.imnodes.EndInputAttribute();
 	
-	imgui.imnodes.BeginInputAttribute(self.id+5);
-	imgui.Text(ldyom.langt("rotate").." x");
-	if not self.Pins[self.id+5].link then
-		imgui.SetNextItemWidth(200);
-		imgui.InputInt("", self.Pins[self.id+5].value);
-	end
-	imgui.imnodes.EndInputAttribute();
+	imgui.imnodes.BeginStaticAttribute(self.id+10);
+	imgui.ToggleButton(ldyom.langt("turn"), self.pointPos);
+	imgui.imnodes.EndStaticAttribute();
 	
-	imgui.imnodes.BeginInputAttribute(self.id+6);
-	imgui.Text(ldyom.langt("rotate").." y");
-	if not self.Pins[self.id+6].link then
-		imgui.SetNextItemWidth(200);
-		imgui.InputInt("", self.Pins[self.id+6].value);
+	if (self.pointPos[0]) then
+		imgui.imnodes.BeginInputAttribute(self.id+5);
+		imgui.Text(ldyom.langt("rotate").." x");
+		if not self.Pins[self.id+5].link then
+			imgui.SetNextItemWidth(200);
+			imgui.InputInt("", self.Pins[self.id+5].value);
+		end
+		imgui.imnodes.EndInputAttribute();
+		
+		imgui.imnodes.BeginInputAttribute(self.id+6);
+		imgui.Text(ldyom.langt("rotate").." y");
+		if not self.Pins[self.id+6].link then
+			imgui.SetNextItemWidth(200);
+			imgui.InputInt("", self.Pins[self.id+6].value);
+		end
+		imgui.imnodes.EndInputAttribute();
+		
+		imgui.imnodes.BeginInputAttribute(self.id+7);
+		imgui.Text(ldyom.langt("rotate").." z");
+		if not self.Pins[self.id+7].link then
+			imgui.SetNextItemWidth(200);
+			imgui.InputInt("", self.Pins[self.id+7].value);
+		end
+		imgui.imnodes.EndInputAttribute();
+		
+		imgui.imnodes.BeginInputAttribute(self.id+8);
+		if not self.Pins[self.id+8].link then
+			imgui.ToggleButton(ldyom.langt("movecam"), self.Pins[self.id+8].value);
+		else
+			imgui.Text(ldyom.langt(""));
+		end
+		imgui.imnodes.EndInputAttribute();
+		
 	end
-	imgui.imnodes.EndInputAttribute();
 	
-	imgui.imnodes.BeginInputAttribute(self.id+7);
-	imgui.Text(ldyom.langt("rotate").." z");
-	if not self.Pins[self.id+7].link then
-		imgui.SetNextItemWidth(200);
-		imgui.InputInt("", self.Pins[self.id+7].value);
-	end
-	imgui.imnodes.EndInputAttribute();
-	
-	imgui.imnodes.BeginStaticAttribute(self.id+8);
+	imgui.imnodes.BeginStaticAttribute(self.id+9);
 	if imgui.Button(ldyom.langt("edithand"), imgui.ImVec2:new(200,20)) then
 		callOpcode(0x01B4, {{0,"int"}, {0,"int"}});
 		currNodeStaticCamera = self;
@@ -101,7 +118,7 @@ function Node:draw()
 	end
 	imgui.imnodes.EndStaticAttribute();
 	
-	imgui.imnodes.BeginOutputAttribute(self.id+9);
+	imgui.imnodes.BeginOutputAttribute(self.id+10);
 	imgui.Dummy(imgui.ImVec2:new(0,10));
 	imgui.imnodes.EndOutputAttribute();
 	
@@ -116,6 +133,7 @@ function Node:play(data, mission)
 	local rot_x = self:getPinValue(self.id+5,data,mission)[0];
 	local rot_y = self:getPinValue(self.id+6,data,mission)[0];
 	local rot_z = self:getPinValue(self.id+7,data,mission)[0];
+	local movecam = self:getPinValue(self.id+8,data,mission)[0];
 	ldyom.setLastNode(self.id);
 	
 	local xx = x
@@ -132,9 +150,11 @@ function Node:play(data, mission)
 	z1 = z1 + 2 * math.cos(math.rad(rxx));
 
 	callOpcode(0x015F, {{xx,"float"}, {xy,"float"}, {xz,"float"}, {0,"float"}, {math.rad(rxz),"float"}, {0,"float"}});
-	callOpcode(0x0160, {{x1,"float"}, {y1,"float"}, {z1,"float"}, {2,"int"}});
+	if (self.pointPos[0]) then
+		callOpcode(0x0160, {{x1,"float"}, {y1,"float"}, {z1,"float"}, {fif(movecam,1,2),"int"}});
+	end
 	
-	self:callOutputLinks(data, mission, self.id+9);
+	self:callOutputLinks(data, mission, self.id+10);
 end
 
 ldyom.nodeEditor.addNodeClass("Camera",Node);

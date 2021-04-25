@@ -43,6 +43,7 @@ function main()
 	
 	ldyom.langMenu["CoreCalcParam"] = ldyom.parseJsonArray(ldyom.langt("CoreCalcParam"));
 	ldyom.langMenu["CoreTypeMovingObject"] = ldyom.parseJsonArray(ldyom.langt("CoreTypeMovingObject"));
+	ldyom.langMenu["cameraModes"] = ldyom.parseJsonArray(ldyom.langt("cameraModes"));
 	
 	callOpcode(0x0ADF,{{"HENAA","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HENAA"))),"string"}});
 	callOpcode(0x0ADF,{{"HVIEW","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HVIEW"))),"string"}});
@@ -142,7 +143,24 @@ function main()
 	require "LDYOM.Scripts.Core.Player.NodePlayerToPed"
 	
 	require "LDYOM.Scripts.Core.Camera.NodeGetPosActiveCam"
+	require "LDYOM.Scripts.Core.Camera.NodeInterpolationParameters"
 	require "LDYOM.Scripts.Core.Camera.NodeStaticCutscene"
+	require "LDYOM.Scripts.Core.Camera.NodeCameraPointToPos"
+	require "LDYOM.Scripts.Core.Camera.NodeCameraPointToVehicle"
+	require "LDYOM.Scripts.Core.Camera.NodeCameraPointToChar"
+	require "LDYOM.Scripts.Core.Camera.NodeRestoreCamera"
+	require "LDYOM.Scripts.Core.Camera.NodeRestoreCameraJumpcut"
+	require "LDYOM.Scripts.Core.Camera.NodeAttachCamToVehicle"
+	require "LDYOM.Scripts.Core.Camera.NodeAttachCamToChar"
+	require "LDYOM.Scripts.Core.Camera.NodeAttachCamToVehicleLookVehicle"
+	require "LDYOM.Scripts.Core.Camera.NodeAttachCamToVehicleLookChar"
+	require "LDYOM.Scripts.Core.Camera.NodeAttachCamToCharLookChar"
+	require "LDYOM.Scripts.Core.Camera.NodeGetFOV"
+	require "LDYOM.Scripts.Core.Camera.NodeLerpFOV"
+	require "LDYOM.Scripts.Core.Camera.NodeSetCinemaCamera"
+	require "LDYOM.Scripts.Core.Camera.NodeSetDrawCrosshair"
+	require "LDYOM.Scripts.Core.Camera.NodeSetPhotocameraMode"
+	require "LDYOM.Scripts.Core.Camera.NodeShakeSimulation"
 	
 	print("Core nodes loaded")
 end

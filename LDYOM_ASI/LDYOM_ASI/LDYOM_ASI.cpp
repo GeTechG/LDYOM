@@ -661,6 +661,12 @@ public:
 					CHud::DrawHelpText();
 				}
 
+				if (Command<0x0ADC>("MISSIOMAFIA"))
+				{
+					CHud::SetHelpMessage("~w~I MISSIO MAFIA", false, false, false);
+					CHud::DrawHelpText();
+				}
+
 				if (KeyPressed(0x11)) {
 					if (KeyJustPressed(0x53)) {
 						if (fastdata_pack != -1) {

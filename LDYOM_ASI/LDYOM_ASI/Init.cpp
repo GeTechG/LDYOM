@@ -1396,6 +1396,8 @@ void Audio::play(void* void_mission) {
 	
 	if (namesAudioFiles.empty())
 		return;
+
+	this_coro::wait(0);
 	
 	Mission* mission = static_cast<Mission*>(void_mission);
 	if (audio3D)
@@ -1761,6 +1763,8 @@ void addLDYOMClasses(sol::state& lua)
 	car_class["removeMissionCar"] = &Car::removeMissionCar;
 	car_class["missionCar"] = &Car::missionCar;
 	car_class["editorCar"] = &Car::editorCar;
+	car_class["pos"] = &Car::pos;
+	car_class["angle"] = &Car::angle;
 
 	auto train_class = lua.new_usertype<Train>("Train", sol::no_constructor);
 	train_class["updateMissionTrain"] = &Train::updateMissionTrain;
@@ -1815,4 +1819,9 @@ void addLDYOMClasses(sol::state& lua)
 	checkpointStoryline_class["activate"] = &CheckpointStoryline::activate;
 	
 	storyline_class.set("list_checkpoints", &Storyline::list_checkpoints);
+
+	auto cvector_class = lua.new_usertype<CVector>("CVector", sol::no_constructor);
+	cvector_class["x"] = &CVector::x;
+	cvector_class["y"] = &CVector::y;
+	cvector_class["z"] = &CVector::z;
 }

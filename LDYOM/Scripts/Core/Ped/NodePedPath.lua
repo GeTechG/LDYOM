@@ -106,6 +106,7 @@ function Node:play(data, mission)
 		local ped = node:getPinValue(node.id+2,data,mission)[0];
 		local type_move_ped = node:getPinValue(node.id+3,data,mission)[0];
         local type_route_ped = node:getPinValue(node.id+4,data,mission)[0];
+		assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");	
 		ldyom.setLastNode(self.id);
 		
 		local type_walk = 4

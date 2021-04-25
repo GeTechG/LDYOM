@@ -124,6 +124,7 @@ function Node:play(data, mission)
         local speed = node:getPinValue(node.id+4,data,mission)[0];
         local type_route_ped = node:getPinValue(node.id+5,data,mission)[0];
         local agressive = node:getPinValue(node.id+6,data,mission)[0];
+		assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");	
 		ldyom.setLastNode(self.id);
 		
 		local px = ffi.new("float[1]");
