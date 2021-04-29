@@ -57,7 +57,7 @@ void Manager::SaveMission(int curr_pack,int curr_miss)
 	bool scripts = true;
 
 	for (auto node : currentNodeGraphPtr->nodes) {
-		ImVec2 pos = imnodes::GetNodeEditorSpacePos(node.first);
+		ImVec2 pos = ImNodes::GetNodeEditorSpacePos(node.first);
 		node.second["pos"]["x"] = pos.x;
 		node.second["pos"]["y"] = pos.y;
 	}
@@ -175,7 +175,7 @@ void Manager::LoadMission(int curr_pack, int curr_miss)
 	for (auto node : currentNodeGraphPtr->nodes) {
 		float x = node.second["pos"]["x"];
 		float y = node.second["pos"]["y"];
-		imnodes::SetNodeEditorSpacePos(node.first,ImVec2(x,y));
+		ImNodes::SetNodeEditorSpacePos(node.first,ImVec2(x,y));
 	}
 	LoadVars(namesMissionPacks[curr_pack]);
 }
@@ -261,7 +261,7 @@ void Manager::SaveStoryline(int curr_storyline)
 	bool scripts = true;
 
 	for (auto node : currentNodeGraphPtr->nodes) {
-		ImVec2 pos = imnodes::GetNodeEditorSpacePos(node.first);
+		ImVec2 pos = ImNodes::GetNodeEditorSpacePos(node.first);
 		node.second["pos"]["x"] = pos.x;
 		node.second["pos"]["y"] = pos.y;
 	}
@@ -374,7 +374,7 @@ void Manager::LoadStoryline(int curr_storyline)
 	for (auto node : currentNodeGraphPtr->nodes) {
 		float x = node.second["pos"]["x"];
 		float y = node.second["pos"]["y"];
-		imnodes::SetNodeEditorSpacePos(node.first, ImVec2(x, y));
+		ImNodes::SetNodeEditorSpacePos(node.first, ImVec2(x, y));
 	}
 	LoadVars(currentStorylinePtr->missPack);
 }

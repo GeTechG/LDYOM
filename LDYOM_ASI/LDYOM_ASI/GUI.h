@@ -1587,6 +1587,7 @@ void fActors()
 		ToggleButton(langt("should_live"), &actorPtr->shouldNotDie);
 		ToggleButton(langt("stayInSamePlace"), &actorPtr->stayInSamePlace);
 		ToggleButton(langt("kindaStayInSamePlace"), &actorPtr->kindaStayInSamePlace);
+		ToggleButton(langt("headshot"), &actorPtr->headshot);
 
 
 		ImGui::Separator();
@@ -4798,7 +4799,7 @@ void fInfo()
 	ImGui::Text(name.c_str());
 	ImGui::Spacing();
 	ImGui::Text(langMenu["info_t"][6].c_str());
-	std::string namesHelpers = "Jasmijn Wellner (gvx), Um Geek, Alexey Generalov, Ivan Kogotko";
+	std::string namesHelpers = "Jasmijn Wellner (gvx), Nelarius, Alexey Generalov, Ivan Kogotko";
 	ImGui::TextWrapped(namesHelpers.c_str());
 	ImGui::Text("");
 	name.clear();

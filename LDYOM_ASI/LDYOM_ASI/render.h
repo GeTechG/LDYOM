@@ -38,8 +38,8 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 		ImGui_ImplWin32_Init(GetActiveWindow());
 		ImGui_ImplDX9_Init(pDevice);
 
-		imnodes::Initialize();
-		imnodes::SetNodeGridSpacePos(1, ImVec2(200.0f, 200.0f));
+		ImNodes::CreateContext();
+		ImNodes::SetNodeGridSpacePos(1, ImVec2(200.0f, 200.0f));
 
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -194,6 +194,7 @@ void InitHooks()
 
 void DeleteHooks()
 {
+	ImNodes::DestroyContext();
 	ImGui_ImplDX9_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();

@@ -1032,18 +1032,6 @@ void setNamespaceLua(sol::state& lua)
 	t_imgui.set_function("GetFrameHeight", ImGui::GetFrameHeight);
 	t_imgui.set_function("GetFrameHeightWithSpacing", ImGui::GetFrameHeightWithSpacing);
 
-	t_imgui.set_function("BeginHorizontalStr", sol::resolve<const char*, const ImVec2&, float>(ImGui::BeginHorizontal));
-	t_imgui.set_function("BeginHorizontalVoid", sol::resolve<const void*, const ImVec2&, float>(ImGui::BeginHorizontal));
-	t_imgui.set_function("BeginHorizontal", sol::resolve<int, const ImVec2&, float>(ImGui::BeginHorizontal));
-	t_imgui.set_function("EndHorizontal", ImGui::EndHorizontal);
-	t_imgui.set_function("BeginVerticalStr", sol::resolve<const char*, const ImVec2&, float>(ImGui::BeginVertical));
-	t_imgui.set_function("BeginVerticalVoid", sol::resolve<const void*, const ImVec2&, float>(ImGui::BeginVertical));
-	t_imgui.set_function("BeginVertical", sol::resolve<int, const ImVec2&, float>(ImGui::BeginVertical));
-	t_imgui.set_function("EndVertical", ImGui::EndVertical);
-	t_imgui.set_function("Spring", ImGui::Spring);
-	t_imgui.set_function("SuspendLayout", ImGui::SuspendLayout);
-	t_imgui.set_function("ResumeLayout", ImGui::ResumeLayout);
-
 	t_imgui.set_function("PushID", sol::resolve<void(const char*)>(ImGui::PushID));
 	t_imgui.set_function("PushID", sol::resolve<const char*, const char*>(ImGui::PushID));
 	t_imgui.set_function("PushID", sol::resolve<const void*>(ImGui::PushID));
@@ -1075,7 +1063,7 @@ void setNamespaceLua(sol::state& lua)
 	t_imgui.set_function("Image", ImGui::Image);
 	t_imgui.set_function("ImageButton", ImGui::ImageButton);
 	t_imgui.set_function("Checkbox", ImGui::Checkbox);
-	t_imgui.set_function("CheckboxFlags", ImGui::CheckboxFlags);
+	//t_imgui.set_function("CheckboxFlags", ImGui::CheckboxFlags);
 	t_imgui.set_function("RadioButton", sol::resolve<const char*, bool>(ImGui::RadioButton));
 	t_imgui.set_function("RadioButtonP", sol::resolve<const char*, int*, int>(ImGui::RadioButton));
 	t_imgui.set_function("ProgressBar", ImGui::ProgressBar);
@@ -1087,30 +1075,30 @@ void setNamespaceLua(sol::state& lua)
 	t_imgui.set_function("ComboVecStr", ComboVecStr);
 	t_imgui.set_function("ComboVecChars", ComboVecChars);
 
-	t_imgui.set_function("DragFloat", ImGui::DragFloat);
-	t_imgui.set_function("DragFloat2", ImGui::DragFloat2);
-	t_imgui.set_function("DragFloat3", ImGui::DragFloat3);
-	t_imgui.set_function("DragFloat4", ImGui::DragFloat4);
+	//t_imgui.set_function("DragFloat", ImGui::DragFloat);
+	//t_imgui.set_function("DragFloat2", ImGui::DragFloat2);
+	//t_imgui.set_function("DragFloat3", ImGui::DragFloat3);
+	//t_imgui.set_function("DragFloat4", ImGui::DragFloat4);
 	t_imgui.set_function("DragFloatRange2", ImGui::DragFloatRange2);
 	t_imgui.set_function("DragInt", ImGui::DragInt);
 	t_imgui.set_function("DragInt2", ImGui::DragInt2);
 	t_imgui.set_function("DragInt3", ImGui::DragInt3);
 	t_imgui.set_function("DragInt4", ImGui::DragInt4);
 	t_imgui.set_function("DragIntRange2", ImGui::DragIntRange2);
-	t_imgui.set_function("DragScalar", ImGui::DragScalar);
-	t_imgui.set_function("DragScalarN", ImGui::DragScalarN);
+	//t_imgui.set_function("DragScalar", ImGui::DragScalar);
+	//t_imgui.set_function("DragScalarN", ImGui::DragScalarN);
 
-	t_imgui.set_function("SliderFloat", ImGui::SliderFloat);
-	t_imgui.set_function("SliderFloat2", ImGui::SliderFloat2);
-	t_imgui.set_function("SliderFloat3", ImGui::SliderFloat3);
-	t_imgui.set_function("SliderFloat4", ImGui::SliderFloat4);
+	//t_imgui.set_function("SliderFloat", ImGui::SliderFloat);
+	//t_imgui.set_function("SliderFloat2", ImGui::SliderFloat2);
+	//t_imgui.set_function("SliderFloat3", ImGui::SliderFloat3);
+	//t_imgui.set_function("SliderFloat4", ImGui::SliderFloat4);
 	t_imgui.set_function("SliderAngle", ImGui::SliderAngle);
 	t_imgui.set_function("SliderInt", SliderInt);
 	t_imgui.set_function("SliderInt2", ImGui::SliderInt2);
 	t_imgui.set_function("SliderInt3", ImGui::SliderInt3);
 	t_imgui.set_function("SliderInt4", ImGui::SliderInt4);
-	t_imgui.set_function("SliderScalar", ImGui::SliderScalar);
-	t_imgui.set_function("SliderScalarN", ImGui::SliderScalarN);
+	//t_imgui.set_function("SliderScalar", ImGui::SliderScalar);
+	//t_imgui.set_function("SliderScalarN", ImGui::SliderScalarN);
 	t_imgui.set_function("VSliderFloat", ImGui::VSliderFloat);
 	t_imgui.set_function("VSliderInt", ImGui::VSliderInt);
 	t_imgui.set_function("VSliderScalar", ImGui::VSliderScalar);
@@ -1185,83 +1173,83 @@ void setNamespaceLua(sol::state& lua)
 	//imnodes
 	sol::table t_imnodes = t_imgui["imnodes"].get_or_create<sol::table>();
 
-	t_imnodes.set_function("PushColorStyle", imnodes::PushColorStyle);
-	t_imnodes.set_function("PopColorStyle", imnodes::PopColorStyle);
-	t_imnodes.set_function("PushStyleVar", imnodes::PushStyleVar);
-	t_imnodes.set_function("PopStyleVar", imnodes::PopStyleVar);
+	t_imnodes.set_function("PushColorStyle", ImNodes::PushColorStyle);
+	t_imnodes.set_function("PopColorStyle", ImNodes::PopColorStyle);
+	t_imnodes.set_function("PushStyleVar", ImNodes::PushStyleVar);
+	t_imnodes.set_function("PopStyleVar", ImNodes::PopStyleVar);
 	
-	t_imnodes.set_function("BeginNodeDef", imnodes::BeginNode);
-	t_imnodes.set_function("EndNodeDef", imnodes::EndNode);
+	t_imnodes.set_function("BeginNodeDef", ImNodes::BeginNode);
+	t_imnodes.set_function("EndNodeDef", ImNodes::EndNode);
 	t_imnodes.set_function("BeginNode", NodeGraph::BeginNode);
 	t_imnodes.set_function("EndNode", NodeGraph::EndNode);
 	
-	t_imnodes.set_function("GetNodeDimensions", imnodes::GetNodeDimensions);
+	t_imnodes.set_function("GetNodeDimensions", ImNodes::GetNodeDimensions);
 	
-	t_imnodes.set_function("BeginNodeTitleBar", imnodes::BeginNodeTitleBar);
-	t_imnodes.set_function("EndNodeTitleBar", imnodes::EndNodeTitleBar);
+	t_imnodes.set_function("BeginNodeTitleBar", ImNodes::BeginNodeTitleBar);
+	t_imnodes.set_function("EndNodeTitleBar", ImNodes::EndNodeTitleBar);
 	
-	t_imnodes.set_function("BeginInputAttributeDef", imnodes::BeginInputAttribute);
-	t_imnodes.set_function("EndInputAttributeDef", imnodes::EndInputAttribute);
+	t_imnodes.set_function("BeginInputAttributeDef", ImNodes::BeginInputAttribute);
+	t_imnodes.set_function("EndInputAttributeDef", ImNodes::EndInputAttribute);
 	t_imnodes.set_function("BeginInputAttribute", NodeGraph::BeginInputAttribute);
 	t_imnodes.set_function("EndInputAttribute", NodeGraph::EndInputAttribute);
 	
-	t_imnodes.set_function("BeginOutputAttributeDef", imnodes::BeginOutputAttribute);
-	t_imnodes.set_function("EndOutputAttributeDef", imnodes::EndOutputAttribute);
+	t_imnodes.set_function("BeginOutputAttributeDef", ImNodes::BeginOutputAttribute);
+	t_imnodes.set_function("EndOutputAttributeDef", ImNodes::EndOutputAttribute);
 	t_imnodes.set_function("BeginOutputAttribute", NodeGraph::BeginOutputAttribute);
 	t_imnodes.set_function("EndOutputAttribute", NodeGraph::EndOutputAttribute);
 	
-	t_imnodes.set_function("BeginStaticAttribute", imnodes::BeginStaticAttribute);
-	t_imnodes.set_function("EndStaticAttribute", imnodes::EndStaticAttribute);
+	t_imnodes.set_function("BeginStaticAttribute", ImNodes::BeginStaticAttribute);
+	t_imnodes.set_function("EndStaticAttribute", ImNodes::EndStaticAttribute);
 	
-	t_imnodes.set_function("PushAttributeFlag", imnodes::PushAttributeFlag);
-	t_imnodes.set_function("PopAttributeFlag", imnodes::PopAttributeFlag);
+	t_imnodes.set_function("PushAttributeFlag", ImNodes::PushAttributeFlag);
+	t_imnodes.set_function("PopAttributeFlag", ImNodes::PopAttributeFlag);
 	
-	t_imnodes.set_function("Link", imnodes::Link);
+	t_imnodes.set_function("Link", ImNodes::Link);
 	
-	t_imnodes.set_function("SetNodeDraggable", imnodes::SetNodeDraggable);
+	t_imnodes.set_function("SetNodeDraggable", ImNodes::SetNodeDraggable);
 	
-	t_imnodes.set_function("SetNodeScreenSpacePos", imnodes::SetNodeScreenSpacePos);
-	t_imnodes.set_function("SetNodeEditorSpacePos", imnodes::SetNodeEditorSpacePos);
-	t_imnodes.set_function("SetNodeGridSpacePos", imnodes::SetNodeGridSpacePos);
+	t_imnodes.set_function("SetNodeScreenSpacePos", ImNodes::SetNodeScreenSpacePos);
+	t_imnodes.set_function("SetNodeEditorSpacePos", ImNodes::SetNodeEditorSpacePos);
+	t_imnodes.set_function("SetNodeGridSpacePos", ImNodes::SetNodeGridSpacePos);
 	
-	t_imnodes.set_function("GetNodeScreenSpacePos", imnodes::GetNodeScreenSpacePos);
-	t_imnodes.set_function("GetNodeEditorSpacePos", imnodes::GetNodeEditorSpacePos);
-	t_imnodes.set_function("GetNodeGridSpacePos", imnodes::GetNodeGridSpacePos);
+	t_imnodes.set_function("GetNodeScreenSpacePos", ImNodes::GetNodeScreenSpacePos);
+	t_imnodes.set_function("GetNodeEditorSpacePos", ImNodes::GetNodeEditorSpacePos);
+	t_imnodes.set_function("GetNodeGridSpacePos", ImNodes::GetNodeGridSpacePos);
 	
-	t_imnodes.set_function("IsEditorHovered", imnodes::IsEditorHovered);
+	t_imnodes.set_function("IsEditorHovered", ImNodes::IsEditorHovered);
 	
-	t_imnodes.set_function("IsNodeHovered", imnodes::IsNodeHovered);
-	t_imnodes.set_function("IsLinkHovered", imnodes::IsLinkHovered);
-	t_imnodes.set_function("IsPinHovered", imnodes::IsPinHovered);
+	t_imnodes.set_function("IsNodeHovered", ImNodes::IsNodeHovered);
+	t_imnodes.set_function("IsLinkHovered", ImNodes::IsLinkHovered);
+	t_imnodes.set_function("IsPinHovered", ImNodes::IsPinHovered);
 	
-	t_imnodes.set_function("NumSelectedNodes", imnodes::NumSelectedNodes);
-	t_imnodes.set_function("NumSelectedLinks", imnodes::NumSelectedLinks);
+	t_imnodes.set_function("NumSelectedNodes", ImNodes::NumSelectedNodes);
+	t_imnodes.set_function("NumSelectedLinks", ImNodes::NumSelectedLinks);
 	
-	t_imnodes.set_function("GetSelectedNodes", imnodes::GetSelectedNodes);
-	t_imnodes.set_function("GetSelectedLinks", imnodes::GetSelectedLinks);
+	t_imnodes.set_function("GetSelectedNodes", ImNodes::GetSelectedNodes);
+	t_imnodes.set_function("GetSelectedLinks", ImNodes::GetSelectedLinks);
 	
-	t_imnodes.set_function("ClearNodeSelection", imnodes::ClearNodeSelection);
-	t_imnodes.set_function("ClearLinkSelection", imnodes::ClearLinkSelection);
+	t_imnodes.set_function("ClearNodeSelection", ImNodes::ClearNodeSelection);
+	t_imnodes.set_function("ClearLinkSelection", ImNodes::ClearLinkSelection);
 	
-	t_imnodes.set_function("IsAttributeActive", imnodes::IsAttributeActive);
-	t_imnodes.set_function("IsAnyAttributeActive", imnodes::IsAnyAttributeActive);
+	t_imnodes.set_function("IsAttributeActive", ImNodes::IsAttributeActive);
+	t_imnodes.set_function("IsAnyAttributeActive", ImNodes::IsAnyAttributeActive);
 	
-	t_imnodes.set_function("IsLinkStarted", imnodes::IsLinkStarted);
-	t_imnodes.set_function("IsLinkDropped", imnodes::IsLinkDropped);
-	t_imnodes.set_function("IsLinkCreated", sol::resolve<int*, int*, bool*>(imnodes::IsLinkCreated));
+	t_imnodes.set_function("IsLinkStarted", ImNodes::IsLinkStarted);
+	t_imnodes.set_function("IsLinkDropped", ImNodes::IsLinkDropped);
+	t_imnodes.set_function("IsLinkCreated", sol::resolve<int*, int*, bool*>(ImNodes::IsLinkCreated));
 	
-	t_imnodes.set_function("IsLinkDestroyed", imnodes::IsLinkDestroyed);
-	t_imnodes.set_function("IsLinkDestroyed", imnodes::IsLinkDestroyed);
+	t_imnodes.set_function("IsLinkDestroyed", ImNodes::IsLinkDestroyed);
+	t_imnodes.set_function("IsLinkDestroyed", ImNodes::IsLinkDestroyed);
 
 	t_imnodes.set_function("getNodeIcon", NodeGraph::getNodeIcon);
 	
-	t_imnodes.new_enum<imnodes::PinShape>("PinShape", {
-		{"Circle",imnodes::PinShape_Circle},
-		{"CircleFilled",imnodes::PinShape_CircleFilled},
-		{"Triangle",imnodes::PinShape_Triangle},
-		{"TriangleFilled",imnodes::PinShape_TriangleFilled},
-		{"Quad",imnodes::PinShape_Quad},
-		{"QuadFilled",imnodes::PinShape_QuadFilled},
+	t_imnodes.new_enum<ImNodesPinShape>("PinShape", {
+		{"Circle",ImNodesPinShape_Circle},
+		{"CircleFilled",ImNodesPinShape_CircleFilled},
+		{"Triangle",ImNodesPinShape_Triangle},
+		{"TriangleFilled",ImNodesPinShape_TriangleFilled},
+		{"Quad",ImNodesPinShape_Quad},
+		{"QuadFilled",ImNodesPinShape_QuadFilled},
 		});
 
 	t_imnodes["PinType"].get_or_create<sol::table>();
@@ -1271,24 +1259,24 @@ void setNamespaceLua(sol::state& lua)
 	t_imnodes["PinType"]["void"] = (int)NodeGraph::PinType::void_;
 	
 	
-	t_imnodes.new_enum<imnodes::ColorStyle>("ColorStyle", {
-		{"NodeBackground",imnodes::ColorStyle_NodeBackground},
-		{"NodeBackgroundHovered",imnodes::ColorStyle_NodeBackgroundHovered},
-		{"NodeBackgroundSelected",imnodes::ColorStyle_NodeBackgroundSelected},
-		{"NodeOutline",imnodes::ColorStyle_NodeOutline},
-		{"TitleBar",imnodes::ColorStyle_TitleBar},
-		{"TitleBarHovered",imnodes::ColorStyle_TitleBarHovered},
-		{"TitleBarSelected",imnodes::ColorStyle_TitleBarSelected},
-		{"Link",imnodes::ColorStyle_Link},
-		{"LinkHovered",imnodes::ColorStyle_LinkHovered},
-		{"LinkSelected",imnodes::ColorStyle_LinkSelected},
-		{"Pin",imnodes::ColorStyle_Pin},
-		{"PinHovered",imnodes::ColorStyle_PinHovered},
-		{"BoxSelector",imnodes::ColorStyle_BoxSelector},
-		{"BoxSelectorOutline",imnodes::ColorStyle_BoxSelectorOutline},
-		{"GridBackground",imnodes::ColorStyle_GridBackground},
-		{"GridLine",imnodes::ColorStyle_GridLine},
-		{"Count",imnodes::ColorStyle_Count},
+	t_imnodes.new_enum<ImNodesCol>("ColorStyle", {
+		{"NodeBackground",ImNodesCol_NodeBackground},
+		{"NodeBackgroundHovered",ImNodesCol_NodeBackgroundHovered},
+		{"NodeBackgroundSelected",ImNodesCol_NodeBackgroundSelected},
+		{"NodeOutline",ImNodesCol_NodeOutline},
+		{"TitleBar",ImNodesCol_TitleBar},
+		{"TitleBarHovered",ImNodesCol_TitleBarHovered},
+		{"TitleBarSelected",ImNodesCol_TitleBarSelected},
+		{"Link",ImNodesCol_Link},
+		{"LinkHovered",ImNodesCol_LinkHovered},
+		{"LinkSelected",ImNodesCol_LinkSelected},
+		{"Pin",ImNodesCol_Pin},
+		{"PinHovered",ImNodesCol_PinHovered},
+		{"BoxSelector",ImNodesCol_BoxSelector},
+		{"BoxSelectorOutline",ImNodesCol_BoxSelectorOutline},
+		{"GridBackground",ImNodesCol_GridBackground},
+		{"GridLine",ImNodesCol_GridLine},
+		{"Count",ImNodesCol_COUNT},
 		});
 }
 

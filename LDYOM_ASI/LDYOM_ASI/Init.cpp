@@ -211,14 +211,14 @@ void Actor::updateMissionPed() {
 	this->missionPed->m_bUsesCollision = false;
 	this->missionPed->m_fHealth = this->health;
 	this->missionPed->m_nWeaponAccuracy = this->accuracy;
-	this->missionPed->m_nPedFlags.bNoCriticalHits = static_cast<unsigned>(this->headshot);
+	Command<Commands::SET_CHAR_SUFFERS_CRITICAL_HITS>(this->missionPed, (int)this->headshot);
 	if (this->group == 0)
 	{
 		int g;
 		Command<Commands::GET_PLAYER_GROUP>(0, &g);
 		Command<Commands::SET_GROUP_MEMBER>(g, this->missionPed);
 	}
-	while (DistanceBetweenPoints(TheCamera.GetPosition(),missionPed->GetPosition()) > 100.0f)
+	while (mission_started && DistanceBetweenPoints(TheCamera.GetPosition(),missionPed->GetPosition()) > 100.0f)
 	{
 		this_coro::wait(0ms);
 	}
@@ -740,7 +740,7 @@ void Car::updateMissionCar()
 	CWorld::Add(missionCar);
 	Command<Commands::SET_CAR_AS_MISSION_CAR>(missionCar);
 	Command<Commands::FREEZE_CAR_POSITION>(missionCar, true);
-	while (DistanceBetweenPoints(TheCamera.GetPosition(), missionCar->GetPosition()) > 100.0f)
+	while (mission_started && DistanceBetweenPoints(TheCamera.GetPosition(), missionCar->GetPosition()) > 100.0f)
 	{
 		this_coro::wait(0ms);
 	}
@@ -850,7 +850,8 @@ void Train::updateEditorTrain() {
 	CStreaming::RequestModel(trainModel, 0);
 	CStreaming::RequestModel(carriageModel, 0);
 	CStreaming::LoadAllRequestedModels(false);
-	this_coro::wait(0);
+	CStreaming::LoadRequestedModels();
+	this_coro::wait(100);
 	
 	int trainHandle;
 	Command<Commands::CREATE_MISSION_TRAIN>(modelID, pos[0], pos[1], pos[2], static_cast<int>(rotation), &trainHandle);
@@ -910,6 +911,7 @@ void Train::updateMissionTrain()
 	CStreaming::RequestModel(trainModel, 0);
 	CStreaming::RequestModel(carriageModel, 0);
 	CStreaming::LoadAllRequestedModels(false);
+	CStreaming::LoadRequestedModels();
 	this_coro::wait(0);
 
 	int trainHandle;
@@ -922,7 +924,7 @@ void Train::updateMissionTrain()
 	missionTrain->m_nVehicleFlags.bCanBeDamaged = false;
 	CStreaming::RemoveAllUnusedModels();
 	Command<Commands::FREEZE_CAR_POSITION>(missionTrain, true);
-	while (DistanceBetweenPoints(TheCamera.GetPosition(), missionTrain->GetPosition()) > 100.0f)
+	while (mission_started && DistanceBetweenPoints(TheCamera.GetPosition(), missionTrain->GetPosition()) > 100.0f)
 	{
 		this_coro::wait(0ms);
 	}

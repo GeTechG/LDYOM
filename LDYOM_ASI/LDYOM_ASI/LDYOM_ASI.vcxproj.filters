@@ -91,6 +91,9 @@
     <ClCompile Include="libs\ScriptCommands.cpp">
       <Filter>libs</Filter>
     </ClCompile>
+    <ClCompile Include="ImGUI\imgui_tables.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LDYOM_ASI.h" />

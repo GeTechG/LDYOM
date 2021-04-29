@@ -46,6 +46,7 @@ list<int> missionPickup{};
 list<int> missionExplosion{};
 list<int> missionAudio{};
 map<unsigned, sol::object> realVariable;
+bool loadedNodes = false;
 
 void stopStoryline()
 {
@@ -234,13 +235,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 	
 	for (auto node1 : graph->nodes)
 		node1.second["runnable"] = false;
-	
-	//call start node
-	std::string name_node = NodeGraph::getNodeIcon("event") + " " + langt("CoreNodeStart");
-	NodeGraph::callAllNodeName(name_node, graph, mission);
-	//call main loop
-	name_node = NodeGraph::getNodeIcon("loop") + " " + langt("CoreNodeMainCycle");
-	NodeGraph::callAllNodeName(name_node, graph, mission);
+
 	
 	unsigned char skip = 1;
 
@@ -250,9 +245,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		for (int i = 0; i < mission->list_actors.size(); ++i)
 		{
 			if (mission->list_actors[i]->useTarget) {
-				arr_target_actor[mission->list_actors[i]->startC].first.emplace_back(i);
-				if (mission->list_actors[i]->endC != 0)
-					arr_target_actor[mission->list_actors[i]->endC-1].second.emplace_back(i);
+				int startC = min(mission->list_actors[i]->startC, mission->list_targets.size() - 1);
+				int endC = min(mission->list_actors[i]->endC, mission->list_targets.size());
+				arr_target_actor[startC].first.emplace_back(i);
+				if (endC != 0)
+					arr_target_actor[endC-1].second.emplace_back(i);
 			}
 		}
 
@@ -260,9 +257,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		for (int i = 0; i < mission->list_cars.size(); ++i)
 		{
 			if (mission->list_cars[i]->useTarget) {
-				arr_target_car[mission->list_cars[i]->startC].first.emplace_back(i);
-				if (mission->list_cars[i]->endC != 0)
-					arr_target_car[mission->list_cars[i]->endC - 1].second.emplace_back(i);
+				int startC = min(mission->list_cars[i]->startC, mission->list_targets.size() - 1);
+				int endC = min(mission->list_cars[i]->endC, mission->list_targets.size());
+				arr_target_car[startC].first.emplace_back(i);
+				if (endC != 0)
+					arr_target_car[endC - 1].second.emplace_back(i);
 			}
 		}
 
@@ -270,9 +269,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		for (int i = 0; i < mission->list_trains.size(); ++i)
 		{
 			if (mission->list_trains[i]->useTarget) {
-				arr_target_train[mission->list_trains[i]->startC].first.emplace_back(i);
-				if (mission->list_trains[i]->endC != 0)
-					arr_target_train[mission->list_trains[i]->endC - 1].second.emplace_back(i);
+				int startC = min(mission->list_trains[i]->startC, mission->list_targets.size() - 1);
+				int endC = min(mission->list_trains[i]->endC, mission->list_targets.size());
+				arr_target_train[startC].first.emplace_back(i);
+				if (endC != 0)
+					arr_target_train[endC - 1].second.emplace_back(i);
 			}
 		}
 
@@ -280,9 +281,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		for (int i = 0; i < mission->list_objects.size(); ++i)
 		{
 			if (mission->list_objects[i]->useTarget) {
-				arr_target_object[mission->list_objects[i]->startC].first.emplace_back(i);
-				if (mission->list_objects[i]->endC != 0)
-					arr_target_object[mission->list_objects[i]->endC - 1].second.emplace_back(i);
+				int startC = min(mission->list_objects[i]->startC, mission->list_targets.size() - 1);
+				int endC = min(mission->list_objects[i]->endC, mission->list_targets.size());
+				arr_target_object[startC].first.emplace_back(i);
+				if (endC != 0)
+					arr_target_object[endC - 1].second.emplace_back(i);
 			}
 		}
 
@@ -290,9 +293,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		for (int i = 0; i < mission->list_particles.size(); ++i)
 		{
 			if (mission->list_particles[i]->useTarget) {
-				arr_target_particle[mission->list_particles[i]->startC].first.emplace_back(i);
-				if (mission->list_particles[i]->endC != 0)
-					arr_target_particle[mission->list_particles[i]->endC - 1].second.emplace_back(i);
+				int startC = min(mission->list_particles[i]->startC, mission->list_targets.size() - 1);
+				int endC = min(mission->list_particles[i]->endC, mission->list_targets.size());
+				arr_target_particle[startC].first.emplace_back(i);
+				if (endC != 0)
+					arr_target_particle[endC - 1].second.emplace_back(i);
 			}
 		}
 
@@ -300,9 +305,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		for (int i = 0; i < mission->list_pickups.size(); ++i)
 		{
 			if (mission->list_pickups[i]->useTarget) {
-				arr_target_pickup[mission->list_pickups[i]->startC].first.emplace_back(i);
-				if (mission->list_pickups[i]->endC != 0)
-					arr_target_pickup[mission->list_pickups[i]->endC - 1].second.emplace_back(i);
+				int startC = min(mission->list_pickups[i]->startC, mission->list_targets.size() - 1);
+				int endC = min(mission->list_pickups[i]->endC, mission->list_targets.size());
+				arr_target_pickup[startC].first.emplace_back(i);
+				if (endC != 0)
+					arr_target_pickup[endC - 1].second.emplace_back(i);
 			}
 		}
 
@@ -310,9 +317,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		for (int i = 0; i < mission->list_explosions.size(); ++i)
 		{
 			if (mission->list_explosions[i]->useTarget) {
-				arr_target_explosion[mission->list_explosions[i]->startC].first.emplace_back(i);
-				if (mission->list_explosions[i]->endC != 0)
-					arr_target_explosion[mission->list_explosions[i]->endC - 1].second.emplace_back(i);
+				int startC = min(mission->list_explosions[i]->startC, mission->list_targets.size() - 1);
+				int endC = min(mission->list_explosions[i]->endC, mission->list_targets.size());
+				arr_target_explosion[startC].first.emplace_back(i);
+				if (endC != 0)
+					arr_target_explosion[endC - 1].second.emplace_back(i);
 			}
 		}
 
@@ -320,11 +329,15 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		for (int i = 0; i < mission->list_audios.size(); ++i)
 		{
 			if (mission->list_audios[i]->useTarget) {
-				arr_target_audio[mission->list_audios[i]->startC].first.emplace_back(i);
-				if (mission->list_audios[i]->endC != 0)
-					arr_target_audio[mission->list_audios[i]->endC - 1].second.emplace_back(i);
+				int startC = min(mission->list_audios[i]->startC, mission->list_targets.size() - 1);
+				int endC = min(mission->list_audios[i]->endC, mission->list_targets.size());
+				arr_target_audio[startC].first.emplace_back(i);
+				if (endC != 0)
+					arr_target_audio[endC - 1].second.emplace_back(i);
 			}
 		}
+
+		loadedNodes = false;
 		
 		//targets loop
 		while (current_mission_target < mission->list_targets.size() && mission_started)
@@ -631,6 +644,17 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 				}
 			}
 			
+			if (!loadedNodes)
+			{
+				//call start node
+				std::string name_node = NodeGraph::getNodeIcon("event") + " " + langt("CoreNodeStart");
+				NodeGraph::callAllNodeName(name_node, graph, mission);
+				//call main loop
+				name_node = NodeGraph::getNodeIcon("loop") + " " + langt("CoreNodeMainCycle");
+				NodeGraph::callAllNodeName(name_node, graph, mission);
+
+				loadedNodes = true;
+			}
 			
 			switch (mission->list_targets[current_mission_target]->type)
 			{
@@ -714,19 +738,28 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 								if (actor->missionPed->m_nPedType == mission->list_actors[targetPtr->actor]->missionPed->m_nPedType)
 								{
 									group_actors.push_back(actor);
-								}
-								if (targetPtr->colorBlip > 0)
-								{
-									int blip = NULL;
-									Command<Commands::ADD_BLIP_FOR_CHAR>(actor->missionPed, &blip);
-									blips.push_back(blip);
-									if (targetPtr->colorBlip != 6)
+
+									if (targetPtr->colorBlip > 0)
 									{
-										CRadar::ChangeBlipColour(blips.back(), targetPtr->colorBlip - 1);
-									}
-									else
-									{
-										CRadar::SetBlipFriendly(blips.back(), 1);
+										int blip = NULL;
+										Command<Commands::ADD_BLIP_FOR_CHAR>(actor->missionPed, &blip);
+										blips.push_back(blip);
+										if (targetPtr->colorBlip != 6)
+										{
+											CRadar::ChangeBlipColour(blips.back(), targetPtr->colorBlip - 1);
+										}
+										else
+										{
+											CRadar::SetBlipFriendly(blips.back(), 1);
+										}
+										instance.add_to_queue(std::bind([](Actor *actor, int blip)
+										{
+											while (!CTheScripts::pActiveScripts->IsPedDead(actor->missionPed) && mission_started)
+											{
+												this_coro::wait(0);
+											}
+											CRadar::ClearBlip(blip);
+										}, actor, blip));
 									}
 								}
 							}
@@ -796,14 +829,23 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							CHud::bScriptDontDisplayRadar = true;
 							CHud::m_Wants_To_Draw_Hud = false;
 							TheCamera.m_bWideScreenOn = true;
-							Command<Commands::SET_PLAYER_CONTROL>(0, 0);
 
-							if (current_mission_target > 0 && !(mission->list_targets[current_mission_target - 1]->type == 3 && mission->list_targets[current_mission_target - 1]->targetType == 0))
+							if (current_mission_target > 0)
 							{
-								TheCamera.Fade(0.5f, 0);
-								this_coro::wait(1s);
-								TheCamera.Fade(0.5f, 1);
-								skip = 1;
+								bool last_cutscene = mission->list_targets[current_mission_target - 1]->type == 3 && mission->list_targets[current_mission_target - 1]->targetType == 0;
+								bool last_playerAnim = mission->list_targets[current_mission_target - 1]->type == 6 && mission->list_targets[current_mission_target - 1]->targetType == 1;
+								
+								if (!(last_cutscene || last_playerAnim))
+								{
+									TheCamera.Fade(0.5f, 0);
+									this_coro::wait(1s);
+									TheCamera.Fade(0.5f, 1);
+									skip = 1;
+								}
+								if (!(mission->list_targets[current_mission_target - 1]->type == 6 && mission->list_targets[current_mission_target - 1]->targetType == 1))
+								{
+									Command<Commands::SET_PLAYER_CONTROL>(0, 0);
+								}
 							}
 
 							bool useSkip = true;
@@ -1686,7 +1728,8 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							break;
 							}
 
-							if (current_mission_target >= mission->list_targets.size()-1 || !(mission->list_targets[current_mission_target+1]->type == 3 && mission->list_targets[current_mission_target+1]->targetType == 0)) {
+							std::function endCutscene = []()
+							{
 								TheCamera.Fade(0.5f, 0);
 								this_coro::wait(0.5s);
 								CHud::bScriptDontDisplayRadar = false;
@@ -1694,9 +1737,20 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 								TheCamera.m_bWideScreenOn = false;
 								TheCamera.RestoreWithJumpCut();
 								TheCamera.Fade(0.5f, 1);
-								Command<Commands::SET_PLAYER_CONTROL>(0, 1);
 								this_coro::wait(0.5s);
+								Command<Commands::SET_PLAYER_CONTROL>(0, 1);
+							};
 								
+							if (current_mission_target >= mission->list_targets.size() - 1) {
+								endCutscene();
+							} else
+							{
+								bool next_cutscene = mission->list_targets[current_mission_target + 1]->type == 3 && mission->list_targets[current_mission_target + 1]->targetType == 0;
+								bool next_playerAnim = mission->list_targets[current_mission_target + 1]->type == 6 && mission->list_targets[current_mission_target + 1]->targetType == 1;
+								if (!(next_cutscene || next_playerAnim))
+								{
+									endCutscene();
+								}
 							}
 								
 							break;
@@ -1902,12 +1956,14 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 						case 1: {
 							TargetAnimation* targetPtr = static_cast<TargetAnimation*>(mission->list_targets[current_mission_target]);
 
-							//Command<Commands::SET_PLAYER_CONTROL>(0, 0);
-								
+							Command<Commands::SET_PLAYER_CONTROL>(0, 0);
+
 							if (!Command<Commands::HAS_ANIMATION_LOADED>(Anim_name[targetPtr->pack].c_str()))
 								Command<Commands::REQUEST_ANIMATION>(Anim_name[targetPtr->pack].c_str());
+								
 							vector<std::string> anims = Anim_list[targetPtr->pack];
-							Command<Commands::TASK_PLAY_ANIM>(playerPed, anims[targetPtr->anim].c_str(), Anim_name[targetPtr->pack].c_str(), targetPtr->blend, targetPtr->looped, false, false, false, -1);
+								
+							Command<Commands::TASK_PLAY_ANIM>(playerPed, anims[targetPtr->anim].c_str(), Anim_name[targetPtr->pack].c_str(), 4.0, targetPtr->looped, 0, 0, 0, -1);
 								
 							break;
 						}

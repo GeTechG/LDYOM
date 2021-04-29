@@ -46,8 +46,8 @@
     <IntDir>$(ProjectDir).obj\GTASA\Release\</IntDir>
     <TargetName>LDYOM_ASI.SA</TargetName>
     <TargetExt>.asi</TargetExt>
-    <IncludePath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\include;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\inc;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaBridge\Source;C:\local\boost_1_74_0;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master\examples\application\include;C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\ImGUI</IncludePath>
-    <LibraryPath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\lib;C:\local\boost_1_74_0\lib32-msvc-14.1;$(LibraryPath);$(WindowsSDK_LibraryPath_x86);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <IncludePath>C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\include;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\inc;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\LuaBridge\Source;C:\local\boost_1_74_0;$(IncludePath);$(DIRECTX9_SDK_DIR)\Include\.;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master\examples\application\include;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\ImGUI</IncludePath>
+    <LibraryPath>C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\lib;C:\local\boost_1_74_0\lib32-msvc-14.1;$(LibraryPath);$(DIRECTX9_SDK_DIR)\Lib\x86\</LibraryPath>
     <SourcePath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GTASA zDebug|Win32'">
@@ -62,7 +62,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GTASA Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
@@ -71,15 +71,23 @@
       <PreprocessorDefinitions>_NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;_DX9_SDK_INSTALLED;PLUGIN_SGV_10US;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <StringPooling>true</StringPooling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>plugin.lib;d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GTASA zDebug|Win32'">
@@ -122,6 +130,7 @@
     <ClCompile Include="ImGUI\imgui_draw.cpp" />
     <ClCompile Include="ImGUI\imgui_impl_dx9.cpp" />
     <ClCompile Include="ImGUI\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGUI\imgui_tables.cpp" />
     <ClCompile Include="ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="imnodes.cpp" />
     <ClCompile Include="Init.cpp" />

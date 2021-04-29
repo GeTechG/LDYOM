@@ -3,9 +3,9 @@
 #include <map>
 
 #include "imgui.h"
-#define IMGUI_DEFINE_MATH_OPERATORS 1
 #include <CMessages.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
 #include "ScriptManager.h"
 #include "libs/coro_wait.h"
@@ -95,48 +95,48 @@ void NodeGraph::BeginInputAttribute(int id, sol::object shape = sol::nil)
 {
 	sol::optional<sol::table> pin = currentNodeGraphPtr->nodes[(id / 100) * 100]["Pins"][id];
 	if (pin) {
-		imnodes::PinShape c_shape = imnodes::PinShape_CircleFilled;
+		ImNodesPinShape c_shape = ImNodesPinShape_CircleFilled;
 		if (shape.get_type() == sol::type::userdata)
 		{
-			c_shape = shape.as<imnodes::PinShape>();
+			c_shape = shape.as<ImNodesPinShape>();
 		}
 		auto color = getPinColor(static_cast<PinType>(pin.value()["type"]));
 		ImColor hover_color = color.Value - ImColor(30, 30, 30, 0).Value;
-		imnodes::PushColorStyle(imnodes::ColorStyle_Pin, ImGui::ColorConvertFloat4ToU32(color.Value));
-		imnodes::PushColorStyle(imnodes::ColorStyle_PinHovered, ImGui::ColorConvertFloat4ToU32(hover_color.Value));
-		imnodes::BeginInputAttribute(id, c_shape);
+		ImNodes::PushColorStyle(ImNodesCol_Pin, ImGui::ColorConvertFloat4ToU32(color.Value));
+		ImNodes::PushColorStyle(ImNodesCol_PinHovered, ImGui::ColorConvertFloat4ToU32(hover_color.Value));
+		ImNodes::BeginInputAttribute(id, c_shape);
 	}
 }
 
 void NodeGraph::EndInputAttribute()
 {
-	imnodes::EndInputAttribute();
-	imnodes::PopColorStyle();
-	imnodes::PopColorStyle();
+	ImNodes::EndInputAttribute();
+	ImNodes::PopColorStyle();
+	ImNodes::PopColorStyle();
 }
 
 void NodeGraph::BeginOutputAttribute(int id, sol::object shape)
 {
 	sol::optional<sol::table> pin = currentNodeGraphPtr->nodes[(id / 100) * 100]["Pins"][id];
 	if (pin) {
-		imnodes::PinShape c_shape = imnodes::PinShape_CircleFilled;
+		ImNodesPinShape c_shape = ImNodesPinShape_CircleFilled;
 		if (shape.get_type() == sol::type::userdata)
 		{
-			c_shape = shape.as<imnodes::PinShape>();
+			c_shape = shape.as<ImNodesPinShape>();
 		}
 		auto color = getPinColor(static_cast<PinType>(pin.value()["type"]));
 		ImColor hover_color = color.Value - ImColor(10, 10, 10, 0).Value;
-		imnodes::PushColorStyle(imnodes::ColorStyle_Pin, ImGui::ColorConvertFloat4ToU32(color.Value));
-		imnodes::PushColorStyle(imnodes::ColorStyle_PinHovered, ImGui::ColorConvertFloat4ToU32(hover_color.Value));
-		imnodes::BeginOutputAttribute(id, c_shape);
+		ImNodes::PushColorStyle(ImNodesCol_Pin, ImGui::ColorConvertFloat4ToU32(color.Value));
+		ImNodes::PushColorStyle(ImNodesCol_PinHovered, ImGui::ColorConvertFloat4ToU32(hover_color.Value));
+		ImNodes::BeginOutputAttribute(id, c_shape);
 	}
 }
 
 void NodeGraph::EndOutputAttribute()
 {
-	imnodes::EndOutputAttribute();
-	imnodes::PopColorStyle();
-	imnodes::PopColorStyle();
+	ImNodes::EndOutputAttribute();
+	ImNodes::PopColorStyle();
+	ImNodes::PopColorStyle();
 }
 
 ImColor getNodeColor(unsigned short type_)
@@ -171,18 +171,18 @@ void NodeGraph::BeginNode(int id, unsigned short type_)
 {
 	ImColor color = getNodeColor(type_);
 	ImColor color_hover = color + ImColor(15, 15, 15, 0).Value;
-	imnodes::PushColorStyle(imnodes::ColorStyle_TitleBar, ImGui::ColorConvertFloat4ToU32(color.Value));
-	imnodes::PushColorStyle(imnodes::ColorStyle_TitleBarHovered, ImGui::ColorConvertFloat4ToU32(color_hover.Value));
-	imnodes::PushColorStyle(imnodes::ColorStyle_TitleBarSelected, ImGui::ColorConvertFloat4ToU32(color_hover.Value));
-	imnodes::BeginNode(id);
+	ImNodes::PushColorStyle(ImNodesCol_TitleBar, ImGui::ColorConvertFloat4ToU32(color.Value));
+	ImNodes::PushColorStyle(ImNodesCol_TitleBarHovered, ImGui::ColorConvertFloat4ToU32(color_hover.Value));
+	ImNodes::PushColorStyle(ImNodesCol_TitleBarSelected, ImGui::ColorConvertFloat4ToU32(color_hover.Value));
+	ImNodes::BeginNode(id);
 }
 
 void NodeGraph::EndNode()
 {
-	imnodes::EndNode();
-	imnodes::PopColorStyle();
-	imnodes::PopColorStyle();
-	imnodes::PopColorStyle();
+	ImNodes::EndNode();
+	ImNodes::PopColorStyle();
+	ImNodes::PopColorStyle();
+	ImNodes::PopColorStyle();
 }
 
 std::string NodeGraph::getNodeIcon(std::string icon)
@@ -380,14 +380,14 @@ void NodeGraph::render()
 	ImGui::EndChild();
 	ImGui::SameLine();
 	
-	imnodes::PushColorStyle(imnodes::ColorStyle_GridBackground, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_ChildBg]));
-	imnodes::PushColorStyle(imnodes::ColorStyle_GridLine, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_Text] + ImVec4(.0f, .0f, .0f, -0.84f)));
-	imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackground, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_WindowBg] + ImVec4(0.07f, 0.07f, 0.07f, .0f)));
-	imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackgroundHovered, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_WindowBg] + ImVec4(0.07f, 0.09f, 0.09f, .0f)));
-	imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackgroundSelected, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_WindowBg] + ImVec4(0.09f, 0.09f, 0.09f, .0f)));
-	imnodes::PushStyleVar(imnodes::StyleVar_NodeCornerRounding, ImGui::GetStyle().FrameRounding);
-	imnodes::PushAttributeFlag(imnodes::AttributeFlags_EnableLinkDetachWithDragClick);
-	imnodes::BeginNodeEditor();
+	ImNodes::PushColorStyle(ImNodesCol_GridBackground, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_ChildBg]));
+	ImNodes::PushColorStyle(ImNodesCol_GridLine, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_Text] + ImVec4(.0f, .0f, .0f, -0.84f)));
+	ImNodes::PushColorStyle(ImNodesCol_NodeBackground, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_WindowBg] + ImVec4(0.07f, 0.07f, 0.07f, .0f)));
+	ImNodes::PushColorStyle(ImNodesCol_NodeBackgroundHovered, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_WindowBg] + ImVec4(0.07f, 0.09f, 0.09f, .0f)));
+	ImNodes::PushColorStyle(ImNodesCol_NodeBackgroundSelected, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[ImGuiCol_WindowBg] + ImVec4(0.09f, 0.09f, 0.09f, .0f)));
+	ImNodes::PushStyleVar(ImNodesStyleVar_NodeCornerRounding, ImGui::GetStyle().FrameRounding);
+	ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
+	ImNodes::BeginNodeEditor();
 
 	for (auto node : currentNodeGraphPtr->nodes)
 	{
@@ -411,27 +411,27 @@ void NodeGraph::render()
 		ImColor color = getPinColor((PinType)pin_type);
 		ImColor color_hover = color.Value + ImColor(20, 20, 20, 0).Value;
 		ImColor color_selected = color.Value + ImColor(35, 35, 35, 0).Value;
-		imnodes::PushColorStyle(imnodes::ColorStyle_Link, color);
-		imnodes::PushColorStyle(imnodes::ColorStyle_LinkHovered, color_hover);
-		imnodes::PushColorStyle(imnodes::ColorStyle_LinkSelected, color_selected);
-		imnodes::Link(link.first, id_in, id_out);
-		imnodes::PopColorStyle();
-		imnodes::PopColorStyle();
-		imnodes::PopColorStyle();
+		ImNodes::PushColorStyle(ImNodesCol_Link, color);
+		ImNodes::PushColorStyle(ImNodesCol_LinkHovered, color_hover);
+		ImNodes::PushColorStyle(ImNodesCol_LinkSelected, color_selected);
+		ImNodes::Link(link.first, id_in, id_out);
+		ImNodes::PopColorStyle();
+		ImNodes::PopColorStyle();
+		ImNodes::PopColorStyle();
 	}
-	editor_hover = imnodes::IsEditorHovered();
-	imnodes::PopColorStyle();
-	imnodes::PopColorStyle();
-	imnodes::PopColorStyle();
-	imnodes::PopColorStyle();
-	imnodes::PopColorStyle();
-	imnodes::PopStyleVar();
-	imnodes::PopAttributeFlag();
-	imnodes::EndNodeEditor();
+	editor_hover = ImNodes::IsEditorHovered();
+	ImNodes::PopColorStyle();
+	ImNodes::PopColorStyle();
+	ImNodes::PopColorStyle();
+	ImNodes::PopColorStyle();
+	ImNodes::PopColorStyle();
+	ImNodes::PopStyleVar();
+	ImNodes::PopAttributeFlag();
+	ImNodes::EndNodeEditor();
 
 	int id_in, id_out;
 
-	if (imnodes::IsLinkStarted(&id_in))
+	if (ImNodes::IsLinkStarted(&id_in))
 	{
 		sol::object type_pin = currentNodeGraphPtr->nodes[(id_in / 100) * 100]["Pins"][id_in]["type"];
 		if (type_pin.get_type() == sol::type::number)
@@ -439,18 +439,18 @@ void NodeGraph::render()
 			ImColor color = getPinColor((PinType)type_pin.as<int>());
 			ImColor color_hover = color.Value + ImColor(10, 10, 10, 0).Value;
 			ImColor color_selected = color.Value + ImColor(15, 15, 15, 0).Value;
-			imnodes::PushColorStyle(imnodes::ColorStyle_Link, color);
-			imnodes::PushColorStyle(imnodes::ColorStyle_LinkHovered, color_hover);
-			imnodes::PushColorStyle(imnodes::ColorStyle_LinkSelected, color_selected);
+			ImNodes::PushColorStyle(ImNodesCol_Link, color);
+			ImNodes::PushColorStyle(ImNodesCol_LinkHovered, color_hover);
+			ImNodes::PushColorStyle(ImNodesCol_LinkSelected, color_selected);
 		}
 	}
 
 	int link_id;
-	if (imnodes::IsLinkDestroyed(&link_id))
+	if (ImNodes::IsLinkDestroyed(&link_id))
 	{
 		removeLink(link_id);
 	}
-	if (imnodes::IsPinHovered(&id_in))
+	if (ImNodes::IsPinHovered(&id_in))
 	{
 		if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
 		{
@@ -464,7 +464,16 @@ void NodeGraph::render()
 	}
 
 	int id_node;
-	if (imnodes::IsNodeHovered(&id_node)) {}
+
+	static int selectDelete;
+	
+	if (ImNodes::IsNodeHovered(&id_node))
+	{
+		if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+			selectDelete = id_node;
+			ImGui::OpenPopup("deleteNode");
+		}
+	}
 	else
 	{
 		if (editor_hover)
@@ -474,6 +483,39 @@ void NodeGraph::render()
 		}
 	}
 
+	if (ImGui::BeginPopup("deleteNode"))
+	{
+		
+		if (ImGui::Button(langt("delete")))
+		{
+			sol::table pins = currentNodeGraphPtr->nodes[selectDelete]["Pins"];
+			for (auto pin : pins)
+			{
+				sol::table pin_value = pin.second.as<sol::table>();
+				int pin_type = pin_value["pin_type"];
+				if (pin_type == 0)
+				{
+					sol::optional<int> link = pin_value["link"];
+					if (link.has_value())
+						removeLink(link.value());
+				}
+				else
+				{
+					sol::table links = pin_value["links"];
+					for (auto link : links)
+					{
+						if (link.second.get_type() != sol::type::nil)
+							removeLink(link.second.as<int>());
+					}
+				}
+			}
+			currentNodeGraphPtr->nodes.erase(selectDelete);
+
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+	
 	ImGui::SetNextWindowSize(ImVec2(200, 0));
 	if (ImGui::BeginPopup("CreateMenu"))
 	{
@@ -508,7 +550,7 @@ void NodeGraph::render()
 						auto result = fNew(node_class, id_node);
 						if (ScriptManager::checkProtected(result)) {
 							currentNodeGraphPtr->nodes[id_node] = result;
-							imnodes::SetNodeScreenSpacePos(id_node, ImGui::GetWindowPos());
+							ImNodes::SetNodeScreenSpacePos(id_node, ImGui::GetWindowPos());
 						}
 						ImGui::CloseCurrentPopup();
 					}
@@ -559,7 +601,7 @@ void NodeGraph::render()
 							auto result = fNew(nodeVarClass, id_node, var_id, setter);
 							if (ScriptManager::checkProtected(result)) {
 								currentNodeGraphPtr->nodes[id_node] = result;
-								imnodes::SetNodeScreenSpacePos(id_node, ImGui::GetWindowPos());
+								ImNodes::SetNodeScreenSpacePos(id_node, ImGui::GetWindowPos());
 								select_var = false;
 							}
 						}
@@ -572,7 +614,7 @@ void NodeGraph::render()
 		ImGui::EndPopup();
 	}
 	
-	if (imnodes::IsLinkCreated(&id_in, &id_out))
+	if (ImNodes::IsLinkCreated(&id_in, &id_out))
 	{
 		int node_id_in = (id_in / 100) * 100;
 		int node_id_out = (id_out / 100) * 100;
@@ -610,12 +652,12 @@ void NodeGraph::render()
 		}
 	}
 
-	const int num_selected = imnodes::NumSelectedNodes();
-	if (num_selected > 0 && ImGui::IsKeyReleased(0x58))
+	const int num_selected = ImNodes::NumSelectedNodes();
+	if (num_selected > 0 && ImGui::IsKeyReleased(0x2E))
 	{
 		static std::vector<int> selected_nodes;
 		selected_nodes.resize(static_cast<size_t>(num_selected));
-		imnodes::GetSelectedNodes(selected_nodes.data());
+		ImNodes::GetSelectedNodes(selected_nodes.data());
 		for (const int node_id : selected_nodes)
 		{
 			sol::table pins = currentNodeGraphPtr->nodes[node_id]["Pins"];
@@ -640,7 +682,7 @@ void NodeGraph::render()
 			}
 			currentNodeGraphPtr->nodes.erase(node_id);
 		}
-		imnodes::ClearNodeSelection();
+		ImNodes::ClearNodeSelection();
 	}
 	
 	ImGui::End();
