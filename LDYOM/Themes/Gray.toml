@@ -1,0 +1,163 @@
+[window.padding]
+    value = [6, 6]
+
+[window.rounding]
+    value = 15.0
+
+[frame.padding]
+    value = [2.5, 3.5]
+
+[frame.rounding]
+    value = 6.0
+
+[child.rounding]
+    value = 8.0
+
+[item.spacing]
+    value = [4, 4]
+
+[scrollbar.size]
+    value = 15.0
+
+[scrollbar.rounding]
+    value = 15.0
+
+[grab.min.size]
+    value = 15.0
+
+[grab.rounding]
+    value = 7.0
+
+[button.text.align]
+    value = [0.5, 0.35]
+
+[frame.border.size]
+    value = 0.0
+
+# Colors
+
+[text]
+    value = [0.95, 0.96, 0.98, 1.00]
+
+    [text.disabled]
+        value = [0.36, 0.42, 0.47, 1.00]
+
+[window.bg]
+    value = [0.11, 0.15, 0.17, 1.00]
+
+[child.bg]
+    value = [0.15, 0.18, 0.22, 1.00]
+
+[popup.bg]
+    value = [0.08, 0.08, 0.08, 0.94]
+
+[border]
+    value = [0.43, 0.43, 0.50, 0.50]
+
+    [border.shadow]
+        value = [0.00, 0.00, 0.00, 0.00]
+
+[frame.bg]
+    value = [0.20, 0.25, 0.29, 1.00]
+
+    [frame.bg.hovered]
+        value = [0.12, 0.20, 0.28, 1.00]
+
+    [frame.bg.active]
+        value = [0.09, 0.12, 0.14, 1.00]
+
+[title.bg]
+    value = [0.09, 0.12, 0.14, 0.65]
+
+    [title.bg.active]
+        value = [0.08, 0.10, 0.12, 1.00]
+
+    [title.bg.collapsed]
+        value = [0.00, 0.00, 0.00, 0.51]
+
+[menu.bar.bg]
+    value = [0.15, 0.18, 0.22, 1.00]
+
+[scrollbar.bg]
+    value = [0.02, 0.02, 0.02, 0.39]
+
+[scrollbar.grab]
+    value = [0.20, 0.25, 0.29, 1.00]
+
+    [scrollbar.grab.hovered]
+        value = [0.18, 0.22, 0.25, 1.00]
+
+    [scrollbar.grab.active]
+        value = [0.09, 0.21, 0.31, 1.00]
+
+[check.mark]
+    value = [0.28, 0.56, 1.00, 1.00]
+
+[slider.grab]
+    value = [0.28, 0.56, 1.00, 1.00]
+
+    [slider.grab.active]
+        value = [0.37, 0.61, 1.00, 1.00]
+
+[button]
+    value = [0.20, 0.25, 0.29, 1.00]
+
+    [button.hovered]
+        value = [0.28, 0.56, 1.00, 1.00]
+
+    [button.active]
+        value = [0.06, 0.53, 0.98, 1.00]
+
+[header]
+    value = [0.20, 0.25, 0.29, 0.55]
+
+    [header.hovered]
+        value = [0.26, 0.59, 0.98, 0.80]
+
+    [header.active]
+        value = [0.26, 0.59, 0.98, 1.00]
+
+[separator]
+    value = [0.0, 0.52, 0.74, 0.4]
+
+    [separator.hovered]
+        value = [0.26, 0.59, 0.98, 0.78]
+
+    [separator.active]
+        value = [0.26, 0.59, 0.98, 1.00]
+
+[resize.grip]
+    value = [0.26, 0.59, 0.98, 0.25]
+
+    [resize.grip.hovered]
+        value = [0.26, 0.59, 0.98, 0.67]
+
+    [resize.grip.active]
+        value = [0.06, 0.05, 0.07, 1.00]
+
+[tab]
+    value = [0.26, 0.59, 0.98, 0.31]
+
+    [tab.hovered]
+        value = [0.26, 0.59, 0.98, 0.80]
+
+    [tab.active]
+        value = [0.26, 0.59, 0.98, 1.00]
+
+    [tab.unfocused]
+        value = [0.26, 0.59, 0.98, 0.31]
+
+        [tab.unfocused.active]
+            value = [0.26, 0.59, 0.98, 1.00]
+
+[plot.lines]
+    value = [0.61, 0.61, 0.61, 1.00]
+
+    [plot.lines.hovered]
+        value = [1.00, 0.43, 0.35, 1.00]
+
+[plot.histogram]
+    value = [0.90, 0.70, 0.00, 1.00]
+
+    [plot.histogram.hovered]
+        value = [1.00, 0.60, 0.00, 1.00]

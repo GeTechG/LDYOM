@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="LDYOM_ASI.cpp" />
+    <ClCompile Include="ImGUI\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_impl_dx9.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_impl_win32.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\memsafe.cpp">
+      <Filter>libs</Filter>
+    </ClCompile>
+    <ClCompile Include="VMTHooker\vmt.cpp">
+      <Filter>hook</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\coro_wait.cpp">
+      <Filter>libs</Filter>
+    </ClCompile>
+    <ClCompile Include="carSelector.cpp" />
+    <ClCompile Include="Init.cpp" />
+    <ClCompile Include="vehicle_renderer.cpp" />
+    <ClCompile Include="libs\pch.cpp">
+      <Filter>libs</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\additional_events.cpp">
+      <Filter>libs</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="gzip\adler32.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\compress.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\crc32.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\deflate.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\gzclose.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\gzlib.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\gzread.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\gzwrite.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\infback.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\inffast.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\inflate.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\inftrees.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\trees.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\uncompr.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="gzip\zutil.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="MissionPlayer.cpp" />
+    <ClCompile Include="imnodes.cpp" />
+    <ClCompile Include="ScriptManager.cpp" />
+    <ClCompile Include="NodeGraph.cpp" />
+    <ClCompile Include="libs\ScriptCommands.cpp">
+      <Filter>libs</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_tables.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LDYOM_ASI.h" />
+    <ClInclude Include="GUI.h" />
+    <ClInclude Include="Init.h" />
+    <ClInclude Include="render.h" />
+    <ClInclude Include="ImGUI\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui_impl_dx9.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui_impl_win32.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imstb_textedit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imstb_truetype.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\cpptoml.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\fa.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\imguistyleloader.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\ini.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\memsafe.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\MyFuncs.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="VMTHooker\vmt.h">
+      <Filter>hook</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="libs\coro_wait.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="carSelector.h" />
+    <ClInclude Include="components.h" />
+    <ClInclude Include="vehicle_renderer.h" />
+    <ClInclude Include="libs\forward_declarations.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\pch.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\pool_object_extender.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\singleton.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\additional_events.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h" />
+    <ClInclude Include="gzip\compress.hpp">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\config.hpp">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\crc32.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\decompress.hpp">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\deflate.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\gzguts.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\inffast.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\inffixed.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\inflate.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\inftrees.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\trees.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\utils.hpp">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\version.hpp">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\zconf.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\zlib.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="gzip\zutil.h">
+      <Filter>gzip</Filter>
+    </ClInclude>
+    <ClInclude Include="MissionPlayer.h" />
+    <ClInclude Include="imnodes.h" />
+    <ClInclude Include="ScriptManager.h" />
+    <ClInclude Include="NodeGraph.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{91cf092c-8387-4b91-a062-fa302e4720a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs">
+      <UniqueIdentifier>{39310bb6-20d3-4116-b9b5-27c5e9b64991}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hook">
+      <UniqueIdentifier>{e7c8eac7-4a43-4551-9101-ded8af13821f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gzip">
+      <UniqueIdentifier>{9146ac9b-3f0a-4da6-9650-72b905a6445c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="LDYOM_ASI.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\weapons.png" />
+    <Image Include="images\blips.png" />
+    <Image Include="images\peds.jpg" />
+    <Image Include="bitmap1.bmp" />
+  </ItemGroup>
+</Project>
