@@ -184,7 +184,7 @@ void foo()
 	//this_coro::wait(5s);
 	currentMissionPtr->player.updateEditorPed();
 	
-	while (runningThreads)
+	while (runningThreads && CGame::bMissionPackGame == 7)
 	{
 		this_coro::wait(0ms);
 		if (editmodeCamera)
@@ -618,6 +618,9 @@ public:
 					namesCars.clear();
 					currentCar = 0;
 					bCars = false;
+					namesTrains.clear();
+					currentTrain = 0;
+					bTrains = false;
 					namesObjects.clear();
 					currentObject = 0;
 					bObjects = false;
@@ -637,23 +640,30 @@ public:
 					bPlayer = false;
 					bMissionPacks = false;
 					carSelector::bShow = false;
+					
+				} else
+				{
+					InitHooks();
 				}
-
+				createDirsLDYOM();
 				startLog();
 				MainThread();
 				loadArrayMenu();
 				currentMissionPtr = new Mission;
+				currentStorylinePtr = new Storyline;
 				currentNodeGraphPtr = new NodeGraph;
-				currentMissionPtr->player.updateEditorPed();
+				instance.add_to_queue(foo);
 				printLog("start");
-				init = true;
-				printLog("reini");
 				ScriptManager::loadScripts();
+				init = true;
+				langMenu["typesValue"] = parseJsonArray<std::string>(langt("typesValue"));
+				playerPed->DisablePedSpeech(1);
 			}
 		};
-		Events::processScriptsEvent += []
+		
+		Events::gameProcessEvent += []
 		{
-			if (CGame::bMissionPackGame == 7)
+			if (CGame::bMissionPackGame == 7 && init)
 			{
 				if (Command<0x0ADC>("TOP2009"))
 				{

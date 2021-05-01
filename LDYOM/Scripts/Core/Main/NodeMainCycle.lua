@@ -36,7 +36,6 @@ end
 function Node:play(data, mission)
 	ldyom.setLastNode(self.id);
 	while (ldyom.getMissionStarted()) do
-		wait(0);
 		if self.Pins[self.id+1].links ~= nil then
 			for k,v in pairs(self.Pins[self.id+1].links) do
 				local link = data.links[v];
@@ -50,6 +49,7 @@ function Node:play(data, mission)
 				end
 			end
 		end
+		wait(0);
 	end
 end
 

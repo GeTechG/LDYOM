@@ -51,6 +51,7 @@ function main()
 	
 	require "LDYOM.Scripts.Core.VariableNode"
 	
+	require "LDYOM.Scripts.Core.Main.NodeBranch"
 	require "LDYOM.Scripts.Core.Main.NodeStart"
 	require "LDYOM.Scripts.Core.Main.NodeMainCycle"
 	require "LDYOM.Scripts.Core.Main.NodePrintLog"
@@ -135,6 +136,10 @@ function main()
 	require "LDYOM.Scripts.Core.Ped.NodePedTakeWeapons"
 	require "LDYOM.Scripts.Core.Ped.NodePedChangeSkin"
 	require "LDYOM.Scripts.Core.Ped.NodeGetPosChar"
+	require "LDYOM.Scripts.Core.Ped.NodeSetPosChar"
+	require "LDYOM.Scripts.Core.Ped.NodeIsInArea"
+	require "LDYOM.Scripts.Core.Ped.NodeIsPedInVehicle"
+	require "LDYOM.Scripts.Core.Ped.NodeIsPedInVehicleModel"
 	
 	require "LDYOM.Scripts.Core.Vehicle.NodeOpenDoors"
 	require "LDYOM.Scripts.Core.Vehicle.NodeLockVehicle"

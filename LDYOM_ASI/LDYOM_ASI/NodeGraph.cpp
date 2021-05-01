@@ -711,3 +711,4 @@ void NodeGraph::callNodeS(sol::table& node, NodeGraph* data, Storyline* mission)
 		CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
 	}
 }
+
