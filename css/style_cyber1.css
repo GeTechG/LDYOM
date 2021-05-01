@@ -1,0 +1,40 @@
+.cyber-text {
+    font-family: 'Blender Pro';
+}
+
+img[alt="www.000webhost.com"]{display:none;}
+
+body {
+    background-color: #FBF301;
+    margin: 0;
+}
+
+#cyber_logo {
+    width: 80vh;
+    display:block;
+    margin:auto;
+    margin-top: 10vh;
+    pointer-events: none;
+}
+
+h1 {
+    font-size: 80pt;
+}
+
+.butt {
+    
+    font-size: 36pt;
+    background-color: #136377;
+    padding: 20px;
+    width: max-content;
+    margin: auto;
+    margin-top: 20px;
+    color: white;
+    cursor: pointer;
+    min-width: 200px;
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+}
