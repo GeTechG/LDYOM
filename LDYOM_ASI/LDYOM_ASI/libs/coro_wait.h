@@ -5,7 +5,7 @@
 #include <thread>
 #include <mutex>
 #include <functional>
-
+#include <list>
 #include <boost/context/continuation.hpp>
 
 class running_coro {

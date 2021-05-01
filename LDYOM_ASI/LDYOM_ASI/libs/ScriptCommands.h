@@ -101,7 +101,7 @@ public:
 public:
 
 
-static bool CallCommandByIdPtr(unsigned int commandId, sol::table params) {
+static bool CallCommandByIdPtr(unsigned int commandId, sol::table &params) {
     // create our 'script' object
     static CRunningScript script;
     memset(&script, 0, sizeof(CRunningScript));

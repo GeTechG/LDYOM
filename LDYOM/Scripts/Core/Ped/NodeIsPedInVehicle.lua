@@ -2,19 +2,19 @@ ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-Node = bitser.registerClass(class("NodeLockVehicle", BaseNode));
+Node = bitser.registerClass(class("NodeIsPedInVehicle", BaseNode));
 Node.static.mission = true;
 
-Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodeLockVehicle");
+Node.static.name = imgui.imnodes.getNodeIcon("fork")..' '..ldyom.langt("CoreNodeIsPedInVehicle");
 
 function Node:initialize(id)
 	BaseNode.initialize(self,id);
-	self.type = 4;
+	self.type = 1;
 	self.Pins = {
 		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.void, 0),
 		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
 		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
-		[self.id+4] = BasePin:new(self.id+4,imgui.imnodes.PinType.void, 1),
+		[self.id+4] = BasePin:new(self.id+4,imgui.imnodes.PinType.boolean, 1, ffi.new("bool[1]")),
 	};
 end
 
@@ -29,24 +29,17 @@ function Node:draw()
 	end
 	imgui.imnodes.EndNodeTitleBar();
 	
-	imgui.imnodes.BeginInputAttribute(self.id+1);
-	imgui.Dummy(imgui.ImVec2:new(0,10));
-	imgui.imnodes.EndInputAttribute();
-	
 	imgui.imnodes.BeginInputAttribute(self.id+2);
-	imgui.Text(ldyom.langt("vehicle"));
+	imgui.Text(ldyom.langt("ped"));
 	imgui.imnodes.EndInputAttribute();
 	
 	imgui.imnodes.BeginInputAttribute(self.id+3);
-	imgui.Text(ldyom.langt("seat"));
-	if not self.Pins[self.id+3].link then
-		imgui.SetNextItemWidth(200);
-		imgui.ComboVecStr("", self.Pins[self.id+3].value, ldyom.langMenu["open_close"]);
-	end
+	imgui.Text(ldyom.langt("CoreHandleCar"));
 	imgui.imnodes.EndInputAttribute();
 	
 	imgui.imnodes.BeginOutputAttribute(self.id+4);
-	imgui.Dummy(imgui.ImVec2:new(0,10));
+	imgui.Indent(130);
+	imgui.Text(ldyom.langt("result"));
 	imgui.imnodes.EndOutputAttribute();
 	
 	imgui.imnodes.EndNode();
@@ -55,14 +48,15 @@ end
 
 function Node:play(data, mission)
 		
-	local vehicle = self:getPinValue(self.id+2,data,mission)[0];
-	local lock = self:getPinValue(self.id+3,data,mission)[0]+1;
+	local ped = self:getPinValue(self.id+2,data,mission)[0];
+	local vehicle = self:getPinValue(self.id+3,data,mission)[0];
+	assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");
 	assert(callOpcode(0x056E, {{vehicle,"int"}}), "Not found vehicle");
 	ldyom.setLastNode(self.id);
 	
-	callOpcode(0x020A, {{vehicle,"int"}, {lock,"int"}});
+	local result = self.Pins[self.id+4].value;
 	
-	self:callOutputLinks(data, mission, self.id+4);
+	result[0] = callOpcode(0x00DB, {{ped,"int"}, {vehicle,"int"}});
 end
 
-ldyom.nodeEditor.addNodeClass("Vehicle",Node);
+ldyom.nodeEditor.addNodeClass("Ped",Node);

@@ -47,6 +47,7 @@ list<int> missionExplosion{};
 list<int> missionAudio{};
 map<unsigned, sol::object> realVariable;
 bool loadedNodes = false;
+bool useSkip = false;
 
 void stopStoryline()
 {
@@ -830,6 +831,27 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							CHud::m_Wants_To_Draw_Hud = false;
 							TheCamera.m_bWideScreenOn = true;
 
+							std::function start_cutscene = [&skip]() {
+								TheCamera.Fade(0.5f, 0);
+								this_coro::wait(1s);
+								TheCamera.Fade(0.5f, 1);
+								skip = 1;
+								useSkip = true;
+
+								instance.add_to_queue([&skip]
+								{
+									while (useSkip && mission_started)
+									{
+										if (KeyJustPressed(VK_SPACE))
+										{
+											skip = 0;
+											break;
+										}
+										this_coro::wait(0ms);
+									}
+								});
+							};
+								
 							if (current_mission_target > 0)
 							{
 								bool last_cutscene = mission->list_targets[current_mission_target - 1]->type == 3 && mission->list_targets[current_mission_target - 1]->targetType == 0;
@@ -837,30 +859,17 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 								
 								if (!(last_cutscene || last_playerAnim))
 								{
-									TheCamera.Fade(0.5f, 0);
-									this_coro::wait(1s);
-									TheCamera.Fade(0.5f, 1);
-									skip = 1;
+									start_cutscene();
 								}
 								if (!(mission->list_targets[current_mission_target - 1]->type == 6 && mission->list_targets[current_mission_target - 1]->targetType == 1))
 								{
 									Command<Commands::SET_PLAYER_CONTROL>(0, 0);
 								}
-							}
-
-							bool useSkip = true;
-
-							instance.add_to_queue([&useSkip, &skip]
+							} else
 							{
-								while (useSkip && mission_started)
-								{
-									if (KeyJustPressed(VK_SPACE))
-									{
-										skip = 0;
-									}
-									this_coro::wait(0ms);
-								}
-							});
+								start_cutscene();
+								Command<Commands::SET_PLAYER_CONTROL>(0, 0);
+							}
 
 							switch (targetPtr->tied) {
 							case 0: {
@@ -1730,6 +1739,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 
 							std::function endCutscene = []()
 							{
+								useSkip = false;
 								TheCamera.Fade(0.5f, 0);
 								this_coro::wait(0.5s);
 								CHud::bScriptDontDisplayRadar = false;
@@ -1999,16 +2009,16 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							Command<Commands::TASK_PICK_UP_OBJECT>(playerPed, phone, 0, 0, 0, 6, 16, "NULL", "NULL", -1);
 							this_coro::wait(1430ms);
 							skip = 1;
+							useSkip = true;
 
-							bool useSkip = true;
-
-							instance.add_to_queue([&useSkip, &skip]
+							instance.add_to_queue([&skip]
 							{
 								while (useSkip && mission_started)
 								{
 									if (KeyJustPressed(VK_SPACE))
 									{
 										skip = 0;
+										break;
 									}
 									this_coro::wait(0ms);
 								}

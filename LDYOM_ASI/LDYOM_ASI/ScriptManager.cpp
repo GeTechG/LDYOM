@@ -131,9 +131,9 @@ bool ToggleButtonLua(const char* str_id, sol::object v) {
 	return ToggleButton(str_id, (bool*)v.pointer());
 }
 
-void wait (int ms)
+void wait (int mills)
 {
-	this_coro::wait(ms);
+	this_coro::wait(mills);
 }
 
 void callNodeThread(sol::table& node, NodeGraph* data, Mission* mission)
@@ -829,6 +829,57 @@ void setCameraLook(float x, float y, float z)
 	TheCamera.m_vecAttachedCamLookAt.Set(x, y, z);
 }
 
+void walkPointsNode(int pedHandle, int type_move_ped, int type_route_ped, sol::table &path, sol::table &node, int id_out, NodeGraph* data, Mission* mission)
+{
+	instance.add_to_queue([pedHandle, type_move_ped, path, type_route_ped, data, mission, node, id_out]() {
+		CPed* ped = CPools::GetPed(pedHandle);
+
+		int type_walk = 4;
+		if (type_move_ped == 2)
+			type_walk = 6;
+		else if (type_move_ped == 3)
+			type_walk = 7;
+
+		Command<Commands::TASK_TOGGLE_DUCK>(pedHandle, (int)(type_move_ped == 0));
+
+		while (getMissionStarted())
+		{
+			for (int i = 1; i <= path.size(); ++i)
+			{
+				if (!Command<Commands::DOES_CHAR_EXIST>(pedHandle))
+				{
+					return;
+				}
+				float* point = (float*)((sol::object)path[i]).pointer();
+				Command<Commands::TASK_GO_STRAIGHT_TO_COORD>(pedHandle, point[0], point[1], point[2], type_walk, -1);
+				float dist = 99999;
+				while (dist > 1.0f)
+				{
+					if (!Command<Commands::DOES_CHAR_EXIST>(pedHandle))
+					{
+						return;
+					}
+					dist = DistanceBetweenPoints(ped->GetPosition(), CVector(point[0], point[1], point[2]));
+					this_coro::wait(0);
+				}
+			}
+
+			if (type_route_ped == 0)
+				break;
+
+			this_coro::wait(0);
+		}
+
+		Command<Commands::TASK_TOGGLE_DUCK>(pedHandle, 0);
+
+		const sol::protected_function play = node["callOutputLinks"];
+		auto result = play(node, data, mission, id_out);
+		if (!ScriptManager::checkProtected(result))
+			CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+
+	});
+} 
+
 void setNamespaceLua(sol::state& lua)
 {
 	lua.set_function("print", &printLog);
@@ -901,6 +952,7 @@ void setNamespaceLua(sol::state& lua)
 	t_ldyom.set("getPos", &getPos);
 	t_ldyom.set("setCameraLook", setCameraLook);
 	t_ldyom.set("attachCameraToEntity", &attachCameraToEntity);
+	t_ldyom.set("walkPointsNode", &walkPointsNode);
 
 	addLDYOMClasses(lua);
 	
