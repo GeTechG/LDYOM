@@ -108,6 +108,7 @@ function Node:play(data, mission)
 	local ped = self:getPinValue(self.id+6,data,mission)[0];
 	local movecam = self:getPinValue(self.id+7,data,mission)[0];
 	assert(mission.list_cars[car+1].missionCar, "The car is not yet established or has already disappeared.");
+	assert(mission.list_actors[ped+1].missionPed, "The actor is not yet established or has already disappeared.");
 	ldyom.setLastNode(self.id);
 
 	local carRef = getCarRef(mission.list_cars[car+1].missionCar);

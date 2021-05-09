@@ -79,6 +79,7 @@ function Node:play(data, mission)
 	local type_ = self:getPinValue(self.id+3,data,mission)[0];
 	local model = self:getPinValue(self.id+4,data,mission)[0];
 	local slot = self:getPinValue(self.id+5,data,mission)[0];
+	assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");	
 	ldyom.setLastNode(self.id);
 	
 	local modl;

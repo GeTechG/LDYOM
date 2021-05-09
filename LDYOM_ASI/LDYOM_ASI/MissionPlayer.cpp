@@ -145,7 +145,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		std::string modell_n = ID_Spec_Actors[mission->player.modelID];
 		CStreaming::RequestSpecialChar(9, modell_n.c_str(), 0);
 		CStreaming::LoadAllRequestedModels(false);
-		modell = 290 + 10 - 1;
+		modell = 290 + 9 - 1;
 	}
 	Command<Commands::SET_PLAYER_MODEL>(0, modell);
 	int weap_modell;
@@ -2399,6 +2399,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		Command<Commands::SET_PED_DENSITY_MULTIPLIER>(0.0f);
 		Command<Commands::SET_CAR_DENSITY_MULTIPLIER>(0.0f);
 		TheCamera.Restore();
+		TheCamera.LerpFOV(80.0f, 70.0f, 0.1f, false);
 		mission->updateEditorEntity();
 	}
 }

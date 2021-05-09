@@ -20,8 +20,21 @@ sol::state NodeGraph::baseNode{};
 std::map<int, const char*> namesVars;
 extern bool ToggleButton(const char* str_id, bool* v);
 
+int getIdNode()
+{
+	currentNodeGraphPtr->counter_nodes += 100;
+	return currentNodeGraphPtr->counter_nodes;
+}
+
+int getIdLink()
+{
+	return currentNodeGraphPtr->counter_links++;
+}
+
 NodeGraph::NodeGraph()
 {
+	this->counter_nodes = 0;
+	this->counter_links = 0;
 	this->nodes = std::map<unsigned, sol::table>();
 	this->links = std::map<int, sol::table>();
 	this->vars = std::map<int, sol::table>();
@@ -253,7 +266,7 @@ void removeLink(int link_id)
 void NodeGraph::render()
 {
 	bool editor_hover = false;
-	ImGui::SetNextWindowSize(ImVec2(800, 600));
+	ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
 	ImGui::Begin(langt("CoreNodeSystem"));
 	//ImGui::Text(std::to_string(ImGui::GetIO().Framerate).c_str());
 
@@ -545,7 +558,8 @@ void NodeGraph::render()
 					}
 					if (ImGui::MenuItem(name_node.c_str()))
 					{
-						int id_node = currentNodeGraphPtr->nodes.empty()? 0 : (--currentNodeGraphPtr->nodes.end())->first + 100;
+						//int id_node = currentNodeGraphPtr->nodes.empty() ? 0 : (--currentNodeGraphPtr->nodes.end())->first + 100;
+						int id_node = getIdNode();
 						sol::protected_function fNew = node_class["new"];
 						auto result = fNew(node_class, id_node);
 						if (ScriptManager::checkProtected(result)) {
@@ -631,7 +645,8 @@ void NodeGraph::render()
 			{
 				removeLink(link_in.as<int>());
 			}
-			int link_id = currentNodeGraphPtr->links.empty() ? 0 : (--currentNodeGraphPtr->links.end())->first + 1;
+			//int link_id = currentNodeGraphPtr->links.empty() ? 0 : (--currentNodeGraphPtr->links.end())->first + 1;
+			int link_id = getIdLink();
 			currentNodeGraphPtr->nodes[node_id_in]["Pins"][id_in]["link"] = link_id;
 			sol::table links_out = currentNodeGraphPtr->nodes[node_id_out]["Pins"][id_out]["links"];
 			links_out.add(link_id);

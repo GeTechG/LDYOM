@@ -805,6 +805,8 @@ public:
 	}
 };
 
+struct Mission;
+
 class Audio {
 public:
 	CObject* object = nullptr;
@@ -828,7 +830,7 @@ public:
 	static void loadAudiosList();
 	void loadAudio();
 	void unloadAudio();
-	void play(void* void_mission);
+	void play(Mission* void_mission);
 	void stop();
 
 	void removeEditorAudio();

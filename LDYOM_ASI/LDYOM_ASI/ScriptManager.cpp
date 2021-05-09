@@ -819,6 +819,7 @@ void attachCameraToEntity(int opcode, int entity, int entity2, sol::object x_obj
 	}
 }
 
+
 std::tuple<float, float, float> getPos(float* pos)
 {
 	return std::make_tuple(pos[0], pos[1], pos[2]);
@@ -879,6 +880,151 @@ void walkPointsNode(int pedHandle, int type_move_ped, int type_route_ped, sol::t
 
 	});
 } 
+
+
+void driveCarPointsNode(int pedHandle, int carHandle, float speed, int type_route_ped, bool agressive, sol::table &path, sol::table &node, int id_out, NodeGraph* data, Mission* mission)
+{
+	instance.add_to_queue([pedHandle, carHandle, speed, agressive, path, type_route_ped, data, mission, node, id_out]() {
+		CVehicle* car = CPools::GetVehicle(carHandle);
+
+		Command<Commands::SET_CAR_STRONG>(carHandle, 1);
+
+		while (getMissionStarted())
+		{
+			for (int i = 1; i <= path.size(); ++i)
+			{
+				if (!Command<Commands::DOES_CHAR_EXIST>(pedHandle))
+				{
+					return;
+				}
+				if (!Command<Commands::DOES_VEHICLE_EXIST>(carHandle))
+				{
+					return;
+				}
+				float* point = (float*)((sol::object)path[i]).pointer();
+				Command<Commands::TASK_CAR_DRIVE_TO_COORD>(pedHandle, carHandle, point[0], point[1], point[2], speed, 0, 0, (!agressive)? 0 : 2);
+				float dist = 99999;
+				while (dist > 5.0f)
+				{
+					if (!Command<Commands::DOES_CHAR_EXIST>(pedHandle))
+					{
+						return;
+					}
+					if (!Command<Commands::DOES_VEHICLE_EXIST>(carHandle))
+					{
+						return;
+					}
+					dist = DistanceBetweenPoints(car->GetPosition(), CVector(point[0], point[1], point[2]));
+					this_coro::wait(0);
+				}
+			}
+
+			if (type_route_ped == 0)
+				break;
+
+			this_coro::wait(0);
+		}
+
+		Command<Commands::SET_CAR_STRONG>(carHandle, 0);
+
+		const sol::protected_function play = node["callOutputLinks"];
+		auto result = play(node, data, mission, id_out);
+		if (!ScriptManager::checkProtected(result))
+			CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+
+	});
+}
+
+void nodeEnterCar(int pedHandle, int carHandle, int speed_walk, int seat, bool teleport, sol::table &node, int id_out, NodeGraph* data, Mission* mission)
+{
+	instance.add_to_queue([pedHandle, carHandle, speed_walk, seat, teleport, data, mission, node, id_out]() {
+
+		Command<Commands::SET_NEXT_DESIRED_MOVE_STATE>(speed_walk + 4);
+
+		if (seat == 0)
+		{
+			if (teleport)
+			{
+				Command<Commands::TASK_ENTER_CAR_AS_DRIVER>(pedHandle, carHandle, 0);
+			} else
+			{
+				Command<Commands::TASK_ENTER_CAR_AS_DRIVER>(pedHandle, carHandle, -1);
+			}
+		} else
+		{
+			if (teleport)
+			{
+				Command<Commands::TASK_ENTER_CAR_AS_PASSENGER>(pedHandle, carHandle, 0, seat - 1);
+			}
+			else
+			{
+				Command<Commands::TASK_ENTER_CAR_AS_PASSENGER>(pedHandle, carHandle, -1, seat - 1);
+			}
+		}
+
+		while (true)
+		{
+			if (!Command<Commands::DOES_CHAR_EXIST>(pedHandle))
+			{
+				return;
+			}
+			if (Command<Commands::IS_CHAR_IN_CAR>(pedHandle, carHandle))
+			{
+				break;
+			}
+			this_coro::wait(0);
+		}
+
+		const sol::protected_function play = node["callOutputLinks"];
+		auto result = play(node, data, mission, id_out);
+		if (!ScriptManager::checkProtected(result))
+			CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+
+	});
+}
+
+void mainCycle(sol::table &node, int id_out, NodeGraph* data, Mission* mission)
+{
+	instance.add_to_queue([data, mission, node, id_out]() {
+		while (getMissionStarted())
+		{
+			const sol::protected_function play = node["callOutputLinks"];
+			auto result = play(node, data, mission, id_out);
+			if (!ScriptManager::checkProtected(result))
+				CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+			this_coro::wait(0);
+		}
+	});
+}
+
+void waitUtilNode(sol::table &node, int id_in, int id_out, int id_out2, NodeGraph* data, Mission* mission)
+{
+	instance.add_to_queue([data, mission, node, id_out, id_in, id_out2]() {
+		while (getMissionStarted()) {
+			this_coro::wait(0);
+			const sol::protected_function pin = node["getPinValue"];
+			auto result_pin = pin(node, id_in, data, mission);
+			if (!ScriptManager::checkProtected(result_pin))
+				CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+			else {
+				bool* cond = (bool*)((sol::object)result_pin).pointer();
+
+				if (*cond)
+				{
+					const sol::protected_function play = node["callOutputLinks"];
+					auto result = play(node, data, mission, id_out);
+					if (!ScriptManager::checkProtected(result))
+						CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+					break;
+				}
+				const sol::protected_function play = node["callOutputLinks"];
+				auto result = play(node, data, mission, id_out2);
+				if (!ScriptManager::checkProtected(result))
+					CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+			}
+		}
+	});
+}
 
 void setNamespaceLua(sol::state& lua)
 {
@@ -953,6 +1099,10 @@ void setNamespaceLua(sol::state& lua)
 	t_ldyom.set("setCameraLook", setCameraLook);
 	t_ldyom.set("attachCameraToEntity", &attachCameraToEntity);
 	t_ldyom.set("walkPointsNode", &walkPointsNode);
+	t_ldyom.set("driveCarPointsNode", &driveCarPointsNode);
+	t_ldyom.set("nodeEnterCar", &nodeEnterCar);
+	t_ldyom.set("mainCycle", &mainCycle);
+	t_ldyom.set("waitUtilNode", &waitUtilNode);
 
 	addLDYOMClasses(lua);
 	

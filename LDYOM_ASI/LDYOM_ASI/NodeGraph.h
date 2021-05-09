@@ -22,6 +22,8 @@ public:
 
 	int lastNode = -1;
 	int curr_var = 0;
+	int counter_nodes;
+	int counter_links;
 
 	NodeGraph();
 	

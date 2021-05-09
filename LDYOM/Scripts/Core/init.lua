@@ -57,6 +57,7 @@ function main()
 	require "LDYOM.Scripts.Core.Main.NodePrintLog"
 	require "LDYOM.Scripts.Core.Main.NodeNumberToString"
 	require "LDYOM.Scripts.Core.Main.NodeBoolToString"
+	require "LDYOM.Scripts.Core.Main.NodeWaitUntil"
 	
 	require "LDYOM.Scripts.Core.Math.NodeCalc"
 	

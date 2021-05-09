@@ -661,7 +661,7 @@ public:
 			}
 		};
 		
-		Events::gameProcessEvent += []
+		Events::processScriptsEvent += []
 		{
 			if (CGame::bMissionPackGame == 7 && init)
 			{
