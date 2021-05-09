@@ -20,7 +20,7 @@ function Node:initialize(id)
 		[self.id+6] = BasePin:new(self.id+6,imgui.imnodes.PinType.boolean, 0, ffi.new("bool[1]")),
 		[self.id+7] = BasePin:new(self.id+7,imgui.imnodes.PinType.boolean, 0, ffi.new("bool[1]")),
 		[self.id+8] = BasePin:new(self.id+8,imgui.imnodes.PinType.number, 0, ffi.new("float[1]")),
-		[self.id+9] = BasePin:new(self.id+9,imgui.imnodes.PinType.number, 0, ffi.new("float[1]")),
+		[self.id+9] = BasePin:new(self.id+9,imgui.imnodes.PinType.number, 0, ffi.new("float[1]",4)),
 		[self.id+14] = BasePin:new(self.id+14,imgui.imnodes.PinType.void, 1),
 		[self.id+15] = BasePin:new(self.id+15,imgui.imnodes.PinType.void, 1),
 	};
@@ -190,6 +190,7 @@ function Node:play(data, mission)
 		local useAnimMove = node:getPinValue(node.id+7,data,mission)[0];
 		local _time = node:getPinValue(node.id+8,data,mission)[0];
 		local smoothness = node:getPinValue(node.id+9,data,mission)[0];
+		assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");	
 		ldyom.setLastNode(self.id);
 		
 		if not callOpcode(0x04EE, {{ldyom.Anim_name[pack+1],"string"}}) then

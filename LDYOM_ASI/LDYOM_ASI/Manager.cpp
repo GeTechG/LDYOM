@@ -82,6 +82,8 @@ void Manager::SaveMission(int curr_pack,int curr_miss)
 
 						oa << nodes_bytes;
 						oa << links_bytes;
+						oa << currentNodeGraphPtr->counter_nodes;
+						oa << currentNodeGraphPtr->counter_links;
 						scripts = true;
 					}
 				}
@@ -143,6 +145,7 @@ void Manager::LoadMission(int curr_pack, int curr_miss)
 			ia >> nodes_bytes;
 			ia >> links_bytes;
 			
+			
 			sol::protected_function func = pair.second["deserilize"];
 			if (func.valid())
 			{
@@ -168,6 +171,17 @@ void Manager::LoadMission(int curr_pack, int curr_miss)
 					}
 				}
 
+			}
+
+			try
+			{
+				ia >> currentNodeGraphPtr->counter_nodes;
+				ia >> currentNodeGraphPtr->counter_links;
+			}
+			catch (...)
+			{
+				currentNodeGraphPtr->counter_nodes = currentNodeGraphPtr->nodes.empty() ? 0 : (--currentNodeGraphPtr->nodes.end())->first + 100;
+				currentNodeGraphPtr->counter_links = currentNodeGraphPtr->links.empty() ? 0 : (--currentNodeGraphPtr->links.end())->first + 1;
 			}
 		}
 	}

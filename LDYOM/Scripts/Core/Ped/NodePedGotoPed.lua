@@ -53,6 +53,8 @@ function Node:play(data, mission)
 		
 	local ped = self:getPinValue(self.id+2,data,mission)[0];
 	local ped2 = self:getPinValue(self.id+3,data,mission)[0];
+	assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");
+	assert(callOpcode(0x056D, {{ped2,"int"}}), "Not found ped");
 	ldyom.setLastNode(self.id);
 	
 	callOpcode(0x0850, {{ped,"int"}, {ped2,"int"}});

@@ -67,6 +67,7 @@ function Node:play(data, mission)
 	local ped = self:getPinValue(self.id+2,data,mission)[0];
 	local weapon = self:getPinValue(self.id+3,data,mission)[0];
 	local ammo = self:getPinValue(self.id+4,data,mission)[0];
+	assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");
 	ldyom.setLastNode(self.id);
 	
 	local model = ffi.new("int[1]");

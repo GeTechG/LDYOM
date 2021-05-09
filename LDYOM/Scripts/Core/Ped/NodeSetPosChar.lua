@@ -73,7 +73,7 @@ function Node:draw()
 	end
 	imgui.imnodes.EndStaticAttribute();
 	
-	imgui.imnodes.BeginOutputAttribute(self.id+7);
+	imgui.imnodes.BeginOutputAttribute(self.id+6);
 	imgui.Dummy(imgui.ImVec2:new(0,10));
 	imgui.imnodes.EndOutputAttribute();
 	

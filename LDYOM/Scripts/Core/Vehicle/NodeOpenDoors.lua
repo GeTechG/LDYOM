@@ -101,6 +101,7 @@ end
 function Node:play(data, mission)
 		
 	local vehicle = self:getPinValue(self.id+2,data,mission)[0];
+	assert(callOpcode(0x056E, {{vehicle,"int"}}), "Not found vehicle");
 	ldyom.setLastNode(self.id);
 	
 	for g = 0,5 do

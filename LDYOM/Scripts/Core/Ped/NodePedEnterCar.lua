@@ -83,48 +83,18 @@ function Node:draw()
 end
 
 function Node:play(data, mission)
-	addThreadObj(function(data_pack)
-		local data = data_pack[1];
-		local mission = data_pack[2];
-		local node = data_pack[3];
 		
-		local ped = node:getPinValue(node.id+2,data,mission)[0];
-		local car = node:getPinValue(node.id+3,data,mission)[0];
-        local speed_walk = node:getPinValue(node.id+4,data,mission)[0]
-        local seat = node:getPinValue(node.id+5,data,mission)[0]
-        local teleport = node:getPinValue(node.id+6,data,mission)[0]
-		ldyom.setLastNode(self.id);
-		
-        callOpcode(0x07A1, {{speed_walk+4,"int"}});
-		if seat == 0 then
-            if teleport then
-				callOpcode(0x05CB, {{ped,"int"}, {car,"int"}, {0,"int"}});
-            else
-				callOpcode(0x05CB, {{ped,"int"}, {car,"int"}, {-1,"int"}});
-            end
-        else
-            if teleport then
-				callOpcode(0x05CA, {{ped,"int"}, {car,"int"}, {0,"int"}, {seat-1,"int"}});
-            else
-				callOpcode(0x05CA, {{ped,"int"}, {car,"int"}, {-1,"int"}, {seat-1,"int"}});
-            end
-        end
-
-        while true do
-            wait(0)
-            if not callOpcode(0x056D,{{ped,"int"}}) then
-                return
-            end
-			if callOpcode(0x00DF, {{ped,"int"}}) then
-				break;
-			end
-        end
-		
-		
-		node:callOutputLinks(data, mission, node.id+7);
-		
-	end, {data,mission,self});
+	local ped = self:getPinValue(self.id+2,data,mission)[0];
+	local car = self:getPinValue(self.id+3,data,mission)[0];
+	local speed_walk = self:getPinValue(self.id+4,data,mission)[0]
+	local seat = self:getPinValue(self.id+5,data,mission)[0]
+	local teleport = self:getPinValue(self.id+6,data,mission)[0]
+	assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");
+	assert(callOpcode(0x056E, {{car,"int"}}), "Not found vehicle");
+	ldyom.setLastNode(self.id);
 	
+	ldyom.nodeEnterCar(ped, car, speed_walk, seat, teleport, self, self.id+7, data, mission);
+
 	self:callOutputLinks(data, mission, self.id+8);
 end
 

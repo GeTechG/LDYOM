@@ -1519,7 +1519,7 @@ void fActors()
 				actorPtr->updateEditorPed();
 			}
 		}
-		else if (ImGui::SliderInt(langt("slot"), &actorPtr->slotSkin, 1, 10) || Combo(
+		else if (ImGui::SliderInt(langt("slot"), &actorPtr->slotSkin, 1, 9) || Combo(
 			langt("model"), actorPtr->modelID, &ID_Spec_Actors))
 		{
 			actorPtr->updateEditorPed();
@@ -4647,7 +4647,7 @@ void fTools()
 		playerPed->SetPosn(currentMissionPtr->list_actors[tp_actor]->pos[0], currentMissionPtr->list_actors[tp_actor]->pos[1], currentMissionPtr->list_actors[tp_actor]->pos[2]);
 	}
 	ImGui::PopID();
-	Combo(langt("tool_tp_car"), tp_actor, &namesCars);
+	Combo(langt("tool_tp_car"), tp_car, &namesCars);
 	ImGui::SameLine();
 	ImGui::PushID(langt("tool_tp_car"));
 	if (ImGui::Button(langt("teleport"))) {
@@ -4688,7 +4688,7 @@ void fSettings()
 		pt.put<std::string>("Settings.curr_theme", names_themes[curr_theme]);
 		boost::property_tree::write_ini("LDYOM/LDYOM_data.ini", pt);
 		curr_theme_string = names_themes[curr_theme];
-		
+
 		name.clear();
 		name.append(ICON_FA_EXCLAMATION_TRIANGLE);
 		name.append(" ");
@@ -4697,69 +4697,45 @@ void fSettings()
 		//ImGui::OpenPopup(name.c_str());
 	}
 
-	if (Combo(langt("lang"), curr_lang, &names_langs)) {
-		boost::property_tree::ptree pt;
-		read_ini("LDYOM/LDYOM_data.ini", pt);
-		assert(!pt.empty());
-		pt.put<std::string>("Settings.curr_lang", names_langs[curr_lang]);
-		boost::property_tree::write_ini("LDYOM/LDYOM_data.ini", pt);
-		curr_lang_string = names_langs[curr_lang];
-		lang_file.clear();
-		loadArrayMenu();
-	}
 
-	/*name.clear();
+	name.clear();
 	name.append(ICON_FA_EXCLAMATION_TRIANGLE);
 	name.append(" ");
-	name.append(langt("reload"));
-				if (ImGui::BeginPopupModal(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+	name.append(langt("load"));
+	
+	if (Combo(langt("lang"), curr_lang, &names_langs)) {
+		ImGui::OpenPopup(name.c_str());
+	}
 
-					ImGui::Text(langMenu["reloadQues"][1].c_str());
-					ImGui::Text(langMenu["reloadQues"][2].c_str());
-					ImGui::Text(langMenu["reloadQues"][3].c_str());
+	
+	if (ImGui::BeginPopupModal(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 
-					ImVec2 size_b = ImVec2(160, 0);
+		ImGui::Text(langMenu["reloadQues"][1].c_str());
 
-					if (ImGui::Button(langt("yes"], size_b)) {
-						for i = 1, #vr.list_actors do
-							deleteChar(vr.list_actors[i]["data"]["char"])
-							end
-							for c = 1, #vr.list_cars do
-								deleteCar(vr.list_cars[c]["data"]["car"])
-								end
-								for o = 1, #vr.list_objects do
-									deleteObject(vr.list_objects[o]["data"]["obj"])
-									end
-									for p = 1, #vr.list_pickups do
-										removePickup(vr.list_pickups[p]["data"]["pick"])
-										end
-										for p = 1, #vr.list_particles do
-											killFxSystem(vr.list_particles[p]["data"]["prtcl"][1])
-											deleteObject(vr.list_particles[p]["data"]["prtcl"][2])
-											end
-											for p = 1, #vr.list_explosions do
-												if vr.list_explosions[p]["data"]["fire"] then
-													removeScriptFire(vr.list_explosions[p]["data"]["fire"])
-													end
-													if vr.list_explosions[p]["data"]["explosion"] then
-														deleteObject(vr.list_explosions[p]["data"]["explosion"])
-														end
-														end
-														for a = 1, #vr.list_audios do
-															if vr.list_audios[a]["data"]["obj"] then
-																deleteObject(vr.list_audios[a]["data"]["obj"])
-																end
-																end
-																deleteChar(vr.player_ped)
-																thisScript() :reload()
-																end
-																ImGui::SameLine()
-																if (ImGui::Button(langt("no"], size_b) then
-																	ImGui::CloseCurrentPopup()
-																	end
+		const ImVec2 size_b = ImVec2(160, 0);
 
-																	ImGui::EndPopup()
-																	}*/
+		if (ImGui::Button(langt("yes"), size_b)) {
+			boost::property_tree::ptree pt;
+			read_ini("LDYOM/LDYOM_data.ini", pt);
+			assert(!pt.empty());
+			pt.put<std::string>("Settings.curr_lang", names_langs[curr_lang]);
+			boost::property_tree::write_ini("LDYOM/LDYOM_data.ini", pt);
+			curr_lang_string = names_langs[curr_lang];
+			lang_file.clear();
+			loadArrayMenu();
+			clearScripts();
+			ScriptManager::loadScripts();
+			
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(langt("no"), size_b)) {
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
 
 	ImGui::End();
 }

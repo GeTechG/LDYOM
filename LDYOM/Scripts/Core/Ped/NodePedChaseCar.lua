@@ -88,6 +88,9 @@ function Node:play(data, mission)
 	local beh_transp = self:getPinValue(self.id+5,data,mission)[0];
 	local beh_driver = self:getPinValue(self.id+6,data,mission)[0];
 	local car_target = self:getPinValue(self.id+7,data,mission)[0];
+	assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");
+	assert(callOpcode(0x056E, {{car_ped,"int"}}), "Not found vehicle");
+	assert(callOpcode(0x056E, {{car_target,"int"}}), "Not found vehicle");
 	ldyom.setLastNode(self.id);
 	
 	callOpcode(0x06E1, {{ped,"int"}, {car_ped,"int"}, {car_target,"int"}, {beh_driver-1,"int"}, {max_speed,"float"}, {beh_transp,"int"}});

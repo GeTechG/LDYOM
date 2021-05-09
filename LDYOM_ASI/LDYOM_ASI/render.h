@@ -8,7 +8,6 @@
 #include "imnodes.h"
 #include "NodeGraph.h"
 
-
 void showCursor(bool state)
 {
 	ImGui::GetIO().MouseDrawCursor = state;
@@ -232,7 +231,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				TheCamera.Restore();
 			}
 		} else {
-			showCursor(true);
+			showCursor(false);
 			if (!storylineMode)
 				bMainMenu = true;
 			else
@@ -246,8 +245,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	openFrame = bMainMenu || bTargets || bActors || bCars || bTrains || carSelector::bShow || bGroupRelations || bObjects || bParticles || bPickups || bExplosions || bAudios || bMissionPacks || bPlayer || bMissionSettings || bStorylines || bTools || bSettings || bInfo || bStorylineMainMenu || bStorylineCheckpoints || bScriptsSettings || bNodeEditor;
 
 	if (openFrame && !mission_started && !storyline_started && !off_gui) {
+		Command<0x0AB3>(700, 1);
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
-	}
+	} else
+		Command<0x0AB3>(700, 0);
 
 	return CallWindowProcA((WNDPROC)prevWndProc, hWnd, uMsg, wParam, lParam);
 }

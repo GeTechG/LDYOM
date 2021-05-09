@@ -11,8 +11,8 @@ function Node:initialize(id)
 	self.type = 4;
 	self.Pins = {
 		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.void, 0),
-		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.number, 0, ffi.new("float[1]")),
-		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.number, 0, ffi.new("float[1]")),
+		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.number, 0, ffi.new("float[1]",70)),
+		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.number, 0, ffi.new("float[1]",120)),
 		[self.id+4] = BasePin:new(self.id+4,imgui.imnodes.PinType.number, 0, ffi.new("float[1]")),
 		[self.id+5] = BasePin:new(self.id+5,imgui.imnodes.PinType.boolean, 0, ffi.new("bool[1]")),
 		[self.id+6] = BasePin:new(self.id+6,imgui.imnodes.PinType.boolean, 0, ffi.new("bool[1]")),

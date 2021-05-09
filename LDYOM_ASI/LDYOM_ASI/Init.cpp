@@ -994,10 +994,8 @@ void Object::updateMissionObject()
 	CStreaming::RemoveAllUnusedModels();
 	missionObject->SetPosn(pos[0], pos[1], pos[2]);
 	missionObject->SetOrientation(rad(rotation[0]), rad(rotation[1]), rad(rotation[2]));
-	missionObject->m_nColDamageEffect = 1;
 	CWorld::Add(missionObject);
 	missionObject->m_nObjectType = eObjectType::OBJECT_MISSION;
-	Command<Commands::DONT_REMOVE_OBJECT>(missionObject);
 	Command<0x0550>(missionObject, 1);
 	Command<Commands::SET_OBJECT_DYNAMIC>(missionObject, 0);
 }
@@ -1394,14 +1392,20 @@ void Audio::unloadAudio() {
 	Command<0x0AAE>(missionAudio);
 }
 
-void Audio::play(void* void_mission) {
+void Audio::play(Mission* mission) {
 	
 	if (namesAudioFiles.empty())
 		return;
 
 	this_coro::wait(0);
 	
-	Mission* mission = static_cast<Mission*>(void_mission);
+	int state;
+	Command<0x0AB9>(missionAudio, &state);
+	if (state == 1)
+	{
+		return;
+	}
+	
 	if (audio3D)
 	{
 		switch (audio3DType)
@@ -1474,7 +1478,7 @@ void Player::updateEditorPed() {
 		const std::string modell_n = ID_Spec_Actors[this->modelID];
 		CStreaming::RequestSpecialChar(9, modell_n.c_str(), 0);
 		CStreaming::LoadAllRequestedModels(false);
-		modell = 290 + 10 - 1;
+		modell = 290 + 9 - 1;
 	}
 	this->editorPed = new CCivilianPed(static_cast<ePedType>(4), modell);
 	this->editorPed->SetPosn(this->pos[0], this->pos[1], this->pos[2]);
