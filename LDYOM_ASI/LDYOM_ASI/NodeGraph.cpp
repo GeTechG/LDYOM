@@ -609,7 +609,8 @@ void NodeGraph::render()
 					{
 						sol::optional<std::string> name = lua_script.second["info"]["name"];
 						if (name.value()._Equal("Main nodes")) {
-							int id_node = currentNodeGraphPtr->nodes.empty() ? 0 : (--currentNodeGraphPtr->nodes.end())->first + 100;
+							//int id_node = currentNodeGraphPtr->nodes.empty() ? 0 : (--currentNodeGraphPtr->nodes.end())->first + 100;
+							int id_node = getIdNode();
 							sol::table nodeVarClass = lua_script.second["NodeVariable"];
 							sol::protected_function fNew = nodeVarClass["new"];
 							auto result = fNew(nodeVarClass, id_node, var_id, setter);

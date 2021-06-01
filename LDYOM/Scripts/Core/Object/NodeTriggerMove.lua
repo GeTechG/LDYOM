@@ -22,6 +22,7 @@ function Node:initialize(id)
 		[self.id+5] = BasePin:new(self.id+5,imgui.imnodes.PinType.number, 0, ffi.new("float[1]",1)),
 		[self.id+6] = BasePin:new(self.id+6,imgui.imnodes.PinType.number, 0, ffi.new("float[1]",1)),
 		[self.id+8] = BasePin:new(self.id+8,imgui.imnodes.PinType.void, 1),
+		[self.id+9] = BasePin:new(self.id+9,imgui.imnodes.PinType.boolean, 0, ffi.new("bool[1]",true)),
 	};
 end
 
@@ -88,73 +89,30 @@ function Node:draw()
 	imgui.Dummy(imgui.ImVec2:new(0,10));
 	imgui.imnodes.EndOutputAttribute();
 	
+	imgui.imnodes.BeginInputAttribute(self.id+9);
+	if (self.Pins[self.id+9].link == nil) then
+		imgui.Text(ldyom.langt("truee"));
+	end
+	imgui.imnodes.EndInputAttribute();
+	
 	imgui.imnodes.EndNode();
 	
+	
+	--update to Beta 0.7.2
+	if (self.Pins[self.id+9] == nil) then
+		self.Pins[self.id+9] = BasePin:new(self.id+9,imgui.imnodes.PinType.boolean, 0, ffi.new("bool[1]",true))
+	end
 end
 
 function Node:play(data, mission)
-	addThreadObj(function(data_pack)
-		local data = data_pack[1];
-		local mission = data_pack[2];
-		local node = data_pack[3];
 	
-		local object = node:getPinValue(node.id+2,data,mission)[0];
-		local pos = node:getPinValue(node.id+3,data,mission);
-		local rot = node:getPinValue(node.id+4,data,mission);
-		ldyom.setLastNode(node.id);
-		assert(mission.list_objects[object+1].missionObject,"The object is not yet established or has already disappeared.");
-		
-		local start_time = time_ms();
-		local speed = node:getPinValue(node.id+5,data,mission)[0] / 10;
-		local radius = node:getPinValue(node.id+6,data,mission)[0];
-		local curr_time = 0;
-		local obj = getObjectRef(mission.list_objects[object+1].missionObject);
-		
-		local start_x = ffi.new("float[1]");
-		local start_y = ffi.new("float[1]");
-		local start_z = ffi.new("float[1]");
-		callOpcode(0x01BB, {{obj, "int"}, {start_x,"float*"}, {start_y,"float*"}, {start_z,"float*"}});
-		
-		local start_rot_x = ffi.new("float[1]");
-		local start_rot_y = ffi.new("float[1]");
-		local start_rot_z = ffi.new("float[1]");
-		getOrientationObject(mission.list_objects[object+1].missionObject, start_rot_x, start_rot_y, start_rot_z);
-		local delta = 0;
-		while (ldyom.getMissionStarted()) do
-			
-			if (not mission.list_objects[object+1].missionObject) then
-				break;
-			end
-			
-			local player_x = ffi.new("float[1]");
-			local player_y = ffi.new("float[1]");
-			local player_z = ffi.new("float[1]");
-			callOpcode(0x00A0, {{PLAYER_PED,"ped"},{player_x,"float*"}, {player_y,"float*"}, {player_z,"float*"}});
-			
-			local dist = ffi.new("float[1]");
-			callOpcode(0x050A, {{player_x[0],"float"}, {player_y[0],"float"}, {player_z[0],"float"}, {start_x[0],"float"}, {start_y[0],"float"}, {start_z[0],"float"}, {dist,"float*"}})
-			if dist[0] < radius then
-				delta = delta + speed;
-			else
-				delta = delta - speed;
-			end
-			
-			delta = clamp(delta,0,1);
-			
-			local delta_x = start_x[0]*(1-delta) + pos[0]*delta;
-			local delta_y = start_y[0]*(1-delta) + pos[1]*delta;
-			local delta_z = start_z[0]*(1-delta) + pos[2]*delta;
-			callOpcode(0x01BC,{{obj,"int"}, {delta_x,"float"}, {delta_y,"float"}, {delta_z,"float"}});
-			
-			local delta_rot_x = start_rot_x[0]*(1-delta) + rot[0]*delta;
-			local delta_rot_y = start_rot_y[0]*(1-delta) + rot[1]*delta;
-			local delta_rot_z = start_rot_z[0]*(1-delta) + rot[2]*delta;
-			callOpcode(0x0453, {{obj,"int"}, {delta_rot_x,"float"}, {delta_rot_y,"float"}, {delta_rot_z,"float"}})
-			wait(0);
-		end
-		
-		
-	end, {data,mission,self});
+	local object = self:getPinValue(self.id+2,data,mission)[0];
+	local pos = self:getPinValue(self.id+3,data,mission);
+	local rot = self:getPinValue(self.id+4,data,mission);
+	local speed = self:getPinValue(self.id+5,data,mission)[0] / 10;
+	local radius = self:getPinValue(self.id+6,data,mission)[0];
+	
+	ldyom.triggerMoveObject(self, self.id+9, object, pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], speed, radius, data, mission);
 	
 	self:callOutputLinks(data, mission, self.id+8);
 end

@@ -78,6 +78,7 @@ extern void loadArrayMenu();
 extern bool load_theme;
 extern std::map<int, const char*> namesVars;
 extern void clearScripts();
+extern int current_mission_target;
 
 void fMainMenu()
 {
@@ -227,12 +228,18 @@ void fMainMenu()
 		bStorylines = true;
 	}
 	ImGui::Separator();
+	static int startTarget = 0;
+	ImGui::PushID("target_start");
+	ImGui::SetNextItemWidth(size_b.x);
+	Combo("", startTarget, &namesTargets);
+	ImGui::PopID();
 	name.clear();
 	name.append(ICON_FA_PLAY);
 	name.append(" ");
 	name.append(langt("missionStart"));
 	if (ImGui::Button(name.c_str(), size_b))
 	{
+		current_mission_target = startTarget;
 		bMainMenu = false;
 		// open mission
 		currentMissionPtr->removeEditorEntity();
@@ -605,6 +612,10 @@ void fTargets()
 				name.append(type_targets_name->at(selTarget));
 				currentMissionPtr->list_targets.push_back(new TargetWaitSignal(name.c_str()));
 				break;
+			case 8:
+				name.append(type_targets_name->at(selTarget));
+				currentMissionPtr->list_targets.push_back(new TargetDestroyVehicle(name.c_str()));
+				break;
 			default:
 				break;
 			}
@@ -704,6 +715,15 @@ void fTargets()
 				Combo(langt("colorMarker"), targetPtr->colorBlip, &langMenu["targets_marker_color"]);
 				ImGui::InputText(langt("textTarget"), &targetPtr->text[0], IM_ARRAYSIZE(targetPtr->text));
 				ImGui::InputFloat(langt("timeText"), &targetPtr->textTime);
+				ImGui::Separator();
+				Combo(langt("howToArrive"), targetPtr->onWhat, &langMenu["onWhatCheckpoint"]);
+
+				if (targetPtr->onWhat == 3)
+				{
+					Combo(langt("car"), targetPtr->comeBackVehicle, &namesCars);
+					ImGui::InputText(langt("text"), targetPtr->textComeBackVehicle, 129);
+					Combo(langt("colorMarkerCar"), targetPtr->colorBlipComeBackVehicle, &langMenu["targets_marker_color"]);
+				}
 
 
 				ImGui::SetNextWindowBgAlpha(0.50);
@@ -876,6 +896,7 @@ void fTargets()
 						}
 
 						ToggleButton(langt("movecam"), &targetPtr->moveCam);
+						ToggleButton(langt("widescreen"), &targetPtr->widescreen);
 						ImGui::InputText(langt("text"), targetPtr->text, IM_ARRAYSIZE(targetPtr->text));
 						ImGui::PushItemWidth(-180);
 						ImGui::InputFloat(langt("timecutscene"), &targetPtr->time);
@@ -1313,6 +1334,18 @@ void fTargets()
 					break;
 				}
 				break;
+			}
+		case 8:
+			{
+				TargetDestroyVehicle* targetPtr = static_cast<TargetDestroyVehicle*>(currentMissionPtr->list_targets[currentTarget]);
+				Combo(langt("car"), targetPtr->vehicle, &namesCars);
+				Combo(langt("colorMarker"), targetPtr->colorBlip, &langMenu["targets_marker_color"]);
+				ImGui::InputText(langt("textTarget"), &targetPtr->text[0], IM_ARRAYSIZE(targetPtr->text));
+				ImGui::InputFloat(langt("timeText"), &targetPtr->textTime);
+				ImGui::Text(langt("condition"));
+				ImGui::RadioButton(langt("destroy"), &targetPtr->typeDamage, 0);
+				ImGui::RadioButton(langt("hit"), &targetPtr->typeDamage, 1);
+				ImGui::RadioButton(langt("sunk"), &targetPtr->typeDamage, 2);
 			}
 		default:
 			break;
@@ -2147,7 +2180,7 @@ void fTrains()
 		namesTrains.push_back(currentMissionPtr->list_trains[currentTrain]->name);
 		currentMissionPtr->list_trains[currentMissionPtr->list_trains.size() - 1]->updateEditorTrain();
 	}
-	if (currentMissionPtr->list_trains.size() > 0)
+	if (!currentMissionPtr->list_trains.empty())
 	{
 		ImGui::SameLine();
 
@@ -2390,7 +2423,8 @@ void fObjects()
 		namesObjects.push_back(currentMissionPtr->list_objects[currentObject]->name);
 		currentMissionPtr->list_objects[currentMissionPtr->list_objects.size() - 1]->updateEditorObject();
 	}
-	if (currentMissionPtr->list_objects.size() > 0)
+	
+	if (!currentMissionPtr->list_objects.empty())
 	{
 		ImGui::SameLine();
 
@@ -2512,6 +2546,17 @@ void fObjects()
 			                                       static_cast<float>(objectPtr->rotation[1]),
 			                                       static_cast<float>(objectPtr->rotation[2]));
 		}
+
+		if (ImGui::Button(ICON_FA_BOOKMARK))
+		{
+			ImGui::OpenPopup("objectBookmark");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(ICON_FA_GLOBE_ASIA))
+		{
+			system("explorer https://dev.prineside.com/en/gtasa_samp_model_id/");
+		}
+		ImGui::SameLine();
 		ImGui::InputInt(langt("model"), &objectPtr->modelID);
 		if (ImGui::Button(langt("apply")))
 		{
@@ -2527,8 +2572,38 @@ void fObjects()
 			Combo(langt("dis_after"), objectPtr->endC, &list_tg_m);
 		}
 
-		ImGui::End();
+		//Bookmark
+		if (ImGui::BeginPopup("objectBookmark"))
+		{
+			ImGui::BeginListBox("", ImVec2(100, 100));
+			for (auto it = currentMissionPtr->objectsBookmark.begin(); it != currentMissionPtr->objectsBookmark.end();)
+			{
+				if (ImGui::Button(std::to_string(*it).c_str()))
+				{
+					objectPtr->modelID = *it;
+				}
+				ImGui::SameLine();
+				ImGui::PushID(*it);
+				if (ImGui::Button(ICON_FA_TIMES))
+				{
+					currentMissionPtr->objectsBookmark.erase(it);
+					ImGui::PopID();
+					break;
+				}
+				ImGui::PopID();
+				++it;
+			}
+			ImGui::EndListBox();
+			if (ImGui::Button(langt("add"), ImVec2(ImGui::GetWindowWidth()-10, 0)))
+			{
+				currentMissionPtr->objectsBookmark.insert(objectPtr->modelID);
+			}
 
+			ImGui::EndPopup();
+		}
+
+		ImGui::End();
+		
 		//edit
 		ImGui::SetNextWindowBgAlpha(0.50f);
 		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);

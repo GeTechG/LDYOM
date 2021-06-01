@@ -11,6 +11,7 @@
 #include <ctime>
 #include <boost/serialization/base_object.hpp>
 #include <CTrain.h>
+#include <set>
 
 
 #include "CBmx.h"
@@ -125,27 +126,41 @@ public:
 class Target {
 public:
 	char name[65];
-	unsigned char type;
-	unsigned char targetType;
+	int type;
+	int targetType;
 	virtual ~Target() = default;
 
 	template <typename Archive>
 	void serialize(Archive &ar, const unsigned int version)
 	{
 		ar & name;
-		ar & type;
-		ar & targetType;
+		if (version < 72)
+		{
+			unsigned char buf;
+			ar & buf;
+			type = buf;
+			ar & buf;
+			targetType = buf;
+		} else
+		{
+			ar & type;
+			ar & targetType;
+		}
 	}
 };
 
 class TargetCheckpoint : public Target {
 public:
-	float pos[3];
+	float pos[3]; //72
 	float radius = 2.0f;
 	char text[129] = {};
 	float textTime = 2.0f;
 	int colorBlip = 0;
 	unsigned int indexSphere;
+	int onWhat = 0;
+	int comeBackVehicle = 0;
+	char textComeBackVehicle[129] = {};
+	int colorBlipComeBackVehicle = 0;
 
 	TargetCheckpoint() = default;
 	TargetCheckpoint(const char* name, float x, float y, float z);
@@ -162,6 +177,14 @@ public:
 		ar & textTime;
 		ar & colorBlip;
 		ar & indexSphere;
+
+		if (version >= 72)
+		{
+			ar & onWhat;
+			ar & comeBackVehicle;
+			ar & textComeBackVehicle;
+			ar & colorBlipComeBackVehicle;
+		}
 	}
 };
 
@@ -227,6 +250,7 @@ public:
 	char text[129] = {};
 	float time = 2;
 	bool moveCam = false;
+	bool widescreen = false;
 
 
 	TargetCutscene(const char* name, float x, float y, float z);
@@ -246,6 +270,10 @@ public:
 		ar & text;
 		ar & time;
 		ar & moveCam;
+		if (version >= 72)
+		{
+			ar & widescreen;
+		}
 	}
 };
 
@@ -540,6 +568,33 @@ public:
 	void serialize(Archive & ar, const unsigned int version)
 	{
 		ar & boost::serialization::base_object<Target>(*this);
+	}
+};
+
+class TargetDestroyVehicle : public Target
+{
+public:
+	int vehicle = 0;
+	char text[129] = "";
+	float textTime = 2.0f;
+	int colorBlip = 0;
+	int typeDamage = 0;
+	
+	
+	TargetDestroyVehicle(const char* name);
+	TargetDestroyVehicle() = default;
+	TargetDestroyVehicle(const TargetDestroyVehicle& target);
+
+	template <typename Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & boost::serialization::base_object<Target>(*this);
+
+		ar & vehicle;
+		ar & text;
+		ar & textTime;
+		ar & colorBlip;
+		ar & typeDamage;
 	}
 };
 
@@ -905,6 +960,7 @@ struct Mission {
 	int weather = 0;
 	bool riot = false;
 	Player player = Player(884.6011f, -1221.845f, 16.9766f, 0.0f);
+	std::set<int> objectsBookmark;
 
 	Mission();
 	~Mission();
@@ -939,6 +995,10 @@ struct Mission {
 		ar.template register_type <TargetDialog>();
 		ar.template register_type <TargetMoney>();
 		ar.template register_type <TargetWaitSignal>();
+		if (version >= 72)
+		{
+			ar.template register_type <TargetDestroyVehicle>();
+		}
 		
 		ar & list_targets;
 		ar & list_actors;
@@ -958,6 +1018,11 @@ struct Mission {
 		ar & weather;
 		ar & riot;
 		ar & player;
+		
+		if (version >= 72)
+		{
+			ar & objectsBookmark;
+		}
 	}
 };
 

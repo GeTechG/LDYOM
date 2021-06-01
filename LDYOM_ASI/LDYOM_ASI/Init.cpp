@@ -274,6 +274,10 @@ TargetCheckpoint::TargetCheckpoint(const TargetCheckpoint& target) {
 	strcpy(text, target.text);
 	textTime = target.textTime;
 	colorBlip = target.colorBlip;
+	onWhat = target.onWhat;
+	comeBackVehicle = target.comeBackVehicle;
+	strcpy(textComeBackVehicle, target.textComeBackVehicle);
+	colorBlipComeBackVehicle = target.colorBlipComeBackVehicle;
 }
 
 TargetCar::TargetCar(const char* name) {
@@ -328,6 +332,7 @@ TargetCutscene::TargetCutscene(const TargetCutscene& target) {
 	strcpy(text, target.text);
 	time = target.time;
 	moveCam = target.moveCam;
+	widescreen = target.widescreen;
 }
 
 TargetCountdown::TargetCountdown(const char* name) {
@@ -545,6 +550,22 @@ TargetWaitSignal::TargetWaitSignal(const char* name) {
 TargetWaitSignal::TargetWaitSignal(const TargetWaitSignal& target) {
 	strcpy(name, target.name);
 	type = target.type;
+}
+
+TargetDestroyVehicle::TargetDestroyVehicle(const char* name) {
+	strcpy(this->name, name);
+	this->type = 8;
+}
+
+TargetDestroyVehicle::TargetDestroyVehicle(const TargetDestroyVehicle& target) {
+	strcpy(name, target.name);
+	type = target.type;
+
+	vehicle = target.vehicle;
+	strcpy(text, target.text);
+	textTime = target.textTime;
+	colorBlip = target.colorBlip;
+	typeDamage = target.typeDamage;
 }
 
 Car::Car(const char* name, float x, float y, float z, float angle, int lastTarget) {
@@ -1476,7 +1497,7 @@ void Player::updateEditorPed() {
 	}
 	else if (this->modelType == 1) {
 		const std::string modell_n = ID_Spec_Actors[this->modelID];
-		CStreaming::RequestSpecialChar(9, modell_n.c_str(), 0);
+		CStreaming::RequestSpecialChar(8, modell_n.c_str(), 0);
 		CStreaming::LoadAllRequestedModels(false);
 		modell = 290 + 9 - 1;
 	}

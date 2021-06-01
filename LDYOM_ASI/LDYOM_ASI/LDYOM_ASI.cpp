@@ -3,6 +3,7 @@
 
 #include "NodeGraph.h"
 #include "ScriptManager.h"
+#include <CTimer.h>
 
 extern bool mission_started;
 
@@ -137,6 +138,7 @@ void loadArrayMenu()
 	langMenu["speed_walk_to_car"] = parseJsonArray<std::string>(langt("speed_walk_to_car"));
 	langMenu["place_in_car"] = parseJsonArray<std::string>(langt("place_in_car"));
 	langMenu["open_close"] = parseJsonArray<std::string>(langt("open_close"));
+	langMenu["onWhatCheckpoint"] = parseJsonArray<std::string>(langt("onWhatCheckpoint"));
 }
 
 void createDirsLDYOM()
@@ -193,6 +195,8 @@ void foo()
 			CHud::m_Wants_To_Draw_Hud = false;
 
 			TargetCutscene* targetPtr = static_cast<TargetCutscene*>(currentMissionPtr->list_targets[currentTarget]);
+			Command<Commands::SWITCH_WIDESCREEN>((int)targetPtr->widescreen);
+
 			while (editmodeCamera)
 			{
 				this_coro::wait(0ms);
@@ -297,6 +301,7 @@ void foo()
 					bTargets = true;
 					CHud::bScriptDontDisplayRadar = false;
 					CHud::m_Wants_To_Draw_Hud = true;
+					Command<Commands::SWITCH_WIDESCREEN>(0);
 				}
 			}
 		}
@@ -555,6 +560,11 @@ void foo()
 	}
 }
 
+//extern "C" __declspec(dllexport) void testExport()
+//{
+//	CHud::SetHelpMessage("ldyom exported", true, true, true);
+//}
+
 void clearScripts()
 {
 	lang_file.clear();
@@ -677,20 +687,20 @@ public:
 					CHud::DrawHelpText();
 				}
 
-				if (KeyPressed(0x11)) {
-					if (KeyJustPressed(0x53)) {
-						if (fastdata_pack != -1) {
-							if (storylineMode)
-							{
-								Manager::SaveStoryline(fastdata_pack);
-								CHud::SetHelpMessage("Saved!", false, false, false);
-							} else if (fastdata_miss != -1)
-							{
-								Manager::SaveMission(fastdata_pack, fastdata_miss);
-								Manager::SaveListMission(fastdata_pack);
-								CHud::SetHelpMessage("Saved!", false, false, false);
-							}
+				static unsigned saveKeyPressTime = 0;
+				if (KeyPressed(0x11) && KeyJustPressed(0x53) && CTimer::m_snTimeInMilliseconds - saveKeyPressTime > 1500) {
+					if (fastdata_pack != -1) {
+						if (storylineMode)
+						{
+							Manager::SaveStoryline(fastdata_pack);
+							CHud::SetHelpMessage("Saved!", false, false, false);
+						} else if (fastdata_miss != -1)
+						{
+							Manager::SaveMission(fastdata_pack, fastdata_miss);
+							Manager::SaveListMission(fastdata_pack);
+							CHud::SetHelpMessage("Saved!", false, false, false);
 						}
+						saveKeyPressTime = CTimer::m_snTimeInMilliseconds;
 					}
 				}
 				

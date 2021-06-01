@@ -46,8 +46,8 @@
     <IntDir>$(ProjectDir).obj\GTASA\Release\</IntDir>
     <TargetName>LDYOM_ASI.SA</TargetName>
     <TargetExt>.asi</TargetExt>
-    <IncludePath>C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\include;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\inc;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\LuaBridge\Source;C:\local\boost_1_74_0;$(IncludePath);$(DIRECTX9_SDK_DIR)\Include\.;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master\examples\application\include;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\ImGUI</IncludePath>
-    <LibraryPath>C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\lib;C:\local\boost_1_74_0\lib32-msvc-14.1;$(LibraryPath);$(DIRECTX9_SDK_DIR)\Lib\x86\</LibraryPath>
+    <IncludePath>C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\include;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\luajit\inc;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\LuaBridge\Source;C:\local\boost_1_74_0;$(IncludePath);$(DIRECTX9_SDK_DIR)\Include\.;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master\examples\application\include;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\ImGUI</IncludePath>
+    <LibraryPath>C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\luajit\lib;C:\local\boost_1_74_0\lib32-msvc-14.1;$(LibraryPath);$(DIRECTX9_SDK_DIR)\Lib\x86\</LibraryPath>
     <SourcePath>C:\Users\Sergey\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GTASA zDebug|Win32'">
@@ -55,9 +55,9 @@
     <IntDir>$(ProjectDir).obj\GTASA\Debug\</IntDir>
     <TargetName>LDYOM_ASI.SA</TargetName>
     <TargetExt>.asi</TargetExt>
-    <IncludePath>C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\include;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\inc;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\LuaBridge\Source;C:\local\boost_1_74_0;$(IncludePath);$(DIRECTX9_SDK_DIR)\Include\.;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master\examples\application\include;C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\ImGUI</IncludePath>
-    <LibraryPath>C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\luajit\lib;C:\local\boost_1_74_0\lib32-msvc-14.1;$(LibraryPath);$(DIRECTX9_SDK_DIR)\Lib\x86\</LibraryPath>
-    <SourcePath>C:\Users\User\Documents\source\repos\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;$(SourcePath)</SourcePath>
+    <IncludePath>C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\include;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\luajit\inc;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\LuaBridge\Source;C:\local\boost_1_74_0;$(IncludePath);$(DIRECTX9_SDK_DIR)\Include\.;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\imgui-node-editor-master\examples\application\include;C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\ImGUI</IncludePath>
+    <LibraryPath>C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\luajit\lib;C:\local\boost_1_74_0\lib32-msvc-14.1;$(LibraryPath);$(DIRECTX9_SDK_DIR)\Lib\x86\</LibraryPath>
+    <SourcePath>C:\Users\User\Documents\LDYOM\LDYOM\LDYOM_ASI\LDYOM_ASI\LuaJIT-2.0.5\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GTASA Release|Win32'">
     <ClCompile>
@@ -110,6 +110,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="carSelector.cpp" />
+    <ClCompile Include="CLEO_API.cpp" />
     <ClCompile Include="gzip\adler32.c" />
     <ClCompile Include="gzip\compress.c" />
     <ClCompile Include="gzip\crc32.c" />
@@ -142,6 +143,7 @@
     <ClCompile Include="libs\ScriptCommands.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="MissionPlayer.cpp" />
+    <ClCompile Include="NodeFunctions.cpp" />
     <ClCompile Include="NodeGraph.cpp" />
     <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="vehicle_renderer.cpp" />
@@ -192,6 +194,7 @@
     <ClInclude Include="libs\singleton.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="MissionPlayer.h" />
+    <ClInclude Include="NodeFunctions.h" />
     <ClInclude Include="NodeGraph.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="resource.h" />

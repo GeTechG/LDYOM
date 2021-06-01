@@ -64,6 +64,11 @@ bool getMissionStarted()
 	return mission_started;
 }
 
+void setMissionStarted(bool value)
+{
+	mission_started = value;
+}
+
 void failMission()
 {
 	unsigned int textPtr;
@@ -109,6 +114,7 @@ void testDefeat()
 }
 
 int current_mission_target = 0;
+bool break_target = false;
 
 void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clearSelf)
 {
@@ -143,7 +149,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 	}
 	else if (mission->player.modelType == 1) {
 		std::string modell_n = ID_Spec_Actors[mission->player.modelID];
-		CStreaming::RequestSpecialChar(9, modell_n.c_str(), 0);
+		CStreaming::RequestSpecialChar(8, modell_n.c_str(), 0);
 		CStreaming::LoadAllRequestedModels(false);
 		modell = 290 + 9 - 1;
 	}
@@ -188,7 +194,6 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 			}
 		}
 	}
-	current_mission_target = 0;
 
 	//load audio
 	for (auto audio : mission->list_audios)
@@ -233,9 +238,6 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 			}
 		}
 	}
-	
-	for (auto node1 : graph->nodes)
-		node1.second["runnable"] = false;
 
 	
 	unsigned char skip = 1;
@@ -644,6 +646,20 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 					}
 				}
 			}
+			for (auto node : graph->nodes)
+			{
+				std::string name = NodeGraph::getNodeIcon("loop") + " " + langt("CoreNodeTargetCycle");
+				sol::optional<std::string> node_name = node.second["class"]["static"]["name"];
+				if (node_name.has_value())
+				{
+					if (node_name.value()._Equal(name))
+					{
+						sol::object value = node.second["Pins"][node.first + 1]["value"];
+						if ((*(int*)value.pointer()) == current_mission_target)
+							instance.add_to_queue(std::bind(NodeGraph::callNode, node.second, graph, mission));
+					}
+				}
+			}
 			
 			if (!loadedNodes)
 			{
@@ -679,11 +695,103 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 						}
 					}
 					unsigned sphere = CTheScripts::AddScriptSphere(600, CVector(targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2]), targetPtr->radius);
-					while (!Command<Commands::LOCATE_CHAR_ANY_MEANS_3D>(playerPed, targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2], targetPtr->radius, targetPtr->radius, targetPtr->radius, false) && mission_started)
+					switch (targetPtr->onWhat)
 					{
-						this_coro::wait(0ms);
-						CTheScripts::DrawScriptSpheres();
+					case 0:
+						{
+							while (!Command<Commands::LOCATE_CHAR_ANY_MEANS_3D>(playerPed, targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2], targetPtr->radius, targetPtr->radius, targetPtr->radius, false) && mission_started)
+							{
+								if (break_target)
+								{
+									break_target = false;
+									break;
+								}
+								this_coro::wait(0ms);
+								CTheScripts::DrawScriptSpheres();
+							}
+							break;
+						}
+					case 1:
+						{
+							while (!Command<Commands::LOCATE_CHAR_ON_FOOT_3D>(playerPed, targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2], targetPtr->radius, targetPtr->radius, targetPtr->radius, false) && mission_started)
+							{
+								if (break_target)
+								{
+									break_target = false;
+									break;
+								}
+								this_coro::wait(0ms);
+								CTheScripts::DrawScriptSpheres();
+							}
+							break;
+						}
+					case 2:
+						{
+							while (!Command<Commands::LOCATE_CHAR_IN_CAR_3D>(playerPed, targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2], targetPtr->radius, targetPtr->radius, targetPtr->radius, false) && mission_started)
+							{
+								if (break_target)
+								{
+									break_target = false;
+									break;
+								}
+								this_coro::wait(0ms);
+								CTheScripts::DrawScriptSpheres();
+							}
+							break;
+						}
+					case 3:
+						{
+							while (mission_started)
+							{
+								if (break_target)
+								{
+									break_target = false;
+									break;
+								}
+								if (!Command<Commands::IS_CHAR_IN_CAR>(playerPed, mission->list_cars[targetPtr->comeBackVehicle]->missionCar))
+								{
+									std::string str_textComeBack = targetPtr->textComeBackVehicle;
+									str_textComeBack = is_utf8(str_textComeBack.c_str()) ? UTF8_to_CP1251(str_textComeBack) : str_textComeBack;
+									GXTEncode(str_textComeBack);
+									CMessages::AddMessage(const_cast<char*>(str_textComeBack.c_str()), 2000.0f, 0, false);
+									int blipComeBack = NULL;
+									if (targetPtr->colorBlipComeBackVehicle > 0)
+									{
+										Command<Commands::ADD_BLIP_FOR_CAR>(mission->list_cars[targetPtr->comeBackVehicle]->missionCar, &blipComeBack);
+										if (targetPtr->colorBlipComeBackVehicle != 6)
+										{
+											CRadar::ChangeBlipColour(blipComeBack, targetPtr->colorBlipComeBackVehicle - 1);
+										}
+										else
+										{
+											CRadar::SetBlipFriendly(blipComeBack, 1);
+										}
+									}
+									while (!Command<Commands::IS_CHAR_IN_CAR>(playerPed, mission->list_cars[targetPtr->comeBackVehicle]->missionCar) && mission_started)
+									{
+										if (break_target)
+										{
+											break;
+										}
+										this_coro::wait(0ms);
+									}
+									if (blipComeBack != NULL)
+									{
+										CRadar::ClearBlip(blipComeBack);
+									}
+									CMessages::ClearMessages(true);
+								}
+								CTheScripts::DrawScriptSpheres();
+								if (Command<Commands::LOCATE_CHAR_IN_CAR_3D>(playerPed, targetPtr->pos[0], targetPtr->pos[1], targetPtr->pos[2], targetPtr->radius, targetPtr->radius, targetPtr->radius, false))
+								{
+									break;
+								}
+								this_coro::wait(0ms);
+							}
+							break;
+						}
 					}
+						
 					CTheScripts::RemoveScriptSphere(sphere);
 					if (blip != NULL)
 					{
@@ -713,6 +821,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 					}
 					while (!mission->list_cars[targetPtr->car]->missionCar->IsDriver(playerPed) && mission_started)
 					{
+						if (break_target)
+						{
+							break_target = false;
+							break;
+						}
 						this_coro::wait(0ms);
 					}
 					if (blip != NULL)
@@ -757,6 +870,10 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										{
 											while (!CTheScripts::pActiveScripts->IsPedDead(actor->missionPed) && mission_started)
 											{
+												if (break_target)
+												{
+													break;
+												}
 												this_coro::wait(0);
 											}
 											CRadar::ClearBlip(blip);
@@ -768,6 +885,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 						int count_dead = 0;
 						while (count_dead < group_actors.size() && mission_started)
 						{
+							if (break_target)
+							{
+								break_target = false;
+								break;
+							}
 							this_coro::wait(0ms);
 							count_dead = 0;
 							for (auto* actor : group_actors)
@@ -804,12 +926,22 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 						{
 							while (!(mission->list_actors[targetPtr->actor]->missionPed->m_pLastEntityDamage == playerPed) && mission_started)
 							{
+								if (break_target)
+								{
+									break_target = false;
+									break;
+								}
 								this_coro::wait(0ms);
 							}
 						}
 						else {
 							while (!CTheScripts::pActiveScripts->IsPedDead(mission->list_actors[targetPtr->actor]->missionPed) && mission_started)
 							{
+								if (break_target)
+								{
+									break_target = false;
+									break;
+								}
 								this_coro::wait(0ms);
 							}
 						}
@@ -829,7 +961,8 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 
 							CHud::bScriptDontDisplayRadar = true;
 							CHud::m_Wants_To_Draw_Hud = false;
-							TheCamera.m_bWideScreenOn = true;
+							Command<Commands::SWITCH_WIDESCREEN>((int)targetPtr->widescreen);
+								
 
 							std::function start_cutscene = [&skip]() {
 								TheCamera.Fade(0.5f, 0);
@@ -964,6 +1097,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 
 											while (timer < targetPtr->time * 1000 * skip && mission_started)
 											{
+												if (break_target)
+												{
+													break_target = false;
+													break;
+												}
 												Command<Commands::POINT_CAMERA_AT_POINT>(pos.x, pos.y, pos.z, 1);
 												timer += clock() - last_time;
 												last_time = clock();
@@ -976,6 +1114,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 
 											while (timer < targetPtr->time * 1000 * skip && mission_started)
 											{
+												if (break_target)
+												{
+													break_target = false;
+													break;
+												}
 												Command<Commands::POINT_CAMERA_AT_POINT>(pos.x, pos.y, pos.z, 2);
 												timer += clock() - last_time;
 												last_time = clock();
@@ -1028,6 +1171,12 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& curr_pos = mission->list_actors[targetPtr->tiedID]->missionPed->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
+										
 										float rx = curr_pos.x + (xx - x1), ry = curr_pos.y + (xy - y1), rz = curr_pos.z + (xz - z1);
 
 										rx = rx + 2 * sin(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
@@ -1068,6 +1217,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& actor_pos = mission->list_actors[targetPtr->followID]->missionPed->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1102,6 +1256,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& car_pos = mission->list_cars[targetPtr->followID]->missionCar->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1136,6 +1295,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& obj_pos = mission->list_objects[targetPtr->followID]->missionObject->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1170,6 +1334,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& actor_pos = playerPed->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1209,6 +1378,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& curr_pos = mission->list_cars[targetPtr->tiedID]->missionCar->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										float rx = curr_pos.x + (xx - x1), ry = curr_pos.y + (xy - y1), rz = curr_pos.z + (xz - z1);
 
 										rx = rx + 2 * sin(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
@@ -1249,6 +1423,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& actor_pos = mission->list_actors[targetPtr->followID]->missionPed->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1283,6 +1462,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& car_pos = mission->list_cars[targetPtr->followID]->missionCar->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1317,6 +1501,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& obj_pos = mission->list_objects[targetPtr->followID]->missionObject->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1351,6 +1540,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& actor_pos = playerPed->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1390,6 +1584,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										CVector& curr_pos = mission->list_objects[targetPtr->tiedID]->missionObject->GetPosition();
 										while (timer < targetPtr->time * 1000 * skip && mission_started)
 										{
+											if (break_target)
+											{
+												break_target = false;
+												break;
+											}
 											float rx = curr_pos.x + (xx - x1), ry = curr_pos.y + (xy - y1), rz = curr_pos.z + (xz - z1);
 
 											rx = rx + 2 * sin(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
@@ -1430,6 +1629,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										CVector& actor_pos = mission->list_actors[targetPtr->followID]->missionPed->GetPosition();
 										while (timer < targetPtr->time * 1000 * skip && mission_started)
 										{
+											if (break_target)
+											{
+												break_target = false;
+												break;
+											}
 											if (targetPtr->moveCam) {
 												Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1464,6 +1668,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										CVector& car_pos = mission->list_cars[targetPtr->followID]->missionCar->GetPosition();
 										while (timer < targetPtr->time * 1000 * skip && mission_started)
 										{
+											if (break_target)
+											{
+												break_target = false;
+												break;
+											}
 											if (targetPtr->moveCam) {
 												Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1498,6 +1707,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										CVector& obj_pos = mission->list_objects[targetPtr->followID]->missionObject->GetPosition();
 										while (timer < targetPtr->time * 1000 * skip && mission_started)
 										{
+											if (break_target)
+											{
+												break_target = false;
+												break;
+											}
 											if (targetPtr->moveCam) {
 												Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1532,6 +1746,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										CVector& actor_pos = mission->list_actors[targetPtr->followID]->missionPed->GetPosition();
 										while (timer < targetPtr->time * 1000 * skip && mission_started)
 										{
+											if (break_target)
+											{
+												break_target = false;
+												break;
+											}
 											if (targetPtr->moveCam) {
 												Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 												Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1571,6 +1790,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& curr_pos = playerPed->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										float rx = curr_pos.x + (xx - x1), ry = curr_pos.y + (xy - y1), rz = curr_pos.z + (xz - z1);
 
 										rx = rx + 2 * sin(static_cast<float>(rad(rxy))) * sin(static_cast<float>(rad(rxx)));
@@ -1611,6 +1835,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& actor_pos = mission->list_actors[targetPtr->followID]->missionPed->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1645,6 +1874,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& car_pos = mission->list_cars[targetPtr->followID]->missionCar->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1679,6 +1913,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& obj_pos = mission->list_objects[targetPtr->followID]->missionObject->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1713,6 +1952,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									CVector& actor_pos = playerPed->GetPosition();
 									while (timer < targetPtr->time * 1000 * skip && mission_started)
 									{
+										if (break_target)
+										{
+											break_target = false;
+											break;
+										}
 										if (targetPtr->moveCam) {
 											Command<Commands::SET_INTERPOLATION_PARAMETERS>(0.0f, (int)(targetPtr->time * 1000));
 											Command<Commands::SET_FIXED_CAMERA_POSITION>(curr_pos.x + (xx - x1), curr_pos.y + (xy - y1), curr_pos.z + (xz - z1), 0, 0, 0);
@@ -1744,7 +1988,6 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 								this_coro::wait(0.5s);
 								CHud::bScriptDontDisplayRadar = false;
 								CHud::m_Wants_To_Draw_Hud = true;
-								TheCamera.m_bWideScreenOn = false;
 								TheCamera.RestoreWithJumpCut();
 								TheCamera.Fade(0.5f, 1);
 								this_coro::wait(0.5s);
@@ -1762,6 +2005,8 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 									endCutscene();
 								}
 							}
+
+							Command<Commands::SWITCH_WIDESCREEN>(0);
 								
 							break;
 						}
@@ -1847,6 +2092,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 
 						while (!Command<Commands::IS_CHAR_TOUCHING_OBJECT>(playerPed,mission->list_objects[targetPtr->object]->missionObject) && mission_started)
 						{
+							if (break_target)
+							{
+								break_target = false;
+								break;
+							}
 							this_coro::wait(0ms);
 						}
 
@@ -1854,6 +2104,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 					case 1:
 						while (mission->list_objects[targetPtr->object]->missionObject->m_nLastWeaponDamage == 255 && mission_started)
 						{
+							if (break_target)
+							{
+								break_target = false;
+								break;
+							}
 							this_coro::wait(0ms);
 						}
 						mission->list_objects[targetPtr->object]->missionObject->m_nLastWeaponDamage = 255;
@@ -1862,6 +2117,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 
 						while (!Command<Commands::HAS_OBJECT_BEEN_PHOTOGRAPHED>(mission->list_objects[targetPtr->object]->missionObject) && mission_started)
 						{
+							if (break_target)
+							{
+								break_target = false;
+								break;
+							}
 							this_coro::wait(0ms);
 						}
 
@@ -1870,6 +2130,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 
 						while (!Command<Commands::HAS_OBJECT_BEEN_DAMAGED_BY_WEAPON>(mission->list_objects[targetPtr->object]->missionObject,targetPtr->weapon) && mission_started)
 						{
+							if (break_target)
+							{
+								break_target = false;
+								break;
+							}
 							this_coro::wait(0ms);
 						}
 
@@ -1905,6 +2170,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 					}
 					while (!Command<Commands::HAS_PICKUP_BEEN_COLLECTED>(mission->list_pickups[targetPtr->pickup]->missionPickup) && mission_started)
 					{
+						if (break_target)
+						{
+							break_target = false;
+							break;
+						}
 						this_coro::wait(0ms);
 					}
 					if (blip != NULL)
@@ -2026,6 +2296,11 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 
 							for (auto dialog : targetPtr->dialogs)
 							{
+								if (break_target)
+								{
+									break_target = false;
+									break;
+								}
 								std::string str_text = dialog.text;
 								str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
 								GXTEncode(str_text);
@@ -2062,10 +2337,64 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 				case 7: {
 					while (!nodeSignal && mission_started)
 					{
+						if (break_target)
+						{
+							break_target = false;
+							break;
+						}
 						this_coro::wait(0ms);
 					}
 					nodeSignal = false;
 				}
+				case 8:
+					{
+						TargetDestroyVehicle* targetPtr = static_cast<TargetDestroyVehicle*>(mission->list_targets[current_mission_target]);
+
+						std::string str_text = targetPtr->text;
+						str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
+						GXTEncode(str_text);
+						CMessages::AddMessage(const_cast<char*>(str_text.c_str()), targetPtr->textTime*1000.0f, 0, false);
+						int blip = NULL;
+						if (targetPtr->colorBlip > 0)
+						{
+							Command<Commands::ADD_BLIP_FOR_CAR>(mission->list_cars[targetPtr->vehicle]->missionCar, &blip);
+							if (targetPtr->colorBlip != 6)
+							{
+								CRadar::ChangeBlipColour(blip, targetPtr->colorBlip - 1);
+							}
+							else
+							{
+								CRadar::SetBlipFriendly(blip, 1);
+							}
+						}
+						while (mission_started)
+						{
+							if (break_target)
+							{
+								break_target = false;
+								break;
+							}
+							if (Command<Commands::IS_CAR_DEAD>(mission->list_cars[targetPtr->vehicle]->missionCar) && targetPtr->typeDamage == 0)
+							{
+								break;
+							}
+							if (Command<Commands::IS_CAR_VISIBLY_DAMAGED>(mission->list_cars[targetPtr->vehicle]->missionCar) && targetPtr->typeDamage == 1)
+							{
+								break;
+							}
+							if (Command<Commands::IS_CAR_IN_WATER>(mission->list_cars[targetPtr->vehicle]->missionCar) && targetPtr->typeDamage == 2)
+							{
+								break;
+							}
+							this_coro::wait(0);
+						}
+						if (blip != NULL)
+						{
+							CRadar::ClearBlip(blip);
+						}
+						CMessages::ClearMessages(true);
+						break;
+					}
 			}
 
 			for (int actor_targ : arr_target_actor[current_mission_target].second)
@@ -2345,6 +2674,8 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 			}
 			
 			current_mission_target++;
+			
+			this_coro::wait(0);
 		}
 	}
 
@@ -2400,6 +2731,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		Command<Commands::SET_CAR_DENSITY_MULTIPLIER>(0.0f);
 		TheCamera.Restore();
 		TheCamera.LerpFOV(80.0f, 70.0f, 0.1f, false);
+		Command<Commands::SWITCH_WIDESCREEN>(0);
 		mission->updateEditorEntity();
 	}
 }

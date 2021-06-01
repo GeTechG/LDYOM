@@ -44,6 +44,8 @@ function main()
 	ldyom.langMenu["CoreCalcParam"] = ldyom.parseJsonArray(ldyom.langt("CoreCalcParam"));
 	ldyom.langMenu["CoreTypeMovingObject"] = ldyom.parseJsonArray(ldyom.langt("CoreTypeMovingObject"));
 	ldyom.langMenu["cameraModes"] = ldyom.parseJsonArray(ldyom.langt("cameraModes"));
+	ldyom.langMenu["compaingTypes"] = ldyom.parseJsonArray(ldyom.langt("compaingTypes"));
+	ldyom.langMenu["typeLocate"] = ldyom.parseJsonArray(ldyom.langt("typeLocate"));
 	
 	callOpcode(0x0ADF,{{"HENAA","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HENAA"))),"string"}});
 	callOpcode(0x0ADF,{{"HVIEW","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HVIEW"))),"string"}});
@@ -52,12 +54,16 @@ function main()
 	require "LDYOM.Scripts.Core.VariableNode"
 	
 	require "LDYOM.Scripts.Core.Main.NodeBranch"
+	require "LDYOM.Scripts.Core.Main.NodeBoolInvert"
 	require "LDYOM.Scripts.Core.Main.NodeStart"
+	require "LDYOM.Scripts.Core.Main.NodeCurrentMissionComplete"
 	require "LDYOM.Scripts.Core.Main.NodeMainCycle"
 	require "LDYOM.Scripts.Core.Main.NodePrintLog"
 	require "LDYOM.Scripts.Core.Main.NodeNumberToString"
 	require "LDYOM.Scripts.Core.Main.NodeBoolToString"
 	require "LDYOM.Scripts.Core.Main.NodeWaitUntil"
+	require "LDYOM.Scripts.Core.Main.NodeComparingNumber"
+	require "LDYOM.Scripts.Core.Main.NodeComparingString"
 	
 	require "LDYOM.Scripts.Core.Math.NodeCalc"
 	
@@ -66,6 +72,7 @@ function main()
 	require "LDYOM.Scripts.Core.Targets.NodeStartedTarg"
 	require "LDYOM.Scripts.Core.Targets.NodeEndedTarg"
 	require "LDYOM.Scripts.Core.Targets.NodeSetTarg"
+	require "LDYOM.Scripts.Core.Targets.NodeTargetCycle"
 	
 	require "LDYOM.Scripts.Core.Storyline.NodeMissionComplete"
 	require "LDYOM.Scripts.Core.Storyline.NodeGotoMission"
@@ -139,8 +146,12 @@ function main()
 	require "LDYOM.Scripts.Core.Ped.NodeGetPosChar"
 	require "LDYOM.Scripts.Core.Ped.NodeSetPosChar"
 	require "LDYOM.Scripts.Core.Ped.NodeIsInArea"
+	require "LDYOM.Scripts.Core.Ped.NodePedLocateInCoord"
+	require "LDYOM.Scripts.Core.Ped.NodePedLocateInPed"
 	require "LDYOM.Scripts.Core.Ped.NodeIsPedInVehicle"
 	require "LDYOM.Scripts.Core.Ped.NodeIsPedInVehicleModel"
+	require "LDYOM.Scripts.Core.Ped.NodeIsPedDead"
+	require "LDYOM.Scripts.Core.Ped.NodeIsPedInZone"
 	
 	require "LDYOM.Scripts.Core.Vehicle.NodeOpenDoors"
 	require "LDYOM.Scripts.Core.Vehicle.NodeLockVehicle"
@@ -166,6 +177,7 @@ function main()
 	require "LDYOM.Scripts.Core.Camera.NodeSetCinemaCamera"
 	require "LDYOM.Scripts.Core.Camera.NodeSetDrawCrosshair"
 	require "LDYOM.Scripts.Core.Camera.NodeSetPhotocameraMode"
+	require "LDYOM.Scripts.Core.Camera.NodeSetWidescreen"
 	require "LDYOM.Scripts.Core.Camera.NodeShakeSimulation"
 	
 	print("Core nodes loaded")
