@@ -990,8 +990,9 @@ void Object::updateEditorObject() {
 	CStreaming::RemoveAllUnusedModels();
 	editorObject->SetPosn(pos[0], pos[1], pos[2]);
 	editorObject->SetOrientation(rad(rotation[0]), rad(rotation[1]), rad(rotation[2]));
-	editorObject->m_nObjectType = eObjectType::OBJECT_MISSION;
 	CWorld::Add(editorObject);
+	Command<0x0550>(editorObject, 1);
+	editorObject->m_nObjectType = eObjectType::OBJECT_MISSION;
 	Command<Commands::SET_OBJECT_DYNAMIC>(editorObject, 0);
 }
 

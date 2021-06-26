@@ -535,6 +535,7 @@ void NodeGraph::render()
 		for (auto categories : map_nodes_class)
 		{
 			std::string nameC = langt(categories.first);
+			ImGui::SetNextWindowSize(ImVec2(0, 200));
 			if (ImGui::BeginMenu(nameC.empty() ? categories.first.c_str() : nameC.c_str()))
 			{
 				for (auto node_class : categories.second)

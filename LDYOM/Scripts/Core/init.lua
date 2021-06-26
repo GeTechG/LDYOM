@@ -106,6 +106,13 @@ function main()
 	require "LDYOM.Scripts.Core.Object.NodeTriggerMove"
 	require "LDYOM.Scripts.Core.Object.NodeGetPosObject"
 	require "LDYOM.Scripts.Core.Object.NodeSlideObject"
+	require "LDYOM.Scripts.Core.Object.NodeObjectIsOnScreen"
+	require "LDYOM.Scripts.Core.Object.NodeObjectHasBeenDamaged"
+	require "LDYOM.Scripts.Core.Object.NodeObjectIsInWater"
+	require "LDYOM.Scripts.Core.Object.NodeIsObjectInArea"
+	require "LDYOM.Scripts.Core.Object.NodeObjectHasBeenPhotographed"
+	require "LDYOM.Scripts.Core.Object.NodeObjectHasBeenDamagedByWeapon"
+	require "LDYOM.Scripts.Core.Object.NodeObjectLocateInCoord"
 	
 	require "LDYOM.Scripts.Core.Particle.NodeParticleToHandle"
 	require "LDYOM.Scripts.Core.Particle.NodeShowParticle"
@@ -141,10 +148,14 @@ function main()
 	require "LDYOM.Scripts.Core.Ped.NodePedEnterCar"
 	require "LDYOM.Scripts.Core.Ped.NodePedGotoPed"
 	require "LDYOM.Scripts.Core.Ped.NodePedGiveWeapon"
+	require "LDYOM.Scripts.Core.Ped.NodePedAddAmmo"
 	require "LDYOM.Scripts.Core.Ped.NodePedTakeWeapons"
 	require "LDYOM.Scripts.Core.Ped.NodePedChangeSkin"
 	require "LDYOM.Scripts.Core.Ped.NodeGetPosChar"
 	require "LDYOM.Scripts.Core.Ped.NodeSetPosChar"
+	require "LDYOM.Scripts.Core.Ped.NodePedSetBleeding"
+	require "LDYOM.Scripts.Core.Ped.NodePedSetMoney"
+	require "LDYOM.Scripts.Core.Ped.NodePedSetIsChrisCriminal"
 	require "LDYOM.Scripts.Core.Ped.NodeIsInArea"
 	require "LDYOM.Scripts.Core.Ped.NodePedLocateInCoord"
 	require "LDYOM.Scripts.Core.Ped.NodePedLocateInPed"
@@ -152,6 +163,10 @@ function main()
 	require "LDYOM.Scripts.Core.Ped.NodeIsPedInVehicleModel"
 	require "LDYOM.Scripts.Core.Ped.NodeIsPedDead"
 	require "LDYOM.Scripts.Core.Ped.NodeIsPedInZone"
+	require "LDYOM.Scripts.Core.Ped.NodePedTouchingObjectOnFoot"
+	require "LDYOM.Scripts.Core.Ped.NodePedIsOnScreen"
+	require "LDYOM.Scripts.Core.Ped.NodePedIsShooting"
+	require "LDYOM.Scripts.Core.Ped.NodePedExplodeHead"
 	
 	require "LDYOM.Scripts.Core.Vehicle.NodeOpenDoors"
 	require "LDYOM.Scripts.Core.Vehicle.NodeLockVehicle"
@@ -179,6 +194,8 @@ function main()
 	require "LDYOM.Scripts.Core.Camera.NodeSetPhotocameraMode"
 	require "LDYOM.Scripts.Core.Camera.NodeSetWidescreen"
 	require "LDYOM.Scripts.Core.Camera.NodeShakeSimulation"
+	
+	require "LDYOM.Scripts.Core.World.NodeIsAreaOccupied"
 	
 	print("Core nodes loaded")
 end
