@@ -46,6 +46,7 @@ function main()
 	ldyom.langMenu["cameraModes"] = ldyom.parseJsonArray(ldyom.langt("cameraModes"));
 	ldyom.langMenu["compaingTypes"] = ldyom.parseJsonArray(ldyom.langt("compaingTypes"));
 	ldyom.langMenu["typeLocate"] = ldyom.parseJsonArray(ldyom.langt("typeLocate"));
+	ldyom.langMenu["CoreTurretDirection"] = ldyom.parseJsonArray(ldyom.langt("CoreTurretDirection"));
 	
 	callOpcode(0x0ADF,{{"HENAA","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HENAA"))),"string"}});
 	callOpcode(0x0ADF,{{"HVIEW","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HVIEW"))),"string"}});
@@ -156,6 +157,10 @@ function main()
 	require "LDYOM.Scripts.Core.Ped.NodePedSetBleeding"
 	require "LDYOM.Scripts.Core.Ped.NodePedSetMoney"
 	require "LDYOM.Scripts.Core.Ped.NodePedSetIsChrisCriminal"
+	require "LDYOM.Scripts.Core.Ped.NodePedTurretModeCar"
+	require "LDYOM.Scripts.Core.Ped.NodePedTurretModeObject"
+	require "LDYOM.Scripts.Core.Ped.NodePedTurretModeOff"
+	require "LDYOM.Scripts.Core.Ped.NodePedGetCurrentWeapon"
 	require "LDYOM.Scripts.Core.Ped.NodeIsInArea"
 	require "LDYOM.Scripts.Core.Ped.NodePedLocateInCoord"
 	require "LDYOM.Scripts.Core.Ped.NodePedLocateInPed"
@@ -167,6 +172,12 @@ function main()
 	require "LDYOM.Scripts.Core.Ped.NodePedIsOnScreen"
 	require "LDYOM.Scripts.Core.Ped.NodePedIsShooting"
 	require "LDYOM.Scripts.Core.Ped.NodePedExplodeHead"
+	require "LDYOM.Scripts.Core.Ped.NodePedIsSittingInCar"
+	require "LDYOM.Scripts.Core.Ped.NodeHasGotWeapon"
+	require "LDYOM.Scripts.Core.Ped.NodePedIsInWater"
+	require "LDYOM.Scripts.Core.Ped.NodePedHasBeenPhotographed"
+	require "LDYOM.Scripts.Core.Ped.NodePedHasBeenDamagedByChar"
+	require "LDYOM.Scripts.Core.Ped.NodePedHasBeenDamagedByCar"
 	
 	require "LDYOM.Scripts.Core.Vehicle.NodeOpenDoors"
 	require "LDYOM.Scripts.Core.Vehicle.NodeLockVehicle"

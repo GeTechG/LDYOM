@@ -13,6 +13,7 @@
 #define VK_O 0x4F
 #define VK_K 0x4B
 #define VK_L 0x4C
+#include "fa.h"
 
 bool pressed_keys[122];
 
@@ -486,3 +487,15 @@ void rotateVec2(float& x, float& y, float angle) {
 	y = y1;
 }
 
+static void HelpMarker(const char* desc)
+{
+	ImGui::TextDisabled(ICON_FA_QUESTION_CIRCLE);
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::Text(desc);
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
+}

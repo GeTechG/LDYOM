@@ -598,6 +598,48 @@ public:
 	}
 };
 
+class TargetAddTimer: public Target
+{
+public:
+	int typeTimer = 0;
+	bool backward = false;
+	int compareType = 0;
+	int compareValue = 0;
+	int startTime = 0;
+	char text[129] = "";
+	
+	TargetAddTimer(const char* name);
+	TargetAddTimer() = default;
+	TargetAddTimer(const TargetAddTimer& target);
+
+	template <typename Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & boost::serialization::base_object<Target>(*this);
+
+		ar & typeTimer;
+		ar & backward;
+		ar & compareType;
+		ar & compareValue;
+		ar & startTime;
+		ar & text;
+	}
+};
+
+class TargetRemoveTimer: public Target
+{
+public:
+	TargetRemoveTimer(const char* name);
+	TargetRemoveTimer() = default;
+	TargetRemoveTimer(const TargetRemoveTimer& target);
+
+	template <typename Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & boost::serialization::base_object<Target>(*this);
+	}
+};
+
 class Car {
 public:
 	CVehicle* editorCar = nullptr;
@@ -998,6 +1040,8 @@ struct Mission {
 		if (version >= 72)
 		{
 			ar.template register_type <TargetDestroyVehicle>();
+			ar.template register_type <TargetAddTimer>();
+			ar.template register_type <TargetRemoveTimer>();
 		}
 		
 		ar & list_targets;

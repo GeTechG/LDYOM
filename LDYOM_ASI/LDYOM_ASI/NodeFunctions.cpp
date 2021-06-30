@@ -5,6 +5,10 @@
 #include <CCamera.h>
 #include <CHud.h>
 #include <CMessages.h>
+#include <CText.h>
+#include "libs/ScriptCommands.h"
+
+#include <CUserDisplay.h>
 #include <map>
 
 #include "imgui.h"
@@ -860,6 +864,23 @@ void triggerMoveObject(sol::table &node, int id_on, int object, float pos_x, flo
 			this_coro::wait(0);
 		}
 	});
+}
+
+
+
+int timerPtr = 0xA49960;
+void addTimer(int varID, std::string text, bool direction, int value) {
+	int timer = 12640 + varID * 4;
+	int& adress = *(int*)(timerPtr + timer);
+	adress = value;
+	
+	CUserDisplay::OnscnTimer.AddClock(timer, (char*)text.c_str(), direction);
+}
+
+void removeTimer(int varID)
+{
+	int timer = 12640 + varID * 4;
+	CUserDisplay::OnscnTimer.ClearClock(timer);
 }
 
 void connectNodesFunctions(sol::table& t_ldyom)

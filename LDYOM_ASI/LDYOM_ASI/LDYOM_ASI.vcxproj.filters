@@ -223,6 +223,9 @@
     <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="NodeGraph.h" />
     <ClInclude Include="NodeFunctions.h" />
+    <ClInclude Include="libs\ScriptCommands.h">
+      <Filter>libs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ImGui">

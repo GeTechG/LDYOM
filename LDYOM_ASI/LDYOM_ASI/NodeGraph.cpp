@@ -532,6 +532,12 @@ void NodeGraph::render()
 	ImGui::SetNextWindowSize(ImVec2(200, 0));
 	if (ImGui::BeginPopup("CreateMenu"))
 	{
+
+		static char searchNode[129];
+		ImGui::PushID("searchNodeInput");
+		ImGui::InputText("", searchNode, IM_ARRAYSIZE(searchNode));
+		ImGui::PopID();
+		
 		for (auto categories : map_nodes_class)
 		{
 			std::string nameC = langt(categories.first);
@@ -542,6 +548,12 @@ void NodeGraph::render()
 				{
 					std::string name_node = node_class["static"]["name"];
 					sol::optional<bool> storyline_node = node_class["static"]["storyline"];
+
+					if (searchNode[0] != '\0') {
+						if (name_node.find(searchNode) == std::string::npos)
+							continue;
+					}
+					
 					if (storyline_node.has_value())
 					{
 						if (storyline_node.value() && !storylineMode)

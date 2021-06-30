@@ -568,6 +568,37 @@ TargetDestroyVehicle::TargetDestroyVehicle(const TargetDestroyVehicle& target) {
 	typeDamage = target.typeDamage;
 }
 
+TargetAddTimer::TargetAddTimer(const char* name) {
+	strcpy(this->name, name);
+	this->type = 3;
+	this->targetType = 6;
+}
+
+TargetAddTimer::TargetAddTimer(const TargetAddTimer& target) {
+	strcpy(name, target.name);
+	type = target.type;
+	targetType = target.targetType;
+
+	typeTimer = target.typeTimer;
+	backward = target.backward;
+	compareType = target.compareType;
+	compareValue = target.compareValue;
+	startTime = target.startTime;
+	strcpy(text, target.text);
+}
+
+TargetRemoveTimer::TargetRemoveTimer(const char* name) {
+	strcpy(this->name, name);
+	this->type = 3;
+	this->targetType = 7;
+}
+
+TargetRemoveTimer::TargetRemoveTimer(const TargetRemoveTimer& target) {
+	strcpy(name, target.name);
+	type = target.type;
+	targetType = target.targetType;
+}
+
 Car::Car(const char* name, float x, float y, float z, float angle, int lastTarget) {
 	strcpy(this->name, name);
 	this->pos[0] = x;

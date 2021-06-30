@@ -48,6 +48,7 @@ list<int> missionAudio{};
 map<unsigned, sol::object> realVariable;
 bool loadedNodes = false;
 bool useSkip = false;
+bool timerOn = false;
 
 void stopStoryline()
 {
@@ -116,6 +117,10 @@ void testDefeat()
 int current_mission_target = 0;
 bool break_target = false;
 
+extern void addTimer(int varID, std::string text, bool direction, int value);
+extern void removeTimer(int varID);
+extern int timerPtr;
+
 void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clearSelf)
 {
 	assert(CTheScripts::ScriptSpace[CTheScripts::OnAMissionFlag] == 0);
@@ -123,6 +128,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 	graph->lastNode = -1;
 
 	//start
+	timerOn = false;
 	defeat = false;
 	mission_started = true;
 	TheCamera.Fade(0.2f, 0);
@@ -2060,7 +2066,137 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 
 							break;
 						}
-						default: break;
+						case 6: {
+							TargetAddTimer* targetPtr = static_cast<TargetAddTimer*>(mission->list_targets[current_mission_target]);
+							int* timer = (int*)(timerPtr + 12640 + 0 * 4);
+
+							if (timerOn)
+							{
+								break;
+							}
+								
+							timerOn = true;
+
+							Command<0x0ADF>("LDTIMER0", targetPtr->text);
+
+							addTimer(0, "LDTIMER0", targetPtr->backward, targetPtr->startTime * 1000);
+								
+							if (targetPtr->typeTimer == 0)
+							{
+								[=]()
+								{
+									while (mission_started && timerOn)
+									{
+										switch (targetPtr->compareType)
+										{
+										//Равно
+										case 0:
+											if (*timer == targetPtr->compareValue * 1000)
+												return;
+											break;
+										//Не равно
+										case 1:
+											if (*timer != targetPtr->compareValue * 1000)
+												return;
+											break;
+										//Больше
+										case 2:
+											if (*timer > targetPtr->compareValue * 1000)
+												return;
+											break;
+										//Больше, или равно
+										case 3:
+											if (*timer >= targetPtr->compareValue * 1000)
+												return;
+											break;
+										//Меньше
+										case 4:
+											if (*timer < targetPtr->compareValue * 1000)
+												return;
+											break;
+										//Меньше, или ровно
+										case 5:
+											if (*timer <= targetPtr->compareValue * 1000)
+												return;
+											break;
+										default:
+											break;
+										}
+										this_coro::wait(0);
+									}
+									timerOn = false;
+									removeTimer(0);
+								}();
+							} else
+							{
+								instance.add_to_queue([=]()
+								{
+									auto defeatFunc = [=]()
+									{
+										removeTimer(0);
+										timerOn = false;
+										defeat = true;
+										mission_started = false;
+										Command<Commands::SET_CHAR_PROOFS>(playerPed, 1, 1, 1, 1, 1);
+										CMessages::ClearMessages(true);
+										failMission();
+									};
+									
+									while (mission_started && timerOn)
+									{
+										switch (targetPtr->compareType)
+										{
+											//Равно
+										case 0:
+											if (*timer == targetPtr->compareValue * 1000)
+												defeatFunc();
+											break;
+											//Не равно
+										case 1:
+											if (*timer != targetPtr->compareValue * 1000)
+												defeatFunc();
+											break;
+											//Больше
+										case 2:
+											if (*timer > targetPtr->compareValue * 1000)
+												defeatFunc();
+											break;
+											//Больше, или равно
+										case 3:
+											if (*timer >= targetPtr->compareValue * 1000)
+												defeatFunc();
+											break;
+											//Меньше
+										case 4:
+											if (*timer < targetPtr->compareValue * 1000)
+												defeatFunc();
+											break;
+											//Меньше, или ровно
+										case 5:
+											if (*timer <= targetPtr->compareValue * 1000)
+												defeatFunc();
+											break;
+										default:
+											break;
+										}
+										this_coro::wait(0);
+									}
+								});
+							}
+
+							break;
+						}
+						case 7: {
+							TargetRemoveTimer* targetPtr = static_cast<TargetRemoveTimer*>(mission->list_targets[current_mission_target]);
+
+							timerOn = false;
+							removeTimer(0);
+							
+
+							break;
+						}
+						default:
+							break;
 					}
 					break;
 				}

@@ -411,6 +411,14 @@ void fTargets()
 					target = new TargetTraffic(
 						*static_cast<TargetTraffic*>(currentMissionPtr->list_targets.at(currentTarget)));
 					break;
+				case 6:
+					target = new TargetAddTimer(
+						*static_cast<TargetAddTimer*>(currentMissionPtr->list_targets.at(currentTarget)));
+					break;
+				case 7:
+					target = new
+						TargetRemoveTimer(*static_cast<TargetRemoveTimer*>(currentMissionPtr->list_targets.at(currentTarget)));
+					break;
 				default:
 					break;
 				}
@@ -563,6 +571,12 @@ void fTargets()
 					break;
 				case 5:
 					currentMissionPtr->list_targets.push_back(new TargetTraffic(name.c_str()));
+					break;
+				case 6:
+					currentMissionPtr->list_targets.push_back(new TargetAddTimer(name.c_str()));
+					break;
+				case 7:
+					currentMissionPtr->list_targets.push_back(new TargetRemoveTimer(name.c_str()));
 					break;
 				default:
 					break;
@@ -952,6 +966,27 @@ void fTargets()
 						ImGui::SliderScalar(langt("countCar"), ImGuiDataType_U8, &targetPtr->cars, &minS, &maxS,
 						                    langMenu["countTraffic"][targetPtr->cars].c_str());
 						break;
+					}
+				case 6:
+					{
+						TargetAddTimer* targetPtr = static_cast<TargetAddTimer*>(currentMissionPtr->list_targets[
+							currentTarget]);
+
+						Combo(langt("type"), targetPtr->typeTimer, &langMenu["typesTimer"]);
+						ImGui::SameLine();
+						HelpMarker(langt("hintTimerTypes"));
+
+						ImGui::Text(langt("start"));
+						ImGui::PushID("startTime");
+						ImGui::InputInt(langt("time"), &targetPtr->startTime);
+						ImGui::PopID();
+						
+						ToggleButton("backwards", &targetPtr->backward);
+						ImGui::PushID("typeTimer");
+						Combo("", targetPtr->compareType, &langMenu["compaingTypes"]);
+						ImGui::PopID();
+						ImGui::InputInt(langt("time"), &targetPtr->compareValue);
+						ImGui::InputText(langt("text"), targetPtr->text, IM_ARRAYSIZE(targetPtr->text));
 					}
 				default:
 					break;

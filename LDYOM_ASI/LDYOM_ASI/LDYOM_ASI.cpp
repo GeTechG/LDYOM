@@ -7,6 +7,7 @@
 
 extern bool mission_started;
 
+
 void MainThread()
 {
 	bool initialized = false;
@@ -139,6 +140,7 @@ void loadArrayMenu()
 	langMenu["place_in_car"] = parseJsonArray<std::string>(langt("place_in_car"));
 	langMenu["open_close"] = parseJsonArray<std::string>(langt("open_close"));
 	langMenu["onWhatCheckpoint"] = parseJsonArray<std::string>(langt("onWhatCheckpoint"));
+	langMenu["typesTimer"] = parseJsonArray<std::string>(langt("typesTimer"));
 }
 
 void createDirsLDYOM()

@@ -191,6 +191,7 @@
     <ClInclude Include="libs\MyFuncs.h" />
     <ClInclude Include="libs\pch.h" />
     <ClInclude Include="libs\pool_object_extender.h" />
+    <ClInclude Include="libs\ScriptCommands.h" />
     <ClInclude Include="libs\singleton.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="MissionPlayer.h" />

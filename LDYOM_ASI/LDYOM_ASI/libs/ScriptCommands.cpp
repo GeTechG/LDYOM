@@ -224,3 +224,6 @@ void scripting::ScriptCode::operator<<(CObject **p) {
     AddBytes(reinterpret_cast<unsigned char *>(&varIndexCounter), 2);
     ++varIndexCounter;
 }
+
+CRunningScript scripting::scriptHandle;
+bool scripting::init = false;
