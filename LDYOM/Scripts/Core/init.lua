@@ -47,6 +47,7 @@ function main()
 	ldyom.langMenu["compaingTypes"] = ldyom.parseJsonArray(ldyom.langt("compaingTypes"));
 	ldyom.langMenu["typeLocate"] = ldyom.parseJsonArray(ldyom.langt("typeLocate"));
 	ldyom.langMenu["CoreTurretDirection"] = ldyom.parseJsonArray(ldyom.langt("CoreTurretDirection"));
+	ldyom.langMenu["target_type"] = ldyom.parseJsonArray(ldyom.langt("target_type"));
 	
 	callOpcode(0x0ADF,{{"HENAA","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HENAA"))),"string"}});
 	callOpcode(0x0ADF,{{"HVIEW","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HVIEW"))),"string"}});
@@ -161,6 +162,7 @@ function main()
 	require "LDYOM.Scripts.Core.Ped.NodePedTurretModeObject"
 	require "LDYOM.Scripts.Core.Ped.NodePedTurretModeOff"
 	require "LDYOM.Scripts.Core.Ped.NodePedGetCurrentWeapon"
+	require "LDYOM.Scripts.Core.Ped.NodeGetPedHealth"
 	require "LDYOM.Scripts.Core.Ped.NodeIsInArea"
 	require "LDYOM.Scripts.Core.Ped.NodePedLocateInCoord"
 	require "LDYOM.Scripts.Core.Ped.NodePedLocateInPed"
@@ -182,6 +184,7 @@ function main()
 	require "LDYOM.Scripts.Core.Vehicle.NodeOpenDoors"
 	require "LDYOM.Scripts.Core.Vehicle.NodeLockVehicle"
 	require "LDYOM.Scripts.Core.Vehicle.NodeGetPosVehicle"
+	require "LDYOM.Scripts.Core.Vehicle.NodeVehicleGetHealth"
 	
 	require "LDYOM.Scripts.Core.Player.NodePlayerToPed"
 	
@@ -207,6 +210,11 @@ function main()
 	require "LDYOM.Scripts.Core.Camera.NodeShakeSimulation"
 	
 	require "LDYOM.Scripts.Core.World.NodeIsAreaOccupied"
+	require "LDYOM.Scripts.Core.World.NodeAddTimer"
+	require "LDYOM.Scripts.Core.World.NodeRemoveTimer"
+	require "LDYOM.Scripts.Core.World.NodeGetTimerTime"
+	require "LDYOM.Scripts.Core.World.NodeAddCounter"
+	require "LDYOM.Scripts.Core.World.NodeRemoveCounter"
 	
 	print("Core nodes loaded")
 end

@@ -61,9 +61,9 @@ function Node:draw()
 end
 
 function Node:play(data, mission)
-	local value1 = self:getPinValue(self.id+2,data,mission)[0];
+	local value1 = self:getPinValue(self.id+1,data,mission)[0];
 	local value2 = self:getPinValue(self.id+3,data,mission)[0];
-	local _type = self.compaingType[0];
+	local _type = self.comparingType[0];
 	ldyom.setLastNode(self.id);
 	
 	if (_type == 0) then

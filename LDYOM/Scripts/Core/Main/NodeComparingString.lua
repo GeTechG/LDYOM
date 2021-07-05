@@ -11,8 +11,8 @@ function Node:initialize(id)
 	self.type = 1;
 	self.Pins = {
 		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.string, 0, ffi.new("char[128]")),
-		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.string, 0, ffi.new("char[128]")),
-		[self.id+4] = BasePin:new(self.id+4,imgui.imnodes.PinType.boolean, 1, ffi.new("bool[1]")),
+		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.string, 0, ffi.new("char[128]")),
+		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.boolean, 1, ffi.new("bool[1]")),
 	};
 end
 
@@ -36,16 +36,16 @@ function Node:draw()
 	end
 	imgui.imnodes.EndInputAttribute();
 	
-	imgui.imnodes.BeginInputAttribute(self.id+3);
-	if (self.Pins[self.id+3].link == nil) then
+	imgui.imnodes.BeginInputAttribute(self.id+2);
+	if (self.Pins[self.id+2].link == nil) then
 		imgui.SetNextItemWidth(150);
-		imgui.InputString("", self.Pins[self.id+3], 128);
+		imgui.InputString("", self.Pins[self.id+2], 128);
 	else
 		imgui.Text(ldyom.langt("value").." 2");
 	end
 	imgui.imnodes.EndInputAttribute();
 	
-	imgui.imnodes.BeginOutputAttribute(self.id+4);
+	imgui.imnodes.BeginOutputAttribute(self.id+3);
 	imgui.Indent(120);
 	imgui.Text(ldyom.langt("result"));
 	imgui.imnodes.EndOutputAttribute();
@@ -55,12 +55,11 @@ function Node:draw()
 end
 
 function Node:play(data, mission)
-	local value1 = ffi.string(self:getPinValue(self.id+2,data,mission));
-	local value2 = ffi.string(self:getPinValue(self.id+3,data,mission));
-	local _type = self.compaingType[0];
+	local value1 = ffi.string(self:getPinValue(self.id+1,data,mission));
+	local value2 = ffi.string(self:getPinValue(self.id+2,data,mission));
 	ldyom.setLastNode(self.id);
 	
-	self.Pins[self.id+4].value[0] = value1 == value2;
+	self.Pins[self.id+3].value[0] = value1 == value2;
 
 end
 

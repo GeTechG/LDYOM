@@ -1003,6 +1003,7 @@ struct Mission {
 	bool riot = false;
 	Player player = Player(884.6011f, -1221.845f, 16.9766f, 0.0f);
 	std::set<int> objectsBookmark;
+	std::vector<std::pair<char[129], float>> startLabels;
 
 	Mission();
 	~Mission();
@@ -1066,6 +1067,8 @@ struct Mission {
 		if (version >= 72)
 		{
 			ar & objectsBookmark;
+			ar & startLabels;
+			
 		}
 	}
 };

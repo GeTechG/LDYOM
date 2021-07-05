@@ -981,7 +981,7 @@ void fTargets()
 						ImGui::InputInt(langt("time"), &targetPtr->startTime);
 						ImGui::PopID();
 						
-						ToggleButton("backwards", &targetPtr->backward);
+						ToggleButton(langt("backwards"), &targetPtr->backward);
 						ImGui::PushID("typeTimer");
 						Combo("", targetPtr->compareType, &langMenu["compaingTypes"]);
 						ImGui::PopID();
@@ -4471,6 +4471,30 @@ void fMissionSettings()
 	ImVec2 size_b = ImVec2(160, 0);
 
 	InputText(langt("nameMission"),65, &currentMissionPtr->name,0, nullptr,nullptr);
+	ImGui::Separator();
+	ImGui::Text(langt("startText"));
+	ImGui::SameLine();
+	if (ImGui::Button("+"))
+	{
+		currentMissionPtr->startLabels.emplace_back();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("-"))
+	{
+		currentMissionPtr->startLabels.pop_back();
+	}
+	ImGui::BeginChild("start_labels", ImVec2(0, 120));
+	for (int i = 0; i < currentMissionPtr->startLabels.size(); ++i)
+	{
+		std::pair<char[129], float>& start_label = currentMissionPtr->startLabels.at(i);
+		ImGui::PushID(std::to_string(i).c_str());
+		ImGui::InputText(langt("text"), start_label.first, IM_ARRAYSIZE(start_label.first));
+		ImGui::InputFloat(langt("time"), &start_label.second);
+		ImGui::PopID();
+		ImGui::Separator();
+	}
+	ImGui::EndChild();
+	
 	ImGui::Separator();
 	Combo(langt("weather"), currentMissionPtr->weather, &langMenu["Weather_arr"]);
 	if (ImGui::Button(langt("preview"))) {

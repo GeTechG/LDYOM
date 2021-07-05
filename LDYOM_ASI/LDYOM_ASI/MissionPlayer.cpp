@@ -48,7 +48,7 @@ list<int> missionAudio{};
 map<unsigned, sol::object> realVariable;
 bool loadedNodes = false;
 bool useSkip = false;
-bool timerOn = false;
+
 
 void stopStoryline()
 {
@@ -117,9 +117,12 @@ void testDefeat()
 int current_mission_target = 0;
 bool break_target = false;
 
-extern void addTimer(int varID, std::string text, bool direction, int value);
-extern void removeTimer(int varID);
-extern int timerPtr;
+extern void addTimer(std::string text, bool direction, int value);
+extern void removeTimer();
+extern int getTimerTime();
+extern int spaceVarsPtr;
+extern int timer;
+extern bool timerOn;
 
 void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clearSelf)
 {
@@ -347,6 +350,24 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 		}
 
 		loadedNodes = false;
+
+		
+		
+		std::vector<std::string> labels;
+
+		instance.add_to_queue([&labels,&mission]()
+		{
+			this_coro::wait(100ms);
+			for (auto start_label : mission->startLabels)
+			{
+				std::string& str_text = labels.emplace_back(start_label.first);
+				str_text = is_utf8(str_text.c_str()) ? UTF8_to_CP1251(str_text) : str_text;
+				GXTEncode(str_text);
+				CHud::SetHelpMessage(str_text.c_str(), true, false, false);
+				this_coro::wait(start_label.second * 1000);
+			}
+		});
+		
 		
 		//targets loop
 		while (current_mission_target < mission->list_targets.size() && mission_started)
@@ -2068,18 +2089,15 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 						}
 						case 6: {
 							TargetAddTimer* targetPtr = static_cast<TargetAddTimer*>(mission->list_targets[current_mission_target]);
-							int* timer = (int*)(timerPtr + 12640 + 0 * 4);
 
 							if (timerOn)
 							{
 								break;
 							}
-								
+							
 							timerOn = true;
 
-							Command<0x0ADF>("LDTIMER0", targetPtr->text);
-
-							addTimer(0, "LDTIMER0", targetPtr->backward, targetPtr->startTime * 1000);
+							addTimer("LDTIMER0", targetPtr->backward, targetPtr->startTime * 1000);
 								
 							if (targetPtr->typeTimer == 0)
 							{
@@ -2091,32 +2109,32 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										{
 										//Равно
 										case 0:
-											if (*timer == targetPtr->compareValue * 1000)
+											if (getTimerTime() == targetPtr->compareValue * 1000)
 												return;
 											break;
 										//Не равно
 										case 1:
-											if (*timer != targetPtr->compareValue * 1000)
+											if (getTimerTime() != targetPtr->compareValue * 1000)
 												return;
 											break;
 										//Больше
 										case 2:
-											if (*timer > targetPtr->compareValue * 1000)
+											if (getTimerTime() > targetPtr->compareValue * 1000)
 												return;
 											break;
 										//Больше, или равно
 										case 3:
-											if (*timer >= targetPtr->compareValue * 1000)
+											if (getTimerTime() >= targetPtr->compareValue * 1000)
 												return;
 											break;
 										//Меньше
 										case 4:
-											if (*timer < targetPtr->compareValue * 1000)
+											if (getTimerTime() < targetPtr->compareValue * 1000)
 												return;
 											break;
 										//Меньше, или ровно
 										case 5:
-											if (*timer <= targetPtr->compareValue * 1000)
+											if (getTimerTime() <= targetPtr->compareValue * 1000)
 												return;
 											break;
 										default:
@@ -2125,7 +2143,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										this_coro::wait(0);
 									}
 									timerOn = false;
-									removeTimer(0);
+									removeTimer();
 								}();
 							} else
 							{
@@ -2133,7 +2151,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 								{
 									auto defeatFunc = [=]()
 									{
-										removeTimer(0);
+										removeTimer();
 										timerOn = false;
 										defeat = true;
 										mission_started = false;
@@ -2148,32 +2166,32 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										{
 											//Равно
 										case 0:
-											if (*timer == targetPtr->compareValue * 1000)
+											if (getTimerTime() == targetPtr->compareValue * 1000)
 												defeatFunc();
 											break;
 											//Не равно
 										case 1:
-											if (*timer != targetPtr->compareValue * 1000)
+											if (getTimerTime() != targetPtr->compareValue * 1000)
 												defeatFunc();
 											break;
 											//Больше
 										case 2:
-											if (*timer > targetPtr->compareValue * 1000)
+											if (getTimerTime() > targetPtr->compareValue * 1000)
 												defeatFunc();
 											break;
 											//Больше, или равно
 										case 3:
-											if (*timer >= targetPtr->compareValue * 1000)
+											if (getTimerTime() >= targetPtr->compareValue * 1000)
 												defeatFunc();
 											break;
 											//Меньше
 										case 4:
-											if (*timer < targetPtr->compareValue * 1000)
+											if (getTimerTime() < targetPtr->compareValue * 1000)
 												defeatFunc();
 											break;
 											//Меньше, или ровно
 										case 5:
-											if (*timer <= targetPtr->compareValue * 1000)
+											if (getTimerTime() <= targetPtr->compareValue * 1000)
 												defeatFunc();
 											break;
 										default:
@@ -2181,6 +2199,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										}
 										this_coro::wait(0);
 									}
+									removeTimer();
 								});
 							}
 
@@ -2190,7 +2209,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							TargetRemoveTimer* targetPtr = static_cast<TargetRemoveTimer*>(mission->list_targets[current_mission_target]);
 
 							timerOn = false;
-							removeTimer(0);
+							removeTimer();
 							
 
 							break;

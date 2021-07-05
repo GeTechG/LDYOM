@@ -867,20 +867,72 @@ void triggerMoveObject(sol::table &node, int id_on, int object, float pos_x, flo
 }
 
 
+int spaceVarsPtr = 0xA49960;
 
-int timerPtr = 0xA49960;
-void addTimer(int varID, std::string text, bool direction, int value) {
-	int timer = 12640 + varID * 4;
-	int& adress = *(int*)(timerPtr + timer);
+bool timerOn = false;
+int timer = 12640;
+void addTimer(std::string text, bool direction, int value) {
+	int& adress = *(int*)(spaceVarsPtr + timer);
 	adress = value;
 	
 	CUserDisplay::OnscnTimer.AddClock(timer, (char*)text.c_str(), direction);
 }
 
-void removeTimer(int varID)
+void removeTimer()
 {
-	int timer = 12640 + varID * 4;
 	CUserDisplay::OnscnTimer.ClearClock(timer);
+}
+
+int getTimerTime()
+{
+	return *(int*)(spaceVarsPtr + timer);
+}
+
+bool counterOn[4] = { false, false, false, false };
+int counter = 12644;
+void addCounter(int slot, int type, std::string text) {
+	CUserDisplay::OnscnTimer.AddCounter(counter + slot * 4, type, (char*)text.c_str(), slot);
+}
+
+void removeCounter(int slot)
+{
+	CUserDisplay::OnscnTimer.ClearCounter(counter + slot * 4);
+}
+
+void removeCounterByNode(int slot)
+{
+	counterOn[slot] = false;
+}
+
+void addCounterByNode(int slot, bool type, std::string gxt, sol::table node, NodeGraph* data, Mission* mission)
+{
+	
+	addCounter(slot, type ? 1 : 0, gxt);
+	
+	
+	instance.add_to_queue([=]()
+	{
+		if (counterOn[slot])
+		{
+			counterOn[slot] = false;
+			this_coro::wait(1);
+		}
+		counterOn[slot] = true;
+		while (getMissionStarted() && counterOn[slot])
+		{
+			const sol::protected_function getValue = node["getValue"];
+			auto result_getValue = getValue(node, data, mission);
+			if (!ScriptManager::checkProtected(result_getValue))
+				CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+			int value = (int)result_getValue.get<float>();
+
+			int& adress = *(int*)(spaceVarsPtr + counter + slot * 4);
+			adress = value;
+			
+			this_coro::wait(0);
+		}
+		removeCounter(slot);
+	});
 }
 
 void connectNodesFunctions(sol::table& t_ldyom)
@@ -897,4 +949,11 @@ void connectNodesFunctions(sol::table& t_ldyom)
 	t_ldyom.set("waitUtilNode", &waitUtilNode);
 	t_ldyom.set("targetCycle", &targetCycle);
 	t_ldyom.set("triggerMoveObject", &triggerMoveObject);
+	t_ldyom.set("addTimer", addTimer);
+	t_ldyom.set("removeTimer", removeTimer);
+	t_ldyom.set("getTimerTime", getTimerTime);
+	t_ldyom.set("addCounterByNode", addCounterByNode);
+	t_ldyom.set("removeCounterByNode", removeCounterByNode);
+	t_ldyom.set("addCounter", addCounter);
+	t_ldyom.set("removeCounter", removeCounter);
 }
