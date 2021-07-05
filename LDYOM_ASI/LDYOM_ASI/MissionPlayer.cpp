@@ -1,5 +1,7 @@
 #include "MissionPlayer.h"
 
+
+#include <CClothes.h>
 #include <CText.h>
 #include "CStats.h"
 #include "CTheScripts.h"
@@ -48,7 +50,6 @@ list<int> missionAudio{};
 map<unsigned, sol::object> realVariable;
 bool loadedNodes = false;
 bool useSkip = false;
-
 
 void stopStoryline()
 {
@@ -172,6 +173,14 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 	playerPed->GiveWeapon(static_cast<eWeaponType>(ID_Weapons[mission->player.weapon]), mission->player.ammo, false);
 	playerPed->SetCurrentWeapon(static_cast<eWeaponType>(ID_Weapons[mission->player.weapon]));
 	CStreaming::RemoveAllUnusedModels();
+
+	if (mission->player.modelType == 0 && mission->player.modelID == 0)
+	{
+		auto playerClothers = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+		std::memcpy(playerClothers->m_anTextureKeys, mission->player.clotherM_anTextureKeys, sizeof(playerClothers->m_anTextureKeys));
+		std::memcpy(playerClothers->m_anModelKeys, mission->player.clotherM_anModelKeys, sizeof(playerClothers->m_anModelKeys));
+		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
+	}
 	
 	//show name mission.
 	
@@ -2384,6 +2393,15 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 							CStreaming::RemoveAllUnusedModels();
 							Command<Commands::SET_CHAR_HEADING>(playerPed, targetPtr->angle);
 							Command<Commands::REQUEST_COLLISION>(targetPtr->pos[0], targetPtr->pos[1]);
+
+							if (targetPtr->modelType == 0 && targetPtr->modelID == 0)
+							{
+								auto playerClothers = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+								std::memcpy(playerClothers->m_anTextureKeys, targetPtr->clotherM_anTextureKeys, sizeof(playerClothers->m_anTextureKeys));
+								std::memcpy(playerClothers->m_anModelKeys, targetPtr->clotherM_anModelKeys, sizeof(playerClothers->m_anModelKeys));
+								CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
+							}
+								
 							TheCamera.Fade(0.5f, 1);
 							this_coro::wait(0.5s);
 							break;

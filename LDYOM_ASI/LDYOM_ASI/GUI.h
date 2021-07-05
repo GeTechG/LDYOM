@@ -1128,6 +1128,18 @@ void fTargets()
 						else
 							Combo(langt("model"), targetPtr->modelID, &ID_Spec_Actors);
 
+						if (targetPtr->modelType == 0 && targetPtr->modelID == 0)
+						{
+							if (ImGui::Button(langt("copyClothes")))
+							{
+								auto playerClothers = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+								std::memcpy(targetPtr->clotherM_anTextureKeys, playerClothers->m_anTextureKeys, sizeof(playerClothers->m_anTextureKeys));
+								std::memcpy(targetPtr->clotherM_anModelKeys, playerClothers->m_anModelKeys, sizeof(playerClothers->m_anModelKeys));
+							}
+							ImGui::SameLine();
+							HelpMarker(langt("helpCopyClothes"));
+						}
+						
 						ImGui::Separator();
 
 						if (ImGui::TreeNode(langt("chartics")))
@@ -3992,6 +4004,19 @@ void fPlayer()
 		playerPtr->updateEditorPed();
 	}
 
+	if (playerPtr->modelType == 0 && playerPtr->modelID == 0)
+	{
+		if (ImGui::Button(langt("copyClothes")))
+		{
+			auto playerClothers = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+			std::memcpy(playerPtr->clotherM_anTextureKeys, playerClothers->m_anTextureKeys, sizeof(playerClothers->m_anTextureKeys));
+			std::memcpy(playerPtr->clotherM_anModelKeys, playerClothers->m_anModelKeys, sizeof(playerClothers->m_anModelKeys));
+			playerPtr->updateEditorPed();
+		}
+		ImGui::SameLine();
+		HelpMarker(langt("helpCopyClothes"));	
+	}
+	
 	ImGui::Separator();
 
 	if (ImGui::TreeNode(langt("chartics")))

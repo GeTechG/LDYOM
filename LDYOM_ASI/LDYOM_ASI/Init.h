@@ -419,6 +419,8 @@ public:
 	int weapon = 0;
 	int ammo = 0;
 	int interiorID;
+	unsigned clotherM_anModelKeys[10];
+	unsigned clotherM_anTextureKeys[18];
 
 	TargetTeleport(const char* name, float x, float y, float z, float angle, int interiorID);
 	TargetTeleport() = default;
@@ -436,6 +438,12 @@ public:
 		ar & weapon;
 		ar & ammo;
 		ar & interiorID;
+
+		if (version >= 72)
+		{
+			ar & clotherM_anModelKeys;
+			ar & clotherM_anTextureKeys;
+		}
 	}
 };
 
@@ -959,6 +967,8 @@ public:
 	int weapon = 0;
 	int ammo = 0;
 	int interiorID = 0;
+	unsigned clotherM_anModelKeys[10];
+	unsigned clotherM_anTextureKeys[18];
 
 	Player(float x, float y, float z, float angle);
 	Player(const Player& player);
@@ -978,6 +988,12 @@ public:
 		ar & weapon;
 		ar & ammo;
 		ar & interiorID;
+
+		if (version >= 72)
+		{
+			ar & clotherM_anModelKeys;
+			ar & clotherM_anTextureKeys;
+		}
 	}
 };
 

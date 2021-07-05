@@ -2,6 +2,7 @@
 
 
 #include <CClock.h>
+#include <CClothes.h>
 #include <CHud.h>
 #include <CRadar.h>
 #include <sol/sol.hpp>
@@ -440,6 +441,10 @@ TargetTeleport::TargetTeleport(const char* name, float x, float y, float z, floa
 	this->pos[2] = z;
 	this->angle = angle;
 	this->interiorID = interiorID;
+
+	auto playerClothers = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+	std::memcpy(clotherM_anTextureKeys, playerClothers->m_anTextureKeys, sizeof(playerClothers->m_anTextureKeys));
+	std::memcpy(clotherM_anModelKeys, playerClothers->m_anModelKeys, sizeof(playerClothers->m_anModelKeys));
 }
 
 TargetTeleport::TargetTeleport(const TargetTeleport& target) {
@@ -454,6 +459,8 @@ TargetTeleport::TargetTeleport(const TargetTeleport& target) {
 	weapon = target.weapon;
 	ammo = target.ammo;
 	interiorID = target.interiorID;
+	memcpy(clotherM_anTextureKeys, target.clotherM_anTextureKeys, sizeof(target.clotherM_anTextureKeys));
+	memcpy(clotherM_anModelKeys, target.clotherM_anModelKeys, sizeof(target.clotherM_anModelKeys));
 }
 TargetAnimation::TargetAnimation(const char* name) {
 	strcpy(this->name, name);
@@ -1505,7 +1512,10 @@ Player::Player(float x, float y, float z, float angle) {
 	this->pos[2] = z;
 	this->angle = angle;
 	Command<Commands::GET_AREA_VISIBLE>(&this->interiorID);
-	printLog("pl test");
+	
+	auto playerClothers = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+	std::memcpy(clotherM_anTextureKeys, playerClothers->m_anTextureKeys, sizeof(playerClothers->m_anTextureKeys));
+	std::memcpy(clotherM_anModelKeys, playerClothers->m_anModelKeys, sizeof(playerClothers->m_anModelKeys));
 }
 
 Player::Player(const Player& player) {
@@ -1517,6 +1527,8 @@ Player::Player(const Player& player) {
 	weapon = player.weapon;
 	ammo = player.ammo;
 	interiorID = player.interiorID;
+	memcpy(clotherM_anTextureKeys, player.clotherM_anTextureKeys, sizeof(player.clotherM_anTextureKeys));
+	memcpy(clotherM_anModelKeys, player.clotherM_anModelKeys, sizeof(player.clotherM_anModelKeys));
 }
 
 void Player::updateEditorPed() {
@@ -1538,6 +1550,7 @@ void Player::updateEditorPed() {
 	this->editorPed->SetHeading((float)rad(this->angle));
 	this->editorPed->m_bUsesCollision = false;
 	this->editorPed->m_nCreatedBy = 2;
+	
 	CWorld::Add(this->editorPed);
 	int weap_modell;
 	Command<Commands::GET_WEAPONTYPE_MODEL>(ID_Weapons[this->weapon], &weap_modell);

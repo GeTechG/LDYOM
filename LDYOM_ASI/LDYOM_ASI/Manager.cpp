@@ -508,5 +508,17 @@ namespace boost {
 		{
 			BOOST_STATIC_CONSTANT(unsigned int, value = LDYOM_VER);
 		};
+
+		template <>
+		struct version<TargetTeleport>
+		{
+			BOOST_STATIC_CONSTANT(unsigned int, value = LDYOM_VER);
+		};
+
+		template <>
+		struct version<Player>
+		{
+			BOOST_STATIC_CONSTANT(unsigned int, value = LDYOM_VER);
+		};
 	} // namespace serialization
 } // namespace boost
