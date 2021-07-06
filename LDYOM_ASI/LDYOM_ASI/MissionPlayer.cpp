@@ -358,6 +358,19 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 			}
 		}
 
+		vector<pair<vector<int>, vector<int>>> arr_target_visualEffect(mission->list_targets.size());
+		for (int i = 0; i < mission->list_visualEffects.size(); ++i)
+		{
+			mission->list_visualEffects[i]->drawing = false;
+			if (mission->list_visualEffects[i]->useTarget) {
+				int startC = min(mission->list_visualEffects[i]->startC, mission->list_targets.size() - 1);
+				int endC = min(mission->list_visualEffects[i]->endC, mission->list_targets.size());
+				arr_target_visualEffect[startC].first.emplace_back(i);
+				if (endC != 0)
+					arr_target_visualEffect[endC - 1].second.emplace_back(i);
+			}
+		}
+
 		loadedNodes = false;
 
 		
@@ -652,7 +665,39 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 					}
 				}
 			}
-			
+
+			for (int visualEffect_targ : arr_target_visualEffect[current_mission_target].first)
+			{
+				instance.add_to_queue([&mission, visualEffect_targ, &graph] {
+					mission->list_visualEffects[visualEffect_targ]->drawing = true;
+					for (auto node : graph->nodes)
+					{
+						std::string name = NodeGraph::getNodeIcon("event") + " " + langt("CoreNodeApperVisualEffect");
+						sol::optional<std::string> node_name = node.second["class"]["static"]["name"];
+						if (node_name.has_value())
+						{
+							if (node_name.value()._Equal(name))
+							{
+								sol::object value = node.second["Pins"][node.first + 1]["value"];
+								if ((*(int*)value.pointer()) == visualEffect_targ)
+									instance.add_to_queue(std::bind(NodeGraph::callNode, node.second, graph, mission));
+							}
+						}
+					}
+				});
+			}
+			for (auto lua_script : ScriptManager::lua_scripts)
+			{
+				if (lua_script.first)
+				{
+					sol::protected_function apper_visualEffect = lua_script.second["apper_visualEffect"];
+					if (apper_visualEffect.valid())
+					{
+						auto result = apper_visualEffect(arr_target_visualEffect[current_mission_target].first);
+						ScriptManager::checkProtected(result);
+					}
+				}
+			}
 
 			this_coro::wait(1ms);
 
@@ -2813,6 +2858,37 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 					if (disapper_audio.valid())
 					{
 						auto result = disapper_audio(arr_target_audio[current_mission_target].second);
+						ScriptManager::checkProtected(result);
+					}
+				}
+			}
+
+			for (int visualEffect_targ : arr_target_visualEffect[current_mission_target].second)
+			{
+				mission->list_visualEffects[visualEffect_targ]->drawing = false;
+				for (auto node : graph->nodes)
+				{
+					std::string name = NodeGraph::getNodeIcon("event") + " " + langt("CoreNodeDisapperVisualEffect");
+					sol::optional<std::string> node_name = node.second["class"]["static"]["name"];
+					if (node_name.has_value())
+					{
+						if (node_name.value()._Equal(name))
+						{
+							sol::object value = node.second["Pins"][node.first + 1]["value"];
+							if ((*(int*)value.pointer()) == visualEffect_targ)
+								instance.add_to_queue(std::bind(NodeGraph::callNode, node.second, graph, mission));
+						}
+					}
+				}
+			}
+			for (auto lua_script : ScriptManager::lua_scripts)
+			{
+				if (lua_script.first)
+				{
+					sol::protected_function disapper_visualEffect = lua_script.second["disapper_visualEffect"];
+					if (disapper_visualEffect.valid())
+					{
+						auto result = disapper_visualEffect(arr_target_visualEffect[current_mission_target].second);
 						ScriptManager::checkProtected(result);
 					}
 				}

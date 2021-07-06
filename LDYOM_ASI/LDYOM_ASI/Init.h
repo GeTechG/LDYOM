@@ -997,6 +997,42 @@ public:
 	}
 };
 
+class VisualEffect
+{
+public:
+	char name[65];
+	int effectType = 0;
+	float pos[3];
+	float size = 1.0f;
+	int type = 0;
+	int flare = 0;
+	float color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+	bool drawing = false;
+	int startC;
+	int endC = 0;
+	bool useTarget = true;
+	
+	VisualEffect(const char* name, float x, float y, float z, int lastTarget);
+	VisualEffect(const VisualEffect& effect);
+	VisualEffect() = default;
+	void draw();
+
+	template <typename Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & name;
+		ar & effectType;
+		ar & pos;
+		ar & size;
+		ar & type;
+		ar & flare;
+		ar & color;
+		ar & startC;
+		ar & endC;
+		ar & useTarget;
+	}
+};
+
 struct Mission {
 	friend class boost::serialization::access;
 	std::string name;
@@ -1020,6 +1056,7 @@ struct Mission {
 	Player player = Player(884.6011f, -1221.845f, 16.9766f, 0.0f);
 	std::set<int> objectsBookmark;
 	std::vector<std::pair<char[129], float>> startLabels;
+	vector<VisualEffect*> list_visualEffects;
 
 	Mission();
 	~Mission();
@@ -1084,7 +1121,7 @@ struct Mission {
 		{
 			ar & objectsBookmark;
 			ar & startLabels;
-			
+			ar & list_visualEffects;
 		}
 	}
 };

@@ -158,6 +158,7 @@ HRESULT WINAPI Present(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const
 				if (bStorylineCheckpoints) { fStorylineCheckpoints(); }
 				if (bScriptsSettings) { fScriptsSettings(); }
 				if (bNodeEditor) { NodeGraph::render(); }
+				if (bVisualEffects) { fVisualEffects(); }
 				//ImGui::ShowDemoWindow(&openFrame);
 			} else if (ImGui::GetIO().MouseDrawCursor)
 			{
@@ -225,6 +226,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			bStorylineCheckpoints = false;
 			bScriptsSettings = false;
 			bNodeEditor = false;
+			bVisualEffects = false;
 			if (!mission_started)
 			{
 				Command<Commands::FREEZE_CHAR_POSITION>(playerPed, false);
@@ -242,7 +244,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	openFrame = bMainMenu || bTargets || bActors || bCars || bTrains || carSelector::bShow || bGroupRelations || bObjects || bParticles || bPickups || bExplosions || bAudios || bMissionPacks || bPlayer || bMissionSettings || bStorylines || bTools || bSettings || bInfo || bStorylineMainMenu || bStorylineCheckpoints || bScriptsSettings || bNodeEditor;
+	openFrame = bMainMenu || bTargets || bActors || bCars || bTrains || carSelector::bShow || bGroupRelations || bObjects || bParticles || bPickups || bExplosions || bAudios || bMissionPacks || bPlayer || bMissionSettings || bStorylines || bTools || bSettings || bInfo || bStorylineMainMenu || bStorylineCheckpoints || bScriptsSettings || bNodeEditor || bVisualEffects;
 
 	if (openFrame && !mission_started && !storyline_started && !off_gui) {
 		Command<0x0AB3>(700, 1);

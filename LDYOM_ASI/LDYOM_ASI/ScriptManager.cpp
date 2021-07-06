@@ -107,6 +107,7 @@ extern std::vector<const char*> namesParticles;
 extern std::vector<const char*> namesPickups;
 extern std::vector<const char*> namesExplosions;
 extern std::vector<const char*> namesAudios;
+extern std::vector<const char*> namesVisualEffects;
 extern std::vector<const char*> namesStorylineCheckpoints;
 extern void addLDYOMClasses(sol::state& lua);
 extern void setNodeSignal(bool value);
@@ -379,6 +380,7 @@ void setNamespaceLua(sol::state& lua)
 	t_ldyom["namesPickups"] = &namesPickups;
 	t_ldyom["namesExplosions"] = &namesExplosions;
 	t_ldyom["namesAudios"] = &namesAudios;
+	t_ldyom["namesVisualEffects"] = &namesVisualEffects;
 	t_ldyom.set_function("setNodeSignal", &setNodeSignal);
 	t_ldyom.set_function("getMissionStarted", &getMissionStarted);
 	t_ldyom.set_function("setMissionStarted", &setMissionStarted);

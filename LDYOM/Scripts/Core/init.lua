@@ -216,6 +216,11 @@ function main()
 	require "LDYOM.Scripts.Core.World.NodeAddCounter"
 	require "LDYOM.Scripts.Core.World.NodeRemoveCounter"
 	
+	require "LDYOM.Scripts.Core.VisualEffect.NodeShowVisualEffect"
+	require "LDYOM.Scripts.Core.VisualEffect.NodeApperVisualEffect"
+	require "LDYOM.Scripts.Core.VisualEffect.NodeHideVisualEffect"
+	require "LDYOM.Scripts.Core.VisualEffect.NodeDisapperVisualEffect"
+	
 	print("Core nodes loaded")
 end
 

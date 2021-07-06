@@ -935,6 +935,16 @@ void addCounterByNode(int slot, bool type, std::string gxt, sol::table node, Nod
 	});
 }
 
+void showVisualEffect(VisualEffect &effect)
+{
+	effect.drawing = true;
+}
+
+void hideVisualEffect(VisualEffect &effect)
+{
+	effect.drawing = false;
+}
+
 void connectNodesFunctions(sol::table& t_ldyom)
 {
 	t_ldyom.set_function("SkinSelector", &SkinSelector);
@@ -956,4 +966,6 @@ void connectNodesFunctions(sol::table& t_ldyom)
 	t_ldyom.set("removeCounterByNode", removeCounterByNode);
 	t_ldyom.set("addCounter", addCounter);
 	t_ldyom.set("removeCounter", removeCounter);
+	t_ldyom.set("showVisualEffect", showVisualEffect);
+	t_ldyom.set("hideVisualEffect", hideVisualEffect);
 }

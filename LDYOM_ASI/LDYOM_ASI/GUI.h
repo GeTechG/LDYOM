@@ -21,6 +21,7 @@ bool bPickups = false;
 bool bExplosions = false;
 bool bAudios = false;
 bool bPlayer = false;
+bool bVisualEffects = false;
 bool bNodeEditor = false;
 bool bMissionPacks = false;
 bool bMissionSettings = false;
@@ -46,6 +47,7 @@ int currentMissionPack;
 int currentMission;
 int currentStoryline;
 int currentStorylineCheckpoint;
+int currentVisualEffect;
 vector<const char*> namesTargets;
 vector<const char*> namesCars;
 vector<const char*> namesTrains;
@@ -57,6 +59,7 @@ vector<const char*> namesExplosions;
 vector<const char*> namesAudios;
 vector<const char*> namesStorylineCheckpoints;
 vector<std::string> namesMissionPacks;
+vector<const char*> namesVisualEffects;
 vector<vector<std::string>> namesMissions;
 vector<std::string> namesStorylines;
 vector<std::string> namesAudioFiles;
@@ -79,6 +82,60 @@ extern bool load_theme;
 extern std::map<int, const char*> namesVars;
 extern void clearScripts();
 extern int current_mission_target;
+
+void updateNames()
+{
+	namesTargets.clear();
+	for (auto& list_target : currentMissionPtr->list_targets)
+	{
+		namesTargets.push_back(list_target->name);
+	}
+	namesActors.clear();
+	for (auto& list_actor : currentMissionPtr->list_actors)
+	{
+		namesActors.push_back(list_actor->name);
+	}
+	namesCars.clear();
+	for (auto& list_car : currentMissionPtr->list_cars)
+	{
+		namesCars.push_back(list_car->name);
+	}
+	namesTrains.clear();
+	for (auto& train : currentMissionPtr->list_trains)
+	{
+		namesTrains.push_back(train->name);
+	}
+	namesObjects.clear();
+	for (auto& list_object : currentMissionPtr->list_objects)
+	{
+		namesObjects.push_back(list_object->name);
+	}
+	namesPickups.clear();
+	for (auto& list_pickup : currentMissionPtr->list_pickups)
+	{
+		namesPickups.push_back(list_pickup->name);
+	}
+	namesParticles.clear();
+	for (auto& list_particle : currentMissionPtr->list_particles)
+	{
+		namesParticles.push_back(list_particle->name);
+	}
+	namesExplosions.clear();
+	for (auto& list_explosion : currentMissionPtr->list_explosions)
+	{
+		namesExplosions.push_back(list_explosion->name);
+	}
+	namesAudios.clear();
+	for (auto& list_audio : currentMissionPtr->list_audios)
+	{
+		namesAudios.push_back(list_audio->name);
+	}
+	namesVisualEffects.clear();
+	for (auto& effect : currentMissionPtr->list_visualEffects)
+	{
+		namesVisualEffects.push_back(effect->name);
+	}
+}
 
 void fMainMenu()
 {
@@ -150,6 +207,15 @@ void fMainMenu()
 	{
 		bMainMenu = false;
 		bParticles = true;
+	}
+	name.clear();
+	name.append(ICON_FA_SPARKLES);
+	name.append(" ");
+	name.append(langt("visualEffects"));
+	if (ImGui::Button(name.c_str(), size_b))
+	{
+		bMainMenu = false;
+		bVisualEffects = true;
 	}
 	name.clear();
 	name.append(ICON_FA_HEART);
@@ -4172,6 +4238,252 @@ void fPlayer()
 	ImGui::End();
 }
 
+void fVisualEffects()
+{
+	bool isWindow = false;
+	std::string name;
+	ImGui::SetNextWindowSize(ImVec2(270, 410), ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(ImVec2(resolution.x - 270, 0), ImGuiCond_Appearing);
+	name.clear();
+	name.append(ICON_FA_SPARKLES);
+	name.append(" ");
+	name.append(langt("visualEffects"));
+	ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+	//List
+	ImGui::SetNextItemWidth(255.0f);
+	ListBox("", currentVisualEffect, &namesVisualEffects);
+
+	if (ImGui::Button(langt("create")))
+	{
+		CVector playerPos = playerPed->GetPosition();
+		float angle = deg(playerPed->GetHeading());
+
+		std::string name(langt("visualEffect"));
+		name.append(" #");
+		name.append(std::to_string(currentMissionPtr->list_visualEffects.size()));
+		currentMissionPtr->list_visualEffects.push_back(new VisualEffect(name.c_str(), playerPos.x, playerPos.y, playerPos.z,
+			currentMissionPtr->list_targets.empty()
+			? 0
+			: currentMissionPtr->list_targets.size() - 1));
+		currentVisualEffect = currentMissionPtr->list_visualEffects.size() - 1;
+		namesVisualEffects.push_back(currentMissionPtr->list_visualEffects[currentVisualEffect]->name);
+	}
+
+	if (!currentMissionPtr->list_visualEffects.empty())
+	{
+		ImGui::SameLine();
+
+		if (ImGui::Button(langt("duplicate")))
+		{
+			int new_visualEffect = currentMissionPtr->list_visualEffects.size();
+			VisualEffect* visualEffect = new VisualEffect(*currentMissionPtr->list_visualEffects[currentVisualEffect]);
+			currentMissionPtr->list_visualEffects.push_back(visualEffect);
+			string str;
+			str.append(currentMissionPtr->list_visualEffects[new_visualEffect]->name);
+			str.append("c");
+			strcpy(visualEffect->name, str.c_str());
+
+			namesVisualEffects.push_back(visualEffect->name);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(langt("rename")))
+		{
+			ImGui::OpenPopup("rename");
+		}
+		if (ImGui::Button(langt("delete")))
+		{
+			name.clear();
+			name.append(ICON_FA_TRASH_ALT);
+			name.append(" ");
+			name.append(langt("delete"));
+			ImGui::OpenPopup(name.c_str());
+		}
+	}
+
+	isWindow |= ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered();
+
+	//delete
+	ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	name.clear();
+	name.append(ICON_FA_TRASH_ALT);
+	name.append(" ");
+	name.append(langt("delete"));
+	if (ImGui::BeginPopupModal(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text(langt("deleteQues"));
+
+		ImVec2 size_b = ImVec2(100, 0);
+
+		if (ImGui::Button(langt("yes"), size_b))
+		{
+			delete currentMissionPtr->list_visualEffects[currentVisualEffect];
+			currentMissionPtr->list_visualEffects.erase(currentMissionPtr->list_visualEffects.begin() + currentVisualEffect);
+			namesVisualEffects.erase(namesVisualEffects.begin() + currentVisualEffect);
+			if (currentVisualEffect > 0)
+			{
+				currentVisualEffect -= 1;
+			}
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(langt("no"), size_b))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	//Rename popup
+	if (ImGui::BeginPopup("rename"))
+	{
+		ImGui::InputText("", &currentMissionPtr->list_visualEffects[currentVisualEffect]->name[0],
+			IM_ARRAYSIZE(currentMissionPtr->list_visualEffects[currentVisualEffect]->name));
+
+		if (ImGui::Button(langt("close")))
+			ImGui::CloseCurrentPopup();
+
+		ImGui::EndPopup();
+	}
+
+	ImGui::End();
+
+	//visualEffect render
+	if (!currentMissionPtr->list_visualEffects.empty())
+	{
+		VisualEffect* visualEffectPtr = currentMissionPtr->list_visualEffects[currentVisualEffect];
+		ImGui::SetNextWindowSize(ImVec2(400, 360), ImGuiCond_Always);
+		ImGui::SetNextWindowPos(ImVec2(resolution.x - 670, 0), ImGuiCond_Appearing);
+		name.clear();
+		name.append(ICON_FA_SPARKLES);
+		name.append(" ");
+		name.append(langt("visualEffect"));
+		ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+		Command<Commands::FREEZE_CHAR_POSITION>(playerPed, true);
+
+		if (ImGui::SliderInt(langt("typeEffect"), &visualEffectPtr->effectType, 0, 1, langMenu["typeEffectMode"][visualEffectPtr->effectType].c_str()))
+		{
+			visualEffectPtr->type = 0;
+		}
+		
+		if (ImGui::Button(ICON_FA_STREET_VIEW))
+		{
+			CVector playerPos = playerPed->GetPosition();
+			visualEffectPtr->pos[0] = playerPos.x;
+			visualEffectPtr->pos[1] = playerPos.y;
+			visualEffectPtr->pos[2] = playerPos.z;
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip(langt("playerCoordinates"));
+		}
+		ImGui::SameLine();
+		ImGui::PushItemWidth(270);
+		ImGui::InputFloat3(langt("position"), visualEffectPtr->pos, "%.6f");
+
+		ImGui::InputFloat(langt("size"), &visualEffectPtr->size);
+
+		if (visualEffectPtr->effectType == 0)
+		{
+			ImGui::SliderInt(langt("type"), &visualEffectPtr->type, 0, 9);
+			ImGui::SliderInt(langt("flare"), &visualEffectPtr->flare, 0, 2);
+		} else
+		{
+			ImGui::SliderInt(langt("type"), &visualEffectPtr->type, 0, 6);
+		}
+
+		ImGui::ColorEdit4("EffectColorE", visualEffectPtr->color,
+			ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
+			ImGuiColorEditFlags_NoLabel);
+		ImGui::SameLine();
+		ImGui::Text(langt("color"));
+
+		ToggleButton(langt("useTarget"), &visualEffectPtr->useTarget);
+		if (visualEffectPtr->useTarget)
+		{
+			vector<const char*> list_tg_m = namesTargets;
+			list_tg_m.insert(list_tg_m.begin(), langt("toend"));
+			Combo(langt("app_on"), visualEffectPtr->startC, &namesTargets);
+			Combo(langt("dis_after"), visualEffectPtr->endC, &list_tg_m);
+		}
+
+		ImGui::End();
+
+		//edit
+		ImGui::SetNextWindowBgAlpha(0.50f);
+		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(240, 60), ImGuiCond_Always);
+		ImGui::Begin("info", nullptr,
+			ImGuiWindowFlags_NoDecoration + ImGuiWindowFlags_AlwaysAutoResize +
+			ImGuiWindowFlags_NoSavedSettings + ImGuiWindowFlags_NoMove + ImGuiWindowFlags_NoInputs);
+
+		ImGui::Text(langMenu["infoOverlay"][0].c_str());
+		ImGui::Text(langMenu["infoOverlay"][1].c_str());
+		ImGui::Text(langMenu["infoOverlay"][2].c_str());
+		ImGui::Text(langMenu["infoOverlay"][3].c_str());
+		ImGui::Text(langMenu["infoOverlay"][4].c_str());
+
+		ImGui::End();
+
+		isWindow |= ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered();
+
+		float cx = visualEffectPtr->pos[0], cy = visualEffectPtr->pos[1], cz = visualEffectPtr->pos[2];
+		cx += (camera_zoom * sin(static_cast<float>(rad(camera_angle[0]))) * cos(
+			static_cast<float>(rad(camera_angle[1]))));
+		cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
+			static_cast<float>(rad(camera_angle[1]))));
+		cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
+		Command<Commands::POINT_CAMERA_AT_POINT>(visualEffectPtr->pos[0], visualEffectPtr->pos[1], visualEffectPtr->pos[2], 2);
+		if (!isWindow)
+		{
+			if (ImGui::IsMouseDragging(2))
+			{
+				ImVec2 dt = ImGui::GetIO().MouseDelta;
+				camera_angle[0] += dt.x;
+				camera_angle[1] += dt.y;
+			}
+			if (ImGui::GetIO().MouseWheel != 0.0f && KeyPressed(VK_SHIFT))
+			{
+				camera_zoom += (camera_zoom * ImGui::GetIO().MouseWheel) / 4.0;
+				if (camera_zoom < 1.0f)
+					camera_zoom = 1.0f;
+			}
+		}
+		
+		if (KeyPressed(VK_UP))
+		{
+			visualEffectPtr->pos[0] -= 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0])));
+			visualEffectPtr->pos[1] -= 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0])));
+		}
+		else if (KeyPressed(VK_DOWN))
+		{
+			visualEffectPtr->pos[0] += 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0])));
+			visualEffectPtr->pos[1] += 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0])));
+		}
+		if (KeyPressed(VK_LEFT))
+		{
+			visualEffectPtr->pos[0] += 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0] + 90)));
+			visualEffectPtr->pos[1] += 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0] + 90)));
+		}
+		else if (KeyPressed(VK_RIGHT))
+		{
+			visualEffectPtr->pos[0] += 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0] - 90)));
+			visualEffectPtr->pos[1] += 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0] - 90)));
+		}
+		if (KeyPressed(VK_Q))
+		{
+			visualEffectPtr->pos[2] += 0.01 * camera_zoom;
+		}
+		else if (KeyPressed(VK_E))
+		{
+			visualEffectPtr->pos[2] -= 0.01 * camera_zoom;
+		}
+	}
+}
+
 void fMissionPacks()
 {
 	std::string name;
@@ -4423,46 +4735,7 @@ void fMissionPacks()
 				Command<Commands::SET_CHAR_AREA_VISIBLE>(currentMissionPtr->player.editorPed, currentMissionPtr->player.interiorID);
 				Command<Commands::SET_AREA_VISIBLE>(currentMissionPtr->player.interiorID);
 
-				namesTargets.clear();
-				for (auto& list_target : currentMissionPtr->list_targets)
-				{
-					namesTargets.push_back(list_target->name);
-				}
-				namesActors.clear();
-				for (auto& list_actor : currentMissionPtr->list_actors)
-				{
-					namesActors.push_back(list_actor->name);
-				}
-				namesCars.clear();
-				for (auto& list_car : currentMissionPtr->list_cars)
-				{
-					namesCars.push_back(list_car->name);
-				}
-				namesObjects.clear();
-				for (auto& list_object : currentMissionPtr->list_objects)
-				{
-					namesObjects.push_back(list_object->name);
-				}
-				namesPickups.clear();
-				for (auto& list_pickup : currentMissionPtr->list_pickups)
-				{
-					namesPickups.push_back(list_pickup->name);
-				}
-				namesParticles.clear();
-				for (auto& list_particle : currentMissionPtr->list_particles)
-				{
-					namesParticles.push_back(list_particle->name);
-				}
-				namesExplosions.clear();
-				for (auto& list_explosion : currentMissionPtr->list_explosions)
-				{
-					namesExplosions.push_back(list_explosion->name);
-				}
-				namesAudios.clear();
-				for (auto& list_audio : currentMissionPtr->list_audios)
-				{
-					namesAudios.push_back(list_audio->name);
-				}
+				updateNames();
 
 				nameCurrPack = &namesMissionPacks[currentMissionPack];
 

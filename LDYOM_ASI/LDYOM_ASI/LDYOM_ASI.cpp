@@ -141,6 +141,7 @@ void loadArrayMenu()
 	langMenu["open_close"] = parseJsonArray<std::string>(langt("open_close"));
 	langMenu["onWhatCheckpoint"] = parseJsonArray<std::string>(langt("onWhatCheckpoint"));
 	langMenu["typesTimer"] = parseJsonArray<std::string>(langt("typesTimer"));
+	langMenu["typeEffectMode"] = parseJsonArray<std::string>(langt("typeEffectMode"));
 }
 
 void createDirsLDYOM()
@@ -620,6 +621,7 @@ public:
 					delete currentMissionPtr;
 					delete currentStorylinePtr;
 					delete currentNodeGraphPtr;
+					clearScripts();
 					bMainMenu = false;
 					namesTargets.clear();
 					currentTarget = 0;
@@ -706,32 +708,46 @@ public:
 					}
 				}
 				
-				if (!storylineMode && !mission_started) {
-					if (updateSphere)
-						updateSphere = false;
-					else
-					{
-						vector<unsigned int> sphereIdx;
-						for (auto v : currentMissionPtr->list_targets)
+				if (!storylineMode) {
+					if (!mission_started) {
+						if (updateSphere)
+							updateSphere = false;
+						else
 						{
-							if (v->type == 0)
+							vector<unsigned int> sphereIdx;
+							for (auto v : currentMissionPtr->list_targets)
 							{
-								TargetCheckpoint* v_ptr = static_cast<TargetCheckpoint*>(v);
-								if (DistanceBetweenPoints(CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
-									TheCamera.GetPosition()) < 100.0f)
-									sphereIdx.push_back(CTheScripts::AddScriptSphere(
-										sphereIdx.size(), CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
-										v_ptr->radius));
+								if (v->type == 0)
+								{
+									TargetCheckpoint* v_ptr = static_cast<TargetCheckpoint*>(v);
+									if (DistanceBetweenPoints(CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
+										TheCamera.GetPosition()) < 100.0f)
+										sphereIdx.push_back(CTheScripts::AddScriptSphere(
+											sphereIdx.size(), CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
+											v_ptr->radius));
+								}
 							}
-						}
-						CTheScripts::DrawScriptSpheres();
-						for (auto v : sphereIdx)
-						{
-							CTheScripts::RemoveScriptSphere(v);
+							CTheScripts::DrawScriptSpheres();
+							for (auto v : sphereIdx)
+							{
+								CTheScripts::RemoveScriptSphere(v);
+							}
 						}
 					}
 				}
+				
 				instance.process();
+			}
+		};
+
+		Events::gameProcessEvent.before += []
+		{
+			for (auto visual_effect : currentMissionPtr->list_visualEffects)
+			{
+				if (visual_effect->drawing || !mission_started)
+				{
+					visual_effect->draw();
+				}
 			}
 		};
 	}

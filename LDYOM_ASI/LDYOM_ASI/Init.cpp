@@ -5,6 +5,8 @@
 #include <CClothes.h>
 #include <CHud.h>
 #include <CRadar.h>
+#include <CCoronas.h>
+#include <CShadows.h>
 #include <sol/sol.hpp>
 
 
@@ -1572,6 +1574,41 @@ void Player::removeEditorPed() {
 	}
 }
 
+VisualEffect::VisualEffect(const char* name, float x, float y, float z, int lastTarget)
+{
+	strcpy(this->name, name);
+	this->pos[0] = x;
+	this->pos[1] = y;
+	this->pos[2] = z;
+}
+
+VisualEffect::VisualEffect(const VisualEffect& effect)
+{
+	strcpy(this->name, effect.name);
+	memcpy(pos, effect.pos, 3 * sizeof(float));
+	effectType = effect.effectType;
+	size = effect.size;
+	type = effect.type;
+	flare = effect.flare;
+	memcpy(color, effect.color, 3 * sizeof(float));
+	startC = effect.startC;
+	endC = effect.endC;
+	useTarget = effect.useTarget;
+}
+
+void VisualEffect::draw()
+{
+	if (effectType == 0)
+	{
+		CCoronas::RegisterCorona(reinterpret_cast<unsigned int>(this), 0, (int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255), (int)(color[3] * 255), CVector(pos[0], pos[1], pos[2]),
+			size, 150.0f, (eCoronaType)type, (eCoronaFlareType)flare, true, false, 0, 0.0f, false, 0.2f, 0, 15.0f, false, false);
+	} else
+	{
+		CShadows::StoreShadowToBeRendered(type, &CVector(pos[0], pos[1], pos[2]), -size, size-1.0f, size-1.0f, size, (int)(color[3] * 255), (int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255));
+		//Command<Commands::DRAW_SHADOW>(type, angleZ, size, alpha, (int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255), pos[0], pos[1], pos[2]);
+	}
+}
+
 Mission::Mission() {
 	name = langt("newMiss");
 	name.append("_");
@@ -1883,6 +1920,7 @@ void addLDYOMClasses(sol::state& lua)
 	mission_class["list_pickups"] = &Mission::list_pickups;
 	mission_class["list_explosions"] = &Mission::list_explosions;
 	mission_class["list_audios"] = &Mission::list_audios;
+	mission_class["list_visualEffects"] = &Mission::list_visualEffects;
 
 
 	auto storyline_class = lua.new_usertype<Storyline>("Storyline", sol::no_constructor);
