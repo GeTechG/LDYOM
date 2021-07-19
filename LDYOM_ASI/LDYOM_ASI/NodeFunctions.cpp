@@ -644,9 +644,9 @@ void walkPointsNode(int pedHandle, int type_move_ped, int type_route_ped, sol::t
 }
 
 
-void driveCarPointsNode(int pedHandle, int carHandle, float speed, int type_route_ped, bool agressive, sol::table &path, sol::table &node, int id_out, NodeGraph* data, Mission* mission)
+void driveCarPointsNode(int pedHandle, int carHandle, int type_route_ped, bool agressive, sol::table &path, sol::table &speeds, sol::table &node, int id_out, NodeGraph* data, Mission* mission)
 {
-	instance.add_to_queue([pedHandle, carHandle, speed, agressive, path, type_route_ped, data, mission, node, id_out]() {
+	instance.add_to_queue([pedHandle, carHandle, agressive, path, speeds, type_route_ped, data, mission, node, id_out]() {
 		CVehicle* car = CPools::GetVehicle(carHandle);
 
 		Command<Commands::SET_CAR_STRONG>(carHandle, 1);
@@ -664,7 +664,12 @@ void driveCarPointsNode(int pedHandle, int carHandle, float speed, int type_rout
 					return;
 				}
 				float* point = (float*)((sol::object)path[i]).pointer();
-				Command<Commands::TASK_CAR_DRIVE_TO_COORD>(pedHandle, carHandle, point[0], point[1], point[2], speed, 0, 0, (!agressive) ? 0 : 2);
+				int speed = 60;
+				if (!speeds.empty())
+				{
+					speed = speeds[i];
+				}
+				Command<Commands::TASK_CAR_DRIVE_TO_COORD>(pedHandle, carHandle, point[0], point[1], point[2], (float)speed, 0, 0, (!agressive) ? 0 : 2);
 				float dist = 99999;
 				while (dist > 5.0f)
 				{
@@ -945,6 +950,13 @@ void hideVisualEffect(VisualEffect &effect)
 	effect.drawing = false;
 }
 
+void setPosVisualEffect(VisualEffect &effect, float x, float y, float z)
+{
+	effect.pos[0] = x;
+	effect.pos[1] = y;
+	effect.pos[2] = z;
+}
+
 void connectNodesFunctions(sol::table& t_ldyom)
 {
 	t_ldyom.set_function("SkinSelector", &SkinSelector);
@@ -968,4 +980,5 @@ void connectNodesFunctions(sol::table& t_ldyom)
 	t_ldyom.set("removeCounter", removeCounter);
 	t_ldyom.set("showVisualEffect", showVisualEffect);
 	t_ldyom.set("hideVisualEffect", hideVisualEffect);
+	t_ldyom.set("setPosVisualEffect", setPosVisualEffect);
 }

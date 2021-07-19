@@ -62,6 +62,8 @@ extern vector <std::string> Anim_name;
 extern vector<vector <std::string>> Anim_list;
 extern const char* langt(const std::string& key);
 
+struct Mission;
+
 class Actor {
 public:
 	CPed* editorPed = nullptr;
@@ -92,7 +94,7 @@ public:
 	Actor(const Actor& actor);
 
 	void updateEditorPed();
-	void updateMissionPed();
+	void updateMissionPed(Mission* mission);
 
 	void removeEditorPed();
 	void removeMissionPed();
@@ -684,7 +686,7 @@ public:
 	void updateEditorCar(bool recolor = false);
 	void removeEditorCar();
 
-	void updateMissionCar();
+	void updateMissionCar(Mission* mission);
 	void removeMissionCar();
 
 	template <typename Archive>
@@ -910,7 +912,6 @@ public:
 	}
 };
 
-struct Mission;
 
 class Audio {
 public:
@@ -1057,6 +1058,11 @@ struct Mission {
 	std::set<int> objectsBookmark;
 	std::vector<std::pair<char[129], float>> startLabels;
 	vector<VisualEffect*> list_visualEffects;
+	bool gxtTextMissionPassed = true;
+	char customTextMissionPassed[129] = "M_PASSR";
+	int passedSound = 1;
+	bool gxtTextMissionDefeat = true;
+	char customTextMissionDefeat[129] = "M_FAIL";
 
 	Mission();
 	~Mission();
@@ -1122,6 +1128,11 @@ struct Mission {
 			ar & objectsBookmark;
 			ar & startLabels;
 			ar & list_visualEffects;
+			ar & gxtTextMissionPassed;
+			ar & customTextMissionPassed;
+			ar & passedSound;
+			ar & gxtTextMissionDefeat;
+			ar & customTextMissionDefeat;
 		}
 	}
 };

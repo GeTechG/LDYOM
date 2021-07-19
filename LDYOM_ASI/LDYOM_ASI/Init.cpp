@@ -32,7 +32,7 @@ extern bool storyline_started;
 extern bool is_utf8(const char* string);
 extern coro_wait instance;
 extern bool defeat;
-extern void failMission();
+extern void failMission(Mission* mission);
 void rotateVec2(float& x, float& y, float angle);
 
 float camera_zoom = 5.0f;
@@ -188,7 +188,7 @@ void Actor::removeEditorPed() {
 	}
 }
 
-void Actor::updateMissionPed() {
+void Actor::updateMissionPed(Mission* mission) {
 	this->removeMissionPed();
 	int modell;
 	if (this->modelType == 0) {
@@ -236,7 +236,7 @@ void Actor::updateMissionPed() {
 	this->missionPed->SetCurrentWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]));
 	CStreaming::RemoveAllUnusedModels();
 	if (this->shouldNotDie)
-		instance.add_to_queue([&]()
+		instance.add_to_queue([=]()
 		{
 			while (mission_started && missionPed != nullptr)
 			{
@@ -245,7 +245,7 @@ void Actor::updateMissionPed() {
 					defeat = true;
 					mission_started = false;
 					CMessages::ClearMessages(true);
-					failMission();
+					failMission(mission);
 				}
 				this_coro::wait(0ms);
 			}
@@ -753,7 +753,7 @@ void Car::removeEditorCar() {
 	}
 }
 
-void Car::updateMissionCar()
+void Car::updateMissionCar(Mission* mission)
 {
 	removeMissionCar();
 	
@@ -828,7 +828,7 @@ void Car::updateMissionCar()
 		}
 	}
 	if (this->shouldNotDie)
-		instance.add_to_queue([&](){
+		instance.add_to_queue([=](){
 			while (mission_started && missionCar != nullptr)
 			{
 				if (Command<Commands::IS_CAR_DEAD>(missionCar))
@@ -836,7 +836,7 @@ void Car::updateMissionCar()
 					defeat = true;
 					mission_started = false;
 					CMessages::ClearMessages(true);
-					failMission();
+					failMission(mission);
 				}
 				this_coro::wait(0ms);
 			}

@@ -43,16 +43,13 @@ void MainThread()
 		{
 			ifp_idx = Anim_name.size();
 			Anim_name.push_back(v_ifp.first.data());
+			Anim_list.emplace_back();
 		}
 		else
 		{
 			ifp_idx = std::distance(Anim_name.begin(), it);
 		}
-		boost::property_tree::ptree json_anim_actor;
-		std::stringstream stream_json_anim_actor;
-		stream_json_anim_actor << v_ifp.second.data();
-		read_json(stream_json_anim_actor, json_anim_actor);
-		for (boost::property_tree::ptree::value_type& v_anim : json_anim_actor)
+		for (boost::property_tree::ptree::value_type& v_anim : v_ifp.second)
 		{
 			assert(v_anim.first.empty()); // array elements have no names
 			Anim_list.at(ifp_idx).push_back(v_anim.second.data());

@@ -14,7 +14,7 @@ function Node:initialize(id)
 		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.void, 0),
 		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
 		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
-		[self.id+4] = BasePin:new(self.id+4,imgui.imnodes.PinType.number, 0, ffi.new("float[1]")),
+	
 		[self.id+5] = BasePin:new(self.id+5,imgui.imnodes.PinType.number, 0, ffi.new("int[1]")),
 		[self.id+6] = BasePin:new(self.id+6,imgui.imnodes.PinType.boolean, 0, ffi.new("bool[1]")),
 		[self.id+7] = BasePin:new(self.id+7,imgui.imnodes.PinType.void, 1),
@@ -22,11 +22,14 @@ function Node:initialize(id)
 	};
 end
 
+
+local curr_speed = 60;
 function editPathCar()
 	callOpcode(0x01B4, {{0,"int"}, {1,"int"}});
 	callOpcode(0x0512, {{"HAPA","string"}});
 	callOpcode(0x07A7, {{PLAYER_PED,"ped"}});
 	currNodePedPath.points = {};
+	currNodePedPath.speeds = {};
 	while not isKeyJustPressed(0x4E) do
         wait(0);
 		
@@ -36,7 +39,17 @@ function editPathCar()
 			local z = ffi.new("float[1]");
 			callOpcode(0x00A0, {{PLAYER_PED,"ped"}, {x,"float*"}, {y,"float*"}, {z,"float*"}});
 			currNodePedPath.points[#currNodePedPath.points+1] = ffi.new("float[3]",x[0],y[0],z[0]);
+			currNodePedPath.speeds[#currNodePedPath.speeds+1] = curr_speed;
 			callOpcode(0x0ACC, {{GXTEncode(UTF8_to_CP1251(ldyom.langt("added_point")..tostring(#currNodePedPath.points))),"string"}, {1000,"int"}});
+		end
+		if isKeyJustPressed(0x49) then
+			curr_speed = curr_speed + 5;
+			callOpcode(0x0ACC, {{GXTEncode(UTF8_to_CP1251(ldyom.langt("speed")..tostring(curr_speed))),"string"}, {500,"int"}});
+		end
+		if isKeyJustPressed(0x50) then
+			curr_speed = curr_speed - 5;
+			if curr_speed < 0 then curr_speed = 0 end
+			callOpcode(0x0ACC, {{GXTEncode(UTF8_to_CP1251(ldyom.langt("speed")..tostring(curr_speed))),"string"}, {500,"int"}});
 		end
     end
 	callOpcode(0x03E6,{});
@@ -66,14 +79,6 @@ function Node:draw()
 	
 	imgui.imnodes.BeginInputAttribute(self.id+3);
 	imgui.Text(ldyom.langt("CoreHandleCar"));
-	imgui.imnodes.EndInputAttribute();
-	
-	imgui.imnodes.BeginInputAttribute(self.id+4);
-	imgui.Text(ldyom.langt("speed"));
-	if not self.Pins[self.id+4].link then
-		imgui.SetNextItemWidth(200);
-		imgui.InputFloat("", self.Pins[self.id+4].value);
-	end
 	imgui.imnodes.EndInputAttribute();
 	
 	imgui.imnodes.BeginInputAttribute(self.id+5);
@@ -116,14 +121,13 @@ end
 function Node:play(data, mission)
 	local ped = self:getPinValue(self.id+2,data,mission)[0];
 	local car = self:getPinValue(self.id+3,data,mission)[0];
-	local speed = self:getPinValue(self.id+4,data,mission)[0];
 	local type_route_ped = self:getPinValue(self.id+5,data,mission)[0];
 	local agressive = self:getPinValue(self.id+6,data,mission)[0];
 	assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");	
 	assert(callOpcode(0x056E, {{car,"int"}}), "Not found vehicle");
 	ldyom.setLastNode(self.id);
 	
-	ldyom.driveCarPointsNode(ped, car, speed, type_route_ped, agressive, self.points, self, self.id+7, data, mission);
+	ldyom.driveCarPointsNode(ped, car, type_route_ped, agressive, self.points, self.speeds or {}, self, self.id+7, data, mission);
 
 	self:callOutputLinks(data, mission, self.id+8);
 end

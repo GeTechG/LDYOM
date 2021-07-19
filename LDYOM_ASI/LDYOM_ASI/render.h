@@ -27,6 +27,12 @@ void showCursor(bool state)
 
 	if (state)
 	{
+		patch::Nop(0x541DF5, 5); // don't call CControllerConfigManager::AffectPadFromKeyBoard
+		patch::Nop(0x53F417, 5); // don't call CPad__getMouseState
+		patch::SetRaw(0x53F41F, "\x33\xC0\x0F\x84", 4); // test eax, eax -> xor eax, eax
+														// jl loc_53F526 -> jz loc_53F526
+		patch::PutRetn(0x6194A0); // disable RsMouseSetPos (ret)
+		
 		::VirtualProtect(reinterpret_cast<void *>(0x53F3C6U), 5U,
 			PAGE_EXECUTE_READWRITE, &updateMouseProtection);
 
@@ -45,15 +51,28 @@ void showCursor(bool state)
 		memset(reinterpret_cast<void *>(0x748A1BU), 0x90, 5U);
 
 		rwCurrentD3dDevice->ShowCursor(TRUE);
+		static_cast<IDirect3DDevice9 *>(RwD3D9GetCurrentD3DDevice())->ShowCursor(TRUE);
 	}
 	else
 	{
+		patch::SetRaw(0x541DF5, "\xE8\x46\xF3\xFE\xFF", 5); // call CControllerConfigManager::AffectPadFromKeyBoard
+		patch::SetRaw(0x53F417, "\xE8\xB4\x7A\x20\x00", 5); // call CPad__getMouseState
+		patch::SetRaw(0x53F41F, "\x85\xC0\x0F\x8C", 4); // xor eax, eax -> test eax, eax
+														// jz loc_53F526 -> jl loc_53F526
+		patch::SetUChar(0x6194A0, 0xE9); // jmp setup
+		static_cast<IDirect3DDevice9 *>(RwD3D9GetCurrentD3DDevice())->ShowCursor(FALSE);
+		
 		// Original: CPad::UpdateMouse
 		memcpy(reinterpret_cast<void *>(0x53F3C6U), "\xE8\x95\x6C\x20\x00", 5U);
 
 		// Original: RsMouseSetPos
 		memcpy(reinterpret_cast<void *>(0x53E9F1U), "\xE8\xAA\xAA\x0D\x00", 5U);
 		memcpy(reinterpret_cast<void *>(0x748A1BU), "\xE8\x80\x0A\xED\xFF", 5U);
+
+		CPad::NewMouseControllerState.X = 0;
+		CPad::NewMouseControllerState.Y = 0;
+		Call<0x541BD0>(); // CPad::ClearMouseHistory
+		Call<0x541DD0>(); // CPad::UpdatePads
 
 		using CPad_ClearMouseHistory_t = void(__cdecl *)();
 		using CPad_UpdatePads_t = void(__cdecl *)();

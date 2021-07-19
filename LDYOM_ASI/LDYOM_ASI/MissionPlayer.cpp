@@ -71,22 +71,41 @@ void setMissionStarted(bool value)
 	mission_started = value;
 }
 
-void failMission()
+std::string endMissionText;
+void failMission(Mission* mission)
 {
 	unsigned int textPtr;
-	Command<0x0ADE>("M_FAIL", &textPtr);
+	if (!mission->gxtTextMissionDefeat)
+	{
+		endMissionText = mission->customTextMissionDefeat;
+		endMissionText = is_utf8(endMissionText.c_str()) ? UTF8_to_CP1251(endMissionText) : endMissionText;
+		GXTEncode(endMissionText);
+		textPtr = (unsigned int)endMissionText.c_str();
+	} else
+	{
+		Command<0x0ADE>(mission->customTextMissionDefeat, &textPtr);
+	}
 	CMessages::AddBigMessageWithNumber(reinterpret_cast<char*>(textPtr), 4000, 0, 100, NULL, NULL, NULL, NULL, NULL);
 }
 
-void respectMission()
+void respectMission(Mission* mission)
 {
 	unsigned int textPtr;
-	Command<0x0ADE>("M_PASSR", &textPtr);
+	if (!mission->gxtTextMissionPassed)
+	{
+		endMissionText = mission->customTextMissionPassed;
+		endMissionText = is_utf8(endMissionText.c_str()) ? UTF8_to_CP1251(endMissionText) : endMissionText;
+		GXTEncode(endMissionText);
+		textPtr = (unsigned int)endMissionText.c_str();
+	} else
+	{
+		Command<0x0ADE>(mission->customTextMissionPassed, &textPtr);
+	}
 	CMessages::AddBigMessageQ(reinterpret_cast<char*>(textPtr), 4000, 0);
-	Command<Commands::PLAY_MISSION_PASSED_TUNE>(1);
+	Command<Commands::PLAY_MISSION_PASSED_TUNE>(mission->passedSound);
 }
 
-void testDefeat()
+void testDefeat(Mission* mission)
 {
 	while (mission_started)
 	{
@@ -103,7 +122,7 @@ void testDefeat()
 			mission_started = false;
 			Command<Commands::SET_CHAR_PROOFS>(playerPed, 1, 1, 1, 1, 1);
 			CMessages::ClearMessages(true);
-			failMission();
+			failMission(mission);
 		}
 		if (Command<0x0ADC>("ldstop"))
 		{
@@ -227,7 +246,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 	Command<Commands::SET_PED_DENSITY_MULTIPLIER>(ped_density);
 	Command<Commands::SET_CAR_DENSITY_MULTIPLIER>(car_density);
 	
-	instance.add_to_queue(testDefeat);
+	instance.add_to_queue(std::bind(testDefeat, mission));
 
 	if (clearSelf) {
 		realVariable.clear();
@@ -397,7 +416,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 			for (int actor_targ : arr_target_actor[current_mission_target].first)
 			{
 				instance.add_to_queue([&mission,actor_targ, &graph]{
-					mission->list_actors[actor_targ]->updateMissionPed();
+					mission->list_actors[actor_targ]->updateMissionPed(mission);
 					missionActors.push_back(mission->list_actors[actor_targ]->missionPed);
 					for (auto node : graph->nodes)
 					{
@@ -431,7 +450,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 			for (int car_targ : arr_target_car[current_mission_target].first)
 			{
 				instance.add_to_queue([&mission, car_targ, &graph] {
-					mission->list_cars[car_targ]->updateMissionCar();
+					mission->list_cars[car_targ]->updateMissionCar(mission);
 					missionVehicle.push_back(mission->list_cars[car_targ]->missionCar);
 					for (auto node : graph->nodes)
 					{
@@ -2211,7 +2230,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 										mission_started = false;
 										Command<Commands::SET_CHAR_PROOFS>(playerPed, 1, 1, 1, 1, 1);
 										CMessages::ClearMessages(true);
-										failMission();
+										failMission(mission);
 									};
 									
 									while (mission_started && timerOn)
@@ -2937,7 +2956,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 	if (!defeat)
 	{
 		CMessages::ClearMessages(true);
-		respectMission();
+		respectMission(mission);
 	}
 	printLog(std::to_string(graph->lastNode));
 	mission_started = false;

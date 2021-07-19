@@ -32,6 +32,8 @@ function playNodePreviewAnimPed()
     end
     callOpcode(0x01B4, {{0,"int"}, {0,"int"}});
     local anims = ldyom.Anim_list[currNodePlayAnim.Pins[currNodePlayAnim.id+2].value[0]+1];
+	print(ffi.string(anims[currNodePlayAnim.Pins[currNodePlayAnim.id+3].value[0]+1]));
+	print(ffi.string(ldyom.Anim_name[currNodePlayAnim.Pins[currNodePlayAnim.id+2].value[0]+1]));
 	callOpcode(0x0605,{{PLAYER_PED,"ped"}, {anims[currNodePlayAnim.Pins[currNodePlayAnim.id+3].value[0]+1],"string"}, {ldyom.Anim_name[currNodePlayAnim.Pins[currNodePlayAnim.id+2].value[0]+1],"string"}, {currNodePlayAnim.Pins[currNodePlayAnim.id+9].value[0],"float"}, {currNodePlayAnim.Pins[currNodePlayAnim.id+4].value[0],"bool"}, {false,"bool"}, {false,"bool"}, {false,"bool"}, {-1,"int"}});
 end
 

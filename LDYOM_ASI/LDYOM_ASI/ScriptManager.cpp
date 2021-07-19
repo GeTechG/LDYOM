@@ -332,6 +332,96 @@ void breakTarget()
 	break_target = true;
 }
 
+extern bool is_utf8(const char* string);
+
+
+std::string messageNode;
+void AddMessage(std::string text, unsigned int time, unsigned short flag, bool bPreviousBrief, bool gxt)
+{
+	instance.add_to_queue([=]() {
+		
+		unsigned int textPtr;
+		CMessages::ClearAllMessagesDisplayedByGame();
+		if (gxt)
+		{
+			Command<0x0ADE>(text.c_str(), &textPtr);
+		}
+		else
+		{
+			messageNode = text;
+			messageNode = is_utf8(messageNode.c_str()) ? UTF8_to_CP1251(messageNode) : messageNode;
+			GXTEncode(messageNode);
+			textPtr = (unsigned int)messageNode.c_str();
+		}
+		CMessages::AddMessage(reinterpret_cast<char*>(textPtr), time, flag, bPreviousBrief);
+		this_coro::wait(0);
+		this_coro::wait(time);
+	});
+}
+
+void AddMessageJumpQ(std::string text, unsigned int time, unsigned short flag, bool bPreviousBrief, bool gxt)
+{
+	instance.add_to_queue([=]() {
+		CMessages::ClearAllMessagesDisplayedByGame();
+		unsigned int textPtr;
+		if (gxt)
+		{
+			Command<0x0ADE>(text.c_str(), &textPtr);
+		}
+		else
+		{
+			messageNode = text;
+			messageNode = is_utf8(messageNode.c_str()) ? UTF8_to_CP1251(messageNode) : messageNode;
+			GXTEncode(messageNode);
+			textPtr = (unsigned int)messageNode.c_str();
+		}
+		CMessages::AddMessageJumpQ(reinterpret_cast<char*>(textPtr), time, flag, bPreviousBrief);
+		this_coro::wait(time);
+	});
+}
+
+void AddBigMessageWithNumber(std::string text, unsigned int time, unsigned short style, int n1, int n2, int n3, int n4, int n5, int n6, bool gxt)
+{
+	instance.add_to_queue([=]() {
+		CMessages::ClearAllMessagesDisplayedByGame();
+		unsigned int textPtr;
+		if (gxt)
+		{
+			Command<0x0ADE>(text.c_str(), &textPtr);
+		}
+		else
+		{
+			messageNode = text;
+			messageNode = is_utf8(messageNode.c_str()) ? UTF8_to_CP1251(messageNode) : messageNode;
+			GXTEncode(messageNode);
+			textPtr = (unsigned int)messageNode.c_str();
+		}
+		CMessages::AddBigMessageWithNumber(reinterpret_cast<char*>(textPtr), time, style, n1, n2, n3, n4, n5, n6);
+		this_coro::wait(time);
+	});
+}
+
+void AddBigMessageWithNumberQ(std::string text, unsigned int time, unsigned short style, int n1, int n2, int n3, int n4, int n5, int n6, bool gxt)
+{
+	instance.add_to_queue([=]() {
+		CMessages::ClearAllMessagesDisplayedByGame();
+		unsigned int textPtr;
+		if (gxt)
+		{
+			Command<0x0ADE>(text.c_str(), &textPtr);
+		}
+		else
+		{
+			messageNode = text;
+			messageNode = is_utf8(messageNode.c_str()) ? UTF8_to_CP1251(messageNode) : messageNode;
+			GXTEncode(messageNode);
+			textPtr = (unsigned int)messageNode.c_str();
+		}
+		CMessages::AddBigMessageWithNumberQ(reinterpret_cast<char*>(textPtr), time, style, n1, n2, n3, n4, n5, n6);
+		this_coro::wait(time);
+	});
+}
+
 void setNamespaceLua(sol::state& lua)
 {
 	lua.set_function("print", &printLog);
@@ -355,6 +445,10 @@ void setNamespaceLua(sol::state& lua)
 	lua.set_function("time_ms", &getTime);
 	lua.set_function("getOrientationObject", getOrientationObject);
 	lua.set_function("getPointerString", &getPointerString);
+	lua.set_function("AddMessage", AddMessage);
+	lua.set_function("AddMessageJumpQ", AddMessageJumpQ);
+	lua.set_function("AddBigMessageWithNumber", AddBigMessageWithNumber);
+	lua.set_function("AddBigMessageWithNumberQ", AddBigMessageWithNumberQ);
 
 	sol::usertype<charPointer> charPointerClass = lua.new_usertype<charPointer>("charPointer", sol::constructors<charPointer()>());
 

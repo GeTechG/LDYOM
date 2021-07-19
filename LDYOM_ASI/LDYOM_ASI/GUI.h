@@ -4763,7 +4763,7 @@ void fMissionSettings()
 {
 	std::string name;
 	ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_Appearing);
-	ImGui::SetNextWindowPos(ImVec2(resolution.x / 2 - 100, resolution.y / 2 - 200), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(resolution.x / 2 - 100, resolution.y / 2 - 400), ImGuiCond_Appearing);
 	ImGui::Begin(langt("settingsMiss"), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
 	ImVec2 size_b = ImVec2(160, 0);
@@ -4792,6 +4792,28 @@ void fMissionSettings()
 		ImGui::Separator();
 	}
 	ImGui::EndChild();
+
+	ImGui::Separator();
+	
+	
+	ImGui::InputText(langt("passedText"), currentMissionPtr->customTextMissionPassed, IM_ARRAYSIZE(currentMissionPtr->customTextMissionPassed));
+	ImGui::SameLine();
+	ImGui::PushID("gxtPassed");
+	ToggleButton(langt("gxt"), &currentMissionPtr->gxtTextMissionPassed);
+	ImGui::PopID();
+
+	
+	if (ImGui::SliderInt(langt("passedSound"), &currentMissionPtr->passedSound, 1, 2))
+	{
+		Command<Commands::PLAY_MISSION_PASSED_TUNE>(currentMissionPtr->passedSound);
+	}
+
+	
+	ImGui::InputText(langt("defeatText"), currentMissionPtr->customTextMissionDefeat, IM_ARRAYSIZE(currentMissionPtr->customTextMissionDefeat));
+	ImGui::SameLine();
+	ImGui::PushID("gxtDefeat");
+	ToggleButton(langt("gxt"), &currentMissionPtr->gxtTextMissionDefeat);
+	ImGui::PopID();
 	
 	ImGui::Separator();
 	Combo(langt("weather"), currentMissionPtr->weather, &langMenu["Weather_arr"]);

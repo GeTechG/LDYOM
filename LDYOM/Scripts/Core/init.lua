@@ -184,6 +184,7 @@ function main()
 	require "LDYOM.Scripts.Core.Vehicle.NodeOpenDoors"
 	require "LDYOM.Scripts.Core.Vehicle.NodeLockVehicle"
 	require "LDYOM.Scripts.Core.Vehicle.NodeGetPosVehicle"
+	require "LDYOM.Scripts.Core.Vehicle.NodeSetPosVehicle"
 	require "LDYOM.Scripts.Core.Vehicle.NodeVehicleGetHealth"
 	
 	require "LDYOM.Scripts.Core.Player.NodePlayerToPed"
@@ -220,6 +221,9 @@ function main()
 	require "LDYOM.Scripts.Core.VisualEffect.NodeApperVisualEffect"
 	require "LDYOM.Scripts.Core.VisualEffect.NodeHideVisualEffect"
 	require "LDYOM.Scripts.Core.VisualEffect.NodeDisapperVisualEffect"
+	require "LDYOM.Scripts.Core.VisualEffect.NodeSetPosVisualEffect"
+	
+	require "LDYOM.Scripts.Core.Text.NodeAddMessage"
 	
 	print("Core nodes loaded")
 end
