@@ -422,6 +422,11 @@ void AddBigMessageWithNumberQ(std::string text, unsigned int time, unsigned shor
 	});
 }
 
+float calcDistance(float x1, float y1, float z1, float x2, float y2, float z2)
+{
+	return DistanceBetweenPoints(CVector(x1, y1, z1), CVector(x2, y2, z2));
+}
+
 void setNamespaceLua(sol::state& lua)
 {
 	lua.set_function("print", &printLog);
@@ -449,6 +454,7 @@ void setNamespaceLua(sol::state& lua)
 	lua.set_function("AddMessageJumpQ", AddMessageJumpQ);
 	lua.set_function("AddBigMessageWithNumber", AddBigMessageWithNumber);
 	lua.set_function("AddBigMessageWithNumberQ", AddBigMessageWithNumberQ);
+	lua.set_function("calcDistance", calcDistance);
 
 	sol::usertype<charPointer> charPointerClass = lua.new_usertype<charPointer>("charPointer", sol::constructors<charPointer()>());
 

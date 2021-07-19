@@ -5237,8 +5237,8 @@ void fInfo()
 	name.append(" ");
 	name.append(langMenu["info_t"][7].c_str());
 	if (ImGui::Button(name.c_str())) {
-		//os.execute('start https://mgeymer.github.io/LDYOM_DOC/')
-		system("explorer https://mgeymer.github.io/LDYOM_DOC/");
+		//os.execute('start https://getechg.github.io/LDYOM_DOC/')
+		system("explorer https://getechg.github.io/LDYOM_DOC/");
 	}
 	
 	ImGui::End();

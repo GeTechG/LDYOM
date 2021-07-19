@@ -216,6 +216,7 @@ function main()
 	require "LDYOM.Scripts.Core.World.NodeGetTimerTime"
 	require "LDYOM.Scripts.Core.World.NodeAddCounter"
 	require "LDYOM.Scripts.Core.World.NodeRemoveCounter"
+	require "LDYOM.Scripts.Core.World.NodeDistanceBetweenPoints"
 	
 	require "LDYOM.Scripts.Core.VisualEffect.NodeShowVisualEffect"
 	require "LDYOM.Scripts.Core.VisualEffect.NodeApperVisualEffect"
