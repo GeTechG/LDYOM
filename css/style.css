@@ -221,3 +221,14 @@ h2 {
   box-shadow: 0px 0px 10px rgb(85, 85, 85);
   vertical-align: middle;
 }
+
+.positive_text {
+  color: rgb(0, 255, 0);
+}
+
+#download_buttons {
+  display: flex;
+  flex-direction: column;
+  -ms-flex-align: center;
+  width: 45%;
+}
