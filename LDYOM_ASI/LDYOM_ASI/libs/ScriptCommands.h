@@ -150,7 +150,11 @@ static bool CallCommandByIdPtr(unsigned int commandId, sol::table &params) {
 		{
 			sol::object val = value[1];
 			code.Pack((float*)val.pointer());
-		}
+		} else if (type._Equal("char**"))
+		{
+			char(*val)[16] = value[1];
+			code.Pack(val);
+		} 
 	}
 #ifdef GTASA
     script.m_pBaseIP = script.m_pCurrentIP = code.GetData();

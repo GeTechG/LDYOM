@@ -3,8 +3,10 @@
 
 #include "NodeGraph.h"
 #include "ScriptManager.h"
+#include <CTimer.h>
 
 extern bool mission_started;
+
 
 void MainThread()
 {
@@ -41,16 +43,13 @@ void MainThread()
 		{
 			ifp_idx = Anim_name.size();
 			Anim_name.push_back(v_ifp.first.data());
+			Anim_list.emplace_back();
 		}
 		else
 		{
 			ifp_idx = std::distance(Anim_name.begin(), it);
 		}
-		boost::property_tree::ptree json_anim_actor;
-		std::stringstream stream_json_anim_actor;
-		stream_json_anim_actor << v_ifp.second.data();
-		read_json(stream_json_anim_actor, json_anim_actor);
-		for (boost::property_tree::ptree::value_type& v_anim : json_anim_actor)
+		for (boost::property_tree::ptree::value_type& v_anim : v_ifp.second)
 		{
 			assert(v_anim.first.empty()); // array elements have no names
 			Anim_list.at(ifp_idx).push_back(v_anim.second.data());
@@ -137,6 +136,9 @@ void loadArrayMenu()
 	langMenu["speed_walk_to_car"] = parseJsonArray<std::string>(langt("speed_walk_to_car"));
 	langMenu["place_in_car"] = parseJsonArray<std::string>(langt("place_in_car"));
 	langMenu["open_close"] = parseJsonArray<std::string>(langt("open_close"));
+	langMenu["onWhatCheckpoint"] = parseJsonArray<std::string>(langt("onWhatCheckpoint"));
+	langMenu["typesTimer"] = parseJsonArray<std::string>(langt("typesTimer"));
+	langMenu["typeEffectMode"] = parseJsonArray<std::string>(langt("typeEffectMode"));
 }
 
 void createDirsLDYOM()
@@ -193,6 +195,8 @@ void foo()
 			CHud::m_Wants_To_Draw_Hud = false;
 
 			TargetCutscene* targetPtr = static_cast<TargetCutscene*>(currentMissionPtr->list_targets[currentTarget]);
+			Command<Commands::SWITCH_WIDESCREEN>((int)targetPtr->widescreen);
+
 			while (editmodeCamera)
 			{
 				this_coro::wait(0ms);
@@ -297,6 +301,7 @@ void foo()
 					bTargets = true;
 					CHud::bScriptDontDisplayRadar = false;
 					CHud::m_Wants_To_Draw_Hud = true;
+					Command<Commands::SWITCH_WIDESCREEN>(0);
 				}
 			}
 		}
@@ -555,6 +560,11 @@ void foo()
 	}
 }
 
+//extern "C" __declspec(dllexport) void testExport()
+//{
+//	CHud::SetHelpMessage("ldyom exported", true, true, true);
+//}
+
 void clearScripts()
 {
 	lang_file.clear();
@@ -608,6 +618,7 @@ public:
 					delete currentMissionPtr;
 					delete currentStorylinePtr;
 					delete currentNodeGraphPtr;
+					clearScripts();
 					bMainMenu = false;
 					namesTargets.clear();
 					currentTarget = 0;
@@ -677,49 +688,63 @@ public:
 					CHud::DrawHelpText();
 				}
 
-				if (KeyPressed(0x11)) {
-					if (KeyJustPressed(0x53)) {
-						if (fastdata_pack != -1) {
-							if (storylineMode)
+				static unsigned saveKeyPressTime = 0;
+				if (KeyPressed(0x11) && KeyJustPressed(0x53) && CTimer::m_snTimeInMilliseconds - saveKeyPressTime > 1500) {
+					if (fastdata_pack != -1) {
+						if (storylineMode)
+						{
+							Manager::SaveStoryline(fastdata_pack);
+							CHud::SetHelpMessage("Saved!", false, false, false);
+						} else if (fastdata_miss != -1)
+						{
+							Manager::SaveMission(fastdata_pack, fastdata_miss);
+							Manager::SaveListMission(fastdata_pack);
+							CHud::SetHelpMessage("Saved!", false, false, false);
+						}
+						saveKeyPressTime = CTimer::m_snTimeInMilliseconds;
+					}
+				}
+				
+				if (!storylineMode) {
+					if (!mission_started) {
+						if (updateSphere)
+							updateSphere = false;
+						else
+						{
+							vector<unsigned int> sphereIdx;
+							for (auto v : currentMissionPtr->list_targets)
 							{
-								Manager::SaveStoryline(fastdata_pack);
-								CHud::SetHelpMessage("Saved!", false, false, false);
-							} else if (fastdata_miss != -1)
+								if (v->type == 0)
+								{
+									TargetCheckpoint* v_ptr = static_cast<TargetCheckpoint*>(v);
+									if (DistanceBetweenPoints(CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
+										TheCamera.GetPosition()) < 100.0f)
+										sphereIdx.push_back(CTheScripts::AddScriptSphere(
+											sphereIdx.size(), CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
+											v_ptr->radius));
+								}
+							}
+							CTheScripts::DrawScriptSpheres();
+							for (auto v : sphereIdx)
 							{
-								Manager::SaveMission(fastdata_pack, fastdata_miss);
-								Manager::SaveListMission(fastdata_pack);
-								CHud::SetHelpMessage("Saved!", false, false, false);
+								CTheScripts::RemoveScriptSphere(v);
 							}
 						}
 					}
 				}
 				
-				if (!storylineMode && !mission_started) {
-					if (updateSphere)
-						updateSphere = false;
-					else
-					{
-						vector<unsigned int> sphereIdx;
-						for (auto v : currentMissionPtr->list_targets)
-						{
-							if (v->type == 0)
-							{
-								TargetCheckpoint* v_ptr = static_cast<TargetCheckpoint*>(v);
-								if (DistanceBetweenPoints(CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
-									TheCamera.GetPosition()) < 100.0f)
-									sphereIdx.push_back(CTheScripts::AddScriptSphere(
-										sphereIdx.size(), CVector(v_ptr->pos[0], v_ptr->pos[1], v_ptr->pos[2]),
-										v_ptr->radius));
-							}
-						}
-						CTheScripts::DrawScriptSpheres();
-						for (auto v : sphereIdx)
-						{
-							CTheScripts::RemoveScriptSphere(v);
-						}
-					}
-				}
 				instance.process();
+			}
+		};
+
+		Events::gameProcessEvent.before += []
+		{
+			for (auto visual_effect : currentMissionPtr->list_visualEffects)
+			{
+				if (visual_effect->drawing || !mission_started)
+				{
+					visual_effect->draw();
+				}
 			}
 		};
 	}

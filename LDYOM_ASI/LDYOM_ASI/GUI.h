@@ -21,6 +21,7 @@ bool bPickups = false;
 bool bExplosions = false;
 bool bAudios = false;
 bool bPlayer = false;
+bool bVisualEffects = false;
 bool bNodeEditor = false;
 bool bMissionPacks = false;
 bool bMissionSettings = false;
@@ -46,6 +47,7 @@ int currentMissionPack;
 int currentMission;
 int currentStoryline;
 int currentStorylineCheckpoint;
+int currentVisualEffect;
 vector<const char*> namesTargets;
 vector<const char*> namesCars;
 vector<const char*> namesTrains;
@@ -57,6 +59,7 @@ vector<const char*> namesExplosions;
 vector<const char*> namesAudios;
 vector<const char*> namesStorylineCheckpoints;
 vector<std::string> namesMissionPacks;
+vector<const char*> namesVisualEffects;
 vector<vector<std::string>> namesMissions;
 vector<std::string> namesStorylines;
 vector<std::string> namesAudioFiles;
@@ -78,6 +81,61 @@ extern void loadArrayMenu();
 extern bool load_theme;
 extern std::map<int, const char*> namesVars;
 extern void clearScripts();
+extern int current_mission_target;
+
+void updateNames()
+{
+	namesTargets.clear();
+	for (auto& list_target : currentMissionPtr->list_targets)
+	{
+		namesTargets.push_back(list_target->name);
+	}
+	namesActors.clear();
+	for (auto& list_actor : currentMissionPtr->list_actors)
+	{
+		namesActors.push_back(list_actor->name);
+	}
+	namesCars.clear();
+	for (auto& list_car : currentMissionPtr->list_cars)
+	{
+		namesCars.push_back(list_car->name);
+	}
+	namesTrains.clear();
+	for (auto& train : currentMissionPtr->list_trains)
+	{
+		namesTrains.push_back(train->name);
+	}
+	namesObjects.clear();
+	for (auto& list_object : currentMissionPtr->list_objects)
+	{
+		namesObjects.push_back(list_object->name);
+	}
+	namesPickups.clear();
+	for (auto& list_pickup : currentMissionPtr->list_pickups)
+	{
+		namesPickups.push_back(list_pickup->name);
+	}
+	namesParticles.clear();
+	for (auto& list_particle : currentMissionPtr->list_particles)
+	{
+		namesParticles.push_back(list_particle->name);
+	}
+	namesExplosions.clear();
+	for (auto& list_explosion : currentMissionPtr->list_explosions)
+	{
+		namesExplosions.push_back(list_explosion->name);
+	}
+	namesAudios.clear();
+	for (auto& list_audio : currentMissionPtr->list_audios)
+	{
+		namesAudios.push_back(list_audio->name);
+	}
+	namesVisualEffects.clear();
+	for (auto& effect : currentMissionPtr->list_visualEffects)
+	{
+		namesVisualEffects.push_back(effect->name);
+	}
+}
 
 void fMainMenu()
 {
@@ -149,6 +207,15 @@ void fMainMenu()
 	{
 		bMainMenu = false;
 		bParticles = true;
+	}
+	name.clear();
+	name.append(ICON_FA_SPARKLES);
+	name.append(" ");
+	name.append(langt("visualEffects"));
+	if (ImGui::Button(name.c_str(), size_b))
+	{
+		bMainMenu = false;
+		bVisualEffects = true;
 	}
 	name.clear();
 	name.append(ICON_FA_HEART);
@@ -227,12 +294,18 @@ void fMainMenu()
 		bStorylines = true;
 	}
 	ImGui::Separator();
+	static int startTarget = 0;
+	ImGui::PushID("target_start");
+	ImGui::SetNextItemWidth(size_b.x);
+	Combo("", startTarget, &namesTargets);
+	ImGui::PopID();
 	name.clear();
 	name.append(ICON_FA_PLAY);
 	name.append(" ");
 	name.append(langt("missionStart"));
 	if (ImGui::Button(name.c_str(), size_b))
 	{
+		current_mission_target = startTarget;
 		bMainMenu = false;
 		// open mission
 		currentMissionPtr->removeEditorEntity();
@@ -404,6 +477,14 @@ void fTargets()
 					target = new TargetTraffic(
 						*static_cast<TargetTraffic*>(currentMissionPtr->list_targets.at(currentTarget)));
 					break;
+				case 6:
+					target = new TargetAddTimer(
+						*static_cast<TargetAddTimer*>(currentMissionPtr->list_targets.at(currentTarget)));
+					break;
+				case 7:
+					target = new
+						TargetRemoveTimer(*static_cast<TargetRemoveTimer*>(currentMissionPtr->list_targets.at(currentTarget)));
+					break;
 				default:
 					break;
 				}
@@ -557,6 +638,12 @@ void fTargets()
 				case 5:
 					currentMissionPtr->list_targets.push_back(new TargetTraffic(name.c_str()));
 					break;
+				case 6:
+					currentMissionPtr->list_targets.push_back(new TargetAddTimer(name.c_str()));
+					break;
+				case 7:
+					currentMissionPtr->list_targets.push_back(new TargetRemoveTimer(name.c_str()));
+					break;
 				default:
 					break;
 				}
@@ -604,6 +691,10 @@ void fTargets()
 			case 7:
 				name.append(type_targets_name->at(selTarget));
 				currentMissionPtr->list_targets.push_back(new TargetWaitSignal(name.c_str()));
+				break;
+			case 8:
+				name.append(type_targets_name->at(selTarget));
+				currentMissionPtr->list_targets.push_back(new TargetDestroyVehicle(name.c_str()));
 				break;
 			default:
 				break;
@@ -704,6 +795,15 @@ void fTargets()
 				Combo(langt("colorMarker"), targetPtr->colorBlip, &langMenu["targets_marker_color"]);
 				ImGui::InputText(langt("textTarget"), &targetPtr->text[0], IM_ARRAYSIZE(targetPtr->text));
 				ImGui::InputFloat(langt("timeText"), &targetPtr->textTime);
+				ImGui::Separator();
+				Combo(langt("howToArrive"), targetPtr->onWhat, &langMenu["onWhatCheckpoint"]);
+
+				if (targetPtr->onWhat == 3)
+				{
+					Combo(langt("car"), targetPtr->comeBackVehicle, &namesCars);
+					ImGui::InputText(langt("text"), targetPtr->textComeBackVehicle, 129);
+					Combo(langt("colorMarkerCar"), targetPtr->colorBlipComeBackVehicle, &langMenu["targets_marker_color"]);
+				}
 
 
 				ImGui::SetNextWindowBgAlpha(0.50);
@@ -876,6 +976,7 @@ void fTargets()
 						}
 
 						ToggleButton(langt("movecam"), &targetPtr->moveCam);
+						ToggleButton(langt("widescreen"), &targetPtr->widescreen);
 						ImGui::InputText(langt("text"), targetPtr->text, IM_ARRAYSIZE(targetPtr->text));
 						ImGui::PushItemWidth(-180);
 						ImGui::InputFloat(langt("timecutscene"), &targetPtr->time);
@@ -931,6 +1032,27 @@ void fTargets()
 						ImGui::SliderScalar(langt("countCar"), ImGuiDataType_U8, &targetPtr->cars, &minS, &maxS,
 						                    langMenu["countTraffic"][targetPtr->cars].c_str());
 						break;
+					}
+				case 6:
+					{
+						TargetAddTimer* targetPtr = static_cast<TargetAddTimer*>(currentMissionPtr->list_targets[
+							currentTarget]);
+
+						Combo(langt("type"), targetPtr->typeTimer, &langMenu["typesTimer"]);
+						ImGui::SameLine();
+						HelpMarker(langt("hintTimerTypes"));
+
+						ImGui::Text(langt("start"));
+						ImGui::PushID("startTime");
+						ImGui::InputInt(langt("time"), &targetPtr->startTime);
+						ImGui::PopID();
+						
+						ToggleButton(langt("backwards"), &targetPtr->backward);
+						ImGui::PushID("typeTimer");
+						Combo("", targetPtr->compareType, &langMenu["compaingTypes"]);
+						ImGui::PopID();
+						ImGui::InputInt(langt("time"), &targetPtr->compareValue);
+						ImGui::InputText(langt("text"), targetPtr->text, IM_ARRAYSIZE(targetPtr->text));
 					}
 				default:
 					break;
@@ -1072,6 +1194,18 @@ void fTargets()
 						else
 							Combo(langt("model"), targetPtr->modelID, &ID_Spec_Actors);
 
+						if (targetPtr->modelType == 0 && targetPtr->modelID == 0)
+						{
+							if (ImGui::Button(langt("copyClothes")))
+							{
+								auto playerClothers = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+								std::memcpy(targetPtr->clotherM_anTextureKeys, playerClothers->m_anTextureKeys, sizeof(playerClothers->m_anTextureKeys));
+								std::memcpy(targetPtr->clotherM_anModelKeys, playerClothers->m_anModelKeys, sizeof(playerClothers->m_anModelKeys));
+							}
+							ImGui::SameLine();
+							HelpMarker(langt("helpCopyClothes"));
+						}
+						
 						ImGui::Separator();
 
 						if (ImGui::TreeNode(langt("chartics")))
@@ -1313,6 +1447,18 @@ void fTargets()
 					break;
 				}
 				break;
+			}
+		case 8:
+			{
+				TargetDestroyVehicle* targetPtr = static_cast<TargetDestroyVehicle*>(currentMissionPtr->list_targets[currentTarget]);
+				Combo(langt("car"), targetPtr->vehicle, &namesCars);
+				Combo(langt("colorMarker"), targetPtr->colorBlip, &langMenu["targets_marker_color"]);
+				ImGui::InputText(langt("textTarget"), &targetPtr->text[0], IM_ARRAYSIZE(targetPtr->text));
+				ImGui::InputFloat(langt("timeText"), &targetPtr->textTime);
+				ImGui::Text(langt("condition"));
+				ImGui::RadioButton(langt("destroy"), &targetPtr->typeDamage, 0);
+				ImGui::RadioButton(langt("hit"), &targetPtr->typeDamage, 1);
+				ImGui::RadioButton(langt("sunk"), &targetPtr->typeDamage, 2);
 			}
 		default:
 			break;
@@ -2147,7 +2293,7 @@ void fTrains()
 		namesTrains.push_back(currentMissionPtr->list_trains[currentTrain]->name);
 		currentMissionPtr->list_trains[currentMissionPtr->list_trains.size() - 1]->updateEditorTrain();
 	}
-	if (currentMissionPtr->list_trains.size() > 0)
+	if (!currentMissionPtr->list_trains.empty())
 	{
 		ImGui::SameLine();
 
@@ -2390,7 +2536,8 @@ void fObjects()
 		namesObjects.push_back(currentMissionPtr->list_objects[currentObject]->name);
 		currentMissionPtr->list_objects[currentMissionPtr->list_objects.size() - 1]->updateEditorObject();
 	}
-	if (currentMissionPtr->list_objects.size() > 0)
+	
+	if (!currentMissionPtr->list_objects.empty())
 	{
 		ImGui::SameLine();
 
@@ -2512,6 +2659,17 @@ void fObjects()
 			                                       static_cast<float>(objectPtr->rotation[1]),
 			                                       static_cast<float>(objectPtr->rotation[2]));
 		}
+
+		if (ImGui::Button(ICON_FA_BOOKMARK))
+		{
+			ImGui::OpenPopup("objectBookmark");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(ICON_FA_GLOBE_ASIA))
+		{
+			system("explorer https://dev.prineside.com/en/gtasa_samp_model_id/");
+		}
+		ImGui::SameLine();
 		ImGui::InputInt(langt("model"), &objectPtr->modelID);
 		if (ImGui::Button(langt("apply")))
 		{
@@ -2527,8 +2685,38 @@ void fObjects()
 			Combo(langt("dis_after"), objectPtr->endC, &list_tg_m);
 		}
 
-		ImGui::End();
+		//Bookmark
+		if (ImGui::BeginPopup("objectBookmark"))
+		{
+			ImGui::BeginListBox("", ImVec2(100, 100));
+			for (auto it = currentMissionPtr->objectsBookmark.begin(); it != currentMissionPtr->objectsBookmark.end();)
+			{
+				if (ImGui::Button(std::to_string(*it).c_str()))
+				{
+					objectPtr->modelID = *it;
+				}
+				ImGui::SameLine();
+				ImGui::PushID(*it);
+				if (ImGui::Button(ICON_FA_TIMES))
+				{
+					currentMissionPtr->objectsBookmark.erase(it);
+					ImGui::PopID();
+					break;
+				}
+				ImGui::PopID();
+				++it;
+			}
+			ImGui::EndListBox();
+			if (ImGui::Button(langt("add"), ImVec2(ImGui::GetWindowWidth()-10, 0)))
+			{
+				currentMissionPtr->objectsBookmark.insert(objectPtr->modelID);
+			}
 
+			ImGui::EndPopup();
+		}
+
+		ImGui::End();
+		
 		//edit
 		ImGui::SetNextWindowBgAlpha(0.50f);
 		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
@@ -3882,6 +4070,19 @@ void fPlayer()
 		playerPtr->updateEditorPed();
 	}
 
+	if (playerPtr->modelType == 0 && playerPtr->modelID == 0)
+	{
+		if (ImGui::Button(langt("copyClothes")))
+		{
+			auto playerClothers = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+			std::memcpy(playerPtr->clotherM_anTextureKeys, playerClothers->m_anTextureKeys, sizeof(playerClothers->m_anTextureKeys));
+			std::memcpy(playerPtr->clotherM_anModelKeys, playerClothers->m_anModelKeys, sizeof(playerClothers->m_anModelKeys));
+			playerPtr->updateEditorPed();
+		}
+		ImGui::SameLine();
+		HelpMarker(langt("helpCopyClothes"));	
+	}
+	
 	ImGui::Separator();
 
 	if (ImGui::TreeNode(langt("chartics")))
@@ -4035,6 +4236,252 @@ void fPlayer()
 	}
 
 	ImGui::End();
+}
+
+void fVisualEffects()
+{
+	bool isWindow = false;
+	std::string name;
+	ImGui::SetNextWindowSize(ImVec2(270, 410), ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(ImVec2(resolution.x - 270, 0), ImGuiCond_Appearing);
+	name.clear();
+	name.append(ICON_FA_SPARKLES);
+	name.append(" ");
+	name.append(langt("visualEffects"));
+	ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+	//List
+	ImGui::SetNextItemWidth(255.0f);
+	ListBox("", currentVisualEffect, &namesVisualEffects);
+
+	if (ImGui::Button(langt("create")))
+	{
+		CVector playerPos = playerPed->GetPosition();
+		float angle = deg(playerPed->GetHeading());
+
+		std::string name(langt("visualEffect"));
+		name.append(" #");
+		name.append(std::to_string(currentMissionPtr->list_visualEffects.size()));
+		currentMissionPtr->list_visualEffects.push_back(new VisualEffect(name.c_str(), playerPos.x, playerPos.y, playerPos.z,
+			currentMissionPtr->list_targets.empty()
+			? 0
+			: currentMissionPtr->list_targets.size() - 1));
+		currentVisualEffect = currentMissionPtr->list_visualEffects.size() - 1;
+		namesVisualEffects.push_back(currentMissionPtr->list_visualEffects[currentVisualEffect]->name);
+	}
+
+	if (!currentMissionPtr->list_visualEffects.empty())
+	{
+		ImGui::SameLine();
+
+		if (ImGui::Button(langt("duplicate")))
+		{
+			int new_visualEffect = currentMissionPtr->list_visualEffects.size();
+			VisualEffect* visualEffect = new VisualEffect(*currentMissionPtr->list_visualEffects[currentVisualEffect]);
+			currentMissionPtr->list_visualEffects.push_back(visualEffect);
+			string str;
+			str.append(currentMissionPtr->list_visualEffects[new_visualEffect]->name);
+			str.append("c");
+			strcpy(visualEffect->name, str.c_str());
+
+			namesVisualEffects.push_back(visualEffect->name);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(langt("rename")))
+		{
+			ImGui::OpenPopup("rename");
+		}
+		if (ImGui::Button(langt("delete")))
+		{
+			name.clear();
+			name.append(ICON_FA_TRASH_ALT);
+			name.append(" ");
+			name.append(langt("delete"));
+			ImGui::OpenPopup(name.c_str());
+		}
+	}
+
+	isWindow |= ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered();
+
+	//delete
+	ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	name.clear();
+	name.append(ICON_FA_TRASH_ALT);
+	name.append(" ");
+	name.append(langt("delete"));
+	if (ImGui::BeginPopupModal(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text(langt("deleteQues"));
+
+		ImVec2 size_b = ImVec2(100, 0);
+
+		if (ImGui::Button(langt("yes"), size_b))
+		{
+			delete currentMissionPtr->list_visualEffects[currentVisualEffect];
+			currentMissionPtr->list_visualEffects.erase(currentMissionPtr->list_visualEffects.begin() + currentVisualEffect);
+			namesVisualEffects.erase(namesVisualEffects.begin() + currentVisualEffect);
+			if (currentVisualEffect > 0)
+			{
+				currentVisualEffect -= 1;
+			}
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(langt("no"), size_b))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	//Rename popup
+	if (ImGui::BeginPopup("rename"))
+	{
+		ImGui::InputText("", &currentMissionPtr->list_visualEffects[currentVisualEffect]->name[0],
+			IM_ARRAYSIZE(currentMissionPtr->list_visualEffects[currentVisualEffect]->name));
+
+		if (ImGui::Button(langt("close")))
+			ImGui::CloseCurrentPopup();
+
+		ImGui::EndPopup();
+	}
+
+	ImGui::End();
+
+	//visualEffect render
+	if (!currentMissionPtr->list_visualEffects.empty())
+	{
+		VisualEffect* visualEffectPtr = currentMissionPtr->list_visualEffects[currentVisualEffect];
+		ImGui::SetNextWindowSize(ImVec2(400, 360), ImGuiCond_Always);
+		ImGui::SetNextWindowPos(ImVec2(resolution.x - 670, 0), ImGuiCond_Appearing);
+		name.clear();
+		name.append(ICON_FA_SPARKLES);
+		name.append(" ");
+		name.append(langt("visualEffect"));
+		ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+		Command<Commands::FREEZE_CHAR_POSITION>(playerPed, true);
+
+		if (ImGui::SliderInt(langt("typeEffect"), &visualEffectPtr->effectType, 0, 1, langMenu["typeEffectMode"][visualEffectPtr->effectType].c_str()))
+		{
+			visualEffectPtr->type = 0;
+		}
+		
+		if (ImGui::Button(ICON_FA_STREET_VIEW))
+		{
+			CVector playerPos = playerPed->GetPosition();
+			visualEffectPtr->pos[0] = playerPos.x;
+			visualEffectPtr->pos[1] = playerPos.y;
+			visualEffectPtr->pos[2] = playerPos.z;
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip(langt("playerCoordinates"));
+		}
+		ImGui::SameLine();
+		ImGui::PushItemWidth(270);
+		ImGui::InputFloat3(langt("position"), visualEffectPtr->pos, "%.6f");
+
+		ImGui::InputFloat(langt("size"), &visualEffectPtr->size);
+
+		if (visualEffectPtr->effectType == 0)
+		{
+			ImGui::SliderInt(langt("type"), &visualEffectPtr->type, 0, 9);
+			ImGui::SliderInt(langt("flare"), &visualEffectPtr->flare, 0, 2);
+		} else
+		{
+			ImGui::SliderInt(langt("type"), &visualEffectPtr->type, 0, 6);
+		}
+
+		ImGui::ColorEdit4("EffectColorE", visualEffectPtr->color,
+			ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
+			ImGuiColorEditFlags_NoLabel);
+		ImGui::SameLine();
+		ImGui::Text(langt("color"));
+
+		ToggleButton(langt("useTarget"), &visualEffectPtr->useTarget);
+		if (visualEffectPtr->useTarget)
+		{
+			vector<const char*> list_tg_m = namesTargets;
+			list_tg_m.insert(list_tg_m.begin(), langt("toend"));
+			Combo(langt("app_on"), visualEffectPtr->startC, &namesTargets);
+			Combo(langt("dis_after"), visualEffectPtr->endC, &list_tg_m);
+		}
+
+		ImGui::End();
+
+		//edit
+		ImGui::SetNextWindowBgAlpha(0.50f);
+		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(240, 60), ImGuiCond_Always);
+		ImGui::Begin("info", nullptr,
+			ImGuiWindowFlags_NoDecoration + ImGuiWindowFlags_AlwaysAutoResize +
+			ImGuiWindowFlags_NoSavedSettings + ImGuiWindowFlags_NoMove + ImGuiWindowFlags_NoInputs);
+
+		ImGui::Text(langMenu["infoOverlay"][0].c_str());
+		ImGui::Text(langMenu["infoOverlay"][1].c_str());
+		ImGui::Text(langMenu["infoOverlay"][2].c_str());
+		ImGui::Text(langMenu["infoOverlay"][3].c_str());
+		ImGui::Text(langMenu["infoOverlay"][4].c_str());
+
+		ImGui::End();
+
+		isWindow |= ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered();
+
+		float cx = visualEffectPtr->pos[0], cy = visualEffectPtr->pos[1], cz = visualEffectPtr->pos[2];
+		cx += (camera_zoom * sin(static_cast<float>(rad(camera_angle[0]))) * cos(
+			static_cast<float>(rad(camera_angle[1]))));
+		cy += (camera_zoom * cos(static_cast<float>(rad(camera_angle[0]))) * cos(
+			static_cast<float>(rad(camera_angle[1]))));
+		cz += (camera_zoom * sin(static_cast<float>(rad(camera_angle[1]))));
+		Command<Commands::SET_FIXED_CAMERA_POSITION>(cx, cy, cz, 0.0f, 0.0f, 0.0f);
+		Command<Commands::POINT_CAMERA_AT_POINT>(visualEffectPtr->pos[0], visualEffectPtr->pos[1], visualEffectPtr->pos[2], 2);
+		if (!isWindow)
+		{
+			if (ImGui::IsMouseDragging(2))
+			{
+				ImVec2 dt = ImGui::GetIO().MouseDelta;
+				camera_angle[0] += dt.x;
+				camera_angle[1] += dt.y;
+			}
+			if (ImGui::GetIO().MouseWheel != 0.0f && KeyPressed(VK_SHIFT))
+			{
+				camera_zoom += (camera_zoom * ImGui::GetIO().MouseWheel) / 4.0;
+				if (camera_zoom < 1.0f)
+					camera_zoom = 1.0f;
+			}
+		}
+		
+		if (KeyPressed(VK_UP))
+		{
+			visualEffectPtr->pos[0] -= 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0])));
+			visualEffectPtr->pos[1] -= 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0])));
+		}
+		else if (KeyPressed(VK_DOWN))
+		{
+			visualEffectPtr->pos[0] += 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0])));
+			visualEffectPtr->pos[1] += 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0])));
+		}
+		if (KeyPressed(VK_LEFT))
+		{
+			visualEffectPtr->pos[0] += 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0] + 90)));
+			visualEffectPtr->pos[1] += 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0] + 90)));
+		}
+		else if (KeyPressed(VK_RIGHT))
+		{
+			visualEffectPtr->pos[0] += 0.01 * camera_zoom * sin(static_cast<float>(rad(camera_angle[0] - 90)));
+			visualEffectPtr->pos[1] += 0.01 * camera_zoom * cos(static_cast<float>(rad(camera_angle[0] - 90)));
+		}
+		if (KeyPressed(VK_Q))
+		{
+			visualEffectPtr->pos[2] += 0.01 * camera_zoom;
+		}
+		else if (KeyPressed(VK_E))
+		{
+			visualEffectPtr->pos[2] -= 0.01 * camera_zoom;
+		}
+	}
 }
 
 void fMissionPacks()
@@ -4288,46 +4735,7 @@ void fMissionPacks()
 				Command<Commands::SET_CHAR_AREA_VISIBLE>(currentMissionPtr->player.editorPed, currentMissionPtr->player.interiorID);
 				Command<Commands::SET_AREA_VISIBLE>(currentMissionPtr->player.interiorID);
 
-				namesTargets.clear();
-				for (auto& list_target : currentMissionPtr->list_targets)
-				{
-					namesTargets.push_back(list_target->name);
-				}
-				namesActors.clear();
-				for (auto& list_actor : currentMissionPtr->list_actors)
-				{
-					namesActors.push_back(list_actor->name);
-				}
-				namesCars.clear();
-				for (auto& list_car : currentMissionPtr->list_cars)
-				{
-					namesCars.push_back(list_car->name);
-				}
-				namesObjects.clear();
-				for (auto& list_object : currentMissionPtr->list_objects)
-				{
-					namesObjects.push_back(list_object->name);
-				}
-				namesPickups.clear();
-				for (auto& list_pickup : currentMissionPtr->list_pickups)
-				{
-					namesPickups.push_back(list_pickup->name);
-				}
-				namesParticles.clear();
-				for (auto& list_particle : currentMissionPtr->list_particles)
-				{
-					namesParticles.push_back(list_particle->name);
-				}
-				namesExplosions.clear();
-				for (auto& list_explosion : currentMissionPtr->list_explosions)
-				{
-					namesExplosions.push_back(list_explosion->name);
-				}
-				namesAudios.clear();
-				for (auto& list_audio : currentMissionPtr->list_audios)
-				{
-					namesAudios.push_back(list_audio->name);
-				}
+				updateNames();
 
 				nameCurrPack = &namesMissionPacks[currentMissionPack];
 
@@ -4355,12 +4763,58 @@ void fMissionSettings()
 {
 	std::string name;
 	ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_Appearing);
-	ImGui::SetNextWindowPos(ImVec2(resolution.x / 2 - 100, resolution.y / 2 - 200), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(resolution.x / 2 - 100, resolution.y / 2 - 400), ImGuiCond_Appearing);
 	ImGui::Begin(langt("settingsMiss"), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
 	ImVec2 size_b = ImVec2(160, 0);
 
 	InputText(langt("nameMission"),65, &currentMissionPtr->name,0, nullptr,nullptr);
+	ImGui::Separator();
+	ImGui::Text(langt("startText"));
+	ImGui::SameLine();
+	if (ImGui::Button("+"))
+	{
+		currentMissionPtr->startLabels.emplace_back();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("-"))
+	{
+		currentMissionPtr->startLabels.pop_back();
+	}
+	ImGui::BeginChild("start_labels", ImVec2(0, 120));
+	for (int i = 0; i < currentMissionPtr->startLabels.size(); ++i)
+	{
+		std::pair<char[129], float>& start_label = currentMissionPtr->startLabels.at(i);
+		ImGui::PushID(std::to_string(i).c_str());
+		ImGui::InputText(langt("text"), start_label.first, IM_ARRAYSIZE(start_label.first));
+		ImGui::InputFloat(langt("time"), &start_label.second);
+		ImGui::PopID();
+		ImGui::Separator();
+	}
+	ImGui::EndChild();
+
+	ImGui::Separator();
+	
+	
+	ImGui::InputText(langt("passedText"), currentMissionPtr->customTextMissionPassed, IM_ARRAYSIZE(currentMissionPtr->customTextMissionPassed));
+	ImGui::SameLine();
+	ImGui::PushID("gxtPassed");
+	ToggleButton(langt("gxt"), &currentMissionPtr->gxtTextMissionPassed);
+	ImGui::PopID();
+
+	
+	if (ImGui::SliderInt(langt("passedSound"), &currentMissionPtr->passedSound, 1, 2))
+	{
+		Command<Commands::PLAY_MISSION_PASSED_TUNE>(currentMissionPtr->passedSound);
+	}
+
+	
+	ImGui::InputText(langt("defeatText"), currentMissionPtr->customTextMissionDefeat, IM_ARRAYSIZE(currentMissionPtr->customTextMissionDefeat));
+	ImGui::SameLine();
+	ImGui::PushID("gxtDefeat");
+	ToggleButton(langt("gxt"), &currentMissionPtr->gxtTextMissionDefeat);
+	ImGui::PopID();
+	
 	ImGui::Separator();
 	Combo(langt("weather"), currentMissionPtr->weather, &langMenu["Weather_arr"]);
 	if (ImGui::Button(langt("preview"))) {
@@ -4783,8 +5237,8 @@ void fInfo()
 	name.append(" ");
 	name.append(langMenu["info_t"][7].c_str());
 	if (ImGui::Button(name.c_str())) {
-		//os.execute('start https://mgeymer.github.io/LDYOM_DOC/')
-		system("explorer https://mgeymer.github.io/LDYOM_DOC/");
+		//os.execute('start https://getechg.github.io/LDYOM_DOC/')
+		system("explorer https://getechg.github.io/LDYOM_DOC/");
 	}
 	
 	ImGui::End();

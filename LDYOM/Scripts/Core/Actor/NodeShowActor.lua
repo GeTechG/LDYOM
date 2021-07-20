@@ -53,7 +53,7 @@ function Node:play(data, mission)
 	local actor = self:getPinValue(self.id+2,data,mission)[0];
 	ldyom.setLastNode(self.id);
 	assert(actor < #mission.list_actors,"The ID of the actor exceeds the number of actors.");
-	mission.list_actors[actor+1]:updateMissionPed();
+	mission.list_actors[actor+1]:updateMissionPed(mission);
 	for k,v in pairs(data.nodes) do
 		local name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeApperActor");
 		local name_node = v["class"]["static"]["name"];

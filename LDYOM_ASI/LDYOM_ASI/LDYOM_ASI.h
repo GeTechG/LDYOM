@@ -74,7 +74,7 @@ using namespace plugin;
 using namespace memsafe;
 using namespace std;
 
-const char VERSION_STR[11] = "Beta 0.7.1";
+const char VERSION_STR[11] = "Beta 0.7.2";
 const std::string authors[2] = { "SKIC","SIZZZ" };
 bool init = false;
 CPed *playerPed;

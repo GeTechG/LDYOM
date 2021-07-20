@@ -532,15 +532,28 @@ void NodeGraph::render()
 	ImGui::SetNextWindowSize(ImVec2(200, 0));
 	if (ImGui::BeginPopup("CreateMenu"))
 	{
+
+		static char searchNode[129];
+		ImGui::PushID("searchNodeInput");
+		ImGui::InputText("", searchNode, IM_ARRAYSIZE(searchNode));
+		ImGui::PopID();
+		
 		for (auto categories : map_nodes_class)
 		{
 			std::string nameC = langt(categories.first);
+			ImGui::SetNextWindowSize(ImVec2(0, 200));
 			if (ImGui::BeginMenu(nameC.empty() ? categories.first.c_str() : nameC.c_str()))
 			{
 				for (auto node_class : categories.second)
 				{
 					std::string name_node = node_class["static"]["name"];
 					sol::optional<bool> storyline_node = node_class["static"]["storyline"];
+
+					if (searchNode[0] != '\0') {
+						if (name_node.find(searchNode) == std::string::npos)
+							continue;
+					}
+					
 					if (storyline_node.has_value())
 					{
 						if (storyline_node.value() && !storylineMode)
@@ -609,7 +622,8 @@ void NodeGraph::render()
 					{
 						sol::optional<std::string> name = lua_script.second["info"]["name"];
 						if (name.value()._Equal("Main nodes")) {
-							int id_node = currentNodeGraphPtr->nodes.empty() ? 0 : (--currentNodeGraphPtr->nodes.end())->first + 100;
+							//int id_node = currentNodeGraphPtr->nodes.empty() ? 0 : (--currentNodeGraphPtr->nodes.end())->first + 100;
+							int id_node = getIdNode();
 							sol::table nodeVarClass = lua_script.second["NodeVariable"];
 							sol::protected_function fNew = nodeVarClass["new"];
 							auto result = fNew(nodeVarClass, id_node, var_id, setter);

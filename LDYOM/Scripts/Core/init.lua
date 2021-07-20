@@ -44,6 +44,10 @@ function main()
 	ldyom.langMenu["CoreCalcParam"] = ldyom.parseJsonArray(ldyom.langt("CoreCalcParam"));
 	ldyom.langMenu["CoreTypeMovingObject"] = ldyom.parseJsonArray(ldyom.langt("CoreTypeMovingObject"));
 	ldyom.langMenu["cameraModes"] = ldyom.parseJsonArray(ldyom.langt("cameraModes"));
+	ldyom.langMenu["compaingTypes"] = ldyom.parseJsonArray(ldyom.langt("compaingTypes"));
+	ldyom.langMenu["typeLocate"] = ldyom.parseJsonArray(ldyom.langt("typeLocate"));
+	ldyom.langMenu["CoreTurretDirection"] = ldyom.parseJsonArray(ldyom.langt("CoreTurretDirection"));
+	ldyom.langMenu["target_type"] = ldyom.parseJsonArray(ldyom.langt("target_type"));
 	
 	callOpcode(0x0ADF,{{"HENAA","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HENAA"))),"string"}});
 	callOpcode(0x0ADF,{{"HVIEW","string"}, {GXTEncode(UTF8_to_CP1251(ldyom.langt("HVIEW"))),"string"}});
@@ -52,12 +56,16 @@ function main()
 	require "LDYOM.Scripts.Core.VariableNode"
 	
 	require "LDYOM.Scripts.Core.Main.NodeBranch"
+	require "LDYOM.Scripts.Core.Main.NodeBoolInvert"
 	require "LDYOM.Scripts.Core.Main.NodeStart"
+	require "LDYOM.Scripts.Core.Main.NodeCurrentMissionComplete"
 	require "LDYOM.Scripts.Core.Main.NodeMainCycle"
 	require "LDYOM.Scripts.Core.Main.NodePrintLog"
 	require "LDYOM.Scripts.Core.Main.NodeNumberToString"
 	require "LDYOM.Scripts.Core.Main.NodeBoolToString"
 	require "LDYOM.Scripts.Core.Main.NodeWaitUntil"
+	require "LDYOM.Scripts.Core.Main.NodeComparingNumber"
+	require "LDYOM.Scripts.Core.Main.NodeComparingString"
 	
 	require "LDYOM.Scripts.Core.Math.NodeCalc"
 	
@@ -66,6 +74,7 @@ function main()
 	require "LDYOM.Scripts.Core.Targets.NodeStartedTarg"
 	require "LDYOM.Scripts.Core.Targets.NodeEndedTarg"
 	require "LDYOM.Scripts.Core.Targets.NodeSetTarg"
+	require "LDYOM.Scripts.Core.Targets.NodeTargetCycle"
 	
 	require "LDYOM.Scripts.Core.Storyline.NodeMissionComplete"
 	require "LDYOM.Scripts.Core.Storyline.NodeGotoMission"
@@ -99,6 +108,13 @@ function main()
 	require "LDYOM.Scripts.Core.Object.NodeTriggerMove"
 	require "LDYOM.Scripts.Core.Object.NodeGetPosObject"
 	require "LDYOM.Scripts.Core.Object.NodeSlideObject"
+	require "LDYOM.Scripts.Core.Object.NodeObjectIsOnScreen"
+	require "LDYOM.Scripts.Core.Object.NodeObjectHasBeenDamaged"
+	require "LDYOM.Scripts.Core.Object.NodeObjectIsInWater"
+	require "LDYOM.Scripts.Core.Object.NodeIsObjectInArea"
+	require "LDYOM.Scripts.Core.Object.NodeObjectHasBeenPhotographed"
+	require "LDYOM.Scripts.Core.Object.NodeObjectHasBeenDamagedByWeapon"
+	require "LDYOM.Scripts.Core.Object.NodeObjectLocateInCoord"
 	
 	require "LDYOM.Scripts.Core.Particle.NodeParticleToHandle"
 	require "LDYOM.Scripts.Core.Particle.NodeShowParticle"
@@ -134,17 +150,42 @@ function main()
 	require "LDYOM.Scripts.Core.Ped.NodePedEnterCar"
 	require "LDYOM.Scripts.Core.Ped.NodePedGotoPed"
 	require "LDYOM.Scripts.Core.Ped.NodePedGiveWeapon"
+	require "LDYOM.Scripts.Core.Ped.NodePedAddAmmo"
 	require "LDYOM.Scripts.Core.Ped.NodePedTakeWeapons"
 	require "LDYOM.Scripts.Core.Ped.NodePedChangeSkin"
 	require "LDYOM.Scripts.Core.Ped.NodeGetPosChar"
 	require "LDYOM.Scripts.Core.Ped.NodeSetPosChar"
+	require "LDYOM.Scripts.Core.Ped.NodePedSetBleeding"
+	require "LDYOM.Scripts.Core.Ped.NodePedSetMoney"
+	require "LDYOM.Scripts.Core.Ped.NodePedSetIsChrisCriminal"
+	require "LDYOM.Scripts.Core.Ped.NodePedTurretModeCar"
+	require "LDYOM.Scripts.Core.Ped.NodePedTurretModeObject"
+	require "LDYOM.Scripts.Core.Ped.NodePedTurretModeOff"
+	require "LDYOM.Scripts.Core.Ped.NodePedGetCurrentWeapon"
+	require "LDYOM.Scripts.Core.Ped.NodeGetPedHealth"
 	require "LDYOM.Scripts.Core.Ped.NodeIsInArea"
+	require "LDYOM.Scripts.Core.Ped.NodePedLocateInCoord"
+	require "LDYOM.Scripts.Core.Ped.NodePedLocateInPed"
 	require "LDYOM.Scripts.Core.Ped.NodeIsPedInVehicle"
 	require "LDYOM.Scripts.Core.Ped.NodeIsPedInVehicleModel"
+	require "LDYOM.Scripts.Core.Ped.NodeIsPedDead"
+	require "LDYOM.Scripts.Core.Ped.NodeIsPedInZone"
+	require "LDYOM.Scripts.Core.Ped.NodePedTouchingObjectOnFoot"
+	require "LDYOM.Scripts.Core.Ped.NodePedIsOnScreen"
+	require "LDYOM.Scripts.Core.Ped.NodePedIsShooting"
+	require "LDYOM.Scripts.Core.Ped.NodePedExplodeHead"
+	require "LDYOM.Scripts.Core.Ped.NodePedIsSittingInCar"
+	require "LDYOM.Scripts.Core.Ped.NodeHasGotWeapon"
+	require "LDYOM.Scripts.Core.Ped.NodePedIsInWater"
+	require "LDYOM.Scripts.Core.Ped.NodePedHasBeenPhotographed"
+	require "LDYOM.Scripts.Core.Ped.NodePedHasBeenDamagedByChar"
+	require "LDYOM.Scripts.Core.Ped.NodePedHasBeenDamagedByCar"
 	
 	require "LDYOM.Scripts.Core.Vehicle.NodeOpenDoors"
 	require "LDYOM.Scripts.Core.Vehicle.NodeLockVehicle"
 	require "LDYOM.Scripts.Core.Vehicle.NodeGetPosVehicle"
+	require "LDYOM.Scripts.Core.Vehicle.NodeSetPosVehicle"
+	require "LDYOM.Scripts.Core.Vehicle.NodeVehicleGetHealth"
 	
 	require "LDYOM.Scripts.Core.Player.NodePlayerToPed"
 	
@@ -166,7 +207,24 @@ function main()
 	require "LDYOM.Scripts.Core.Camera.NodeSetCinemaCamera"
 	require "LDYOM.Scripts.Core.Camera.NodeSetDrawCrosshair"
 	require "LDYOM.Scripts.Core.Camera.NodeSetPhotocameraMode"
+	require "LDYOM.Scripts.Core.Camera.NodeSetWidescreen"
 	require "LDYOM.Scripts.Core.Camera.NodeShakeSimulation"
+	
+	require "LDYOM.Scripts.Core.World.NodeIsAreaOccupied"
+	require "LDYOM.Scripts.Core.World.NodeAddTimer"
+	require "LDYOM.Scripts.Core.World.NodeRemoveTimer"
+	require "LDYOM.Scripts.Core.World.NodeGetTimerTime"
+	require "LDYOM.Scripts.Core.World.NodeAddCounter"
+	require "LDYOM.Scripts.Core.World.NodeRemoveCounter"
+	require "LDYOM.Scripts.Core.World.NodeDistanceBetweenPoints"
+	
+	require "LDYOM.Scripts.Core.VisualEffect.NodeShowVisualEffect"
+	require "LDYOM.Scripts.Core.VisualEffect.NodeApperVisualEffect"
+	require "LDYOM.Scripts.Core.VisualEffect.NodeHideVisualEffect"
+	require "LDYOM.Scripts.Core.VisualEffect.NodeDisapperVisualEffect"
+	require "LDYOM.Scripts.Core.VisualEffect.NodeSetPosVisualEffect"
+	
+	require "LDYOM.Scripts.Core.Text.NodeAddMessage"
 	
 	print("Core nodes loaded")
 end

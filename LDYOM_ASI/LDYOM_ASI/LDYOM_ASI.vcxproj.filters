@@ -94,6 +94,8 @@
     <ClCompile Include="ImGUI\imgui_tables.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="CLEO_API.cpp" />
+    <ClCompile Include="NodeFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LDYOM_ASI.h" />
@@ -220,6 +222,10 @@
     <ClInclude Include="imnodes.h" />
     <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="NodeGraph.h" />
+    <ClInclude Include="NodeFunctions.h" />
+    <ClInclude Include="libs\ScriptCommands.h">
+      <Filter>libs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ImGui">

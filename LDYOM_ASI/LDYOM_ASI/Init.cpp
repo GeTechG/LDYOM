@@ -2,8 +2,11 @@
 
 
 #include <CClock.h>
+#include <CClothes.h>
 #include <CHud.h>
 #include <CRadar.h>
+#include <CCoronas.h>
+#include <CShadows.h>
 #include <sol/sol.hpp>
 
 
@@ -29,7 +32,7 @@ extern bool storyline_started;
 extern bool is_utf8(const char* string);
 extern coro_wait instance;
 extern bool defeat;
-extern void failMission();
+extern void failMission(Mission* mission);
 void rotateVec2(float& x, float& y, float angle);
 
 float camera_zoom = 5.0f;
@@ -185,7 +188,7 @@ void Actor::removeEditorPed() {
 	}
 }
 
-void Actor::updateMissionPed() {
+void Actor::updateMissionPed(Mission* mission) {
 	this->removeMissionPed();
 	int modell;
 	if (this->modelType == 0) {
@@ -233,7 +236,7 @@ void Actor::updateMissionPed() {
 	this->missionPed->SetCurrentWeapon(static_cast<eWeaponType>(ID_Weapons[this->weapon]));
 	CStreaming::RemoveAllUnusedModels();
 	if (this->shouldNotDie)
-		instance.add_to_queue([&]()
+		instance.add_to_queue([=]()
 		{
 			while (mission_started && missionPed != nullptr)
 			{
@@ -242,7 +245,7 @@ void Actor::updateMissionPed() {
 					defeat = true;
 					mission_started = false;
 					CMessages::ClearMessages(true);
-					failMission();
+					failMission(mission);
 				}
 				this_coro::wait(0ms);
 			}
@@ -274,6 +277,10 @@ TargetCheckpoint::TargetCheckpoint(const TargetCheckpoint& target) {
 	strcpy(text, target.text);
 	textTime = target.textTime;
 	colorBlip = target.colorBlip;
+	onWhat = target.onWhat;
+	comeBackVehicle = target.comeBackVehicle;
+	strcpy(textComeBackVehicle, target.textComeBackVehicle);
+	colorBlipComeBackVehicle = target.colorBlipComeBackVehicle;
 }
 
 TargetCar::TargetCar(const char* name) {
@@ -328,6 +335,7 @@ TargetCutscene::TargetCutscene(const TargetCutscene& target) {
 	strcpy(text, target.text);
 	time = target.time;
 	moveCam = target.moveCam;
+	widescreen = target.widescreen;
 }
 
 TargetCountdown::TargetCountdown(const char* name) {
@@ -435,6 +443,10 @@ TargetTeleport::TargetTeleport(const char* name, float x, float y, float z, floa
 	this->pos[2] = z;
 	this->angle = angle;
 	this->interiorID = interiorID;
+
+	auto playerClothers = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+	std::memcpy(clotherM_anTextureKeys, playerClothers->m_anTextureKeys, sizeof(playerClothers->m_anTextureKeys));
+	std::memcpy(clotherM_anModelKeys, playerClothers->m_anModelKeys, sizeof(playerClothers->m_anModelKeys));
 }
 
 TargetTeleport::TargetTeleport(const TargetTeleport& target) {
@@ -449,6 +461,8 @@ TargetTeleport::TargetTeleport(const TargetTeleport& target) {
 	weapon = target.weapon;
 	ammo = target.ammo;
 	interiorID = target.interiorID;
+	memcpy(clotherM_anTextureKeys, target.clotherM_anTextureKeys, sizeof(target.clotherM_anTextureKeys));
+	memcpy(clotherM_anModelKeys, target.clotherM_anModelKeys, sizeof(target.clotherM_anModelKeys));
 }
 TargetAnimation::TargetAnimation(const char* name) {
 	strcpy(this->name, name);
@@ -545,6 +559,53 @@ TargetWaitSignal::TargetWaitSignal(const char* name) {
 TargetWaitSignal::TargetWaitSignal(const TargetWaitSignal& target) {
 	strcpy(name, target.name);
 	type = target.type;
+}
+
+TargetDestroyVehicle::TargetDestroyVehicle(const char* name) {
+	strcpy(this->name, name);
+	this->type = 8;
+}
+
+TargetDestroyVehicle::TargetDestroyVehicle(const TargetDestroyVehicle& target) {
+	strcpy(name, target.name);
+	type = target.type;
+
+	vehicle = target.vehicle;
+	strcpy(text, target.text);
+	textTime = target.textTime;
+	colorBlip = target.colorBlip;
+	typeDamage = target.typeDamage;
+}
+
+TargetAddTimer::TargetAddTimer(const char* name) {
+	strcpy(this->name, name);
+	this->type = 3;
+	this->targetType = 6;
+}
+
+TargetAddTimer::TargetAddTimer(const TargetAddTimer& target) {
+	strcpy(name, target.name);
+	type = target.type;
+	targetType = target.targetType;
+
+	typeTimer = target.typeTimer;
+	backward = target.backward;
+	compareType = target.compareType;
+	compareValue = target.compareValue;
+	startTime = target.startTime;
+	strcpy(text, target.text);
+}
+
+TargetRemoveTimer::TargetRemoveTimer(const char* name) {
+	strcpy(this->name, name);
+	this->type = 3;
+	this->targetType = 7;
+}
+
+TargetRemoveTimer::TargetRemoveTimer(const TargetRemoveTimer& target) {
+	strcpy(name, target.name);
+	type = target.type;
+	targetType = target.targetType;
 }
 
 Car::Car(const char* name, float x, float y, float z, float angle, int lastTarget) {
@@ -692,7 +753,7 @@ void Car::removeEditorCar() {
 	}
 }
 
-void Car::updateMissionCar()
+void Car::updateMissionCar(Mission* mission)
 {
 	removeMissionCar();
 	
@@ -767,7 +828,7 @@ void Car::updateMissionCar()
 		}
 	}
 	if (this->shouldNotDie)
-		instance.add_to_queue([&](){
+		instance.add_to_queue([=](){
 			while (mission_started && missionCar != nullptr)
 			{
 				if (Command<Commands::IS_CAR_DEAD>(missionCar))
@@ -775,7 +836,7 @@ void Car::updateMissionCar()
 					defeat = true;
 					mission_started = false;
 					CMessages::ClearMessages(true);
-					failMission();
+					failMission(mission);
 				}
 				this_coro::wait(0ms);
 			}
@@ -969,8 +1030,9 @@ void Object::updateEditorObject() {
 	CStreaming::RemoveAllUnusedModels();
 	editorObject->SetPosn(pos[0], pos[1], pos[2]);
 	editorObject->SetOrientation(rad(rotation[0]), rad(rotation[1]), rad(rotation[2]));
-	editorObject->m_nObjectType = eObjectType::OBJECT_MISSION;
 	CWorld::Add(editorObject);
+	Command<0x0550>(editorObject, 1);
+	editorObject->m_nObjectType = eObjectType::OBJECT_MISSION;
 	Command<Commands::SET_OBJECT_DYNAMIC>(editorObject, 0);
 }
 
@@ -1452,7 +1514,10 @@ Player::Player(float x, float y, float z, float angle) {
 	this->pos[2] = z;
 	this->angle = angle;
 	Command<Commands::GET_AREA_VISIBLE>(&this->interiorID);
-	printLog("pl test");
+	
+	auto playerClothers = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+	std::memcpy(clotherM_anTextureKeys, playerClothers->m_anTextureKeys, sizeof(playerClothers->m_anTextureKeys));
+	std::memcpy(clotherM_anModelKeys, playerClothers->m_anModelKeys, sizeof(playerClothers->m_anModelKeys));
 }
 
 Player::Player(const Player& player) {
@@ -1464,6 +1529,8 @@ Player::Player(const Player& player) {
 	weapon = player.weapon;
 	ammo = player.ammo;
 	interiorID = player.interiorID;
+	memcpy(clotherM_anTextureKeys, player.clotherM_anTextureKeys, sizeof(player.clotherM_anTextureKeys));
+	memcpy(clotherM_anModelKeys, player.clotherM_anModelKeys, sizeof(player.clotherM_anModelKeys));
 }
 
 void Player::updateEditorPed() {
@@ -1476,7 +1543,7 @@ void Player::updateEditorPed() {
 	}
 	else if (this->modelType == 1) {
 		const std::string modell_n = ID_Spec_Actors[this->modelID];
-		CStreaming::RequestSpecialChar(9, modell_n.c_str(), 0);
+		CStreaming::RequestSpecialChar(8, modell_n.c_str(), 0);
 		CStreaming::LoadAllRequestedModels(false);
 		modell = 290 + 9 - 1;
 	}
@@ -1485,6 +1552,7 @@ void Player::updateEditorPed() {
 	this->editorPed->SetHeading((float)rad(this->angle));
 	this->editorPed->m_bUsesCollision = false;
 	this->editorPed->m_nCreatedBy = 2;
+	
 	CWorld::Add(this->editorPed);
 	int weap_modell;
 	Command<Commands::GET_WEAPONTYPE_MODEL>(ID_Weapons[this->weapon], &weap_modell);
@@ -1503,6 +1571,41 @@ void Player::removeEditorPed() {
 		this->editorPed->Remove();
 		delete this->editorPed;
 		this->editorPed = nullptr;
+	}
+}
+
+VisualEffect::VisualEffect(const char* name, float x, float y, float z, int lastTarget)
+{
+	strcpy(this->name, name);
+	this->pos[0] = x;
+	this->pos[1] = y;
+	this->pos[2] = z;
+}
+
+VisualEffect::VisualEffect(const VisualEffect& effect)
+{
+	strcpy(this->name, effect.name);
+	memcpy(pos, effect.pos, 3 * sizeof(float));
+	effectType = effect.effectType;
+	size = effect.size;
+	type = effect.type;
+	flare = effect.flare;
+	memcpy(color, effect.color, 3 * sizeof(float));
+	startC = effect.startC;
+	endC = effect.endC;
+	useTarget = effect.useTarget;
+}
+
+void VisualEffect::draw()
+{
+	if (effectType == 0)
+	{
+		CCoronas::RegisterCorona(reinterpret_cast<unsigned int>(this), 0, (int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255), (int)(color[3] * 255), CVector(pos[0], pos[1], pos[2]),
+			size, 150.0f, (eCoronaType)type, (eCoronaFlareType)flare, true, false, 0, 0.0f, false, 0.2f, 0, 15.0f, false, false);
+	} else
+	{
+		CShadows::StoreShadowToBeRendered(type, &CVector(pos[0], pos[1], pos[2]), -size, size-1.0f, size-1.0f, size, (int)(color[3] * 255), (int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255));
+		//Command<Commands::DRAW_SHADOW>(type, angleZ, size, alpha, (int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255), pos[0], pos[1], pos[2]);
 	}
 }
 
@@ -1817,6 +1920,7 @@ void addLDYOMClasses(sol::state& lua)
 	mission_class["list_pickups"] = &Mission::list_pickups;
 	mission_class["list_explosions"] = &Mission::list_explosions;
 	mission_class["list_audios"] = &Mission::list_audios;
+	mission_class["list_visualEffects"] = &Mission::list_visualEffects;
 
 
 	auto storyline_class = lua.new_usertype<Storyline>("Storyline", sol::no_constructor);

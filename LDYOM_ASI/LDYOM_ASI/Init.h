@@ -11,6 +11,7 @@
 #include <ctime>
 #include <boost/serialization/base_object.hpp>
 #include <CTrain.h>
+#include <set>
 
 
 #include "CBmx.h"
@@ -61,6 +62,8 @@ extern vector <std::string> Anim_name;
 extern vector<vector <std::string>> Anim_list;
 extern const char* langt(const std::string& key);
 
+struct Mission;
+
 class Actor {
 public:
 	CPed* editorPed = nullptr;
@@ -91,7 +94,7 @@ public:
 	Actor(const Actor& actor);
 
 	void updateEditorPed();
-	void updateMissionPed();
+	void updateMissionPed(Mission* mission);
 
 	void removeEditorPed();
 	void removeMissionPed();
@@ -125,27 +128,41 @@ public:
 class Target {
 public:
 	char name[65];
-	unsigned char type;
-	unsigned char targetType;
+	int type;
+	int targetType;
 	virtual ~Target() = default;
 
 	template <typename Archive>
 	void serialize(Archive &ar, const unsigned int version)
 	{
 		ar & name;
-		ar & type;
-		ar & targetType;
+		if (version < 72)
+		{
+			unsigned char buf;
+			ar & buf;
+			type = buf;
+			ar & buf;
+			targetType = buf;
+		} else
+		{
+			ar & type;
+			ar & targetType;
+		}
 	}
 };
 
 class TargetCheckpoint : public Target {
 public:
-	float pos[3];
+	float pos[3]; //72
 	float radius = 2.0f;
 	char text[129] = {};
 	float textTime = 2.0f;
 	int colorBlip = 0;
 	unsigned int indexSphere;
+	int onWhat = 0;
+	int comeBackVehicle = 0;
+	char textComeBackVehicle[129] = {};
+	int colorBlipComeBackVehicle = 0;
 
 	TargetCheckpoint() = default;
 	TargetCheckpoint(const char* name, float x, float y, float z);
@@ -162,6 +179,14 @@ public:
 		ar & textTime;
 		ar & colorBlip;
 		ar & indexSphere;
+
+		if (version >= 72)
+		{
+			ar & onWhat;
+			ar & comeBackVehicle;
+			ar & textComeBackVehicle;
+			ar & colorBlipComeBackVehicle;
+		}
 	}
 };
 
@@ -227,6 +252,7 @@ public:
 	char text[129] = {};
 	float time = 2;
 	bool moveCam = false;
+	bool widescreen = false;
 
 
 	TargetCutscene(const char* name, float x, float y, float z);
@@ -246,6 +272,10 @@ public:
 		ar & text;
 		ar & time;
 		ar & moveCam;
+		if (version >= 72)
+		{
+			ar & widescreen;
+		}
 	}
 };
 
@@ -391,6 +421,8 @@ public:
 	int weapon = 0;
 	int ammo = 0;
 	int interiorID;
+	unsigned clotherM_anModelKeys[10];
+	unsigned clotherM_anTextureKeys[18];
 
 	TargetTeleport(const char* name, float x, float y, float z, float angle, int interiorID);
 	TargetTeleport() = default;
@@ -408,6 +440,12 @@ public:
 		ar & weapon;
 		ar & ammo;
 		ar & interiorID;
+
+		if (version >= 72)
+		{
+			ar & clotherM_anModelKeys;
+			ar & clotherM_anTextureKeys;
+		}
 	}
 };
 
@@ -543,6 +581,75 @@ public:
 	}
 };
 
+class TargetDestroyVehicle : public Target
+{
+public:
+	int vehicle = 0;
+	char text[129] = "";
+	float textTime = 2.0f;
+	int colorBlip = 0;
+	int typeDamage = 0;
+	
+	
+	TargetDestroyVehicle(const char* name);
+	TargetDestroyVehicle() = default;
+	TargetDestroyVehicle(const TargetDestroyVehicle& target);
+
+	template <typename Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & boost::serialization::base_object<Target>(*this);
+
+		ar & vehicle;
+		ar & text;
+		ar & textTime;
+		ar & colorBlip;
+		ar & typeDamage;
+	}
+};
+
+class TargetAddTimer: public Target
+{
+public:
+	int typeTimer = 0;
+	bool backward = false;
+	int compareType = 0;
+	int compareValue = 0;
+	int startTime = 0;
+	char text[129] = "";
+	
+	TargetAddTimer(const char* name);
+	TargetAddTimer() = default;
+	TargetAddTimer(const TargetAddTimer& target);
+
+	template <typename Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & boost::serialization::base_object<Target>(*this);
+
+		ar & typeTimer;
+		ar & backward;
+		ar & compareType;
+		ar & compareValue;
+		ar & startTime;
+		ar & text;
+	}
+};
+
+class TargetRemoveTimer: public Target
+{
+public:
+	TargetRemoveTimer(const char* name);
+	TargetRemoveTimer() = default;
+	TargetRemoveTimer(const TargetRemoveTimer& target);
+
+	template <typename Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & boost::serialization::base_object<Target>(*this);
+	}
+};
+
 class Car {
 public:
 	CVehicle* editorCar = nullptr;
@@ -579,7 +686,7 @@ public:
 	void updateEditorCar(bool recolor = false);
 	void removeEditorCar();
 
-	void updateMissionCar();
+	void updateMissionCar(Mission* mission);
 	void removeMissionCar();
 
 	template <typename Archive>
@@ -805,7 +912,6 @@ public:
 	}
 };
 
-struct Mission;
 
 class Audio {
 public:
@@ -862,6 +968,8 @@ public:
 	int weapon = 0;
 	int ammo = 0;
 	int interiorID = 0;
+	unsigned clotherM_anModelKeys[10];
+	unsigned clotherM_anTextureKeys[18];
 
 	Player(float x, float y, float z, float angle);
 	Player(const Player& player);
@@ -881,6 +989,48 @@ public:
 		ar & weapon;
 		ar & ammo;
 		ar & interiorID;
+
+		if (version >= 72)
+		{
+			ar & clotherM_anModelKeys;
+			ar & clotherM_anTextureKeys;
+		}
+	}
+};
+
+class VisualEffect
+{
+public:
+	char name[65];
+	int effectType = 0;
+	float pos[3];
+	float size = 1.0f;
+	int type = 0;
+	int flare = 0;
+	float color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+	bool drawing = false;
+	int startC;
+	int endC = 0;
+	bool useTarget = true;
+	
+	VisualEffect(const char* name, float x, float y, float z, int lastTarget);
+	VisualEffect(const VisualEffect& effect);
+	VisualEffect() = default;
+	void draw();
+
+	template <typename Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+		ar & name;
+		ar & effectType;
+		ar & pos;
+		ar & size;
+		ar & type;
+		ar & flare;
+		ar & color;
+		ar & startC;
+		ar & endC;
+		ar & useTarget;
 	}
 };
 
@@ -905,6 +1055,14 @@ struct Mission {
 	int weather = 0;
 	bool riot = false;
 	Player player = Player(884.6011f, -1221.845f, 16.9766f, 0.0f);
+	std::set<int> objectsBookmark;
+	std::vector<std::pair<char[129], float>> startLabels;
+	vector<VisualEffect*> list_visualEffects;
+	bool gxtTextMissionPassed = true;
+	char customTextMissionPassed[129] = "M_PASSR";
+	int passedSound = 1;
+	bool gxtTextMissionDefeat = true;
+	char customTextMissionDefeat[129] = "M_FAIL";
 
 	Mission();
 	~Mission();
@@ -939,6 +1097,12 @@ struct Mission {
 		ar.template register_type <TargetDialog>();
 		ar.template register_type <TargetMoney>();
 		ar.template register_type <TargetWaitSignal>();
+		if (version >= 72)
+		{
+			ar.template register_type <TargetDestroyVehicle>();
+			ar.template register_type <TargetAddTimer>();
+			ar.template register_type <TargetRemoveTimer>();
+		}
 		
 		ar & list_targets;
 		ar & list_actors;
@@ -958,6 +1122,18 @@ struct Mission {
 		ar & weather;
 		ar & riot;
 		ar & player;
+		
+		if (version >= 72)
+		{
+			ar & objectsBookmark;
+			ar & startLabels;
+			ar & list_visualEffects;
+			ar & gxtTextMissionPassed;
+			ar & customTextMissionPassed;
+			ar & passedSound;
+			ar & gxtTextMissionDefeat;
+			ar & customTextMissionDefeat;
+		}
 	}
 };
 

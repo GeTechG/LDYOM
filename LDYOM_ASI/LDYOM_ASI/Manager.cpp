@@ -12,6 +12,7 @@
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/array.hpp>
 #include <boost/serialization/utility.hpp>
+#include <boost/serialization/set.hpp>
 
 #include "ScriptManager.h"
 #include "lzma/Lzma2Dec.h"
@@ -35,7 +36,7 @@ extern Storyline* currentStorylinePtr;
 extern NodeGraph* currentNodeGraphPtr;
 extern std::map<int, const char*> namesVars;
 
-#define LDYOM_VER 71;
+#define LDYOM_VER 72;
 
 void Manager::SaveMission(int curr_pack,int curr_miss)
 {
@@ -479,11 +480,43 @@ void Manager::LoadVars(std::string missPack)
 	}
 }
 
+
+
 namespace boost {
 	namespace serialization {
 
 		template <>
 		struct version<Mission>
+		{
+			BOOST_STATIC_CONSTANT(unsigned int, value = LDYOM_VER);
+		};
+
+		template <>
+		struct version<Target>
+		{
+			BOOST_STATIC_CONSTANT(unsigned int, value = LDYOM_VER);
+		};
+
+		template <>
+		struct version<TargetCutscene>
+		{
+			BOOST_STATIC_CONSTANT(unsigned int, value = LDYOM_VER);
+		};
+
+		template <>
+		struct version<TargetCheckpoint>
+		{
+			BOOST_STATIC_CONSTANT(unsigned int, value = LDYOM_VER);
+		};
+
+		template <>
+		struct version<TargetTeleport>
+		{
+			BOOST_STATIC_CONSTANT(unsigned int, value = LDYOM_VER);
+		};
+
+		template <>
+		struct version<Player>
 		{
 			BOOST_STATIC_CONSTANT(unsigned int, value = LDYOM_VER);
 		};

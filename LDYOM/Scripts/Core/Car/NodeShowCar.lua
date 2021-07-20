@@ -53,7 +53,7 @@ function Node:play(data, mission)
 	local car = self:getPinValue(self.id+2,data,mission)[0];
 	ldyom.setLastNode(self.id);
 	assert(car < #mission.list_cars,"The ID of the car exceeds the number of cars.");
-	mission.list_cars[car+1]:updateMissionCar();
+	mission.list_cars[car+1]:updateMissionCar(mission);
 	for k,v in pairs(data.nodes) do
 		local name = imgui.imnodes.getNodeIcon("event")..' '..ldyom.langt("CoreNodeApperCar");
 		local name_node = v["class"]["static"]["name"];
