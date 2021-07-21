@@ -42,19 +42,8 @@ end
 function Node:play(data, mission)
 	ldyom.setLastNode(self.id);
 	ldyom.setNodeSignal(true);
-	if self.Pins[self.id+2].links ~= nil then
-		for k,v in pairs(self.Pins[self.id+2].links) do
-			local link = data.links[v];
-			for k2,v2 in pairs(link) do
-				local strr = Utf8ToAnsi(k2);
-				if strr == "id_in" then
-					local node_num = math.floor(v2 / 100)*100;
-					data.nodes[node_num]:play(data,mission);
-					break;
-				end
-			end
-		end
-	end
+	
+	self:callOutputLinks(data, mission, self.id+2);
 end
 
 ldyom.nodeEditor.addNodeClass("Target",Node);

@@ -18,6 +18,7 @@ void MainThread()
 	assert(!pt.empty());
 	curr_lang_string = pt.get<std::string>("Settings.curr_lang");
 	curr_theme_string = pt.get<std::string>("Settings.curr_theme");
+	showImguiCursor = pt.get<std::string>("Settings.show_cursor")._Equal("true");
 
 	//load special id actor
 	boost::property_tree::ptree json_spec_actor;

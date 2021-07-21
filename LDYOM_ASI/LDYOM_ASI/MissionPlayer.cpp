@@ -2582,6 +2582,7 @@ void MissionPlayer::start_mission(Mission* mission, NodeGraph* graph, bool clear
 						this_coro::wait(0ms);
 					}
 					nodeSignal = false;
+					break;
 				}
 				case 8:
 					{
