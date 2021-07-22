@@ -41,11 +41,11 @@ function Node:draw()
 end
 
 function Node:play(data, mission)
-	local ped = self:getPinValue(self.id+1,data,mission)[0];
+	local vehicle = self:getPinValue(self.id+1,data,mission)[0];
 	ldyom.setLastNode(self.id);
-	assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");
+	assert(callOpcode(0x056E, {{vehicle,"int"}}), "Not found vehicle");
 	
-	callOpcode(0x0227, {{ped,"int"}, {self.Pins[self.id+2].value,"int*"}});
+	callOpcode(0x0227, {{vehicle,"int"}, {self.Pins[self.id+2].value,"int*"}});
 end
 
 ldyom.nodeEditor.addNodeClass("Vehicle",Node);
