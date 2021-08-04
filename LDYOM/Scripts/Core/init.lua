@@ -60,14 +60,17 @@ function main()
 	require "LDYOM.Scripts.Core.Main.NodeStart"
 	require "LDYOM.Scripts.Core.Main.NodeCurrentMissionComplete"
 	require "LDYOM.Scripts.Core.Main.NodeMainCycle"
+	require "LDYOM.Scripts.Core.Main.NodeWait"
 	require "LDYOM.Scripts.Core.Main.NodePrintLog"
 	require "LDYOM.Scripts.Core.Main.NodeNumberToString"
 	require "LDYOM.Scripts.Core.Main.NodeBoolToString"
+	require "LDYOM.Scripts.Core.Main.NodeConcatenateString"
 	require "LDYOM.Scripts.Core.Main.NodeWaitUntil"
 	require "LDYOM.Scripts.Core.Main.NodeComparingNumber"
 	require "LDYOM.Scripts.Core.Main.NodeComparingString"
 	
 	require "LDYOM.Scripts.Core.Math.NodeCalc"
+	require "LDYOM.Scripts.Core.Math.NodeRandomNumber"
 	
 	require "LDYOM.Scripts.Core.Targets.NodeRunSignal"
 	require "LDYOM.Scripts.Core.Targets.NodeCheckTarg"
@@ -93,11 +96,12 @@ function main()
 	require "LDYOM.Scripts.Core.Car.NodeHideCar"
 	require "LDYOM.Scripts.Core.Car.NodeDisapperCar"
 	
-	require "LDYOM.Scripts.Core.Train.NodeTrainToHandle"
 	require "LDYOM.Scripts.Core.Train.NodeShowTrain"
 	require "LDYOM.Scripts.Core.Train.NodeApperTrain"
 	require "LDYOM.Scripts.Core.Train.NodeHideTrain"
 	require "LDYOM.Scripts.Core.Train.NodeDisapperTrain"
+	require "LDYOM.Scripts.Core.Train.NodeTrainSetSpeed"
+	require "LDYOM.Scripts.Core.Train.NodeTrainSetCruiseSpeed"
 	
 	require "LDYOM.Scripts.Core.Object.NodeObjectToHandle"
 	require "LDYOM.Scripts.Core.Object.NodeShowObject"
@@ -225,6 +229,7 @@ function main()
 	require "LDYOM.Scripts.Core.VisualEffect.NodeSetPosVisualEffect"
 	
 	require "LDYOM.Scripts.Core.Text.NodeAddMessage"
+	require "LDYOM.Scripts.Core.Text.NodeAddHelpMessage"
 	
 	print("Core nodes loaded")
 end

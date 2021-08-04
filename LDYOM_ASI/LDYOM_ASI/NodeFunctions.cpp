@@ -957,6 +957,18 @@ void setPosVisualEffect(VisualEffect &effect, float x, float y, float z)
 	effect.pos[2] = z;
 }
 
+void waitNode(int time, sol::table &node, int id_out, NodeGraph* data, Mission* mission)
+{
+	instance.add_to_queue([=]() {
+		this_coro::wait(time);
+
+		const sol::protected_function play = node["callOutputLinks"];
+		auto result = play(node, data, mission, id_out);
+		if (!ScriptManager::checkProtected(result))
+			CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+	});
+}
+
 void connectNodesFunctions(sol::table& t_ldyom)
 {
 	t_ldyom.set_function("SkinSelector", &SkinSelector);
@@ -981,4 +993,5 @@ void connectNodesFunctions(sol::table& t_ldyom)
 	t_ldyom.set("showVisualEffect", showVisualEffect);
 	t_ldyom.set("hideVisualEffect", hideVisualEffect);
 	t_ldyom.set("setPosVisualEffect", setPosVisualEffect);
+	t_ldyom.set("waitNode", waitNode);
 }

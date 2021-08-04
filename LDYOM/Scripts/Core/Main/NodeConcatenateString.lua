@@ -2,17 +2,17 @@ ffi = require "ffi"
 require "LDYOM.Scripts.baseNode"
 class = require "LDYOM.Scripts.middleclass"
 
-Node = bitser.registerClass(class("NodeComparingString", BaseNode));
+Node = bitser.registerClass(class("NodeConcatenateString", BaseNode));
 
-Node.static.name = imgui.imnodes.getNodeIcon("fork")..' '..ldyom.langt("CoreNodeComparingString");
+Node.static.name = imgui.imnodes.getNodeIcon("func")..' '..ldyom.langt("CoreNodeConcatenateString");
 
 function Node:initialize(id)
 	BaseNode.initialize(self,id);
-	self.type = 1;
+	self.type = 4;
 	self.Pins = {
 		[self.id+1] = BasePin:new(self.id+1,imgui.imnodes.PinType.string, 0, ffi.new("char[128]")),
 		[self.id+2] = BasePin:new(self.id+2,imgui.imnodes.PinType.string, 0, ffi.new("char[128]")),
-		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.boolean, 1, ffi.new("bool[1]")),
+		[self.id+3] = BasePin:new(self.id+3,imgui.imnodes.PinType.string, 1, ffi.new("char[128]")),
 	};
 end
 
@@ -59,8 +59,7 @@ function Node:play(data, mission)
 	local value2 = ffi.string(self:getPinValue(self.id+2,data,mission));
 	ldyom.setLastNode(self.id);
 	
-	self.Pins[self.id+3].value[0] = value1 == value2;
-
+	ffi.copy(self.Pins[self.id+3].value, value1 .. value2);
 end
 
 ldyom.nodeEditor.addNodeClass("Main",Node);

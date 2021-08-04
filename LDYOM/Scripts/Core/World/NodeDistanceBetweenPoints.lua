@@ -88,7 +88,7 @@ function Node:draw()
 		imgui.imnodes.EndInputAttribute();
 	end
 	
-	imgui.imnodes.BeginOutputAttribute(self.id+6);
+	imgui.imnodes.BeginOutputAttribute(self.id+7);
 	imgui.Dummy(imgui.ImVec2:new(0,10));
 	imgui.imnodes.EndOutputAttribute();
 	
@@ -100,9 +100,9 @@ function Node:play(data, mission)
 	local x1 = self:getPinValue(self.id+1,data,mission)[0];
 	local y1 = self:getPinValue(self.id+2,data,mission)[0];
 	local z1 = self:getPinValue(self.id+3,data,mission)[0];
-	local x3 = self:getPinValue(self.id+4,data,mission)[0];
-	local y4 = self:getPinValue(self.id+5,data,mission)[0];
-	local z5 = self:getPinValue(self.id+6,data,mission)[0];
+	local x2 = self:getPinValue(self.id+4,data,mission)[0];
+	local y2 = self:getPinValue(self.id+5,data,mission)[0];
+	local z2 = self:getPinValue(self.id+6,data,mission)[0];
 	ldyom.setLastNode(self.id);
 	
 	if (self.three[0]) then

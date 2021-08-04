@@ -422,9 +422,35 @@ void AddBigMessageWithNumberQ(std::string text, unsigned int time, unsigned shor
 	});
 }
 
+void AddHelpMessage(std::string text, bool quickMessage, bool permanent, bool gxt)
+{
+	instance.add_to_queue([=]() {
+		unsigned int textPtr;
+		if (gxt)
+		{
+			Command<0x0ADE>(text.c_str(), &textPtr);
+		}
+		else
+		{
+			messageNode = text;
+			messageNode = is_utf8(messageNode.c_str()) ? UTF8_to_CP1251(messageNode) : messageNode;
+			GXTEncode(messageNode);
+			textPtr = (unsigned int)messageNode.c_str();
+		}
+		CHud::SetHelpMessage(reinterpret_cast<const char*>(textPtr), quickMessage, permanent, true);
+		CHud::DrawHelpText();
+		this_coro::wait(10s);
+	});
+}
+
 float calcDistance(float x1, float y1, float z1, float x2, float y2, float z2)
 {
 	return DistanceBetweenPoints(CVector(x1, y1, z1), CVector(x2, y2, z2));
+}
+
+int getTrainRef(CTrain* train)
+{
+	return CPools::GetVehicleRef(train);
 }
 
 void setNamespaceLua(sol::state& lua)
@@ -442,7 +468,7 @@ void setNamespaceLua(sol::state& lua)
 	lua.set_function("getPointer", &getPointer);
 	lua.set_function("getPedRef", CPools::GetPedRef);
 	lua.set_function("getCarRef", CPools::GetVehicleRef);
-	lua.set_function("getCarRef", CPools::GetVehicleRef);
+	lua.set_function("getTrainRef", getTrainRef);
 	lua.set_function("getObjectRef", CPools::GetObjectRef);
 	lua.set_function("isKeyJustPressed", &KeyJustPressed);
 	lua.set_function("UTF8_to_CP1251", &UTF8_to_CP1251);
@@ -453,7 +479,7 @@ void setNamespaceLua(sol::state& lua)
 	lua.set_function("AddMessage", AddMessage);
 	lua.set_function("AddMessageJumpQ", AddMessageJumpQ);
 	lua.set_function("AddBigMessageWithNumber", AddBigMessageWithNumber);
-	lua.set_function("AddBigMessageWithNumberQ", AddBigMessageWithNumberQ);
+	lua.set_function("AddHelpMessage", AddHelpMessage);
 	lua.set_function("calcDistance", calcDistance);
 
 	sol::usertype<charPointer> charPointerClass = lua.new_usertype<charPointer>("charPointer", sol::constructors<charPointer()>());
@@ -924,7 +950,7 @@ void ScriptManager::loadScripts()
 				{
 					sol::state& lua = *(new sol::state);
 					
-					lua.open_libraries(sol::lib::base, sol::lib::jit, sol::lib::ffi, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string);
+					lua.open_libraries(sol::lib::base, sol::lib::jit, sol::lib::ffi, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string, sol::lib::os);
 					
 					setNamespaceLua(lua);
 

@@ -786,7 +786,10 @@ void fTargets()
 				}
 				ImGui::SameLine();
 				ImGui::PushItemWidth(270);
-				ImGui::InputFloat3(langt("position"), targetPtr->pos, "%.6f");
+				if (ImGui::InputFloat3(langt("position"), targetPtr->pos, "%.6f"))
+				{
+					updateSphere = true;
+				}
 				ImGui::PushItemWidth(-130);
 				if (ImGui::DragFloat(langt("radiusCheckpoint"), &targetPtr->radius, 0.05f, 0.0f, 100.0f))
 				{
@@ -1610,7 +1613,10 @@ void fActors()
 		}
 		ImGui::SameLine();
 		ImGui::PushItemWidth(270);
-		ImGui::InputFloat3(langt("position"), actorPtr->pos, "%.6f");
+		if (ImGui::InputFloat3(langt("position"), actorPtr->pos, "%.6f"))
+		{
+			actorPtr->editorPed->SetPosn(actorPtr->pos[0], actorPtr->pos[1], actorPtr->pos[2]);
+		}
 		ImGui::PushID("angle");
 		if (ImGui::Button(ICON_FA_STREET_VIEW))
 		{
@@ -2025,7 +2031,10 @@ void fCars()
 		}
 		ImGui::SameLine();
 		ImGui::PushItemWidth(270);
-		ImGui::InputFloat3(langt("position"), carPtr->pos, "%.6f");
+		if (ImGui::InputFloat3(langt("position"), carPtr->pos, "%.6f"))
+		{
+			carPtr->editorCar->SetPosn(carPtr->pos[0], carPtr->pos[1], carPtr->pos[2]);
+		}
 		ImGui::PushID("angle");
 		if (ImGui::Button(ICON_FA_STREET_VIEW))
 		{
@@ -4011,7 +4020,10 @@ void fPlayer()
 	}
 	ImGui::SameLine();
 	ImGui::PushItemWidth(270);
-	ImGui::InputFloat3(langt("position"), playerPtr->pos, "%.6f");
+	if (ImGui::InputFloat3(langt("position"), playerPtr->pos, "%.6f"))
+	{
+		playerPtr->editorPed->SetPosn(playerPtr->pos[0], playerPtr->pos[1], playerPtr->pos[2]);
+	}
 	ImGui::PushID("angle");
 	if (ImGui::Button(ICON_FA_STREET_VIEW))
 	{
@@ -5513,7 +5525,10 @@ void fStorylineCheckpoints()
 		}
 		ImGui::SameLine();
 		ImGui::PushItemWidth(270);
-		ImGui::InputFloat3(langt("position"), checkPtr->pos, "%.6f");
+		if (ImGui::InputFloat3(langt("position"), checkPtr->pos, "%.6f"))
+		{
+			checkPtr->updateEditorCheckpoint();
+		}
 		ImGui::PushItemWidth(-130);
 		auto& colorsL = langMenu["targets_marker_color"];
 		vector<std::string> cut_colors(colorsL.begin(), colorsL.end() - 1);
