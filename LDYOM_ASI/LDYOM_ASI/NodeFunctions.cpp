@@ -969,6 +969,44 @@ void waitNode(int time, sol::table &node, int id_out, NodeGraph* data, Mission* 
 	});
 }
 
+void playAnimPed(sol::table &node, int id_out, NodeGraph* data, Mission* mission, int ped, int pack, int anim, bool looped, bool unbreak, bool stopEndFrame, bool useAnimMove, int _time, float smoothness)
+{
+	instance.add_to_queue([=]()
+	{
+		if (!Command<0x04EE>(Anim_name[pack].c_str()))
+		{
+			Command<0x04ED>(Anim_name[pack].c_str());
+			while (!Command<0x04EE>(Anim_name.at(pack).c_str()))
+			{
+				this_coro::wait(0);
+			}
+		}
+		auto anims = Anim_list[pack];
+
+		if (!unbreak)
+			Command<Commands::TASK_PLAY_ANIM>(ped, anims[anim].c_str(), Anim_name[pack].c_str(), smoothness, (int)looped, (int)useAnimMove, (int)useAnimMove, (int)stopEndFrame, (_time > 0) ? _time : -1);
+		else
+			Command<Commands::TASK_PLAY_ANIM_WITH_FLAGS>(ped, anims[anim].c_str(), Anim_name[pack].c_str(), smoothness, (int)looped, (int)useAnimMove, (int)useAnimMove, (int)stopEndFrame, (_time > 0) ? _time : -1, 0, 0);
+
+		if (_time > 0) {
+			this_coro::wait(_time);
+		} else {
+			while (getMissionStarted() && !Command<0x0611>(ped, anims[anim].c_str())) {
+				this_coro::wait(0);
+			}
+			float time_c = 0.0f;
+			Command<Commands::GET_CHAR_ANIM_TOTAL_TIME>(ped, anims[anim].c_str(), &time_c);
+			this_coro::wait((unsigned)time_c);
+		}
+
+		const sol::protected_function play = node["callOutputLinks"];
+		auto result = play(node, data, mission, id_out);
+		if (!ScriptManager::checkProtected(result))
+			CMessages::AddMessageJumpQ("~r~Node Graph error! The mission will be unstable, dial the cheat code: LDSTOP, to end the mission prematurely.", 5000, 0, false);
+		
+	});
+}
+
 void connectNodesFunctions(sol::table& t_ldyom)
 {
 	t_ldyom.set_function("SkinSelector", &SkinSelector);
@@ -994,4 +1032,5 @@ void connectNodesFunctions(sol::table& t_ldyom)
 	t_ldyom.set("hideVisualEffect", hideVisualEffect);
 	t_ldyom.set("setPosVisualEffect", setPosVisualEffect);
 	t_ldyom.set("waitNode", waitNode);
+	t_ldyom.set("playAnimPed", playAnimPed);
 }

@@ -177,52 +177,20 @@ function Node:draw()
 	
 end
 
-function Node:play(data, mission)
-	addThreadObj(function(data_pack)
-		local data = data_pack[1];
-		local mission = data_pack[2];
-		local node = data_pack[3];
-		
-		local ped = node:getPinValue(node.id+1,data,mission)[0];
-		local pack = node:getPinValue(node.id+2,data,mission)[0];
-		local anim = node:getPinValue(node.id+3,data,mission)[0];
-		local looped = node:getPinValue(node.id+4,data,mission)[0];
-		local unbreak = node:getPinValue(node.id+5,data,mission)[0];
-		local stopEndFrame = node:getPinValue(node.id+6,data,mission)[0];
-		local useAnimMove = node:getPinValue(node.id+7,data,mission)[0];
-		local _time = node:getPinValue(node.id+8,data,mission)[0];
-		local smoothness = node:getPinValue(node.id+9,data,mission)[0];
-		assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");	
-		ldyom.setLastNode(self.id);
-		
-		if not callOpcode(0x04EE, {{ldyom.Anim_name[pack+1],"string"}}) then
-			callOpcode(0x04ED, {{ldyom.Anim_name[pack+1],"string"}});
-			while not callOpcode(0x04EE, {{ldyom.Anim_name[pack+1],"string"}}) do
-				wait(0);
-			end
-		end
-		local anims = ldyom.Anim_list[pack+1];
-		
-		if not unbreak then
-			callOpcode(0x0605,{{ped,"int"}, {anims[anim+1],"string"}, {ldyom.Anim_name[pack+1],"string"}, {smoothness,"float"}, {looped,"bool"}, {useAnimMove,"bool"}, {useAnimMove,"bool"}, {stopEndFrame,"bool"}, {fif(_time > 0,_time*1000,-1),"int"}});
-        else
-			callOpcode(0x088A,{{ped,"int"}, {anims[anim+1],"string"}, {ldyom.Anim_name[pack+1],"string"}, {smoothness,"float"}, {looped,"bool"}, {useAnimMove,"bool"}, {useAnimMove,"bool"}, {stopEndFrame,"bool"}, {fif(_time > 0,_time*1000,-1),"int"}, {false,"bool"}, {false,"bool"}});
-        end
-		if _time > 0 then
-            wait(_time * 1000)
-        else
-            while ldyom.getMissionStarted() and not callOpcode(0x0611, {{ped,"int"}, {anims[anim+1], "string"}}) do
-                wait(0);
-            end
-			local time_c = ffi.new("float[1]");
-			callOpcode(0x061A, {{ped, "int"}, {anims[anim+1], "string"}, {time_c, "float*"}});
-			print(tostring(time_c[0]));
-            wait(math.floor(time_c[0]));
-        end
-		
-		node:callOutputLinks(data, mission, node.id+14);
-		
-	end, {data,mission,self});
+function Node:play(data, mission)	
+	local ped = self:getPinValue(self.id+1,data,mission)[0];
+	local pack = self:getPinValue(self.id+2,data,mission)[0];
+	local anim = self:getPinValue(self.id+3,data,mission)[0];
+	local looped = self:getPinValue(self.id+4,data,mission)[0];
+	local unbreak = self:getPinValue(self.id+5,data,mission)[0];
+	local stopEndFrame = self:getPinValue(self.id+6,data,mission)[0];
+	local useAnimMove = self:getPinValue(self.id+7,data,mission)[0];
+	local _time = self:getPinValue(self.id+8,data,mission)[0];
+	local smoothness = self:getPinValue(self.id+9,data,mission)[0];
+	assert(callOpcode(0x056D, {{ped,"int"}}), "Not found ped");	
+	ldyom.setLastNode(self.id);
+	
+	ldyom.playAnimPed(self, self.id+14, data, mission, ped, pack, anim, looped, unbreak, stopEndFrame, useAnimMove, math.floor(_time*1000), smoothness);
 	
 	self:callOutputLinks(data, mission, self.id+15);
 end
