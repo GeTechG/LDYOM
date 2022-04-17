@@ -1,0 +1,7 @@
+[main_menu]
+title = "Главное меню"
+
+[settings]
+title = "Настройки"
+themes = "Темы"
+languages = "Языки"

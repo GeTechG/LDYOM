@@ -1,0 +1,279 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{73401e4f-bf0e-4ea2-b56a-ff23dc4e8e36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{5918c6ed-eecf-4fa6-af2a-9c4020c958c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows">
+      <UniqueIdentifier>{711f8340-a82c-4792-8159-a7210434953c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\MainMenu">
+      <UniqueIdentifier>{4aee9da5-479f-48a9-8b48-233eaa407f61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\settings">
+      <UniqueIdentifier>{49cca4c0-124f-40b3-bc83-9d13d1797980}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Fonts">
+      <UniqueIdentifier>{e20713ce-dbe5-4854-b6f6-c0ff6533f598}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\Settings">
+      <UniqueIdentifier>{51194ebc-508b-4f1e-af49-e5804d78302c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Localization">
+      <UniqueIdentifier>{d8d84c62-95dd-4283-be59-e7366251671c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Lua">
+      <UniqueIdentifier>{15efa7da-014b-463c-bffe-d47ef91b2507}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\Entities">
+      <UniqueIdentifier>{6c9b813c-a7ef-4704-8285-ab924dc5a073}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{672ef22a-dc4f-4373-a608-75e73ac22d15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\HotkeyService">
+      <UniqueIdentifier>{fbc6553d-3963-41e8-bf51-8b22877133f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ProjectsPopup">
+      <UniqueIdentifier>{66e7dbbd-0ea8-4b51-afa2-a7526e50cb47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\ProjectsManager">
+      <UniqueIdentifier>{a3b527fa-621d-484a-9e2f-5280d2022ae7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ActorsWindow">
+      <UniqueIdentifier>{dc04b2c0-8ddb-4c6f-b0fc-951febe3483c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\ModelsService">
+      <UniqueIdentifier>{295a8e14-2b66-47c4-b81e-c4df5b37069f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\PopupSkinSelector">
+      <UniqueIdentifier>{d988e1e0-a328-4bba-997b-14de47c84ec4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\PopupWeaponSelector">
+      <UniqueIdentifier>{b79191d2-badd-4449-a43d-fe7be3ce7b2e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ImGui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_dx9.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_tables.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\fa_data.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Logger.cpp" />
+    <ClCompile Include="utils\format.cc">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Settings.cpp">
+      <Filter>Utils\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\fonts\fira_regular.cpp">
+      <Filter>Utils\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\SettingsWindow.cpp">
+      <Filter>Windows\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\MainMenu.cpp">
+      <Filter>Windows\MainMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\utils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Localization\Localization.cpp">
+      <Filter>Utils\Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Tasker.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="VMTHooker\vmt.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\LuaEngine.cpp" />
+    <ClCompile Include="Windows\EntitiesWindow.cpp">
+      <Filter>Windows\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\HotKeyService.cpp">
+      <Filter>Utils\HotkeyService</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ProjectsWindowPopup.cpp">
+      <Filter>Windows\ProjectsPopup</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ProjectsService.cpp">
+      <Filter>Utils\ProjectsManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\ProjectData.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Actor.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ActorsWindow.cpp">
+      <Filter>Windows\ActorsWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ListWindow.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\WindowsRenderService.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\utilsRender.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ModelsService.cpp">
+      <Filter>Utils\ModelsService</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\PopupSkinSelector.cpp">
+      <Filter>Windows\PopupSkinSelector</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Texture.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Weapon.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\PopupWeaponSelector.cpp">
+      <Filter>Windows\PopupWeaponSelector</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ImGui\imstb_truetype.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_dx9.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_win32.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_textedit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\fa.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\imguistyleloader.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\KeyCodes.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\utils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\IWindow.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Logger.h" />
+    <ClInclude Include="utils\Settings.h">
+      <Filter>Utils\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\SettingsWindow.h">
+      <Filter>Windows\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\MainMenu.h">
+      <Filter>Windows\MainMenu</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Localization\Localization.h">
+      <Filter>Utils\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Tasker.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\LuaEngine.h" />
+    <ClInclude Include="Windows\EntitiesWindow.h">
+      <Filter>Windows\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\constants.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\HotKeyService.h">
+      <Filter>Utils\HotkeyService</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ProjectsWindowPopup.h">
+      <Filter>Windows\ProjectsPopup</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\ProjectsService.h">
+      <Filter>Utils\ProjectsManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\ProjectData.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Actor.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ActorsWindow.h">
+      <Filter>Windows\ActorsWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ListWindow.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\INameable.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\WindowsRenderService.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\HotkeysExecutor.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\utilsRender.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\IPositionable.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\ModelsService.h">
+      <Filter>Utils\ModelsService</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\PopupSkinSelector.h">
+      <Filter>Windows\PopupSkinSelector</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Texture.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Weapon.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\PopupWeaponSelector.h">
+      <Filter>Windows\PopupWeaponSelector</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

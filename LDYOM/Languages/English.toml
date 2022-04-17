@@ -1,0 +1,65 @@
+[general]
+rename = "Rename"
+delete = "Delete"
+position = "Position"
+player_position = "Player position"
+angle_rotation = "Angle rotation"
+player_angle_rotation = "Player angle rotation"
+add = "Add"
+weapons = "Weapons"
+initial = "Initial"
+model = "Model"
+slot = "Slot"
+
+[actor_model_type]
+ped = "Ped"
+special = "Special"
+
+[weapons]
+ammo = "Ammo"
+
+[main_menu]
+title = "Main Menu"
+save_mission = "Save project"
+
+[entities]
+title = "Entities"
+actors = "Actors"
+actor = "Actor"
+vehicles = "Vehicles"
+
+[skin_selector]
+title = "Skin Selector"
+search = "Search"
+filter = "Filter"
+
+[filter_ped]
+male = "Male"
+female = "Female"
+cop = "Cop"
+emergency = "Emergency"
+
+[list_window]
+create_new = "Create a new"
+delete_selected = "Delete selected"
+
+[projects]
+title = "Projects"
+new_project = "New project"
+load_project = "Load project"
+delete_project = "Delete project"
+project_name = "Project name"
+
+[settings]
+title = "Settings"
+themes = "Themes"
+languages = "Languages"
+edit_hotkeys = "Edit hotkeys"
+
+[hotkey_editor]
+title = "Hotkeys Editor"
+clear = "Clear"
+set = "Set"
+done = "Done"
+hk_openMenu = "Open Menu"
+hk_openMenu_desc = "Opens the main LDYOM menu"
