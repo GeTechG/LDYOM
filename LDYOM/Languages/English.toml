@@ -2,6 +2,7 @@
 rename = "Rename"
 delete = "Delete"
 position = "Position"
+player = "Player"
 player_position = "Player position"
 angle_rotation = "Angle rotation"
 player_angle_rotation = "Player angle rotation"
@@ -10,10 +11,65 @@ weapons = "Weapons"
 initial = "Initial"
 model = "Model"
 slot = "Slot"
+characteristics = "Characteristics"
+save = "Save"
+cancel = "Cancel"
+colors = "Colors"
+city = "City"
+must_survive = "Must survive"
+edit_manually = "Edit manually"
+radius = "Radius"
+color_marker = "Color marker"
+color_marker_enum = ["No marker", "Red", "Green", "Light Blue", "Black", "Yellow", "Blue"]
+text = "Text"
+time = "Time (sec)"
+
+[objective]
+title = "Objective"
+objectives = "Objectives"
+checkpoint = "Checkpoint"
+
+[objective_categories]
+world = "World"
+
+[checkpoint_objective]
+how_to_arrive = "How to arrive"
+how_to_arrive_enum=["By anything", "On foot", "By any vehicle", "By vehicle ..."]
 
 [actor_model_type]
 ped = "Ped"
 special = "Special"
+
+[actor]
+health = "Health"
+accuracy_shooting = "Accuracy of shooting"
+group = "Group"
+random_spawn = "Random spawn"
+stay_in_same_place = "Stay in same place"
+stay_in_same_place_description = "Makes the actor maintain their position when attacked"
+kinda_stay_in_same_place = "Kinda stay in same place"
+kinda_stay_in_same_place_description = "Sets whether the actor shouldn't chase their victim far \n(to attempt a melee attack or get in weapon range)"
+headshot = "Headshot"
+drop_weapons = "Drop weapons"
+edit_by_player = "Edit by player"
+edit_by_player_overlay = "Accept - %s\nCancel - %s"
+
+[vehicle]
+extended_colors = "Extended colors"
+primary_color = "Primary color"
+secondary_color = "Secondary color"
+component = "Component"
+numberplate = "Numberplate"
+vehicle_unbreakable = ["Bulletproof", "Fireproof", "Explosionproof", "Collisionproof", "Meleeproof", "Tires vulnerability"]
+locked = "Locked"
+edit_by_player_overlay = "Get out of the vehicle to apply."
+
+[vehicle_selector]
+searchType = "Search type"
+searchTypeEnum = ["Name", "ID"]
+filters = "Filters"
+filtersEnum = ["Car", "Bike", "Mtrack", "Quad", "Heli", "Plane", "BMX", "Trailer", "Boat"]
+icons_scale = "Icons scale"
 
 [weapons]
 ammo = "Ammo"
@@ -27,6 +83,7 @@ title = "Entities"
 actors = "Actors"
 actor = "Actor"
 vehicles = "Vehicles"
+vehicle = "Vehicle"
 
 [skin_selector]
 title = "Skin Selector"
@@ -45,16 +102,49 @@ delete_selected = "Delete selected"
 
 [projects]
 title = "Projects"
+project = "Project"
 new_project = "New project"
 load_project = "Load project"
 delete_project = "Delete project"
 project_name = "Project name"
 
+[project_info]
+title = "Project info"
+name = "Project name"
+author = "Author"
+
+
+[scenes]
+title = "Scenes"
+scene = "Scene"
+new_scene = "New scene"
+load_scene = "Load scene"
+delete_scene = "Delete scene"
+scene_name = "Scene name"
+
+[warning_popup]
+title = "Warning"
+text  = "Are you sure? The data will be permanently deleted."
+yes = "Yes"
+no = "No"
+
+[quick_commands]
+title = "Fast Menu"
+duplicate = "Duplicate"
+
+
 [settings]
 title = "Settings"
 themes = "Themes"
 languages = "Languages"
+show_entities_names = "Show entities' names"
+distance_show_names = "Distance to show names"
 edit_hotkeys = "Edit hotkeys"
+custom_ped_models = "Custom ped models"
+custom_special_ped_models = "Custom special ped models"
+custom_vehicle_models = "Custom vehicle models"
+custom_weapon_models = "Custom weapon models"
+custom_ped_animations = "Custom ped animations"
 
 [hotkey_editor]
 title = "Hotkeys Editor"
@@ -63,3 +153,7 @@ set = "Set"
 done = "Done"
 hk_openMenu = "Open Menu"
 hk_openMenu_desc = "Opens the main LDYOM menu"
+hk_openQuickCommandsMenu = "Open quick commands Menu"
+hk_openQuickCommandsMenu_desc = "Open the quick commands menu"
+hk_accept = "Accept"
+hk_cancel = "Cancel"
