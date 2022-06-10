@@ -5,9 +5,9 @@
 
 class PopupSkinSelector {
 private:
-	std::unordered_map<int, Texture> pedsIcons_;
-	std::unordered_map<int, Texture> specialPedIcons_;
-	std::optional<Texture> unknownIcon_;
+	std::unordered_map<int, std::unique_ptr<Texture>> pedsIcons_;
+	std::unordered_map<int, std::unique_ptr<Texture>> specialPedIcons_;
+	std::unique_ptr<Texture> unknownIcon_;
 
 	bool isOpen_ = false;
 

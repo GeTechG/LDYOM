@@ -100,7 +100,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\utils;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\ImGui;C:\local\boost_1_78_0\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\patch;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\utils;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\ImGui;C:\local\boost_1_78_0\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\patch;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\sqlite3;C:\Users\User\Documents\vcpkg\installed\x86-windows\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;_DX9_SDK_INSTALLED;PLUGIN_SGV_10US;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- /utf-8 /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
@@ -109,8 +109,8 @@
     <Link>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;dxguid.lib;dinput8.lib;d3d9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurl.lib;libcurlpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -122,7 +122,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\utils;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\ImGui;C:\local\boost_1_78_0\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\patch;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\utils;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\ImGui;C:\local\boost_1_78_0\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\patch;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\sqlite3;C:\Users\User\Documents\vcpkg\installed\x86-windows\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_NDEBUG;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;_DX9_SDK_INSTALLED;PLUGIN_SGV_10US;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- /utf-8 /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
@@ -133,8 +133,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;dxguid.lib;dinput8.lib;d3d9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurlpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -173,82 +173,164 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Data\BaseObjective.cpp" />
+    <ClCompile Include="Data\CheckpointObjective.cpp" />
+    <ClCompile Include="Data\Object.cpp" />
+    <ClCompile Include="Data\ObjectiveDependent.cpp" />
+    <ClCompile Include="Data\Scene.cpp" />
     <ClCompile Include="Data\Texture.cpp" />
     <ClCompile Include="Data\ProjectData.cpp" />
     <ClCompile Include="Data\Actor.cpp" />
+    <ClCompile Include="Data\Vehicle.cpp" />
     <ClCompile Include="Data\Weapon.cpp" />
+    <ClCompile Include="Data\WorldObjective.cpp" />
+    <ClCompile Include="easylogging\easylogging++.cc" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx9.cpp" />
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\imgui_stdlib.cpp" />
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="ImGui\WindowsRenderService.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sqlcpp\sqliteBackup.cpp" />
+    <ClCompile Include="sqlcpp\sqliteColumn.cpp" />
+    <ClCompile Include="sqlcpp\sqliteDatabase.cpp" />
+    <ClCompile Include="sqlcpp\sqliteException.cpp" />
+    <ClCompile Include="sqlcpp\sqliteStatement.cpp" />
+    <ClCompile Include="sqlcpp\sqliteTransaction.cpp" />
+    <ClCompile Include="sqlite3\sqlite3.c" />
+    <ClCompile Include="utils\additional_events.cpp" />
+    <ClCompile Include="utils\EditByPlayerService.cpp" />
     <ClCompile Include="utils\fa_data.cpp" />
+    <ClCompile Include="utils\FileWatcher.cpp" />
     <ClCompile Include="utils\fonts\fira_regular.cpp" />
     <ClCompile Include="utils\format.cc" />
     <ClCompile Include="utils\HotKeyService.cpp" />
+    <ClCompile Include="utils\HttpRequester.cpp" />
+    <ClCompile Include="utils\ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="utils\Localization\Localization.cpp" />
     <ClCompile Include="utils\Logger.cpp" />
     <ClCompile Include="utils\LuaEngine.cpp" />
+    <ClCompile Include="utils\memsafe.cpp" />
     <ClCompile Include="utils\ModelsService.cpp" />
+    <ClCompile Include="utils\pch.cpp" />
+    <ClCompile Include="utils\ProjectPlayerService.cpp" />
     <ClCompile Include="utils\ProjectsService.cpp" />
     <ClCompile Include="utils\Settings.cpp" />
     <ClCompile Include="utils\Tasker.cpp" />
     <ClCompile Include="utils\utils.cpp" />
+    <ClCompile Include="utils\vehicle_renderer.cpp" />
+    <ClCompile Include="utils\VirtualScene.cpp" />
     <ClCompile Include="VMTHooker\vmt.cpp" />
     <ClCompile Include="Windows\ActorsWindow.cpp" />
+    <ClCompile Include="Windows\FastObjectSelector.cpp" />
+    <ClCompile Include="Windows\ModelRenderer.cpp" />
+    <ClCompile Include="Windows\ObjectivesWindow.cpp" />
+    <ClCompile Include="Windows\ObjectSelectorPopup.cpp" />
+    <ClCompile Include="Windows\ObjectsWindow.cpp" />
+    <ClCompile Include="Windows\ObjectViewerPopup.cpp" />
+    <ClCompile Include="Windows\PopupSpriteBlipSelector.cpp" />
+    <ClCompile Include="Windows\PopupVehicleSelector.cpp" />
     <ClCompile Include="Windows\EntitiesWindow.cpp" />
+    <ClCompile Include="Windows\PopupWarning.cpp" />
+    <ClCompile Include="Windows\PopupScenes.cpp" />
+    <ClCompile Include="Windows\ProjectInfoWindow.cpp" />
+    <ClCompile Include="Windows\QuickCommandsWindow.cpp" />
     <ClCompile Include="Windows\ListWindow.cpp" />
     <ClCompile Include="Windows\MainMenu.cpp" />
+    <ClCompile Include="Windows\NameEntitiesRender.cpp" />
     <ClCompile Include="Windows\PopupSkinSelector.cpp" />
     <ClCompile Include="Windows\PopupWeaponSelector.cpp" />
     <ClCompile Include="Windows\ProjectsWindowPopup.cpp" />
     <ClCompile Include="Windows\SettingsWindow.cpp" />
     <ClCompile Include="Windows\utilsRender.cpp" />
+    <ClCompile Include="Windows\VehiclesWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Data\BaseObjective.h" />
+    <ClInclude Include="Data\CheckpointObjective.h" />
+    <ClInclude Include="Data\IRenderable.h" />
+    <ClInclude Include="Data\IUuidable.h" />
+    <ClInclude Include="Data\Object.h" />
+    <ClInclude Include="Data\ObjectiveDependent.h" />
+    <ClInclude Include="Data\Scene.h" />
     <ClInclude Include="Data\Texture.h" />
     <ClInclude Include="Data\INameable.h" />
     <ClInclude Include="Data\IPositionable.h" />
     <ClInclude Include="Data\ProjectData.h" />
     <ClInclude Include="Data\Actor.h" />
+    <ClInclude Include="Data\Vehicle.h" />
     <ClInclude Include="Data\Weapon.h" />
+    <ClInclude Include="Data\WorldObjective.h" />
+    <ClInclude Include="easylogging\easylogging++.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_dx9.h" />
     <ClInclude Include="ImGui\imgui_impl_win32.h" />
     <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imgui_stdlib.h" />
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="ImGui\WindowsRenderService.h" />
     <ClInclude Include="include\constants.h" />
+    <ClInclude Include="include\forward_declarations.h" />
+    <ClInclude Include="include\imgui_notify.h" />
+    <ClInclude Include="include\pool_object_extender.h" />
+    <ClInclude Include="include\singleton.h" />
+    <ClInclude Include="sqlite3\sqlite3.h" />
+    <ClInclude Include="utils\additional_events.h" />
+    <ClInclude Include="utils\components.h" />
+    <ClInclude Include="utils\EditByPlayerService.h" />
     <ClInclude Include="utils\fa.h" />
+    <ClInclude Include="utils\FileWatcher.h" />
     <ClInclude Include="utils\HotKeyService.h" />
     <ClInclude Include="utils\HotkeysExecutor.h" />
+    <ClInclude Include="utils\HttpRequester.h" />
     <ClInclude Include="utils\imguistyleloader.h" />
+    <ClInclude Include="utils\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="utils\KeyCodes.h" />
     <ClInclude Include="utils\Localization\Localization.h" />
     <ClInclude Include="utils\Logger.h" />
     <ClInclude Include="utils\LuaEngine.h" />
+    <ClInclude Include="utils\memsafe.h" />
     <ClInclude Include="utils\ModelsService.h" />
+    <ClInclude Include="utils\pch.h" />
+    <ClInclude Include="utils\ProjectPlayerService.h" />
     <ClInclude Include="utils\ProjectsService.h" />
     <ClInclude Include="utils\Settings.h" />
+    <ClInclude Include="utils\strUtils.h" />
     <ClInclude Include="utils\Tasker.h" />
     <ClInclude Include="utils\utils.h" />
+    <ClInclude Include="utils\vehicle_renderer.h" />
+    <ClInclude Include="utils\VirtualScene.h" />
     <ClInclude Include="Windows\ActorsWindow.h" />
+    <ClInclude Include="Windows\FastObjectSelector.h" />
+    <ClInclude Include="Windows\ModelRenderer.h" />
+    <ClInclude Include="Windows\ObjectivesWindow.h" />
+    <ClInclude Include="Windows\ObjectSelectorPopup.h" />
+    <ClInclude Include="Windows\ObjectsWindow.h" />
+    <ClInclude Include="Windows\ObjectViewerPopup.h" />
+    <ClInclude Include="Windows\PopupSpriteBlipSelector.h" />
+    <ClInclude Include="Windows\PopupVehicleSelector.h" />
     <ClInclude Include="Windows\EntitiesWindow.h" />
+    <ClInclude Include="Windows\PopupWarning.h" />
+    <ClInclude Include="Windows\PopupScenes.h" />
+    <ClInclude Include="Windows\ProjectInfoWindow.h" />
+    <ClInclude Include="Windows\QuickCommandsWindow.h" />
+    <ClInclude Include="Windows\NameEntitiesRender.h" />
     <ClInclude Include="Windows\PopupSkinSelector.h" />
     <ClInclude Include="Windows\PopupWeaponSelector.h" />
     <ClInclude Include="Windows\utilsRender.h" />
-    <ClInclude Include="Windows\IWindow.h" />
+    <ClInclude Include="Windows\AbstractWindow.h" />
     <ClInclude Include="Windows\ListWindow.h" />
     <ClInclude Include="Windows\MainMenu.h" />
     <ClInclude Include="Windows\ProjectsWindowPopup.h" />
     <ClInclude Include="Windows\SettingsWindow.h" />
+    <ClInclude Include="Windows\VehiclesWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -24,7 +24,8 @@ public:
 	std::vector<ImHotKey::HotKey>& getHotkeys();
 
 	unsigned int stringToKeyCombo(const std::string &combo);
+	const ImHotKey::HotKey* getHotKeyByName(const std::string& name) const;
 
 	void appendHotKey(ImHotKey::HotKey& hotKey);
-	ImHotKey::HotKey* getHotKey();
+	ImHotKey::HotKey* getHotKey(bool repeat = false);
 };

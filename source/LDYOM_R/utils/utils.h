@@ -5,7 +5,15 @@
 
 #define NOMINMAX
 
+#include <array>
+#include <CQuaternion.h>
+#include <CRGBA.h>
+#include <CVector.h>
+#include <filesystem>
+
 #include "../Data/Texture.h"
+
+#include "../Data/IUuidable.h"
 
 #define PI 3.14159265358979323846f
 #define	DEG(rad) ((rad)*180.0f/PI)
@@ -49,43 +57,45 @@ struct version<T >                                                     \
 class utils
 {
 public:
-	static std::vector<std::string> split(const std::string& s, const std::string& delimiter);
-	static bool Combo(const char* label, int* currentItem, const std::vector<std::string>& items);
-    static bool LoadTextureFromFile(const char* filename, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height);
-	static std::optional<Texture> LoadTextureRequiredFromFile(const char* filename);
+    static bool Combo(const char* label, int* currentItem, const std::vector<std::string>& items, int count = 0);
+    static bool Combo(const char* label, boost::uuids::uuid* currentItem, int currentElement, int size, const std::function<const char*(int)>
+                      & getName, const std::function<boost::uuids::uuid(int)>& getUuid);
+    static bool ToggleButton(const char* strId, bool* v);
+    static bool LoadTextureFromFile(std::filesystem::path filename, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height);
+	static std::optional<std::unique_ptr<Texture>> LoadTextureRequiredFromFile(std::filesystem::path filename);
+    static bool LoadTextureFromMemory(const void* pointer, unsigned size, PDIRECT3DTEXTURE9* out_texture, int* out_width,
+                               int* out_height);
+    static std::optional<std::unique_ptr<Texture>> LoadTextureRequiredFromMemory(const void* pointer, unsigned size);
+    static std::optional<std::unique_ptr<Texture>> LoadTextureRequiredFromURL(const std::string& url);
+    static void controlCamera(const CVector& position);
+    static bool controlCameraWithMove(float* pos, bool withZ = true, float zOffset = 0.0f);
+    static std::wstring stringToPathString(const std::string& string);
+    static unsigned int getCarColorRgba(unsigned char id);
+    template<class T>
+    static int indexByUuid(const std::vector<std::unique_ptr<T>>& vector, boost::uuids::uuid uuid);
+    static int createBlip(float* pos, int blipType, int blipColor, int blipSprite = 0);
+    static CQuaternion lookRotation(const CVector& lookAt, CVector& up);
 };
 
-inline std::vector<std::string> utils::split(const std::string& s, const std::string& delimiter) {
-    size_t pos_start = 0, pos_end;
-    const size_t delimLen = delimiter.length();
-    std::vector<std::string> res;
+template <class T>
+int utils::indexByUuid(const std::vector<std::unique_ptr<T>>& vector, boost::uuids::uuid uuid) {
+    const auto it = std::ranges::find_if(vector, [&uuid](const std::unique_ptr<T>& ptr) {
+        IUuidable *uuidable = ptr.get();
+        return uuid == uuidable->getUuid();
+    });
 
-    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
-        std::string token = s.substr(pos_start, pos_end - pos_start);
-        pos_start = pos_end + delimLen;
-        res.push_back(token);
-    }
-
-    res.push_back(s.substr(pos_start));
-    return res;
+    if (it != vector.end())
+        return it - vector.begin();
+    return -1;
 }
 
-// trim from start (in place)
-inline void ltrim(std::string& s) {
-    s.erase(s.begin(), std::ranges::find_if(s, [](unsigned char ch) {
-        return !std::isspace(ch);
-        }));
-}
 
-// trim from end (in place)
-inline void rtrim(std::string& s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-        return !std::isspace(ch);
-        }).base(), s.end());
-}
 
-// trim from both ends (in place)
-inline void trim(std::string& s) {
-    ltrim(s);
-    rtrim(s);
+inline CRGBA floatColorToCRGBA(const std::array<float, 4>& color) {
+    return CRGBA{
+        static_cast<unsigned char>(color[0] * 255.0f),
+        static_cast<unsigned char>(color[1] * 255.0f),
+        static_cast<unsigned char>(color[2] * 255.0f),
+        static_cast<unsigned char>(color[3] * 255.0f)
+    };
 }

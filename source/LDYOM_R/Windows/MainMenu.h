@@ -1,13 +1,15 @@
 #pragma once
-#include "IWindow.h"
+#include "AbstractWindow.h"
+#include "PopupScenes.h"
 #include "ProjectsWindowPopup.h"
 
 namespace Windows
 {
-	class MainMenu : public IWindow
+	class MainMenu : public AbstractWindow
 	{
 	private:
 		ProjectsWindowPopup projectsWindowPopup_;
+		PopupScenes popupScenes_;
 	public:
 		void draw() override;
 	};

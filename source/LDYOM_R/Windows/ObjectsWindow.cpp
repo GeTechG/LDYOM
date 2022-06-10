@@ -1,0 +1,167 @@
+﻿#include "ObjectsWindow.h"
+
+#include <CCamera.h>
+#include <CWorld.h>
+
+#include "EditByPlayerService.h"
+#include "fa.h"
+#include "HotKeyService.h"
+#include "imgui.h"
+#include "Logger.h"
+#include "utils.h"
+#include "utilsRender.h"
+#include "Localization/Localization.h"
+#include "fmt/core.h"
+
+std::string Windows::ObjectsWindow::getNameList() {
+	return fmt::format("{} {}", ICON_FA_CUBES, Localization::getInstance().get("entities.objects"));
+}
+
+std::string Windows::ObjectsWindow::getNameOption() {
+	return fmt::format("{} {}", ICON_FA_CUBE, Localization::getInstance().get("entities.object"));
+}
+
+int Windows::ObjectsWindow::getListSize() {
+	return static_cast<int>(ProjectsService::getInstance()
+		.getCurrentProject()
+		.getCurrentScene()
+		->getObjects()
+		.size());
+}
+
+void Windows::ObjectsWindow::createNewElement() {
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObject();
+}
+
+char* Windows::ObjectsWindow::getElementName(int i) {
+	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(i)->getName();
+}
+
+void Windows::ObjectsWindow::deleteElement(int i) {
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(i)->deleteEditorObject();
+
+	const auto begin = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().begin();
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().erase(begin + i);
+	this->currentElement--;
+}
+
+std::array<float, 3> ToEulerAngles(CQuaternion& q) {
+	std::array<float, 3> angles;
+
+	double sqw = q.real * q.real;
+	double sqx = q.imag.x * q.imag.x;
+	double sqy = q.imag.y * q.imag.y;
+	double sqz = q.imag.z * q.imag.z;
+	double unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+	double test = q.imag.x * q.imag.y + q.imag.z * q.real;
+	if (test > 0.499 * unit) { // singularity at north pole
+		angles[1] = 2 * atan2(q.imag.x, q.real);
+		angles[0] = PI / 2;
+		angles[2] = 0;
+		return angles;
+	}
+	if (test < -0.499 * unit) { // singularity at south pole
+		angles[1] = -2 * atan2(q.imag.x, q.real);
+		angles[0] = -PI / 2;
+		angles[2] = 0;
+		return angles;
+	}
+	angles[1] = atan2(2 * q.imag.y * q.real - 2 * q.imag.x * q.imag.z, sqx - sqy - sqz + sqw);
+	angles[0] = asin(2 * test / unit);
+	angles[2] = atan2(2 * q.imag.x * q.real - 2 * q.imag.y * q.imag.z, -sqx + sqy - sqz + sqw);
+	return angles;
+}
+
+
+void Windows::ObjectsWindow::drawOptions() {
+	auto& local = Localization::getInstance();
+
+	Object* object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(this->currentElement).get();
+
+	const auto matrix = object->getEditorObject().value()->GetMatrix();
+
+	/*ImGui::Text("RwMatrix matrix:");
+	ImGui::Text("%.3f, %.3f, %.3f, %.3f", matrix->right.x, matrix->right.y, matrix->right.z, 0.f);
+	ImGui::Text("%.3f, %.3f, %.3f, %.3f", matrix->up.x, matrix->up.y, matrix->up.z, .0f);
+	ImGui::Text("%.3f, %.3f, %.3f, %.3f", matrix->at.x, matrix->at.y, matrix->at.z, 0.f);
+	ImGui::Text("%.3f, %.3f, %.3f, %.3f", matrix->pos.x, matrix->pos.y, matrix->pos.z, 1.f);*/
+
+	if (TransformEditor(object->getPosition(), object->getRotations(), object->getScale().data())) {
+		object->updateLocation();
+	}
+
+	//position
+	DragPosition(object->getPosition(), [object] {
+		object->updateLocation();
+	});
+	//rotations
+	static std::array<float, 3> eularRot = {0, 0, 0};
+	InputRotations(eularRot.data(), [&] {
+		object->getRotations().Set(RAD(eularRot[0]), RAD(eularRot[1]), RAD(eularRot[2]));
+		object->updateLocation();
+	});
+	///scale
+	if (ImGui::DragFloat3(local.get("general.scale").c_str(), object->getScale().data(), 0.001f, 0.001f, 0, "%.3f")) {
+		object->updateLocation();
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::Button(ICON_FA_CUBES, ImVec2(ImGui::GetFontSize() * 1.56f, ImGui::GetFontSize() * 1.56f))) {
+		objectSelectorPopup_.open();
+		objectSelectorPopup_.setCallbackSelect([&object](int modelId) {
+			object->getModelId() = modelId;
+			object->spawnEditorObject();
+			});
+	}
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetTooltip(local.get("object_selector.title").c_str());
+	}
+	ImGui::SameLine();
+	ImGui::InputInt(local.get("general.model").c_str(), &object->getModelId(), 0, 0);
+	ImGui::SameLine();
+	if (ImGui::Button(local.get("general.apply").c_str())) {
+		object->spawnEditorObject();
+	}
+	if (ImGui::Button(local.get("object.edit_by_camera").c_str())) {
+		EditByPlayerService::getInstance().positionalObject(object->getEditorObject().value(), object->getPosition(), object->getRotations(), false);
+	}
+
+	this->objectViewerPopup_.draw();
+	this->objectSelectorPopup_.draw();
+
+	ObjectiveDependentInput(object);
+
+	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
+		ImGui::Text(local.get("info_overlay.camera_view").c_str());
+		ImGui::Text(local.get("info_overlay.depend_zoom").c_str());
+		ImGui::Text(local.get("info_overlay.move_element").c_str());
+		char guizmoTranslate[32];
+		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoTranslate")->functionKeys, guizmoTranslate, sizeof guizmoTranslate);
+		ImGui::Text(fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoTranslate"), guizmoTranslate).c_str());
+		char guizmoRotate[32];
+		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoRotate")->functionKeys, guizmoRotate, sizeof guizmoRotate);
+		ImGui::Text(fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoRotate"), guizmoRotate).c_str());
+		char guizmoScale[32];
+		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoScale")->functionKeys, guizmoScale, sizeof guizmoScale);
+		ImGui::Text(fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoScale"), guizmoScale).c_str());
+		ImGui::PopTextWrapPos();
+	}
+	ImGui::End();
+
+	if (utils::controlCameraWithMove(object->getPosition())) {
+		object->updateLocation();
+	}
+}
+
+void Windows::ObjectsWindow::close() {
+	ListWindow::close();
+	TheCamera.Restore();
+}
+
+void Windows::ObjectsWindow::open() {
+	ListWindow::open();
+}

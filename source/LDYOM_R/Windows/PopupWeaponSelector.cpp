@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "fmt/core.h"
 #include "imgui.h"
+#include "CWeaponInfo.h"
 
 void PopupWeaponSelector::Init() {
 	const auto& models = ModelsService::getInstance().getWeaponIds();
@@ -12,12 +13,12 @@ void PopupWeaponSelector::Init() {
 		int imageHeight = 0;
 		PDIRECT3DTEXTURE9 texture = nullptr;
 		if (utils::LoadTextureFromFile(fmt::format("LDYOM/Resources/weaponsIcons/50px-Weapon-{}-hd.png", model).c_str(), &texture, &imageWidth, &imageHeight)) {
-			this->icons_.emplace(model, Texture(texture, imageWidth, imageHeight));
+			this->icons_.emplace(model, std::make_unique<Texture>(texture, imageWidth, imageHeight));
 		}
 	}
-	const std::optional<Texture> unknownTextureIcon = utils::LoadTextureRequiredFromFile("LDYOM/Resources/weaponsIcons/50px-Weapon-unk-hd.png");
+	auto unknownTextureIcon = utils::LoadTextureRequiredFromFile(L"LDYOM/Resources/weaponsIcons/50px-Weapon-unk-hd.png");
 	if (unknownTextureIcon.has_value())
-		this->unknownIcon_ = unknownTextureIcon;
+		this->unknownIcon_ = std::move(unknownTextureIcon.value());
 	else
 		throw std::exception("invalid load unknown texture icon");
 }
@@ -28,7 +29,7 @@ void PopupWeaponSelector::showPopup() const {
 
 void PopupWeaponSelector::weaponButton(const int* value) {
 	const auto itr = this->icons_.find(*value);
-	Texture* icon = itr == this->icons_.cend() ? &this->unknownIcon_.value() : &itr->second;
+	Texture* icon = itr == this->icons_.cend() ? this->unknownIcon_.get() : itr->second.get();
 
 	if (ImGui::ImageButton(icon->getTexture(), ImVec2(static_cast<float>(icon->getWidth()), static_cast<float>(icon->getHeight())))) {
 		showPopup();
@@ -36,7 +37,7 @@ void PopupWeaponSelector::weaponButton(const int* value) {
 }
 
 void PopupWeaponSelector::renderPopup(const std::function<void(int)>& onSelectCallback) {
-	ImGui::SetNextWindowSize(ImVec2(static_cast<float>(8 * (50 + 10)), 200.0f));
+	ImGui::SetNextWindowSize(ImVec2(static_cast<float>(8 * (50 + 12)), 200.0f));
 	if (ImGui::BeginPopup("##weaponSelector")) {
 
 		if (ImGui::BeginChild("##weaponsContainer")) {
@@ -44,7 +45,7 @@ void PopupWeaponSelector::renderPopup(const std::function<void(int)>& onSelectCa
 				int weaponId = ModelsService::getInstance().getWeaponIds().at(i);
 
 				const auto itr = this->icons_.find(weaponId);
-				Texture* icon = itr == this->icons_.cend() ? &this->unknownIcon_.value() : &itr->second;
+				Texture* icon = itr == this->icons_.cend() ? this->unknownIcon_.get() : itr->second.get();
 
 				if (i % 8 != 0) {
 					ImGui::SameLine();
@@ -54,6 +55,9 @@ void PopupWeaponSelector::renderPopup(const std::function<void(int)>& onSelectCa
 					onSelectCallback(weaponId);
 					ImGui::CloseCurrentPopup();
 				}
+
+				if (ImGui::IsItemHovered())
+					ImGui::SetTooltip(CWeaponInfo::ms_aWeaponNames[weaponId]);
 			}
 		}
 		ImGui::EndChild();

@@ -11,5 +11,8 @@ namespace Windows {
 		char* getElementName(int i) override;
 		void deleteElement(int i) override;
 		void drawOptions() override;
+		void close() override;
+		void open() override;
+		void selectElement(int i) override;
 	};
 }

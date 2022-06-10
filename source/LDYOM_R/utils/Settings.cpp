@@ -7,12 +7,13 @@
 
 #include <Windows.h>
 
+#include "FileWatcher.h"
 #include "HotKeyService.h"
 #include "WindowsRenderService.h"
 
-const std::filesystem::path settingsPath("LDYOM/settings.json");
-const std::filesystem::path localizationsDirectory("LDYOM/Languages");
-const std::filesystem::path themesDirectory("LDYOM/Themes");
+const std::filesystem::path settingsPath(L"LDYOM/settings.json");
+const std::filesystem::path localizationsDirectory(L"LDYOM/Languages");
+const std::filesystem::path themesDirectory(L"LDYOM/Themes");
 
 const nlohmann::json defaultSettings = R"(
   {
@@ -132,8 +133,26 @@ void Settings::Init()
 	}
 	this->listLocalizations_ = getListLocalizations();
 	this->listThemes_ = getListThemes();
-	auto settingsUpdateThead = std::thread(settingsWatcher, &this->onUpdate_);
-	settingsUpdateThead.detach();
+	//auto settingsUpdateThead = std::thread(settingsWatcher, &this->onUpdate_);
+	//settingsUpdateThead.detach();
+	FileWatcher::addWatch(
+		localizationsDirectory, 
+		false, 
+		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE, 
+		[&] {
+			this->listLocalizations() = getListLocalizations();
+			Localization::getInstance().Update();
+			this->onUpdate();
+		});
+	FileWatcher::addWatch(
+		themesDirectory,
+		false,
+		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE,
+		[&] {
+			this->listThemes() = getListThemes();
+			Windows::WindowsRenderService::getInstance().style();
+			this->onUpdate();
+		});
 }
 
 void Settings::Save() const

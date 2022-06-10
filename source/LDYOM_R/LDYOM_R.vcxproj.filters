@@ -44,9 +44,6 @@
     <Filter Include="Windows\ProjectsPopup">
       <UniqueIdentifier>{66e7dbbd-0ea8-4b51-afa2-a7526e50cb47}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utils\ProjectsManager">
-      <UniqueIdentifier>{a3b527fa-621d-484a-9e2f-5280d2022ae7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Windows\ActorsWindow">
       <UniqueIdentifier>{dc04b2c0-8ddb-4c6f-b0fc-951febe3483c}</UniqueIdentifier>
     </Filter>
@@ -58,6 +55,117 @@
     </Filter>
     <Filter Include="Windows\PopupWeaponSelector">
       <UniqueIdentifier>{b79191d2-badd-4449-a43d-fe7be3ce7b2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\NamesEntitiesRender">
+      <UniqueIdentifier>{ae29c05d-0d00-4a4a-bdf1-f7e1cac97d6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\FactCommandWindow">
+      <UniqueIdentifier>{0f0a9178-f66e-4589-8829-6e0de780ccde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\PopupScenes">
+      <UniqueIdentifier>{213a733d-fe10-4aaf-b620-addfdcf83fa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\FileWatcher">
+      <UniqueIdentifier>{3bd5f4bb-bdaa-4504-a4bf-f7dbf66d9ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\ProjectsService">
+      <UniqueIdentifier>{a3b527fa-621d-484a-9e2f-5280d2022ae7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\VehiclesWindow">
+      <UniqueIdentifier>{d391a1c7-f82d-45d5-88f4-1fd609aaa594}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\memsafe">
+      <UniqueIdentifier>{bd02643d-e6c8-40ad-aec2-b853a6c14685}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\additional_events">
+      <UniqueIdentifier>{51e712a0-cdce-4043-89f6-237a35a3d332}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\PopupVehicleSelector">
+      <UniqueIdentifier>{9a4cfaf1-292c-44c1-9e8a-da33466b4992}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\EditByPlayerService">
+      <UniqueIdentifier>{bb67f319-32b3-40fd-b0ff-75e6e1ebc992}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\PopupWarning">
+      <UniqueIdentifier>{fbab3be4-6180-4758-bf82-388ca6bcf64d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Actor">
+      <UniqueIdentifier>{ef1c070e-2660-48d0-abe7-27ac00236f28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Scene">
+      <UniqueIdentifier>{cb238523-25e6-4ca9-b650-cf9d6e68852e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Vehicle">
+      <UniqueIdentifier>{2de4ffa1-b39f-4a8b-bb25-2d40d504535a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Weapon">
+      <UniqueIdentifier>{c22e3621-d84f-4cfb-8cc8-db0f752d560d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\ProjectData">
+      <UniqueIdentifier>{c68828ee-2fec-4a1e-bfa5-020ad82f59a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Texture">
+      <UniqueIdentifier>{dfcac7f0-4ec2-45a4-bcaf-38836ac3e941}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Interfaces">
+      <UniqueIdentifier>{a03f54cf-b45a-4cf3-ad3f-94615c7fc51c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives">
+      <UniqueIdentifier>{37f07c79-690b-43a4-8ef7-eee8bc62089a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World">
+      <UniqueIdentifier>{077ea1c9-d0c6-4ad3-a9b8-0b6bd64aa40b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\CheckpointObjective">
+      <UniqueIdentifier>{1831fb37-0eda-49d2-969a-a134914b3a2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ObjectivesWindow">
+      <UniqueIdentifier>{b8da6174-28a5-45cf-8d93-41820f3a06b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\PopupSpriteBlipSelector">
+      <UniqueIdentifier>{71ac4f9d-8313-4995-aaa8-8614c2a346de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ProjectInfoWindow">
+      <UniqueIdentifier>{30c071bf-65e0-438a-91fd-daf5b7824963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\ProjectPlayerService">
+      <UniqueIdentifier>{afe0e59f-11d9-44ce-a36b-5434b5f78d3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\ObjectiveDependent">
+      <UniqueIdentifier>{17f04a3e-e1c6-42b8-a193-29faf81d3a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Object">
+      <UniqueIdentifier>{d9797dd3-8386-408c-b0a6-df5381be58c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ObjectsWindows">
+      <UniqueIdentifier>{c06eeca1-bb84-4f42-a9bb-f105d4f2b5aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\ImGuizmo">
+      <UniqueIdentifier>{a5ee5cb5-6ea6-44d2-86bc-7590cb801938}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ModelsViewer">
+      <UniqueIdentifier>{cc32947e-bbf9-4133-9716-9205cdf8a760}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\VirtualScene">
+      <UniqueIdentifier>{979879f7-5341-437b-87c1-958c522ae664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ObjectViewerPopup">
+      <UniqueIdentifier>{91650512-0161-4b60-bc25-4645bd7c9597}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ObjectSelectorPopup">
+      <UniqueIdentifier>{90e90131-6bdb-4f97-9642-4664c769e976}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\sqlite">
+      <UniqueIdentifier>{543e27fd-2d40-4cb0-8939-50e3e7274171}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\sqlitecpp">
+      <UniqueIdentifier>{4cad251f-7792-4f83-ab92-cada265093f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\easylogging">
+      <UniqueIdentifier>{5b1a6c78-960a-4ae9-9055-3c84a0adea14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\FastObjectSelector">
+      <UniqueIdentifier>{ebceeba0-dce5-4f17-a664-d9afe473dfa3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -125,13 +233,7 @@
       <Filter>Windows\ProjectsPopup</Filter>
     </ClCompile>
     <ClCompile Include="utils\ProjectsService.cpp">
-      <Filter>Utils\ProjectsManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Data\ProjectData.cpp">
-      <Filter>Data</Filter>
-    </ClCompile>
-    <ClCompile Include="Data\Actor.cpp">
-      <Filter>Data</Filter>
+      <Filter>Utils\ProjectsService</Filter>
     </ClCompile>
     <ClCompile Include="Windows\ActorsWindow.cpp">
       <Filter>Windows\ActorsWindow</Filter>
@@ -151,14 +253,140 @@
     <ClCompile Include="Windows\PopupSkinSelector.cpp">
       <Filter>Windows\PopupSkinSelector</Filter>
     </ClCompile>
-    <ClCompile Include="Data\Texture.cpp">
-      <Filter>Data</Filter>
-    </ClCompile>
-    <ClCompile Include="Data\Weapon.cpp">
-      <Filter>Data</Filter>
-    </ClCompile>
     <ClCompile Include="Windows\PopupWeaponSelector.cpp">
       <Filter>Windows\PopupWeaponSelector</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\NameEntitiesRender.cpp">
+      <Filter>Windows\NamesEntitiesRender</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_stdlib.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\QuickCommandsWindow.cpp">
+      <Filter>Windows\FactCommandWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\PopupScenes.cpp">
+      <Filter>Windows\PopupScenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\PopupWarning.cpp">
+      <Filter>Windows\PopupWarning</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\FileWatcher.cpp">
+      <Filter>Utils\FileWatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\VehiclesWindow.cpp">
+      <Filter>Windows\VehiclesWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\vehicle_renderer.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\memsafe.cpp">
+      <Filter>Utils\memsafe</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\additional_events.cpp">
+      <Filter>Utils\additional_events</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\pch.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\PopupVehicleSelector.cpp">
+      <Filter>Windows\PopupVehicleSelector</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\EditByPlayerService.cpp">
+      <Filter>Utils\EditByPlayerService</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Actor.cpp">
+      <Filter>Data\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Scene.cpp">
+      <Filter>Data\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Vehicle.cpp">
+      <Filter>Data\Vehicle</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Weapon.cpp">
+      <Filter>Data\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\ProjectData.cpp">
+      <Filter>Data\ProjectData</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Texture.cpp">
+      <Filter>Data\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\BaseObjective.cpp">
+      <Filter>Data\Objectives</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\CheckpointObjective.cpp">
+      <Filter>Data\Objectives\World\CheckpointObjective</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\WorldObjective.cpp">
+      <Filter>Data\Objectives\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ObjectivesWindow.cpp">
+      <Filter>Windows\ObjectivesWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\PopupSpriteBlipSelector.cpp">
+      <Filter>Windows\PopupSpriteBlipSelector</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ProjectInfoWindow.cpp">
+      <Filter>Windows\ProjectInfoWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ProjectPlayerService.cpp">
+      <Filter>Utils\ProjectPlayerService</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\ObjectiveDependent.cpp">
+      <Filter>Data\ObjectiveDependent</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Object.cpp">
+      <Filter>Data\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ObjectsWindow.cpp">
+      <Filter>Windows\ObjectsWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ImGuizmo\ImGuizmo.cpp">
+      <Filter>Utils\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ModelRenderer.cpp">
+      <Filter>Windows\ModelsViewer</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\VirtualScene.cpp">
+      <Filter>Utils\VirtualScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ObjectViewerPopup.cpp">
+      <Filter>Windows\ObjectViewerPopup</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ObjectSelectorPopup.cpp">
+      <Filter>Windows\ObjectSelectorPopup</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlite3\sqlite3.c">
+      <Filter>Utils\sqlite</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlcpp\sqliteBackup.cpp">
+      <Filter>Utils\sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlcpp\sqliteColumn.cpp">
+      <Filter>Utils\sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlcpp\sqliteDatabase.cpp">
+      <Filter>Utils\sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlcpp\sqliteException.cpp">
+      <Filter>Utils\sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlcpp\sqliteStatement.cpp">
+      <Filter>Utils\sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlcpp\sqliteTransaction.cpp">
+      <Filter>Utils\sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\HttpRequester.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="easylogging\easylogging++.cc">
+      <Filter>Utils\easylogging</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\FastObjectSelector.cpp">
+      <Filter>Windows\FastObjectSelector</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -198,7 +426,7 @@
     <ClInclude Include="utils\utils.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Windows\IWindow.h">
+    <ClInclude Include="Windows\AbstractWindow.h">
       <Filter>Windows</Filter>
     </ClInclude>
     <ClInclude Include="utils\Logger.h" />
@@ -231,22 +459,13 @@
       <Filter>Windows\ProjectsPopup</Filter>
     </ClInclude>
     <ClInclude Include="utils\ProjectsService.h">
-      <Filter>Utils\ProjectsManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Data\ProjectData.h">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Data\Actor.h">
-      <Filter>Data</Filter>
+      <Filter>Utils\ProjectsService</Filter>
     </ClInclude>
     <ClInclude Include="Windows\ActorsWindow.h">
       <Filter>Windows\ActorsWindow</Filter>
     </ClInclude>
     <ClInclude Include="Windows\ListWindow.h">
       <Filter>Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="Data\INameable.h">
-      <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="ImGui\WindowsRenderService.h">
       <Filter>ImGui</Filter>
@@ -257,23 +476,158 @@
     <ClInclude Include="Windows\utilsRender.h">
       <Filter>Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Data\IPositionable.h">
-      <Filter>Data</Filter>
-    </ClInclude>
     <ClInclude Include="utils\ModelsService.h">
       <Filter>Utils\ModelsService</Filter>
     </ClInclude>
     <ClInclude Include="Windows\PopupSkinSelector.h">
       <Filter>Windows\PopupSkinSelector</Filter>
     </ClInclude>
-    <ClInclude Include="Data\Texture.h">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Data\Weapon.h">
-      <Filter>Data</Filter>
-    </ClInclude>
     <ClInclude Include="Windows\PopupWeaponSelector.h">
       <Filter>Windows\PopupWeaponSelector</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\NameEntitiesRender.h">
+      <Filter>Windows\NamesEntitiesRender</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_stdlib.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\QuickCommandsWindow.h">
+      <Filter>Windows\FactCommandWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\PopupScenes.h">
+      <Filter>Windows\PopupScenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\PopupWarning.h">
+      <Filter>Windows\PopupWarning</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\FileWatcher.h">
+      <Filter>Utils\FileWatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui_notify.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\VehiclesWindow.h">
+      <Filter>Windows\VehiclesWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\components.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\vehicle_renderer.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\forward_declarations.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pool_object_extender.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\singleton.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\memsafe.h">
+      <Filter>Utils\memsafe</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\additional_events.h">
+      <Filter>Utils\additional_events</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\pch.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\PopupVehicleSelector.h">
+      <Filter>Windows\PopupVehicleSelector</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\EditByPlayerService.h">
+      <Filter>Utils\EditByPlayerService</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Actor.h">
+      <Filter>Data\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Scene.h">
+      <Filter>Data\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Vehicle.h">
+      <Filter>Data\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Weapon.h">
+      <Filter>Data\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\ProjectData.h">
+      <Filter>Data\ProjectData</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Texture.h">
+      <Filter>Data\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\INameable.h">
+      <Filter>Data\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\IPositionable.h">
+      <Filter>Data\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\BaseObjective.h">
+      <Filter>Data\Objectives</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CheckpointObjective.h">
+      <Filter>Data\Objectives\World\CheckpointObjective</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\IRenderable.h">
+      <Filter>Data\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\WorldObjective.h">
+      <Filter>Data\Objectives\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ObjectivesWindow.h">
+      <Filter>Windows\ObjectivesWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\IUuidable.h">
+      <Filter>Data\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\PopupSpriteBlipSelector.h">
+      <Filter>Windows\PopupSpriteBlipSelector</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ProjectInfoWindow.h">
+      <Filter>Windows\ProjectInfoWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\ProjectPlayerService.h">
+      <Filter>Utils\ProjectPlayerService</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\strUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\ObjectiveDependent.h">
+      <Filter>Data\ObjectiveDependent</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Object.h">
+      <Filter>Data\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ObjectsWindow.h">
+      <Filter>Windows\ObjectsWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\ImGuizmo\ImGuizmo.h">
+      <Filter>Utils\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ModelRenderer.h">
+      <Filter>Windows\ModelsViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\VirtualScene.h">
+      <Filter>Utils\VirtualScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ObjectViewerPopup.h">
+      <Filter>Windows\ObjectViewerPopup</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ObjectSelectorPopup.h">
+      <Filter>Windows\ObjectSelectorPopup</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3\sqlite3.h">
+      <Filter>Utils\sqlite</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\HttpRequester.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="easylogging\easylogging++.h">
+      <Filter>Utils\easylogging</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\FastObjectSelector.h">
+      <Filter>Windows\FastObjectSelector</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

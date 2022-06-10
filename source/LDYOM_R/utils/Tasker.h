@@ -1,10 +1,14 @@
 #pragma once
+#include <map>
+
 #include "ktcoro_wait.hpp"
 
 class Tasker
 {
 private:
-	ktcoro_tasklist taskList_;
+	ktcoro_tasklist ktcoroTaskList_;
+	std::map<std::string, ktwait> taskList_;
+
 
 	Tasker() = default;
 	Tasker(const Tasker&) = delete;
@@ -15,6 +19,19 @@ public:
 		return instance;
 	}
 
-	ktcoro_tasklist& list();
+	std::map<std::string, ktwait>& list();
+
+	void process();
+
+	template<typename Coroutine, typename ...Args>
+	ktwait& addTask(std::string name, Coroutine coro, Args && ...coro_args);
+	void removeTask(const std::string name);
 };
+
+template <typename Coroutine, typename ... Args>
+ktwait& Tasker::addTask(std::string name, Coroutine coro, Args&&... coro_args) {
+	ktwait iKtwait = ktcoroTaskList_.add_task(coro, coro_args...);
+	const auto result = taskList_.emplace(name, std::move(iKtwait));
+	return result.first->second;
+}
 

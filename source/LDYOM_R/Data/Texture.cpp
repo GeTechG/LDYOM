@@ -4,6 +4,10 @@ Texture::Texture(PDIRECT3DTEXTURE9 texture, int width, int height): texture_(tex
                                                                     width_(width),
                                                                     height(height) {}
 
+Texture::~Texture() {
+	this->texture_->Release();
+}
+
 PDIRECT3DTEXTURE9& Texture::getTexture() {
 	return texture_;
 }

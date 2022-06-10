@@ -9,6 +9,7 @@ private:
 	int height;
 public:
 	Texture(PDIRECT3DTEXTURE9 texture, int width, int height);
+	~Texture();
 
 	PDIRECT3DTEXTURE9& getTexture();
 	int& getWidth();

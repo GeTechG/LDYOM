@@ -312,7 +312,7 @@ namespace ImHotKey
         ImGui::EndPopup();
     }
 
-    static HotKey* GetHotKey(HotKey *hotkey, size_t hotkeyCount)
+    static HotKey* GetHotKey(HotKey *hotkey, size_t hotkeyCount, bool repeat)
     {
         static unsigned int lastHotKey = 0xFFFFFFFF;
         unsigned char scanCodes[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -336,20 +336,19 @@ namespace ImHotKey
 
         if (scanCodeCount)
         {
-            if (newHotKey != lastHotKey)
+            for (size_t i = 0; i < hotkeyCount; i++)
             {
-                for (size_t i = 0; i < hotkeyCount; i++)
+
+                if (hotkey[i].functionKeys == newHotKey)
                 {
+                    if (lastHotKey == newHotKey && !repeat)
+                        return nullptr;
 
-                	if (hotkey[i].functionKeys == newHotKey)
-                    {
-
-                    	lastHotKey = newHotKey;
-                        return &hotkey[i];
-                    }
+                    lastHotKey = newHotKey;
+                    return &hotkey[i];
                 }
-                lastHotKey = 0xFFFFFFFF;
             }
+            lastHotKey = 0xFFFFFFFF;
             return nullptr;
         }
         lastHotKey = 0xFFFFFFFF;

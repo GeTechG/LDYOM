@@ -1,18 +1,23 @@
 ﻿#pragma once
-#include "IWindow.h"
+#include "AbstractWindow.h"
 #include "Settings.h"
 
 namespace Windows
 {
-	class SettingsData
-	{
+	struct SettingsData {
 	public:
 		int currentLanguage = 0;
 		int currentTheme = 0;
-		SettingsData() = default;
+		bool showEntitiesName = false;
+		float distanceShowNames = 100.0f;
+		std::vector<int> userPedsModels{};
+		std::vector<std::string> userSpecialPedsModels{};
+		std::vector<int> userVehiclesModels{};
+		std::vector<int> userWeaponsModels{};
+		std::vector<std::pair<std::string, std::string>> userPedAnimations{};
 	};
 
-	class SettingsWindow : public IWindow
+	class SettingsWindow : public AbstractWindow
 	{
 	private:
 		SettingsData settings_;

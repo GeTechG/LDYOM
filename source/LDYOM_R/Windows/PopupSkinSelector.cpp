@@ -22,7 +22,7 @@ void PopupSkinSelector::Init() {
 		int imageHeight = 0;
 		PDIRECT3DTEXTURE9 texture = nullptr;
 		if (utils::LoadTextureFromFile(fmt::format("LDYOM/Resources/skinsIcons/Skinid{}.jpg", model).c_str(), &texture, &imageWidth, &imageHeight)) {
-			this->pedsIcons_.emplace(model, Texture(texture, imageWidth, imageHeight));
+			this->pedsIcons_.emplace(model, std::make_unique<Texture>(texture, imageWidth, imageHeight));
 		}
 	}
 	for (int i = 0; i < static_cast<int>(ModelsService::getInstance().getSpecialsPed().size()); ++i) {
@@ -31,12 +31,12 @@ void PopupSkinSelector::Init() {
 		int imageHeight = 0;
 		PDIRECT3DTEXTURE9 texture = nullptr;
 		if (utils::LoadTextureFromFile(fmt::format("LDYOM/Resources/specialsPeds/{}.jpg", specialPed).c_str(), &texture, &imageWidth, &imageHeight)) {
-			this->specialPedIcons_.emplace(i, Texture(texture, imageWidth, imageHeight));
+			this->specialPedIcons_.emplace(i, std::make_unique<Texture>(texture, imageWidth, imageHeight));
 		}
 	}
-	const std::optional<Texture> unknownTextureIcon = utils::LoadTextureRequiredFromFile("LDYOM/Resources/skinsIcons/SkinNoIcon.jpg");
+	auto unknownTextureIcon = utils::LoadTextureRequiredFromFile(L"LDYOM/Resources/skinsIcons/SkinNoIcon.jpg");
 	if (unknownTextureIcon.has_value())
-		this->unknownIcon_ = unknownTextureIcon;
+		this->unknownIcon_ = std::move(unknownTextureIcon.value());
 	else
 		throw std::exception("invalid load unknown texture icon");
 }
@@ -96,7 +96,7 @@ void PopupSkinSelector::renderPopup(const std::function<void(int)>& onSelectCall
 	static const std::vector<int> specialsPeds = getSpecialsModels();
 
 	const std::vector<int> *models;
-	std::unordered_map<int, Texture> *icons;
+	std::unordered_map<int, std::unique_ptr<Texture>> *icons;
 
 	if (special) {
 		models = &specialsPeds;
@@ -139,7 +139,7 @@ void PopupSkinSelector::renderPopup(const std::function<void(int)>& onSelectCall
 				ImGui::PushID(i);
 
 				const auto itr = icons->find(model);
-				Texture* icon = itr == icons->cend() ? &this->unknownIcon_.value() : &itr->second;
+				Texture* icon = itr == icons->cend() ? this->unknownIcon_.get() : itr->second.get();
 
 				if (static_cast<float>(filled + icon->getWidth()) < ImGui::GetWindowContentRegionWidth()) {
 					if (i > 0)

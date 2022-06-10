@@ -18,6 +18,12 @@ void HotKeyService::loadHotKeys() {
 
 void HotKeyService::Init() {
 	hotkeys_.emplace_back("openMenu", 0xFFFFFF17);
+	hotkeys_.emplace_back("openQuickCommandsMenu", 0xFFFFFF38);
+	hotkeys_.emplace_back("accept", 0xFFFFFF15);
+	hotkeys_.emplace_back("cancel", 0xFFFFFF31);
+	hotkeys_.emplace_back("guizmoTranslate", 0xFFFFFF14);
+	hotkeys_.emplace_back("guizmoRotate", 0xFFFFFF13);
+	hotkeys_.emplace_back("guizmoScale", 0xFFFFFF1F);
 	try {
 		loadHotKeys();
 	} catch(std::exception exception) {
@@ -38,7 +44,7 @@ std::vector<ImHotKey::HotKey>& HotKeyService::getHotkeys() {
 }
 
 unsigned HotKeyService::stringToKeyCombo(const std::string& combo) {
-	std::vector<std::string> keys = utils::split(combo, "+");
+	std::vector<std::string> keys = split(combo, "+");
 
 	unsigned char scanCodes[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
 	unsigned char order[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -64,10 +70,18 @@ unsigned HotKeyService::stringToKeyCombo(const std::string& combo) {
 	return ImHotKey::GetOrderedScanCodes(scanCodes, order);
 }
 
+const ImHotKey::HotKey* HotKeyService::getHotKeyByName(const std::string& name) const {
+	for (const ImHotKey::HotKey& hotkey : hotkeys_) {
+		if (name._Equal(hotkey.functionName))
+			return &hotkey;
+	}
+	return nullptr;
+}
+
 void HotKeyService::appendHotKey(ImHotKey::HotKey& hotKey) {
 	hotkeys_.emplace_back(hotKey);
 }
 
-ImHotKey::HotKey* HotKeyService::getHotKey() {
-	return GetHotKey(hotkeys_.data(), hotkeys_.size());
+ImHotKey::HotKey* HotKeyService::getHotKey(bool repeat) {
+	return GetHotKey(hotkeys_.data(), hotkeys_.size(), repeat);
 }

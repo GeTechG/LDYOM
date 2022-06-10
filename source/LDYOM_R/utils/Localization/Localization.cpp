@@ -18,32 +18,32 @@ void Localization::Init()
 
 void Localization::unpackLocalization(std::string path, toml::table& table)
 {
-	for (const auto& table_value : table)
+	for (const auto& tableValue : table)
 	{
-		std::string name_loc = path + table_value.first;
-		switch (table_value.second.type())
+		std::string nameLoc = path + tableValue.first;
+		switch (tableValue.second.type())
 		{
 		case toml::node_type::table:
-			unpackLocalization(name_loc + ".", *table_value.second.as_table());
+			unpackLocalization(nameLoc + ".", *tableValue.second.as_table());
 			break;
 		case toml::node_type::array: 
 			{
 				std::vector<std::string> arrayLocalization;
-				for (const auto& array_value : *table_value.second.as_array())
+				for (const auto& arrayValue : *tableValue.second.as_array())
 				{
-					if (array_value.is_string())
+					if (arrayValue.is_string())
 					{
-						arrayLocalization.push_back(array_value.as_string()->ref<std::string>());
+						arrayLocalization.push_back(arrayValue.as_string()->ref<std::string>());
 					}
 				}
-				this->arrayLocalization_[name_loc] = arrayLocalization;
+				this->arrayLocalization_[nameLoc] = arrayLocalization;
 			}
 			break;
 		case toml::node_type::string:
-			this->textLocalizations_[name_loc] = table_value.second.as_string()->ref<std::string>();
+			this->textLocalizations_[nameLoc] = tableValue.second.as_string()->ref<std::string>();
 			break;
 		default:
-			Logger::getInstance().log(fmt::format("invalid read \"{}\"", name_loc));
+			Logger::getInstance().log(fmt::format("invalid read \"{}\"", nameLoc));
 			break;
 		}
 	}

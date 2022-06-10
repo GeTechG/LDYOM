@@ -27,15 +27,24 @@ void Windows::ListWindow::drawList() {
 				ImGui::PushID(i);
 				if (ImGui::Selectable(this->getElementName(i), this->currentElement == i)) {
 					this->currentElement = i;
+					selectElement(i);
 				}
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
-					this->currentElement = i;
-					ImGui::OpenPopup("##renameElementPopup");
+
+				if (this->dragsItems_) {
+					if (ImGui::IsItemActive() && !ImGui::IsItemHovered()) {
+						const int nextItem = i + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
+						if (nextItem >= 0 && nextItem < this->getListSize()) {
+							this->swapItems(i, nextItem);
+							ImGui::ResetMouseDragDelta();
+						}
+					}
 				}
-				if (ImGui::BeginPopupContextItem()) {
 
-					ImGui::InputText("##inputNameRename", this->getElementName(i), NAME_SIZE);
-
+				if (ImGui::BeginPopupContextItem("##editElementName")) {
+					ImGui::InputText("##inputNameRename", this->getElementName(i), NAME_SIZE, ImGuiInputTextFlags_EnterReturnsTrue);
+					if (ImGui::IsItemDeactivatedAfterEdit()) {
+						ImGui::CloseCurrentPopup();
+					}
 					ImGui::EndPopup();
 				}
 
@@ -45,9 +54,7 @@ void Windows::ListWindow::drawList() {
 		}
 
 		if (ImGui::Button(local.get("list_window.create_new").c_str(), ImVec2(listSize.x / 2.0f - 3.0f, 0))) {
-			this->createNewElement();
-			this->currentElement = this->getListSize() - 1;
-			ImGui::OpenPopup("##renameElementPopup");
+			onButtonCreateNewElement();
 		}
 		ImGui::SameLine();
 		ImGui::BeginDisabled(this->currentElement == -1);
@@ -58,11 +65,24 @@ void Windows::ListWindow::drawList() {
 
 		if (this->currentElement != -1)
 			renamePopup(this->getElementName(currentElement));
+
+		drawListWindow();
 	}
 	ImGui::End();
 }
 
+void Windows::ListWindow::onButtonCreateNewElement() {
+	this->createNewElement();
+	this->currentElement = this->getListSize() - 1;
+	ImGui::OpenPopup("##renameElementPopup");
+}
+
+void Windows::ListWindow::selectElement(int i) {
+	this->currentElement = i;
+}
+
 void Windows::ListWindow::draw() {
+	this->currentElement = min(this->currentElement, getListSize() - 1);
 	drawList();
 	if (this->currentElement != -1) {
 		const auto windowSize = ImGui::GetIO().DisplaySize;

@@ -1,8 +1,8 @@
 #pragma once
+#include "strUtils.h"
 #include "nlohmann/json.hpp"
 #include "utils.h"
 #include "boost/signals2.hpp"
-#include "imHotKey.h"
 
 class Settings
 {
@@ -42,7 +42,7 @@ public:
 template <typename T>
 std::optional<T> Settings::get(std::string path)
 {
-	const std::vector<std::string> partPath = utils::split(path, ".");
+	const std::vector<std::string> partPath = split(path, ".");
 	nlohmann::json* temp = &settings_;
 	for (std::string part : partPath)
 	{
@@ -56,7 +56,7 @@ std::optional<T> Settings::get(std::string path)
 template <typename T>
 void Settings::set(std::string path, T& data)
 {
-	std::vector<std::string> partPath = utils::split(path, ".");
+	std::vector<std::string> partPath = split(path, ".");
 	std::string last = partPath.back();
 	partPath.pop_back();
 	nlohmann::json* temp = &settings_;

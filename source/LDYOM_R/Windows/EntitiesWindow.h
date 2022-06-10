@@ -1,9 +1,9 @@
 #pragma once
-#include "IWindow.h"
+#include "AbstractWindow.h"
 
 namespace Windows
 {
-	class EntitiesWindow : public IWindow
+	class EntitiesWindow : public AbstractWindow
 	{
 		void draw() override;
 	};

@@ -5,8 +5,8 @@
 
 class PopupWeaponSelector {
 private:
-	std::unordered_map<int, Texture> icons_;
-	std::optional<Texture> unknownIcon_;
+	std::unordered_map<int, std::unique_ptr<Texture>> icons_;
+	std::unique_ptr<Texture> unknownIcon_;
 
 	PopupWeaponSelector() = default;
 	PopupWeaponSelector(const PopupWeaponSelector & root) = delete;
