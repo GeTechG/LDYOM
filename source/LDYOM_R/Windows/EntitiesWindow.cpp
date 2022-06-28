@@ -7,6 +7,9 @@
 
 #include "ActorsWindow.h"
 #include "ObjectsWindow.h"
+#include "ParticlesWindow.h"
+#include "PickupWindow.h"
+#include "TrainsWindow.h"
 #include "VehiclesWindow.h"
 #include "WindowsRenderService.h"
 
@@ -29,6 +32,18 @@ void Windows::EntitiesWindow::draw()
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_CUBES, local.get("entities.objects")).c_str(), ImVec2(200.0f, .0f))) {
 			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
 			WindowsRenderService::getInstance().toggleWindow<ObjectsWindow>(true);
+		}
+		if (ImGui::Button(fmt::format("{} {}", ICON_FA_SPARKLES, local.get("entities.particles")).c_str(), ImVec2(200.0f, .0f))) {
+			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
+			WindowsRenderService::getInstance().toggleWindow<ParticlesWindow>(true);
+		}
+		if (ImGui::Button(fmt::format("{} {}", ICON_FA_TRAIN, local.get("entities.trains")).c_str(), ImVec2(200.0f, .0f))) {
+			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
+			WindowsRenderService::getInstance().toggleWindow<TrainsWindow>(true);
+		}
+		if (ImGui::Button(fmt::format("{} {}", ICON_FA_HEART, local.get("entities.pickups")).c_str(), ImVec2(200.0f, .0f))) {
+			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
+			WindowsRenderService::getInstance().toggleWindow<PickupWindow>(true);
 		}
 	}
 	ImGui::End();

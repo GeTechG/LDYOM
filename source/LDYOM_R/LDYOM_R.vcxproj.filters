@@ -167,6 +167,24 @@
     <Filter Include="Windows\FastObjectSelector">
       <UniqueIdentifier>{ebceeba0-dce5-4f17-a664-d9afe473dfa3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Train">
+      <UniqueIdentifier>{22995c75-1b48-4dde-8bd4-1683efe44381}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\TrainsWindow">
+      <UniqueIdentifier>{3b18c813-d113-42bd-a55a-b1e52a943eef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Particle">
+      <UniqueIdentifier>{49097109-f00c-486a-982c-fcf2114dde15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ParticlesWindow">
+      <UniqueIdentifier>{81fc7752-e512-4a14-983b-8b8112ad7ff5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Pickup">
+      <UniqueIdentifier>{34dd448d-6d9d-4532-a45e-b6b1ee967fa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\PickupWindow">
+      <UniqueIdentifier>{fb56b2b5-5619-4f4d-a6c2-2f849463c266}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -387,6 +405,24 @@
     </ClCompile>
     <ClCompile Include="Windows\FastObjectSelector.cpp">
       <Filter>Windows\FastObjectSelector</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Train.cpp">
+      <Filter>Data\Train</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\TrainsWindow.cpp">
+      <Filter>Windows\TrainsWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Particle.cpp">
+      <Filter>Data\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ParticlesWindow.cpp">
+      <Filter>Windows\ParticlesWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Pickup.cpp">
+      <Filter>Data\Pickup</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\PickupWindow.cpp">
+      <Filter>Windows\PickupWindow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -628,6 +664,24 @@
     </ClInclude>
     <ClInclude Include="Windows\FastObjectSelector.h">
       <Filter>Windows\FastObjectSelector</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Train.h">
+      <Filter>Data\Train</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\TrainsWindow.h">
+      <Filter>Windows\TrainsWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Particle.h">
+      <Filter>Data\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ParticlesWindow.h">
+      <Filter>Windows\ParticlesWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Pickup.h">
+      <Filter>Data\Pickup</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\PickupWindow.h">
+      <Filter>Windows\PickupWindow</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

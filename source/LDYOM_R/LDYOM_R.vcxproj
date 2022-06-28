@@ -177,10 +177,13 @@
     <ClCompile Include="Data\CheckpointObjective.cpp" />
     <ClCompile Include="Data\Object.cpp" />
     <ClCompile Include="Data\ObjectiveDependent.cpp" />
+    <ClCompile Include="Data\Particle.cpp" />
+    <ClCompile Include="Data\Pickup.cpp" />
     <ClCompile Include="Data\Scene.cpp" />
     <ClCompile Include="Data\Texture.cpp" />
     <ClCompile Include="Data\ProjectData.cpp" />
     <ClCompile Include="Data\Actor.cpp" />
+    <ClCompile Include="Data\Train.cpp" />
     <ClCompile Include="Data\Vehicle.cpp" />
     <ClCompile Include="Data\Weapon.cpp" />
     <ClCompile Include="Data\WorldObjective.cpp" />
@@ -232,6 +235,8 @@
     <ClCompile Include="Windows\ObjectSelectorPopup.cpp" />
     <ClCompile Include="Windows\ObjectsWindow.cpp" />
     <ClCompile Include="Windows\ObjectViewerPopup.cpp" />
+    <ClCompile Include="Windows\ParticlesWindow.cpp" />
+    <ClCompile Include="Windows\PickupWindow.cpp" />
     <ClCompile Include="Windows\PopupSpriteBlipSelector.cpp" />
     <ClCompile Include="Windows\PopupVehicleSelector.cpp" />
     <ClCompile Include="Windows\EntitiesWindow.cpp" />
@@ -246,6 +251,7 @@
     <ClCompile Include="Windows\PopupWeaponSelector.cpp" />
     <ClCompile Include="Windows\ProjectsWindowPopup.cpp" />
     <ClCompile Include="Windows\SettingsWindow.cpp" />
+    <ClCompile Include="Windows\TrainsWindow.cpp" />
     <ClCompile Include="Windows\utilsRender.cpp" />
     <ClCompile Include="Windows\VehiclesWindow.cpp" />
   </ItemGroup>
@@ -256,12 +262,15 @@
     <ClInclude Include="Data\IUuidable.h" />
     <ClInclude Include="Data\Object.h" />
     <ClInclude Include="Data\ObjectiveDependent.h" />
+    <ClInclude Include="Data\Particle.h" />
+    <ClInclude Include="Data\Pickup.h" />
     <ClInclude Include="Data\Scene.h" />
     <ClInclude Include="Data\Texture.h" />
     <ClInclude Include="Data\INameable.h" />
     <ClInclude Include="Data\IPositionable.h" />
     <ClInclude Include="Data\ProjectData.h" />
     <ClInclude Include="Data\Actor.h" />
+    <ClInclude Include="Data\Train.h" />
     <ClInclude Include="Data\Vehicle.h" />
     <ClInclude Include="Data\Weapon.h" />
     <ClInclude Include="Data\WorldObjective.h" />
@@ -314,6 +323,8 @@
     <ClInclude Include="Windows\ObjectSelectorPopup.h" />
     <ClInclude Include="Windows\ObjectsWindow.h" />
     <ClInclude Include="Windows\ObjectViewerPopup.h" />
+    <ClInclude Include="Windows\ParticlesWindow.h" />
+    <ClInclude Include="Windows\PickupWindow.h" />
     <ClInclude Include="Windows\PopupSpriteBlipSelector.h" />
     <ClInclude Include="Windows\PopupVehicleSelector.h" />
     <ClInclude Include="Windows\EntitiesWindow.h" />
@@ -324,6 +335,7 @@
     <ClInclude Include="Windows\NameEntitiesRender.h" />
     <ClInclude Include="Windows\PopupSkinSelector.h" />
     <ClInclude Include="Windows\PopupWeaponSelector.h" />
+    <ClInclude Include="Windows\TrainsWindow.h" />
     <ClInclude Include="Windows\utilsRender.h" />
     <ClInclude Include="Windows\AbstractWindow.h" />
     <ClInclude Include="Windows\ListWindow.h" />

@@ -17,6 +17,7 @@ protected:
 	boost::uuids::uuid deleteObjectiveUuid_{};
 public:
 	ObjectiveDependent() = default;
+	ObjectiveDependent(void* new_);
 	ObjectiveDependent(const ObjectiveDependent& other) = default;
 	ObjectiveDependent(ObjectiveDependent&& other) noexcept;
 	ObjectiveDependent& operator=(const ObjectiveDependent& other);

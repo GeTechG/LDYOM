@@ -45,6 +45,9 @@ void ModelsService::Init() {
 	auto vehicleModels = Settings::getInstance().get<std::vector<int>>("data.vehicleModels");
 	if (vehicleModels.has_value())
 		vehicleModels_.insert(vehicleModels_.end(), vehicleModels->begin(), vehicleModels->end());
+
+	this->particlesNames_ = { "blood_heli","boat_prop","camflash","carwashspray","cement","cloudfast","coke_puff","coke_trail","cigarette_smoke","explosion_barrel","explosion_crate","explosion_door","exhale","explosion_fuel_car","explosion_large","explosion_medium","explosion_molotov","explosion_small","explosion_tiny","extinguisher","flame","fire","fire_med","fire_large","flamethrower","fire_bike","fire_car","gunflash","gunsmoke","insects","heli_dust","jetpack","jetthrust","nitro","molotov_flame","overheat_car","overheat_car_electric","prt_boatsplash","prt_cardebris","prt_collisionsmoke","prt_glass","prt_gunshell","prt_sand","prt_sand2","prt_smokeII_3_expand","prt_smoke_huge","prt_spark","prt_spark_2","prt_splash","prt_wake","prt_watersplash","prt_wheeldirt","petrolcan","puke","riot_smoke","spraycan","smoke30lit","smoke30m","smoke50lit","shootlight","smoke_flare","tank_fire","teargas","teargasAD","tree_hit_fir","tree_hit_palm","vent","vent2","water_hydrant","water_ripples","water_speed","water_splash","water_splash_big","water_splsh_sml","water_swim","waterfall_end","water_fnt_tme","water_fountain","wallbust","WS_factorysmoke" };
+	this->pedBones_ = { {1,"BONE_PELVIS1"},{2,"BONE_PELVIS"},{3,"BONE_SPINE1"},{4,"BONE_UPPERTORSO"},{5,"BONE_NECK"},{6,"BONE_HEAD2"},{7,"BONE_HEAD1"},{8,"BONE_HEAD"},{21,"BONE_RIGHTUPPERTORSO"},{22,"BONE_RIGHTSHOULDER"},{23,"BONE_RIGHTELBOW"},{24,"BONE_RIGHTWRIST"},{25,"BONE_RIGHTHAND"},{26,"BONE_RIGHTTHUMB"},{31,"BONE_LEFTUPPERTORSO"},{32,"BONE_LEFTSHOULDER"},{33,"BONE_LEFTELBOW"},{34,"BONE_LEFTWRIST"},{35,"BONE_LEFTHAND"},{36,"BONE_LEFTTHUMB"},{41,"BONE_LEFTHIP"},{42,"BONE_LEFTKNEE"},{43,"BONE_LEFTANKLE"},{44,"BONE_LEFTFOOT"},{51,"BONE_RIGHTHIP"},{52,"BONE_RIGHTKNEE"},{53,"BONE_RIGHTANKLE"},{54,"BONE_RIGHTFOOT"}};
 }
 
 int ModelsService::validPedModel(const int model) {
@@ -378,4 +381,12 @@ std::vector<std::string>& ModelsService::getSpecialsPed() {
 
 std::vector<int>& ModelsService::getVehicleModels() {
 	return vehicleModels_;
+}
+
+std::vector<std::string>& ModelsService::getParticlesNames() {
+	return particlesNames_;
+}
+
+std::map<int, std::string>& ModelsService::getPedBones() {
+	return pedBones_;
 }

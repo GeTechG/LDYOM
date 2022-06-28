@@ -2,12 +2,12 @@
 
 #include <CCamera.h>
 #include <CWorld.h>
+#include <extensions/ScriptCommands.h>
 
 #include "EditByPlayerService.h"
 #include "fa.h"
 #include "HotKeyService.h"
 #include "imgui.h"
-#include "Logger.h"
 #include "utils.h"
 #include "utilsRender.h"
 #include "Localization/Localization.h"
@@ -44,34 +44,6 @@ void Windows::ObjectsWindow::deleteElement(int i) {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().erase(begin + i);
 	this->currentElement--;
 }
-
-std::array<float, 3> ToEulerAngles(CQuaternion& q) {
-	std::array<float, 3> angles;
-
-	double sqw = q.real * q.real;
-	double sqx = q.imag.x * q.imag.x;
-	double sqy = q.imag.y * q.imag.y;
-	double sqz = q.imag.z * q.imag.z;
-	double unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
-	double test = q.imag.x * q.imag.y + q.imag.z * q.real;
-	if (test > 0.499 * unit) { // singularity at north pole
-		angles[1] = 2 * atan2(q.imag.x, q.real);
-		angles[0] = PI / 2;
-		angles[2] = 0;
-		return angles;
-	}
-	if (test < -0.499 * unit) { // singularity at south pole
-		angles[1] = -2 * atan2(q.imag.x, q.real);
-		angles[0] = -PI / 2;
-		angles[2] = 0;
-		return angles;
-	}
-	angles[1] = atan2(2 * q.imag.y * q.real - 2 * q.imag.x * q.imag.z, sqx - sqy - sqz + sqw);
-	angles[0] = asin(2 * test / unit);
-	angles[2] = atan2(2 * q.imag.x * q.real - 2 * q.imag.y * q.imag.z, -sqx + sqy - sqz + sqw);
-	return angles;
-}
-
 
 void Windows::ObjectsWindow::drawOptions() {
 	auto& local = Localization::getInstance();
@@ -124,7 +96,13 @@ void Windows::ObjectsWindow::drawOptions() {
 		object->spawnEditorObject();
 	}
 	if (ImGui::Button(local.get("object.edit_by_camera").c_str())) {
-		EditByPlayerService::getInstance().positionalObject(object->getEditorObject().value(), object->getPosition(), object->getRotations(), false);
+		EditByPlayerService::getInstance().positionalObject(object->getEditorObject().value(), [object](CMatrix& mat) {
+			const auto obj = object->getEditorObject().value();
+			CWorld::Remove(obj);
+			obj->SetMatrix(mat);
+			obj->UpdateRwFrame();
+			CWorld::Add(obj);
+		}, object->getPosition(), object->getRotations(), false);
 	}
 
 	this->objectViewerPopup_.draw();
@@ -160,8 +138,10 @@ void Windows::ObjectsWindow::drawOptions() {
 void Windows::ObjectsWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
+	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
 }
 
 void Windows::ObjectsWindow::open() {
 	ListWindow::open();
+	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
 }

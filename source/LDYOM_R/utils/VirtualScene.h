@@ -6,7 +6,8 @@ class CEntity;
 
 class VirtualScene {
 private:
-	int frameSize;
+	int frameWidth_;
+	int frameHeight_;
 
 	RwCamera* camera_ = nullptr;
 	RwFrame* frame_ = nullptr;
@@ -18,6 +19,7 @@ private:
 	bool create_texture(RwRaster*& buffer, RwTexture*& texture) const;
 public:
 	explicit VirtualScene(const int frameSize);
+	explicit VirtualScene(const int frameWidth, const int frameHeight);
 
 	bool initialize();
 

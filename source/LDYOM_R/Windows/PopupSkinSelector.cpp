@@ -16,6 +16,55 @@
 #include "CModelInfo.h"
 #include "CPedModelInfo.h"
 
+std::optional<ModelRenderer> PopupSkinSelector::renderer_{};
+
+void PopupSkinSelector::clearUnknownSkins() {
+	for (const auto & pair : this->unknownSkins_) {
+		RwTextureDestroy(pair.second);
+	}
+	this->unknownSkins_.clear();
+}
+
+std::pair<IDirect3DTexture9*, ImVec2> PopupSkinSelector::getModelIcon(int modelId, bool special) {
+	if (special && this->specialPedIcons_.contains(modelId)) {
+		auto texture = this->specialPedIcons_.at(modelId).get();
+		return {
+			texture->getTexture(),
+			ImVec2(texture->getWidth(), texture->getHeight())
+		};
+	}
+	if (!special && this->pedsIcons_.contains(modelId)) {
+		auto texture = this->pedsIcons_.at(modelId).get();
+		return {
+			texture->getTexture(),
+			ImVec2(texture->getWidth(), texture->getHeight())
+		};
+	}
+	if (!renderer_.has_value()) {
+		renderer_ = ModelRenderer(CVector(0.f, 0, 0.f), 200, 200);
+		renderer_.value().init();
+		renderer_.value().getZoomKoef() = 5;
+	}
+	if (this->unknownSkins_.contains(modelId)) {
+		if (this->unknownSkins_.at(modelId) != nullptr)
+			return {
+				*reinterpret_cast<IDirect3DTexture9**>(this->unknownSkins_.at(modelId)->raster + 1),
+				ImVec2(200, 200)
+			};
+	} else {
+		const auto pair = this->unknownSkins_.emplace(modelId, nullptr);
+		if (special)
+			renderer_.value().renderSpecialPed(ModelsService::getInstance().getSpecialsPed().at(modelId), &pair.first->second);
+		else
+			renderer_.value().render(modelId, &pair.first->second);
+	}
+
+	return {
+		this->unknownIcon_->getTexture(),
+		ImVec2(this->unknownIcon_->getWidth(), this->unknownIcon_->getHeight())
+	};
+}
+
 void PopupSkinSelector::Init() {
 	for (int model : ModelsService::getInstance().getPedModels()) {
 		int imageWidth = 0;
@@ -44,6 +93,7 @@ void PopupSkinSelector::Init() {
 void PopupSkinSelector::showPopup() {
 	const auto popupName = fmt::format("{} {}", ICON_FA_TSHIRT, Localization::getInstance().get("skin_selector.title"));
 	isOpen_ = true;
+	this->clearUnknownSkins();
 	ImGui::OpenPopup(popupName.c_str());
 }
 
@@ -96,15 +146,12 @@ void PopupSkinSelector::renderPopup(const std::function<void(int)>& onSelectCall
 	static const std::vector<int> specialsPeds = getSpecialsModels();
 
 	const std::vector<int> *models;
-	std::unordered_map<int, std::unique_ptr<Texture>> *icons;
 
 	if (special) {
 		models = &specialsPeds;
-		icons = &this->specialPedIcons_;
 	}
 	else {
 		models = &ModelsService::getInstance().getPedModels();
-		icons = &this->pedsIcons_;
 	}
 
 	static char searchBuffer[256] = "";
@@ -138,17 +185,16 @@ void PopupSkinSelector::renderPopup(const std::function<void(int)>& onSelectCall
 
 				ImGui::PushID(i);
 
-				const auto itr = icons->find(model);
-				Texture* icon = itr == icons->cend() ? this->unknownIcon_.get() : itr->second.get();
+				auto icon = getModelIcon(model, special);
 
-				if (static_cast<float>(filled + icon->getWidth()) < ImGui::GetWindowContentRegionWidth()) {
+				if (static_cast<float>(filled) + icon.second.x < ImGui::GetWindowContentRegionWidth()) {
 					if (i > 0)
 						ImGui::SameLine();
 				} else {
 					filled = 0;
 				}
 
-				if (ImGui::ImageButton(icon->getTexture(), ImVec2(static_cast<float>(icon->getWidth()), static_cast<float>(icon->getHeight())))) {
+				if (ImGui::ImageButton(icon.first, icon.second)) {
 					onSelectCallback(model);
 					ImGui::CloseCurrentPopup();
 				}

@@ -94,23 +94,23 @@ void DragAngleRotation(float* angleRotation, const std::function<void()>& callba
 void ObjectiveDependentInput(ObjectiveDependent* objectiveDependent) {
 	utils::ToggleButton(Localization::getInstance().get("general.use_objectives").c_str(), &objectiveDependent->isUseObjective());
 
-	if (objectiveDependent->isUseObjective()) {
-		const auto& objectives = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives();
+	ImGui::BeginDisabled(!objectiveDependent->isUseObjective());
+	const auto& objectives = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives();
 
-		const int spawnObjectiveIdx = utils::indexByUuid(objectives, objectiveDependent->getSpawnObjectiveUuid());
-		utils::Combo(Localization::getInstance().get("general.spawn_before").c_str(), &objectiveDependent->getSpawnObjectiveUuid(), spawnObjectiveIdx, static_cast<int>(objectives.size()), [&objectives](const int i) {
-			return objectives.at(i)->getName();
-			}, [&objectives](const int i) {
-				return objectives.at(i)->getUuid();
-			});
+	const int spawnObjectiveIdx = utils::indexByUuid(objectives, objectiveDependent->getSpawnObjectiveUuid());
+	utils::Combo(Localization::getInstance().get("general.spawn_before").c_str(), &objectiveDependent->getSpawnObjectiveUuid(), spawnObjectiveIdx, static_cast<int>(objectives.size()), [&objectives](const int i) {
+		return objectives.at(i)->getName();
+		}, [&objectives](const int i) {
+			return objectives.at(i)->getUuid();
+		});
 
-		const int deleteObjectiveIdx = utils::indexByUuid(objectives, objectiveDependent->getDeleteObjectiveUuid());
-		utils::Combo(Localization::getInstance().get("general.delete_after").c_str(), &objectiveDependent->getDeleteObjectiveUuid(), deleteObjectiveIdx, static_cast<int>(objectives.size()), [&objectives](const int i) {
-			return objectives.at(i)->getName();
-			}, [&objectives](const int i) {
-				return objectives.at(i)->getUuid();
-			});
-	}
+	const int deleteObjectiveIdx = utils::indexByUuid(objectives, objectiveDependent->getDeleteObjectiveUuid());
+	utils::Combo(Localization::getInstance().get("general.delete_after").c_str(), &objectiveDependent->getDeleteObjectiveUuid(), deleteObjectiveIdx, static_cast<int>(objectives.size()), [&objectives](const int i) {
+		return objectives.at(i)->getName();
+		}, [&objectives](const int i) {
+			return objectives.at(i)->getUuid();
+		});
+	ImGui::EndDisabled();
 }
 
 void DragRotations(float* rotations, const std::function<void()>& callback) {

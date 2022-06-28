@@ -44,6 +44,9 @@ back = "Back"
 page = "Page"
 close = "Close"
 create = "Create"
+health = "Health"
+type = "Type"
+bone = "Bone"
 
 [objective]
 title = "Objective"
@@ -67,7 +70,6 @@ ped = "Ped"
 special = "Special"
 
 [actor]
-health = "Health"
 accuracy_shooting = "Accuracy of shooting"
 group = "Group"
 random_spawn = "Random spawn"
@@ -88,6 +90,15 @@ numberplate = "Numberplate"
 vehicle_unbreakable = ["Bulletproof", "Fireproof", "Explosionproof", "Collisionproof", "Meleeproof", "Tires vulnerability"]
 locked = "Locked"
 edit_by_player_overlay = "Get out of the vehicle to apply."
+
+[train]
+speed = "Speed"
+cruise_speed = "Cruise Speed"
+
+[particle]
+attach_type = ["None", "Actor", "Vehicle", "Object"]
+attach_to = "Attach to"
+
 
 [vehicle_selector]
 searchType = "Search type"
@@ -120,6 +131,11 @@ title_name = "Title name"
 model_name = "Model name"
 model_id = "Model ID"
 
+[pickup]
+spawn_type = "Spawn type"
+pickup_types = ["Weapons", "Health", "Armor", "Remove stars", "Drug", "Other"]
+spawn_types_pickup = ["One-time", "every 30 seconds", "every 6 minutes"]
+
 [info_overlay]
 camera_view = "Move Camera - RMB, Zoom - Shift + MWheel"
 move_element = "Move current element - Arrows, QE"
@@ -144,6 +160,12 @@ vehicles = "Vehicles"
 vehicle = "Vehicle"
 objects = "Objects"
 object = "Object"
+trains = "Trains"
+train = "Train"
+particle = "Particle"
+particles = "Particles"
+pickups = "Pickups"
+pickup = "Pickup"
 
 [skin_selector]
 title = "Skin Selector"

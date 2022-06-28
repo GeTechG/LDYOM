@@ -17,24 +17,27 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, int startObjective) {
 	std::unordered_map<boost::uuids::uuid, std::vector<ObjectiveDependent*>, boost::hash<boost::uuids::uuid>> spawnMap;
 	std::unordered_map<boost::uuids::uuid, std::vector<ObjectiveDependent*>, boost::hash<boost::uuids::uuid>> deleteMap;
 
+	auto addObjectiveDependedEntity = [&spawnMap, &deleteMap]<typename T>(std::vector<std::unique_ptr<T>>& entities) {
+		for (const auto& entityT : entities) {
+			auto entity = static_cast<ObjectiveDependent*>(entityT.get());
+			if (entity->isUseObjective()) {
+				spawnMap[entity->getSpawnObjectiveUuid()].emplace_back(entity);
+				deleteMap[entity->getDeleteObjectiveUuid()].emplace_back(entity);
+			}
+		}
+	};
+
 	for (const auto & objective : scene->getObjectives()) {
 		spawnMap[objective->getUuid()] = std::vector<ObjectiveDependent*>();
 		deleteMap[objective->getUuid()] = std::vector<ObjectiveDependent*>();
 	}
 
-	for (const auto & actor : scene->getActors()) {
-		if (actor->isUseObjective()) {
-			spawnMap[actor->getSpawnObjectiveUuid()].emplace_back(actor.get());
-			deleteMap[actor->getDeleteObjectiveUuid()].emplace_back(actor.get());
-		}
-	}
-
-	for (const auto& vehicle : scene->getVehicles()) {
-		if (vehicle->isUseObjective()) {
-			spawnMap[vehicle->getSpawnObjectiveUuid()].emplace_back(vehicle.get());
-			deleteMap[vehicle->getDeleteObjectiveUuid()].emplace_back(vehicle.get());
-		}
-	}
+	addObjectiveDependedEntity(scene->getActors());
+	addObjectiveDependedEntity(scene->getVehicles());
+	addObjectiveDependedEntity(scene->getObjects());
+	addObjectiveDependedEntity(scene->getParticles());
+	addObjectiveDependedEntity(scene->getTrains());
+	addObjectiveDependedEntity(scene->getPickups());
 
 	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
 		const auto &objective = scene->getObjectives().at(o);

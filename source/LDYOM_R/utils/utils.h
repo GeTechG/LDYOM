@@ -75,6 +75,8 @@ public:
     static int indexByUuid(const std::vector<std::unique_ptr<T>>& vector, boost::uuids::uuid uuid);
     static int createBlip(float* pos, int blipType, int blipColor, int blipSprite = 0);
     static CQuaternion lookRotation(const CVector& lookAt, CVector& up);
+    static std::array<float, 3> ToEulerAngles(CQuaternion& q);
+    static CQuaternion matrixToQuat(const RwMatrix* matrix);
 };
 
 template <class T>
@@ -89,7 +91,12 @@ int utils::indexByUuid(const std::vector<std::unique_ptr<T>>& vector, boost::uui
     return -1;
 }
 
-
+inline void rotateVec2(float& x, float& y, const float angle) {
+	const float x1 = x * cos(RAD(angle)) - y * sin(RAD(angle));
+	const float y1 = x * sin(RAD(angle)) + y * cos(RAD(angle));
+    x = x1;
+    y = y1;
+}
 
 inline CRGBA floatColorToCRGBA(const std::array<float, 4>& color) {
     return CRGBA{

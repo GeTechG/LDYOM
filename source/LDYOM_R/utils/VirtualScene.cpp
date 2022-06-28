@@ -49,7 +49,7 @@ RwFrame* create_frame() {
 }
 
 bool VirtualScene::create_texture(RwRaster*& buffer, RwTexture*& texture) const {
-	buffer = RwRasterCreate(frameSize, frameSize, 0, rwRASTERTYPECAMERATEXTURE);
+	buffer = RwRasterCreate(frameWidth_, frameHeight_, 0, rwRASTERTYPECAMERATEXTURE);
 	if (!buffer)
 		return false;
 	texture = RwTextureCreate(buffer);
@@ -80,7 +80,10 @@ void rotate_entity(CEntity* entity, const RwV3d& rotate) {
 	update_matrix(entity, mat);
 }
 
-VirtualScene::VirtualScene(const int frameSize): frameSize(frameSize) {
+VirtualScene::VirtualScene(const int frameSize): frameWidth_(frameSize), frameHeight_(frameSize) {
+}
+
+VirtualScene::VirtualScene(const int frameWidth, const int frameHeight): frameWidth_(frameWidth), frameHeight_(frameHeight) {
 }
 
 bool VirtualScene::initialize() {
@@ -88,7 +91,7 @@ bool VirtualScene::initialize() {
 	if (!light_)
 		return false;
 
-	zraster_ = RwRasterCreate(frameSize, frameSize, 0, rwRASTERTYPEZBUFFER);
+	zraster_ = RwRasterCreate(frameWidth_, frameHeight_, 0, rwRASTERTYPEZBUFFER);
 	if (!create_texture(raster_, texture_) || !zraster_)
 		return false;
 

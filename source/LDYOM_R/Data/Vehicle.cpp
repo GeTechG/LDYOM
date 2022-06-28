@@ -79,13 +79,15 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 	CStreaming::SetMissionDoesntRequireModel(model);
 
 	newVehicle->m_nVehicleFlags.bEngineOn = 0;
+	newVehicle->m_fHealth = static_cast<float>(this->health_);
 
 	recolorVehicle(recolor, newVehicle);
 
 	return newVehicle;
 }
 
-Vehicle::Vehicle(const char* name, const CVector& pos, float headingAngle): uuid_(boost::uuids::random_generator()()), headingAngle_(headingAngle),
+Vehicle::Vehicle(const char* name, const CVector& pos, float headingAngle): ObjectiveDependent(nullptr),
+																			uuid_(boost::uuids::random_generator()()), headingAngle_(headingAngle),
                                                                             modelId_(400), health_(1000),
                                                                             numberplateCity_(-1) {
 	strlcpy(this->name_, name, sizeof this->name_);

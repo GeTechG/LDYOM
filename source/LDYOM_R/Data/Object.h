@@ -45,7 +45,7 @@ public:
 
 	Object(const Object& other);
 
-	Object& operator=(Object other);
+	Object& operator=(const Object& other);
 
 	~Object() override;
 

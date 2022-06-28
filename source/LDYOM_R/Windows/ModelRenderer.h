@@ -18,6 +18,7 @@ private:
 	std::array<float, 4> backgroundColor_ = {0.4f, 0.4f, 0.4f, 1};
 public:
 	explicit ModelRenderer(const CVector& rotateModel, int sceneSize = 128);
+	explicit ModelRenderer(const CVector& rotateModel, int sceneWidth, int sceneHeight);
 	void init();
 
 	std::array<float, 3>& getPos();

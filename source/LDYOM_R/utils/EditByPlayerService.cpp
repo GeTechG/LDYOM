@@ -169,7 +169,7 @@ CVector rotate_vector_by_quaternion(const CVector& v, const CQuaternion& q) {
 		+ 2.0f * s * crossed;
 }
 
-ktwait positionalObjectTask(CObject* obj, float* posO, CQuaternion& quat, bool fastCreate) {
+ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMatrix, float* posO, CQuaternion& quat, bool fastCreate) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
@@ -196,6 +196,7 @@ ktwait positionalObjectTask(CObject* obj, float* posO, CQuaternion& quat, bool f
 
 
 	CWorld::Remove(FindPlayerPed());
+	Command<Commands::SET_PLAYER_CONTROL>(0, true);
 
 	CVector posCam = TheCamera.m_vecGameCamPos;
 
@@ -215,7 +216,7 @@ ktwait positionalObjectTask(CObject* obj, float* posO, CQuaternion& quat, bool f
 		
 		CColPoint colPoint;
 		CEntity* cEntity;
-		CWorld::pIgnoreEntity = obj;
+		CWorld::pIgnoreEntity = entity;
 		CWorld::ProcessLineOfSight(TheCamera.GetPosition(), pos, colPoint, cEntity, true, true, false, true, true, true, true, true);
 		CWorld::pIgnoreEntity = nullptr;
 
@@ -232,23 +233,19 @@ ktwait positionalObjectTask(CObject* obj, float* posO, CQuaternion& quat, bool f
 		}
 
 		CVector newPos = colPoint.m_vecPoint;
-		const auto objSize = obj->GetColModel()->m_boundBox.m_vecMax - obj->GetColModel()->m_boundBox.m_vecMin;
-		newPos += colPoint.m_vecNormal * (objSize.z / 2.f);
+		if (entity) {
+			const auto objSize = entity->GetColModel()->m_boundBox.m_vecMax - entity->GetColModel()->m_boundBox.m_vecMin;
+			newPos += colPoint.m_vecNormal * (objSize.z / 2.f);
+		}
 
-		CWorld::Remove(obj);
 		newMatrix.SetTranslateOnly(newPos.x, newPos.y, newPos.z);
-		obj->SetMatrix(newMatrix);
-		obj->UpdateRwFrame();
-		CWorld::Add(obj);
+		setMatrix(newMatrix);
 
 		const auto hotKey = HotKeyService::getInstance().getHotKey(true);
 		if (hotKey != nullptr && std::strcmp(hotKey->functionName, "cancel") == 0) {
-			CWorld::Remove(obj);
 			newMatrix.SetRotate(quat);
 			newMatrix.SetTranslateOnly(posO[0], posO[1], posO[1]);
-			obj->SetMatrix(newMatrix);
-			obj->UpdateRwFrame();
-			CWorld::Add(obj);
+			setMatrix(newMatrix);
 			break;
 		}
 
@@ -321,11 +318,12 @@ ktwait positionalObjectTask(CObject* obj, float* posO, CQuaternion& quat, bool f
 	FindPlayerPed()->SetPosn(posCam.x, posCam.y, z + 1.f);
 
 	CWorld::Add(FindPlayerPed());
+	Command<Commands::SET_PLAYER_CONTROL>(0, false);
 
 	Windows::WindowsRenderService::getInstance().removeRender("editByPlayerOverlay");
 	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
 }
 
-void EditByPlayerService::positionalObject(CObject* obj, float* posO, CQuaternion& quat, bool fastCreate) {
-	Tasker::getInstance().addTask("createFastObject", positionalObjectTask, obj, posO, quat, fastCreate);
+void EditByPlayerService::positionalObject(CEntity* entity, std::function<void(CMatrix&)> setMatrix, float* posO, CQuaternion& quat, bool fastCreate) {
+	Tasker::getInstance().addTask("createFastObject", positionalObjectTask, entity, setMatrix, posO, quat, fastCreate);
 }

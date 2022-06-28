@@ -2,6 +2,8 @@
 #include "imgui.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include <CWorld.h>
+
 #include "EditByPlayerService.h"
 #include "FastObjectSelector.h"
 #include "imgui_internal.h"
@@ -79,8 +81,14 @@ void Windows::QuickCommandsWindow::draw() {
 				const auto& object = currentScene->getObjects().back();
 				object->getModelId() = modelId;
 				object->spawnEditorObject();
-				EditByPlayerService::getInstance().positionalObject(object->getEditorObject().value(), object->getPosition(), object->getRotations());
-				});
+				EditByPlayerService::getInstance().positionalObject(object.get()->getEditorObject().value(), [&object](CMatrix& mat) {
+					const auto obj = object.get()->getEditorObject().value();
+					CWorld::Remove(obj);
+					obj->SetMatrix(mat);
+					obj->UpdateRwFrame();
+					CWorld::Add(obj);
+				}, object->getPosition(), object->getRotations());
+			});
 		}
 	}
 

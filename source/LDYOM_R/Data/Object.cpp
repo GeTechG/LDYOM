@@ -31,7 +31,9 @@ std::optional<CObject*> Object::spawnObject() {
 	return newObject;
 }
 
-Object::Object(const char* name, const CVector& pos): uuid_(boost::uuids::random_generator()()), rotate{{0,0,0}, 1},
+Object::Object(const char* name, const CVector& pos): ObjectiveDependent(nullptr),
+													  uuid_(boost::uuids::random_generator()()),
+													  rotate{{0,0,0}, 1},
                                                       modelId_(325) {
 	strlcpy(this->name_, name, sizeof this->name_);
 	this->pos_[0] = pos.x;
@@ -39,18 +41,36 @@ Object::Object(const char* name, const CVector& pos): uuid_(boost::uuids::random
 	this->pos_[2] = pos.z;
 }
 
-Object::Object(const Object& other): INameable{other},
-                                     IPositionable{other}, uuid_(boost::uuids::random_generator()()), rotate(other.rotate),
-                                     scale_(other.scale_),
+Object::Object(const Object& other): ObjectiveDependent{other},
+                                     INameable{other},
+                                     IPositionable{other},
+                                     IUuidable{other},
+                                     uuid_{other.uuid_},
+                                     editorObject_{other.editorObject_},
+                                     projectObject_{other.projectObject_},
+                                     rotate{other.rotate},
+                                     scale_{other.scale_},
                                      modelId_{other.modelId_} {
 	strlcat(name_, other.name_, sizeof name_);
 	strlcat(name_, "C", sizeof name_);
 	memcpy(this->pos_, other.pos_, sizeof this->pos_);
 }
 
-Object& Object::operator=(Object other) {
-	using std::swap;
-	swap(*this, other);
+Object& Object::operator=(const Object& other) {
+	if (this == &other)
+		return *this;
+	ObjectiveDependent::operator =(other);
+	INameable::operator =(other);
+	IPositionable::operator =(other);
+	IUuidable::operator =(other);
+	uuid_ = other.uuid_;
+	editorObject_ = other.editorObject_;
+	projectObject_ = other.projectObject_;
+	rotate = other.rotate;
+	scale_ = other.scale_;
+	modelId_ = other.modelId_;
+	strlcat(name_, other.name_, sizeof name_);
+	memcpy(this->pos_, other.pos_, sizeof this->pos_);
 	return *this;
 }
 
@@ -82,7 +102,6 @@ std::array<float, 3>& Object::getScale() {
 int& Object::getModelId() {
 	return modelId_;
 }
-
 
 void Object::updateLocation() {
 	CQuaternion rw;

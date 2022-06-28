@@ -18,7 +18,7 @@ public:
 
 	void editByPlayerActor(Actor& actor);
 	void editByPlayerVehicle(Vehicle& vehicle);
-	void positionalObject(CObject* obj, float* posO, CQuaternion& quat, bool fastCreate = true);
+	void positionalObject(CEntity* entity, std::function<void(CMatrix&)> setMatrix, float* posO, CQuaternion& quat, bool fastCreate = true);
 };
 
 

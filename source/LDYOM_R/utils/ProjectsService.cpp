@@ -7,6 +7,8 @@
 #include "utils.h"
 #include "fmt/core.h"
 #include "imgui_notify.h"
+#include "WindowsRenderService.h"
+#include "../Windows/ObjectivesWindow.h"
 
 #include "boost/archive/binary_oarchive.hpp"
 #include "boost/archive/binary_iarchive.hpp"
@@ -15,6 +17,7 @@
 #include "boost/serialization/array.hpp"
 #include "boost/serialization/utility.hpp"
 #include "boost/uuid/uuid_serialize.hpp"
+
 
 const std::filesystem::path PROJECTS_PATH = L"LDYOM\\Projects\\";
 
@@ -131,6 +134,8 @@ void ProjectsService::loadProject(int projectIdx) {
 	this->getCurrentProject().getCurrentScene()->loadEditorScene();
 
 	getCurrentProject().onChangedScene()();
+
+	Windows::WindowsRenderService::getInstance().getWindow<Windows::ObjectivesWindow>()->selectElement(this->getCurrentProject().getCurrentScene()->getObjectives().size() - 1);
 
 	ImGui::InsertNotification({ ImGuiToastType_Success, 3000, "Loaded!" });
 }

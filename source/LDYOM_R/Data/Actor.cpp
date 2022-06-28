@@ -8,6 +8,7 @@
 
 #include <boost/uuid/uuid_generators.hpp>
 
+#include "ProjectsService.h"
 #include "strUtils.h"
 
 using namespace plugin;
@@ -94,18 +95,22 @@ CPed* Actor::spawnPed() {
 	return ped;
 }
 
-Actor::Actor(const char* name, const CVector& pos, float headingAngle): uuid_(boost::uuids::random_generator()()),
-                                                                        headingAngle_(headingAngle), accuracy_(50),
-                                                                        health_(100),
+Actor::Actor(const char* name, const CVector& pos, float headingAngle): ObjectiveDependent(nullptr),
+																		uuid_(boost::uuids::random_generator()()),
+                                                                        pos_{pos.x, pos.y, pos.z}, headingAngle_(headingAngle),
+                                                                        accuracy_(50),
+																		health_(100),
                                                                         headshot_(true) {
-	strcpy(this->name_, name);
-	this->pos_[0] = pos.x;
-	this->pos_[1] = pos.y;
-	this->pos_[2] = pos.z;
+	strcpy(this->name_.data(), name);
 }
 
-Actor::Actor(const Actor& other): INameable{other},
-                                  IPositionable{other}, uuid_(boost::uuids::random_generator()()),
+Actor::Actor(const Actor& other): ObjectiveDependent{other},
+                                  INameable{other},
+                                  IPositionable{other},
+                                  IUuidable{other},
+                                  uuid_{ boost::uuids::random_generator()() },
+                                  name_{other.name_},
+                                  pos_{other.pos_},
                                   headingAngle_{other.headingAngle_},
                                   group_{other.group_},
                                   modelType_{other.modelType_},
@@ -120,27 +125,26 @@ Actor::Actor(const Actor& other): INameable{other},
                                   stayInSamePlace_{other.stayInSamePlace_},
                                   kindaStayInSamePlace_{other.kindaStayInSamePlace_},
                                   headshot_{other.headshot_},
-                                  dropWeapons_(other.dropWeapons_) {
-	strlcpy(this->name_, other.name_, sizeof this->name_);
-	strlcat(this->name_, "C", sizeof this->name_);
-	memcpy(this->pos_, other.pos_, sizeof this->pos_);
+                                  dropWeapons_{other.dropWeapons_} {
+	strlcat(this->name_.data(), "C", sizeof this->name_);
 }
 
-Actor& Actor::operator=(Actor&& other) noexcept {
+Actor& Actor::operator=(const Actor& other) {
 	if (this == &other)
 		return *this;
-	INameable::operator =(std::move(other));
-	IPositionable::operator =(std::move(other));
-	IUuidable::operator =(std::move(other));
-	uuid_ = std::move(other.uuid_);
-	editorPed_ = std::move(other.editorPed_);
-	projectPed_ = std::move(other.projectPed_);
+	ObjectiveDependent::operator =(other);
+	INameable::operator =(other);
+	IPositionable::operator =(other);
+	IUuidable::operator =(other);
+	uuid_ = other.uuid_;
+	name_ = other.name_;
+	pos_ = other.pos_;
 	headingAngle_ = other.headingAngle_;
 	group_ = other.group_;
 	modelType_ = other.modelType_;
 	slot_ = other.slot_;
 	modelId_ = other.modelId_;
-	weapons_ = std::move(other.weapons_);
+	weapons_ = other.weapons_;
 	defaultWeapon_ = other.defaultWeapon_;
 	accuracy_ = other.accuracy_;
 	health_ = other.health_;
@@ -159,11 +163,11 @@ Actor::~Actor() {
 }
 
 char* Actor::getName() {
-	return this->name_;
+	return this->name_.data();
 }
 
 float* Actor::getPosition() {
-	return this->pos_;
+	return this->pos_.data();
 }
 
 std::optional<CPed*>& Actor::getEditorPed() {
@@ -241,11 +245,11 @@ boost::uuids::uuid& Actor::getUuid() {
 void Actor::updateLocation() const {
 	if (this->editorPed_.has_value()) {
 		this->editorPed_.value()->SetPosn(this->pos_[0], this->pos_[1], this->pos_[2]);
-		this->editorPed_.value()->SetHeading(RAD(this->headingAngle_));
+		Command<Commands::SET_CHAR_HEADING>(this->editorPed_.value(), this->headingAngle_);
 	}
 	if (this->projectPed_.has_value()) {
 		this->projectPed_.value()->SetPosn(this->pos_[0], this->pos_[1], this->pos_[2]);
-		this->projectPed_.value()->SetHeading(RAD(this->headingAngle_));
+		Command<Commands::SET_CHAR_HEADING>(this->projectPed_.value(), this->headingAngle_);
 	}
 }
 

@@ -6,6 +6,9 @@
 #include "BaseObjective.h"
 #include "CheckpointObjective.h"
 #include "Object.h"
+#include "Particle.h"
+#include "Pickup.h"
+#include "Train.h"
 #include "Vehicle.h"
 
 class Scene final : public INameable {
@@ -15,7 +18,11 @@ class Scene final : public INameable {
 	{
 		ar & this->name_;
 		ar & this->actors_;
-		ar & this->vehicles_;
+		ar& this->vehicles_;
+		ar& this->objects_;
+		ar& this->trains_;
+		ar& this->particles_;
+		ar & this->pickups_;
 
 		ar.template register_type<CheckpointObjective>();
 
@@ -28,6 +35,9 @@ class Scene final : public INameable {
 	std::vector<std::unique_ptr<Actor>> actors_;
 	std::vector<std::unique_ptr<Vehicle>> vehicles_;
 	std::vector<std::unique_ptr<Object>> objects_;
+	std::vector<std::unique_ptr<Particle>> particles_;
+	std::vector<std::unique_ptr<Train>> trains_;
+	std::vector<std::unique_ptr<Pickup>> pickups_;
 public:
 	Scene() = default;
 	Scene(const char* name);
@@ -42,18 +52,27 @@ public:
 	std::vector<std::unique_ptr<Actor>>& getActors();
 	std::vector<std::unique_ptr<Vehicle>>& getVehicles();
 	std::vector<std::unique_ptr<Object>>& getObjects();
+	std::vector<std::unique_ptr<Particle>>& getParticles();
+	std::vector<std::unique_ptr<Train>>& getTrains();
+	std::vector<std::unique_ptr<Pickup>>& getPickups();
 
 	template <class _Ty, class... _Types>
 	void createNewObjectives(_Types&&... _Args);
 	void createNewActor();
 	void createNewVehicle();
 	void createNewObject();
+	void createNewParticle();
+	void createNewTrain();
+	void createNewPickup();
 
 	template<typename T>
 	void createNewObjectiveFrom(T& objective);
 	void createNewActorFrom(Actor& actor);
 	void createNewVehicleFrom(Vehicle& vehicle);
 	void createNewObjectFrom(Object& object);
+	void createNewParticleFrom(Particle& particle);
+	void createNewTrainFrom(Train& train);
+	void createNewPickupFrom(Pickup& pickup);
 
 	void unloadEditorScene() const;
 	void unloadProjectScene() const;

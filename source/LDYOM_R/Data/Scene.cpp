@@ -17,6 +17,7 @@ Scene& Scene::operator=(Scene&& other) noexcept {
 	objectives_ = std::move(other.objectives_);
 	actors_ = std::move(other.actors_);
 	vehicles_ = std::move(other.vehicles_);
+	objects_ = std::move(other.objects_);
 	return *this;
 }
 
@@ -34,6 +35,18 @@ std::vector<std::unique_ptr<Vehicle>>& Scene::getVehicles() {
 
 std::vector<std::unique_ptr<Object>>& Scene::getObjects() {
 	return objects_;
+}
+
+std::vector<std::unique_ptr<Particle>>& Scene::getParticles() {
+	return particles_;
+}
+
+std::vector<std::unique_ptr<Train>>& Scene::getTrains() {
+	return trains_;
+}
+
+std::vector<std::unique_ptr<Pickup>>& Scene::getPickups() {
+	return pickups_;
 }
 
 
@@ -66,6 +79,28 @@ void Scene::createNewObject() {
 	this->objects_.back()->updateLocation();
 }
 
+void Scene::createNewParticle() {
+	const auto player = FindPlayerPed();
+	const auto defaultName = fmt::format("{} #{}", Localization::getInstance().get("entities.particle"), this->particles_.size());
+	this->particles_.emplace_back(std::make_unique<Particle>(defaultName.c_str(), player->GetPosition()));
+	this->particles_.back()->spawnEditorParticle();
+	this->particles_.back()->updateLocation();
+}
+
+void Scene::createNewTrain() {
+	const auto player = FindPlayerPed();
+	const auto defaultName = fmt::format("{} #{}", Localization::getInstance().get("entities.train"), this->trains_.size());
+	this->trains_.emplace_back(std::make_unique<Train>(defaultName.c_str(), player->GetPosition()));
+	this->trains_.back()->spawnEditorTrain();
+}
+
+void Scene::createNewPickup() {
+	const auto player = FindPlayerPed();
+	const auto defaultName = fmt::format("{} #{}", Localization::getInstance().get("entities.pickup"), this->pickups_.size());
+	this->pickups_.emplace_back(std::make_unique<Pickup>(defaultName.c_str(), player->GetPosition()));
+	this->pickups_.back()->spawnEditorPickup();
+}
+
 void Scene::createNewActorFrom(Actor& actor) {
 	this->actors_.emplace_back(std::make_unique<Actor>(actor));
 }
@@ -78,6 +113,18 @@ void Scene::createNewObjectFrom(Object& object) {
 	this->objects_.emplace_back(std::make_unique<Object>(object));
 }
 
+void Scene::createNewParticleFrom(Particle& particle) {
+	this->particles_.emplace_back(std::make_unique<Particle>(particle));
+}
+
+void Scene::createNewTrainFrom(Train& train) {
+	this->trains_.emplace_back(std::make_unique<Train>(train));
+}
+
+void Scene::createNewPickupFrom(Pickup& pickup) {
+	this->pickups_.emplace_back(std::make_unique<Pickup>(pickup));
+}
+
 void Scene::unloadEditorScene() const {
 	for (const auto & actor : this->actors_)
 		actor->deleteEditorPed();
@@ -85,6 +132,12 @@ void Scene::unloadEditorScene() const {
 		vehicle->deleteEditorVehicle();
 	for (const auto& object : this->objects_)
 		object->deleteEditorObject();
+	for (const auto& train : this->trains_)
+		train->deleteEditorTrain();
+	for (const auto& particle : this->particles_)
+		particle->deleteEditorParticle();
+	for (const auto& pickup : this->pickups_)
+		pickup->deleteEditorPickup();
 	for (const auto& objective : this->objectives_) {
 		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
 			checkpoint->removeEditorBlip();
@@ -93,12 +146,18 @@ void Scene::unloadEditorScene() const {
 }
 
 void Scene::unloadProjectScene() const {
-	for (const auto& actor : this->actors_)
-		actor->deleteProjectEntity();
-	for (const auto& vehicle : this->vehicles_)
-		vehicle->deleteProjectEntity();
-	for (const auto& object : this->objects_)
-		object->deleteProjectEntity();
+	for (const auto& entity : this->actors_)
+		entity->deleteProjectEntity();
+	for (const auto& entity : this->vehicles_)
+		entity->deleteProjectEntity();
+	for (const auto& entity : this->objects_)
+		entity->deleteProjectEntity();
+	for (const auto& entity : this->trains_)
+		entity->deleteProjectEntity();
+	for (const auto& entity : this->particles_)
+		entity->deleteProjectEntity();
+	for (const auto& entity : this->pickups_)
+		entity->deleteProjectEntity();
 	for (const auto& objective : this->objectives_) {
 		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
 			checkpoint->removeProjectBlip();
@@ -114,6 +173,12 @@ void Scene::loadEditorScene() const {
 		vehicle->spawnEditorVehicle();
 	for (const auto& object : this->objects_)
 		object->spawnEditorObject();
+	for (const auto& object : this->trains_)
+		object->spawnEditorTrain();
+	for (const auto& particle : this->particles_)
+		particle->spawnEditorParticle();
+	for (const auto& pickup : this->pickups_)
+		pickup->spawnEditorPickup();
 	for (const auto& objective : this->objectives_) {
 		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
 			checkpoint->createEditorBlip();

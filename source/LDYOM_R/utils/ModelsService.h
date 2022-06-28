@@ -38,6 +38,8 @@ private:
 	std::vector<std::string> specialsPed_;
 	std::optional<std::vector<ObjectModelCategory>> modelCategories_;
 	std::optional<std::vector<ObjectModelTag>> modelTags_;
+	std::vector<std::string> particlesNames_;
+	std::map<int, std::string> pedBones_;
 
 	SQLite::Database db_;
 	std::optional<SQLite::Database> iconDb_;
@@ -87,5 +89,7 @@ public:
 	std::vector<int>& getWeaponIds();
 	std::vector<std::string>& getSpecialsPed();
 	std::vector<int>& getVehicleModels();
+	std::vector<std::string>& getParticlesNames();
+	std::map<int, std::string>& getPedBones();
 };
 

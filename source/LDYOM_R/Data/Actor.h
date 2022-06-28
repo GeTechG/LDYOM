@@ -1,8 +1,11 @@
 ﻿#pragma once
+#include <array>
+
 #include "plugin.h"
 #include <optional>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
+#include <boost/serialization/array.hpp>
 
 #include "constants.h"
 #include "INameable.h"
@@ -10,6 +13,7 @@
 #include "IUuidable.h"
 #include "ObjectiveDependent.h"
 #include "Weapon.h"
+#include "boost/signals2.hpp"
 
 class Actor final : public ObjectiveDependent, public INameable, public IPositionable, public IUuidable {
 private:
@@ -19,8 +23,8 @@ private:
 	{
 		ar & boost::serialization::base_object<ObjectiveDependent>(*this);
 		ar & this->uuid_;
-		ar & this->name_;
-		ar & this->pos_;
+		ar & boost::serialization::make_array(this->name_.data(), this->name_.size());
+		ar & boost::serialization::make_array(this->pos_.data(), this->pos_.size());
 		ar & this->headingAngle_;
 		ar & this->group_;
 		ar & this->modelType_;
@@ -43,10 +47,10 @@ private:
 	std::optional<CPed*> editorPed_;
 	std::optional<CPed*> projectPed_;
 
-	char name_[NAME_SIZE]{};
-	float pos_[3]{};
+	std::array<char, NAME_SIZE> name_{};
+	std::array<float, 3> pos_{};
 	float headingAngle_{};
-	int group_{};
+	int group_ = 1;
 	unsigned char modelType_{};
 	int slot_{};
 	int modelId_{};
@@ -61,14 +65,16 @@ private:
 	bool headshot_{};
 	bool dropWeapons_{};
 
+	boost::signals2::signal<void(CPed*)> signalUpdateEditorPed;
+	boost::signals2::signal<void()> signalDeleteActor;
+
 	CPed* spawnPed();
 public:
 	Actor() = default;
 	Actor(const char* name, const CVector& pos, float headingAngle);
 
 	Actor(const Actor& other);
-
-	Actor& operator=(Actor&& other) noexcept;
+	Actor& operator=(const Actor& other);
 
 	~Actor() override;
 
@@ -94,6 +100,8 @@ public:
 	bool& isHeadshot();
 	bool& isDropWeapons();
 	boost::uuids::uuid& getUuid() override;
+
+
 
 	void updateLocation() const;
 

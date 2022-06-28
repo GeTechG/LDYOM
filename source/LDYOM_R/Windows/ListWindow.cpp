@@ -81,6 +81,10 @@ void Windows::ListWindow::selectElement(int i) {
 	this->currentElement = i;
 }
 
+int Windows::ListWindow::getElement() {
+	return this->currentElement;
+}
+
 void Windows::ListWindow::draw() {
 	this->currentElement = min(this->currentElement, getListSize() - 1);
 	drawList();

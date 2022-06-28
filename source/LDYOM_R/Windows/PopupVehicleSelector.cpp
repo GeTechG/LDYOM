@@ -8,6 +8,46 @@
 #include "fmt/core.h"
 #include "Localization/Localization.h"
 
+std::optional<ModelRenderer> PopupVehicleSelector::renderer_{};
+
+void PopupVehicleSelector::clearUnknownVehicles() {
+	for (const auto& pair : this->unknownVehicles_) {
+		RwTextureDestroy(pair.second);
+	}
+	this->unknownVehicles_.clear();
+}
+
+std::pair<IDirect3DTexture9*, ImVec2> PopupVehicleSelector::getModelIcon(int modelId) {
+	if (this->vehicleIcons_.contains(modelId)) {
+		const auto &texture = this->vehicleIcons_.at(modelId);
+		return {
+			texture->getTexture(),
+			ImVec2(static_cast<float>(texture->getWidth()), static_cast<float>(texture->getHeight()))
+		};
+	}
+	if (!renderer_.has_value()) {
+		renderer_ = ModelRenderer(CVector(0.f, 0, 0.f), 200, 200);
+		renderer_.value().init();
+		renderer_.value().getZoomKoef() = 5;
+	}
+	if (this->unknownVehicles_.contains(modelId)) {
+		if (this->unknownVehicles_.at(modelId) != nullptr)
+			return {
+				*reinterpret_cast<IDirect3DTexture9**>(this->unknownVehicles_.at(modelId)->raster + 1),
+				ImVec2(200, 200)
+		};
+	}
+	else {
+		const auto pair = this->unknownVehicles_.emplace(modelId, nullptr);
+		renderer_.value().render(modelId, &pair.first->second);
+	}
+
+	return {
+		this->unknownIcon_->getTexture(),
+		ImVec2(static_cast<float>(this->unknownIcon_->getWidth()), static_cast<float>(this->unknownIcon_->getHeight()))
+	};
+}
+
 PopupVehicleSelector::PopupVehicleSelector() {
 	for (int model : ModelsService::getInstance().getVehicleModels()) {
 		int imageWidth = 0;
@@ -139,20 +179,19 @@ void PopupVehicleSelector::draw(const std::function<void(int model)> onSelect) {
 				break;
 			}
 
-			const auto itr = vehicleIcons_.find(i);
-			Texture* icon = itr == vehicleIcons_.cend() ? this->unknownIcon_.get() : itr->second.get();
+			const auto icon = this->getModelIcon(i);
 
-			const float widthNextIcon = static_cast<float>(icon->getWidth()) * scale;
+			const float widthNextIcon = icon.second.x * scale;
 
-			if (width + widthNextIcon < ImGui::GetWindowSize().x) {
+			if (width + widthNextIcon + ImGui::GetStyle().ItemSpacing.x * 2.0f < ImGui::GetWindowSize().x && width > 0.f) {
 				ImGui::SameLine();
 			} else {
 				width = 0.0f;
 			}
 
-			if (ImGui::ImageButton(icon->getTexture(), ImVec2(
+			if (ImGui::ImageButton(icon.first, ImVec2(
 				widthNextIcon, 
-				static_cast<float>(icon->getHeight()) * scale))) {
+				icon.second.y * scale))) {
 				onSelect(i);
 				ImGui::CloseCurrentPopup();
 			}
@@ -162,7 +201,7 @@ void PopupVehicleSelector::draw(const std::function<void(int model)> onSelect) {
 				ImGui::SetTooltip(info.c_str());
 			}
 
-			width += widthNextIcon;
+			width += widthNextIcon + ImGui::GetStyle().ItemSpacing.x * 2.0f;
 		}
 
 		ImGui::EndChild();

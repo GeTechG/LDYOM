@@ -30,7 +30,10 @@
 #include "Data/CheckpointObjective.h"
 #include "Windows/FastObjectSelector.h"
 #include "Windows/ObjectsWindow.h"
+#include "Windows/ParticlesWindow.h"
+#include "Windows/PickupWindow.h"
 #include "Windows/ProjectInfoWindow.h"
+#include "Windows/TrainsWindow.h"
 
 using namespace plugin;
 
@@ -88,7 +91,10 @@ public:
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::ActorsWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::VehiclesWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::ObjectsWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::TrainsWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::ParticlesWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::FastObjectSelector>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::PickupWindow>());
 			Windows::WindowsRenderService::getInstance().addRender("showEntitiesName", [] {
 				if (!ProjectPlayerService::getInstance().isProjectRunning()) {
 					if (Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false))

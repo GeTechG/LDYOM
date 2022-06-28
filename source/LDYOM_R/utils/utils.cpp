@@ -303,3 +303,42 @@ CQuaternion utils::lookRotation(const CVector& lookAt, CVector& up) {
 
     return ret;
 }
+
+std::array<float, 3> utils::ToEulerAngles(CQuaternion& q) {
+    std::array<float, 3> angles;
+
+    double sqw = q.real * q.real;
+    double sqx = q.imag.x * q.imag.x;
+    double sqy = q.imag.y * q.imag.y;
+    double sqz = q.imag.z * q.imag.z;
+    double unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+    double test = q.imag.x * q.imag.y + q.imag.z * q.real;
+    if (test > 0.499 * unit) { // singularity at north pole
+        angles[1] = 2 * atan2(q.imag.x, q.real);
+        angles[0] = PI / 2;
+        angles[2] = 0;
+        return angles;
+    }
+    if (test < -0.499 * unit) { // singularity at south pole
+        angles[1] = -2 * atan2(q.imag.x, q.real);
+        angles[0] = -PI / 2;
+        angles[2] = 0;
+        return angles;
+    }
+    angles[1] = atan2(2 * q.imag.y * q.real - 2 * q.imag.x * q.imag.z, sqx - sqy - sqz + sqw);
+    angles[0] = asin(2 * test / unit);
+    angles[2] = atan2(2 * q.imag.x * q.real - 2 * q.imag.y * q.imag.z, -sqx + sqy - sqz + sqw);
+    return angles;
+}
+
+CQuaternion utils::matrixToQuat(const RwMatrix* matrix) {
+    CQuaternion quat;
+    quat.real = sqrt(std::max(0.f, 1.0f + matrix->right.x + matrix->up.y + matrix->at.z)) / 2.f;
+    quat.imag.x = sqrt(std::max(0.f, 1 + matrix->right.x - matrix->up.y - matrix->at.z)) / 2;
+    quat.imag.y = sqrt(std::max(0.f, 1 - matrix->right.x + matrix->up.y - matrix->at.z)) / 2;
+    quat.imag.z = sqrt(std::max(0.f, 1 - matrix->right.x - matrix->up.y + matrix->at.z)) / 2;
+    quat.imag.x = _copysignf(quat.imag.x, matrix->at.y - matrix->up.y);
+    quat.imag.y = _copysignf(quat.imag.y, matrix->right.z - matrix->at.x);
+    quat.imag.z = _copysignf(quat.imag.z, matrix->up.x - matrix->right.y);
+    return quat;
+}

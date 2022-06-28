@@ -32,6 +32,7 @@ namespace Windows {
 	public:
 		void draw() override;
 		virtual void selectElement(int i);
+		int getElement();
 		void unselect();
 	};
 }

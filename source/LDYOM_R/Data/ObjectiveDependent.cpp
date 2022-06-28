@@ -1,4 +1,12 @@
 ﻿#include "ObjectiveDependent.h"
+#include "WindowsRenderService.h"
+#include "../Windows/ObjectivesWindow.h"
+
+ObjectiveDependent::ObjectiveDependent(void* new_) {
+	const int currentObjective = Windows::WindowsRenderService::getInstance().getWindow<Windows::ObjectivesWindow>()->getElement();
+	if (currentObjective != -1) 
+		this->spawnObjectiveUuid_ = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().at(currentObjective)->getUuid();
+}
 
 ObjectiveDependent::ObjectiveDependent(ObjectiveDependent&& other) noexcept: useObjective(other.useObjective),
                                                                              spawnObjectiveUuid_{

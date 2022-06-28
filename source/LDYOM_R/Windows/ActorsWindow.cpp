@@ -106,7 +106,7 @@ void weaponsSection(Actor* actor, Localization& local) {
 				PopupWeaponSelector::getInstance().renderPopup([&weapon, &actor](const int weaponId) {
 					weapon.weapon = weaponId;
 					actor->spawnEditorPed();
-					});
+				});
 
 
 				ImGui::TableNextColumn();
@@ -148,7 +148,7 @@ void weaponsSection(Actor* actor, Localization& local) {
 void characteristicsSection(Localization& local, Actor* actor) {
 	if (ImGui::TreeNode(local.get("general.characteristics").c_str())) {
 		ImGui::SetNextItemWidth(150.0f);
-		ImGui::InputInt(local.get("actor.health").c_str(), &actor->getHealth(), 0, 0);
+		ImGui::InputInt(local.get("general.health").c_str(), &actor->getHealth(), 0, 0);
 		ImGui::SetNextItemWidth(150.0f);
 		ImGui::DragInt(local.get("actor.accuracy_shooting").c_str(), &actor->getAccuracy(), 0.5f, 0, 100, "%d %%");
 		ImGui::SetNextItemWidth(150.0f);
@@ -208,10 +208,12 @@ void Windows::ActorsWindow::drawOptions() {
 void Windows::ActorsWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
+	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
 }
 
 void Windows::ActorsWindow::open() {
 	ListWindow::open();
+	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
 }
 
 

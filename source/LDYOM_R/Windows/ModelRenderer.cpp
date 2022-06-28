@@ -12,6 +12,10 @@ ModelRenderer::ModelRenderer(const CVector& rotateModel, const int sceneSize): s
     scene_.initialize();
 }
 
+ModelRenderer::ModelRenderer(const CVector& rotateModel, int sceneWidth, int sceneHeight): scene_(sceneWidth, sceneHeight), rotateModel_(rotateModel) {
+    scene_.initialize();
+}
+
 void ModelRenderer::init() {
     beforeMainRender += [&] {
 	    if (!this->listReRender_.empty()) {
@@ -79,7 +83,7 @@ void ModelRenderer::init() {
                 };
 
                 RwV3d& posRw = *reinterpret_cast<RwV3d*>(this->pos.data());
-                posRw.y = -maxSize * 4.f;
+                posRw.y = -maxSize * 4.f + abs(this->zoomKoef);
                 const auto rotate = this->rotateModel_.ToRwV3d();
                 *reRender.second = this->scene_.renderPed(290, bg, posRw, rotate);
 
