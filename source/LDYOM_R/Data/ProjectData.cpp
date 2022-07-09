@@ -7,6 +7,7 @@ ProjectData::ProjectData() {
 	this->projectInfo_ = std::make_unique<ProjectInfo>();
 	strncpy_s(this->projectInfo_->name, fmt::format("{} #{}", Localization::getInstance().get("projects.project").c_str(), time(nullptr)).c_str(), sizeof this->projectInfo_->name);
 	this->projectInfo_->startScene = this->currentScene_;
+	this->projectInfo_->directory.clear();
 }
 
 ProjectData& ProjectData::operator=(ProjectData&& other) noexcept {

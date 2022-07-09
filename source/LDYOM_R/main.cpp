@@ -14,6 +14,7 @@
 #include "ProjectsService.h"
 
 #include "CGame.h"
+#include <extensions/ScriptCommands.h>
 #include "FileWatcher.h"
 #include "WindowsRenderService.h"
 #include "HotkeysExecutor.h"
@@ -33,7 +34,12 @@
 #include "Windows/ParticlesWindow.h"
 #include "Windows/PickupWindow.h"
 #include "Windows/ProjectInfoWindow.h"
+#include "Windows/PyrotechnicsWindow.h"
 #include "Windows/TrainsWindow.h"
+#include "bass.h"
+#include "Data/Audio.h"
+#include "Windows/AudioWindow.h"
+#include "Windows/VisualEffectsWindow.h"
 
 using namespace plugin;
 
@@ -65,6 +71,7 @@ public:
 						checkpoint->render();
 					}
 				}
+				Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 			}
 		};
 
@@ -95,6 +102,9 @@ public:
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::ParticlesWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::FastObjectSelector>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::PickupWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::PyrotechnicsWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::AudioWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::VisualEffectsWindow>());
 			Windows::WindowsRenderService::getInstance().addRender("showEntitiesName", [] {
 				if (!ProjectPlayerService::getInstance().isProjectRunning()) {
 					if (Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false))
@@ -116,6 +126,8 @@ public:
 			LuaEngine::getInstance().Init();
 
 			defaultWindow = Windows::WindowsRenderService::getInstance().getWindow<Windows::MainMenu>();
+			
+			ProjectsService::getInstance().onUpdate().connect(Audio::loadAudioFilesList);
 
 			////init is complete
 			init = true;
@@ -155,6 +167,9 @@ public:
 
 			restart = true;
 			ProjectsService::getInstance().getCurrentProject() = ProjectData();
+			ProjectsService::getInstance().Reset();
+			ProjectPlayerService::getInstance().reset();
+			defaultWindow = Windows::WindowsRenderService::getInstance().getWindow<Windows::MainMenu>();
 			restart = false;
 		};
 		Events::vehicleRenderEvent.before += [](CVehicle* veh)
@@ -169,6 +184,10 @@ public:
 		};
 		Events::initRwEvent += [] {
 			
+		};
+		Events::shutdownPoolsEvent.before += [] {
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->unloadProjectScene();
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->unloadEditorScene();
 		};
 	}
 } ldyomr;

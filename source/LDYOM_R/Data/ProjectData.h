@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "boost/signals2/signal.hpp"
 #include "boost/archive/binary_oarchive.hpp"
+#include "boost/serialization/utility.hpp"
 
 struct ProjectInfo {
 	char name[NAME_SIZE] = "";
@@ -24,6 +25,7 @@ namespace boost {
 			ar & p.name;
 			ar & p.authorName;
 			ar & p.startScene;
+			ar & p.directory;
 		}
 
 	}

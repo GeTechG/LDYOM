@@ -69,51 +69,6 @@ std::vector<std::string>& Settings::listThemes()
 	return listThemes_;
 }
 
-void settingsWatcher(boost::signals2::signal<void()> *onUpdate) {
-	HANDLE dwChangeHandles[2];
-
-	dwChangeHandles[0] = FindFirstChangeNotification(
-		localizationsDirectory.string().c_str(),
-		FALSE,
-		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE);
-	dwChangeHandles[1] = FindFirstChangeNotification(
-		themesDirectory.string().c_str(),
-		FALSE,
-		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE);
-	while (true) {
-		const DWORD dwWaitStatus = WaitForMultipleObjects(2,
-		                                                  dwChangeHandles,
-		                                                  FALSE,
-		                                                  INFINITE);
-
-		auto update = false;
-
-		switch (dwWaitStatus) {
-		case WAIT_OBJECT_0:
-			Settings::getInstance().listLocalizations() = getListLocalizations();
-			Localization::getInstance().Update();
-			FindNextChangeNotification(dwChangeHandles[0]);
-			update = true;
-			break;
-
-		case WAIT_OBJECT_0 + 1:
-			Settings::getInstance().listThemes() = getListThemes();
-			Windows::WindowsRenderService::getInstance().style();
-			FindNextChangeNotification(dwChangeHandles[1]);
-			update = true;
-			break;
-		default:
-			break;
-		}
-
-		if (update) {
-			(*onUpdate)();
-		}
-
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-	}
-}
-
 void Settings::Init()
 {
 	if (exists(settingsPath))

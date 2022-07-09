@@ -28,5 +28,6 @@ public:
 	ktwait startProject(int sceneIdx, int startObjective = 0);
 
 	bool& isProjectRunning();
+	void reset();
 };
 

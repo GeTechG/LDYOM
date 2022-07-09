@@ -185,6 +185,24 @@
     <Filter Include="Windows\PickupWindow">
       <UniqueIdentifier>{fb56b2b5-5619-4f4d-a6c2-2f849463c266}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Pyrotechnics">
+      <UniqueIdentifier>{47a5c153-3797-498b-a606-cf25d59862dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\PyrotechnicsWindow">
+      <UniqueIdentifier>{7b3ec681-0dd3-42af-bb64-1c671087c238}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Audio">
+      <UniqueIdentifier>{9bc70335-acd2-4a63-9291-e8c1d3353f29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\AudioWindow">
+      <UniqueIdentifier>{c76e61e6-ec91-4ed3-93df-8658d374d0f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\VisualEffect">
+      <UniqueIdentifier>{6ca7cabe-89b5-42f8-9e18-b60b3c7df359}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\VisualEffectsWindow">
+      <UniqueIdentifier>{477f94d8-2f2f-4ae2-837a-1bb494ec6457}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -423,6 +441,27 @@
     </ClCompile>
     <ClCompile Include="Windows\PickupWindow.cpp">
       <Filter>Windows\PickupWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Pyrotechnics.cpp">
+      <Filter>Data\Pyrotechnics</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\PyrotechnicsWindow.cpp">
+      <Filter>Windows\PyrotechnicsWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\Audio.cpp">
+      <Filter>Data\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\AudioWindow.cpp">
+      <Filter>Windows\AudioWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\imgui-knobs.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\VisualEffect.cpp">
+      <Filter>Data\VisualEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\VisualEffectsWindow.cpp">
+      <Filter>Windows\VisualEffectsWindow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -682,6 +721,30 @@
     </ClInclude>
     <ClInclude Include="Windows\PickupWindow.h">
       <Filter>Windows\PickupWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Pyrotechnics.h">
+      <Filter>Data\Pyrotechnics</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\PyrotechnicsWindow.h">
+      <Filter>Windows\PyrotechnicsWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\Audio.h">
+      <Filter>Data\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CSoundSystem.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\AudioWindow.h">
+      <Filter>Windows\AudioWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\imgui-knobs.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\VisualEffect.h">
+      <Filter>Data\VisualEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\VisualEffectsWindow.h">
+      <Filter>Windows\VisualEffectsWindow</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -9,6 +9,7 @@
 #include "imgui_notify.h"
 #include "WindowsRenderService.h"
 #include "../Windows/ObjectivesWindow.h"
+#include "../Data/CheckpointObjective.h"
 
 #include "boost/archive/binary_oarchive.hpp"
 #include "boost/archive/binary_iarchive.hpp"
@@ -16,7 +17,9 @@
 #include "boost/serialization/vector.hpp"
 #include "boost/serialization/array.hpp"
 #include "boost/serialization/utility.hpp"
+#include "boost/serialization/split_free.hpp"
 #include "boost/uuid/uuid_serialize.hpp"
+#include "../easylogging/easylogging++.h"
 
 
 const std::filesystem::path PROJECTS_PATH = L"LDYOM\\Projects\\";
@@ -46,6 +49,10 @@ void ProjectsService::update() {
 	}
 }
 
+void ProjectsService::Reset() {
+	this->currentDirectory_ = std::nullopt;
+}
+
 void ProjectsService::createNewProject() {
 	this->getCurrentProject().onChangedScene()();
 	this->getCurrentProject().getCurrentScene()->unloadEditorScene();
@@ -58,22 +65,34 @@ void ProjectsService::saveCurrentProject() {
 	auto scenesDirectory = projectDirectory / "scenes";
 
 	if (this->currentDirectory_.has_value() && exists(this->currentDirectory_.value())) {
-		std::filesystem::rename(this->currentDirectory_.value(), projectDirectory);
+		std::error_code ec;
+		std::filesystem::rename(this->currentDirectory_.value(), projectDirectory, ec);
+		if (ec.value() != 0) {
+			CLOG(ERROR, "LDYOM") << "invalid rename project, error: " << ec.message();
+			ImGui::InsertNotification({ ImGuiToastType_Error, 3000, "Error, see log" });
+			return;
+		}
 	}
 
 	if (!exists(projectDirectory)) {
 		//create directories
 		std::error_code error;
 		if (!create_directory(projectDirectory, error)) {
-			Logger::getInstance().log(fmt::format("Failed to create the project directory, error: {}", error.message()));
-			throw std::exception(error.message().c_str());
+			if (error.value() != 0)
+				CLOG(ERROR, "LDYOM") << "Failed to create the project directory, error: " << error.message();
+			ImGui::InsertNotification({ ImGuiToastType_Error, 1000, "Error, see log"});
+			return;
 		}
 
 		if (!create_directory(scenesDirectory, error)) {
-			Logger::getInstance().log(fmt::format("Failed to create scenes directory, error: {}", error.message()));
-			throw std::exception(error.message().c_str());
+			if (error.value() != 0)
+				CLOG(ERROR, "LDYOM") << "Failed to create scenes directory, error: {} " << error.message();
+			ImGui::InsertNotification({ ImGuiToastType_Error, 1000, "Error, see log" });
+			return;
 		}
 	}
+
+	this->getCurrentProject().getProjectInfo()->directory = projectDirectory;
 
 	{
 		//save index file
@@ -137,6 +156,8 @@ void ProjectsService::loadProject(int projectIdx) {
 
 	Windows::WindowsRenderService::getInstance().getWindow<Windows::ObjectivesWindow>()->selectElement(this->getCurrentProject().getCurrentScene()->getObjectives().size() - 1);
 
+	this->onUpdate_();
+
 	ImGui::InsertNotification({ ImGuiToastType_Success, 3000, "Loaded!" });
 }
 
@@ -181,5 +202,38 @@ namespace boost {
 			ar& p.imag.z;
 		}
 
+		template<class Archive>
+		void serialize(Archive& ar, Scene& p, const unsigned int version)
+		{
+			ar& make_array(p.getName(), NAME_SIZE);
+			ar& p.getActors();
+			ar& p.getVehicles();
+			ar& p.getObjects();
+			ar& p.getTrains();
+			ar& p.getParticles();
+			ar& p.getPickups();
+			ar& p.getPyrotechnics();
+			ar& p.getAudio();
+
+			ar.template register_type<CheckpointObjective>();
+
+			ar& p.getObjectives();
+		}
+
+		template<class Archive>
+		void save(Archive& ar, const std::filesystem::path& p, const unsigned int version)
+		{
+			ar & p.string();
+		}
+		template<class Archive>
+		void load(Archive& ar, std::filesystem::path& p, const unsigned int version)
+		{
+			std::string path;
+			ar & path;
+			p = path;
+		}
+
 	}
 }
+
+BOOST_SERIALIZATION_SPLIT_FREE(std::filesystem::path)

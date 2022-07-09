@@ -5,6 +5,9 @@
 #include "WindowsRenderService.h"
 #include "boost/functional/hash.hpp"
 #include "extensions/ScriptCommands.h"
+#include "CFireManager.h"
+#include "imgui_notify.h"
+#include "../easylogging/easylogging++.h"
 
 namespace Windows {
 	class AbstractWindow;
@@ -38,12 +41,26 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, int startObjective) {
 	addObjectiveDependedEntity(scene->getParticles());
 	addObjectiveDependedEntity(scene->getTrains());
 	addObjectiveDependedEntity(scene->getPickups());
+	addObjectiveDependedEntity(scene->getPyrotechnics());
+	addObjectiveDependedEntity(scene->getAudio());
+	addObjectiveDependedEntity(scene->getVisualEffects());
+
+	for (const auto & audio : scene->getAudio()) {
+		if (audio->isUseObjective()) 
+			audio->preloadProjectAudio();
+	}
 
 	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
 		const auto &objective = scene->getObjectives().at(o);
 
-		for (const auto & dependent : spawnMap[objective->getUuid()])
-			dependent->spawnProjectEntity();
+		for (const auto & dependent : spawnMap[objective->getUuid()]) {
+			try {
+				dependent->spawnProjectEntity();
+			} catch (const std::exception& e) {
+				CLOG(ERROR, "LDYOM") << "Failed spawn entity on objective \"" << objective->getName() << "\", error: " <<  e.what();
+				ImGui::InsertNotification({ ImGuiToastType_Error, 1000, "Error, see log" });
+			}
+		}
 
 		co_await objective->execute(scene);
 
@@ -79,10 +96,13 @@ void ProjectPlayerService::setNextScene(Scene* _nextScene) {
 }
 
 ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
+	using namespace plugin;
+
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->unloadEditorScene();
 	const auto savedWindow = defaultWindow;
 	defaultWindow = std::nullopt;
 	Windows::WindowsRenderService::getInstance().closeAllWindows();
+	Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 0, 0, 0, 0, 0);
 	this->projectRunning = true;
 
 	const auto startScene = ProjectsService::getInstance().getCurrentProject().getScenes().at(sceneIdx).get();
@@ -120,12 +140,20 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 		scene->unloadProjectScene();
 	}
 
+	for (auto & fire : gFireManager.m_aFires) {
+		fire.Extinguish();
+	}
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->loadEditorScene();
 	defaultWindow = savedWindow;
 	defaultWindow.value()->open();
+	Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 	this->projectRunning = false;
 }
 
 bool& ProjectPlayerService::isProjectRunning() {
 	return projectRunning;
+}
+
+void ProjectPlayerService::reset() {
+	this->projectRunning = false;
 }

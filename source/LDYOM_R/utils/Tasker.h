@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <map>
 
 #include "ktcoro_wait.hpp"
@@ -20,6 +21,7 @@ public:
 	}
 
 	std::map<std::string, ktwait>& list();
+	ktcoro_tasklist& getKtcoroTaskList();
 
 	void process();
 

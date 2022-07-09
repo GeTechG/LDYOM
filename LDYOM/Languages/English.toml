@@ -47,6 +47,8 @@ create = "Create"
 health = "Health"
 type = "Type"
 bone = "Bone"
+color = "Color"
+size = "Size"
 
 [objective]
 title = "Objective"
@@ -99,6 +101,13 @@ cruise_speed = "Cruise Speed"
 attach_type = ["None", "Actor", "Vehicle", "Object"]
 attach_to = "Attach to"
 
+[audio]
+warning = "Please save the project, without this the audio functions cannot work."
+audio3D = "Audio 3D"
+attach_type_3d = ["Position","Actor","Car","Object"]
+looped = "Looped"
+desclaimer_3d_audio = "The audio file has to be mono"
+volume = "Volume"
 
 [vehicle_selector]
 searchType = "Search type"
@@ -136,6 +145,17 @@ spawn_type = "Spawn type"
 pickup_types = ["Weapons", "Health", "Armor", "Remove stars", "Drug", "Other"]
 spawn_types_pickup = ["One-time", "every 30 seconds", "every 6 minutes"]
 
+[pyrotechnics]
+types = ["Fire","Explosion"]
+size_fire = "Size fire"
+propagation_fire  = "Propagation fire"
+type_explosion = "Type explosion"
+
+[visual_effect]
+types = ["Coronas","Projections"]
+effect_type = "Effect type"
+flare = "Flare"
+
 [info_overlay]
 camera_view = "Move Camera - RMB, Zoom - Shift + MWheel"
 move_element = "Move current element - Arrows, QE"
@@ -166,6 +186,10 @@ particle = "Particle"
 particles = "Particles"
 pickups = "Pickups"
 pickup = "Pickup"
+pyrotechnics = "Pyrotechnics"
+audio = "Audio"
+visual_effects = "Visual Effects"
+visual_effect = "Visual Effect"
 
 [skin_selector]
 title = "Skin Selector"

@@ -65,7 +65,6 @@ private:
 	bool headshot_{};
 	bool dropWeapons_{};
 
-	boost::signals2::signal<void(CPed*)> signalUpdateEditorPed;
 	boost::signals2::signal<void()> signalDeleteActor;
 
 	CPed* spawnPed();
@@ -101,7 +100,7 @@ public:
 	bool& isDropWeapons();
 	boost::uuids::uuid& getUuid() override;
 
-
+	boost::signals2::signal<void()>& getSignalDeleteActor();
 
 	void updateLocation() const;
 

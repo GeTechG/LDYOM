@@ -342,3 +342,20 @@ CQuaternion utils::matrixToQuat(const RwMatrix* matrix) {
     quat.imag.z = _copysignf(quat.imag.z, matrix->up.x - matrix->right.y);
     return quat;
 }
+
+//extensions with dot - .mp3, .exe
+std::vector<std::string> utils::getFilenameList(const std::filesystem::path& path, const std::vector<std::string>& extensions) {
+    std::vector <std::string> filesNames;
+
+    if (!path.empty() && exists(path)) {
+	    for (const auto &entry : std::filesystem::recursive_directory_iterator(path)) {
+            if (entry.is_regular_file()) {
+	            if (auto finedFile = entry.path(); std::ranges::find(extensions, finedFile.extension().string()) != extensions.end()) {
+	                filesNames.emplace_back(wstrToUtf8Str(finedFile.filename().wstring()));
+                }
+            }
+	    }
+    }
+
+    return filesNames;
+}

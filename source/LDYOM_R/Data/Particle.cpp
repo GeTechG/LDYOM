@@ -150,78 +150,84 @@ void Particle::updateLocation() {
 		case 1: {
 			const auto& actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
 			const int index = utils::indexByUuid(actors, this->attachUuid_);
-			const auto & actor = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().at(index);
+			if (index != -1) {
+				const auto& actor = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().at(index);
 
-			auto animHier = GetAnimHierarchyFromSkinClump(actor->getProjectPed().value()->m_pRwClump);
-			auto boneIndex = RpHAnimIDGetIndex(animHier, this->pedBodeId_);
-			parent = &RpHAnimHierarchyGetMatrixArray(animHier)[boneIndex];
-			actor->getProjectPed().value()->Update();
-			actor->getProjectPed().value()->UpdateAnim();
-			actor->getProjectPed().value()->UpdateRpHAnim();
-			actor->getProjectPed().value()->UpdateRwFrame();
+				auto animHier = GetAnimHierarchyFromSkinClump(actor->getProjectPed().value()->m_pRwClump);
+				auto boneIndex = RpHAnimIDGetIndex(animHier, this->pedBodeId_);
+				parent = &RpHAnimHierarchyGetMatrixArray(animHier)[boneIndex];
+				actor->getProjectPed().value()->Update();
+				actor->getProjectPed().value()->UpdateAnim();
+				actor->getProjectPed().value()->UpdateRpHAnim();
+				actor->getProjectPed().value()->UpdateRwFrame();
 
-			CQuaternion parentQuat;
-			parentQuat.Set(*parent);
-			parentQuat.Normalise();
-			parentQuat.Conjugate();
-			CMatrix parentNewMat;
-			parentNewMat.SetRotate(parentQuat);
+				CQuaternion parentQuat;
+				parentQuat.Set(*parent);
+				parentQuat.Normalise();
+				parentQuat.Conjugate();
+				CMatrix parentNewMat;
+				parentNewMat.SetRotate(parentQuat);
 
-			CQuaternion newRw;
-			newRw.Multiply(parentQuat, rw);
+				CQuaternion newRw;
+				newRw.Multiply(parentQuat, rw);
 
-			matrix.SetRotate(newRw);
-			CVector pos = {
-				this->getPosition()[0] - parent->pos.x,
-				this->getPosition()[1] - parent->pos.y,
-				this->getPosition()[2] - parent->pos.z
-			};
-			CVector newPos;
-			newPos.FromMultiply3x3(parentNewMat, pos);
-			matrix.SetTranslateOnly(newPos.x, newPos.y, newPos.z);
+				matrix.SetRotate(newRw);
+				CVector pos = {
+					this->getPosition()[0] - parent->pos.x,
+					this->getPosition()[1] - parent->pos.y,
+					this->getPosition()[2] - parent->pos.z
+				};
+				CVector newPos;
+				newPos.FromMultiply3x3(parentNewMat, pos);
+				matrix.SetTranslateOnly(newPos.x, newPos.y, newPos.z);
+			}
 			break;
 		}
 		case 2: {
 			const auto& vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
 			const int index = utils::indexByUuid(vehicles, this->attachUuid_);
-			const auto& vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().at(index);
-			parent = reinterpret_cast<RwMatrix*>(vehicle->getProjectVehicle().value()->GetMatrix());
+			if (index != -1) {
+				const auto& vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().at(index);
+				parent = reinterpret_cast<RwMatrix*>(vehicle->getProjectVehicle().value()->GetMatrix());
 
-			matrix.SetRotate(rw);
-			matrix.RotateZ(RAD(-vehicle->getHeadingAngle()));
-			float x = this->getPosition()[0] - vehicle->getPosition()[0];
-			float y = this->getPosition()[1] - vehicle->getPosition()[1];
-			float z = this->getPosition()[2] - vehicle->getPosition()[2];
-			rotateVec2(x, y, -vehicle->getHeadingAngle());
-			matrix.SetTranslateOnly(x, y, z);
+				matrix.SetRotate(rw);
+				matrix.RotateZ(RAD(-vehicle->getHeadingAngle()));
+				float x = this->getPosition()[0] - vehicle->getPosition()[0];
+				float y = this->getPosition()[1] - vehicle->getPosition()[1];
+				float z = this->getPosition()[2] - vehicle->getPosition()[2];
+				rotateVec2(x, y, -vehicle->getHeadingAngle());
+				matrix.SetTranslateOnly(x, y, z);
+			}
 			break;
 		}
 		case 3: {
 			const auto& objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
 			const int index = utils::indexByUuid(objects, this->attachUuid_);
-			const auto& object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(index);
-			parent = reinterpret_cast<RwMatrix*>(object->getProjectObject().value()->GetMatrix());
-			RwMatrix parentMatRot;
-			CQuaternion parentQuat;
-			parentQuat.real = object->getRotations().real;
-			parentQuat.imag.x = object->getRotations().imag.z;
-			parentQuat.imag.y = object->getRotations().imag.x;
-			parentQuat.imag.z = -object->getRotations().imag.y;
-			parentQuat.Normalise();
-			parentQuat.Conjugate();
-			parentQuat.Get(&parentMatRot);
-			CQuaternion newRw;
-			newRw.Multiply(parentQuat, rw);
-			CVector pos = {
-				this->getPosition()[0] - object->getPosition()[0],
-				this->getPosition()[1] - object->getPosition()[1],
-				this->getPosition()[2] - object->getPosition()[2]
-			};
-			CVector rotatedPos;
-			rotatedPos.FromMultiply3x3(reinterpret_cast<CMatrix&>(parentMatRot), pos);
+			if (index != -1) {
+				const auto& object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(index);
+				parent = reinterpret_cast<RwMatrix*>(object->getProjectObject().value()->GetMatrix());
+				RwMatrix parentMatRot;
+				CQuaternion parentQuat;
+				parentQuat.real = object->getRotations().real;
+				parentQuat.imag.x = object->getRotations().imag.z;
+				parentQuat.imag.y = object->getRotations().imag.x;
+				parentQuat.imag.z = -object->getRotations().imag.y;
+				parentQuat.Normalise();
+				parentQuat.Conjugate();
+				parentQuat.Get(&parentMatRot);
+				CQuaternion newRw;
+				newRw.Multiply(parentQuat, rw);
+				CVector pos = {
+					this->getPosition()[0] - object->getPosition()[0],
+					this->getPosition()[1] - object->getPosition()[1],
+					this->getPosition()[2] - object->getPosition()[2]
+				};
+				CVector rotatedPos;
+				rotatedPos.FromMultiply3x3(reinterpret_cast<CMatrix&>(parentMatRot), pos);
 
-			matrix.SetRotate(newRw);
-			matrix.SetTranslateOnly(rotatedPos.x, rotatedPos.y, rotatedPos.z);
+				matrix.SetRotate(newRw);
+				matrix.SetTranslateOnly(rotatedPos.x, rotatedPos.y, rotatedPos.z);
+			}
 			break;
 		}
 		default:

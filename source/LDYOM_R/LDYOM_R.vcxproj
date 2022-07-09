@@ -100,7 +100,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\utils;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\ImGui;C:\local\boost_1_78_0\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\patch;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\sqlite3;C:\Users\User\Documents\vcpkg\installed\x86-windows\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\utils;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\ImGui;C:\local\boost_1_78_0\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\patch;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\sqlite3;C:\Users\User\Documents\vcpkg\installed\x86-windows\include;C:\Users\User\Documents\plugin-sdk\bass;C:\Users\User\Documents\plugin-sdk\CLEO4\source</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;_DX9_SDK_INSTALLED;PLUGIN_SGV_10US;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- /utf-8 /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
@@ -109,8 +109,8 @@
     <Link>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurl.lib;libcurlpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Debug;%(AdditionalLibraryDirectories);C:\Users\User\Documents\plugin-sdk\bass;C:\Users\User\Documents\plugin-sdk\CLEO4\output\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurl.lib;libcurlpp.lib;%(AdditionalDependencies);bass.lib;CLEO.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -122,7 +122,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\utils;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\ImGui;C:\local\boost_1_78_0\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\patch;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\sqlite3;C:\Users\User\Documents\vcpkg\installed\x86-windows\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\utils;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\ImGui;C:\local\boost_1_78_0\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\patch;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\sqlite3;C:\Users\User\Documents\vcpkg\installed\x86-windows\include;C:\Users\User\Documents\plugin-sdk\bass</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_NDEBUG;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;_DX9_SDK_INSTALLED;PLUGIN_SGV_10US;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- /utf-8 /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
@@ -133,8 +133,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurlpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Release;%(AdditionalLibraryDirectories);C:\Users\User\Documents\plugin-sdk\bass;C:\Users\User\Documents\plugin-sdk\CLEO4\output\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurlpp.lib;%(AdditionalDependencies);bass.lib;CLEO.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -173,18 +173,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Data\Audio.cpp" />
     <ClCompile Include="Data\BaseObjective.cpp" />
     <ClCompile Include="Data\CheckpointObjective.cpp" />
     <ClCompile Include="Data\Object.cpp" />
     <ClCompile Include="Data\ObjectiveDependent.cpp" />
     <ClCompile Include="Data\Particle.cpp" />
     <ClCompile Include="Data\Pickup.cpp" />
+    <ClCompile Include="Data\Pyrotechnics.cpp" />
     <ClCompile Include="Data\Scene.cpp" />
     <ClCompile Include="Data\Texture.cpp" />
     <ClCompile Include="Data\ProjectData.cpp" />
     <ClCompile Include="Data\Actor.cpp" />
     <ClCompile Include="Data\Train.cpp" />
     <ClCompile Include="Data\Vehicle.cpp" />
+    <ClCompile Include="Data\VisualEffect.cpp" />
     <ClCompile Include="Data\Weapon.cpp" />
     <ClCompile Include="Data\WorldObjective.cpp" />
     <ClCompile Include="easylogging\easylogging++.cc" />
@@ -213,6 +216,7 @@
     <ClCompile Include="utils\format.cc" />
     <ClCompile Include="utils\HotKeyService.cpp" />
     <ClCompile Include="utils\HttpRequester.cpp" />
+    <ClCompile Include="utils\imgui-knobs.cpp" />
     <ClCompile Include="utils\ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="utils\Localization\Localization.cpp" />
     <ClCompile Include="utils\Logger.cpp" />
@@ -229,6 +233,7 @@
     <ClCompile Include="utils\VirtualScene.cpp" />
     <ClCompile Include="VMTHooker\vmt.cpp" />
     <ClCompile Include="Windows\ActorsWindow.cpp" />
+    <ClCompile Include="Windows\AudioWindow.cpp" />
     <ClCompile Include="Windows\FastObjectSelector.cpp" />
     <ClCompile Include="Windows\ModelRenderer.cpp" />
     <ClCompile Include="Windows\ObjectivesWindow.cpp" />
@@ -243,6 +248,7 @@
     <ClCompile Include="Windows\PopupWarning.cpp" />
     <ClCompile Include="Windows\PopupScenes.cpp" />
     <ClCompile Include="Windows\ProjectInfoWindow.cpp" />
+    <ClCompile Include="Windows\PyrotechnicsWindow.cpp" />
     <ClCompile Include="Windows\QuickCommandsWindow.cpp" />
     <ClCompile Include="Windows\ListWindow.cpp" />
     <ClCompile Include="Windows\MainMenu.cpp" />
@@ -254,16 +260,20 @@
     <ClCompile Include="Windows\TrainsWindow.cpp" />
     <ClCompile Include="Windows\utilsRender.cpp" />
     <ClCompile Include="Windows\VehiclesWindow.cpp" />
+    <ClCompile Include="Windows\VisualEffectsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Data\Audio.h" />
     <ClInclude Include="Data\BaseObjective.h" />
     <ClInclude Include="Data\CheckpointObjective.h" />
+    <ClInclude Include="Data\CSoundSystem.h" />
     <ClInclude Include="Data\IRenderable.h" />
     <ClInclude Include="Data\IUuidable.h" />
     <ClInclude Include="Data\Object.h" />
     <ClInclude Include="Data\ObjectiveDependent.h" />
     <ClInclude Include="Data\Particle.h" />
     <ClInclude Include="Data\Pickup.h" />
+    <ClInclude Include="Data\Pyrotechnics.h" />
     <ClInclude Include="Data\Scene.h" />
     <ClInclude Include="Data\Texture.h" />
     <ClInclude Include="Data\INameable.h" />
@@ -272,6 +282,7 @@
     <ClInclude Include="Data\Actor.h" />
     <ClInclude Include="Data\Train.h" />
     <ClInclude Include="Data\Vehicle.h" />
+    <ClInclude Include="Data\VisualEffect.h" />
     <ClInclude Include="Data\Weapon.h" />
     <ClInclude Include="Data\WorldObjective.h" />
     <ClInclude Include="easylogging\easylogging++.h" />
@@ -299,6 +310,7 @@
     <ClInclude Include="utils\HotKeyService.h" />
     <ClInclude Include="utils\HotkeysExecutor.h" />
     <ClInclude Include="utils\HttpRequester.h" />
+    <ClInclude Include="utils\imgui-knobs.h" />
     <ClInclude Include="utils\imguistyleloader.h" />
     <ClInclude Include="utils\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="utils\KeyCodes.h" />
@@ -317,6 +329,7 @@
     <ClInclude Include="utils\vehicle_renderer.h" />
     <ClInclude Include="utils\VirtualScene.h" />
     <ClInclude Include="Windows\ActorsWindow.h" />
+    <ClInclude Include="Windows\AudioWindow.h" />
     <ClInclude Include="Windows\FastObjectSelector.h" />
     <ClInclude Include="Windows\ModelRenderer.h" />
     <ClInclude Include="Windows\ObjectivesWindow.h" />
@@ -331,6 +344,7 @@
     <ClInclude Include="Windows\PopupWarning.h" />
     <ClInclude Include="Windows\PopupScenes.h" />
     <ClInclude Include="Windows\ProjectInfoWindow.h" />
+    <ClInclude Include="Windows\PyrotechnicsWindow.h" />
     <ClInclude Include="Windows\QuickCommandsWindow.h" />
     <ClInclude Include="Windows\NameEntitiesRender.h" />
     <ClInclude Include="Windows\PopupSkinSelector.h" />
@@ -343,6 +357,7 @@
     <ClInclude Include="Windows\ProjectsWindowPopup.h" />
     <ClInclude Include="Windows\SettingsWindow.h" />
     <ClInclude Include="Windows\VehiclesWindow.h" />
+    <ClInclude Include="Windows\VisualEffectsWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

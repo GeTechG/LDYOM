@@ -77,10 +77,14 @@ public:
     static CQuaternion lookRotation(const CVector& lookAt, CVector& up);
     static std::array<float, 3> ToEulerAngles(CQuaternion& q);
     static CQuaternion matrixToQuat(const RwMatrix* matrix);
+    static std::vector<std::string> getFilenameList(const std::filesystem::path& path, const std::vector<std::string>& extensions);
 };
 
 template <class T>
 int utils::indexByUuid(const std::vector<std::unique_ptr<T>>& vector, boost::uuids::uuid uuid) {
+	if (uuid.is_nil())
+        return -1;
+
     const auto it = std::ranges::find_if(vector, [&uuid](const std::unique_ptr<T>& ptr) {
         IUuidable *uuidable = ptr.get();
         return uuid == uuidable->getUuid();

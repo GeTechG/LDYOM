@@ -43,8 +43,6 @@ void Windows::ObjectivesWindow::drawOptions() {
 	objective->draw(local);
 }
 
-void Windows::ObjectivesWindow::selectElement(int i) {}
-
 void Windows::ObjectivesWindow::onButtonCreateNewElement() {
 	ImGui::OpenPopup("##modalObjectiveSelector");
 }
@@ -81,4 +79,8 @@ void Windows::ObjectivesWindow::close() {
 
 Windows::ObjectivesWindow::ObjectivesWindow(): ListWindow() {
 	this->dragsItems_ = true;
+}
+
+void Windows::ObjectivesWindow::selectElement(int i) {
+	ListWindow::selectElement(i);
 }

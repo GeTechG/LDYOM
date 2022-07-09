@@ -1,5 +1,6 @@
 ﻿#include "Scene.h"
 
+#include "CheckpointObjective.h"
 #include "strUtils.h"
 #include "Localization/Localization.h"
 #include "fmt/core.h"
@@ -47,6 +48,18 @@ std::vector<std::unique_ptr<Train>>& Scene::getTrains() {
 
 std::vector<std::unique_ptr<Pickup>>& Scene::getPickups() {
 	return pickups_;
+}
+
+std::vector<std::unique_ptr<Pyrotechnics>>& Scene::getPyrotechnics() {
+	return pyrotechnics_;
+}
+
+std::vector<std::unique_ptr<Audio>>& Scene::getAudio() {
+	return audio_;
+}
+
+std::vector<std::unique_ptr<VisualEffect>>& Scene::getVisualEffects() {
+	return visualEffects_;
 }
 
 
@@ -101,6 +114,27 @@ void Scene::createNewPickup() {
 	this->pickups_.back()->spawnEditorPickup();
 }
 
+void Scene::createNewPyrotechnics() {
+	const auto player = FindPlayerPed();
+	const auto defaultName = fmt::format("{} #{}", Localization::getInstance().get("entities.pyrotechnics"), this->pyrotechnics_.size());
+	this->pyrotechnics_.emplace_back(std::make_unique<Pyrotechnics>(defaultName.c_str(), player->GetPosition()));
+	this->pyrotechnics_.back()->spawnEditorPyrotechnics();
+}
+
+void Scene::createNewAudio() {
+	const auto player = FindPlayerPed();
+	const auto defaultName = fmt::format("{} #{}", Localization::getInstance().get("entities.audio"), this->audio_.size());
+	this->audio_.emplace_back(std::make_unique<Audio>(defaultName.c_str(), player->GetPosition()));
+	this->audio_.back()->spawnEditorAudio();
+}
+
+void Scene::createNewVisualEffect() {
+	const auto player = FindPlayerPed();
+	const auto defaultName = fmt::format("{} #{}", Localization::getInstance().get("entities.visual_effect"), this->visualEffects_.size());
+	this->visualEffects_.emplace_back(std::make_unique<VisualEffect>(defaultName.c_str(), player->GetPosition()));
+	this->visualEffects_.back()->spawnEditorVisualEffect();
+}
+
 void Scene::createNewActorFrom(Actor& actor) {
 	this->actors_.emplace_back(std::make_unique<Actor>(actor));
 }
@@ -125,6 +159,18 @@ void Scene::createNewPickupFrom(Pickup& pickup) {
 	this->pickups_.emplace_back(std::make_unique<Pickup>(pickup));
 }
 
+void Scene::createNewPyrotechnicsFrom(Pyrotechnics& pyrotechnics) {
+	this->pyrotechnics_.emplace_back(std::make_unique<Pyrotechnics>(pyrotechnics));
+}
+
+void Scene::createNewAudioFrom(Audio& audio) {
+	this->audio_.emplace_back(std::make_unique<Audio>(audio));
+}
+
+void Scene::createNewVisualEffectFrom(VisualEffect& visualEffect) {
+	this->visualEffects_.emplace_back(std::make_unique<VisualEffect>(visualEffect));
+}
+
 void Scene::unloadEditorScene() const {
 	for (const auto & actor : this->actors_)
 		actor->deleteEditorPed();
@@ -138,6 +184,12 @@ void Scene::unloadEditorScene() const {
 		particle->deleteEditorParticle();
 	for (const auto& pickup : this->pickups_)
 		pickup->deleteEditorPickup();
+	for (const auto& pyrotechnics : this->pyrotechnics_)
+		pyrotechnics->deleteEditorPyrotechnics();
+	for (const auto& audio : this->audio_)
+		audio->deleteEditorAudio();
+	for (const auto& visualEffect : this->visualEffects_)
+		visualEffect->deleteEditorVisualEffect();
 	for (const auto& objective : this->objectives_) {
 		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
 			checkpoint->removeEditorBlip();
@@ -158,6 +210,12 @@ void Scene::unloadProjectScene() const {
 		entity->deleteProjectEntity();
 	for (const auto& entity : this->pickups_)
 		entity->deleteProjectEntity();
+	for (const auto& entity : this->pyrotechnics_)
+		entity->deleteProjectEntity();
+	for (const auto& audio : this->audio_)
+		audio->deleteProjectEntity();
+	for (const auto& visualEffect : this->visualEffects_)
+		visualEffect->deleteProjectEntity();
 	for (const auto& objective : this->objectives_) {
 		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
 			checkpoint->removeProjectBlip();
@@ -179,6 +237,12 @@ void Scene::loadEditorScene() const {
 		particle->spawnEditorParticle();
 	for (const auto& pickup : this->pickups_)
 		pickup->spawnEditorPickup();
+	for (const auto& pyrotechnics : this->pyrotechnics_)
+		pyrotechnics->spawnEditorPyrotechnics();
+	for (const auto& audio : this->audio_)
+		audio->spawnEditorAudio();
+	for (const auto& visualEffect : this->visualEffects_)
+		visualEffect->spawnEditorVisualEffect();
 	for (const auto& objective : this->objectives_) {
 		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
 			checkpoint->createEditorBlip();

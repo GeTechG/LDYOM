@@ -25,6 +25,7 @@ public:
 
 	void Init();
 	void update();
+	void Reset();
 
 	void createNewProject();
 

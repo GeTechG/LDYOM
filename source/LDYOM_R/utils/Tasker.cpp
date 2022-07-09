@@ -6,6 +6,10 @@ std::map<std::string, ktwait>& Tasker::list() {
 	return this->taskList_;
 }
 
+ktcoro_tasklist& Tasker::getKtcoroTaskList() {
+	return ktcoroTaskList_;
+}
+
 void Tasker::process() {
 	this->ktcoroTaskList_.process();
 }

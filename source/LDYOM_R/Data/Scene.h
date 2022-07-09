@@ -1,33 +1,18 @@
 ﻿#pragma once
 #include "Actor.h"
 #include <vector>
-#include <boost/serialization/access.hpp>
 
+#include "Audio.h"
 #include "BaseObjective.h"
-#include "CheckpointObjective.h"
 #include "Object.h"
 #include "Particle.h"
 #include "Pickup.h"
+#include "Pyrotechnics.h"
 #include "Train.h"
 #include "Vehicle.h"
+#include "VisualEffect.h"
 
 class Scene final : public INameable {
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & this->name_;
-		ar & this->actors_;
-		ar& this->vehicles_;
-		ar& this->objects_;
-		ar& this->trains_;
-		ar& this->particles_;
-		ar & this->pickups_;
-
-		ar.template register_type<CheckpointObjective>();
-
-		ar & this->objectives_;
-	}
 
 	char name_[NAME_SIZE]{};
 
@@ -38,6 +23,9 @@ class Scene final : public INameable {
 	std::vector<std::unique_ptr<Particle>> particles_;
 	std::vector<std::unique_ptr<Train>> trains_;
 	std::vector<std::unique_ptr<Pickup>> pickups_;
+	std::vector<std::unique_ptr<Pyrotechnics>> pyrotechnics_;
+	std::vector<std::unique_ptr<Audio>> audio_;
+	std::vector<std::unique_ptr<VisualEffect>> visualEffects_;
 public:
 	Scene() = default;
 	Scene(const char* name);
@@ -55,6 +43,9 @@ public:
 	std::vector<std::unique_ptr<Particle>>& getParticles();
 	std::vector<std::unique_ptr<Train>>& getTrains();
 	std::vector<std::unique_ptr<Pickup>>& getPickups();
+	std::vector<std::unique_ptr<Pyrotechnics>>& getPyrotechnics();
+	std::vector<std::unique_ptr<Audio>>& getAudio();
+	std::vector<std::unique_ptr<VisualEffect>>& getVisualEffects();
 
 	template <class _Ty, class... _Types>
 	void createNewObjectives(_Types&&... _Args);
@@ -64,6 +55,9 @@ public:
 	void createNewParticle();
 	void createNewTrain();
 	void createNewPickup();
+	void createNewPyrotechnics();
+	void createNewAudio();
+	void createNewVisualEffect();
 
 	template<typename T>
 	void createNewObjectiveFrom(T& objective);
@@ -73,6 +67,9 @@ public:
 	void createNewParticleFrom(Particle& particle);
 	void createNewTrainFrom(Train& train);
 	void createNewPickupFrom(Pickup& pickup);
+	void createNewPyrotechnicsFrom(Pyrotechnics& pyrotechnics);
+	void createNewAudioFrom(Audio& a);
+	void createNewVisualEffectFrom(VisualEffect& visualEffect);
 
 	void unloadEditorScene() const;
 	void unloadProjectScene() const;

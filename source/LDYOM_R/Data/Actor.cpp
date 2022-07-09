@@ -160,6 +160,7 @@ Actor& Actor::operator=(const Actor& other) {
 Actor::~Actor() {
 	this->deleteEditorPed();
 	this->deleteProjectEntity();
+	this->signalDeleteActor();
 }
 
 char* Actor::getName() {
@@ -240,6 +241,10 @@ bool& Actor::isDropWeapons() {
 
 boost::uuids::uuid& Actor::getUuid() {
 	return uuid_;
+}
+
+boost::signals2::signal<void()>& Actor::getSignalDeleteActor() {
+	return signalDeleteActor;
 }
 
 void Actor::updateLocation() const {
