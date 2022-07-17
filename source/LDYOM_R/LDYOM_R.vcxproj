@@ -109,8 +109,8 @@
     <Link>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Debug;%(AdditionalLibraryDirectories);C:\Users\User\Documents\plugin-sdk\bass;C:\Users\User\Documents\plugin-sdk\CLEO4\output\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurl.lib;libcurlpp.lib;%(AdditionalDependencies);bass.lib;CLEO.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\debug\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Debug;%(AdditionalLibraryDirectories);C:\Users\User\Documents\plugin-sdk\bass;C:\Users\User\Documents\plugin-sdk\CLEO4\output\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurl.lib;libcurlpp.lib;%(AdditionalDependencies);bass.lib;CLEO.lib;zip.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -134,7 +134,7 @@
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;C:\Users\User\source\repos\LDYOM_R\LDYOM_R\LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Release;%(AdditionalLibraryDirectories);C:\Users\User\Documents\plugin-sdk\bass;C:\Users\User\Documents\plugin-sdk\CLEO4\output\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurlpp.lib;%(AdditionalDependencies);bass.lib;CLEO.lib</AdditionalDependencies>
+      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurlpp.lib;%(AdditionalDependencies);bass.lib;CLEO.lib;zip.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -175,13 +175,16 @@
   <ItemGroup>
     <ClCompile Include="Data\Audio.cpp" />
     <ClCompile Include="Data\BaseObjective.cpp" />
+    <ClCompile Include="Data\Checkpoint.cpp" />
     <ClCompile Include="Data\CheckpointObjective.cpp" />
     <ClCompile Include="Data\Object.cpp" />
     <ClCompile Include="Data\ObjectiveDependent.cpp" />
     <ClCompile Include="Data\Particle.cpp" />
     <ClCompile Include="Data\Pickup.cpp" />
     <ClCompile Include="Data\Pyrotechnics.cpp" />
+    <ClCompile Include="Data\Result.cpp" />
     <ClCompile Include="Data\Scene.cpp" />
+    <ClCompile Include="Data\SceneSettings.cpp" />
     <ClCompile Include="Data\Texture.cpp" />
     <ClCompile Include="Data\ProjectData.cpp" />
     <ClCompile Include="Data\Actor.cpp" />
@@ -200,6 +203,8 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="ImGui\WindowsRenderService.cpp" />
+    <ClCompile Include="lz4\lz4.c" />
+    <ClCompile Include="lz4\lz4hc.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sqlcpp\sqliteBackup.cpp" />
     <ClCompile Include="sqlcpp\sqliteColumn.cpp" />
@@ -234,6 +239,7 @@
     <ClCompile Include="VMTHooker\vmt.cpp" />
     <ClCompile Include="Windows\ActorsWindow.cpp" />
     <ClCompile Include="Windows\AudioWindow.cpp" />
+    <ClCompile Include="Windows\CheckpointsWindow.cpp" />
     <ClCompile Include="Windows\FastObjectSelector.cpp" />
     <ClCompile Include="Windows\ModelRenderer.cpp" />
     <ClCompile Include="Windows\ObjectivesWindow.cpp" />
@@ -241,7 +247,7 @@
     <ClCompile Include="Windows\ObjectsWindow.cpp" />
     <ClCompile Include="Windows\ObjectViewerPopup.cpp" />
     <ClCompile Include="Windows\ParticlesWindow.cpp" />
-    <ClCompile Include="Windows\PickupWindow.cpp" />
+    <ClCompile Include="Windows\PickupsWindow.cpp" />
     <ClCompile Include="Windows\PopupSpriteBlipSelector.cpp" />
     <ClCompile Include="Windows\PopupVehicleSelector.cpp" />
     <ClCompile Include="Windows\EntitiesWindow.cpp" />
@@ -256,6 +262,7 @@
     <ClCompile Include="Windows\PopupSkinSelector.cpp" />
     <ClCompile Include="Windows\PopupWeaponSelector.cpp" />
     <ClCompile Include="Windows\ProjectsWindowPopup.cpp" />
+    <ClCompile Include="Windows\SceneSettingsPopup.cpp" />
     <ClCompile Include="Windows\SettingsWindow.cpp" />
     <ClCompile Include="Windows\TrainsWindow.cpp" />
     <ClCompile Include="Windows\utilsRender.cpp" />
@@ -265,6 +272,7 @@
   <ItemGroup>
     <ClInclude Include="Data\Audio.h" />
     <ClInclude Include="Data\BaseObjective.h" />
+    <ClInclude Include="Data\Checkpoint.h" />
     <ClInclude Include="Data\CheckpointObjective.h" />
     <ClInclude Include="Data\CSoundSystem.h" />
     <ClInclude Include="Data\IRenderable.h" />
@@ -274,7 +282,9 @@
     <ClInclude Include="Data\Particle.h" />
     <ClInclude Include="Data\Pickup.h" />
     <ClInclude Include="Data\Pyrotechnics.h" />
+    <ClInclude Include="Data\Result.h" />
     <ClInclude Include="Data\Scene.h" />
+    <ClInclude Include="Data\SceneSettings.h" />
     <ClInclude Include="Data\Texture.h" />
     <ClInclude Include="Data\INameable.h" />
     <ClInclude Include="Data\IPositionable.h" />
@@ -301,6 +311,8 @@
     <ClInclude Include="include\imgui_notify.h" />
     <ClInclude Include="include\pool_object_extender.h" />
     <ClInclude Include="include\singleton.h" />
+    <ClInclude Include="lz4\lz4.h" />
+    <ClInclude Include="lz4\lz4hc.h" />
     <ClInclude Include="sqlite3\sqlite3.h" />
     <ClInclude Include="utils\additional_events.h" />
     <ClInclude Include="utils\components.h" />
@@ -330,6 +342,7 @@
     <ClInclude Include="utils\VirtualScene.h" />
     <ClInclude Include="Windows\ActorsWindow.h" />
     <ClInclude Include="Windows\AudioWindow.h" />
+    <ClInclude Include="Windows\CheckpointsWindow.h" />
     <ClInclude Include="Windows\FastObjectSelector.h" />
     <ClInclude Include="Windows\ModelRenderer.h" />
     <ClInclude Include="Windows\ObjectivesWindow.h" />
@@ -337,7 +350,7 @@
     <ClInclude Include="Windows\ObjectsWindow.h" />
     <ClInclude Include="Windows\ObjectViewerPopup.h" />
     <ClInclude Include="Windows\ParticlesWindow.h" />
-    <ClInclude Include="Windows\PickupWindow.h" />
+    <ClInclude Include="Windows\PickupsWindow.h" />
     <ClInclude Include="Windows\PopupSpriteBlipSelector.h" />
     <ClInclude Include="Windows\PopupVehicleSelector.h" />
     <ClInclude Include="Windows\EntitiesWindow.h" />
@@ -349,6 +362,7 @@
     <ClInclude Include="Windows\NameEntitiesRender.h" />
     <ClInclude Include="Windows\PopupSkinSelector.h" />
     <ClInclude Include="Windows\PopupWeaponSelector.h" />
+    <ClInclude Include="Windows\SceneSettingsPopup.h" />
     <ClInclude Include="Windows\TrainsWindow.h" />
     <ClInclude Include="Windows\utilsRender.h" />
     <ClInclude Include="Windows\AbstractWindow.h" />

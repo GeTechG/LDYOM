@@ -1,4 +1,7 @@
-﻿#include "HotKeyService.h"
+﻿#include <CWorld.h>
+#include <CHud.h>
+
+#include "HotKeyService.h"
 #include "plugin.h"
 #include "Logger.h"
 #include "LuaEngine.h"
@@ -28,17 +31,16 @@
 #include "Windows/VehiclesWindow.h"
 #include "Windows/ActorsWindow.h"
 #include "Windows/ObjectivesWindow.h"
-#include "Data/CheckpointObjective.h"
 #include "Windows/FastObjectSelector.h"
 #include "Windows/ObjectsWindow.h"
 #include "Windows/ParticlesWindow.h"
-#include "Windows/PickupWindow.h"
+#include "Windows/PickupsWindow.h"
 #include "Windows/ProjectInfoWindow.h"
 #include "Windows/PyrotechnicsWindow.h"
 #include "Windows/TrainsWindow.h"
-#include "bass.h"
 #include "Data/Audio.h"
 #include "Windows/AudioWindow.h"
+#include "Windows/CheckpointsWindow.h"
 #include "Windows/VisualEffectsWindow.h"
 
 using namespace plugin;
@@ -65,13 +67,22 @@ public:
 		auto scriptProcess = [] {
 			Tasker::getInstance().process();
 			if (!ProjectPlayerService::getInstance().isProjectRunning()) {
-				for (const auto& objective : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives()) {
-					//Checkpoint
-					if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
-						checkpoint->render();
-					}
-				}
-				Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
+				//for (const auto& objective : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives()) {
+				//	//Checkpoint
+				//	if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
+				//		checkpoint->render();
+				//	}
+				//}
+			}
+
+			if (Command<0x0ADC>("TOP2009")) {
+				CHud::SetHelpMessage("~r~I LOVE TWENTY ONE PILOTS", false, false, false);
+				CHud::DrawHelpText();
+			}
+
+			if (Command<0x0ADC>("MISSIOMAFIA")) {
+				CHud::SetHelpMessage("~w~I MISSIO MAFIA", false, false, false);
+				CHud::DrawHelpText();
 			}
 		};
 
@@ -101,10 +112,11 @@ public:
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::TrainsWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::ParticlesWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::FastObjectSelector>());
-			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::PickupWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::PickupsWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::PyrotechnicsWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::AudioWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::VisualEffectsWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::CheckpointsWindow>());
 			Windows::WindowsRenderService::getInstance().addRender("showEntitiesName", [] {
 				if (!ProjectPlayerService::getInstance().isProjectRunning()) {
 					if (Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false))
@@ -131,6 +143,13 @@ public:
 
 			////init is complete
 			init = true;
+
+			Tasker::getInstance().getKtcoroTaskList().add_task([]() -> ktwait {
+				co_await 5s;
+				Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
+
+				//Command<Commands::MAKE_PLAYER_FIRE_PROOF>(0, true);
+			});
 
 			Events::gameProcessEvent.AddAtId(777, gameProcces);
 			Events::processScriptsEvent.AddAtId(778, scriptProcess);

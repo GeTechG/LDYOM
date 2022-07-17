@@ -61,6 +61,22 @@ namespace Windows
 				ImGui::OpenPopup(fmt::format("{} {}", ICON_FA_LANDMARK, local.get("scenes.title")).c_str());
 			}
 
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SLIDERS_H, local.get("scene_settings.title")).c_str(), ImVec2(200.0f, .0f)))
+			{
+				this->sceneSettings_.setShow(true);
+				ImGui::OpenPopup(fmt::format("{} {}", ICON_FA_SLIDERS_H, local.get("scene_settings.title")).c_str());
+			}
+
+			if (ImGui::IsItemHovered()) {
+				auto relations = fmt::format("{} {}", ICON_FA_USERS, local.get("scene_settings.group_relations"));
+				auto time = fmt::format("{} {}", ICON_FA_CLOCK, local.get("general.game_time"));
+				auto traffic = fmt::format("{} {}", ICON_FA_TRAFFIC_CONE, local.get("scene_settings.ped_car_traffic"));
+				auto wanted = fmt::format("{} {}", ICON_FA_STAR, local.get("general.wanted"));
+				auto weather = fmt::format("{} {}", ICON_FA_SUN_CLOUD, local.get("general.weather"));
+				auto riotMode = fmt::format("{} {}", ICON_FA_SKULL_CROSSBONES, local.get("general.riot_mode"));
+				ImGui::SetTooltip(fmt::format("{}\n{}\n{}\n{}\n{}\n{}", relations, time, traffic, wanted, weather, riotMode).c_str());
+			}
+
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_PLAY, local.get("general.play")).c_str(), ImVec2(200.0f, .0f)))
 			{
 				Tasker::getInstance().addTask("playProjectTask", []() -> ktwait {
@@ -78,6 +94,7 @@ namespace Windows
 
 			this->projectsWindowPopup_.draw();
 			this->popupScenes_.draw();
+			this->sceneSettings_.draw();
 
 		}
 		ImGui::End();

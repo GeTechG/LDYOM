@@ -33,6 +33,12 @@ void Windows::ObjectsWindow::createNewElement() {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObject();
 }
 
+void Windows::ObjectsWindow::createNewElementFrom(int i) {
+	const auto& object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(i);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectFrom(*object);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().back()->spawnEditorObject();
+}
+
 char* Windows::ObjectsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(i)->getName();
 }
@@ -139,6 +145,7 @@ void Windows::ObjectsWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+	plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 }
 
 void Windows::ObjectsWindow::open() {

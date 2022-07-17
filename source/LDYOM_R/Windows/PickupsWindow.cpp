@@ -1,4 +1,4 @@
-﻿#include "PickupWindow.h"
+﻿#include "PickupsWindow.h"
 
 #include <CCamera.h>
 #include <imHotKey.h>
@@ -11,15 +11,15 @@
 #include "utilsRender.h"
 #include "fmt/core.h"
 
-std::string Windows::PickupWindow::getNameList() {
+std::string Windows::PickupsWindow::getNameList() {
 	return fmt::format("{} {}", ICON_FA_HEART, Localization::getInstance().get("entities.pickups"));
 }
 
-std::string Windows::PickupWindow::getNameOption() {
+std::string Windows::PickupsWindow::getNameOption() {
 	return fmt::format("{} {}", ICON_FA_HEART, Localization::getInstance().get("entities.pickup"));
 }
 
-int Windows::PickupWindow::getListSize() {
+int Windows::PickupsWindow::getListSize() {
 	return static_cast<int>(ProjectsService::getInstance()
 		.getCurrentProject()
 		.getCurrentScene()
@@ -27,15 +27,21 @@ int Windows::PickupWindow::getListSize() {
 		.size());
 }
 
-void Windows::PickupWindow::createNewElement() {
+void Windows::PickupsWindow::createNewElement() {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewPickup();
 }
 
-char* Windows::PickupWindow::getElementName(int i) {
+void Windows::PickupsWindow::createNewElementFrom(int i) {
+	const auto& pickup = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().at(i);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewPickupFrom(*pickup);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().back()->spawnEditorPickup();
+}
+
+char* Windows::PickupsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().at(i)->getName();
 }
 
-void Windows::PickupWindow::deleteElement(int i) {
+void Windows::PickupsWindow::deleteElement(int i) {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().at(i)->deleteEditorPickup();
 
 	const auto begin = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().begin();
@@ -43,7 +49,7 @@ void Windows::PickupWindow::deleteElement(int i) {
 	this->currentElement--;
 }
 
-void Windows::PickupWindow::drawOptions() {
+void Windows::PickupsWindow::drawOptions() {
 	auto& local = Localization::getInstance();
 
 	Pickup* pickup = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().at(this->currentElement).get();
@@ -106,13 +112,14 @@ void Windows::PickupWindow::drawOptions() {
 	}
 }
 
-void Windows::PickupWindow::close() {
+void Windows::PickupsWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+	plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 }
 
-void Windows::PickupWindow::open() {
+void Windows::PickupsWindow::open() {
 	ListWindow::open();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
 }

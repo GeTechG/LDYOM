@@ -35,6 +35,12 @@ void Windows::ParticlesWindow::createNewElement() {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewParticle();
 }
 
+void Windows::ParticlesWindow::createNewElementFrom(int i) {
+	const auto& particle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getParticles().at(i);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewParticleFrom(*particle);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getParticles().back()->spawnEditorParticle();
+}
+
 char* Windows::ParticlesWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getParticles().at(i)->getName();
 }
@@ -184,6 +190,7 @@ void Windows::ParticlesWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+	plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 }
 
 void Windows::ParticlesWindow::open() {

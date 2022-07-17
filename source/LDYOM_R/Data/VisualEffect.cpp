@@ -41,7 +41,7 @@ VisualEffect::VisualEffect(const VisualEffect& other): ObjectiveDependent{other}
                                                        INameable{other},
                                                        IPositionable{other},
                                                        IUuidable{other},
-                                                       uuid_{other.uuid_},
+                                                       uuid_{ boost::uuids::random_generator()() },
                                                        name_{other.name_},
                                                        pos_{other.pos_},
                                                        type_{other.type_},
@@ -49,7 +49,8 @@ VisualEffect::VisualEffect(const VisualEffect& other): ObjectiveDependent{other}
                                                        effectType_{other.effectType_},
                                                        flare_{other.flare_},
                                                        color_{other.color_},
-                                                       drawing_{other.drawing_} {
+                                                       drawing_{other.drawing_},
+													   angle_(other.angle_) {
 }
 
 VisualEffect& VisualEffect::operator=(const VisualEffect& other) {
@@ -68,6 +69,7 @@ VisualEffect& VisualEffect::operator=(const VisualEffect& other) {
 	flare_ = other.flare_;
 	color_ = other.color_;
 	drawing_ = other.drawing_;
+	angle_ = other.angle_;
 	return *this;
 }
 

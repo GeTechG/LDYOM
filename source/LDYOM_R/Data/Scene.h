@@ -4,13 +4,17 @@
 
 #include "Audio.h"
 #include "BaseObjective.h"
+#include "Checkpoint.h"
 #include "Object.h"
 #include "Particle.h"
 #include "Pickup.h"
 #include "Pyrotechnics.h"
+#include "SceneSettings.h"
 #include "Train.h"
 #include "Vehicle.h"
 #include "VisualEffect.h"
+
+struct SceneSettings;
 
 class Scene final : public INameable {
 
@@ -26,8 +30,14 @@ class Scene final : public INameable {
 	std::vector<std::unique_ptr<Pyrotechnics>> pyrotechnics_;
 	std::vector<std::unique_ptr<Audio>> audio_;
 	std::vector<std::unique_ptr<VisualEffect>> visualEffects_;
+	std::vector<std::unique_ptr<Checkpoint>> checkpoints_;
+
+	SceneSettings sceneSettings_;
+	bool toggleSceneSettings_ = true;
+
+	void initGroupRelations();
 public:
-	Scene() = default;
+	Scene();
 	Scene(const char* name);
 
 	Scene& operator=(Scene&& other) noexcept;
@@ -46,6 +56,10 @@ public:
 	std::vector<std::unique_ptr<Pyrotechnics>>& getPyrotechnics();
 	std::vector<std::unique_ptr<Audio>>& getAudio();
 	std::vector<std::unique_ptr<VisualEffect>>& getVisualEffects();
+	std::vector<std::unique_ptr<Checkpoint>>& getCheckpoints();
+
+	SceneSettings& getSceneSettings();
+	bool& isToggleSceneSettings();
 
 	template <class _Ty, class... _Types>
 	void createNewObjectives(_Types&&... _Args);
@@ -58,6 +72,7 @@ public:
 	void createNewPyrotechnics();
 	void createNewAudio();
 	void createNewVisualEffect();
+	void createNewCheckpoint();
 
 	template<typename T>
 	void createNewObjectiveFrom(T& objective);
@@ -70,6 +85,7 @@ public:
 	void createNewPyrotechnicsFrom(Pyrotechnics& pyrotechnics);
 	void createNewAudioFrom(Audio& a);
 	void createNewVisualEffectFrom(VisualEffect& visualEffect);
+	void createNewCheckpointFrom(Checkpoint& checkpoint);
 
 	void unloadEditorScene() const;
 	void unloadProjectScene() const;

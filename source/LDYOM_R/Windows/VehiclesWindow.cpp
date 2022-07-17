@@ -34,6 +34,12 @@ void Windows::VehiclesWindow::createNewElement() {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewVehicle();
 }
 
+void Windows::VehiclesWindow::createNewElementFrom(int i) {
+	const auto& vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().at(i);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewVehicleFrom(*vehicle);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().back()->spawnEditorVehicle();
+}
+
 char* Windows::VehiclesWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().at(i)->getName();
 }
@@ -171,6 +177,7 @@ void Windows::VehiclesWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+	plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 }
 
 void Windows::VehiclesWindow::open() {

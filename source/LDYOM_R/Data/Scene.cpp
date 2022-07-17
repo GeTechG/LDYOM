@@ -7,8 +7,25 @@
 
 const char* names[200] = { "Douglas", "Aaron", "Brandon", "Dorothy", "Eric", "Carlos", "Shirley", "Carol", "Ralph", "Jeremy", "Lisa", "Kathleen", "Martin", "Teresa", "Donna", "Connie", "Sarah", "Cynthia", "Monica", "Michael", "Bruce", "Craig", "Mildred", "Timothy", "Evelyn", "Nicholas", "Angela", "Mary", "Andrea", "Dennis", "Samuel", "Stephanie", "Alice", "Amber", "Mark", "Rebecca", "Tina", "Joyce", "Laura", "Ernest", "Matthew", "Justin", "Marilyn", "Heather", "Donald", "Maria", "Christopher", "Ruby", "Susan", "Harold", "Victor", "Gerald", "Elizabeth", "Andrew", "Patricia", "Thomas", "Rachel", "Sherry", "Larry", "Brian", "Harry", "Eugene", "Lori", "Joe", "Ronald", "William", "Tiffany", "Randy", "Sylvia", "Frances", "Russell", "Cheryl", "April", "Kelly", "Brenda", "Alan", "Shawn", "Amanda", "Willie", "Karen", "Peter", "Sandra", "Stanley", "Debra", "Ryan", "Joseph", "Earl", "Danny", "Richard", "Norma", "Frank", "Amy", "Terry", "Antonio", "Ashley", "Ruth", "Helen", "Jose", "Kimberly", "Joan", "Ann", "Philip", "Martha", "Lois", "Judith", "Steve", "Tony", "Steven", "Nicole", "Bonnie", "Tracy", "Linda", "Paul", "Stephen", "Kenneth", "Charles", "John", "Jerry", "George", "Lauren", "Gregory", "Jesse", "Louis", "Louise", "Virginia", "Janet", "Gloria", "Jacqueline", "Henry", "Jimmy", "Carl", "Juan", "Johnny", "Jane", "Jennifer", "Walter", "Tammy", "Emma", "Denise", "Chris", "Catherine", "Melissa", "Patrick", "Todd", "Jonathan", "Irene", "Scott", "Grace", "Anthony", "Margaret", "Edward", "Keith", "Arthur", "Christine", "Albert", "Roy", "Wanda", "Bobby", "Doris", "Beverly", "Sharon", "Paula", "Pamela", "Jack", "Kevin", "Jason", "Lillian", "Howard", "Janice", "Benjamin", "Julia", "Daniel", "Robert", "David", "Betty", "Adam", "Lawrence", "Wendy", "Raymond", "Cindy", "Michelle", "Clarence", "Carolyn", "Judy", "Emily", "James", "Wayne", "Billy", "Nancy", "Barbara", "Jean", "Phyllis", "Rose", "Fred", "Jeffrey", "Kathy", "Joshua", "Jessica", "Roger", "Julie" };
 
+void Scene::initGroupRelations() {
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 9; j++) {
+			if (i + 1 != j) {
+				this->sceneSettings_.groupRelations[i][j] = 2;
+			} else {
+				this->sceneSettings_.groupRelations[i][j] = -1;
+			}
+		}
+	}
+}
+
+Scene::Scene() {
+	initGroupRelations();
+}
+
 Scene::Scene(const char* name) {
 	strcpy_s(this->name_, sizeof this->name_, name);
+	initGroupRelations();
 }
 
 Scene& Scene::operator=(Scene&& other) noexcept {
@@ -19,6 +36,7 @@ Scene& Scene::operator=(Scene&& other) noexcept {
 	actors_ = std::move(other.actors_);
 	vehicles_ = std::move(other.vehicles_);
 	objects_ = std::move(other.objects_);
+	sceneSettings_ = std::move(other.sceneSettings_);
 	return *this;
 }
 
@@ -60,6 +78,18 @@ std::vector<std::unique_ptr<Audio>>& Scene::getAudio() {
 
 std::vector<std::unique_ptr<VisualEffect>>& Scene::getVisualEffects() {
 	return visualEffects_;
+}
+
+std::vector<std::unique_ptr<Checkpoint>>& Scene::getCheckpoints() {
+	return checkpoints_;
+}
+
+SceneSettings& Scene::getSceneSettings() {
+	return sceneSettings_;
+}
+
+bool& Scene::isToggleSceneSettings() {
+	return toggleSceneSettings_;
 }
 
 
@@ -135,6 +165,13 @@ void Scene::createNewVisualEffect() {
 	this->visualEffects_.back()->spawnEditorVisualEffect();
 }
 
+void Scene::createNewCheckpoint() {
+	const auto player = FindPlayerPed();
+	const auto defaultName = fmt::format("{} #{}", Localization::getInstance().get("entities.checkpoint"), this->checkpoints_.size());
+	this->checkpoints_.emplace_back(std::make_unique<Checkpoint>(defaultName.c_str(), player->GetPosition()));
+	this->checkpoints_.back()->spawnEditorCheckpoint();
+}
+
 void Scene::createNewActorFrom(Actor& actor) {
 	this->actors_.emplace_back(std::make_unique<Actor>(actor));
 }
@@ -171,6 +208,10 @@ void Scene::createNewVisualEffectFrom(VisualEffect& visualEffect) {
 	this->visualEffects_.emplace_back(std::make_unique<VisualEffect>(visualEffect));
 }
 
+void Scene::createNewCheckpointFrom(Checkpoint& checkpoint) {
+	this->checkpoints_.emplace_back(std::make_unique<Checkpoint>(checkpoint));
+}
+
 void Scene::unloadEditorScene() const {
 	for (const auto & actor : this->actors_)
 		actor->deleteEditorPed();
@@ -190,11 +231,13 @@ void Scene::unloadEditorScene() const {
 		audio->deleteEditorAudio();
 	for (const auto& visualEffect : this->visualEffects_)
 		visualEffect->deleteEditorVisualEffect();
-	for (const auto& objective : this->objectives_) {
+	for (const auto& checkpoint : this->checkpoints_)
+		checkpoint->deleteEditorCheckpoint();
+	/*for (const auto& objective : this->objectives_) {
 		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
 			checkpoint->removeEditorBlip();
 		}
-	}
+	}*/
 }
 
 void Scene::unloadProjectScene() const {
@@ -216,12 +259,14 @@ void Scene::unloadProjectScene() const {
 		audio->deleteProjectEntity();
 	for (const auto& visualEffect : this->visualEffects_)
 		visualEffect->deleteProjectEntity();
-	for (const auto& objective : this->objectives_) {
+	for (const auto& checkpoint : this->checkpoints_)
+		checkpoint->deleteProjectEntity();
+	/*for (const auto& objective : this->objectives_) {
 		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
 			checkpoint->removeProjectBlip();
 			checkpoint->removeProjectComeBackBlip();
 		}
-	}
+	}*/
 }
 
 void Scene::loadEditorScene() const {
@@ -243,9 +288,11 @@ void Scene::loadEditorScene() const {
 		audio->spawnEditorAudio();
 	for (const auto& visualEffect : this->visualEffects_)
 		visualEffect->spawnEditorVisualEffect();
-	for (const auto& objective : this->objectives_) {
+	for (const auto& checkpoint : this->checkpoints_)
+		checkpoint->spawnEditorCheckpoint();
+	/*for (const auto& objective : this->objectives_) {
 		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
 			checkpoint->createEditorBlip();
 		}
-	}
+	}*/
 }

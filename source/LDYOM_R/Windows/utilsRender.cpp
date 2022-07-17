@@ -98,11 +98,13 @@ void ObjectiveDependentInput(ObjectiveDependent* objectiveDependent) {
 	const auto& objectives = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives();
 
 	const int spawnObjectiveIdx = utils::indexByUuid(objectives, objectiveDependent->getSpawnObjectiveUuid());
-	utils::Combo(Localization::getInstance().get("general.spawn_before").c_str(), &objectiveDependent->getSpawnObjectiveUuid(), spawnObjectiveIdx, static_cast<int>(objectives.size()), [&objectives](const int i) {
-		return objectives.at(i)->getName();
-		}, [&objectives](const int i) {
-			return objectives.at(i)->getUuid();
-		});
+	IncorrectHighlight(spawnObjectiveIdx == -1 && objectiveDependent->isUseObjective(), [&] {
+		utils::Combo(Localization::getInstance().get("general.spawn_before").c_str(), &objectiveDependent->getSpawnObjectiveUuid(), spawnObjectiveIdx, static_cast<int>(objectives.size()), [&objectives](const int i) {
+			return objectives.at(i)->getName();
+			}, [&objectives](const int i) {
+				return objectives.at(i)->getUuid();
+			});
+	});
 
 	const int deleteObjectiveIdx = utils::indexByUuid(objectives, objectiveDependent->getDeleteObjectiveUuid());
 	utils::Combo(Localization::getInstance().get("general.delete_after").c_str(), &objectiveDependent->getDeleteObjectiveUuid(), deleteObjectiveIdx, static_cast<int>(objectives.size()), [&objectives](const int i) {
@@ -422,4 +424,17 @@ bool TransformEditor(float* translate, CQuaternion& rotates, float* scale) {
 	}
 
 	return false;
+}
+
+void IncorrectHighlight(const bool cond, const std::function<void()> render) {
+	if (cond) {
+		const ImU32 originalColor = ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
+		const ImU32 blendColor = ImGui::ColorConvertFloat4ToU32(ImVec4(1.f, 0.f, 0.f, 0.7f));
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImAlphaBlendColors(originalColor, blendColor));
+	}
+
+	render();
+
+	if (cond)
+		ImGui::PopStyleColor();
 }

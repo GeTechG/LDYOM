@@ -1,5 +1,9 @@
 ﻿#include "ProjectPlayerService.h"
 
+#include <CClock.h>
+#include <CWeather.h>
+#include <CWorld.h>
+
 #include "ProjectsService.h"
 #include "Tasker.h"
 #include "WindowsRenderService.h"
@@ -7,6 +11,7 @@
 #include "extensions/ScriptCommands.h"
 #include "CFireManager.h"
 #include "imgui_notify.h"
+#include "../Data/Result.h"
 #include "../easylogging/easylogging++.h"
 
 namespace Windows {
@@ -44,10 +49,41 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, int startObjective) {
 	addObjectiveDependedEntity(scene->getPyrotechnics());
 	addObjectiveDependedEntity(scene->getAudio());
 	addObjectiveDependedEntity(scene->getVisualEffects());
+	addObjectiveDependedEntity(scene->getCheckpoints());
 
 	for (const auto & audio : scene->getAudio()) {
 		if (audio->isUseObjective()) 
 			audio->preloadProjectAudio();
+	}
+
+	//apply scene settings
+	if (scene->isToggleSceneSettings()) {
+		using namespace plugin;
+
+		const auto & sceneSettings = scene->getSceneSettings();
+		CWeather::ForceWeatherNow(static_cast<short>(sceneSettings.weather));
+		CClock::SetGameClock(sceneSettings.time[0], sceneSettings.time[1], 0);
+		Command<Commands::SET_LA_RIOTS>(sceneSettings.riot);
+		Command<Commands::SET_PED_DENSITY_MULTIPLIER>(sceneSettings.trafficPed);
+		Command<Commands::SET_CAR_DENSITY_MULTIPLIER>(sceneSettings.trafficCar);
+		CWorld::Players[0].m_PlayerData.m_pWanted->SetWantedLevelNoDrop(sceneSettings.wantedMin);
+		CWanted::SetMaximumWantedLevel(sceneSettings.wantedMax);
+
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (sceneSettings.groupRelations[i][j] != -1) {
+					if (j == 0) {
+						Command<Commands::SET_RELATIONSHIP>((int)sceneSettings.groupRelations[i][j], 24 + i, 0);
+						Command<Commands::SET_RELATIONSHIP>((int)sceneSettings.groupRelations[i][j], 24 + i, 23);
+						Command<Commands::SET_RELATIONSHIP>((int)sceneSettings.groupRelations[i][j], 23, 24 + i);
+					} else {
+						if (i != j - 1) {
+							Command<Commands::SET_RELATIONSHIP>((int)sceneSettings.groupRelations[i][j], 24 + i, 24 + j - 1);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
@@ -62,7 +98,14 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, int startObjective) {
 			}
 		}
 
-		co_await objective->execute(scene);
+		Result result;
+		co_await objective->execute(scene, result);
+
+		if (!result.isDone()) {
+			CLOG(ERROR, "LDYOM") << result;
+			ImGui::InsertNotification({ ImGuiToastType_Error, 5000, result.str().c_str()});
+			co_return;
+		}
 
 		if (o == static_cast<int>(scene->getObjectives().size() - 1)) {
 			using namespace plugin;
@@ -112,8 +155,8 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 		const auto scene = this->nextScene.value();
 		this->nextScene = std::nullopt;
 		auto taskScene = changeScene(startScene, startObjective);
-		this->currentSceneTask = &taskScene;
-		co_await std::move(taskScene);
+		this->currentSceneTask.emplace(std::move(taskScene));
+		co_await ktwait(this->currentSceneTask.value().coro_handle);
 
 		{
 			using namespace plugin;
@@ -147,6 +190,15 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	defaultWindow = savedWindow;
 	defaultWindow.value()->open();
 	Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
+
+	Command<Commands::SET_LA_RIOTS>(0);
+	Command<Commands::SET_PED_DENSITY_MULTIPLIER>(0.f);
+	Command<Commands::SET_CAR_DENSITY_MULTIPLIER>(0.f);
+	CWorld::Players[0].m_PlayerData.m_pWanted->SetWantedLevelNoDrop(0);
+	CWanted::SetMaximumWantedLevel(0);
+
+	CWorld::ClearExcitingStuffFromArea(FindPlayerPed()->GetPosition(), 999999.f, true);
+
 	this->projectRunning = false;
 }
 

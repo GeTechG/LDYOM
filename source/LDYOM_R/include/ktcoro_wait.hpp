@@ -48,7 +48,9 @@ private:
 struct ktwait {
     class promise_type {
     public:
-        void return_void() const {}
+        void return_void() {
+	        this->returned = true;
+        }
 
         auto initial_suspend() const {
             return std::suspend_always{};
@@ -124,6 +126,7 @@ struct ktwait {
 
         std::coroutine_handle<promise_type> waiter;
         ktcoro_tasklist* coro_tasklist;
+        bool returned = false;
     };
 
     ktwait(std::coroutine_handle<promise_type> h) : coro_handle(h) {}

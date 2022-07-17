@@ -29,6 +29,12 @@ void Windows::TrainsWindow::createNewElement() {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewTrain();
 }
 
+void Windows::TrainsWindow::createNewElementFrom(int i) {
+	const auto& train = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains().at(i);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewTrainFrom(*train);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains().back()->spawnEditorTrain();
+}
+
 char* Windows::TrainsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains().at(i)->getName();
 }
@@ -87,6 +93,7 @@ void Windows::TrainsWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+	plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 }
 
 void Windows::TrainsWindow::open() {

@@ -7,9 +7,10 @@
 
 #include "ActorsWindow.h"
 #include "AudioWindow.h"
+#include "CheckpointsWindow.h"
 #include "ObjectsWindow.h"
 #include "ParticlesWindow.h"
-#include "PickupWindow.h"
+#include "PickupsWindow.h"
 #include "PyrotechnicsWindow.h"
 #include "TrainsWindow.h"
 #include "VehiclesWindow.h"
@@ -46,7 +47,7 @@ void Windows::EntitiesWindow::draw()
 		}
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_HEART, local.get("entities.pickups")).c_str(), ImVec2(200.0f, .0f))) {
 			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<PickupWindow>(true);
+			WindowsRenderService::getInstance().toggleWindow<PickupsWindow>(true);
 		}
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_FIRE_ALT, local.get("entities.pyrotechnics")).c_str(), ImVec2(200.0f, .0f))) {
 			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
@@ -59,6 +60,10 @@ void Windows::EntitiesWindow::draw()
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_SPARKLES, Localization::getInstance().get("entities.visual_effects")).c_str(), ImVec2(200.0f, .0f))) {
 			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
 			WindowsRenderService::getInstance().toggleWindow<VisualEffectsWindow>(true);
+		}
+		if (ImGui::Button(fmt::format("{} {}", ICON_FA_MAP_MARKER_ALT, Localization::getInstance().get("entities.checkpoints")).c_str(), ImVec2(200.0f, .0f))) {
+			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
+			WindowsRenderService::getInstance().toggleWindow<CheckpointsWindow>(true);
 		}
 	}
 	ImGui::End();

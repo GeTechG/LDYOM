@@ -1,16 +1,17 @@
 ﻿#pragma once
 #include "ListWindow.h"
-#include "ObjectSelectorPopup.h"
+#include "PopupSpriteBlipSelector.h"
 
 namespace Windows {
-	class PickupWindow : public ListWindow {
+	class CheckpointsWindow : public ListWindow {
 	private:
-		ObjectSelectorPopup objectSelectorPopup_;
+		PopupSpriteBlipSelector popupSpriteBlipSelector_;
 	public:
 		std::string getNameList() override;
 		std::string getNameOption() override;
 		int getListSize() override;
 		void createNewElement() override;
+		void createNewElementFrom(int i) override;
 		char* getElementName(int i) override;
 		void deleteElement(int i) override;
 		void drawOptions() override;

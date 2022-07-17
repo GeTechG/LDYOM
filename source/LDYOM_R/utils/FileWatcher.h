@@ -4,6 +4,7 @@
 #include <functional>
 
 #define UNICODE
+#include <mutex>
 #include <Windows.h>
 
 struct WatcherTask {
@@ -16,6 +17,7 @@ class FileWatcher {
 private:
 	inline static bool work = false;
 	inline static std::map<std::filesystem::path, WatcherTask> watches_;
+	inline static std::mutex tasks_mutex;
 	inline static std::vector<std::function<void()>*> tasks_;
 	static void process();
 public:

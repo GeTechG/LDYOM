@@ -122,9 +122,30 @@ Vehicle::Vehicle(const Vehicle& other): INameable{other},
 	strlcat(numberplate_, other.numberplate_, sizeof numberplate_);
 }
 
-Vehicle& Vehicle::operator=(Vehicle other) {
-	using std::swap;
-	swap(*this, other);
+Vehicle& Vehicle::operator=(const Vehicle& other) {
+	if (this == &other)
+		return *this;
+	ObjectiveDependent::operator =(other);
+	INameable::operator =(other);
+	IPositionable::operator =(other);
+	IUuidable::operator =(other);
+	uuid_ = other.uuid_;
+	headingAngle_ = other.headingAngle_;
+	modelId_ = other.modelId_;
+	shouldNotDie_ = other.shouldNotDie_;
+	health_ = other.health_;
+	bulletproof_ = other.bulletproof_;
+	fireproof_ = other.fireproof_;
+	explosionproof_ = other.explosionproof_;
+	collisionproof_ = other.collisionproof_;
+	meleeproof_ = other.meleeproof_;
+	tiresVulnerability_ = other.tiresVulnerability_;
+	extendedColor_ = other.extendedColor_;
+	locked_ = other.locked_;
+	colors_ = other.colors_;
+	componentTypeA_ = other.componentTypeA_;
+	componentTypeB_ = other.componentTypeB_;
+	numberplateCity_ = other.numberplateCity_;
 	return *this;
 }
 

@@ -29,35 +29,124 @@ void duplicate(Localization& local) {
 			angle = DEG(playerAngleRotation);
 		};
 
-		if (ImGui::BeginMenu(local.get("entities.actors").c_str())) {
-			for (const auto &actor : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors()) {
-				ImGui::PushID(reinterpret_cast<int>(actor.get()));
-				if (ImGui::MenuItem(actor->getName())) {
-					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewActorFrom(*actor);
-					auto &newActor = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().back();
-					playerPosition(*newActor);
-					playerAngle(newActor->getHeadingAngle());
-					newActor->spawnEditorPed();
+		auto duplicateEntities = [&]<typename T>(const char* nameCategory, std::vector<std::unique_ptr<T>>& entities, auto newEntityCall, auto setCustoms) {
+			if (ImGui::BeginMenu(local.get(nameCategory).c_str())) {
+				for (const auto& entity : entities) {
+					ImGui::PushID(reinterpret_cast<int>(entity.get()));
+					if (ImGui::MenuItem(entity->getName())) {
+						newEntityCall(ProjectsService::getInstance().getCurrentProject().getCurrentScene(), entity);
+						auto& newEntity = entities.back();
+						playerPosition(*newEntity);
+						setCustoms(newEntity);
+						ImGui::PopID();
+						break;
+					}
+					ImGui::PopID();
 				}
-				ImGui::PopID();
+				ImGui::EndMenu();
 			}
-			ImGui::EndMenu();
-		}
+		};
 
-		if (ImGui::BeginMenu(local.get("entities.vehicles").c_str())) {
-			for (const auto& vehicle : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles()) {
-				ImGui::PushID(reinterpret_cast<int>(vehicle.get()));
-				if (ImGui::MenuItem(vehicle->getName())) {
-					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewVehicleFrom(*vehicle);
-					const auto &newVehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().back();
-					playerPosition(*newVehicle);
-					playerAngle(newVehicle->getHeadingAngle());
-					newVehicle->spawnEditorVehicle(false);
-				}
-				ImGui::PopID();
-			}
-			ImGui::EndMenu();
-		}
+		duplicateEntities(
+			"entities.actors", 
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors(),
+			[](Scene* scene, const std::unique_ptr<Actor>& entity) {
+				scene->createNewActorFrom(*entity);
+			},
+			[&](const std::unique_ptr<Actor>& actor) {
+				playerAngle(actor->getHeadingAngle());
+				actor->spawnEditorPed();
+		});
+
+		duplicateEntities(
+			"entities.vehicles",
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles(),
+			[](Scene* scene, const std::unique_ptr<Vehicle>& entity) {scene->createNewVehicleFrom(*entity);},
+			[&](const std::unique_ptr<Vehicle>& entity) {
+				playerAngle(entity->getHeadingAngle());
+				entity->spawnEditorVehicle();
+		});
+
+		duplicateEntities(
+			"entities.objects",
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects(),
+			[](Scene* scene, const std::unique_ptr<Object>& entity) {
+				scene->createNewObjectFrom(*entity);
+			},
+			[&](const std::unique_ptr<Object>& entity) {
+				entity->spawnEditorObject();
+		});
+
+		duplicateEntities(
+			"entities.particles",
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getParticles(),
+			[](Scene* scene, const std::unique_ptr<Particle>& entity) {
+				scene->createNewParticleFrom(*entity);
+			},
+			[&](const std::unique_ptr<Particle>& entity) {
+				entity->spawnEditorParticle();
+			});
+
+		duplicateEntities(
+			"entities.trains",
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains(),
+			[](Scene* scene, const std::unique_ptr<Train>& entity) {
+				scene->createNewTrainFrom(*entity);
+			},
+			[&](const std::unique_ptr<Train>& entity) {
+				entity->spawnEditorTrain();
+			});
+
+		duplicateEntities(
+			"entities.pickups",
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups(),
+			[](Scene* scene, const std::unique_ptr<Pickup>& entity) {
+				scene->createNewPickupFrom(*entity);
+			},
+			[&](const std::unique_ptr<Pickup>& entity) {
+				entity->spawnEditorPickup();
+			});
+
+		duplicateEntities(
+			"entities.pyrotechnics",
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics(),
+			[](Scene* scene, const std::unique_ptr<Pyrotechnics>& entity) {
+				scene->createNewPyrotechnicsFrom(*entity);
+			},
+			[&](const std::unique_ptr<Pyrotechnics>& entity) {
+				entity->spawnEditorPyrotechnics();
+			});
+
+		duplicateEntities(
+			"entities.audio",
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio(),
+			[](Scene* scene, const std::unique_ptr<Audio>& entity) {
+				scene->createNewAudioFrom(*entity);
+			},
+			[&](const std::unique_ptr<Audio>& entity) {
+				entity->spawnEditorAudio();
+			});
+
+		duplicateEntities(
+			"entities.visual_effects",
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects(),
+			[](Scene* scene, const std::unique_ptr<VisualEffect>& entity) {
+				scene->createNewVisualEffectFrom(*entity);
+			},
+			[&](const std::unique_ptr<VisualEffect>& entity) {
+				entity->spawnEditorVisualEffect();
+			});
+
+		duplicateEntities(
+			"entities.checkpoints",
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getCheckpoints(),
+			[](Scene* scene, const std::unique_ptr<Checkpoint>& entity) {
+				scene->createNewCheckpointFrom(*entity);
+			},
+			[&](const std::unique_ptr<Checkpoint>& entity) {
+				playerAngle(entity->getAngle());
+				entity->spawnEditorCheckpoint();
+			});
 
 		ImGui::EndMenu();
 	}

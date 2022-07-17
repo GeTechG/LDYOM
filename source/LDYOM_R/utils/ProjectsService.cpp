@@ -10,6 +10,7 @@
 #include "WindowsRenderService.h"
 #include "../Windows/ObjectivesWindow.h"
 #include "../Data/CheckpointObjective.h"
+#include "../Data/SceneSettings.h"
 
 #include "boost/archive/binary_oarchive.hpp"
 #include "boost/archive/binary_iarchive.hpp"
@@ -20,11 +21,12 @@
 #include "boost/serialization/split_free.hpp"
 #include "boost/uuid/uuid_serialize.hpp"
 #include "../easylogging/easylogging++.h"
+#include "zip.h"
+#include "../lz4/lz4hc.h"
 
 
 const std::filesystem::path PROJECTS_PATH = L"LDYOM\\Projects\\";
-
-std::mutex ProjectsService::mutex_;
+const std::filesystem::path BACKUPS_PATH = L"LDYOM\\Backups\\";
 
 void ProjectsService::update() {
 	this->projectsInfos_.clear();
@@ -60,18 +62,54 @@ void ProjectsService::createNewProject() {
 	this->currentDirectory_ = std::nullopt;
 }
 
+bool zipWalk(zip_t* zip, const std::filesystem::path& path) {
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+		if (entry.is_regular_file()) {
+
+			zip_entry_open(zip, entry.path().lexically_relative(path).string().c_str());
+
+			auto filePath = entry.path().string();
+			if (const int resultWrite = zip_entry_fwrite(zip, filePath.c_str()); resultWrite < 0) {
+				CLOG(ERROR, "LDYOM") << "Error archive directory - " << path.string() << ", error: " << resultWrite;
+				return false;
+			}
+
+			zip_entry_close(zip);
+		}
+	}
+	return true;
+}
+
 void ProjectsService::saveCurrentProject() {
-	const auto projectDirectory = PROJECTS_PATH / std::filesystem::path(utils::stringToPathString(this->getCurrentProject().getProjectInfo()->name));
+	auto projectDirectoryName = std::filesystem::path(utils::stringToPathString(this->getCurrentProject().getProjectInfo()->name));
+	const auto projectDirectory = PROJECTS_PATH / projectDirectoryName;
 	auto scenesDirectory = projectDirectory / "scenes";
 
 	if (this->currentDirectory_.has_value() && exists(this->currentDirectory_.value())) {
+		auto checkError = [](const std::error_code& ec) {
+			if (ec.value() != 0) {
+				CLOG(ERROR, "LDYOM") << "invalid rename project, error: " << ec.message();
+				ImGui::InsertNotification({ ImGuiToastType_Error, 3000, "Error, see log" });
+				return true;
+			}
+			return false;
+		};
+
 		std::error_code ec;
-		std::filesystem::rename(this->currentDirectory_.value(), projectDirectory, ec);
-		if (ec.value() != 0) {
-			CLOG(ERROR, "LDYOM") << "invalid rename project, error: " << ec.message();
-			ImGui::InsertNotification({ ImGuiToastType_Error, 3000, "Error, see log" });
-			return;
+
+		if (!exists(BACKUPS_PATH)) {
+			create_directory(BACKUPS_PATH, ec);
+			if (checkError(ec)) return;
 		}
+
+		auto backupPath = (BACKUPS_PATH / fmt::format("{}_{}.zip", projectDirectoryName.string(), time(nullptr))).string();
+		auto zip = zip_open(backupPath.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
+		if (!zipWalk(zip, this->currentDirectory_.value()))
+			return;
+		zip_close(zip);
+
+		std::filesystem::rename(this->currentDirectory_.value(), projectDirectory, ec);
+		if (checkError(ec)) return;
 	}
 
 	if (!exists(projectDirectory)) {
@@ -104,9 +142,23 @@ void ProjectsService::saveCurrentProject() {
 
 	//save scenes
 	for (const auto& pair: this->getCurrentProject().getScenes()) {
-		std::ofstream file(scenesDirectory / fmt::format("{}.dat", pair.first), std::ios_base::binary);
-		boost::archive::binary_oarchive oa(file);
+		std::ostringstream uncompressedStream;
+		boost::archive::binary_oarchive oa(uncompressedStream);
 		oa << pair.second;
+
+		auto ucString = uncompressedStream.str();
+
+		std::vector<char> compressedVector;
+		compressedVector.resize(LZ4_compressBound(ucString.size()), '\0');
+		int result = LZ4_compress_HC(ucString.c_str(), compressedVector.data(), static_cast<int>(ucString.size()), static_cast<int>(compressedVector.size()), LZ4HC_CLEVEL_MAX);
+		if (result == 0) {
+			CLOG(ERROR, "LDYOM") << "Failed compress";
+			return;
+		}
+
+		std::ofstream file(scenesDirectory / fmt::format("{}.dat", pair.first), std::ios_base::binary);
+		file << static_cast<unsigned>(ucString.size());
+		std::ranges::copy(compressedVector.begin(), compressedVector.begin() + result, std::ostreambuf_iterator(file));
 		file.close();
 	}
 
@@ -137,13 +189,33 @@ void ProjectsService::loadProject(int projectIdx) {
 	//load scenes
 	for (auto &path : std::filesystem::directory_iterator(scenesDirectory)) {
 		if (path.is_regular_file() && path.path().extension() == ".dat") {
-			std::ifstream file(path.path(), std::ios_base::binary);
-			boost::archive::binary_iarchive ia(file);
+			std::string compressed;
+			unsigned uncompressedSize;
+			{
+				std::ifstream file(path.path(), std::ios_base::binary);
+				file >> uncompressedSize;
+				std::ostringstream ss;
+				ss << file.rdbuf();
+				compressed = ss.str();
+				file.close();
+			}
+
+			std::vector<char> uncompressedVector;
+			uncompressedVector.resize(uncompressedSize, '\0');
+			int result = LZ4_decompress_safe(compressed.c_str(), uncompressedVector.data(), static_cast<int>(compressed.size()), static_cast<int>(uncompressedSize));
+			if (result == 0) {
+				CLOG(ERROR, "LDYOM") << "Failed compress";
+				return;
+			}
+			std::istringstream ss(std::string(uncompressedVector.begin(), uncompressedVector.end()));
+
+
+			boost::archive::binary_iarchive ia(ss);
 			std::unique_ptr<Scene> scene;
 			ia >> scene;
 
 			getCurrentProject().getScenes().emplace(std::stoi(path.path().stem().wstring()), std::move(scene));
-			file.close();
+			
 		}
 	}
 
@@ -205,19 +277,37 @@ namespace boost {
 		template<class Archive>
 		void serialize(Archive& ar, Scene& p, const unsigned int version)
 		{
-			ar& make_array(p.getName(), NAME_SIZE);
-			ar& p.getActors();
-			ar& p.getVehicles();
-			ar& p.getObjects();
-			ar& p.getTrains();
-			ar& p.getParticles();
-			ar& p.getPickups();
-			ar& p.getPyrotechnics();
-			ar& p.getAudio();
+			ar & make_array(p.getName(), NAME_SIZE);
+			ar & p.getActors();
+			ar & p.getVehicles();
+			ar & p.getObjects();
+			ar & p.getTrains();
+			ar & p.getParticles();
+			ar & p.getPickups();
+			ar & p.getPyrotechnics();
+			ar & p.getAudio();
+			ar & p.getVisualEffects();
+			ar & p.getCheckpoints();
+
+			ar & p.getSceneSettings();
+			ar & p.isToggleSceneSettings();
 
 			ar.template register_type<CheckpointObjective>();
 
 			ar& p.getObjectives();
+		}
+
+		template<class Archive>
+		void serialize(Archive& ar, SceneSettings& p, const unsigned int version)
+		{
+			ar & make_array(p.groupRelations.data(), p.groupRelations.size());
+			ar & make_array(p.time.data(), p.time.size());
+			ar & p.trafficPed;
+			ar & p.trafficCar;
+			ar & p.wantedMin;
+			ar & p.wantedMax;
+			ar & p.weather;
+			ar & p.riot;
 		}
 
 		template<class Archive>

@@ -49,6 +49,17 @@ type = "Type"
 bone = "Bone"
 color = "Color"
 size = "Size"
+settings = "Settings"
+hours = "Hours"
+minutes = "Minutes"
+ped_traffic = "Ped traffic"
+car_traffic = "Car traffic"
+min_wanted = "Min wanted"
+max_wanted = "Max wanted"
+weather = "Weather"
+riot_mode = "Riot Mode"
+wanted = "Wanted"
+game_time = "Game time"
 
 [objective]
 title = "Objective"
@@ -156,6 +167,14 @@ types = ["Coronas","Projections"]
 effect_type = "Effect type"
 flare = "Flare"
 
+[checkpoint]
+types = ["Sphere", "Race"]
+type_sphere = "Type sphere"
+color = "Color"
+pulse_period = "Pulse period"
+pulse_fraction = "Pulse fraction"
+rotate_rate = "Rotate rate"
+
 [info_overlay]
 camera_view = "Move Camera - RMB, Zoom - Shift + MWheel"
 move_element = "Move current element - Arrows, QE"
@@ -190,6 +209,8 @@ pyrotechnics = "Pyrotechnics"
 audio = "Audio"
 visual_effects = "Visual Effects"
 visual_effect = "Visual Effect"
+checkpoints = "Checkpoints"
+checkpoint = "Checkpoint"
 
 [skin_selector]
 title = "Skin Selector"
@@ -205,6 +226,7 @@ emergency = "Emergency"
 [list_window]
 create_new = "Create a new"
 delete_selected = "Delete selected"
+duplicate_selected = "Duplicate selected"
 
 [projects]
 title = "Projects"
@@ -230,6 +252,13 @@ new_scene = "New scene"
 load_scene = "Load scene"
 delete_scene = "Delete scene"
 scene_name = "Scene name"
+
+[scene_settings]
+title = "Scene Settings"
+ped_car_traffic = "Ped/Car Traffic"
+apply = "Apply scene settings"
+group_relations = "Group relations"
+relationship_types = ["Respect", "Like", "Ignore", "Dislike","Hate"]
 
 [warning_popup]
 title = "Warning"

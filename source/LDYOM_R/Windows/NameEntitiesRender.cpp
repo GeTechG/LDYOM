@@ -26,18 +26,30 @@ void drawEntityName(const float* position, const float zOffset, const char* name
 
 void NameEntitiesRender::draw() {
 
-	for (const auto & actor : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors()) {
-		const auto position = actor->getPosition();
-		drawEntityName(position, 1.0f, actor->getName());
-	}
-	for (const auto& vehicle : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles()) {
-		const auto position = vehicle->getPosition();
-		drawEntityName(position, 2.0f, vehicle->getName());
-	}
-	for (const auto& objective : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives()) {
+	auto entitiesNamesRender = []<typename T>(std::vector<std::unique_ptr<T>>& entities, float zOffset = 1.f) {
+		for (const auto& entity : entities) {
+			const auto position = entity->getPosition();
+			drawEntityName(position, zOffset, entity->getName());
+		}
+	};
+
+	const auto currentScene = ProjectsService::getInstance().getCurrentProject().getCurrentScene();
+
+	for (const auto& objective : currentScene->getObjectives()) {
 		if (auto* positionable = dynamic_cast<IPositionable*>(objective.get())) {
 			const auto position = positionable->getPosition();
-			drawEntityName(position, 0.0f, objective->getName());
+			drawEntityName(position, 1.f, objective->getName());
 		}
 	}
+
+	entitiesNamesRender(currentScene->getActors());
+	entitiesNamesRender(currentScene->getVehicles(), 2.f);
+	entitiesNamesRender(currentScene->getObjects());
+	entitiesNamesRender(currentScene->getParticles());
+	entitiesNamesRender(currentScene->getTrains(), 2.f);
+	entitiesNamesRender(currentScene->getPickups());
+	entitiesNamesRender(currentScene->getPyrotechnics());
+	entitiesNamesRender(currentScene->getAudio());
+	entitiesNamesRender(currentScene->getVisualEffects());
+	entitiesNamesRender(currentScene->getCheckpoints());
 }

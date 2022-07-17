@@ -24,6 +24,7 @@ namespace Windows {
 		virtual int getListSize() = 0;
 		virtual void onButtonCreateNewElement();
 		virtual void createNewElement() = 0;
+		virtual void createNewElementFrom(int i) = 0;
 		virtual char* getElementName(int i) = 0;
 		virtual void deleteElement(int i) = 0;
 		virtual void drawOptions() = 0;

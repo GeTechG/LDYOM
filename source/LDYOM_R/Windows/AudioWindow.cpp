@@ -36,6 +36,12 @@ void Windows::AudioWindow::createNewElement() {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewAudio();
 }
 
+void Windows::AudioWindow::createNewElementFrom(int i) {
+	const auto& audio = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().at(i);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewAudioFrom(*audio);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().back()->spawnEditorAudio();
+}
+
 char* Windows::AudioWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().at(i)->getName();
 }
@@ -213,6 +219,7 @@ void Windows::AudioWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+	plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 }
 
 void Windows::AudioWindow::open() {

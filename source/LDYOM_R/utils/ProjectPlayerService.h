@@ -10,7 +10,7 @@ private:
 	std::optional<Scene*> currentScene;
 	std::optional<Scene*> nextScene;
 
-	std::optional<ktwait*> currentSceneTask;
+	std::optional<ktwait> currentSceneTask;
 
 	ktwait changeScene(Scene* scene, int startObjective = 0);
 

@@ -1,11 +1,8 @@
 ﻿#pragma once
-#include <mutex>
 #include "../Data/ProjectData.h"
 
 class ProjectsService {
 private:
-	static std::mutex mutex_;
-
 	std::vector<std::unique_ptr<ProjectInfo>> projectsInfos_;
 	ProjectData currentProject_;
 	boost::signals2::signal<void()> onUpdate_;
@@ -18,7 +15,6 @@ private:
 	ProjectsService& operator=(ProjectsService&) = delete;
 public:
 	static ProjectsService& getInstance() {
-		std::lock_guard lock(mutex_);
 		static ProjectsService instance;
 		return instance;
 	}

@@ -64,8 +64,8 @@ Audio::Audio(const Audio& other): ObjectiveDependent{other},
                                   audio3D_{other.audio3D_},
                                   attachType3d_{other.attachType3d_},
 								  attachUuid_{ other.attachUuid_ },
-								  volume_{other.volume_},
-                                  isLooped{other.isLooped} {
+                                  isLooped{other.isLooped},
+                                  volume_{other.volume_} {
 	strlcat(name_.data(), "C", sizeof name_);
 }
 

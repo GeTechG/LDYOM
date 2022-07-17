@@ -13,6 +13,7 @@ namespace Windows {
 		std::string getNameOption() override;
 		int getListSize() override;
 		void createNewElement() override;
+		void createNewElementFrom(int i) override;
 		char* getElementName(int i) override;
 		void deleteElement(int i) override;
 		void drawOptions() override;

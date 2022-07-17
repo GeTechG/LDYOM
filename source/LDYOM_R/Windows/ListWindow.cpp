@@ -20,7 +20,7 @@ void Windows::ListWindow::drawList() {
 
 	ImGui::SetNextWindowPos(ImVec2(windowSize.x, 0.0f), ImGuiCond_Appearing, ImVec2(1.0f, 0.0f));
 	if (ImGui::Begin(this->getNameList().c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-		const auto listSize = ImVec2(windowSize.x / 4.0f, windowSize.y / 2.0f);
+		const auto listSize = ImVec2(windowSize.x / 3.8f, windowSize.y / 2.0f);
 
 		if (ImGui::BeginChild("##ListElements", listSize, true)) {
 			for (int i = 0; i < this->getListSize(); ++i) {
@@ -53,12 +53,18 @@ void Windows::ListWindow::drawList() {
 			ImGui::EndChild();
 		}
 
-		if (ImGui::Button(local.get("list_window.create_new").c_str(), ImVec2(listSize.x / 2.0f - 3.0f, 0))) {
+		const float buttonWidth = listSize.x / 3.0f - 3.0f;
+
+		if (ImGui::Button(local.get("list_window.create_new").c_str(), ImVec2(buttonWidth, 0))) {
 			onButtonCreateNewElement();
 		}
 		ImGui::SameLine();
 		ImGui::BeginDisabled(this->currentElement == -1);
-		if (ImGui::Button(local.get("list_window.delete_selected").c_str(), ImVec2(listSize.x / 2.0f - 3.0f, 0))) {
+		if (ImGui::Button(local.get("list_window.duplicate_selected").c_str(), ImVec2(buttonWidth, 0))) {
+			this->createNewElementFrom(this->currentElement);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(local.get("list_window.delete_selected").c_str(), ImVec2(buttonWidth, 0))) {
 			this->deleteElement(this->currentElement);
 		}
 		ImGui::EndDisabled();

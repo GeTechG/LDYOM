@@ -76,7 +76,7 @@ public:
 
 	Vehicle(const Vehicle& other);
 
-	Vehicle& operator=(Vehicle other);
+	Vehicle& operator=(const Vehicle& other);
 
 	~Vehicle() override;
 

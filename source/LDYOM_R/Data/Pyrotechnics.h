@@ -42,7 +42,7 @@ private:
 	int propagationFire_ = 0;
 
 
-	std::optional<int> spawnFire();
+	std::optional<int> spawnFire(bool editor = false);
 public:
 	Pyrotechnics() = default;
 	Pyrotechnics(const char* name, const CVector& pos);

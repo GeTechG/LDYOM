@@ -29,6 +29,12 @@ void Windows::PyrotechnicsWindow::createNewElement() {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewPyrotechnics();
 }
 
+void Windows::PyrotechnicsWindow::createNewElementFrom(int i) {
+	const auto& pyrotechnics = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().at(i);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewPyrotechnicsFrom(*pyrotechnics);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().back()->spawnEditorPyrotechnics();
+}
+
 char* Windows::PyrotechnicsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().at(i)->getName();
 }
@@ -88,6 +94,7 @@ void Windows::PyrotechnicsWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+	plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 }
 
 void Windows::PyrotechnicsWindow::open() {

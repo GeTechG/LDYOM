@@ -16,10 +16,10 @@
 
 using namespace plugin;
 
-std::optional<int> Pyrotechnics::spawnFire() {
+std::optional<int> Pyrotechnics::spawnFire(bool editor) {
 
 	int scriptFire;
-	Command<Commands::START_SCRIPT_FIRE>(this->pos_[0], this->pos_[1], this->pos_[2], this->propagationFire_, this->sizeFire_, &scriptFire);
+	Command<Commands::START_SCRIPT_FIRE>(this->pos_[0], this->pos_[1], this->pos_[2], editor ? 0 : this->propagationFire_, this->sizeFire_, &scriptFire);
 
 	return scriptFire;
 }
@@ -36,7 +36,7 @@ Pyrotechnics::Pyrotechnics(const Pyrotechnics& other): ObjectiveDependent{other}
                                                        INameable{other},
                                                        IPositionable{other},
                                                        IUuidable{other},
-                                                       uuid_{other.uuid_},
+                                                       uuid_{ boost::uuids::random_generator()() },
                                                        name_{other.name_},
                                                        pos_{other.pos_},
                                                        type_{other.type_},
@@ -145,7 +145,7 @@ void Pyrotechnics::spawnEditorPyrotechnics() {
 		this->deleteEditorPyrotechnics();
 
 	if (this->type_ == 0) {
-		this->editorFire_ = spawnFire();
+		this->editorFire_ = spawnFire(true);
 		this->getEditorFire().value()->m_nNumGenerationsAllowed = 0;
 	} else {
 		CStreaming::RequestModel(1654, 0);

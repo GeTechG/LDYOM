@@ -25,6 +25,13 @@ int Windows::ObjectivesWindow::getListSize() {
 
 void Windows::ObjectivesWindow::createNewElement() {}
 
+void Windows::ObjectivesWindow::createNewElementFrom(int i) {
+	const auto& objective = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().at(i);
+	if (auto* checkpointObjective = dynamic_cast<CheckpointObjective*>(objective.get())) {
+		ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(*checkpointObjective);
+	}
+}
+
 char* Windows::ObjectivesWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().at(i)->getName();
 }
@@ -53,9 +60,7 @@ void Windows::ObjectivesWindow::drawListWindow() {
 		if (ImGui::BeginMenu(Localization::getInstance().get("objective_categories.world").c_str())) {
 
 			if (ImGui::MenuItem(Localization::getInstance().get("objective.checkpoint").c_str())) {
-				const auto & position = FindPlayerPed()->GetPosition();
-				float pos[3] = {position.x, position.y, CWorld::FindGroundZFor3DCoord(position.x, position.y, position.z, nullptr, nullptr)};
-				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<CheckpointObjective>(pos);
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<CheckpointObjective>(nullptr);
 				this->currentElement = this->getListSize() - 1;
 			}
 

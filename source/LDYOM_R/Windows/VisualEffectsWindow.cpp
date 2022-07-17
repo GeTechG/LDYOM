@@ -29,6 +29,12 @@ void Windows::VisualEffectsWindow::createNewElement() {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewVisualEffect();
 }
 
+void Windows::VisualEffectsWindow::createNewElementFrom(int i) {
+	const auto& checkpoint = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().at(i);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewVisualEffectFrom(*checkpoint);
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().back()->spawnEditorVisualEffect();
+}
+
 char* Windows::VisualEffectsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().at(i)->getName();
 }
@@ -86,6 +92,7 @@ void Windows::VisualEffectsWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+	plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 }
 
 void Windows::VisualEffectsWindow::open() {

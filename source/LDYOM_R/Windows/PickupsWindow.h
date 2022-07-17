@@ -1,8 +1,11 @@
 ﻿#pragma once
 #include "ListWindow.h"
+#include "ObjectSelectorPopup.h"
 
 namespace Windows {
-	class VisualEffectsWindow : public ListWindow {
+	class PickupsWindow : public ListWindow {
+	private:
+		ObjectSelectorPopup objectSelectorPopup_;
 	public:
 		std::string getNameList() override;
 		std::string getNameOption() override;

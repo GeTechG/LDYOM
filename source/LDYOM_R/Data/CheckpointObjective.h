@@ -8,7 +8,7 @@
 
 #include "../Windows/PopupSpriteBlipSelector.h"
 
-class CheckpointObjective final : virtual public WorldObjective, public IRenderable, public IPositionable {
+class CheckpointObjective final : virtual public WorldObjective {
 private:
 
 	friend class boost::serialization::access;
@@ -16,93 +16,50 @@ private:
 	void serialize(Archive& ar, const unsigned int version)
 	{
 		ar & boost::serialization::base_object<WorldObjective>(*this);
-		ar & this->pos_;
+		ar & this->checkpointUuid_;
 		ar & this->text_;
 		ar & this->onWhatArrive_;
-		ar & this->radius_;
 		ar & this->textTime_;
-		ar & this->blipColor_;
-		ar & this->indexSphere_;
 		ar & this->comeBackVehicle_;
 		ar & this->textComeBackVehicle_;
 		ar & this->colorBlipComeBackVehicle_;
-		ar & this->sphereColor_;
-		ar & boost::serialization::make_array(this->sphereColor_.data(), this->sphereColor_.size());
-		ar & this->pulsePeriod;
-		ar & this->pulseFraction;
-		ar & this->rotateRate;
 	}
 
-	float pos_[3]{};
-	char  text_[TEXT_SIZE]{};
+	boost::uuids::uuid checkpointUuid_;
+	std::array<char, TEXT_SIZE>  text_;
 	int   onWhatArrive_;
-	float radius_;
 	float textTime_;
-	int   blipColor_;
-	int   indexSphere_;
 	boost::uuids::uuid  comeBackVehicle_;
-	char  textComeBackVehicle_[TEXT_SIZE]{};
+	std::array<char, TEXT_SIZE>  textComeBackVehicle_;
 	int   colorBlipComeBackVehicle_;
-	std::array<float, 4> sphereColor_;
-	int sphereType;
-	int pulsePeriod;
-	float pulseFraction;
-	int rotateRate;
-	int blipType_;
-	int blipSprite_;
-	std::optional<int> editorBlip;
-	std::optional<int> projectBlip;
-	std::optional<int> projectComeBackBlip;
+	std::optional<int> projectComeBackBlip_;
 
-	char gameText[TEXT_SIZE] = "";
-	bool rerender = false;
+	std::array<char, TEXT_SIZE> gameText_ = {""};
 	PopupSpriteBlipSelector popupSpriteBlipSelector_;
 public:
-	CheckpointObjective();
-	explicit CheckpointObjective(const float* pos);
+	CheckpointObjective() = default;
+	explicit CheckpointObjective(void* _new);
 
 	CheckpointObjective(const CheckpointObjective& other);
-
-	CheckpointObjective& operator=(CheckpointObjective other);
-
+	CheckpointObjective& operator=(const CheckpointObjective& other);
 	~CheckpointObjective() override;
 
 	int getTypeCategory() override {
 		return 0;
 	}
 
-	void render() override;
-	ktwait execute(Scene* scene) override;
+	ktwait execute(Scene* scene, Result& result) override;
 	void draw(Localization& local) override;
 
-	char* getText();
-	char* getTextComeBackVehicle();
-	float& getRadius();
-	float& getTextTime();
-	int& getColorBlip();
-	int& getIndexSphere();
+	boost::uuids::uuid& getCheckpointUuid();
+	std::array<char, TEXT_SIZE>& getText();
 	int& getOnWhatArrive();
+	float& getTextTime();
 	boost::uuids::uuid& getComeBackVehicle();
+	std::array<char, TEXT_SIZE>& getTextComeBackVehicle();
 	int& getColorBlipComeBackVehicle();
-	std::array<float, 4>& getSphereColor();
-	int& getSphereType();
-	int& getPulsePeriod();
-	float& getPulseFraction();
-	int& getRotateRate();
-	int& getBlipType();
-	int& getSpriteBlip();
-	std::optional<int>& getEditorBlip();
-	std::optional<int>& getProjectBlip();
 	std::optional<int>& getProjectComeBackBlip();
+	std::array<char, TEXT_SIZE>& getGameText();
 
-	void createEditorBlip();
-	void createProjectBlip();
-
-	void removeEditorBlip();
-	void removeProjectBlip();
 	void removeProjectComeBackBlip();
-
-	bool& isRerender();
-
-	float* getPosition() override;
 };
