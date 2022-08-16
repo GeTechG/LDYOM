@@ -90,8 +90,8 @@ void Windows::WindowsRenderService::mouseProcess() const {
 			plugin::patch::SetRaw(0x541DD7, const_cast<char*>("\xE8\xE4\xD5\xFF\xFF"), 5);
 		}
 
-		CPad::NewMouseControllerState.X = 0;
-		CPad::NewMouseControllerState.Y = 0;
+		CPad::NewMouseControllerState.x = 0;
+		CPad::NewMouseControllerState.y = 0;
 		CPad::ClearMouseHistory();
 		CPad::UpdatePads();
 		mouseState = mouseShown_ && renderWindows_;
@@ -246,8 +246,8 @@ void Windows::WindowsRenderService::removeRender(const std::string name) {
 }
 
 void Windows::WindowsRenderService::closeAllWindows() const {
-	for (const auto &window : windows_)
-	{
-		window->close();
+	for (const auto &window : windows_) {
+		if (window->isShow()) 
+			window->close();
 	}
 }

@@ -42,8 +42,10 @@ public:
 
 	virtual int getCategory() = 0;
 	virtual int getTypeCategory() = 0;
+	virtual void open() {}
+	virtual void close() {}
 	virtual void draw(Localization& local) = 0;
-	virtual ktwait execute(Scene* scene, Result& result) = 0;
+	virtual ktwait execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) = 0;
 };
 
 inline void setObjectiveError(Result& result, BaseObjective& objective, unsigned code, std::string message) {

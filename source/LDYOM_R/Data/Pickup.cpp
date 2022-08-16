@@ -142,6 +142,14 @@ int& Pickup::getAmmo() {
 	return ammo_;
 }
 
+std::optional<int>& Pickup::getProjectPickupIndex() {
+	return this->projectPickup_;
+}
+
+std::optional<int>& Pickup::getEditorPickupIndex() {
+	return this->editorPickup_;
+}
+
 void Pickup::updateLocation() {
 	if (const auto editorPickup = this->getEditorPickup(); editorPickup.has_value()) {
 		editorPickup.value()->SetPosn(this->pos_[0], this->pos_[1], this->pos_[2]);

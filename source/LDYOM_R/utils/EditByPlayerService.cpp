@@ -1,7 +1,10 @@
 ﻿// ReSharper disable CppMemberFunctionMayBeStatic
 #include "EditByPlayerService.h"
 
+#include <CHud.h>
+#include <CRadar.h>
 #include <CStreaming.h>
+#include <CTheScripts.h>
 #include <CWorld.h>
 #include <extensions/ScriptCommands.h>
 
@@ -14,6 +17,8 @@
 #include "utils.h"
 #include "CCamera.h"
 #include "HotKeyService.h"
+#include "MathUtils.h"
+#include "../Data/CutsceneObjective.h"
 #include "../Data/Vehicle.h"
 #include "extensions/KeyCheck.h"
 #include "../easylogging/easylogging++.h"
@@ -154,14 +159,14 @@ void EditByPlayerService::editByPlayerVehicle(Vehicle& vehicle) {
 
 CVector rotate_vector_by_quaternion(const CVector& v, const CQuaternion& q) {
 	// Extract the vector part of the quaternion
-	CVector u(q.imag.x, q.imag.y, q.imag.z);
+	const CVector u(q.imag.x, q.imag.y, q.imag.z);
 
 	// Extract the scalar part of the quaternion
-	float s = q.real;
+	const float s = q.real;
 
 	// Do the math
-	float dotted1 = u.x * v.x + u.y * v.y + u.z * v.z;
-	float dotted2 = u.x * u.x + u.y * u.y + u.z * u.z;
+	const float dotted1 = u.x * v.x + u.y * v.y + u.z * v.z;
+	const float dotted2 = u.x * u.x + u.y * u.y + u.z * u.z;
 	CVector crossed;
 	crossed.Cross(u, v);
 	return 2.f * dotted1 * u
@@ -224,8 +229,8 @@ ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMa
 
 		CQuaternion normalQuat;
 		if (surfaceRotate) {
-			CVector up = CVector(0.f, 1.f, 0.f);
-			normalQuat = utils::lookRotation(colPoint.m_vecNormal, up);
+			CVector up = CVector(0.f, 0.f, 1.f);
+			normalQuat = MathUtils::lookRotationQuat(colPoint.m_vecNormal, up);
 			newMatrix.SetRotate(normalQuat);
 		} else {
 			CQuaternion q = {{quat.imag.z, quat.imag.x, -quat.imag.y}, quat.real};
@@ -269,22 +274,22 @@ ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMa
 		CVector rightCamVec;
 		rightCamVec.Cross(TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront, TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp);
 
-		if (KeyPressed(VK_UP)) {
+		if (KeyPressed(VK_UP) || KeyPressed('W')) {
 			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 		}
-		if (KeyPressed(VK_DOWN)) {
+		if (KeyPressed(VK_DOWN) || KeyPressed('S')) {
 			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * -1;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 
-		if (KeyPressed(VK_LEFT)) {
+		if (KeyPressed(VK_LEFT) || KeyPressed('A')) {
 			posCam += rightCamVec * -1;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
-		if (KeyPressed(VK_RIGHT)) {
+		if (KeyPressed(VK_RIGHT) || KeyPressed('D')) {
 			posCam += rightCamVec;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
@@ -326,4 +331,132 @@ ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMa
 
 void EditByPlayerService::positionalObject(CEntity* entity, std::function<void(CMatrix&)> setMatrix, float* posO, CQuaternion& quat, bool fastCreate) {
 	Tasker::getInstance().addTask("createFastObject", positionalObjectTask, entity, setMatrix, posO, quat, fastCreate);
+}
+
+
+
+ktwait editByPlayerCameraTask(float* pos, CQuaternion* rotation, bool widescreen, std::function<void()> callback) {
+	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
+
+	static float multiplier = 1.f;
+
+	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
+		auto& local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
+			ImGui::Text(local.get("info_overlay.view_camera_mouse").c_str());
+			ImGui::Text(local.get("info_overlay.move_camera").c_str());
+			ImGui::Text(local.get("info_overlay.speed_move").c_str(), multiplier);
+			char acceptHotKey[32];
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey, sizeof acceptHotKey);
+			char cancelHotKey[32];
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey, sizeof cancelHotKey);
+			ImGui::Text(local.get("info_overlay.accept_cancel").c_str(), acceptHotKey, cancelHotKey);
+			ImGui::PopTextWrapPos();
+
+			if (ImGui::GetIO().MouseWheel < 0.f) {
+				multiplier -= 0.01f;
+				multiplier = max(multiplier, 0.f);
+			}
+			else if (ImGui::GetIO().MouseWheel > 0.f) {
+				multiplier += 0.01f;
+			}
+		}
+		ImGui::End();
+		});
+
+	CWorld::Remove(FindPlayerPed());
+
+	CVector posCam = {pos[0], pos[1], pos[2] };
+
+	TheCamera.RestoreWithJumpCut();
+	TheCamera.m_bCameraPersistPosition = true;
+	TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
+	if (widescreen) 
+		TheCamera.SetWideScreenOn();
+
+	CTheScripts::bDisplayHud = false;
+	CHud::bScriptDontDisplayRadar = true;
+
+	while (true) {
+
+		const auto hotKey = HotKeyService::getInstance().getHotKey(true);
+		if (hotKey != nullptr && std::strcmp(hotKey->functionName, "cancel") == 0) {
+			TheCamera.SetPosn(pos[0], pos[1], pos[2]);
+			TheCamera.m_mCameraMatrix.SetRotate(*rotation);
+			break;
+		}
+
+		if (hotKey != nullptr && std::strcmp(hotKey->functionName, "accept") == 0) {
+			pos[0] = TheCamera.m_mCameraMatrix.pos.x;
+			pos[1] = TheCamera.m_mCameraMatrix.pos.y;
+			pos[2] = TheCamera.m_mCameraMatrix.pos.z;
+
+			auto matInverse = TheCamera.m_mMatInverse;
+			matInverse.Reorthogonalise();
+			*rotation = MathUtils::lookRotationQuat({ TheCamera.m_mMatInverse.right.y, TheCamera.m_mMatInverse.up.y, TheCamera.m_mMatInverse.at.y }, {0.f, 0.f, 1.f});
+
+			break;
+		}
+
+		CVector rightCamVec;
+		rightCamVec.Cross(TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront, TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp);
+
+		if (KeyPressed(VK_UP) || KeyPressed('W')) {
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * multiplier;
+			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
+		}
+		if (KeyPressed(VK_DOWN) || KeyPressed('S')) {
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * -1 * multiplier;
+			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
+			FindPlayerPed()->SetPosn(posCam);
+		}
+
+		if (KeyPressed(VK_LEFT) || KeyPressed('A')) {
+			posCam += rightCamVec * -1 * multiplier;
+			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
+			FindPlayerPed()->SetPosn(posCam);
+		}
+		if (KeyPressed(VK_RIGHT) || KeyPressed('D')) {
+			posCam += rightCamVec * multiplier;
+			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
+			FindPlayerPed()->SetPosn(posCam);
+		}
+
+		if (KeyPressed(VK_Q)) {
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * multiplier;
+			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
+			FindPlayerPed()->SetPosn(posCam);
+		}
+		if (KeyPressed(VK_E)) {
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * -1 * multiplier;
+			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
+			FindPlayerPed()->SetPosn(posCam);
+		}
+
+		 co_await 1; 
+	}
+
+	TheCamera.m_bCameraPersistPosition = false;
+	TheCamera.RestoreWithJumpCut();
+	const float z = CWorld::FindGroundZForCoord(posCam.x, posCam.y);
+	FindPlayerPed()->SetPosn(posCam.x, posCam.y, z + 1.f);
+	if (widescreen)
+		TheCamera.SetWideScreenOff();
+
+	CWorld::Add(FindPlayerPed());
+
+	CTheScripts::bDisplayHud = true;
+	CHud::bScriptDontDisplayRadar = false;
+
+	Windows::WindowsRenderService::getInstance().removeRender("editByPlayerOverlay");
+	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
+
+	callback();
+}
+
+void EditByPlayerService::editByPlayerCamera(float* pos, CQuaternion* rotation, bool widescreen, std::function<void()> callback) {
+	Tasker::getInstance().addTask("editByPlayerCamera", editByPlayerCameraTask, pos, rotation, widescreen, callback);
 }

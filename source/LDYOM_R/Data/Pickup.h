@@ -62,6 +62,8 @@ public:
 	int& getSpawnType();
 	int& getWeapon();
 	int& getAmmo();
+	std::optional<int>& getProjectPickupIndex();
+	std::optional<int>& getEditorPickupIndex();
 
 	void updateLocation();
 

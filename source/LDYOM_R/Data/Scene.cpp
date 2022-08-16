@@ -1,7 +1,10 @@
 ﻿#include "Scene.h"
 
+#include <fast_dynamic_cast.h>
+
 #include "CheckpointObjective.h"
 #include "strUtils.h"
+#include "TeleportPlayerObjective.h"
 #include "Localization/Localization.h"
 #include "fmt/core.h"
 
@@ -233,11 +236,11 @@ void Scene::unloadEditorScene() const {
 		visualEffect->deleteEditorVisualEffect();
 	for (const auto& checkpoint : this->checkpoints_)
 		checkpoint->deleteEditorCheckpoint();
-	/*for (const auto& objective : this->objectives_) {
-		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
-			checkpoint->removeEditorBlip();
+	for (const auto& objective : this->objectives_) {
+		if (auto* teleportPlayerObjective = fast_dynamic_cast<TeleportPlayerObjective*>(objective.get())) {
+			teleportPlayerObjective->deleteEditorPed();
 		}
-	}*/
+	}
 }
 
 void Scene::unloadProjectScene() const {
@@ -290,9 +293,9 @@ void Scene::loadEditorScene() const {
 		visualEffect->spawnEditorVisualEffect();
 	for (const auto& checkpoint : this->checkpoints_)
 		checkpoint->spawnEditorCheckpoint();
-	/*for (const auto& objective : this->objectives_) {
-		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
-			checkpoint->createEditorBlip();
+	for (const auto& objective : this->objectives_) {
+		if (auto* teleportPlayerObjective = fast_dynamic_cast<TeleportPlayerObjective*>(objective.get())) {
+			teleportPlayerObjective->spawnEditorPed();
 		}
-	}*/
+	}
 }

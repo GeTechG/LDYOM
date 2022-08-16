@@ -26,7 +26,6 @@ void Windows::ListWindow::drawList() {
 			for (int i = 0; i < this->getListSize(); ++i) {
 				ImGui::PushID(i);
 				if (ImGui::Selectable(this->getElementName(i), this->currentElement == i)) {
-					this->currentElement = i;
 					selectElement(i);
 				}
 
@@ -105,5 +104,5 @@ void Windows::ListWindow::draw() {
 }
 
 void Windows::ListWindow::unselect() {
-	this->currentElement = -1;
+	selectElement(-1);
 }

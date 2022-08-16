@@ -3,6 +3,7 @@
 
 #include <coroutine>
 #include <list>
+#include <set>
 #include <chrono>
 #include <utility>
 
@@ -31,10 +32,13 @@ public:
     }
 
     void process() {
+        delete_tasks();
         for (auto& task : tasks) {
-            if (std::chrono::steady_clock::now() > task.wake_time && task.handle) {
-                task.handle();
-                task.completed = true;
+            if (!this->deleteSetTasks.contains(task.handle.address())) {
+                if (std::chrono::steady_clock::now() > task.wake_time && task.handle) {
+                    task.handle();
+                    task.completed = true;
+                }
             }
         }
         tasks.remove_if([](auto& task) { return task.completed; });
@@ -43,6 +47,9 @@ public:
     void remove_task(ktwait& task);
 private:
     list_type tasks;
+    std::set<void*> deleteSetTasks;
+
+    void delete_tasks();
 };
 
 struct ktwait {
@@ -138,7 +145,13 @@ struct ktwait {
 namespace detail {
     inline bool remove_task_recursively(std::coroutine_handle<ktwait::promise_type>& waiter, std::coroutine_handle<ktwait::promise_type>& task) {
         if (!waiter) return false;
-        if (waiter == task) { task.destroy(); return true; }
+        if (waiter == task) {
+            namespace c = std::chrono;
+            if (task.promise().waiter)
+                task.promise().coro_tasklist->add_started_task(waiter.promise().waiter, c::time_point_cast<c::milliseconds>(c::steady_clock::now()));
+        	task.destroy();
+        	return true;
+        }
         if (remove_task_recursively(waiter.promise().waiter, task)) {
             waiter.destroy();
             return true;
@@ -157,25 +170,33 @@ inline ktwait ktcoro_tasklist::add_task(Coroutine coro, Args && ...coro_args) {
 }
 
 inline void ktcoro_tasklist::remove_task(ktwait& task) {
-    for (auto it = tasks.begin(); it != tasks.end();) {
-        if (it->handle == task.coro_handle) {
-            it->handle.destroy();
-            tasks.erase(it++);
-        }
-        else if (auto coro_handle{ std::coroutine_handle<ktwait::promise_type>::from_address(it->handle.address()) }) {
-            auto& tw = coro_handle.promise().waiter;
-            if (detail::remove_task_recursively(tw, task.coro_handle)) {
-                coro_handle.destroy();
+    this->deleteSetTasks.emplace(task.coro_handle.address());
+}
+
+inline void ktcoro_tasklist::delete_tasks() {
+    for (auto & value : this->deleteSetTasks) {
+        auto handle = std::coroutine_handle<ktwait::promise_type>::from_address(value);
+        for (auto it = tasks.begin(); it != tasks.end();) {
+            if (it->handle == handle) {
+                it->handle.destroy();
                 tasks.erase(it++);
+            }
+            else if (auto coro_handle{ std::coroutine_handle<ktwait::promise_type>::from_address(it->handle.address()) }) {
+                auto& tw = coro_handle.promise().waiter;
+                if (detail::remove_task_recursively(tw, handle)) {
+                    coro_handle.destroy();
+                    tasks.erase(it++);
+                }
+                else {
+                    ++it;
+                }
             }
             else {
                 ++it;
             }
         }
-        else {
-            ++it;
-        }
     }
+    deleteSetTasks.clear();
 }
 
 #endif // KTCORO_WAIT_HPP_

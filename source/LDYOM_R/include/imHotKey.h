@@ -252,7 +252,7 @@ namespace ImHotKey
 
                 bool& butSwtch = keyDown[key.scanCodePage1];
                 ImGui::PushStyleColor(ImGuiCol_Button, butSwtch ? ImGui::GetStyleColorVec4(ImGuiCol_Button) + ImVec4(0.1f, 0.1f, 0.1f, 0.0f) : ImVec4(.0f, .0f, .0f, .5f));
-                if (ImGui::Button(Keys[y][x].lib, ImVec2(width, 40)))
+                if (ImGui::Button(fmt::format("{}##{}", Keys[y][x].lib, key.scanCodePage7).c_str(), ImVec2(width, 40)))
                 {
                     butSwtch = !butSwtch;
                 }
@@ -318,12 +318,12 @@ namespace ImHotKey
         unsigned char scanCodes[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
         unsigned char order[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
         int scanCodeCount = 0;
-        for (int i = 0; i < 512; i++)
+        for (int i = 0; i < 256; i++)
         {
             if (ImGui::IsKeyDown(i))
             {
                 int imKey;
-                imKey = MapVirtualKeyA(i, MAPVK_VK_TO_VSC);;
+                imKey = MapVirtualKeyA(i, MAPVK_VK_TO_VSC);
                 scanCodes[scanCodeCount] = (unsigned char)imKey;
                 order[scanCodeCount] = (unsigned char)GetKeyForScanCode(imKey).order;
                 scanCodeCount++;

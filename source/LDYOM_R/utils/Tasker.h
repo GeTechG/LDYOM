@@ -1,5 +1,4 @@
 #pragma once
-#include <functional>
 #include <map>
 
 #include "ktcoro_wait.hpp"
@@ -9,7 +8,6 @@ class Tasker
 private:
 	ktcoro_tasklist ktcoroTaskList_;
 	std::map<std::string, ktwait> taskList_;
-
 
 	Tasker() = default;
 	Tasker(const Tasker&) = delete;
@@ -27,7 +25,7 @@ public:
 
 	template<typename Coroutine, typename ...Args>
 	ktwait& addTask(std::string name, Coroutine coro, Args && ...coro_args);
-	void removeTask(const std::string name);
+	void removeTask(const std::string& name);
 };
 
 template <typename Coroutine, typename ... Args>

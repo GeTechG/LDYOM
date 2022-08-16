@@ -6,6 +6,7 @@
 #define NOMINMAX
 
 #include <array>
+#include <CMatrix.h>
 #include <CQuaternion.h>
 #include <CRGBA.h>
 #include <CVector.h>
@@ -74,9 +75,6 @@ public:
     template<class T>
     static int indexByUuid(const std::vector<std::unique_ptr<T>>& vector, boost::uuids::uuid uuid);
     static int createBlip(float* pos, int blipType, int blipColor, int blipSprite = 0);
-    static CQuaternion lookRotation(const CVector& lookAt, CVector& up);
-    static std::array<float, 3> ToEulerAngles(CQuaternion& q);
-    static CQuaternion matrixToQuat(const RwMatrix* matrix);
     static std::vector<std::string> getFilenameList(const std::filesystem::path& path, const std::vector<std::string>& extensions);
 };
 

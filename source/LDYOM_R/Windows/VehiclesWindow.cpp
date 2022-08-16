@@ -184,6 +184,3 @@ void Windows::VehiclesWindow::open() {
 	ListWindow::open();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
 }
-
-void Windows::VehiclesWindow::selectElement(int i) {
-}

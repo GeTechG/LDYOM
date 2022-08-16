@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include "IPositionable.h"
-#include "IRenderable.h"
 #include "WorldObjective.h"
 #include "boost/serialization/array.hpp"
 #include "Localization/Localization.h"
@@ -48,7 +46,7 @@ public:
 		return 0;
 	}
 
-	ktwait execute(Scene* scene, Result& result) override;
+	ktwait execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) override;
 	void draw(Localization& local) override;
 
 	boost::uuids::uuid& getCheckpointUuid();

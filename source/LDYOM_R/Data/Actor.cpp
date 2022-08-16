@@ -1,4 +1,7 @@
 ﻿#include "Actor.h"
+
+#include <CClothes.h>
+
 #include "CWorld.h"
 #include "utils.h"
 #include "../shared/extensions/ScriptCommands.h"
@@ -49,6 +52,29 @@ void Actor::deleteProjectEntity() {
 CPed* Actor::spawnPed() {
 	int model;
 
+	std::array<unsigned, 18> textures{};
+	std::array<unsigned, 10> models{};
+	float muscular;
+	float fats;
+	auto playerModel = CWorld::Players[0].m_pPed->m_nModelIndex;
+	{
+		Command<Commands::SET_PLAYER_MODEL>(0, 0);
+		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+		std::memcpy(textures.data(), playerClothes->m_anTextureKeys, sizeof playerClothes->m_anTextureKeys);
+		std::memcpy(models.data(), playerClothes->m_anModelKeys, sizeof playerClothes->m_anModelKeys);
+		muscular = playerClothes->m_fFatStat;
+		fats = playerClothes->m_fMuscleStat;
+	}
+
+	if (this->modelType_ == 0 && this->modelId_ == 0) {
+		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys_.data(), sizeof playerClothes->m_anTextureKeys);
+		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys_.data(), sizeof playerClothes->m_anModelKeys);
+		playerClothes->m_fFatStat = this->fatStat;
+		playerClothes->m_fMuscleStat = this->musculeStat;
+		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
+	}
+
 	if (this->modelType_ == 0) {
 		model = ModelsService::validPedModel(this->modelId_);
 		CStreaming::RequestModel(model, GAME_REQUIRED);
@@ -74,10 +100,7 @@ CPed* Actor::spawnPed() {
 
 		ped->GiveWeapon(static_cast<eWeaponType>(weapon), ammo, false);
 
-		if (this->getModelType() == 0)
-			CStreaming::SetMissionDoesntRequireModel(weaponModel);
-		else
-			CStreaming::SetMissionDoesntRequireSpecialChar(this->slot_);
+		CStreaming::SetMissionDoesntRequireModel(weaponModel);
 	}
 	if (!this->weapons_.empty()) {
 		int currentWeapon = this->weapons_.at(this->defaultWeapon_).weapon;
@@ -85,7 +108,17 @@ CPed* Actor::spawnPed() {
 	}
 
 	ped->DisablePedSpeech(1);
-	
+
+	if (this->modelType_ == 0 && this->modelId_ == 0) {
+		Command<Commands::SET_PLAYER_MODEL>(0, playerModel);
+		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+		std::memcpy(playerClothes->m_anTextureKeys, textures.data(), sizeof playerClothes->m_anTextureKeys);
+		std::memcpy(playerClothes->m_anModelKeys, models.data(), sizeof playerClothes->m_anModelKeys);
+		playerClothes->m_fFatStat = fats;
+		playerClothes->m_fMuscleStat = muscular;
+		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
+	}
+
 	Command<Commands::SET_CHAR_STAY_IN_SAME_PLACE>(newPed, (int)this->stayInSamePlace_);
 	Command<Commands::SET_CHAR_KINDA_STAY_IN_SAME_PLACE>(newPed, (int)this->kindaStayInSamePlace_);
 	ped->m_nWeaponAccuracy = this->accuracy_;
@@ -102,6 +135,12 @@ Actor::Actor(const char* name, const CVector& pos, float headingAngle): Objectiv
 																		health_(100),
                                                                         headshot_(true) {
 	strcpy(this->name_.data(), name);
+
+	const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+	std::memcpy(this->clotherMAnTextureKeys_.data(), playerClothes->m_anTextureKeys, sizeof playerClothes->m_anTextureKeys);
+	std::memcpy(this->clotherMAnModelKeys_.data(), playerClothes->m_anModelKeys, sizeof playerClothes->m_anModelKeys);
+	this->fatStat = playerClothes->m_fFatStat;
+	this->musculeStat = playerClothes->m_fMuscleStat;
 }
 
 Actor::Actor(const Actor& other): ObjectiveDependent{other},
@@ -125,7 +164,11 @@ Actor::Actor(const Actor& other): ObjectiveDependent{other},
                                   stayInSamePlace_{other.stayInSamePlace_},
                                   kindaStayInSamePlace_{other.kindaStayInSamePlace_},
                                   headshot_{other.headshot_},
-                                  dropWeapons_{other.dropWeapons_} {
+                                  dropWeapons_{other.dropWeapons_},
+                                  clotherMAnModelKeys_{other.clotherMAnModelKeys_},
+                                  clotherMAnTextureKeys_{other.clotherMAnTextureKeys_},
+								  fatStat{other.fatStat},
+								  musculeStat{other.musculeStat} {
 	strlcat(this->name_.data(), "C", sizeof this->name_);
 }
 
@@ -154,6 +197,10 @@ Actor& Actor::operator=(const Actor& other) {
 	kindaStayInSamePlace_ = other.kindaStayInSamePlace_;
 	headshot_ = other.headshot_;
 	dropWeapons_ = other.dropWeapons_;
+	clotherMAnTextureKeys_ = other.clotherMAnTextureKeys_;
+	clotherMAnModelKeys_ = other.clotherMAnModelKeys_;
+	fatStat = other.fatStat;
+	musculeStat = other.musculeStat;
 	return *this;
 }
 
@@ -239,6 +286,22 @@ bool& Actor::isDropWeapons() {
 	return dropWeapons_;
 }
 
+std::array<unsigned, 10>& Actor::getClotherMAnModelKeys() {
+	return clotherMAnModelKeys_;
+}
+
+std::array<unsigned, 18>& Actor::getClotherMAnTextureKeys() {
+	return clotherMAnTextureKeys_;
+}
+
+float& Actor::getFatStat() {
+	return fatStat;
+}
+
+float& Actor::getMusculeStat() {
+	return musculeStat;
+}
+
 boost::uuids::uuid& Actor::getUuid() {
 	return uuid_;
 }
@@ -268,7 +331,7 @@ void Actor::spawnEditorPed() {
 	this->editorPed_.value()->m_nPhysicalFlags.bCollisionProof = 1;
 	this->editorPed_.value()->m_nPhysicalFlags.bExplosionProof = 1;
 	this->editorPed_.value()->m_nPhysicalFlags.bFireProof = 1;
-	this->editorPed_.value()->m_nPhysicalFlags.bMeeleProof = 1;
+	this->editorPed_.value()->m_nPhysicalFlags.bMeleeProof = 1;
 	Command<Commands::FREEZE_CHAR_POSITION_AND_DONT_LOAD_COLLISION>(CPools::GetPedRef(this->editorPed_.value()), 1);
 
 	updateLocation();

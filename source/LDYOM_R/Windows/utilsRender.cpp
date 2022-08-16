@@ -1,7 +1,7 @@
-﻿#include "utilsRender.h"
+﻿#define NOMINMAX
+#include "utilsRender.h"
 
 #include <CCamera.h>
-#include <CRadar.h>
 
 #include "fa.h"
 #include "imgui.h"
@@ -11,9 +11,11 @@
 #include "ProjectsService.h"
 #include "utils.h"
 #include "ImGuizmo/ImGuizmo.h"
-#include <boost/math/quaternion.hpp>
+#include <tweeny.h>
 
 #include "HotKeyService.h"
+#include "ModelsService.h"
+#include "PopupSkinSelector.h"
 
 using namespace plugin;
 
@@ -404,10 +406,10 @@ bool TransformEditor(float* translate, CQuaternion& rotates, float* scale) {
 		matrix[9] /= newScale[2];
 		matrix[10] /= newScale[2];
 
-		rotates.real = sqrt(max(0, 1 + matrix[0] + matrix[5] + matrix[10])) / 2;
-		rotates.imag.x = sqrt(max(0, 1 + matrix[0] - matrix[5] - matrix[10])) / 2;
-		rotates.imag.y = sqrt(max(0, 1 - matrix[0] + matrix[5] - matrix[10])) / 2;
-		rotates.imag.z = sqrt(max(0, 1 - matrix[0] - matrix[5] + matrix[10])) / 2;
+		rotates.real = sqrt(std::max(0.f, 1.f + matrix[0] + matrix[5] + matrix[10])) / 2.f;
+		rotates.imag.x = sqrt(std::max(0.f, 1.f + matrix[0] - matrix[5] - matrix[10])) / 2.f;
+		rotates.imag.y = sqrt(std::max(0.f, 1.f - matrix[0] + matrix[5] - matrix[10])) / 2.f;
+		rotates.imag.z = sqrt(std::max(0.f, 1.f - matrix[0] - matrix[5] + matrix[10])) / 2.f;
 		rotates.imag.x = _copysignf(rotates.imag.x, matrix[9] - matrix[6]);
 		rotates.imag.y = _copysignf(rotates.imag.y, matrix[2] - matrix[8]);
 		rotates.imag.z = _copysignf(rotates.imag.z, matrix[4] - matrix[1]);
@@ -437,4 +439,160 @@ void IncorrectHighlight(const bool cond, const std::function<void()> render) {
 
 	if (cond)
 		ImGui::PopStyleColor();
+}
+
+const char* to_string(tweeny::easing::enumerated e) {
+	switch (e) {
+	case tweeny::easing::enumerated::def:
+		return "def";
+	case tweeny::easing::enumerated::linear:
+		return "linear";
+	case tweeny::easing::enumerated::stepped:
+		return "stepped";
+	case tweeny::easing::enumerated::quadraticIn:
+		return "quadraticIn";
+	case tweeny::easing::enumerated::quadraticOut:
+		return "quadraticOut";
+	case tweeny::easing::enumerated::quadraticInOut:
+		return "quadraticInOut";
+	case tweeny::easing::enumerated::cubicIn:
+		return "cubicIn";
+	case tweeny::easing::enumerated::cubicOut:
+		return "cubicOut";
+	case tweeny::easing::enumerated::cubicInOut:
+		return "cubicInOut";
+	case tweeny::easing::enumerated::quarticIn:
+		return "quarticIn";
+	case tweeny::easing::enumerated::quarticOut:
+		return "quarticOut";
+	case tweeny::easing::enumerated::quarticInOut:
+		return "quarticInOut";
+	case tweeny::easing::enumerated::quinticIn:
+		return "quinticIn";
+	case tweeny::easing::enumerated::quinticOut:
+		return "quinticOut";
+	case tweeny::easing::enumerated::quinticInOut:
+		return "quinticInOut";
+	case tweeny::easing::enumerated::sinusoidalIn:
+		return "sinusoidalIn";
+	case tweeny::easing::enumerated::sinusoidalOut:
+		return "sinusoidalOut";
+	case tweeny::easing::enumerated::sinusoidalInOut:
+		return "sinusoidalInOut";
+	case tweeny::easing::enumerated::exponentialIn:
+		return "exponentialIn";
+	case tweeny::easing::enumerated::exponentialOut:
+		return "exponentialOut";
+	case tweeny::easing::enumerated::exponentialInOut:
+		return "exponentialInOut";
+	case tweeny::easing::enumerated::circularIn:
+		return "circularIn";
+	case tweeny::easing::enumerated::circularOut:
+		return "circularOut";
+	case tweeny::easing::enumerated::circularInOut:
+		return "circularInOut";
+	case tweeny::easing::enumerated::bounceIn:
+		return "bounceIn";
+	case tweeny::easing::enumerated::bounceOut:
+		return "bounceOut";
+	case tweeny::easing::enumerated::bounceInOut:
+		return "bounceInOut";
+	case tweeny::easing::enumerated::elasticIn:
+		return "elasticIn";
+	case tweeny::easing::enumerated::elasticOut:
+		return "elasticOut";
+	case tweeny::easing::enumerated::elasticInOut:
+		return "elasticInOut";
+	case tweeny::easing::enumerated::backIn:
+		return "backIn";
+	case tweeny::easing::enumerated::backOut:
+		return "backOut";
+	case tweeny::easing::enumerated::backInOut:
+		return "backInOut";
+	default:
+		return "unknown";
+	}
+}
+
+std::map<tweeny::easing::enumerated, std::array<ImVec2, 256>> generatePreviewEasing() {
+
+	std::map<tweeny::easing::enumerated, std::array<ImVec2, 256>> result;
+	for (int i = static_cast<int>(tweeny::easing::enumerated::linear); i <= static_cast<int>(tweeny::easing::enumerated::backInOut); ++i) {
+		std::array<ImVec2, 256> easing;
+		auto tween = tweeny::from(0.f).to(128.f).during(256).via(static_cast<tweeny::easing::enumerated>(i));
+		for (int j = 0; j < 256; ++j) {
+			if (static_cast<tweeny::easing::enumerated>(i) == tweeny::easing::enumerated::stepped)
+				easing[j] = { static_cast<float>(j), 0.f };
+			else
+				easing[j] = {static_cast<float>(j), 128.f - tween.step(1) };
+		}
+		result.emplace(static_cast<tweeny::easing::enumerated>(i), easing);
+	}
+
+	return result;
+}
+
+void EasingCombo(const char* name, int* v) {
+	using namespace tweeny;
+
+	static auto easingPreviewPoints = generatePreviewEasing();
+
+	if (ImGui::BeginCombo(name, to_string(static_cast<tweeny::easing::enumerated>(*v)))) {
+
+		for (int i = static_cast<int>(easing::enumerated::linear); i <= static_cast<int>(easing::enumerated::backInOut); ++i) {
+			if (ImGui::Selectable(to_string(static_cast<easing::enumerated>(i)), i == *v)) {
+				*v = i;
+			}
+			if (ImGui::IsItemHovered()) {
+				ImGui::BeginTooltip();
+				const auto & originalPoints = easingPreviewPoints.at(static_cast<tweeny::easing::enumerated>(i));
+				const ImU32 color = ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Text));
+				auto offsetedPoints = originalPoints;
+				for (auto& point : offsetedPoints)
+					point += ImGui::GetCursorScreenPos() + ImVec2(0.f, 64.f);
+				ImGui::GetWindowDrawList()->AddPolyline(offsetedPoints.data(), offsetedPoints.size(), color, 0, 1);
+				ImGui::GetWindowDrawList()->AddRect(ImGui::GetCursorScreenPos() + ImVec2(0.f, 64.f), ImGui::GetCursorScreenPos() + ImVec2(256.f, 128.f + 64.f), IM_COL32(255, 255, 255, 100));
+				ImGui::GetWindowDrawList()->AddCircleFilled(offsetedPoints[static_cast<unsigned>(ImGui::GetTime() * 100.0) % 255u], 5.f, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Button)));
+				ImGui::Dummy(ImVec2(256.f, 256.f));
+				ImGui::EndTooltip();
+			}
+		}
+
+		ImGui::EndCombo();
+	}
+}
+
+void modelSkinSelection(unsigned char& modelType, int& modelId, int& slot, const std::function<void()>& editCallback) {
+	auto& local = Localization::getInstance();
+
+	static char unsigned minActorModelType = 0;
+	static char unsigned maxActorModelType = 1;
+	if (ImGui::SliderScalar("##actorModelType", ImGuiDataType_U8, &modelType, &minActorModelType, &maxActorModelType,
+		(modelType == 0) ? local.get("actor_model_type.ped").c_str() : local.get("actor_model_type.special").c_str())) {
+		modelId = 0;
+		editCallback();
+	}
+
+	if (modelType == 1) {
+		ImGui::SliderInt(local.get("general.slot").c_str(), &slot, 0, 8);
+	}
+
+	if (ImGui::Button(ICON_FA_TSHIRT, ImVec2(25.0f, 0.0f))) {
+		PopupSkinSelector::getInstance().showPopup();
+	}
+	ImGui::SameLine();
+	if (modelType == 0) {
+		if (ImGui::InputInt("##model", &modelId, 0, 0, ImGuiInputTextFlags_CharsDecimal)) {
+			editCallback();
+		}
+	} else {
+		if (utils::Combo("##model", &modelId, ModelsService::getInstance().getSpecialsPed())) {
+			editCallback();
+		}
+	}
+
+	PopupSkinSelector::getInstance().renderPopup([&modelId, editCallback](const int model) {
+		modelId = model;
+		editCallback();
+		}, modelType == 1, slot);
 }

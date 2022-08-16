@@ -10,6 +10,29 @@
 #include "WindowsRenderService.h"
 #include "../Windows/ObjectivesWindow.h"
 #include "../Data/CheckpointObjective.h"
+#include "../Data/KillActorOrGroupObjective.h"
+#include "../Data/DamageActorObjective.h"
+#include "../Data/GetInVehicleObjective.h"
+#include "../Data/DestroyVehicleObjective.h"
+#include "../Data/CutsceneObjective.h"
+#include "../Data/CountdownObjective.h"
+#include "../Data/TimeoutObjective.h"
+#include "../Data/WeatherObjective.h"
+#include "../Data/ClockTimeObjective.h"
+#include "../Data/DamageObjectObjective.h"
+#include "../Data/PhotographObjectObjective.h"
+#include "../Data/TouchObjectObjective.h"
+#include "../Data/CollectPickupObjective.h"
+#include "../Data/TeleportPlayerObjective.h"
+#include "../Data/AnimationPlayerObjective.h"
+#include "../Data/TeleportToVehiclePlayerObjective.h"
+#include "../Data/LevelWantedPlayerObjective.h"
+#include "../Data/RemoveWeaponsObjective.h"
+#include "../Data/AddWeaponsPlayerObjective.h"
+#include "../Data/PhoneCallPlayerObjective.h"
+#include "../Data/AddMoneyPlayerObjective.h"
+#include "../Data/AddTimerObjective.h"
+#include "../Data/RemoveTimerObjective.h"
 #include "../Data/SceneSettings.h"
 
 #include "boost/archive/binary_oarchive.hpp"
@@ -149,15 +172,16 @@ void ProjectsService::saveCurrentProject() {
 		auto ucString = uncompressedStream.str();
 
 		std::vector<char> compressedVector;
-		compressedVector.resize(LZ4_compressBound(ucString.size()), '\0');
-		int result = LZ4_compress_HC(ucString.c_str(), compressedVector.data(), static_cast<int>(ucString.size()), static_cast<int>(compressedVector.size()), LZ4HC_CLEVEL_MAX);
+		unsigned inputSize = ucString.size();
+		compressedVector.resize(LZ4_compressBound(inputSize), '\0');
+		int result = LZ4_compress_HC(ucString.c_str(), compressedVector.data(), static_cast<int>(inputSize), static_cast<int>(compressedVector.size()), LZ4HC_CLEVEL_MAX);
 		if (result == 0) {
 			CLOG(ERROR, "LDYOM") << "Failed compress";
 			return;
 		}
 
 		std::ofstream file(scenesDirectory / fmt::format("{}.dat", pair.first), std::ios_base::binary);
-		file << static_cast<unsigned>(ucString.size());
+		file.write(reinterpret_cast<char*>(&inputSize), sizeof inputSize);
 		std::ranges::copy(compressedVector.begin(), compressedVector.begin() + result, std::ostreambuf_iterator(file));
 		file.close();
 	}
@@ -193,7 +217,7 @@ void ProjectsService::loadProject(int projectIdx) {
 			unsigned uncompressedSize;
 			{
 				std::ifstream file(path.path(), std::ios_base::binary);
-				file >> uncompressedSize;
+				file.read(reinterpret_cast<char*>(&uncompressedSize), sizeof uncompressedSize);
 				std::ostringstream ss;
 				ss << file.rdbuf();
 				compressed = ss.str();
@@ -293,6 +317,29 @@ namespace boost {
 			ar & p.isToggleSceneSettings();
 
 			ar.template register_type<CheckpointObjective>();
+			ar.template register_type<KillActorOrGroupObjective>();
+			ar.template register_type<DamageActorObjective>();
+			ar.template register_type<GetInVehicleObjective>();
+			ar.template register_type<DestroyVehicleObjective>();
+			ar.template register_type<CutsceneObjective>();
+			ar.template register_type<CountdownObjective>();
+			ar.template register_type<TimeoutObjective>();
+			ar.template register_type<WeatherObjective>();
+			ar.template register_type<ClockTimeObjective>();
+			ar.template register_type<DamageObjectObjective>();
+			ar.template register_type<PhotographObjectObjective>();
+			ar.template register_type<TouchObjectObjective>();
+			ar.template register_type<CollectPickupObjective>();
+			ar.template register_type<TeleportPlayerObjective>();
+			ar.template register_type<AnimationPlayerObjective>();
+			ar.template register_type<TeleportToVehiclePlayerObjective>();
+			ar.template register_type<LevelWantedPlayerObjective>();
+			ar.template register_type<RemoveWeaponsObjective>();
+			ar.template register_type<AddWeaponsPlayerObjective>();
+			ar.template register_type<PhoneCallPlayerObjective>();
+			ar.template register_type<AddMoneyPlayerObjective>();
+			ar.template register_type<AddTimerObjective>();
+			ar.template register_type<RemoveTimerObjective>();
 
 			ar& p.getObjectives();
 		}

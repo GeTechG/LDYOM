@@ -14,8 +14,12 @@ inline std::optional<Windows::AbstractWindow*> defaultWindow;
 inline bool openWindowsMenu = false;
 void inline hotkeysExecute() {
 
+	const auto hotkey = HotKeyService::getInstance().getHotKey(true);
+
 	static bool openPress = false;
-	if (const auto hotkey = HotKeyService::getInstance().getHotKey(true)) {
+	static bool openFastMenu = false;
+	static bool saveHotkey = false;
+	if (hotkey != nullptr) {
 		if (std::strcmp(hotkey->functionName,"openMenu") == 0 && !openPress) {
 			openWindowsMenu ^= TRUE;
 			if (openWindowsMenu && defaultWindow.has_value())
@@ -23,17 +27,18 @@ void inline hotkeysExecute() {
 			else
 				Windows::WindowsRenderService::getInstance().closeAllWindows();
 			openPress = true;
+		} else if (std::strcmp(hotkey->functionName, "openQuickCommandsMenu") == 0 && !openWindowsMenu) {
+			openFastMenu = true;
+		} else if (std::strcmp(hotkey->functionName, "save") == 0 && !saveHotkey) {
+			ProjectsService::getInstance().saveCurrentProject();
+			saveHotkey = true;
 		}
 	} else {
 		openPress = false;
+		openFastMenu = false;
+		saveHotkey = false;
 	}
-	static bool openFastMenu = false;
-	openFastMenu = false;
-	if (const auto hotkey = HotKeyService::getInstance().getHotKey(true)) {
-		if (std::strcmp(hotkey->functionName, "openQuickCommandsMenu") == 0 && !openWindowsMenu) {
-			openFastMenu = true;
-		}
-	}
+
 	if (openFastMenu)
 		Windows::WindowsRenderService::getInstance().getWindow<Windows::QuickCommandsWindow>()->open();
 	else

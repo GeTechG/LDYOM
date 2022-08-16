@@ -40,6 +40,10 @@ private:
 		ar & this->kindaStayInSamePlace_;
 		ar & this->headshot_;
 		ar & this->dropWeapons_;
+		ar & this->clotherMAnModelKeys_;
+		ar & this->clotherMAnTextureKeys_;
+		ar & this->musculeStat;
+		ar & this->fatStat;
 	}
 
 	boost::uuids::uuid uuid_{};
@@ -64,6 +68,10 @@ private:
 	bool kindaStayInSamePlace_{};
 	bool headshot_{};
 	bool dropWeapons_{};
+	std::array<unsigned, 10> clotherMAnModelKeys_{};
+	std::array<unsigned, 18> clotherMAnTextureKeys_{};
+	float fatStat = 1.f;
+	float musculeStat = 1.f;
 
 	boost::signals2::signal<void()> signalDeleteActor;
 
@@ -98,6 +106,10 @@ public:
 	bool& isKindaStayInSamePlace();
 	bool& isHeadshot();
 	bool& isDropWeapons();
+	std::array<unsigned, 10>& getClotherMAnModelKeys();
+	std::array<unsigned, 18>& getClotherMAnTextureKeys();
+	float& getFatStat();
+	float& getMusculeStat();
 	boost::uuids::uuid& getUuid() override;
 
 	boost::signals2::signal<void()>& getSignalDeleteActor();

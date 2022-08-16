@@ -221,6 +221,96 @@
     <Filter Include="Windows\SceneSettingsPopup">
       <UniqueIdentifier>{98bff168-1292-401c-b45b-edbf91c810e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Objectives\Actor">
+      <UniqueIdentifier>{69d19bd4-d01d-4fcc-8070-bd8179676b3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Actor\KillActorOrGroup">
+      <UniqueIdentifier>{f527a42c-2613-4501-bf75-59fad309963c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Actor\DamageActor">
+      <UniqueIdentifier>{92ddff6d-8c47-4e1a-bd60-c1a4b3877a24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Vehicle">
+      <UniqueIdentifier>{ea58fb70-2662-4e1d-ab4b-0880a5f8b6a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Vehicle\GetInVehicle">
+      <UniqueIdentifier>{72ed6216-81e6-49b9-a361-28a35dccb0bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Vehicle\DestroyVehicle">
+      <UniqueIdentifier>{6c221006-ae8a-4242-ad2d-316e2ff807c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\Cutscene">
+      <UniqueIdentifier>{55d3f8db-3044-4365-bd6c-290023f42116}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\Countdown">
+      <UniqueIdentifier>{4ed75a24-4a4e-4847-9140-afd8786c8f90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\Timeout">
+      <UniqueIdentifier>{bb067b0b-765f-4998-b59f-3424f49943fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\Weather">
+      <UniqueIdentifier>{80d6f24a-ca1d-42ee-88e8-deca8d38e459}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\ClockTime">
+      <UniqueIdentifier>{d723a9bc-f0ef-454d-888b-186df3a696d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\Traffic">
+      <UniqueIdentifier>{3b799614-a949-4cd5-b2d4-0450da507de0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Object">
+      <UniqueIdentifier>{b0be0077-f2b3-4300-8249-63aef305ed08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Object\Damage">
+      <UniqueIdentifier>{b6a8186b-d527-471f-9312-b8a596a2c0c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Pickup">
+      <UniqueIdentifier>{730521c4-a16b-4f02-a02d-dd24f9476582}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Pickup\Collect">
+      <UniqueIdentifier>{377c5c75-a11b-4cf5-acf2-96a3565b7a51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Object\Photograph">
+      <UniqueIdentifier>{db1893e0-6fab-4476-aec3-143569fb8755}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Object\Touch">
+      <UniqueIdentifier>{69930190-79b1-4d66-adae-e7fd95cd4b2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Player">
+      <UniqueIdentifier>{593586cf-d125-4fef-99dd-3a44aabbeaa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Player\Teleport">
+      <UniqueIdentifier>{0b59aa20-1146-48ee-b837-d2682ceea04a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Player\Animation">
+      <UniqueIdentifier>{bf2736c3-22fb-445b-a996-fbfff7c55b2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Player\TeleportToVehicle">
+      <UniqueIdentifier>{c2126d70-7c28-4daf-ae9f-efabec0b2b98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Player\LevelWanted">
+      <UniqueIdentifier>{d3ab350d-c877-46ab-a47e-d61670535372}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Player\RemoveWeapons">
+      <UniqueIdentifier>{a4451d1b-ebe8-467e-af98-2da357abcaef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Player\AddWeapons">
+      <UniqueIdentifier>{9169bfca-4f8b-4271-89bb-9f9f8310db45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Player\PhoneCall">
+      <UniqueIdentifier>{e883b3a2-3ae2-43e2-88cb-47425e171c8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Player\AddMoney">
+      <UniqueIdentifier>{e321b909-d7b5-4ef6-9212-3b821503c63a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\AddTimer">
+      <UniqueIdentifier>{20913a6a-8481-438b-9227-00f1df0ee8f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\TimerService">
+      <UniqueIdentifier>{9b091f88-240d-4fd3-8ec4-c66e1b77f36e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\RemoveTimer">
+      <UniqueIdentifier>{7860c79f-f624-4bfa-984d-5b528ceb6ed9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -501,6 +591,102 @@
     </ClCompile>
     <ClCompile Include="Windows\SceneSettingsPopup.cpp">
       <Filter>Windows\SceneSettingsPopup</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\ActorObjective.cpp">
+      <Filter>Data\Objectives\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\KillActorOrGroupObjective.cpp">
+      <Filter>Data\Objectives\Actor\KillActorOrGroup</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\DamageActorObjective.cpp">
+      <Filter>Data\Objectives\Actor\DamageActor</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\VehicleObjective.cpp">
+      <Filter>Data\Objectives\Vehicle</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\GetInVehicleObjective.cpp">
+      <Filter>Data\Objectives\Vehicle\GetInVehicle</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\DestroyVehicleObjective.cpp">
+      <Filter>Data\Objectives\Vehicle\DestroyVehicle</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\CutsceneObjective.cpp">
+      <Filter>Data\Objectives\World\Cutscene</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\MathUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\CutsceneMutex.cpp">
+      <Filter>Data\Objectives\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\CountdownObjective.cpp">
+      <Filter>Data\Objectives\World\Countdown</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\TimeoutObjective.cpp">
+      <Filter>Data\Objectives\World\Timeout</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\WeatherObjective.cpp">
+      <Filter>Data\Objectives\World\Weather</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\ClockTimeObjective.cpp">
+      <Filter>Data\Objectives\World\ClockTime</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\TrafficObjective.cpp">
+      <Filter>Data\Objectives\World\Traffic</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\ObjectObjective.cpp">
+      <Filter>Data\Objectives\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\DamageObjectObjective.cpp">
+      <Filter>Data\Objectives\Object\Damage</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\PickupObjective.cpp">
+      <Filter>Data\Objectives\Pickup</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\CollectPickupObjective.cpp">
+      <Filter>Data\Objectives\Pickup\Collect</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\PhotographObjectObjective.cpp">
+      <Filter>Data\Objectives\Object\Photograph</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\TouchObjectObjective.cpp">
+      <Filter>Data\Objectives\Object\Touch</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\PlayerObjective.cpp">
+      <Filter>Data\Objectives\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\TeleportPlayerObjective.cpp">
+      <Filter>Data\Objectives\Player\Teleport</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\AnimationPlayerObjective.cpp">
+      <Filter>Data\Objectives\Player\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\TeleportToVehiclePlayerObjective.cpp">
+      <Filter>Data\Objectives\Player\TeleportToVehicle</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\LevelWantedPlayerObjective.cpp">
+      <Filter>Data\Objectives\Player\LevelWanted</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\RemoveWeaponsObjective.cpp">
+      <Filter>Data\Objectives\Player\RemoveWeapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\AddWeaponsPlayerObjective.cpp">
+      <Filter>Data\Objectives\Player\AddWeapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\PhoneCallPlayerObjective.cpp">
+      <Filter>Data\Objectives\Player\PhoneCall</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\AddMoneyPlayerObjective.cpp">
+      <Filter>Data\Objectives\Player\AddMoney</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\AddTimerObjective.cpp">
+      <Filter>Data\Objectives\World\AddTimer</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\TimerService.cpp">
+      <Filter>Utils\TimerService</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\RemoveTimerObjective.cpp">
+      <Filter>Data\Objectives\World\RemoveTimer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -805,6 +991,108 @@
     </ClInclude>
     <ClInclude Include="Windows\SceneSettingsPopup.h">
       <Filter>Windows\SceneSettingsPopup</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\ActorObjective.h">
+      <Filter>Data\Objectives\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\KillActorOrGroupObjective.h">
+      <Filter>Data\Objectives\Actor\KillActorOrGroup</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\DamageActorObjective.h">
+      <Filter>Data\Objectives\Actor\DamageActor</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\VehicleObjective.h">
+      <Filter>Data\Objectives\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\GetInVehicleObjective.h">
+      <Filter>Data\Objectives\Vehicle\GetInVehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\DestroyVehicleObjective.h">
+      <Filter>Data\Objectives\Vehicle\DestroyVehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CutsceneObjective.h">
+      <Filter>Data\Objectives\World\Cutscene</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\MathUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ktcoro_wait.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CutsceneMutex.h">
+      <Filter>Data\Objectives\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CountdownObjective.h">
+      <Filter>Data\Objectives\World\Countdown</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\TimeoutObjective.h">
+      <Filter>Data\Objectives\World\Timeout</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\WeatherObjective.h">
+      <Filter>Data\Objectives\World\Weather</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\ClockTimeObjective.h">
+      <Filter>Data\Objectives\World\ClockTime</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\TrafficObjective.h">
+      <Filter>Data\Objectives\World\Traffic</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\ObjectObjective.h">
+      <Filter>Data\Objectives\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\DamageObjectObjective.h">
+      <Filter>Data\Objectives\Object\Damage</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\PickupObjective.h">
+      <Filter>Data\Objectives\Pickup</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CollectPickupObjective.h">
+      <Filter>Data\Objectives\Pickup\Collect</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\PhotographObjectObjective.h">
+      <Filter>Data\Objectives\Object\Photograph</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\TouchObjectObjective.h">
+      <Filter>Data\Objectives\Object\Touch</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\PlayerObjective.h">
+      <Filter>Data\Objectives\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\TeleportPlayerObjective.h">
+      <Filter>Data\Objectives\Player\Teleport</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\AnimationPlayerObjective.h">
+      <Filter>Data\Objectives\Player\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\TeleportToVehiclePlayerObjective.h">
+      <Filter>Data\Objectives\Player\TeleportToVehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\LevelWantedPlayerObjective.h">
+      <Filter>Data\Objectives\Player\LevelWanted</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\RemoveWeaponsObjective.h">
+      <Filter>Data\Objectives\Player\RemoveWeapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\AddWeaponsPlayerObjective.h">
+      <Filter>Data\Objectives\Player\AddWeapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\PhoneCallPlayerObjective.h">
+      <Filter>Data\Objectives\Player\PhoneCall</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\AddMoneyPlayerObjective.h">
+      <Filter>Data\Objectives\Player\AddMoney</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\AddTimerObjective.h">
+      <Filter>Data\Objectives\World\AddTimer</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\TimerService.h">
+      <Filter>Utils\TimerService</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\MathCondition.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\RemoveTimerObjective.h">
+      <Filter>Data\Objectives\World\RemoveTimer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

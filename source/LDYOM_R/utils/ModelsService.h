@@ -40,6 +40,8 @@ private:
 	std::optional<std::vector<ObjectModelTag>> modelTags_;
 	std::vector<std::string> particlesNames_;
 	std::map<int, std::string> pedBones_;
+	std::vector<std::string> packsNames_;
+	std::map<std::string, std::vector<std::string>> animations_;
 
 	SQLite::Database db_;
 	std::optional<SQLite::Database> iconDb_;
@@ -91,5 +93,7 @@ public:
 	std::vector<int>& getVehicleModels();
 	std::vector<std::string>& getParticlesNames();
 	std::map<int, std::string>& getPedBones();
+	std::vector<std::string>& getPacksNames();
+	std::map<std::string, std::vector<std::string>>& getAnimations();
 };
 

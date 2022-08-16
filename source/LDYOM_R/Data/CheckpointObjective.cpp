@@ -62,7 +62,7 @@ CheckpointObjective::~CheckpointObjective() {
 	}
 }
 
-ktwait CheckpointObjective::execute(Scene* scene, Result& result) {
+ktwait CheckpointObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
 	const auto& checkpoints = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getCheckpoints();
 	const int indexCheckpoint = utils::indexByUuid(checkpoints, this->checkpointUuid_);
 
@@ -188,7 +188,7 @@ void CheckpointObjective::draw(Localization& local) {
 	});
 
 	ImGui::InputText(local.get("general.text").c_str(), this->text_.data(), sizeof this->text_);
-	ImGui::InputFloat(local.get("general.time").c_str(), &this->textTime_);
+	ImGui::DragFloat(local.get("general.time").c_str(), &this->textTime_, 0.001f);
 	ImGui::Separator();
 	utils::Combo(local.get("checkpoint_objective.how_to_arrive").c_str(), &this->onWhatArrive_, local.getArray("checkpoint_objective.how_to_arrive_enum"));
 

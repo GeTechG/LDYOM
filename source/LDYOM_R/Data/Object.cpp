@@ -144,6 +144,7 @@ void Object::spawnEditorObject() {
 
 	Command<Commands::FREEZE_OBJECT_POSITION>(this->editorObject_.value(), 1);
 	Command<Commands::SET_OBJECT_DYNAMIC>(this->editorObject_.value(), 0);
+	Command<Commands::SET_OBJECT_PROOFS>(this->editorObject_.value(), 1, 1, 1, 1, 1);
 
 	updateLocation();
 }

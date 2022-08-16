@@ -100,6 +100,3 @@ void Windows::TrainsWindow::open() {
 	ListWindow::open();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
 }
-
-void Windows::TrainsWindow::selectElement(int i) {
-}

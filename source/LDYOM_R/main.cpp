@@ -1,5 +1,6 @@
 ﻿#include <CWorld.h>
 #include <CHud.h>
+#include <CTheScripts.h>
 
 #include "HotKeyService.h"
 #include "plugin.h"
@@ -156,6 +157,8 @@ public:
 		};
 
 		Events::initGameEvent += [=]{
+			CTheScripts::ScriptSpace = *reinterpret_cast<char**>(0x44CA42 + 2);
+
 			//MPACK7
 			if (CGame::bMissionPackGame != 7)
 				return;

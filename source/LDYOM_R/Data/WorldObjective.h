@@ -14,10 +14,7 @@ private:
 protected:
 	WorldObjective() = default;
 	WorldObjective(void* _new);
-	WorldObjective(const WorldObjective& other) : BaseObjective{ other } {}
 public:
-	~WorldObjective() override = default;
-
 	int getCategory() override {
 		return 0;
 	}

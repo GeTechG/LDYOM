@@ -158,7 +158,7 @@ void Train::spawnEditorTrain() {
 	this->editorTrain_ = spawnTrain();
 	this->editorTrain_.value()->m_nStatus = STATUS_ABANDONED;
 	this->editorTrain_.value()->m_nVehicleFlags.bEngineOn = 0;
-	this->editorTrain_.value()->m_nDoorLock = CARLOCK_LOCKED;
+	this->editorTrain_.value()->m_eDoorLock = DOORLOCK_LOCKED;
 	Command<Commands::FREEZE_CAR_POSITION>(dynamic_cast<CVehicle*>(this->editorTrain_.value()), true);
 	this->editorTrain_.value()->m_nVehicleFlags.bCanBeDamaged = false;
 

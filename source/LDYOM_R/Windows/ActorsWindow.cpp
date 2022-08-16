@@ -55,40 +55,6 @@ void Windows::ActorsWindow::deleteElement(const int i) {
 	this->currentElement--;
 }
 
-void modelSelection(Actor* actor, Localization& local) {
-	static char unsigned minActorModelType = 0;
-	static char unsigned maxActorModelType = 1;
-	if (ImGui::SliderScalar("##actorModelType", ImGuiDataType_U8, &actor->getModelType(), &minActorModelType, &maxActorModelType,
-		(actor->getModelType() == 0) ? local.get("actor_model_type.ped").c_str() : local.get("actor_model_type.special").c_str())) {
-		actor->getModelId() = 0;
-		actor->spawnEditorPed();
-	}
-
-	if (actor->getModelType() == 1) {
-		ImGui::SliderInt(local.get("general.slot").c_str(), &actor->getSlot(), 0, 8);
-	}
-
-	if (ImGui::Button(ICON_FA_TSHIRT, ImVec2(25.0f, 0.0f))) {
-		PopupSkinSelector::getInstance().showPopup();
-	}
-	ImGui::SameLine();
-	if (actor->getModelType() == 0) {
-		if (ImGui::InputInt("##model", &actor->getModelId(), 0, 0, ImGuiInputTextFlags_CharsDecimal)) {
-			actor->spawnEditorPed();
-		}
-	}
-	else {
-		if (utils::Combo("##model", &actor->getModelId(), ModelsService::getInstance().getSpecialsPed())) {
-			actor->spawnEditorPed();
-		}
-	}
-
-	PopupSkinSelector::getInstance().renderPopup([actor](int model) {
-		actor->getModelId() = model;
-		actor->spawnEditorPed();
-		}, actor->getModelType() == 1, actor->getSlot());
-}
-
 void weaponsSection(Actor* actor, Localization& local) {
 	if (ImGui::TreeNode(local.get("general.weapons").c_str())) {
 		if (ImGui::BeginTable("##weaponsTable", 4, ImGuiTableFlags_ScrollY, ImVec2(300.0f, 200.0f))) {
@@ -187,7 +153,22 @@ void Windows::ActorsWindow::drawOptions() {
 	//heading
 	DragAngleRotation(&actor->getHeadingAngle(), [actor] { actor->updateLocation(); });
 
-	modelSelection(actor, local);
+	modelSkinSelection(actor->getModelType(), actor->getModelId(), actor->getSlot(), [actor] {
+		actor->spawnEditorPed();
+	});
+
+	if (actor->getModelType() == 0 && actor->getModelId() == 0) {
+		if (ImGui::Button(local.get("teleport_player_objective.copy_clothes").c_str())) {
+			const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+			std::memcpy(actor->getClotherMAnTextureKeys().data(), playerClothes->m_anTextureKeys, sizeof playerClothes->m_anTextureKeys);
+			std::memcpy(actor->getClotherMAnModelKeys().data(), playerClothes->m_anModelKeys, sizeof playerClothes->m_anModelKeys);
+			actor->getFatStat() = playerClothes->m_fFatStat;
+			actor->getMusculeStat() = playerClothes->m_fMuscleStat;
+			actor->spawnEditorPed();
+		}
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip(local.get("teleport_player_objective.help_copy_clothes").c_str());
+	}
 
 	characteristicsSection(local, actor);
 
@@ -222,6 +203,3 @@ void Windows::ActorsWindow::open() {
 	ListWindow::open();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
 }
-
-
-void Windows::ActorsWindow::selectElement(int i) {}

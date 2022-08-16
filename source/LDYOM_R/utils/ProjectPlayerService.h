@@ -12,7 +12,7 @@ private:
 
 	std::optional<ktwait> currentSceneTask;
 
-	ktwait changeScene(Scene* scene, int startObjective = 0);
+	ktwait changeScene(Scene* scene, ktcoro_tasklist& tasklist, int startObjective = 0);
 
 	ProjectPlayerService() = default;
 	ProjectPlayerService(const ProjectPlayerService& root) = delete;

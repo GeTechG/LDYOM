@@ -16,6 +16,7 @@ namespace Windows {
 		void drawListWindow() override;
 		void swapItems(int firstItem, int secondItem) override;
 		void close() override;
+		void open() override;
 	public:
 		ObjectivesWindow();
 		void selectElement(int i) override;

@@ -292,7 +292,7 @@ void Vehicle::spawnEditorVehicle(const bool recolor) {
 	this->editorVehicle_.value()->m_nPhysicalFlags.bCollisionProof = 1;
 	this->editorVehicle_.value()->m_nPhysicalFlags.bExplosionProof = 1;
 	this->editorVehicle_.value()->m_nPhysicalFlags.bFireProof = 1;
-	this->editorVehicle_.value()->m_nPhysicalFlags.bMeeleProof = 1;
+	this->editorVehicle_.value()->m_nPhysicalFlags.bMeleeProof = 1;
 	Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(CPools::GetVehicleRef(this->editorVehicle_.value()), 1);
 
 	updateLocation();

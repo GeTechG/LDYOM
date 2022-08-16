@@ -60,11 +60,41 @@ weather = "Weather"
 riot_mode = "Riot Mode"
 wanted = "Wanted"
 game_time = "Game time"
+weathers_types=["Very sunny (LS)", "Sunny (LS)", "Very sunny, smog (LS)", "Sunny, smog (LS)", "Clouds (LS)", "Sunny (SF)", "Very sunny (SF)"," Clouds (SF)","Rainy (SF)","Foggy (SF)","Sunny (LV)","Very sunny (LV)","Clouds (LV)","Very Sunny (CS)","Sunny (CS)", "Clouds (CS)", "Rainy (CS)", "Very Sunny (Des)", "Sunny (Des)", "Sandstorm (Des)" , "Underwater", "Extra 1", "Extra 2"]
+place = "Place"
+places_in_car = ["Driver's seat", "Passenger's seat", "Rear left seat", "Rear right seat"]
+move_mouth = "Move mouth"
+comparings = ["Equal", "Not equal", "More", "More, or equal", "Less", "Less, or equal"]
+condition = "Condition"
 
 [objective]
 title = "Objective"
 objectives = "Objectives"
 checkpoint = "Checkpoint"
+kill_actor_or_group = "Kill Actor/Group"
+damage_actor = "Damage actor"
+get_in_vehicle = "Get in vehicle"
+destroy_vehicle = "Destroy vehicle"
+cutscene = "Cutsecne"
+countdown = "Countdown"
+timeout = "Timeout"
+weather = "Weather"
+clock_time = "Clock time"
+traffic = "Traffic"
+damage_object = "Damage object"
+photograph_object = "Photograph object"
+touch_object = "Touch object"
+collect_pickup = "Collect pickup"
+teleport_player = "Teleport player"
+animation_player = "Animation player"
+teleport_to_vehicle_player = "Teleport player to vehicle"
+level_wanted_player = "Level wanted player"
+remove_weapons_player = "Remove weapons player"
+add_weapons_player = "Add weapons player"
+phone_call_player = "Call phone by player"
+add_money_player = "Add money player"
+add_timer = "Add timer"
+remove_timer = "Remove timer"
 
 [objective_categories]
 world = "World"
@@ -78,9 +108,47 @@ pulse_period = "Pulse period"
 pulse_fraction = "Pulse fraction"
 rotate_rate = "Rotate rate"
 
+[cutscene_objective]
+attach_types = ["None", "To actor"," To vehicle", "To object"]
+attach = "Attach"
+follow_types = ["None", "Actor", "Vehicle", "Object"]
+follow = "Follow"
+interpolation = "Interpolation"
+position_interpolation = "Interpolation of position"
+rotation_interpolation = "Interpolation of rotation"
+asynchronous = "Asynchronous"
+widescreen = "Widescreen"
+start_fade_out = "Fade out at the start"
+fade_out_time = "Fade out time"
+end_fade_in = "Fade in at the end"
+fade_in_time = "Fade in time"
+final_scene = "Final scene"
+lock_player_control = "Lock player control"
+
+[damage_object_objective]
+types = ["Anything", "Weapon ..."]
+
+[teleport_player_objective]
+copy_clothes = "Copy clothes"
+help_copy_clothes = "Copies the clothes that the player is currently wearing.\nIn order to change clothes you can use any clothing selection script.\nFor example, \"Visual Player Image\"."
+
 [actor_model_type]
 ped = "Ped"
 special = "Special"
+
+[animation]
+title = "Animation"
+pack = "Pack"
+looped = "Looped"
+smoothness = "Smoothness"
+preview = "Preview"
+help = "Y - Next animation\nN - Previous animation"
+
+[timer]
+types = ["Waiting", "Limit"]
+help_timer_types = "Waiting - wait for timer to expire and move on to the next objective.\nLimit - go immediately to the next objective and if the timer expires, the project mission is failed."
+backwards = "Backwards"
+
 
 [actor]
 accuracy_shooting = "Accuracy of shooting"
@@ -179,10 +247,12 @@ rotate_rate = "Rotate rate"
 camera_view = "Move Camera - RMB, Zoom - Shift + MWheel"
 move_element = "Move current element - Arrows, QE"
 depend_zoom = "Speed depends on the zoom"
-move_camera = "Move camera - Arrows, QE"
+move_camera = "Move camera - Arrows or WASD, QE"
+speed_move = "Speed of movement: %.2f, Edit - Mouse wheel"
 view_camera_mouse = "View - Move mouse"
 accept_cancel = "Accept - %s\nCancel - %s"
 toggle_surface_rotate = "On/Off surface rotate - %s"
+rotate_with_shift = "Rotate - Shift + Arrows, QE"
 
 [weapons]
 ammo = "Ammo"
@@ -295,6 +365,8 @@ hk_openQuickCommandsMenu = "Open quick commands Menu"
 hk_openQuickCommandsMenu_desc = "Open the quick commands menu"
 hk_accept = "Accept"
 hk_cancel = "Cancel"
+hk_save = "Save"
+hk_save_desc = "Save current project"
 hk_guizmoTranslate = "Guizmo - Translate"
 hk_guizmoRotate = "Guizmo - Rotate"
 hk_guizmoScale = "Guizmo - Scale"

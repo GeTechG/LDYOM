@@ -1,6 +1,10 @@
 ﻿#include "ProjectPlayerService.h"
 
+#include <CCamera.h>
 #include <CClock.h>
+#include <CClothes.h>
+#include <CHud.h>
+#include <CTheScripts.h>
 #include <CWeather.h>
 #include <CWorld.h>
 
@@ -11,6 +15,7 @@
 #include "extensions/ScriptCommands.h"
 #include "CFireManager.h"
 #include "imgui_notify.h"
+#include "TimerService.h"
 #include "../Data/Result.h"
 #include "../easylogging/easylogging++.h"
 
@@ -21,7 +26,7 @@ namespace Windows {
 extern std::optional<Windows::AbstractWindow*> defaultWindow;
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
-ktwait ProjectPlayerService::changeScene(Scene* scene, int startObjective) {
+ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist, int startObjective) {
 	std::unordered_map<boost::uuids::uuid, std::vector<ObjectiveDependent*>, boost::hash<boost::uuids::uuid>> spawnMap;
 	std::unordered_map<boost::uuids::uuid, std::vector<ObjectiveDependent*>, boost::hash<boost::uuids::uuid>> deleteMap;
 
@@ -86,6 +91,27 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, int startObjective) {
 		}
 	}
 
+
+	{
+		using namespace plugin;
+
+		tasklist.add_task([](ProjectPlayerService* _this) -> ktwait {
+			while (true) {
+				if (Command<0x0ADC>("LDSTOP")) {
+					break;
+				}
+				if (CWorld::Players[0].m_nPlayerState != PLAYERSTATE_PLAYING) {
+					Command<Commands::SET_PLAYER_MODEL>(0, 0);
+					while (CWorld::Players[0].m_nPlayerState != PLAYERSTATE_PLAYING)
+						co_await 1;
+					break;
+				}
+				co_await 1;
+			}
+			Tasker::getInstance().getKtcoroTaskList().remove_task(_this->currentSceneTask.value());
+		}, this);
+	}
+
 	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
 		const auto &objective = scene->getObjectives().at(o);
 
@@ -99,7 +125,7 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, int startObjective) {
 		}
 
 		Result result;
-		co_await objective->execute(scene, result);
+		co_await objective->execute(scene, result, tasklist);
 
 		if (!result.isDone()) {
 			CLOG(ERROR, "LDYOM") << result;
@@ -154,7 +180,15 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	while(this->nextScene.has_value()) {
 		const auto scene = this->nextScene.value();
 		this->nextScene = std::nullopt;
-		auto taskScene = changeScene(startScene, startObjective);
+
+		ktcoro_tasklist ts;
+		Tasker::getInstance().getInstance().addTask("sceneProcces", [](ktcoro_tasklist& ts) -> ktwait {
+			while (true) {
+				ts.process();
+				co_await 1;
+			}
+		}, ts);
+		auto taskScene = changeScene(startScene, ts, startObjective);
 		this->currentSceneTask.emplace(std::move(taskScene));
 		co_await ktwait(this->currentSceneTask.value().coro_handle);
 
@@ -180,24 +214,39 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 			}
 		}
 
+		Tasker::getInstance().getInstance().removeTask("sceneProcces");
+
 		scene->unloadProjectScene();
 	}
 
 	for (auto & fire : gFireManager.m_aFires) {
 		fire.Extinguish();
 	}
-	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->loadEditorScene();
-	defaultWindow = savedWindow;
-	defaultWindow.value()->open();
-	Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 
+	TimerService::getInstance().removeTimer();
+	Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 	Command<Commands::SET_LA_RIOTS>(0);
 	Command<Commands::SET_PED_DENSITY_MULTIPLIER>(0.f);
 	Command<Commands::SET_CAR_DENSITY_MULTIPLIER>(0.f);
 	CWorld::Players[0].m_PlayerData.m_pWanted->SetWantedLevelNoDrop(0);
 	CWanted::SetMaximumWantedLevel(0);
-
+	FindPlayerPed()->SetWantedLevel(0);
+	FindPlayerPed()->ClearWeapons();
+	FindPlayerPed()->m_fHealth = 100.f;
+	FindPlayerPed()->m_fMaxHealth = 100.f;
+	FindPlayerPed()->m_pIntelligence->ClearTasks(true, true);
+	CWorld::Players[0].m_nMoney = 0;
+	Command<Commands::SET_PLAYER_MODEL>(0, 0);
+	CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
+	CTheScripts::bDisplayHud = true;
+	CHud::bScriptDontDisplayRadar = false;
+	TheCamera.RestoreWithJumpCut();
+	Command<Commands::DO_FADE>(0, 1);
 	CWorld::ClearExcitingStuffFromArea(FindPlayerPed()->GetPosition(), 999999.f, true);
+
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->loadEditorScene();
+	defaultWindow = savedWindow;
+	defaultWindow.value()->open();
 
 	this->projectRunning = false;
 }
