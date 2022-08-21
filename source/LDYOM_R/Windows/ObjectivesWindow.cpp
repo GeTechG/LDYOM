@@ -34,6 +34,14 @@
 #include "../Data/AddMoneyPlayerObjective.h"
 #include "../Data/AddTimerObjective.h"
 #include "../Data/RemoveTimerObjective.h"
+#include "../Data/StartMissionObjective.h"
+#include "../Data/EndMissionObjective.h"
+#include "../Data/GoToSceneObjective.h"
+#include "../Data/WaitSignalObjective.h"
+#include "../Data/FollowPathActorObjective.h"
+#include "../Data/AnimationActorObjective.h"
+#include "../Data/EnterVehicleActorObjective.h"
+#include "../Data/FollowPathVehicleObjective.h"
 #include "fmt/core.h"
 
 std::string Windows::ObjectivesWindow::getNameList() {
@@ -100,6 +108,15 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 				case 1:
 					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<DamageActorObjective&>(*objective));
 					break;
+				case 2:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<FollowPathActorObjective&>(*objective));
+					break;
+				case 3:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<AnimationActorObjective&>(*objective));
+					break;
+				case 4:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<EnterVehicleActorObjective&>(*objective));
+					break;
 
 				default:
 					break;
@@ -109,17 +126,18 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 		case 2:
 			switch (objective->getTypeCategory()) {
 				//Vehicle
-			case 0: {
-				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<GetInVehicleObjective&>(*objective));
-			}
-			break;
+				case 0: 
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<GetInVehicleObjective&>(*objective));
+					break;
+				case 1:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<DestroyVehicleObjective&>(*objective));
+					break;
+				case 2:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<FollowPathVehicleObjective&>(*objective));
+					break;
 
-			case 1:
-				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<DestroyVehicleObjective&>(*objective));
-				break;
-
-			default:
-				break;
+				default:
+					break;
 			}
 			break;
 		case 3:
@@ -178,6 +196,32 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<AddMoneyPlayerObjective&>(*objective));
 					break;
 
+			default:
+				break;
+			}
+			break;
+		case 6:
+			switch (objective->getTypeCategory()) {
+				//Mission
+				case 0:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<StartMissionObjective&>(*objective));
+					break;
+				case 1:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<EndMissionObjective&>(*objective));
+					break;
+			default:
+				break;
+			}
+			break;
+		case 7:
+			switch (objective->getTypeCategory()) {
+				//Scene
+				case 0:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<GoToSceneObjective&>(*objective));
+					break;
+				case 1:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<WaitSignalObjective&>(*objective));
+					break;
 			default:
 				break;
 			}
@@ -280,6 +324,21 @@ void Windows::ObjectivesWindow::drawListWindow() {
 				this->selectElement(this->getListSize() - 1);
 			}
 
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.follow_path_actor").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<FollowPathActorObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.animation_actor").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<AnimationActorObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.enter_vehicle_actor").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<EnterVehicleActorObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
 			ImGui::EndMenu();
 		}
 
@@ -292,6 +351,11 @@ void Windows::ObjectivesWindow::drawListWindow() {
 
 			if (ImGui::MenuItem(Localization::getInstance().get("objective.destroy_vehicle").c_str())) {
 				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<DestroyVehicleObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.follow_path_vehicle").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<FollowPathVehicleObjective>(nullptr);
 				this->selectElement(this->getListSize() - 1);
 			}
 
@@ -374,6 +438,37 @@ void Windows::ObjectivesWindow::drawListWindow() {
 
 			ImGui::EndMenu();
 		}
+
+		if (ImGui::BeginMenu(Localization::getInstance().get("mission.title").c_str())) {
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.start_mission").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<StartMissionObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.end_mission").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<EndMissionObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu(Localization::getInstance().get("scenes.scene").c_str())) {
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.go_to_scene").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<GoToSceneObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.wait_signal").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<WaitSignalObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			ImGui::EndMenu();
+		}
+
 
 
 		ImGui::EndPopup();

@@ -24,6 +24,7 @@ namespace Windows {
 }
 
 extern std::optional<Windows::AbstractWindow*> defaultWindow;
+extern bool openWindowsMenu;
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
 ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist, int startObjective) {
@@ -108,12 +109,17 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist
 				}
 				co_await 1;
 			}
-			Tasker::getInstance().getKtcoroTaskList().remove_task(_this->currentSceneTask.value());
+			_this->stopCurrentScene();
 		}, this);
 	}
 
 	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
 		const auto &objective = scene->getObjectives().at(o);
+
+		if (this->nextObjective.has_value()) {
+			o = this->nextObjective.value();
+			this->nextObjective = std::nullopt;
+		}
 
 		for (const auto & dependent : spawnMap[objective->getUuid()]) {
 			try {
@@ -160,8 +166,12 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist
 	}
 }
 
-void ProjectPlayerService::setNextScene(Scene* _nextScene) {
-	this->nextScene = std::make_optional(_nextScene);
+void ProjectPlayerService::setNextScene(Scene* nextScene) {
+	this->nextScene = std::make_optional(nextScene);
+}
+
+void ProjectPlayerService::setNextObjective(int objective) {
+	this->nextObjective = objective;
 }
 
 ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
@@ -176,6 +186,7 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 
 	const auto startScene = ProjectsService::getInstance().getCurrentProject().getScenes().at(sceneIdx).get();
 	setNextScene(startScene);
+	setNextObjective(startObjective);
 
 	while(this->nextScene.has_value()) {
 		const auto scene = this->nextScene.value();
@@ -188,7 +199,9 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 				co_await 1;
 			}
 		}, ts);
-		auto taskScene = changeScene(startScene, ts, startObjective);
+		const auto startObjectiveScene = this->nextObjective.value_or(0);
+		this->nextObjective = std::nullopt;
+		auto taskScene = changeScene(scene, ts, startObjectiveScene);
 		this->currentSceneTask.emplace(std::move(taskScene));
 		co_await ktwait(this->currentSceneTask.value().coro_handle);
 
@@ -224,6 +237,8 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	}
 
 	TimerService::getInstance().removeTimer();
+	CTheScripts::ScriptSpace[CTheScripts::OnAMissionFlag] = 0;
+
 	Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 	Command<Commands::SET_LA_RIOTS>(0);
 	Command<Commands::SET_PED_DENSITY_MULTIPLIER>(0.f);
@@ -244,9 +259,24 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	Command<Commands::DO_FADE>(0, 1);
 	CWorld::ClearExcitingStuffFromArea(FindPlayerPed()->GetPosition(), 999999.f, true);
 
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 9; j++) {
+			if (j == 0) {
+				Command<Commands::SET_RELATIONSHIP>(0, 24 + i, 0);
+				Command<Commands::SET_RELATIONSHIP>(0, 24 + i, 23);
+				Command<Commands::SET_RELATIONSHIP>(0, 23, 24 + i);
+			}
+			else {
+				if (i != j - 1) {
+					Command<Commands::SET_RELATIONSHIP>(0, 24 + i, 24 + j - 1);
+				}
+			}
+		}
+	}
+
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->loadEditorScene();
 	defaultWindow = savedWindow;
-	defaultWindow.value()->open();
+	openWindowsMenu = false;
 
 	this->projectRunning = false;
 }
@@ -257,4 +287,8 @@ bool& ProjectPlayerService::isProjectRunning() {
 
 void ProjectPlayerService::reset() {
 	this->projectRunning = false;
+}
+
+void ProjectPlayerService::stopCurrentScene() {
+	Tasker::getInstance().getKtcoroTaskList().remove_task(this->currentSceneTask.value());
 }

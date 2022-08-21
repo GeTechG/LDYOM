@@ -73,7 +73,7 @@ void PickupObjective::close() {
 }
 
 ktwait PickupObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
-	const auto& pickups = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups();
+	const auto& pickups = scene->getPickups();
 	const int indexPickup = utils::indexByUuid(pickups, this->pickupUuid_);
 
 	if (indexPickup == -1) {
@@ -109,7 +109,7 @@ void PickupObjective::spawnEditorBlip() {
 	const auto& pickups = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups();
 	const int indexPickup = utils::indexByUuid(pickups, this->pickupUuid_);
 
-	if (indexPickup != -1) {
+	if (indexPickup != -1 && this->colorBlip_ > 0) {
 		if (const auto pickup = pickups.at(indexPickup)->getEditorPickupIndex(); pickup.has_value())
 			this->editorBlip_ = spawnBlip(pickup.value());
 	}

@@ -24,6 +24,8 @@ void Windows::SceneSettingsWindowPopup::draw() {
 
 	if (ImGui::BeginPopupModal(fmt::format("{} {}", ICON_FA_SLIDERS_H, local.get("scene_settings.title")).c_str(), &this->show_, ImGuiWindowFlags_AlwaysAutoResize)) {
 
+		ImGui::InputText(local.get("general.name").c_str(), ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getName(), NAME_SIZE);
+
 		utils::ToggleButton(local.get("scene_settings.apply").c_str(), &ProjectsService::getInstance().getCurrentProject().getCurrentScene()->isToggleSceneSettings());
 
 		ImGui::Dummy(ImVec2(0.f, ImGui::GetFontSize()));

@@ -66,6 +66,17 @@ places_in_car = ["Driver's seat", "Passenger's seat", "Rear left seat", "Rear ri
 move_mouth = "Move mouth"
 comparings = ["Equal", "Not equal", "More", "More, or equal", "Less", "Less, or equal"]
 condition = "Condition"
+text_style = "Text style"
+text_styles = ["Middle", "Bottom right", "Middle smaller", "Middle smaller higher", "White middle smaller", "Lightblue top"]
+fade = "Fade"
+fade_in_time = "Fade-in time"
+fade_out_time = "Fade-out time"
+passed_tune = "Passed tune"
+show_text = "Show text"
+name = "Name"
+record_path = "Record path"
+teleport = "Teleport"
+wait_execute = "Wait execute"
 
 [objective]
 title = "Objective"
@@ -95,6 +106,14 @@ phone_call_player = "Call phone by player"
 add_money_player = "Add money player"
 add_timer = "Add timer"
 remove_timer = "Remove timer"
+start_mission = "Start mission"
+end_mission = "End mission"
+go_to_scene = "Go to scene"
+wait_signal = "Wait signal"
+follow_path_actor = "Follow path actor"
+animation_actor = "Animation actor"
+enter_vehicle_actor = "Enter vehicle actor"
+follow_path_vehicle = "Follow path vehicle"
 
 [objective_categories]
 world = "World"
@@ -131,6 +150,26 @@ types = ["Anything", "Weapon ..."]
 [teleport_player_objective]
 copy_clothes = "Copy clothes"
 help_copy_clothes = "Copies the clothes that the player is currently wearing.\nIn order to change clothes you can use any clothing selection script.\nFor example, \"Visual Player Image\"."
+dress_up = "Dress up"
+
+[go_to_scene_objective]
+types = ["Direct", "By checkpoint", "By pickup"]
+
+[follow_path_actor_objective]
+move_type = "Move type"
+move_states = ["Walk", "Run", "Sprint"]
+path_type = "Path type"
+path_types = ["Once", "Loop", "Ping-pong"]
+execute_time = "Execute time"
+
+[follow_path_vehicle_objective]
+drive_type = "Drive type"
+drive_types = ["Anything", "Accurate", "Racing"]
+
+[mission]
+title = "Mission"
+show_name = "Show name"
+name_mission = "Name mission"
 
 [actor_model_type]
 ped = "Ped"
@@ -253,6 +292,10 @@ view_camera_mouse = "View - Move mouse"
 accept_cancel = "Accept - %s\nCancel - %s"
 toggle_surface_rotate = "On/Off surface rotate - %s"
 rotate_with_shift = "Rotate - Shift + Arrows, QE"
+delete_all_points = "Delete all points - L"
+move_point = "Move point - M"
+select_point = "Next/Previous point - I/O"
+add_point = "Add point - P"
 
 [weapons]
 ammo = "Ammo"

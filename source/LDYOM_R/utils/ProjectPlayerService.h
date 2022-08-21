@@ -9,6 +9,7 @@ private:
 	bool projectRunning = false;
 	std::optional<Scene*> currentScene;
 	std::optional<Scene*> nextScene;
+	std::optional<int> nextObjective;
 
 	std::optional<ktwait> currentSceneTask;
 
@@ -23,11 +24,13 @@ public:
 		return instance;
 	}
 
-	void setNextScene(Scene* _nextScene);
+	void setNextScene(Scene* nextScene);
+	void setNextObjective(int objective);
 
 	ktwait startProject(int sceneIdx, int startObjective = 0);
 
 	bool& isProjectRunning();
 	void reset();
+	void stopCurrentScene();
 };
 

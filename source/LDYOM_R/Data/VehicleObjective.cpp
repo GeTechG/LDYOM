@@ -72,7 +72,7 @@ void VehicleObjective::close() {
 }
 
 ktwait VehicleObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
-	const auto& vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
+	const auto& vehicles = scene->getVehicles();
 	const int indexVehicle = utils::indexByUuid(vehicles, this->vehicleUuid_);
 
 	if (indexVehicle == -1) {
@@ -108,7 +108,7 @@ void VehicleObjective::spawnEditorBlip() {
 	const auto& vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
 	const int indexVehicle = utils::indexByUuid(vehicles, this->vehicleUuid_);
 
-	if (indexVehicle != -1) {
+	if (indexVehicle != -1 && this->colorBlip_ > 0) {
 		if (const auto ped = vehicles.at(indexVehicle)->getEditorVehicle(); ped.has_value()) 
 			this->editorBlip_ = spawnBlip(ped.value());
 	}

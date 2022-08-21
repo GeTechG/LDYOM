@@ -5,6 +5,7 @@
 
 #define SQLITECPP_ENABLE_ASSERT_HANDLER
 
+#include <array>
 #include <set>
 #include <SQLiteCpp/Database.h>
 #include "../Data/Texture.h"
@@ -42,6 +43,7 @@ private:
 	std::map<int, std::string> pedBones_;
 	std::vector<std::string> packsNames_;
 	std::map<std::string, std::vector<std::string>> animations_;
+	std::array<int, 6> textStyles_;
 
 	SQLite::Database db_;
 	std::optional<SQLite::Database> iconDb_;
@@ -95,5 +97,6 @@ public:
 	std::map<int, std::string>& getPedBones();
 	std::vector<std::string>& getPacksNames();
 	std::map<std::string, std::vector<std::string>>& getAnimations();
+	std::array<int, 6>& getTextStyles();
 };
 

@@ -3,6 +3,7 @@
 
 #include <CHud.h>
 #include <CRadar.h>
+#include <CSprite.h>
 #include <CStreaming.h>
 #include <CTheScripts.h>
 #include <CWorld.h>
@@ -23,6 +24,7 @@
 #include "extensions/KeyCheck.h"
 #include "../easylogging/easylogging++.h"
 #include "../Windows/ObjectsWindow.h"
+#include <CKeyGen.h>
 
 class Vehicle;
 using namespace std::chrono_literals;
@@ -34,6 +36,7 @@ ktwait editByPlayerActorTask(Actor& actor) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
 	TheCamera.Restore();
+	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
 		auto& local = Localization::getInstance();
@@ -106,6 +109,8 @@ void EditByPlayerService::editByPlayerActor(Actor& actor) {
 ktwait editByPlayerVehicleTask(Vehicle& vehicle) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
+	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
+
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
 		auto& local = Localization::getInstance();
 		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -149,6 +154,8 @@ ktwait editByPlayerVehicleTask(Vehicle& vehicle) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
 
 	Windows::WindowsRenderService::getInstance().removeRender("editByPlayerOverlay");
+
+	Command<Commands::SET_PLAYER_CONTROL>(0, 0);
 
 	Tasker::getInstance().removeTask("editByPlayerVehicle");
 }
@@ -340,6 +347,8 @@ ktwait editByPlayerCameraTask(float* pos, CQuaternion* rotation, bool widescreen
 
 	static float multiplier = 1.f;
 
+	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
+
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
 		auto& local = Localization::getInstance();
 		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
@@ -451,6 +460,8 @@ ktwait editByPlayerCameraTask(float* pos, CQuaternion* rotation, bool widescreen
 	CTheScripts::bDisplayHud = true;
 	CHud::bScriptDontDisplayRadar = false;
 
+	Command<Commands::SET_PLAYER_CONTROL>(0, 0);
+
 	Windows::WindowsRenderService::getInstance().removeRender("editByPlayerOverlay");
 	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
 
@@ -459,4 +470,206 @@ ktwait editByPlayerCameraTask(float* pos, CQuaternion* rotation, bool widescreen
 
 void EditByPlayerService::editByPlayerCamera(float* pos, CQuaternion* rotation, bool widescreen, std::function<void()> callback) {
 	Tasker::getInstance().addTask("editByPlayerCamera", editByPlayerCameraTask, pos, rotation, widescreen, callback);
+}
+
+ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>>& path) {
+	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
+
+	TheCamera.RestoreWithJumpCut();
+
+	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
+
+	auto newPath = path;
+
+	int currentIndexPoint = 0;
+
+	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
+		auto& local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
+			ImGui::Text(local.get("info_overlay.delete_all_points").c_str());
+			ImGui::Text(local.get("info_overlay.move_point").c_str());
+			ImGui::Text(local.get("info_overlay.select_point").c_str());
+			ImGui::Text(local.get("info_overlay.add_point").c_str());
+			char acceptHotKey[32];
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey, sizeof acceptHotKey);
+			char cancelHotKey[32];
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey, sizeof cancelHotKey);
+			ImGui::Text(local.get("info_overlay.accept_cancel").c_str(), acceptHotKey, cancelHotKey);
+			ImGui::PopTextWrapPos();
+
+			const auto drawList = ImGui::GetBackgroundDrawList();
+
+			if (!newPath.empty()) {
+				RwV3d lastPoint;
+				float w, h;
+				auto lastVisible = CSprite::CalcScreenCoors(RwV3d{ newPath.at(0)[0], newPath.at(0)[1], newPath.at(0)[2]}, &lastPoint, &w, &h, true, true);
+				if (lastVisible) 
+					drawList->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f, currentIndexPoint == 0 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+				for (int i = 1; i < newPath.size(); ++i) {
+					RwV3d currentPoint;
+					const auto currentVisible = CSprite::CalcScreenCoors(RwV3d{ newPath.at(i)[0], newPath.at(i)[1], newPath.at(i)[2]}, &currentPoint, &w, &h, true, true);
+					if (lastVisible && currentVisible) 
+						drawList->AddLine(ImVec2(lastPoint.x, lastPoint.y), ImVec2(currentPoint.x, currentPoint.y), IM_COL32_WHITE);
+					if (currentVisible) 
+						drawList->AddCircleFilled(ImVec2(currentPoint.x, currentPoint.y), 5.f, currentIndexPoint == i ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+					lastPoint = currentPoint;
+					lastVisible = currentVisible;
+				}
+			}
+		}
+		ImGui::End();
+	});
+
+	while (true) {
+
+		const auto hotKey = HotKeyService::getInstance().getHotKey(true);
+		if (hotKey != nullptr && std::strcmp(hotKey->functionName, "cancel") == 0) {
+			break;
+		}
+
+		if (hotKey != nullptr && std::strcmp(hotKey->functionName, "accept") == 0) {
+			path.swap(newPath);
+			break;
+		}
+
+		KeyCheck::Update();
+
+		if (KeyCheck::CheckJustDown('L')) {
+			newPath.clear();
+		}
+
+		if (KeyCheck::CheckJustDown('M')) {
+			const auto position = FindPlayerPed()->GetPosition();
+			newPath.at(currentIndexPoint) = {position.x, position.y, position.z };
+		}
+
+		if (KeyCheck::CheckJustDown('I')) {
+			currentIndexPoint++;
+			currentIndexPoint = min(currentIndexPoint, newPath.size() - 1);
+		}
+
+		if (KeyCheck::CheckJustDown('O')) {
+			currentIndexPoint--;
+			currentIndexPoint = max(currentIndexPoint, 0);
+		}
+
+		if (KeyCheck::CheckJustDown('P')) {
+			const auto position = FindPlayerPed()->GetPosition();
+			newPath.emplace_back(std::array{position.x, position.y, position.z});
+			currentIndexPoint = newPath.size() - 1;
+		}
+
+		co_await 1;
+	}
+
+	Command<Commands::SET_PLAYER_CONTROL>(0, 0);
+
+	Windows::WindowsRenderService::getInstance().removeRender("editByPlayerOverlay");
+	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
+}
+
+void EditByPlayerService::editByPlayerActorPath(std::vector<std::array<float, 3>>& path) {
+	Tasker::getInstance().addTask("editByPlayerActorPathTask", editByPlayerActorPathTask, path);
+}
+
+ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>>& path, int model) {
+	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
+
+	TheCamera.RestoreWithJumpCut();
+
+	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
+
+	auto newPath = path;
+
+	int vehicleHandle;
+	Command<Commands::CREATE_CAR>(model, FindPlayerCoors(0).x, FindPlayerCoors(0).y, FindPlayerCoors(0).z, &vehicleHandle);
+	Command<Commands::TASK_WARP_CHAR_INTO_CAR_AS_DRIVER>(static_cast<CPed*>(FindPlayerPed()), vehicleHandle);
+
+	co_await 100ms;
+
+	int currentIndexPoint = 0;
+
+	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
+		auto& local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
+			ImGui::Text(local.get("info_overlay.delete_all_points").c_str());
+			ImGui::Text(local.get("info_overlay.move_point").c_str());
+			ImGui::Text(local.get("info_overlay.select_point").c_str());
+			ImGui::Text(local.get("info_overlay.add_point").c_str());
+			ImGui::Text(local.get("vehicle.edit_by_player_overlay").c_str());
+			ImGui::PopTextWrapPos();
+
+			const auto drawList = ImGui::GetBackgroundDrawList();
+
+			if (!newPath.empty()) {
+				RwV3d lastPoint;
+				float w, h;
+				auto lastVisible = CSprite::CalcScreenCoors(RwV3d{ newPath.at(0)[0], newPath.at(0)[1], newPath.at(0)[2] }, &lastPoint, &w, &h, true, true);
+				if (lastVisible)
+					drawList->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f, currentIndexPoint == 0 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+				for (int i = 1; i < newPath.size(); ++i) {
+					RwV3d currentPoint;
+					const auto currentVisible = CSprite::CalcScreenCoors(RwV3d{ newPath.at(i)[0], newPath.at(i)[1], newPath.at(i)[2] }, &currentPoint, &w, &h, true, true);
+					if (lastVisible && currentVisible)
+						drawList->AddLine(ImVec2(lastPoint.x, lastPoint.y), ImVec2(currentPoint.x, currentPoint.y), IM_COL32_WHITE);
+					if (currentVisible)
+						drawList->AddCircleFilled(ImVec2(currentPoint.x, currentPoint.y), 5.f, currentIndexPoint == i ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+					lastPoint = currentPoint;
+					lastVisible = currentVisible;
+				}
+			}
+		}
+		ImGui::End();
+		});
+
+	while (Command<Commands::IS_CHAR_IN_CAR>(static_cast<CPed*>(FindPlayerPed()), vehicleHandle)) {
+
+		KeyCheck::Update();
+
+		if (KeyCheck::CheckJustDown('L')) {
+			newPath.clear();
+		}
+
+		if (KeyCheck::CheckJustDown('M')) {
+			const auto position = FindPlayerVehicle(0, false)->GetPosition();
+			newPath.at(currentIndexPoint) = { position.x, position.y, position.z };
+		}
+
+		if (KeyCheck::CheckJustDown('I')) {
+			currentIndexPoint++;
+			currentIndexPoint = min(currentIndexPoint, newPath.size() - 1);
+		}
+
+		if (KeyCheck::CheckJustDown('O')) {
+			currentIndexPoint--;
+			currentIndexPoint = max(currentIndexPoint, 0);
+		}
+
+		if (KeyCheck::CheckJustDown('P')) {
+			const auto position = FindPlayerVehicle(0, false)->GetPosition();
+			newPath.emplace_back(std::array{ position.x, position.y, position.z });
+			currentIndexPoint = newPath.size() - 1;
+		}
+
+		co_await 1;
+	}
+
+	path.swap(newPath);
+
+	Command<Commands::DELETE_CAR>(vehicleHandle);
+
+	Command<Commands::SET_PLAYER_CONTROL>(0, 0);
+
+	Windows::WindowsRenderService::getInstance().removeRender("editByPlayerOverlay");
+	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
+}
+
+void EditByPlayerService::editByPlayerVehiclePath(std::vector<std::array<float, 3>>& path, int model) {
+	Tasker::getInstance().addTask("editByPlayerVehiclePathTask", editByPlayerVehiclePathTask, path, model);
 }

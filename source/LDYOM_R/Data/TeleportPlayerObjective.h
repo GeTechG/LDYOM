@@ -19,6 +19,7 @@ private:
 		ar & modelId_;
 		ar & health_;
 		ar & interiorID_;
+		ar & dressUp_;
 		ar & boost::serialization::make_array(clotherMAnModelKeys_.data(), clotherMAnModelKeys_.size());
 		ar & boost::serialization::make_array(clotherMAnTextureKeys_.data(), clotherMAnTextureKeys_.size());
 		ar & fatStat;
@@ -32,6 +33,7 @@ private:
 	int modelId_{};
 	int health_ = 100;
 	int interiorID_ = 0;
+	bool dressUp_ = true;
 	std::array<unsigned, 10> clotherMAnModelKeys_{};
 	std::array<unsigned, 18> clotherMAnTextureKeys_{};
 	float fatStat = 1.f;

@@ -133,17 +133,18 @@ inline std::string cp1251ToUtf8(const char* str) {
     return res;
 }
 
-
+const char sym_ru[] = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+const char sym_sl[] = "AЂ‹‚ѓEE„€…†K‡–­OЊPCЏYЃX‰ЌЋЉђ‘’“”•a—ў™љee›џњќkћЇ®oЈpc¦yx ¤ҐЎ§Ё©Є«¬";
 inline void gxtEncode(std::string& str1251, const bool toSl = true) {
-    static std::string symRu = utf8ToCp1251("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя");
-        static std::string symSl = utf8ToCp1251("AЂ‹‚ѓEE„€…†K‡–­OЊPCЏYЃX‰ЌЋЉђ‘’“”•a—ў™љee›џњќkћЇ®oЈpc¦yx ¤ҐЎ§Ё©Є«¬");
+    for (int i = 0; i < 66; i++) {
+        static std::string ruUtf8 = utf8ToCp1251(sym_ru);
+        static std::string slUtf8 = utf8ToCp1251(sym_sl);
+        if (toSl)
+            std::ranges::replace(str1251, ruUtf8[i], slUtf8[i]);
+        else
+            std::ranges::replace(str1251, slUtf8[i], ruUtf8[i]);
 
-            for (int i = 0; i < 66; i++) {
-                if (toSl)
-                    std::ranges::replace(str1251, symRu[i], symSl[i]);
-                else
-                    std::ranges::replace(str1251, symSl[i], symRu[i]);
-            }
+    }
 }
 
 

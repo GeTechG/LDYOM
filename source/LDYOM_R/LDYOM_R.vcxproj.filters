@@ -311,6 +311,36 @@
     <Filter Include="Data\Objectives\World\RemoveTimer">
       <UniqueIdentifier>{7860c79f-f624-4bfa-984d-5b528ceb6ed9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Objectives\Mission">
+      <UniqueIdentifier>{9b1c120a-63c0-4910-b8e3-00865679f52c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Mission\StartMission">
+      <UniqueIdentifier>{d755c81e-c88e-4485-9c6b-0b9c9f6715dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Mission\EndMission">
+      <UniqueIdentifier>{1c4172d8-df88-4275-a446-08517c99790b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Scene">
+      <UniqueIdentifier>{8a0a65c0-f77b-4428-95e6-8246651638ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Scene\GoTo">
+      <UniqueIdentifier>{5b336804-b05b-4d5f-986b-8cd4f5690ca2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Scene\WaitSignal">
+      <UniqueIdentifier>{502fc21b-e64c-40c5-a8d9-1a154314cb54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Actor\FollowPath">
+      <UniqueIdentifier>{115a39f8-43dc-497e-89b5-e6acab749581}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Actor\Animation">
+      <UniqueIdentifier>{42cdc2e2-4a69-42ed-9f2a-7d198cfc0a0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Actor\EnterVehicle">
+      <UniqueIdentifier>{af007512-83c6-44a4-9c25-01c618b32f33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Vehicle\FollowPath">
+      <UniqueIdentifier>{5cd44741-6482-4d63-a2da-1ec61dc551ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -687,6 +717,36 @@
     </ClCompile>
     <ClCompile Include="Data\RemoveTimerObjective.cpp">
       <Filter>Data\Objectives\World\RemoveTimer</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\MissionObjective.cpp">
+      <Filter>Data\Objectives\Mission</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\StartMissionObjective.cpp">
+      <Filter>Data\Objectives\Mission\StartMission</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\EndMissionObjective.cpp">
+      <Filter>Data\Objectives\Mission\EndMission</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\SceneObjective.cpp">
+      <Filter>Data\Objectives\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\GoToSceneObjective.cpp">
+      <Filter>Data\Objectives\Scene\GoTo</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\WaitSignalObjective.cpp">
+      <Filter>Data\Objectives\Scene\WaitSignal</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\FollowPathActorObjective.cpp">
+      <Filter>Data\Objectives\Actor\FollowPath</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\AnimationActorObjective.cpp">
+      <Filter>Data\Objectives\Actor\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\EnterVehicleActorObjective.cpp">
+      <Filter>Data\Objectives\Actor\EnterVehicle</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\FollowPathVehicleObjective.cpp">
+      <Filter>Data\Objectives\Vehicle\FollowPath</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1093,6 +1153,36 @@
     </ClInclude>
     <ClInclude Include="Data\RemoveTimerObjective.h">
       <Filter>Data\Objectives\World\RemoveTimer</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\MissionObjective.h">
+      <Filter>Data\Objectives\Mission</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\StartMissionObjective.h">
+      <Filter>Data\Objectives\Mission\StartMission</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\EndMissionObjective.h">
+      <Filter>Data\Objectives\Mission\EndMission</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\SceneObjective.h">
+      <Filter>Data\Objectives\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\GoToSceneObjective.h">
+      <Filter>Data\Objectives\Scene\GoTo</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\WaitSignalObjective.h">
+      <Filter>Data\Objectives\Scene\WaitSignal</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\FollowPathActorObjective.h">
+      <Filter>Data\Objectives\Actor\FollowPath</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\AnimationActorObjective.h">
+      <Filter>Data\Objectives\Actor\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\EnterVehicleActorObjective.h">
+      <Filter>Data\Objectives\Actor\EnterVehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\FollowPathVehicleObjective.h">
+      <Filter>Data\Objectives\Vehicle\FollowPath</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

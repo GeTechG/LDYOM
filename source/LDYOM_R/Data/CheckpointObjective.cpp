@@ -63,7 +63,7 @@ CheckpointObjective::~CheckpointObjective() {
 }
 
 ktwait CheckpointObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
-	const auto& checkpoints = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getCheckpoints();
+	const auto& checkpoints = scene->getCheckpoints();
 	const int indexCheckpoint = utils::indexByUuid(checkpoints, this->checkpointUuid_);
 
 	if (indexCheckpoint == -1) {

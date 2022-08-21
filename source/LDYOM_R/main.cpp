@@ -1,5 +1,6 @@
 ﻿#include <CWorld.h>
 #include <CHud.h>
+#include <CMenuManager.h>
 #include <CTheScripts.h>
 
 #include "HotKeyService.h"
@@ -63,6 +64,12 @@ public:
 				hotkeysExecute();
 
 			FileWatcher::runTasks();
+
+			static bool lastFrameMenuActive = false;
+			if (lastFrameMenuActive && !FrontEndMenuManager.m_bMenuActive) {
+				ImGui::GetIO().ClearInputKeys();
+			}
+			lastFrameMenuActive = FrontEndMenuManager.m_bMenuActive;
 		};
 
 		auto scriptProcess = [] {

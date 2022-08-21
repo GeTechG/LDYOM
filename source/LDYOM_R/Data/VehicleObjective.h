@@ -6,7 +6,7 @@
 class Vehicle;
 
 class VehicleObjective : virtual public BaseObjective {
-private:
+protected:
 	friend class boost::serialization::access;
 
 	template <class Archive>
@@ -24,7 +24,7 @@ private:
 	int colorBlip_ = 0;
 
 	std::array<char, TEXT_SIZE> gameText_ = { "" };
-protected:
+
 	VehicleObjective() = default;
 
 	std::optional<int> editorBlip_;

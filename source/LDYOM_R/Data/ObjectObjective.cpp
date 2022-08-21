@@ -73,7 +73,7 @@ void ObjectObjective::close() {
 }
 
 ktwait ObjectObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
-	const auto& objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
+	const auto& objects = scene->getObjects();
 	const int indexObject = utils::indexByUuid(objects, this->objectUuid_);
 
 	if (indexObject == -1) {
@@ -109,7 +109,7 @@ void ObjectObjective::spawnEditorBlip() {
 	const auto& objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
 	const int indexObject = utils::indexByUuid(objects, this->objectUuid_);
 
-	if (indexObject != -1) {
+	if (indexObject != -1 && this->colorBlip_ > 0) {
 		if (const auto ped = objects.at(indexObject)->getEditorObject(); ped.has_value())
 			this->editorBlip_ = spawnBlip(ped.value());
 	}

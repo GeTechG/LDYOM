@@ -37,6 +37,8 @@ void Actor::spawnProjectEntity() {
 		Command<Commands::GET_PLAYER_GROUP>(0, &g);
 		Command<Commands::SET_GROUP_MEMBER>(g, CPools::GetPedRef(this->projectPed_.value()));
 	}
+	this->projectPed_.value()->m_fMaxHealth = max(this->projectPed_.value()->m_fMaxHealth, this->health_);
+	this->projectPed_.value()->m_fHealth = static_cast<float>(this->health_);
 
 	updateLocation();
 }
@@ -66,7 +68,7 @@ CPed* Actor::spawnPed() {
 		fats = playerClothes->m_fMuscleStat;
 	}
 
-	if (this->modelType_ == 0 && this->modelId_ == 0) {
+	if (this->modelType_ == 0 && this->modelId_ == 0 && this->dressUp_) {
 		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
 		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys_.data(), sizeof playerClothes->m_anTextureKeys);
 		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys_.data(), sizeof playerClothes->m_anModelKeys);
@@ -109,7 +111,7 @@ CPed* Actor::spawnPed() {
 
 	ped->DisablePedSpeech(1);
 
-	if (this->modelType_ == 0 && this->modelId_ == 0) {
+	if (this->modelType_ == 0 && this->modelId_ == 0 && this->dressUp_) {
 		Command<Commands::SET_PLAYER_MODEL>(0, playerModel);
 		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
 		std::memcpy(playerClothes->m_anTextureKeys, textures.data(), sizeof playerClothes->m_anTextureKeys);
@@ -284,6 +286,10 @@ bool& Actor::isHeadshot() {
 
 bool& Actor::isDropWeapons() {
 	return dropWeapons_;
+}
+
+bool& Actor::isDressUp() {
+	return dressUp_;
 }
 
 std::array<unsigned, 10>& Actor::getClotherMAnModelKeys() {

@@ -118,6 +118,8 @@ void TeleportPlayerObjective::draw(Localization& local) {
 		this->spawnEditorPed();
 	});
 
+	utils::ToggleButton(local.get("teleport_player_objective.dress_up").c_str(), &this->dressUp_);
+
 	if (this->modelType_ == 0 && this->modelId_ == 0)
 	{
 		if (ImGui::Button(local.get("teleport_player_objective.copy_clothes").c_str())) {
@@ -190,7 +192,7 @@ ktwait TeleportPlayerObjective::execute(Scene* scene, Result& result, ktcoro_tas
 	Command<Commands::SET_CHAR_HEADING>(playerPed, this->headingAngle_);
 	Command<Commands::REQUEST_COLLISION>(this->pos_[0], this->pos_[1]);
 
-	if (this->modelType_ == 0 && this->modelId_ == 0) {
+	if (this->modelType_ == 0 && this->modelId_ == 0 && this->dressUp_) {
 		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
 		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys_.data(), sizeof playerClothes->m_anTextureKeys);
 		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys_.data(), sizeof playerClothes->m_anModelKeys);

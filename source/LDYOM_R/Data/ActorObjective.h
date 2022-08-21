@@ -6,7 +6,7 @@
 class Actor;
 
 class ActorObjective : virtual public BaseObjective {
-private:
+protected:
 	friend class boost::serialization::access;
 
 	template <class Archive>
@@ -24,7 +24,6 @@ private:
 	int colorBlip_ = 0;
 
 	std::array<char, TEXT_SIZE> gameText_ = { "" };
-protected:
 	ActorObjective() = default;
 
 	std::optional<int> editorBlip_;

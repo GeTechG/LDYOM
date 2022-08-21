@@ -12,8 +12,6 @@
 #include "WindowsRenderService.h"
 #include "Localization/Localization.h"
 
-extern bool openWindowsMenu;
-
 void duplicate(Localization& local) {
 	if (ImGui::BeginMenu(local.get("quick_commands.duplicate").c_str())) {
 
@@ -152,6 +150,19 @@ void duplicate(Localization& local) {
 	}
 }
 
+void loadScene(Localization& local) {
+	if (ImGui::BeginMenu(local.get("scenes.load_scene").c_str())) {
+
+		for (auto& pair : ProjectsService::getInstance().getCurrentProject().getScenes()) {
+			if (ImGui::MenuItem(pair.second->getName())) {
+				ProjectsService::getInstance().getCurrentProject().changeScene(pair.first);
+			}
+		}
+
+		ImGui::EndMenu();
+	}
+}
+
 void Windows::QuickCommandsWindow::draw() {
 	auto &local = Localization::getInstance();
 
@@ -159,9 +170,9 @@ void Windows::QuickCommandsWindow::draw() {
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 	if (ImGui::Begin(local.get("quick_commands.title").c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		duplicate(local);
+		loadScene(local);
 
 		if (ImGui::MenuItem(local.get("quick_commands.quick_create_object").c_str())) {
-			openWindowsMenu = true;
 
 			const auto fastObjectSelector = WindowsRenderService::getInstance().getWindow<FastObjectSelector>();
 			fastObjectSelector->openWithCallback([](int modelId) {

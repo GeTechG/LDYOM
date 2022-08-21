@@ -40,6 +40,7 @@ private:
 		ar & this->kindaStayInSamePlace_;
 		ar & this->headshot_;
 		ar & this->dropWeapons_;
+		ar & this->dressUp_;
 		ar & this->clotherMAnModelKeys_;
 		ar & this->clotherMAnTextureKeys_;
 		ar & this->musculeStat;
@@ -68,6 +69,7 @@ private:
 	bool kindaStayInSamePlace_{};
 	bool headshot_{};
 	bool dropWeapons_{};
+	bool dressUp_ = true;
 	std::array<unsigned, 10> clotherMAnModelKeys_{};
 	std::array<unsigned, 18> clotherMAnTextureKeys_{};
 	float fatStat = 1.f;
@@ -106,6 +108,7 @@ public:
 	bool& isKindaStayInSamePlace();
 	bool& isHeadshot();
 	bool& isDropWeapons();
+	bool& isDressUp();
 	std::array<unsigned, 10>& getClotherMAnModelKeys();
 	std::array<unsigned, 18>& getClotherMAnTextureKeys();
 	float& getFatStat();

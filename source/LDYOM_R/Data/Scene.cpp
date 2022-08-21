@@ -3,6 +3,7 @@
 #include <fast_dynamic_cast.h>
 
 #include "CheckpointObjective.h"
+#include "GoToSceneObjective.h"
 #include "strUtils.h"
 #include "TeleportPlayerObjective.h"
 #include "Localization/Localization.h"
@@ -239,6 +240,8 @@ void Scene::unloadEditorScene() const {
 	for (const auto& objective : this->objectives_) {
 		if (auto* teleportPlayerObjective = fast_dynamic_cast<TeleportPlayerObjective*>(objective.get())) {
 			teleportPlayerObjective->deleteEditorPed();
+		} else if (auto* goToSceneObjective = fast_dynamic_cast<GoToSceneObjective*>(objective.get())) {
+			goToSceneObjective->deleteEditorBlip();
 		}
 	}
 }
@@ -264,12 +267,11 @@ void Scene::unloadProjectScene() const {
 		visualEffect->deleteProjectEntity();
 	for (const auto& checkpoint : this->checkpoints_)
 		checkpoint->deleteProjectEntity();
-	/*for (const auto& objective : this->objectives_) {
-		if (auto* checkpoint = dynamic_cast<CheckpointObjective*>(objective.get())) {
-			checkpoint->removeProjectBlip();
-			checkpoint->removeProjectComeBackBlip();
+	for (const auto& objective : this->objectives_) {
+		if (auto* goToSceneObjective = dynamic_cast<GoToSceneObjective*>(objective.get())) {
+			goToSceneObjective->deleteProjectBlip();
 		}
-	}*/
+	}
 }
 
 void Scene::loadEditorScene() const {
@@ -296,6 +298,8 @@ void Scene::loadEditorScene() const {
 	for (const auto& objective : this->objectives_) {
 		if (auto* teleportPlayerObjective = fast_dynamic_cast<TeleportPlayerObjective*>(objective.get())) {
 			teleportPlayerObjective->spawnEditorPed();
+		} else if (auto* goToSceneObjective = fast_dynamic_cast<GoToSceneObjective*>(objective.get())) {
+			goToSceneObjective->spawnEditorBlip();
 		}
 	}
 }

@@ -33,6 +33,14 @@
 #include "../Data/AddMoneyPlayerObjective.h"
 #include "../Data/AddTimerObjective.h"
 #include "../Data/RemoveTimerObjective.h"
+#include "../Data/StartMissionObjective.h"
+#include "../Data/EndMissionObjective.h"
+#include "../Data/GoToSceneObjective.h"
+#include "../Data/WaitSignalObjective.h"
+#include "../Data/FollowPathActorObjective.h"
+#include "../Data/AnimationActorObjective.h"
+#include "../Data/EnterVehicleActorObjective.h"
+#include "../Data/FollowPathVehicleObjective.h"
 #include "../Data/SceneSettings.h"
 
 #include "boost/archive/binary_oarchive.hpp"
@@ -340,6 +348,14 @@ namespace boost {
 			ar.template register_type<AddMoneyPlayerObjective>();
 			ar.template register_type<AddTimerObjective>();
 			ar.template register_type<RemoveTimerObjective>();
+			ar.template register_type<StartMissionObjective>();
+			ar.template register_type<EndMissionObjective>();
+			ar.template register_type<GoToSceneObjective>();
+			ar.template register_type<WaitSignalObjective>();
+			ar.template register_type<FollowPathActorObjective>();
+			ar.template register_type<AnimationActorObjective>();
+			ar.template register_type<EnterVehicleActorObjective>();
+			ar.template register_type<FollowPathVehicleObjective>();
 
 			ar& p.getObjectives();
 		}

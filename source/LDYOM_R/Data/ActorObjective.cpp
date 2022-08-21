@@ -72,7 +72,7 @@ void ActorObjective::close() {
 }
 
 ktwait ActorObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
-	const auto& actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+	const auto& actors = scene->getActors();
 	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
 
 	if (indexActor == -1) {
@@ -108,7 +108,7 @@ void ActorObjective::spawnEditorBlip() {
 	const auto& actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
 	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
 
-	if (indexActor != -1) {
+	if (indexActor != -1 && this->colorBlip_ > 0) {
 		if (const auto ped = actors.at(indexActor)->getEditorPed(); ped.has_value()) 
 			this->editorBlip_ = spawnBlip(ped.value());
 	}
