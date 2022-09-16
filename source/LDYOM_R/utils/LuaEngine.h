@@ -6,7 +6,7 @@
 class LuaEngine
 {
 private:
-	sol::state lua;
+	sol::state luaState_;
 
 	void resetState();
 
@@ -20,6 +20,7 @@ public:
 	}
 
 	void Init();
-
+	sol::state& getLuaState();
+	static sol::protected_function_result errorHandler(sol::this_state, sol::protected_function_result pfr);
 };
 

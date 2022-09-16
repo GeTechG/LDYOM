@@ -27,7 +27,7 @@ Scene::Scene() {
 	initGroupRelations();
 }
 
-Scene::Scene(const char* name) {
+Scene::Scene(const char* name) : id_(reinterpret_cast<int>(this)) {
 	strcpy_s(this->name_, sizeof this->name_, name);
 	initGroupRelations();
 }
@@ -46,6 +46,10 @@ Scene& Scene::operator=(Scene&& other) noexcept {
 
 char* Scene::getName() {
 	return this->name_;
+}
+
+int& Scene::getId() {
+	return id_;
 }
 
 std::vector<std::unique_ptr<Actor>>& Scene::getActors() {

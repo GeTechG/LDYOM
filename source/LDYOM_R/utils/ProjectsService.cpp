@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "fmt/core.h"
 #include "imgui_notify.h"
+#include "LuaEngine.h"
 #include "WindowsRenderService.h"
 #include "../Windows/ObjectivesWindow.h"
 #include "../Data/CheckpointObjective.h"
@@ -41,6 +42,8 @@
 #include "../Data/AnimationActorObjective.h"
 #include "../Data/EnterVehicleActorObjective.h"
 #include "../Data/FollowPathVehicleObjective.h"
+#include "../Data/JumpToObjectiveObjective.h"
+#include "../Data/SetGlobalVariableObjective.h"
 #include "../Data/SceneSettings.h"
 
 #include "boost/archive/binary_oarchive.hpp"
@@ -51,9 +54,9 @@
 #include "boost/serialization/utility.hpp"
 #include "boost/serialization/split_free.hpp"
 #include "boost/uuid/uuid_serialize.hpp"
-#include "../easylogging/easylogging++.h"
 #include "zip.h"
 #include "../lz4/lz4hc.h"
+#include "easylogging/easylogging++.h"
 
 
 const std::filesystem::path PROJECTS_PATH = L"LDYOM\\Projects\\";
@@ -168,6 +171,16 @@ void ProjectsService::saveCurrentProject() {
 		std::ofstream file(projectDirectory / "index.dat", std::ios_base::binary);
 		boost::archive::binary_oarchive oa(file);
 		oa << this->getCurrentProject().getProjectInfo().get();
+
+		for (const auto& pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["saveProject"].get_or_create<sol::table>()) {
+			if (auto result = pairLua.second.as<sol::function>()(); !result.valid()) {
+				sol::error err = result;
+				CLOG(ERROR, "lua") << err.what();
+			}
+			else {
+				oa << result.get<std::string>();
+			}
+		}
 		file.close();
 	}
 
@@ -176,6 +189,14 @@ void ProjectsService::saveCurrentProject() {
 		std::ostringstream uncompressedStream;
 		boost::archive::binary_oarchive oa(uncompressedStream);
 		oa << pair.second;
+		for (auto pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["saveScene"].get_or_create<sol::table>()) {
+			if (auto result = pairLua.second.as<sol::function>()(pair.first); !result.valid()) {
+				sol::error err = result;
+				CLOG(ERROR, "lua") << err.what();
+			} else {
+				oa << result.get<std::string>();
+			}
+		}
 
 		auto ucString = uncompressedStream.str();
 
@@ -215,6 +236,14 @@ void ProjectsService::loadProject(int projectIdx) {
 		ProjectInfo* projectInfo;
 		ia >> projectInfo;
 		this->getCurrentProject().getProjectInfo() = std::unique_ptr<ProjectInfo>(projectInfo);
+		for (auto pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["loadProject"].get_or_create<sol::table>()) {
+			std::string data;
+			ia >> data;
+			if (auto result = pairLua.second.as<sol::function>()(data); !result.valid()) {
+				sol::error err = result;
+				CLOG(ERROR, "lua") << err.what();
+			}
+		}
 		file.close();
 	}
 
@@ -241,13 +270,22 @@ void ProjectsService::loadProject(int projectIdx) {
 			}
 			std::istringstream ss(std::string(uncompressedVector.begin(), uncompressedVector.end()));
 
+			int sceneId = std::stoi(path.path().stem().wstring());
 
 			boost::archive::binary_iarchive ia(ss);
 			std::unique_ptr<Scene> scene;
 			ia >> scene;
+			for (auto pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["loadScene"].get_or_create<sol::table>()) {
+				std::string data;
+				ia >> data;
+				if (auto result = pairLua.second.as<sol::function>()(sceneId, data); !result.valid()) {
+					sol::error err = result;
+					CLOG(ERROR, "lua") << err.what();
+				}
+			}
 
-			getCurrentProject().getScenes().emplace(std::stoi(path.path().stem().wstring()), std::move(scene));
-			
+
+			getCurrentProject().getScenes().emplace(sceneId, std::move(scene));
 		}
 	}
 
@@ -310,6 +348,7 @@ namespace boost {
 		void serialize(Archive& ar, Scene& p, const unsigned int version)
 		{
 			ar & make_array(p.getName(), NAME_SIZE);
+			ar & p.getId();
 			ar & p.getActors();
 			ar & p.getVehicles();
 			ar & p.getObjects();
@@ -356,6 +395,8 @@ namespace boost {
 			ar.template register_type<AnimationActorObjective>();
 			ar.template register_type<EnterVehicleActorObjective>();
 			ar.template register_type<FollowPathVehicleObjective>();
+			ar.template register_type<JumpToObjectiveObjective>();
+			ar.template register_type<SetGlobalVariableObjective>();
 
 			ar& p.getObjectives();
 		}

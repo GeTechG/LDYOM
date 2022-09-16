@@ -1,7 +1,7 @@
 #include "Tasker.h"
 
 #include "Logger.h"
-#include "../easylogging/easylogging++.h"
+#include "easylogging/easylogging++.h"
 
 std::map<std::string, ktwait>& Tasker::list() {
 	return this->taskList_;

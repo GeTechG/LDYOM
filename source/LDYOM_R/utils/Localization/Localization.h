@@ -9,6 +9,7 @@ class Localization
 private:
 	std::unordered_map<std::string, std::string> textLocalizations_;
 	std::unordered_map<std::string, std::vector<std::string>> arrayLocalization_;
+	std::vector<std::string> scriptsLocalizationDirectories;
 
 	Localization() = default;
 	Localization(const Localization&) = delete;
@@ -27,6 +28,9 @@ public:
 	}
 
 	void loadLocalization(const std::string& localizationName);
+	void loadLocalization(const std::string& localizationDirectory, const std::string& localizationName);
+	void addScriptsLocalization(const std::string& localizationDirectory);
+	void clearScriptsLocalization();
 	const std::string& get(const std::string& path);
 	std::vector<std::string>& getArray(const std::string& path);
 };

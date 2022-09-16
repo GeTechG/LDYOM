@@ -77,6 +77,11 @@ name = "Name"
 record_path = "Record path"
 teleport = "Teleport"
 wait_execute = "Wait execute"
+value = "Value"
+result = "Result"
+global_variables = "Global Variables"
+true = "True"
+false = "False"
 
 [objective]
 title = "Objective"
@@ -114,6 +119,8 @@ follow_path_actor = "Follow path actor"
 animation_actor = "Animation actor"
 enter_vehicle_actor = "Enter vehicle actor"
 follow_path_vehicle = "Follow path vehicle"
+jump_to_objective = "Jump to objective"
+set_global_variable = "Set Global Variable"
 
 [objective_categories]
 world = "World"
@@ -373,6 +380,10 @@ apply = "Apply scene settings"
 group_relations = "Group relations"
 relationship_types = ["Respect", "Like", "Ignore", "Dislike","Hate"]
 
+[node_editor]
+title = "Node Editor"
+
+
 [warning_popup]
 title = "Warning"
 text  = "Are you sure? The data will be permanently deleted."
@@ -396,6 +407,10 @@ custom_special_ped_models = "Custom special ped models"
 custom_vehicle_models = "Custom vehicle models"
 custom_weapon_models = "Custom weapon models"
 custom_ped_animations = "Custom ped animations"
+
+[console_window]
+title = "Console"
+run = "Run"
 
 [hotkey_editor]
 title = "Hotkeys Editor"

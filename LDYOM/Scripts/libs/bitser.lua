@@ -411,6 +411,7 @@ local function deserialize_Moonscript(instance, class)
 	return setmetatable(instance, class.__base)
 end
 
+---@return string
 return {dumps = function(value)
 	serialize(value)
 	return ffi.string(buf, buf_pos)

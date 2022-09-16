@@ -341,6 +341,42 @@
     <Filter Include="Data\Objectives\Vehicle\FollowPath">
       <UniqueIdentifier>{5cd44741-6482-4d63-a2da-1ec61dc551ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lua">
+      <UniqueIdentifier>{01ee741e-f804-49c2-a325-da7ced382020}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ConsoleWindow">
+      <UniqueIdentifier>{cc200832-82cb-4579-97ce-c1bf67a0e77e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\imnodes">
+      <UniqueIdentifier>{ee53e5d3-cfa9-4992-a7b9-fa04228bfbeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\Wrappers">
+      <UniqueIdentifier>{cd1f63db-6ebe-412c-b8ff-317fdf3a108d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\Wrappers\Opcodes">
+      <UniqueIdentifier>{4a30efab-1267-4296-927c-0fa19fdea7a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\NodeEditorWindow">
+      <UniqueIdentifier>{e419f120-f0db-4c58-b055-632606a42fad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\NodeEditorUtils">
+      <UniqueIdentifier>{dd97d1ea-cbf3-4785-9e25-c58e48fa3915}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\Wrappers\utils">
+      <UniqueIdentifier>{eca6e9d2-d27e-4d69-8730-e020f0b4d15f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\Wrappers\data">
+      <UniqueIdentifier>{6401ee34-9a0d-4bea-b48f-6c179ac7a040}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\GlobalVariablesWindow">
+      <UniqueIdentifier>{46471f4c-7c61-441b-98b7-ac988f56babd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Scene\JumpToObjective">
+      <UniqueIdentifier>{eeecbabd-978c-4f56-a4df-316e1814db5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\SetGlobalVariable">
+      <UniqueIdentifier>{473b2d9f-a523-4cf1-b266-280876fde0f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -396,7 +432,6 @@
     <ClCompile Include="VMTHooker\vmt.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="utils\LuaEngine.cpp" />
     <ClCompile Include="Windows\EntitiesWindow.cpp">
       <Filter>Windows\Entities</Filter>
     </ClCompile>
@@ -555,9 +590,6 @@
     </ClCompile>
     <ClCompile Include="utils\HttpRequester.cpp">
       <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="easylogging\easylogging++.cc">
-      <Filter>Utils\easylogging</Filter>
     </ClCompile>
     <ClCompile Include="Windows\FastObjectSelector.cpp">
       <Filter>Windows\FastObjectSelector</Filter>
@@ -748,6 +780,300 @@
     <ClCompile Include="Data\FollowPathVehicleObjective.cpp">
       <Filter>Data\Objectives\Vehicle\FollowPath</Filter>
     </ClCompile>
+    <ClCompile Include="utils\LuaEngine.cpp">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\LuaLogger.cpp">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ConsoleWindow.cpp">
+      <Filter>Windows\ConsoleWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imnodes\imnodes.cpp">
+      <Filter>Utils\imnodes</Filter>
+    </ClCompile>
+    <ClCompile Include="include\easylogging\easylogging++.cc">
+      <Filter>Utils\easylogging</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\LuaWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\OpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\AttractorOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\AudioOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\AudioStream3DOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\AudioStreamOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\BlipOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\BoatOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\CameraOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\CardDecksOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\CarGeneratorOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\CarOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\CharOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\CheckpointOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\CleoBlipOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\ClipboardOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\ClockOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\ColPointOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\ConversationOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\CraneOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\CreditsOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\CutsceneOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\DebuggerOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\DecisionMakerCharOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\DecisionMakerGroupOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\DecisionMakerOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\DynamicLibraryOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\EntityOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\FileOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\FindFileOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\FsOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\FxOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\GameOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\GangOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\GarageOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\GroupOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\HeliOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\HudOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\ImGuiOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\IniFileOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\KeywordsOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\KillFrenzyOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\MathOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\MemoryOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\MenuGridOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\MenuOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\MissionOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\MouseOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\ObjectOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\OtherOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\PadOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\ParticleOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\PathOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\PickupOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\PlaneOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\PlayerOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\RcOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\RestartOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\ScriptFireOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\SearchlightOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\SequenceOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\ShoppingOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\SkipOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\SoundOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\SphereOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\StatOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\StreamedScriptOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\StreamingOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\StuckCarCheckOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\TaskOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\TextOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\TrailerOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\TrainOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\TxdOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\User3DMarkerOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\WeaponOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\WeatherOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\WorldOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Opcodes\ZoneOpcodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\Opcodes</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\FilesystemLuaWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\NodeEditorWindow.cpp">
+      <Filter>Windows\NodeEditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ImNodesLuaWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\NodeEditorUtils.cpp">
+      <Filter>Utils\NodeEditorUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ImGuiLuaWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\NodeEditorLuaWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\UtilsLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ProjectServiceLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\SceneLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ProjectDataLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\DataLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\GlobalVariablesWindow.cpp">
+      <Filter>Windows\GlobalVariablesWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\JumpToObjectiveObjective.cpp">
+      <Filter>Data\Objectives\Scene\JumpToObjective</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\SetGlobalVariableObjective.cpp">
+      <Filter>Data\Objectives\World\SetGlobalVariable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imstb_truetype.h">
@@ -805,7 +1131,6 @@
     <ClInclude Include="utils\Tasker.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\LuaEngine.h" />
     <ClInclude Include="Windows\EntitiesWindow.h">
       <Filter>Windows\Entities</Filter>
     </ClInclude>
@@ -982,9 +1307,6 @@
     </ClInclude>
     <ClInclude Include="utils\HttpRequester.h">
       <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="easylogging\easylogging++.h">
-      <Filter>Utils\easylogging</Filter>
     </ClInclude>
     <ClInclude Include="Windows\FastObjectSelector.h">
       <Filter>Windows\FastObjectSelector</Filter>
@@ -1183,6 +1505,63 @@
     </ClInclude>
     <ClInclude Include="Data\FollowPathVehicleObjective.h">
       <Filter>Data\Objectives\Vehicle\FollowPath</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\LuaEngine.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\LuaLogger.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ConsoleWindow.h">
+      <Filter>Windows\ConsoleWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imnodes\imnodes.h">
+      <Filter>Utils\imnodes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imnodes\imnodes_internal.h">
+      <Filter>Utils\imnodes</Filter>
+    </ClInclude>
+    <ClInclude Include="include\easylogging\easylogging++.h">
+      <Filter>Utils\easylogging</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\LuaWrapper.h">
+      <Filter>Lua\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\OpcodesLuaWrapper.h">
+      <Filter>Lua\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\FilesystemLuaWrapper.h">
+      <Filter>Lua\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\NodeEditorWindow.h">
+      <Filter>Windows\NodeEditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\ImNodesLuaWrapper.h">
+      <Filter>Lua\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\NodeEditorUtils.h">
+      <Filter>Utils\NodeEditorUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\ImGuiLuaWrapper.h">
+      <Filter>Lua\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\NodeEditorLuaWrapper.h">
+      <Filter>Lua\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\UtilsLuaWrapper.h">
+      <Filter>Lua\Wrappers\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\DataLuaWrapper.h">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\GlobalVariablesWindow.h">
+      <Filter>Windows\GlobalVariablesWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\JumpToObjectiveObjective.h">
+      <Filter>Data\Objectives\Scene\JumpToObjective</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\SetGlobalVariableObjective.h">
+      <Filter>Data\Objectives\World\SetGlobalVariable</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

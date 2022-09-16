@@ -12,7 +12,10 @@
 #include <CMenuManager.h>
 #include <fmt/core.h>
 
-#include "ImGuizmo/ImGuizmo.h"
+#include "imnodes/imnodes.h"
+
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui_internal.h"
 
 extern unsigned int fa_compressed_size;
 extern unsigned int fa_compressed_data[];
@@ -64,6 +67,7 @@ void Windows::WindowsRenderService::setRenderWindows(const bool renderWindows) {
 }
 
 void Windows::WindowsRenderService::shutdown() const {
+	ImNodes::DestroyContext();
 	ImGui_ImplDX9_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
@@ -142,6 +146,14 @@ void Windows::WindowsRenderService::style() {
 	if (!ImGui::StyleLoader::LoadFile(fmt::format("LDYOM/Themes/{}.toml", Settings::getInstance().get<std::string>("main.theme").value()))) {
 		Logger::getInstance().log("invalid load theme!");
 	}
+
+	ImNodes::GetStyle().PinCircleRadius = 16.0f * uiScaling / 3.f;
+	ImNodes::GetStyle().PinQuadSideLength = 16.0f * uiScaling / 1.5f;
+	ImNodes::GetStyle().PinTriangleSideLength = 16.0f * uiScaling / 1.5f;
+	ImNodes::GetStyle().PinLineThickness = 3.f * uiScaling;
+	ImNodes::GetStyle().NodePadding = ImVec2(10.f, 10.f) * ImVec2(uiScaling, uiScaling);
+	ImNodes::GetStyle().Flags |= ImNodesStyleFlags_GridSnapping;
+	ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
 }
 
 LRESULT wndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -189,6 +201,7 @@ void initImGui() {
 	{
 		ImGui::CreateContext();
 	}
+	ImNodes::CreateContext();
 
 	ImGui_ImplWin32_Init(RsGlobal.ps->window);
 	ImGui::GetIO().MouseDoubleClickTime = 0.8f;

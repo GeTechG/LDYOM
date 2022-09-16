@@ -5,6 +5,7 @@
 
 #define UNICODE
 #include <mutex>
+#include <set>
 #include <Windows.h>
 
 struct WatcherTask {
@@ -18,7 +19,7 @@ private:
 	inline static bool work = false;
 	inline static std::map<std::filesystem::path, WatcherTask> watches_;
 	inline static std::mutex tasks_mutex;
-	inline static std::vector<std::function<void()>*> tasks_;
+	inline static std::set<std::function<void()>*> tasks_;
 	static void process();
 public:
 	static void start();

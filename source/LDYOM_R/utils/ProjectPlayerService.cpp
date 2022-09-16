@@ -15,9 +15,10 @@
 #include "extensions/ScriptCommands.h"
 #include "CFireManager.h"
 #include "imgui_notify.h"
+#include "LuaEngine.h"
 #include "TimerService.h"
 #include "../Data/Result.h"
-#include "../easylogging/easylogging++.h"
+#include "easylogging/easylogging++.h"
 
 namespace Windows {
 	class AbstractWindow;
@@ -113,13 +114,21 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist
 		}, this);
 	}
 
-	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
-		const auto &objective = scene->getObjectives().at(o);
+	const auto onStartSignals = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onStartScene"].get<sol::table>();
+	for (auto [_, func] : onStartSignals) {
+		if (const auto result = func.as<sol::function>()(scene, tasklist); !result.valid()) {
+			const sol::error err = result;
+			CLOG(ERROR, "lua") << err.what();
+		}
+	}
 
+	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
 		if (this->nextObjective.has_value()) {
 			o = this->nextObjective.value();
 			this->nextObjective = std::nullopt;
 		}
+
+		const auto &objective = scene->getObjectives().at(o);
 
 		for (const auto & dependent : spawnMap[objective->getUuid()]) {
 			try {
@@ -164,6 +173,14 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist
 		for (const auto& dependent : deleteMap[objective->getUuid()])
 			dependent->deleteProjectEntity();
 	}
+
+	const auto onEndSignals = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onEndScene"].get<sol::table>();
+	for (auto [_, func] : onStartSignals) {
+		if (const auto result = func.as<sol::function>()(scene, tasklist); !result.valid()) {
+			const sol::error err = result;
+			CLOG(ERROR, "lua") << err.what();
+		}
+	}
 }
 
 void ProjectPlayerService::setNextScene(Scene* nextScene) {
@@ -187,6 +204,14 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	const auto startScene = ProjectsService::getInstance().getCurrentProject().getScenes().at(sceneIdx).get();
 	setNextScene(startScene);
 	setNextObjective(startObjective);
+
+	const auto onStartSignals = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onStartProject"].get<sol::table>();
+	for (auto [_, func] : onStartSignals) {
+		if (auto result = func.as<sol::function>()(); !result.valid()) {
+			sol::error err = result;
+			CLOG(ERROR, "lua") << err.what();
+		}
+	}
 
 	while(this->nextScene.has_value()) {
 		const auto scene = this->nextScene.value();

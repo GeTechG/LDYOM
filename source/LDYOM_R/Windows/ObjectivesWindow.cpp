@@ -42,6 +42,8 @@
 #include "../Data/AnimationActorObjective.h"
 #include "../Data/EnterVehicleActorObjective.h"
 #include "../Data/FollowPathVehicleObjective.h"
+#include "../Data/JumpToObjectiveObjective.h"
+#include "../Data/SetGlobalVariableObjective.h"
 #include "fmt/core.h"
 
 std::string Windows::ObjectivesWindow::getNameList() {
@@ -91,6 +93,9 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 					break;
 				case 8:
 					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<RemoveTimerObjective&>(*objective));
+					break;
+				case 9:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<SetGlobalVariableObjective&>(*objective));
 					break;
 
 				default: 
@@ -222,6 +227,9 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 				case 1:
 					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<WaitSignalObjective&>(*objective));
 					break;
+				case 2:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<JumpToObjectiveObjective&>(*objective));
+					break;
 			default:
 				break;
 			}
@@ -306,6 +314,11 @@ void Windows::ObjectivesWindow::drawListWindow() {
 
 			if (ImGui::MenuItem(Localization::getInstance().get("objective.remove_timer").c_str())) {
 				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<RemoveTimerObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.set_global_variable").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<SetGlobalVariableObjective>(nullptr);
 				this->selectElement(this->getListSize() - 1);
 			}
 
@@ -463,6 +476,11 @@ void Windows::ObjectivesWindow::drawListWindow() {
 
 			if (ImGui::MenuItem(Localization::getInstance().get("objective.wait_signal").c_str())) {
 				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<WaitSignalObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.jump_to_objective").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<JumpToObjectiveObjective>(nullptr);
 				this->selectElement(this->getListSize() - 1);
 			}
 

@@ -1,0 +1,11 @@
+{
+    "workspace": {
+        "library": [
+            "C:/Games/GTA San Andreas Modding/LDYOM/Scripts/"
+    ]
+    },
+    "runtime.path": [
+        "?.lua",
+        "?/init.lua"
+      ]
+}

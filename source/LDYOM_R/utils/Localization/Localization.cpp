@@ -4,9 +4,10 @@
 
 #include "Logger.h"
 #include "Settings.h"
+#include "easylogging/easylogging++.h"
 #include "fmt/core.h"
 
-std::string language_path("LDYOM/Languages/");
+std::string language_path("LDYOM/Languages");
 
 void Localization::Init()
 {
@@ -14,6 +15,11 @@ void Localization::Init()
 	loadLocalization("English");
 	if (language.has_value())
 		loadLocalization(language.value());
+	for (auto&& localizationDirectory : scriptsLocalizationDirectories) {
+		loadLocalization(localizationDirectory, "English");
+		if (language.has_value())
+			loadLocalization(localizationDirectory, language.value());
+	}
 }
 
 void Localization::unpackLocalization(std::string path, toml::table& table)
@@ -49,17 +55,33 @@ void Localization::unpackLocalization(std::string path, toml::table& table)
 	}
 }
 
-void Localization::loadLocalization(const std::string& localizationName)
-{
+void Localization::loadLocalization(const std::string& localizationName) {
+	loadLocalization(language_path, localizationName);
+}
+
+void Localization::loadLocalization(const std::string& localizationDirectory, const std::string& localizationName) {
 	toml::parse_result file;
 	try {
-		file = toml::parse_file(fmt::format("{}{}.toml", language_path, localizationName));
+		file = toml::parse_file(fmt::format("{}/{}.toml", localizationDirectory, localizationName));
 	}
 	catch (toml::parse_error& err) {
-		Logger::getInstance().log(err.what());
+		CLOG(ERROR, "LDYOM") << err.what();
 		return;
 	}
 	unpackLocalization("", file);
+}
+
+void Localization::addScriptsLocalization(const std::string& localizationDirectory) {
+	auto dir = fmt::format("LDYOM/Scripts/scripts/{}", localizationDirectory);
+	scriptsLocalizationDirectories.emplace_back(dir);
+	const std::optional<std::string> language = Settings::getInstance().get<std::string>("main.language");
+	loadLocalization(dir, "English");
+	if (language.has_value())
+		loadLocalization(dir, language.value());
+}
+
+void Localization::clearScriptsLocalization() {
+	scriptsLocalizationDirectories.clear();
 }
 
 const std::string& Localization::get(const std::string& path)

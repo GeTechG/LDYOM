@@ -23,6 +23,7 @@
 #include "FileWatcher.h"
 #include "WindowsRenderService.h"
 #include "HotkeysExecutor.h"
+#include "LuaLogger.h"
 #include "ModelsService.h"
 #include "ProjectPlayerService.h"
 #include "vehicle_renderer.h"
@@ -41,13 +42,17 @@
 #include "Windows/PyrotechnicsWindow.h"
 #include "Windows/TrainsWindow.h"
 #include "Data/Audio.h"
+#include "easylogging/easylogging++.h"
 #include "Windows/AudioWindow.h"
 #include "Windows/CheckpointsWindow.h"
+#include "Windows/ConsoleWindow.h"
+#include "Windows/GlobalVariablesWindow.h"
+#include "Windows/NodeEditorWindow.h"
 #include "Windows/VisualEffectsWindow.h"
 
 using namespace plugin;
 
-bool init = false;
+bool initServices = false;
 
 extern bool isInitImgui;
 
@@ -99,6 +104,7 @@ public:
 			Logger::getInstance().Init();
 			Settings::getInstance().Init();
 			Localization::getInstance().Init();
+			LuaEngine::getInstance().Init();
 			HotKeyService::getInstance().Init();
 			ProjectsService::getInstance().Init();
 			ModelsService::getInstance().Init();
@@ -125,6 +131,9 @@ public:
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::AudioWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::VisualEffectsWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::CheckpointsWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::ConsoleWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::NodeEditorWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::GlobalVariablesWindow>());
 			Windows::WindowsRenderService::getInstance().addRender("showEntitiesName", [] {
 				if (!ProjectPlayerService::getInstance().isProjectRunning()) {
 					if (Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false))
@@ -143,14 +152,21 @@ public:
 
 			Logger::getInstance().log("LDYOMR initialized.");
 
-			LuaEngine::getInstance().Init();
-
 			defaultWindow = Windows::WindowsRenderService::getInstance().getWindow<Windows::MainMenu>();
 			
 			ProjectsService::getInstance().onUpdate().connect(Audio::loadAudioFilesList);
 
 			////init is complete
-			init = true;
+			initServices = true;
+
+			const auto initFuncs = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["init"].get_or_create<sol::table>();
+			for (auto pair : initFuncs) {
+				if (auto result = pair.second.as<sol::function>()(); !result.valid()) {
+					sol::error err = result;
+					CLOG(ERROR, "lua") << err.what();
+					LuaLogger::getInstance().print(err.what());
+				}
+			}
 
 			Tasker::getInstance().getKtcoroTaskList().add_task([]() -> ktwait {
 				co_await 5s;
@@ -186,7 +202,7 @@ public:
 				return;
 			}
 
-			if (!init) {
+			if (!initServices) {
 				initFunc();
 			} else {
 				Events::gameProcessEvent.AddAtId(777, gameProcces);

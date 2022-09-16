@@ -22,9 +22,7 @@
 #include "../Data/CutsceneObjective.h"
 #include "../Data/Vehicle.h"
 #include "extensions/KeyCheck.h"
-#include "../easylogging/easylogging++.h"
 #include "../Windows/ObjectsWindow.h"
-#include <CKeyGen.h>
 
 class Vehicle;
 using namespace std::chrono_literals;

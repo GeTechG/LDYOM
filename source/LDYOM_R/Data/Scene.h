@@ -19,6 +19,7 @@ struct SceneSettings;
 class Scene final : public INameable {
 
 	char name_[NAME_SIZE]{};
+	int id_ = 0;
 
 	std::vector<std::unique_ptr<BaseObjective>> objectives_;
 	std::vector<std::unique_ptr<Actor>> actors_;
@@ -43,6 +44,7 @@ public:
 	Scene& operator=(Scene&& other) noexcept;
 
 	char* getName() override;
+	int& getId();
 
 	~Scene() override = default;
 

@@ -19,7 +19,7 @@ void FileWatcher::process() {
 
 		if (const unsigned long result = dwWaitStatus - (WAIT_OBJECT_0); result < handles.size()) {
 			std::lock_guard guard(tasks_mutex);
-			tasks_.emplace_back(&watches_.at(filepaths.at(result)).callback);
+			tasks_.emplace(&watches_.at(filepaths.at(result)).callback);
 
 			FindNextChangeNotification(handles[result]);
 		}

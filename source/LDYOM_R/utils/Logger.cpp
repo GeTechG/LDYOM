@@ -1,7 +1,9 @@
 // ReSharper disable CppMemberFunctionMayBeStatic
 #include "Logger.h"
 #include <filesystem>
-#include "../easylogging/easylogging++.h"
+
+#include "LuaLogger.h"
+#include "easylogging/easylogging++.h"
 
 using namespace std;
 
@@ -24,7 +26,13 @@ void Logger::Init()
 	defaultConf.set(el::Level::Error, el::ConfigurationType::Format, "%datetime [%logger] %fbase:%func:%line %thread | %msg");
 
 	el::Loggers::getLogger("LDYOM");
+	el::Loggers::getLogger("lua");
 	el::Loggers::reconfigureAllLoggers(defaultConf);
+
+	el::Configurations luaConf(defaultConf);
+	luaConf.setGlobally(el::ConfigurationType::Format, "[%logger] : %msg");
+	luaConf.set(el::Level::Error, el::ConfigurationType::Format, "[%logger] %fbase:%func:%line %thread | %msg");
+	el::Loggers::reconfigureLogger("lua", luaConf);
 
 	CLOG(INFO, "LDYOM") << "Logger initialized.\n";
 }

@@ -7,7 +7,10 @@
 
 #include "MainMenu.h"
 
+#include "ConsoleWindow.h"
 #include "EntitiesWindow.h"
+#include "GlobalVariablesWindow.h"
+#include "NodeEditorWindow.h"
 #include "ObjectivesWindow.h"
 #include "ProjectInfoWindow.h"
 #include "ProjectPlayerService.h"
@@ -37,6 +40,12 @@ namespace Windows
 				WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(true);
             }
 
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_PROJECT_DIAGRAM, local.get("node_editor.title")).c_str(), ImVec2(200.0f, .0f)))
+            {
+				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
+				WindowsRenderService::getInstance().toggleWindow<NodeEditorWindow>(true);
+            }
+
 			ImGui::Separator();
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_THEATER_MASKS, local.get("projects.title")).c_str(), ImVec2(200.0f, .0f)))
@@ -48,6 +57,11 @@ namespace Windows
 			{
 				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
 				WindowsRenderService::getInstance().toggleWindow<ProjectInfoWindow>(true);
+			}
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_BOX, local.get("general.global_variables")).c_str(), ImVec2(200.0f, .0f)))
+			{
+				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
+				WindowsRenderService::getInstance().toggleWindow<GlobalVariablesWindow>(true);
 			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SAVE, local.get("general.save")).c_str(), ImVec2(200.0f, .0f)))
@@ -90,6 +104,12 @@ namespace Windows
 			{
 				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
 				WindowsRenderService::getInstance().toggleWindow<SettingsWindow>(true);
+			}
+
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SCROLL, local.get("console_window.title")).c_str(), ImVec2(200.0f, .0f)))
+			{
+				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
+				WindowsRenderService::getInstance().toggleWindow<ConsoleWindow>(true);
 			}
 
 			this->projectsWindowPopup_.draw();

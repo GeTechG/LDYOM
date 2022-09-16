@@ -1,4 +1,8 @@
 ﻿#include "ProjectData.h"
+
+#include "LuaEngine.h"
+#include "LuaLogger.h"
+#include "easylogging/easylogging++.h"
 #include "Localization/Localization.h"
 #include "fmt/core.h"
 
@@ -45,6 +49,13 @@ void ProjectData::newScene(bool change) {
 		this->getCurrentScene()->loadEditorScene();
 		this->onChangedScene_();
 	}
+	for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onNewScene"].get_or_create<sol::table>()) {
+		if (auto result = pair.second.as<sol::function>()(sceneId); !result.valid()) {
+			sol::error err = result;
+			CLOG(ERROR, "lua") << err.what();
+			LuaLogger::getInstance().print(err.what());
+		}
+	}
 }
 
 void ProjectData::changeScene(int scene) {
@@ -52,6 +63,13 @@ void ProjectData::changeScene(int scene) {
 	this->currentScene_ = scene;
 	this->getCurrentScene()->loadEditorScene();
 	this->onChangedScene_();
+	for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onChangeScene"].get_or_create<sol::table>()) {
+		if (auto result = pair.second.as<sol::function>()(scene); !result.valid()) {
+			sol::error err = result;
+			CLOG(ERROR, "lua") << err.what();
+			LuaLogger::getInstance().print(err.what());
+		}
+	}
 }
 
 void ProjectData::deleteScene(int scene) {
@@ -61,6 +79,13 @@ void ProjectData::deleteScene(int scene) {
 	if (scene == currentScene_) {
 		this->currentScene_ = this->scenes_.begin()->first;
 		this->getCurrentScene()->loadEditorScene();
+	}
+	for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onDeleteScene"].get<sol::table>()) {
+		if (auto result = pair.second.as<sol::function>()(scene); !result.valid()) {
+			sol::error err = result;
+			CLOG(ERROR, "lua") << err.what();
+			LuaLogger::getInstance().print(err.what());
+		}
 	}
 }
 
