@@ -1074,6 +1074,39 @@
     <ClCompile Include="Data\SetGlobalVariableObjective.cpp">
       <Filter>Data\Objectives\World\SetGlobalVariable</Filter>
     </ClCompile>
+    <ClCompile Include="utils\ActorLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\AudioLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\CheckpointLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ObjectLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ParticleLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\PickupLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\PyrotechnicsLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\TrainLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\VehicleLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\VisualEffectLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\BaseObjectiveLuaWrapper.cpp">
+      <Filter>Lua\Wrappers\data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imstb_truetype.h">

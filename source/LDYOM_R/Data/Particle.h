@@ -68,6 +68,7 @@ public:
 	int& getAttachType();
 	boost::uuids::uuid& getAttachUuid();
 	int& getPedBodeId();
+	std::optional<int>& getProjectParticleId();
 
 	void updateLocation();
 

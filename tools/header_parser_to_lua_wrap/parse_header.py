@@ -6,7 +6,7 @@ def specialization_to_string(spec: types.TemplateSpecialization):
     specs = []
     for arg in spec.args:
         if isinstance(arg.arg, types.DecoratedType):
-            specs.append(pqname_to_string(arg.arg.typename));
+            specs.append(pqname_to_string(parse_decorate_type(arg.arg)));
         elif isinstance(arg.arg, types.FunctionType):
             specs.append(func_type_to_string(arg.arg));
         else:

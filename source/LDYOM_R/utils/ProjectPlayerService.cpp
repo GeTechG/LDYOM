@@ -139,6 +139,15 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist
 			}
 		}
 
+
+		const auto onObjectiveStart = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectiveStart"].get_or_create<sol::table>();
+		for (auto [_, func] : onObjectiveStart) {
+			if (const auto result = func.as<sol::function>()(scene, tasklist, objective->getUuid()); !result.valid()) {
+				const sol::error err = result;
+				CLOG(ERROR, "lua") << err.what();
+			}
+		}
+
 		Result result;
 		co_await objective->execute(scene, result, tasklist);
 
@@ -172,6 +181,14 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist
 
 		for (const auto& dependent : deleteMap[objective->getUuid()])
 			dependent->deleteProjectEntity();
+
+		const auto onObjectiveEnd = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectiveEnd"].get_or_create<sol::table>();
+		for (auto [_, func] : onObjectiveEnd) {
+			if (const auto result = func.as<sol::function>()(scene, tasklist, objective->getUuid()); !result.valid()) {
+				const sol::error err = result;
+				CLOG(ERROR, "lua") << err.what();
+			}
+		}
 	}
 
 	const auto onEndSignals = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onEndScene"].get<sol::table>();
@@ -216,8 +233,10 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	while(this->nextScene.has_value()) {
 		const auto scene = this->nextScene.value();
 		this->nextScene = std::nullopt;
+		this->currentScene = scene;
 
 		ktcoro_tasklist ts;
+		this->sceneTasklist = &ts;
 		Tasker::getInstance().getInstance().addTask("sceneProcces", [](ktcoro_tasklist& ts) -> ktwait {
 			while (true) {
 				ts.process();
@@ -316,4 +335,12 @@ void ProjectPlayerService::reset() {
 
 void ProjectPlayerService::stopCurrentScene() {
 	Tasker::getInstance().getKtcoroTaskList().remove_task(this->currentSceneTask.value());
+}
+
+std::optional<Scene*>& ProjectPlayerService::getCurrentScene() {
+	return currentScene;
+}
+
+ktcoro_tasklist*& ProjectPlayerService::getSceneTasklist() {
+	return sceneTasklist;
 }

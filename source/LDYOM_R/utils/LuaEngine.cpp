@@ -49,6 +49,30 @@ void LuaEngine::resetState() {
 	signals.create_named("saveProject");
 	signals.create_named("loadProject");
 	signals.create_named("onEndScene");
+	signals.create_named("onActorSpawn");
+	signals.create_named("onActorDelete");
+	signals.create_named("onAudioSpawn");
+	signals.create_named("onAudioDelete");
+	signals.create_named("onCheckpointSpawn");
+	signals.create_named("onCheckpointDelete");
+	signals.create_named("onObjectSpawn");
+	signals.create_named("onObjectDelete");
+	signals.create_named("onObjectiveStart");
+	signals.create_named("onObjectiveEnd");
+	signals.create_named("onParticleSpawn");
+	signals.create_named("onParticleDelete");
+	signals.create_named("onPickupSpawn");
+	signals.create_named("onPickupDelete");
+	signals.create_named("onPickupSpawn");
+	signals.create_named("onPickupDelete");
+	signals.create_named("onTrainSpawn");
+	signals.create_named("onTrainDelete");
+	signals.create_named("onPyrotechnicsSpawn");
+	signals.create_named("onPyrotechnicsDelete");
+	signals.create_named("onVehicleSpawn");
+	signals.create_named("onVehicleDelete");
+	signals.create_named("onVisualEffectSpawn");
+	signals.create_named("onVisualEffectDelete");
 
 	const std::string scriptsPath = SCRIPT_PATH + "\\scripts";
 	for (const auto &entry : std::filesystem::directory_iterator(scriptsPath)) {

@@ -5,7 +5,11 @@
 #include <boost/uuid/random_generator.hpp>
 #include <extensions/ScriptCommands.h>
 
+#include "LuaEngine.h"
+#include "ProjectPlayerService.h"
 #include "strUtils.h"
+#include "easylogging/easylogging++.h"
+#include "Scene.h"
 
 using namespace plugin;
 
@@ -182,6 +186,19 @@ void Train::spawnProjectEntity() {
 		this->deleteProjectEntity();
 
 	this->projectTrain_ = spawnTrain();
+
+	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+	if (scene.has_value() && tasklist != nullptr) {
+		const auto onTrainSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onTrainSpawn"].get_or_create<sol::table>();
+		for (auto [_, func] : onTrainSpawn) {
+			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+				const sol::error err = result;
+				CLOG(ERROR, "lua") << err.what();
+			}
+		}
+	}
 }
 
 void Train::deleteProjectEntity() {
@@ -189,5 +206,18 @@ void Train::deleteProjectEntity() {
 		int vehicleRef = CPools::GetVehicleRef(this->projectTrain_.value());
 		Command<Commands::DELETE_MISSION_TRAIN>(vehicleRef);
 		this->projectTrain_ = std::nullopt;
+
+		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+		if (scene.has_value() && tasklist != nullptr) {
+			const auto onTrainDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onTrainDelete"].get_or_create<sol::table>();
+			for (auto [_, func] : onTrainDelete) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+					const sol::error err = result;
+					CLOG(ERROR, "lua") << err.what();
+				}
+			}
+		}
 	}
 }

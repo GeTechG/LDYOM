@@ -14,6 +14,8 @@
 
 using namespace std;
 
+extern bool reloadTheme;
+
 namespace Windows
 {
 	void SettingsWindow::Init()
@@ -124,7 +126,7 @@ namespace Windows
 			if (utils::Combo(local.get("settings.themes").c_str(), &this->settings_.currentTheme, Settings::getInstance().listThemes()))
 			{
 				Settings::getInstance().set("main.theme", Settings::getInstance().listThemes().at(this->settings_.currentTheme));
-				WindowsRenderService::getInstance().style();
+				reloadTheme = true;
 				Settings::getInstance().Save();
 			}
 

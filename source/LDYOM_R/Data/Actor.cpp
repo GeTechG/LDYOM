@@ -11,8 +11,11 @@
 
 #include <boost/uuid/uuid_generators.hpp>
 
+#include "LuaEngine.h"
+#include "ProjectPlayerService.h"
 #include "ProjectsService.h"
 #include "strUtils.h"
+#include "easylogging/easylogging++.h"
 
 using namespace plugin;
 
@@ -41,6 +44,19 @@ void Actor::spawnProjectEntity() {
 	this->projectPed_.value()->m_fHealth = static_cast<float>(this->health_);
 
 	updateLocation();
+
+	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+	if (scene.has_value() && tasklist != nullptr) {
+		const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].get_or_create<sol::table>();
+		for (auto [_, func] : onActorSpawn) {
+			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+				const sol::error err = result;
+				CLOG(ERROR, "lua") << err.what();
+			}
+		}
+	}
 }
 
 void Actor::deleteProjectEntity() {
@@ -48,6 +64,19 @@ void Actor::deleteProjectEntity() {
 		int pedRef = CPools::GetPedRef(this->projectPed_.value());
 		Command<Commands::DELETE_CHAR>(pedRef);
 		this->projectPed_ = std::nullopt;
+
+		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+		if (scene.has_value() && tasklist != nullptr) {
+			const auto onActorDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorDelete"].get_or_create<sol::table>();
+			for (auto [_, func] : onActorDelete) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+					const sol::error err = result;
+					CLOG(ERROR, "lua") << err.what();
+				}
+			}
+		}
 	}
 }
 

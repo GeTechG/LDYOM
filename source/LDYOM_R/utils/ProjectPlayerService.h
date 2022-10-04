@@ -11,6 +11,7 @@ private:
 	std::optional<Scene*> nextScene;
 	std::optional<int> nextObjective;
 
+	ktcoro_tasklist* sceneTasklist = nullptr;
 	std::optional<ktwait> currentSceneTask;
 
 	ktwait changeScene(Scene* scene, ktcoro_tasklist& tasklist, int startObjective = 0);
@@ -32,5 +33,8 @@ public:
 	bool& isProjectRunning();
 	void reset();
 	void stopCurrentScene();
+
+	std::optional<Scene*>& getCurrentScene();
+	ktcoro_tasklist*& getSceneTasklist();
 };
 

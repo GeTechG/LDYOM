@@ -11,6 +11,10 @@
 #include "strUtils.h"
 #include "utils.h"
 #include "CPickups.h"
+#include "LuaEngine.h"
+#include "ProjectPlayerService.h"
+#include "easylogging/easylogging++.h"
+#include "Scene.h"
 
 using namespace plugin;
 
@@ -195,11 +199,37 @@ void Pickup::spawnProjectEntity() {
 	this->projectPickup_ = spawnPickup(spawnType);
 
 	updateLocation();
+
+	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+	if (scene.has_value() && tasklist != nullptr) {
+		const auto onPickupSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onPickupSpawn"].get_or_create<sol::table>();
+		for (auto [_, func] : onPickupSpawn) {
+			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+				const sol::error err = result;
+				CLOG(ERROR, "lua") << err.what();
+			}
+		}
+	}
 }
 
 void Pickup::deleteProjectEntity() {
 	if (this->projectPickup_.has_value() && !restart) {
 		Command<Commands::REMOVE_PICKUP>(this->projectPickup_.value());
 		this->projectPickup_ = std::nullopt;
+
+		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+		if (scene.has_value() && tasklist != nullptr) {
+			const auto onPickupDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onPickupDelete"].get_or_create<sol::table>();
+			for (auto [_, func] : onPickupDelete) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+					const sol::error err = result;
+					CLOG(ERROR, "lua") << err.what();
+				}
+			}
+		}
 	}
 }

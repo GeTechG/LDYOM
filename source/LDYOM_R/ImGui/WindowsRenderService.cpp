@@ -36,6 +36,7 @@ _Reset oReset;
 
 bool isInitImgui = false;
 float uiScaling = 1.0f;
+bool reloadTheme = false;
 
 void Windows::WindowsRenderService::render() const {
 	ImGui_ImplDX9_NewFrame();
@@ -107,6 +108,14 @@ void Windows::WindowsRenderService::process() const {
 	mouseProcess();
 }
 
+void loadTheme() {
+	if (!ImGui::StyleLoader::LoadFile(fmt::format("LDYOM/Themes/{}.toml", Settings::getInstance().get<std::string>("main.theme").value()))) {
+		Logger::getInstance().log("invalid load theme!");
+	}
+	ImNodes::GetStyle().Colors[ImNodesCol_GridBackground] = ImGui::GetColorU32(ImGuiCol_WindowBg);
+	ImNodes::GetStyle().Colors[ImNodesCol_GridLine] = ImGui::GetColorU32(ImGuiCol_Border);
+}
+
 void Windows::WindowsRenderService::style() {
 	// Setup Dear ImGui style
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -143,9 +152,7 @@ void Windows::WindowsRenderService::style() {
 
 	ImGui::GetIO().Fonts->Build();
 
-	if (!ImGui::StyleLoader::LoadFile(fmt::format("LDYOM/Themes/{}.toml", Settings::getInstance().get<std::string>("main.theme").value()))) {
-		Logger::getInstance().log("invalid load theme!");
-	}
+	loadTheme();
 
 	ImNodes::GetStyle().PinCircleRadius = 16.0f * uiScaling / 3.f;
 	ImNodes::GetStyle().PinQuadSideLength = 16.0f * uiScaling / 1.5f;
@@ -222,6 +229,10 @@ void initImGui() {
 HRESULT WINAPI EndScene(IDirect3DDevice9* pDevice) {
 	if (!isInitImgui)
 		initImGui();
+	if (reloadTheme) {
+		loadTheme();
+		reloadTheme = false;
+	}
 	if (!FrontEndMenuManager.m_bMenuActive)
 		Windows::WindowsRenderService::getInstance().render();
 	return oEndScene(pDevice);

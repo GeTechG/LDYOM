@@ -215,7 +215,7 @@ end
 
 function NodeEditorContext:updatePinConnected()
     for _, node in pairs(self.nodes) do
-        for _, pin in ipairs(node.pins) do
+        for _, pin in pairs(node.pins) do
             pin.connected = false;
             for _, link in pairs(self.links) do
                 if pin.id == link.pinInId or pin.id == link.pinOutId then

@@ -9,9 +9,13 @@
 #include <extensions/scripting/ScriptCommandNames.h>
 
 #include "components.h"
+#include "LuaEngine.h"
 #include "ModelsService.h"
+#include "ProjectPlayerService.h"
 #include "strUtils.h"
 #include "utils.h"
+#include "easylogging/easylogging++.h"
+#include "Scene.h"
 
 using namespace plugin;
 
@@ -165,6 +169,19 @@ void Object::spawnProjectEntity() {
 	this->projectObject_ = spawnObject();
 
 	updateLocation();
+
+	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+	if (scene.has_value() && tasklist != nullptr) {
+		const auto onObjectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectSpawn"].get_or_create<sol::table>();
+		for (auto [_, func] : onObjectSpawn) {
+			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+				const sol::error err = result;
+				CLOG(ERROR, "lua") << err.what();
+			}
+		}
+	}
 }
 
 void Object::deleteProjectEntity() {
@@ -172,5 +189,18 @@ void Object::deleteProjectEntity() {
 		int objectRef = CPools::GetObjectRef(this->projectObject_.value());
 		Command<Commands::DELETE_OBJECT>(objectRef);
 		this->projectObject_ = std::nullopt;
+
+		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+		if (scene.has_value() && tasklist != nullptr) {
+			const auto onObjectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectDelete"].get_or_create<sol::table>();
+			for (auto [_, func] : onObjectDelete) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+					const sol::error err = result;
+					CLOG(ERROR, "lua") << err.what();
+				}
+			}
+		}
 	}
 }

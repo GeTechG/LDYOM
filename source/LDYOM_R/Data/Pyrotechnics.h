@@ -62,6 +62,7 @@ public:
 	int& getTypeExplosion();
 	int& getSizeFire();
 	int& getPropagationFire();
+	std::optional<int>& getProjectFireId();
 
 	void updateLocation();
 

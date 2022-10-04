@@ -9,11 +9,14 @@
 #include <extensions/scripting/ScriptCommandNames.h>
 
 #include "components.h"
+#include "LuaEngine.h"
 #include "ModelsService.h"
+#include "ProjectPlayerService.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "ProjectsService.h"
 #include "../Data/CSoundSystem.h"
+#include "easylogging/easylogging++.h"
 
 using namespace plugin;
 
@@ -257,6 +260,19 @@ void Audio::spawnProjectEntity() {
 		updateLocation();
 		const auto & audioStream = reinterpret_cast<CLEO::CAudioStream*>(this->projectAudio_.value());
 		audioStream->Play();
+
+		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+		if (scene.has_value() && tasklist != nullptr) {
+			const auto onAudioSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onAudioSpawn"].get_or_create<sol::table>();
+			for (auto [_, func] : onAudioSpawn) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+					const sol::error err = result;
+					CLOG(ERROR, "lua") << err.what();
+				}
+			}
+		}
 	}
 }
 
@@ -265,6 +281,19 @@ void Audio::deleteProjectEntity() {
 		//REMOVE_AUDIO_STREAM
 		Command<0x0AAE>(this->projectAudio_.value());
 		this->projectAudio_ = std::nullopt;
+
+		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+		if (scene.has_value() && tasklist != nullptr) {
+			const auto onAudioDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onAudioDelete"].get_or_create<sol::table>();
+			for (auto [_, func] : onAudioDelete) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+					const sol::error err = result;
+					CLOG(ERROR, "lua") << err.what();
+				}
+			}
+		}
 	}
 }
 

@@ -7,9 +7,6 @@ Scene = {
 	---getName() -> string
     ---@return string
     ["getName"] = function(self) end,
-    ---getId() -> int
-    ---@return int
-    ["getId"] = function(self) end,
 	---~Scene() -> void
     ---@return void
     ["~Scene"] = function(self) end,
