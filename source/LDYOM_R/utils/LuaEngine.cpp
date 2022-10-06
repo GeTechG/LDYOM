@@ -73,6 +73,7 @@ void LuaEngine::resetState() {
 	signals.create_named("onVehicleDelete");
 	signals.create_named("onVisualEffectSpawn");
 	signals.create_named("onVisualEffectDelete");
+	signals.create_named("onMainLoop");
 
 	const std::string scriptsPath = SCRIPT_PATH + "\\scripts";
 	for (const auto &entry : std::filesystem::directory_iterator(scriptsPath)) {

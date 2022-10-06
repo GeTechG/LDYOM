@@ -12,6 +12,14 @@
     },
     "main": {
         "distanceShowNames": 100.0,
+        "favoritesNodes": [
+            "MenuSetColumnNode",
+            "MenuSetColumnOrientationNode",
+            "MenuSetColumnWidthNode",
+            "MissionFailNode",
+            "MissionFinishNode",
+            "MissionLoadAndLaunchInternalNode"
+        ],
         "language": "English",
         "showEntitiesName": true,
         "theme": "default"

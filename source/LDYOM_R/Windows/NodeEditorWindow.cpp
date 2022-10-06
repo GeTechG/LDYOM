@@ -14,6 +14,7 @@
 #include <boost/algorithm/string.hpp>
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
+#include "Settings.h"
 
 void Windows::NodeEditorWindow::newNodePopup(sol::table globalData, sol::table ed, bool* isCreateNode) {
 	if (ImGui::BeginPopup("newNode")) {
@@ -44,13 +45,25 @@ void Windows::NodeEditorWindow::newNodePopup(sol::table globalData, sol::table e
 				}
 			}
 		}
-		if (ImGui::BeginChild("##categories", ImVec2(ImGui::GetFontSize() * 15.f, ImGui::GetFontSize() * 25.f))) {
+		if (ImGui::BeginChild("##categories", ImVec2(ImGui::GetFontSize() * 16.f, ImGui::GetFontSize() * 25.f))) {
 			static bool opened = false;
 			const size_t searchBufLen = std::strlen(searchBuf);
 
-			auto nodeClassMenuItem = [&globalData, &ed, &isCreateNode, &description](int nodeId) {
+			auto nodeClassMenuItem = [&globalData, &ed, &isCreateNode, &description, this](int nodeId) {
 				auto nodeClass = globalData["nodes"][nodeId].get<sol::table>();
 				const auto nameNode = Localization::getInstance().get(nodeClass.get<const char*>("name_"));
+				ImGui::PushID(nodeId);
+				if (ImGui::SmallButton(ICON_FA_STAR)) {
+					if (this->favoritesNodes_.contains(nodeId)) {
+						this->favoritesNodes_.erase(nodeId);
+					}
+					else {
+						this->favoritesNodes_.emplace(nodeId);
+					}
+					saveFavoritesNodes();
+				}
+				ImGui::PopID();
+				ImGui::SameLine();
 				if (ImGui::MenuItem(fmt::format("{} {}", NodeEditorUtils::getIcon(static_cast<NodeType>(nodeClass["static"]["type"].get<int>())), nameNode).c_str())) {
 					if (auto result = ed["newNode"](ed, nodeClass); !result.valid()) {
 						sol::error err = result;
@@ -107,6 +120,13 @@ void Windows::NodeEditorWindow::newNodePopup(sol::table globalData, sol::table e
 					}
 					ImGui::TreePop();
 				}
+				if (ImGui::TreeNode(Localization::getInstance().get("core.categories.favorites").c_str())) {
+					std::set clone(this->favoritesNodes_);
+					for (int favoriteNode : clone) {
+						nodeClassMenuItem(favoriteNode);
+					}
+					ImGui::TreePop();
+				}
 				for (auto& category : globalData["nodes_categories"].get_or_create<sol::table>()) {
 					if (opened)
 						ImGui::SetNextItemOpen(false);
@@ -144,6 +164,30 @@ void Windows::NodeEditorWindow::newNodePopup(sol::table globalData, sol::table e
 		}
 
 		ImGui::EndPopup();
+	}
+}
+
+void Windows::NodeEditorWindow::saveFavoritesNodes() {
+	std::vector<std::string> favoritesNodes{};
+	const auto nodes = LuaEngine::getInstance().getLuaState()["global_data"]["nodes"].get_or_create<sol::table>();
+	for (int favoriteNode : this->favoritesNodes_) {
+		favoritesNodes.emplace_back(nodes[favoriteNode].get<sol::table>()["name"].get<std::string>());
+	}
+	Settings::getInstance().set("main.favoritesNodes", favoritesNodes);
+	Settings::getInstance().Save();
+}
+
+Windows::NodeEditorWindow::NodeEditorWindow() {
+	const auto listNodesName = Settings::getInstance().get<std::vector<std::string>>("main.favoritesNodes");
+	if (listNodesName.has_value()) {
+		const auto nodes = LuaEngine::getInstance().getLuaState()["global_data"]["nodes"].get_or_create<sol::table>();
+		for (auto node : nodes) {
+			for (auto value : listNodesName.value()) {
+				if (strcmp(node.second.as<sol::table>()["name"].get<const char*>(), value.c_str()) == 0) {
+					this->favoritesNodes_.emplace(node.first.as<int>());
+				}
+			}
+		}
 	}
 }
 
@@ -223,6 +267,7 @@ void Windows::NodeEditorWindow::draw() {
 				ImGui::Text(local.get("warning_popup.text").c_str());
 				if (ImGui::Button(local.get("warning_popup.yes").c_str(), ImVec2(ImGui::GetFontSize() * 6.f, 0.f))) {
 					ed["deleteWorkspace"](ed);
+					ImGui::CloseCurrentPopup();
 				}
 				ImGui::SameLine();
 				if (ImGui::Button(local.get("warning_popup.no").c_str(), ImVec2(ImGui::GetFontSize() * 6.f, 0.f))) {

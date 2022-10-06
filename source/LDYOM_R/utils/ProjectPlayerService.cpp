@@ -122,6 +122,19 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist
 		}
 	}
 
+	tasklist.add_task([](Scene* scene, ktcoro_tasklist& tasklist) -> ktwait {
+		while (true) {
+			const auto onMainLoop = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onMainLoop"].get_or_create<sol::table>();
+			for (auto [_, func] : onMainLoop) {
+				if (const auto result = func.as<sol::function>()(scene, tasklist); !result.valid()) {
+					const sol::error err = result;
+					CLOG(ERROR, "lua") << err.what();
+				}
+			}
+			co_await 1;
+		}
+	}, scene, tasklist);
+
 	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
 		if (this->nextObjective.has_value()) {
 			o = this->nextObjective.value();
