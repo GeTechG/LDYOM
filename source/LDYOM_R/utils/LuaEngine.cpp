@@ -24,6 +24,7 @@ void LuaEngine::resetState() {
 	const std::string basePath = SCRIPT_PATH + "\\libs\\";
 	//luaState_.require_file("class", basePath + "middleclass.lua");
 	luaState_.require_file("bitser", basePath + "bitser.lua");
+	luaState_.require_file("base64", basePath + "base64.lua");
 	//luaState_.require_file("tl", basePath + "tl.lua");
 	luaState_.set_function("print", [](sol::this_state L, const sol::object& obj, const sol::variadic_args args) {
 		LuaLogger::getInstance().print(sol::state_view(L), obj, args);
@@ -74,6 +75,8 @@ void LuaEngine::resetState() {
 	signals.create_named("onVisualEffectSpawn");
 	signals.create_named("onVisualEffectDelete");
 	signals.create_named("onMainLoop");
+	signals.create_named("saveGame");
+	signals.create_named("loadGame");
 
 	const std::string scriptsPath = SCRIPT_PATH + "\\scripts";
 	for (const auto &entry : std::filesystem::directory_iterator(scriptsPath)) {

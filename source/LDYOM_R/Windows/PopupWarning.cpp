@@ -10,7 +10,7 @@ char* PopupWarning::getName() {
 }
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
-void PopupWarning::draw(const std::function<void()>& onDelete) {
+void PopupWarning::draw(const std::function<void()>& onDelete, const std::function<void()>& onCancel) {
 	auto &local = Localization::getInstance();
 	if (ImGui::BeginPopupModal(getName(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 
@@ -22,6 +22,7 @@ void PopupWarning::draw(const std::function<void()>& onDelete) {
 		}
 		ImGui::SameLine();
 		if (ImGui::Button(local.get("warning_popup.no").c_str(), ImVec2(width, 0.0f))) {
+			onCancel();
 			ImGui::CloseCurrentPopup();
 		}
 

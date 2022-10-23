@@ -17,8 +17,11 @@
 #include "imgui_notify.h"
 #include "LuaEngine.h"
 #include "TimerService.h"
+#include "utils.h"
 #include "../Data/Result.h"
 #include "easylogging/easylogging++.h"
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace Windows {
 	class AbstractWindow;
@@ -135,6 +138,24 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist
 		}
 	}, scene, tasklist);
 
+	if (this->save_.has_value()) {
+		using namespace plugin;
+
+		Command<Commands::SET_PLAYER_MODEL>(0, this->save_.value()->playerModel);
+		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+		std::memcpy(playerClothes->m_anTextureKeys, this->save_.value()->clotherMAnTextureKeys_.data(), sizeof playerClothes->m_anTextureKeys);
+		std::memcpy(playerClothes->m_anModelKeys, this->save_.value()->clotherMAnModelKeys_.data(), sizeof playerClothes->m_anModelKeys);
+		playerClothes->m_fFatStat = this->save_.value()->fatStat;
+		playerClothes->m_fMuscleStat = this->save_.value()->musculeStat;
+		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
+		FindPlayerPed()->Teleport(CVector(this->save_.value()->playerPosition[0], this->save_.value()->playerPosition[1], this->save_.value()->playerPosition[2]), false);
+
+		if (this->save_.value()->nodePinId != -1) {
+			auto nodeEditorContext = LuaEngine::getInstance().getLuaState()["global_data"]["ed_contexts"][scene->getId()];
+			nodeEditorContext["callNodes"](nodeEditorContext, scene, tasklist, this->save_.value()->nodePinId);
+		}
+	}
+
 	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
 		if (this->nextObjective.has_value()) {
 			o = this->nextObjective.value();
@@ -142,6 +163,7 @@ ktwait ProjectPlayerService::changeScene(Scene* scene, ktcoro_tasklist& tasklist
 		}
 
 		const auto &objective = scene->getObjectives().at(o);
+		this->currentObjective_ = objective.get();
 
 		for (const auto & dependent : spawnMap[objective->getUuid()]) {
 			try {
@@ -221,6 +243,10 @@ void ProjectPlayerService::setNextObjective(int objective) {
 	this->nextObjective = objective;
 }
 
+void ProjectPlayerService::setSave(const std::optional<SaveData*>& save) {
+	save_ = save;
+}
+
 ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	using namespace plugin;
 
@@ -234,6 +260,29 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	const auto startScene = ProjectsService::getInstance().getCurrentProject().getScenes().at(sceneIdx).get();
 	setNextScene(startScene);
 	setNextObjective(startObjective);
+
+	if (this->save_.has_value()) {
+
+		auto nextScene = ProjectsService::getInstance().getCurrentProject().getScenes().at(this->save_.value()->sceneId).get();
+		setNextScene(nextScene);
+
+		auto objectiveIndex = utils::indexByUuid(nextScene->getObjectives(), boost::lexical_cast<boost::uuids::uuid>(this->save_.value()->objectiveUuid));
+		if (objectiveIndex != -1) {
+			objectiveIndex = min(objectiveIndex + 1, nextScene->getObjectives().size() - 1);
+			setNextObjective(objectiveIndex);
+		}
+
+		auto& luaState = LuaEngine::getInstance().getLuaState();
+
+		const sol::table luaData = luaState["bitser"]["loads"](luaState["base64"]["decode"](this->save_.value()->luaData));
+
+		for (auto pairLua : luaState["global_data"]["signals"]["loadGame"].get_or_create<sol::table>()) {
+			if (auto resultLua = pairLua.second.as<sol::function>()(nextScene->getId(), luaData); !resultLua.valid()) {
+				sol::error err = resultLua;
+				CLOG(ERROR, "lua") << err.what();
+			}
+		}
+	}
 
 	const auto onStartSignals = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onStartProject"].get<sol::table>();
 	for (auto [_, func] : onStartSignals) {
@@ -330,6 +379,7 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 			}
 		}
 	}
+	this->save_ = std::nullopt;
 
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->loadEditorScene();
 	defaultWindow = savedWindow;
@@ -356,4 +406,8 @@ std::optional<Scene*>& ProjectPlayerService::getCurrentScene() {
 
 ktcoro_tasklist*& ProjectPlayerService::getSceneTasklist() {
 	return sceneTasklist;
+}
+
+std::optional<BaseObjective*>& ProjectPlayerService::getCurrentObjective() {
+	return currentObjective_;
 }

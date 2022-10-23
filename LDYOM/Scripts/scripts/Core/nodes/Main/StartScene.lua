@@ -47,4 +47,12 @@ global_data.signals.onStartScene[#global_data.signals.onStartScene + 1] = functi
     end
 end
 
+function callNode(scene, tasklist, nodeId)
+    local context = global_data.ed_contexts[scene:getId()];
+    local node = context.nodes[nodeId];
+    Tasker.addTask(tasklist, function()
+        node:execute(scene, tasklist, context);
+    end)
+end
+
 NodeEditor.registerNode("core.categories.main", StartSceneNode);

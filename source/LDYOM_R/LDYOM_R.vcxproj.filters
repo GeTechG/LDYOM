@@ -377,6 +377,15 @@
     <Filter Include="Data\Objectives\World\SetGlobalVariable">
       <UniqueIdentifier>{473b2d9f-a523-4cf1-b266-280876fde0f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\SaveService">
+      <UniqueIdentifier>{04771bb1-1860-4994-bee6-82fa0140175a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Scene\Save">
+      <UniqueIdentifier>{a9389d46-0cdd-4323-9b39-a6463f4a5535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\SaveConfirmPopup">
+      <UniqueIdentifier>{4b39a16c-f75d-40f3-ba6f-5e1479c1348a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1107,6 +1116,15 @@
     <ClCompile Include="utils\BaseObjectiveLuaWrapper.cpp">
       <Filter>Lua\Wrappers\data</Filter>
     </ClCompile>
+    <ClCompile Include="utils\SaveService.cpp">
+      <Filter>Utils\SaveService</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\SaveObjective.cpp">
+      <Filter>Data\Objectives\Scene\Save</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\SaveConfirmPopup.cpp">
+      <Filter>Windows\SaveConfirmPopup</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imstb_truetype.h">
@@ -1595,6 +1613,15 @@
     </ClInclude>
     <ClInclude Include="Data\SetGlobalVariableObjective.h">
       <Filter>Data\Objectives\World\SetGlobalVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\SaveService.h">
+      <Filter>Utils\SaveService</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\SaveObjective.h">
+      <Filter>Data\Objectives\Scene\Save</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\SaveConfirmPopup.h">
+      <Filter>Windows\SaveConfirmPopup</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

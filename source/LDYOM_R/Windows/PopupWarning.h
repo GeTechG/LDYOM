@@ -7,5 +7,5 @@ class PopupWarning: public INameable {
 public:
 	PopupWarning(std::string name = "warning_popup.title");
 	char* getName() override;
-	void draw(const std::function<void()>& onDelete);
+	void draw(const std::function<void()>& onDelete, const std::function<void()>& onCancel = [] {});
 };

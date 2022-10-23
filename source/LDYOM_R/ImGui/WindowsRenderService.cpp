@@ -43,7 +43,8 @@ void Windows::WindowsRenderService::render() const {
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	for (const auto& [name, function] : renderList_)
+	auto currRenderList = renderList_;
+	for (const auto& [name, function] : currRenderList)
 		function();
 
 	if (renderWindows_) {

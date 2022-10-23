@@ -5,6 +5,9 @@
 #include "../Data/Texture.h"
 #include "Localization/Localization.h"
 
+struct ProjectInfo;
+typedef std::vector<std::unique_ptr<ProjectInfo>> ProjectsInfos;
+
 namespace Windows {
 	class ProjectsWindowPopup {
 	private:
@@ -14,7 +17,7 @@ namespace Windows {
 		PopupWarning popupWarningLoadProject_;
 		PopupWarning popupWarningDeleteProject_;
 
-		void projectInfo(Localization& local) const;
+		void projectInfo(Localization& local, const ProjectsInfos& projectInfos) const;
 	public:
 		ProjectsWindowPopup();
 		void draw();

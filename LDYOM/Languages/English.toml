@@ -82,6 +82,8 @@ result = "Result"
 global_variables = "Global Variables"
 true = "True"
 false = "False"
+yes = "Yes"
+no = "No"
 
 [objective]
 title = "Objective"
@@ -121,6 +123,7 @@ enter_vehicle_actor = "Enter vehicle actor"
 follow_path_vehicle = "Follow path vehicle"
 jump_to_objective = "Jump to objective"
 set_global_variable = "Set Global Variable"
+save = "Save"
 
 [objective_categories]
 world = "World"
@@ -172,6 +175,13 @@ execute_time = "Execute time"
 [follow_path_vehicle_objective]
 drive_type = "Drive type"
 drive_types = ["Anything", "Accurate", "Racing"]
+
+[save_objective]
+show_confirm = "Confirm popup"
+confirm_text = "Do you want to save the game?"
+load_save = "Load Save"
+load_save_question = "Saved detected, want to load?"
+
 
 [mission]
 title = "Mission"
@@ -354,10 +364,15 @@ project = "Project"
 new_project = "New project"
 load_project = "Load project"
 delete_project = "Delete project"
+play_project = "Play"
 project_name = "Project name"
 new_project_warning = "Warning! : New Project"
 load_project_warning = "Warning! : Load Project"
 delete_project_warning = "Warning! : Delete Project"
+development = "Development"
+production = "Production"
+make_production = "Make Production"
+
 
 [project_info]
 title = "Project info"
@@ -411,6 +426,9 @@ custom_ped_animations = "Custom ped animations"
 [console_window]
 title = "Console"
 run = "Run"
+
+[welcome_box]
+text = "Welcome to ~n~LDYOM ~r~%s~w~!~n~~n~Press ~y~%s~w~ to open main menu"
 
 [hotkey_editor]
 title = "Hotkeys Editor"

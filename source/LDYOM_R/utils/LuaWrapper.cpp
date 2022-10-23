@@ -16,6 +16,7 @@
 #include "ktcoro_wait.hpp"
 #include "ProjectPlayerService.h"
 #include "utils.h"
+#include "WindowsRenderService.h"
 #include "boost/uuid/uuid.hpp"
 #include "../Windows/utilsRender.h"
 
@@ -30,6 +31,7 @@
 #include "../Data/Train.h"
 #include "../Data/Vehicle.h"
 #include "../Data/VisualEffect.h"
+#include "../Data/SaveObjective.h"
 
 void LuaWrapper::wrap(sol::state& state) {
 	OpcodesLuaWrapper::wrap(state);
@@ -103,6 +105,7 @@ void LuaWrapper::wrap(sol::state& state) {
 	state.set("setNextObjective", [](int next_objective) {
 		ProjectPlayerService::getInstance().setNextObjective(next_objective);
 	});
+	state.set("saveGame", SaveObjective::saveGame);
 
 	auto loc = state.create_table("loc");
 	loc.set_function("get", [](const std::string& key) {

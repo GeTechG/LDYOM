@@ -4,7 +4,9 @@
 #include "fmt/core.h"
 #include "fa.h"
 #include "PopupWarning.h"
+#include "ProjectPlayerService.h"
 #include "ProjectsService.h"
+#include "Tasker.h"
 #include "utils.h"
 #include "Localization/Localization.h"
 
@@ -35,10 +37,10 @@ Windows::ProjectsWindowPopup::ProjectsWindowPopup(): popupWarningNewProject_("pr
 	});
 }
 
-void projectsList(const ImVec2 window_size) {
-	ImGui::BeginChild("##projectsList", ImVec2(window_size.x / 3.0f, window_size.y / 3.0f), true);
-	for (int i = 0; i < static_cast<int>(ProjectsService::getInstance().getProjectsInfos().size()); ++i) {
-		const auto projectInfo = ProjectsService::getInstance().getProjectsInfos().at(i).get();
+void projectsList(const ImVec2 windowSize, const ProjectsInfos& projectInfos) {
+	ImGui::BeginChild("##projectsList", ImVec2(windowSize.x / 3.0f, windowSize.y / 3.0f), true);
+	for (int i = 0; i < static_cast<int>(projectInfos.size()); ++i) {
+		const auto projectInfo = projectInfos.at(i).get();
 		if (ImGui::Selectable(projectInfo->name, selected_project == i)) {
 			selected_project = i;
 		}
@@ -47,13 +49,13 @@ void projectsList(const ImVec2 window_size) {
 	ImGui::EndChild();
 }
 
-void Windows::ProjectsWindowPopup::projectInfo(Localization& local) const {
+void Windows::ProjectsWindowPopup::projectInfo(Localization& local, const ProjectsInfos& projectInfos) const {
 	static const float BASE_WIDTH = ImGui::GetFontSize() * 18.75f;
 
 	ImGui::BeginChild("##projectInfo", ImVec2(BASE_WIDTH + 40.0f, ImGui::GetItemRectSize().y), true);
 
 	if (selected_project != -1) {
-		const auto projectInfo = ProjectsService::getInstance().getProjectsInfos().at(selected_project).get();
+		const auto projectInfo = projectInfos.at(selected_project).get();
 		Texture* icon;
 		if (projectInfo->icon.has_value())
 			icon = projectInfo->icon.value().get();
@@ -87,45 +89,139 @@ void Windows::ProjectsWindowPopup::draw() {
 
 	if (ImGui::BeginPopupModal(fmt::format("{} {}", ICON_FA_THEATER_MASKS, local.get("projects.title")).c_str(), &this->show_, ImGuiWindowFlags_AlwaysAutoResize)) {
 
-		projectsList(window_size);
-		
-		ImGui::SameLine();
-		projectInfo(local);
+		if (ImGui::BeginTabBar("projects")) {
 
-		// / (1/3 window) / (3 buttons) - 3.0
-		const auto widthButton = window_size.x / 3.0f / 3.0f - 3.0f;
-		if (ImGui::Button(local.get("projects.new_project").c_str(), ImVec2(widthButton, .0f))) {
-			ImGui::OpenPopup(popupWarningNewProject_.getName());
-		}
-		ImGui::SameLine();
-		ImGui::BeginDisabled(selected_project == -1);
-		if (ImGui::Button(local.get("projects.load_project").c_str(), ImVec2(widthButton, .0f))) {
-			ImGui::OpenPopup(popupWarningLoadProject_.getName());
-		}
-		ImGui::SameLine();
-		if (ImGui::Button(local.get("projects.delete_project").c_str(), ImVec2(widthButton, .0f))) {
-			ImGui::OpenPopup(popupWarningDeleteProject_.getName());
-		}
-		ImGui::EndDisabled();
+			static int tabId = 0;
 
-		static bool openNewProjectInfo = false;
-		popupWarningNewProject_.draw([&] {
-			ProjectsService::getInstance().createNewProject();
-			openNewProjectInfo = true;
-			});
-		popupWarningLoadProject_.draw([&] {
-			ProjectsService::getInstance().loadProject(selected_project);
-			});
-		popupWarningDeleteProject_.draw([&] {
-			ProjectsService::getInstance().deleteProject(selected_project);
-			});
+			if (ImGui::BeginTabItem(local.get("projects.development").c_str())) {
 
-		if (openNewProjectInfo) {
-			ImGui::OpenPopup(local.get("project_info.title").c_str());
-			openNewProjectInfo = false;
+				if (tabId != 0) {
+					selected_project = -1;
+					tabId = 0;
+				}
+
+				projectsList(window_size, ProjectsService::getInstance().getProjectsInfos());
+
+				ImGui::SameLine();
+				projectInfo(local, ProjectsService::getInstance().getProjectsInfos());
+
+				// / (1/3 window) / (3 buttons) - 3.0
+				const auto widthButton = window_size.x / 3.0f / 4.0f - 3.0f;
+				if (ImGui::Button(local.get("projects.new_project").c_str(), ImVec2(widthButton, .0f))) {
+					ImGui::OpenPopup(popupWarningNewProject_.getName());
+				}
+				ImGui::SameLine();
+				ImGui::BeginDisabled(selected_project == -1);
+				if (ImGui::Button(local.get("projects.load_project").c_str(), ImVec2(widthButton, .0f))) {
+					ImGui::OpenPopup(popupWarningLoadProject_.getName());
+				}
+				ImGui::SameLine();
+				if (ImGui::Button(local.get("projects.make_production").c_str(), ImVec2(widthButton, .0f))) {
+					ProjectsService::getInstance().makeProjectProduction(selected_project);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button(local.get("projects.delete_project").c_str(), ImVec2(widthButton, .0f))) {
+					ImGui::OpenPopup(popupWarningDeleteProject_.getName());
+				}
+				ImGui::EndDisabled();
+
+				static bool openNewProjectInfo = false;
+				popupWarningNewProject_.draw([&] {
+					ProjectsService::getInstance().createNewProject();
+					openNewProjectInfo = true;
+					});
+				popupWarningLoadProject_.draw([&] {
+					ProjectsService::getInstance().loadProject(selected_project);
+					});
+				popupWarningDeleteProject_.draw([&] {
+					ProjectsService::getInstance().deleteProject(selected_project);
+					});
+
+				if (openNewProjectInfo) {
+					ImGui::OpenPopup(local.get("project_info.title").c_str());
+					openNewProjectInfo = false;
+				}
+
+				newProjectInfoPopup();
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem(local.get("projects.production").c_str())) {
+
+				if (tabId != 1) {
+					selected_project = -1;
+					tabId = 1;
+				}
+
+				projectsList(window_size, ProjectsService::getInstance().getProductionProjectsInfos());
+
+				ImGui::SameLine();
+				projectInfo(local, ProjectsService::getInstance().getProductionProjectsInfos());
+
+				// / (1/3 window) / (3 buttons) - 3.0
+				const auto widthButton = window_size.x / 3.0f / 3.0f - 3.0f;
+				ImGui::BeginDisabled(selected_project == -1);
+				if (ImGui::Button(local.get("projects.play_project").c_str(), ImVec2(widthButton, .0f))) {
+					ImGui::OpenPopup(popupWarningLoadProject_.getName());
+				}
+				ImGui::SameLine();
+				if (ImGui::Button(local.get("projects.delete_project").c_str(), ImVec2(widthButton, .0f))) {
+					ImGui::OpenPopup(popupWarningDeleteProject_.getName());
+				}
+				ImGui::EndDisabled();
+
+				bool openLoadSavePopup = false;
+
+				popupWarningLoadProject_.draw([&] {
+					if (SaveService::getInstance().getSave(ProjectsService::getInstance().getProductionProjectsInfos().at(selected_project)->name).has_value()) {
+						openLoadSavePopup = true;
+					} else {
+						ProjectsService::getInstance().loadProductionProject(selected_project);
+						Tasker::getInstance().addTask("playProductionProjectTask", []() -> ktwait {
+							co_await ProjectPlayerService::getInstance().startProject(ProjectsService::getInstance().getCurrentProject().getCurrentSceneIndex(), 0);
+							ProjectsService::getInstance().createNewProject();
+							});
+					}
+				});
+
+				if (openLoadSavePopup)
+					ImGui::OpenPopup(local.get("save_objective.load_save").c_str());
+
+				popupWarningDeleteProject_.draw([&] {
+					ProjectsService::getInstance().deleteProductionProject(selected_project);
+					});
+
+				if (ImGui::BeginPopupModal(local.get("save_objective.load_save").c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+
+					ImGui::Text(local.get("save_objective.load_save_question").c_str());
+					const float width = ImGui::GetContentRegionAvail().x / 2.0f - 3.0f;
+					if (ImGui::Button(local.get("warning_popup.yes").c_str(), ImVec2(width, 0.0f))) {
+						ProjectsService::getInstance().loadProductionProject(selected_project);
+						Tasker::getInstance().addTask("playProductionProjectTask", []() -> ktwait {
+							ProjectPlayerService::getInstance().setSave(SaveService::getInstance().getSave(ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name));
+							co_await ProjectPlayerService::getInstance().startProject(ProjectsService::getInstance().getCurrentProject().getCurrentSceneIndex(), 0);
+							ProjectsService::getInstance().createNewProject();
+							});
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::SameLine();
+					if (ImGui::Button(local.get("warning_popup.no").c_str(), ImVec2(width, 0.0f))) {
+						ProjectsService::getInstance().loadProductionProject(selected_project);
+						Tasker::getInstance().addTask("playProductionProjectTask", []() -> ktwait {
+							co_await ProjectPlayerService::getInstance().startProject(ProjectsService::getInstance().getCurrentProject().getCurrentSceneIndex(), 0);
+							ProjectsService::getInstance().createNewProject();
+							});
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::EndPopup();
+				}
+
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
 		}
-
-		newProjectInfoPopup();
 
 		ImGui::EndPopup();
 	}

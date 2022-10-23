@@ -26,6 +26,7 @@
 #include "LuaLogger.h"
 #include "ModelsService.h"
 #include "ProjectPlayerService.h"
+#include "SaveService.h"
 #include "vehicle_renderer.h"
 #include "Windows/QuickCommandsWindow.h"
 #include "Windows/NameEntitiesRender.h"
@@ -48,6 +49,7 @@
 #include "Windows/ConsoleWindow.h"
 #include "Windows/GlobalVariablesWindow.h"
 #include "Windows/NodeEditorWindow.h"
+#include "Windows/SaveConfirmPopup.h"
 #include "Windows/VisualEffectsWindow.h"
 
 using namespace plugin;
@@ -111,6 +113,7 @@ public:
 			PopupSkinSelector::getInstance().Init();
 			PopupWeaponSelector::getInstance().Init();
 			PopupSpriteBlipSelector::Init();
+			SaveService::getInstance().Init();
 
 			Windows::WindowsRenderService::getInstance().Init();
 
@@ -134,6 +137,7 @@ public:
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::ConsoleWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::NodeEditorWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::GlobalVariablesWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::SaveConfirmPopup>());
 			Windows::WindowsRenderService::getInstance().addRender("showEntitiesName", [] {
 				if (!ProjectPlayerService::getInstance().isProjectRunning()) {
 					if (Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false))
@@ -173,6 +177,25 @@ public:
 				Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 
 				//Command<Commands::MAKE_PLAYER_FIRE_PROOF>(0, true);
+			});
+
+			Tasker::getInstance().getKtcoroTaskList().add_task([]() -> ktwait {
+				co_await 4s;
+
+				static std::array<char, TEXT_SIZE> welcomeS;
+
+				char openMenuHotKey[32];
+				ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("openMenu")->functionKeys, openMenuHotKey, sizeof openMenuHotKey);
+
+				const auto welcomeTemplate = Localization::getInstance().get("welcome_box.text");
+				const std::string welcome = utils::stringFormat(welcomeTemplate, LDYOM_VERSION_STRING, openMenuHotKey);
+
+				auto cp1251Text = utf8ToCp1251(welcome);
+				gxtEncode(cp1251Text);
+				strlcpy(welcomeS.data(), cp1251Text.c_str(), sizeof welcomeS);
+
+				CHud::SetHelpMessage(welcome.c_str(), false, false, false);
+				CHud::DrawHelpText();
 			});
 
 			Events::gameProcessEvent.AddAtId(777, gameProcces);

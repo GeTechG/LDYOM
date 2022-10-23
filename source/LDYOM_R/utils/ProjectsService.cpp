@@ -44,6 +44,7 @@
 #include "../Data/FollowPathVehicleObjective.h"
 #include "../Data/JumpToObjectiveObjective.h"
 #include "../Data/SetGlobalVariableObjective.h"
+#include "../Data/SaveObjective.h"
 #include "../Data/SceneSettings.h"
 
 #include "boost/archive/binary_oarchive.hpp"
@@ -64,6 +65,7 @@ const std::filesystem::path BACKUPS_PATH = L"LDYOM\\Backups\\";
 
 void ProjectsService::update() {
 	this->projectsInfos_.clear();
+	this->productionProjectsInfos_.clear();
 	for (const auto &entry : std::filesystem::directory_iterator(PROJECTS_PATH)) {
 		if (entry.is_directory()) {
 			auto missionFile = entry.path() / "index.dat";
@@ -81,6 +83,40 @@ void ProjectsService::update() {
 
 				this->projectsInfos_.emplace_back(std::unique_ptr<ProjectInfo>(projectInfo));
 			}
+		} else {
+			if (entry.path().extension() == ".ldpack") {
+				auto zip = zip_open(entry.path().string().c_str(), NULL, 'r');
+				if (zip_entry_open(zip, "index.dat") == 0) {
+					size_t indexSize;
+					void* indexBytes;
+					zip_entry_read(zip, &indexBytes, &indexSize);
+
+					std::istringstream stream(std::string(static_cast<const char*>(indexBytes), indexSize));
+					stream.rdbuf()->pubsetbuf(static_cast<char*>(indexBytes), indexSize);
+					boost::archive::binary_iarchive ia(stream);
+					ProjectInfo* projectInfo;
+					ia >> projectInfo;
+
+					free(indexBytes);
+					zip_entry_close(zip);
+
+					projectInfo->directory = entry.path();
+					if (zip_entry_open(zip, "icon.png") == 0) {
+						void* iconBytes;
+						size_t iconBytesSize;
+						zip_entry_read(zip, &iconBytes, &iconBytesSize);
+
+						projectInfo->icon = utils::LoadTextureRequiredFromMemory(iconBytes, iconBytesSize);
+
+						free(iconBytes);
+
+						zip_entry_close(zip);
+					}
+
+					this->productionProjectsInfos_.emplace_back(std::unique_ptr<ProjectInfo>(projectInfo));
+				}
+				zip_close(zip);
+ 			}
 		}
 	}
 }
@@ -137,7 +173,7 @@ void ProjectsService::saveCurrentProject() {
 		}
 
 		auto backupPath = (BACKUPS_PATH / fmt::format("{}_{}.zip", projectDirectoryName.string(), time(nullptr))).string();
-		auto zip = zip_open(backupPath.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
+		auto zip = zip_open(backupPath.c_str(), 9, 'w');
 		if (!zipWalk(zip, this->currentDirectory_.value()))
 			return;
 		zip_close(zip);
@@ -220,13 +256,7 @@ void ProjectsService::saveCurrentProject() {
 	ImGui::InsertNotification({ ImGuiToastType_Success, 3000, "Saved!" });
 }
 
-void ProjectsService::loadProject(int projectIdx) {
-	getCurrentProject().getCurrentScene()->unloadEditorScene();
-
-	//clear all scenes
-	getCurrentProject().getScenes().clear();
-
-	const auto & projectDirectory = projectsInfos_.at(projectIdx)->directory;
+void ProjectsService::loadProjectData(const std::filesystem::path& projectDirectory) {
 	auto scenesDirectory = projectDirectory / "scenes";
 
 	{
@@ -248,7 +278,7 @@ void ProjectsService::loadProject(int projectIdx) {
 	}
 
 	//load scenes
-	for (auto &path : std::filesystem::directory_iterator(scenesDirectory)) {
+	for (auto& path : std::filesystem::directory_iterator(scenesDirectory)) {
 		if (path.is_regular_file() && path.path().extension() == ".dat") {
 			std::string compressed;
 			unsigned uncompressedSize;
@@ -290,6 +320,18 @@ void ProjectsService::loadProject(int projectIdx) {
 	}
 
 	this->currentDirectory_ = projectDirectory;
+}
+
+void ProjectsService::loadProject(int projectIdx) {
+	getCurrentProject().getCurrentScene()->unloadEditorScene();
+
+	//clear all scenes
+	getCurrentProject().getScenes().clear();
+
+	const auto & projectDirectory = projectsInfos_.at(projectIdx)->directory;
+
+	this->loadProjectData(projectDirectory);
+
 	this->getCurrentProject().getCurrentSceneIndex() = projectsInfos_.at(projectIdx)->startScene;
 
 	this->getCurrentProject().getCurrentScene()->loadEditorScene();
@@ -303,13 +345,48 @@ void ProjectsService::loadProject(int projectIdx) {
 	ImGui::InsertNotification({ ImGuiToastType_Success, 3000, "Loaded!" });
 }
 
+void ProjectsService::loadProductionProject(int projectIdx) {
+	getCurrentProject().getCurrentScene()->unloadEditorScene();
+
+	//clear all scenes
+	getCurrentProject().getScenes().clear();
+
+	const auto& projectDirectory = std::filesystem::temp_directory_path() / productionProjectsInfos_.at(projectIdx)->directory.stem();
+	if (exists(projectDirectory)) {
+		remove_all(projectDirectory);
+	}
+	if (create_directory(projectDirectory)) {
+		auto code = zip_extract(productionProjectsInfos_.at(projectIdx)->directory.string().c_str(), projectDirectory.string().c_str(), nullptr, nullptr);
+		this->loadProjectData(projectDirectory);
+		this->getCurrentProject().getCurrentSceneIndex() = productionProjectsInfos_.at(projectIdx)->startScene;
+	}
+}
+
 void ProjectsService::deleteProject(int projectIdx) const {
 	const auto& projectDirectory = projectsInfos_.at(projectIdx)->directory;
 	remove_all(projectDirectory);
 }
 
+void ProjectsService::deleteProductionProject(int projectIdx) const {
+	const auto& projectDirectory = productionProjectsInfos_.at(projectIdx)->directory;
+	remove(projectDirectory);
+}
+
+void ProjectsService::makeProjectProduction(int projectIdx) {
+	auto zip = zip_open((PROJECTS_PATH / fmt::format("{}.ldpack", this->projectsInfos_.at(projectIdx)->name)).string().c_str(), 9, 'w');
+	if (!zipWalk(zip, this->projectsInfos_.at(projectIdx)->directory))
+		return;
+	zip_close(zip);
+
+	ImGui::InsertNotification({ ImGuiToastType_Success, 3000, "Saved public project!" });
+}
+
 std::vector<std::unique_ptr<ProjectInfo>>& ProjectsService::getProjectsInfos() {
 	return projectsInfos_;
+}
+
+std::vector<std::unique_ptr<ProjectInfo>>& ProjectsService::getProductionProjectsInfos() {
+	return productionProjectsInfos_;
 }
 
 boost::signals2::signal<void()>& ProjectsService::onUpdate() {
@@ -397,6 +474,7 @@ namespace boost {
 			ar.template register_type<FollowPathVehicleObjective>();
 			ar.template register_type<JumpToObjectiveObjective>();
 			ar.template register_type<SetGlobalVariableObjective>();
+			ar.template register_type<SaveObjective>();
 
 			ar& p.getObjectives();
 		}

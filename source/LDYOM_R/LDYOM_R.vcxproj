@@ -214,6 +214,7 @@
     <ClCompile Include="Data\RemoveTimerObjective.cpp" />
     <ClCompile Include="Data\RemoveWeaponsObjective.cpp" />
     <ClCompile Include="Data\Result.cpp" />
+    <ClCompile Include="Data\SaveObjective.cpp" />
     <ClCompile Include="Data\Scene.cpp" />
     <ClCompile Include="Data\SceneObjective.cpp" />
     <ClCompile Include="Data\SceneSettings.cpp" />
@@ -371,6 +372,7 @@
     <ClCompile Include="utils\ProjectServiceLuaWrapper.cpp" />
     <ClCompile Include="utils\ProjectsService.cpp" />
     <ClCompile Include="utils\PyrotechnicsLuaWrapper.cpp" />
+    <ClCompile Include="utils\SaveService.cpp" />
     <ClCompile Include="utils\SceneLuaWrapper.cpp" />
     <ClCompile Include="utils\Settings.cpp" />
     <ClCompile Include="utils\Tasker.cpp" />
@@ -411,6 +413,7 @@
     <ClCompile Include="Windows\PopupSkinSelector.cpp" />
     <ClCompile Include="Windows\PopupWeaponSelector.cpp" />
     <ClCompile Include="Windows\ProjectsWindowPopup.cpp" />
+    <ClCompile Include="Windows\SaveConfirmPopup.cpp" />
     <ClCompile Include="Windows\SceneSettingsPopup.cpp" />
     <ClCompile Include="Windows\SettingsWindow.cpp" />
     <ClCompile Include="Windows\TrainsWindow.cpp" />
@@ -464,6 +467,7 @@
     <ClInclude Include="Data\RemoveTimerObjective.h" />
     <ClInclude Include="Data\RemoveWeaponsObjective.h" />
     <ClInclude Include="Data\Result.h" />
+    <ClInclude Include="Data\SaveObjective.h" />
     <ClInclude Include="Data\Scene.h" />
     <ClInclude Include="Data\SceneObjective.h" />
     <ClInclude Include="Data\SceneSettings.h" />
@@ -539,6 +543,7 @@
     <ClInclude Include="utils\pch.h" />
     <ClInclude Include="utils\ProjectPlayerService.h" />
     <ClInclude Include="utils\ProjectsService.h" />
+    <ClInclude Include="utils\SaveService.h" />
     <ClInclude Include="utils\Settings.h" />
     <ClInclude Include="utils\strUtils.h" />
     <ClInclude Include="utils\Tasker.h" />
@@ -572,6 +577,7 @@
     <ClInclude Include="Windows\NameEntitiesRender.h" />
     <ClInclude Include="Windows\PopupSkinSelector.h" />
     <ClInclude Include="Windows\PopupWeaponSelector.h" />
+    <ClInclude Include="Windows\SaveConfirmPopup.h" />
     <ClInclude Include="Windows\SceneSettingsPopup.h" />
     <ClInclude Include="Windows\TrainsWindow.h" />
     <ClInclude Include="Windows\utilsRender.h" />

@@ -76,6 +76,8 @@ public:
     static int indexByUuid(const std::vector<std::unique_ptr<T>>& vector, boost::uuids::uuid uuid);
     static int createBlip(float* pos, int blipType, int blipColor, int blipSprite = 0);
     static std::vector<std::string> getFilenameList(const std::filesystem::path& path, const std::vector<std::string>& extensions);
+    template<typename ... Args>
+    static std::string stringFormat(const std::string& format, Args ... args);
 };
 
 template <class T>
@@ -107,4 +109,14 @@ inline CRGBA floatColorToCRGBA(const std::array<float, 4>& color) {
         static_cast<unsigned char>(color[2] * 255.0f),
         static_cast<unsigned char>(color[3] * 255.0f)
     };
+}
+
+template <typename ... Args>
+std::string utils::stringFormat(const std::string& format, Args... args) {
+	const int sizeS = std::snprintf(nullptr, 0, format.c_str(), args ...) + 1; // Extra space for '\0'
+    if (sizeS <= 0) { throw std::runtime_error("Error during formatting."); }
+	const auto size = static_cast<size_t>(sizeS);
+	const std::unique_ptr<char[]> buf(new char[size]);
+    std::snprintf(buf.get(), size, format.c_str(), args ...);
+    return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
 }

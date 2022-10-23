@@ -2,9 +2,8 @@
 
 namespace Windows
 {
-	class AbstractWindow
-	{
-	private:
+	class AbstractWindow {
+	protected:
 		bool show_ = false;
 	public:
 

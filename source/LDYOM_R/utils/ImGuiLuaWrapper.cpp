@@ -68,6 +68,9 @@ void ImGuiLuaWrapper::wrap(sol::state& state) {
 	table.set_function("isItemHovered", []() {
 		return ImGui::IsItemHovered();
 	});
+	table.set_function("openPopup", [](const char* name) {
+		ImGui::OpenPopup(name);
+	});
 
 
 	auto ImVec4Lua = state.new_usertype<ImVec4>("ImVec4",

@@ -59,6 +59,16 @@ global_data.signals.loadScene[#global_data.signals.loadScene + 1] = function(sce
     global_data.ed_contexts[sceneId]:load(data_load);
 end
 
+global_data.signals.saveGame[#global_data.signals.saveGame+1] = function (sceneId, data)
+    data["core"] = {
+        variablesR = global_data["variablesR"];
+    }
+end
+
+global_data.signals.loadGame[#global_data.signals.loadGame+1] = function (sceneId, data)
+    global_data["variablesR"] = data["variablesR"];
+end
+
 req.tree("scripts.Core.nodes")
 
 return data;

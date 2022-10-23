@@ -44,6 +44,7 @@
 #include "../Data/FollowPathVehicleObjective.h"
 #include "../Data/JumpToObjectiveObjective.h"
 #include "../Data/SetGlobalVariableObjective.h"
+#include "../Data/SaveObjective.h"
 #include "fmt/core.h"
 
 std::string Windows::ObjectivesWindow::getNameList() {
@@ -229,6 +230,9 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 					break;
 				case 2:
 					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<JumpToObjectiveObjective&>(*objective));
+					break;
+				case 3:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(fast_dynamic_cast<SaveObjective&>(*objective));
 					break;
 			default:
 				break;
@@ -481,6 +485,11 @@ void Windows::ObjectivesWindow::drawListWindow() {
 
 			if (ImGui::MenuItem(Localization::getInstance().get("objective.jump_to_objective").c_str())) {
 				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<JumpToObjectiveObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.save").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<SaveObjective>(nullptr);
 				this->selectElement(this->getListSize() - 1);
 			}
 

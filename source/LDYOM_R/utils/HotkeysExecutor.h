@@ -44,7 +44,10 @@ void inline hotkeysExecute() {
 	else
 		Windows::WindowsRenderService::getInstance().getWindow<Windows::QuickCommandsWindow>()->close();
 
-	const bool editorMouseState = (openWindowsMenu || openFastMenu) && !ProjectPlayerService::getInstance().isProjectRunning();
+	bool editorMouseState = openFastMenu;
+	for (auto && window : Windows::WindowsRenderService::getInstance().getWindows()) {
+		editorMouseState |= window->isShow();
+	}
 
 	Windows::WindowsRenderService::getInstance().setMouseShown(editorMouseState);
 }

@@ -21,7 +21,7 @@ void StartMissionObjective::draw(Localization& local) {
 	ImGui::BeginDisabled(!this->showNameMission_);
 
 	ImGui::InputText(local.get("mission.name_mission").c_str(), this->nameMission_.data(), this->nameMission_.size());
-	ImGui::SliderInt(local.get("general.text_style").c_str(), &this->styleTypeName_, 0, 6, local.getArray("general.text_styles").at(this->styleTypeName_).c_str());
+	ImGui::SliderInt(local.get("general.text_style").c_str(), &this->styleTypeName_, 0, 5, local.getArray("general.text_styles").at(this->styleTypeName_).c_str());
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->nameMissionTime_, 0.1f, 0.f, FLT_MAX);
 
 	ImGui::EndDisabled();
