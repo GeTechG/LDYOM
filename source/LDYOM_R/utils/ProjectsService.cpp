@@ -159,7 +159,7 @@ void ProjectsService::saveCurrentProject() {
 		auto checkError = [](const std::error_code& ec) {
 			if (ec.value() != 0) {
 				CLOG(ERROR, "LDYOM") << "invalid rename project, error: " << ec.message();
-				ImGui::InsertNotification({ ImGuiToastType_Error, 3000, "Error, see log" });
+				ImGui::InsertNotification({ ImGuiToastType_Error, 3000, "Error, see log and FAQ" });
 				return true;
 			}
 			return false;

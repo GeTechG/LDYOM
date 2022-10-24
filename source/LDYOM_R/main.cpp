@@ -47,7 +47,9 @@
 #include "Windows/AudioWindow.h"
 #include "Windows/CheckpointsWindow.h"
 #include "Windows/ConsoleWindow.h"
+#include "Windows/FAQWindow.h"
 #include "Windows/GlobalVariablesWindow.h"
+#include "Windows/InfoWindow.h"
 #include "Windows/NodeEditorWindow.h"
 #include "Windows/SaveConfirmPopup.h"
 #include "Windows/VisualEffectsWindow.h"
@@ -138,6 +140,8 @@ public:
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::NodeEditorWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::GlobalVariablesWindow>());
 			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::SaveConfirmPopup>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::FAQWindow>());
+			Windows::WindowsRenderService::getInstance().getWindows().emplace_back(std::make_unique<Windows::InfoWindow>());
 			Windows::WindowsRenderService::getInstance().addRender("showEntitiesName", [] {
 				if (!ProjectPlayerService::getInstance().isProjectRunning()) {
 					if (Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false))

@@ -386,6 +386,12 @@
     <Filter Include="Windows\SaveConfirmPopup">
       <UniqueIdentifier>{4b39a16c-f75d-40f3-ba6f-5e1479c1348a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Windows\FAQWindow">
+      <UniqueIdentifier>{65cfecd8-93a9-4a31-89a8-074de08363e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\InfoWindow">
+      <UniqueIdentifier>{4c4bee0f-b18c-49d2-ac84-cf04cb3cadc3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1125,6 +1131,12 @@
     <ClCompile Include="Windows\SaveConfirmPopup.cpp">
       <Filter>Windows\SaveConfirmPopup</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\FAQWindow.cpp">
+      <Filter>Windows\FAQWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\InfoWindow.cpp">
+      <Filter>Windows\InfoWindow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imstb_truetype.h">
@@ -1622,6 +1634,12 @@
     </ClInclude>
     <ClInclude Include="Windows\SaveConfirmPopup.h">
       <Filter>Windows\SaveConfirmPopup</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\FAQWindow.h">
+      <Filter>Windows\FAQWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\InfoWindow.h">
+      <Filter>Windows\InfoWindow</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

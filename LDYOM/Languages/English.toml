@@ -430,6 +430,25 @@ run = "Run"
 [welcome_box]
 text = "Welcome to ~n~LDYOM ~r~%s~w~!~n~~n~Press ~y~%s~w~ to open main menu"
 
+[faq]
+title = "FAQ"
+invalid_rename_project = """Error: "invalid rename project"
+The most common reason is that the system is blocking the project folder so LDYOM cannot edit the folder. You may have a project folder open in Explorer, exit the folder and try saving again."""
+error_1 = """Error 1 (Not Exists)
+This is a runtime error, meaning that what was selected as the target does not exist, if it is an actor for example, then the actor does not exist at the time it is selected as the target, check where it is specified and when the actor should appear.
+"""
+error_2 = """Error 1 (Not Selected)
+This error means that a mandatory field has not been entered somewhere, usually such fields are highlighted in red when not filled in, check the place where the error is indicated.
+"""
+
+[info]
+title = "Info"
+author_ldyom = "Author LDYOM: %s"
+version = "Version: %s"
+mpack_author = "Author MPACK: %s"
+localization_author = "Localization author: SKIC (Deepl Translate :) )"
+special_thanks = "Special thanks: %s"
+
 [hotkey_editor]
 title = "Hotkeys Editor"
 clear = "Clear"

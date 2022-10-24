@@ -9,7 +9,9 @@
 
 #include "ConsoleWindow.h"
 #include "EntitiesWindow.h"
+#include "FAQWindow.h"
 #include "GlobalVariablesWindow.h"
+#include "InfoWindow.h"
 #include "NodeEditorWindow.h"
 #include "ObjectivesWindow.h"
 #include "ProjectInfoWindow.h"
@@ -99,6 +101,18 @@ namespace Windows
 			}
 
 			ImGui::Separator();
+
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_QUESTION_CIRCLE, local.get("faq.title")).c_str(), ImVec2(200.0f, .0f)))
+			{
+				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
+				WindowsRenderService::getInstance().toggleWindow<FAQWindow>(true);
+			}
+
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_INFO, local.get("info.title")).c_str(), ImVec2(200.0f, .0f)))
+			{
+				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
+				WindowsRenderService::getInstance().toggleWindow<InfoWindow>(true);
+			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_COGS, local.get("settings.title")).c_str(), ImVec2(200.0f, .0f)))
 			{
