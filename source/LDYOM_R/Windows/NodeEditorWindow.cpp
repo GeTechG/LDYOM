@@ -127,11 +127,11 @@ void Windows::NodeEditorWindow::newNodePopup(sol::table globalData, sol::table e
 					}
 					ImGui::TreePop();
 				}
-				for (auto& category : globalData["nodes_categories"].get_or_create<sol::table>()) {
+				for (auto& category : globalData["sorted_nodes_categories_names"].get_or_create<sol::table>()) {
 					if (opened)
 						ImGui::SetNextItemOpen(false);
-					if (ImGui::TreeNode(Localization::getInstance().get(category.first.as<std::string>()).c_str())) {
-						for (auto pair : category.second.as<sol::table>()) {
+					if (ImGui::TreeNode(Localization::getInstance().get(category.second.as<std::string>()).c_str())) {
+						for (auto pair : globalData["nodes_categories"][category.second].get<sol::table>()) {
 							nodeClassMenuItem(pair.second.as<int>());
 						}
 						ImGui::TreePop();
@@ -418,4 +418,9 @@ void Windows::NodeEditorWindow::draw() {
 		
 	}
 	ImGui::End();
+}
+
+void Windows::NodeEditorWindow::close() {
+	AbstractWindow::close();
+	FindPlayerPed()->m_pIntelligence->ClearTasks(true, true);
 }

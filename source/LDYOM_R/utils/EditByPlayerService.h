@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <CObject.h>
+#include <sol.hpp>
 
 
 class CutsceneObjective;
@@ -23,6 +24,8 @@ public:
 	void editByPlayerCamera(float* pos, CQuaternion* rotation, bool widescreen, std::function<void()> callback);
 	void editByPlayerActorPath(std::vector<std::array<float, 3>>& path);
 	void editByPlayerVehiclePath(std::vector<std::array<float, 3>>& path, int model);
+	void editByPlayerActorLuaPath(sol::table path);
+	void editByPlayerVehicleLuaPath(sol::table path, int model);
 };
 
 

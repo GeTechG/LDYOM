@@ -84,6 +84,7 @@ true = "True"
 false = "False"
 yes = "Yes"
 no = "No"
+wait_end = "Wait end"
 
 [objective]
 title = "Objective"

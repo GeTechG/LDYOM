@@ -33,6 +33,7 @@ void FollowPathActorObjective::draw(Localization& local) {
 	if (this->pathType_ > 0) {
 		ImGui::DragFloat(local.get("follow_path_actor_objective.execute_time").c_str(), &this->executeTime_, 0.1f, 0.f, FLT_MAX);
 	}
+	ImGui::Checkbox(local.get("general.wait_end").c_str(), &this->waitEnd);
 	if (ImGui::Button(local.get("general.record_path").c_str())) {
 		EditByPlayerService::getInstance().editByPlayerActorPath(this->path_);
 	}
@@ -43,7 +44,7 @@ int moveState[] = {4, 6, 7};
 ktwait FollowPathActorObjective::execute(Scene* scene, Actor* actor, Result& result, ktcoro_tasklist& tasklist) {
 	using namespace plugin;
 
-	tasklist.add_task([](FollowPathActorObjective* _this, Actor* actor) -> ktwait {
+	auto followPathFunc = [](FollowPathActorObjective* _this, Actor* actor) -> ktwait {
 		auto execute = true;
 		int step = 1;
 		int index = 0;
@@ -68,30 +69,35 @@ ktwait FollowPathActorObjective::execute(Scene* scene, Actor* actor, Result& res
 				execute = false;
 
 			switch (_this->getPathType()) {
-				case 0:
-					if (index == static_cast<int>(_this->getPath().size())) {
-						execute = false;
-					}
-					break;
-				case 1:
-					if (index == static_cast<int>(_this->getPath().size())) {
-						index = 0;
-					}
-					break;
-				case 2:
-					if (index == static_cast<int>(_this->getPath().size())) {
-						step = -1;
-						index -= 2;
-					} else if (index < 0) {
-						step = 1;
-						index += 2;
-					}
-					break;
-				default:
-					break;
+			case 0:
+				if (index == static_cast<int>(_this->getPath().size())) {
+					execute = false;
+				}
+				break;
+			case 1:
+				if (index == static_cast<int>(_this->getPath().size())) {
+					index = 0;
+				}
+				break;
+			case 2:
+				if (index == static_cast<int>(_this->getPath().size())) {
+					step = -1;
+					index -= 2;
+				} else if (index < 0) {
+					step = 1;
+					index += 2;
+				}
+				break;
+			default:
+				break;
 			}
 		}
-	}, this, actor);
+	};
+
+	if (this->waitEnd)
+		co_await followPathFunc(this, actor);
+	else
+		tasklist.add_task(followPathFunc, this, actor);
 
 	co_return;
 }

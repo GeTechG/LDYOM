@@ -12,12 +12,14 @@ private:
 		ar & pathType_;
 		ar & executeTime_;
 		ar & path_;
+		ar & waitEnd;
 	}
 
 	int moveType_ = 0;
 	int pathType_ = 0;
 	float executeTime_ = 1.f;
 	std::vector<std::array<float, 3>> path_;
+	bool waitEnd = false;
 public:
 	FollowPathActorObjective() = default;
 	explicit FollowPathActorObjective(void* _new);

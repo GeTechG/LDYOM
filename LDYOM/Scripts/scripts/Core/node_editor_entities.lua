@@ -190,12 +190,12 @@ function NodeEditorContext:createLink(startedNodeId, startedPinId, endNodeId, en
                 linkId = self:getPinInLink(endPinId);
             end
             if not linkId then
-                self.links[#self.links+1] = Link:new(startedPin, endPin)
-                self.links[#self.links].workspace = self.currentWorkspace;
-            else
-                self.links[linkId] = Link:new(startedPin, endPin);
-                self.links[linkId].workspace = self.currentWorkspace;
+                linkId = #self.links+1;
             end
+            
+            self.links[linkId] = Link:new(startedPin, endPin);
+            self.links[linkId].workspace = self.currentWorkspace;
+
             self:updatePinConnected();
             return true;
         end

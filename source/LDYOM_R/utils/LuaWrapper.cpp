@@ -1,9 +1,11 @@
 ﻿#include "LuaWrapper.h"
 
 #include <chrono>
+#include <CTimer.h>
 
 #include "constants.h"
 #include "DataLuaWrapper.h"
+#include "EditByPlayerService.h"
 #include "FilesystemLuaWrapper.h"
 #include "ImGuiLuaWrapper.h"
 #include "ImNodesLuaWrapper.h"
@@ -14,6 +16,7 @@
 #include "easylogging/easylogging++.h"
 #include "Localization/Localization.h"
 #include "ktcoro_wait.hpp"
+#include "ModelsService.h"
 #include "ProjectPlayerService.h"
 #include "utils.h"
 #include "WindowsRenderService.h"
@@ -32,6 +35,7 @@
 #include "../Data/Vehicle.h"
 #include "../Data/VisualEffect.h"
 #include "../Data/SaveObjective.h"
+#include "../Data/WaitSignalObjective.h"
 
 void LuaWrapper::wrap(sol::state& state) {
 	OpcodesLuaWrapper::wrap(state);
@@ -106,6 +110,28 @@ void LuaWrapper::wrap(sol::state& state) {
 		ProjectPlayerService::getInstance().setNextObjective(next_objective);
 	});
 	state.set("saveGame", SaveObjective::saveGame);
+	state.set("editByPlayerActorLuaPath", [](sol::table path) {
+		EditByPlayerService::getInstance().editByPlayerActorLuaPath(path);
+	});
+	state.set("CTimer_snTimeInMilliseconds", []() {
+		return CTimer::m_snTimeInMilliseconds;
+	});
+	state.set("DistanceBetweenPoints", [](float x1, float y1, float z1, float x2, float y2, float z2) {
+		return DistanceBetweenPoints(CVector(x1, y1, z1), CVector(x2, y2, z2));
+	});
+	state.set("emitSignal", WaitSignalObjective::emitSignal);
+	state.set("editByPlayerVehicleLuaPath", [](sol::table path, int model) {
+		EditByPlayerService::getInstance().editByPlayerVehicleLuaPath(path, model);
+		});
+	state.set("ModelsService_getPacksNames", []() {
+		return &ModelsService::getInstance().getPacksNames();
+	});
+	state.set("ModelsService_getAnimations", []() {
+		return &ModelsService::getInstance().getAnimations();
+	});
+	state.set("getCurrentObjective", []() {
+		return ProjectPlayerService::getInstance().getCurrentObjective();
+	});
 
 	auto loc = state.create_table("loc");
 	loc.set_function("get", [](const std::string& key) {

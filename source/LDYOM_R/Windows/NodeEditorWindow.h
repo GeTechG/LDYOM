@@ -14,5 +14,6 @@ namespace Windows {
 	public:
 		NodeEditorWindow();
 		void draw() override;
+		void close() override;
 	};
 }

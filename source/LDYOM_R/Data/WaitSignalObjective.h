@@ -2,6 +2,9 @@
 #include "SceneObjective.h"
 
 class WaitSignalObjective final: public virtual SceneObjective {
+private:
+	inline static bool isEmitSignal_ = false;
+
 	friend class boost::serialization::access;
 
 	template <class Archive>
@@ -20,4 +23,5 @@ public:
 
 	void draw(Localization & local) override;
 	ktwait execute(Scene * scene, Result & result, ktcoro_tasklist & tasklist) override;
+	static void emitSignal();
 };

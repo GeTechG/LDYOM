@@ -71,4 +71,18 @@ end
 
 req.tree("scripts.Core.nodes")
 
+global_data["sorted_nodes_categories_names"] = {};
+for category, nodes in pairs(global_data["nodes_categories"]) do
+    ---@param a integer
+    ---@param b integer
+    ---@return boolean
+    table.sort(nodes, function (a, b)
+        return loc.get(global_data["nodes"][a].static.name_) < loc.get(global_data["nodes"][b].static.name_)
+    end)
+    global_data["sorted_nodes_categories_names"][#global_data["sorted_nodes_categories_names"]+1] = category;
+end
+table.sort(global_data["sorted_nodes_categories_names"], function (a, b)
+    return loc.get(a) < loc.get(b)
+end)
+
 return data;

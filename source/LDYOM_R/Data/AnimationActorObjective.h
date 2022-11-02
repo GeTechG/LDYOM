@@ -13,6 +13,7 @@ private:
 		ar & looped_;
 		ar & blend_;
 		ar & time_;
+		ar & endWait_;
 	}
 
 	int pack_ = 0;
@@ -20,6 +21,7 @@ private:
 	bool looped_ = false;
 	float blend_ = 0.0f;
 	float time_ = 0.f;
+	bool endWait_ = false;
 public:
 	AnimationActorObjective() = default;
 	explicit AnimationActorObjective(void* _new);

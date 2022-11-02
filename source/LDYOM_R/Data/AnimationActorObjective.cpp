@@ -41,6 +41,7 @@ void AnimationActorObjective::draw(Localization& local) {
 	utils::ToggleButton(local.get("animation.looped").c_str(), &this->looped_);
 	ImGui::DragFloat(local.get("animation.smoothness").c_str(), &this->blend_, 0.01f, FLT_EPSILON, 1.f);
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->time_, 1.0f, -1.0f, FLT_MAX);
+	ImGui::Checkbox(local.get("general.wait_end").c_str(), &this->endWait_);
 
 	static auto lastTime = 0u;
 	if (ImGui::IsKeyPressed(ImGuiKey_Y, true) && CTimer::m_snTimeInMilliseconds - lastTime > 500) {
@@ -96,18 +97,27 @@ void AnimationActorObjective::draw(Localization& local) {
 ktwait AnimationActorObjective::execute(Scene* scene, Actor* actor, Result& result, ktcoro_tasklist& tasklist) {
 	using namespace plugin;
 
-	const auto& packsNames = ModelsService::getInstance().getPacksNames();
+	auto animationActorFunc = [](AnimationActorObjective* _this, Actor* actor) -> ktwait {
+		const auto& packsNames = ModelsService::getInstance().getPacksNames();
 
-	if (!Command<Commands::HAS_ANIMATION_LOADED>(packsNames[this->pack_].c_str()))
-		Command<Commands::REQUEST_ANIMATION>(packsNames[this->pack_].c_str());
-	const auto& anims = ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]);
-	Command<Commands::TASK_PLAY_ANIM_NON_INTERRUPTABLE>(
-		actor->getProjectPed().value(),
-		anims[this->animation_].c_str(),
-		packsNames[this->pack_].c_str(), 10.f * (1.f - (this->blend_ - FLT_EPSILON)),
-		this->looped_, false, false, false, static_cast<int>(this->time_ * 1000.f));
+		if (!Command<Commands::HAS_ANIMATION_LOADED>(packsNames[_this->pack_].c_str()))
+			Command<Commands::REQUEST_ANIMATION>(packsNames[_this->pack_].c_str());
+		const auto& anims = ModelsService::getInstance().getAnimations().at(packsNames[_this->pack_]);
+		Command<Commands::TASK_PLAY_ANIM_NON_INTERRUPTABLE>(
+			actor->getProjectPed().value(),
+			anims[_this->animation_].c_str(),
+			packsNames[_this->pack_].c_str(), 10.f * (1.f - (_this->blend_ - FLT_EPSILON)),
+			_this->looped_, false, false, false, static_cast<int>(_this->time_ * 1000.f));
 
-	co_return;
+		while (Command<Commands::IS_CHAR_PLAYING_ANIM>(actor->getProjectPed().value(), anims[_this->animation_].c_str())) {
+			co_await 1;
+		}
+	};
+
+	if (this->endWait_)
+		co_await animationActorFunc(this, actor);
+	else
+		tasklist.add_task(animationActorFunc, this, actor);
 }
 
 void AnimationActorObjective::close() {

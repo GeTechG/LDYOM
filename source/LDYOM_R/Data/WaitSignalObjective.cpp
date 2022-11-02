@@ -13,7 +13,12 @@ void WaitSignalObjective::draw(Localization& local) {
 }
 
 ktwait WaitSignalObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
-	while (true) {
+	while (!isEmitSignal_) {
 		co_await 1;
 	}
+	isEmitSignal_ = false;
+}
+
+void WaitSignalObjective::emitSignal() {
+	isEmitSignal_ = true;
 }

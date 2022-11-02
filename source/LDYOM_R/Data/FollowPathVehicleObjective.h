@@ -12,12 +12,14 @@ private:
 		ar & pathType_;
 		ar & executeTime_;
 		ar & path_;
+		ar & waitEnd_;
 	}
 
 	int driveType_ = 0;
 	int pathType_ = 0;
 	float executeTime_ = 1.f;
 	std::vector<std::array<float, 3>> path_;
+	bool waitEnd_ = false;
 public:
 	FollowPathVehicleObjective() = default;
 	explicit FollowPathVehicleObjective(void* _new);

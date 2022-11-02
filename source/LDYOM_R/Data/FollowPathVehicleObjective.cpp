@@ -32,6 +32,7 @@ void FollowPathVehicleObjective::draw(Localization& local) {
 	if (this->pathType_ > 0) {
 		ImGui::DragFloat(local.get("follow_path_actor_objective.execute_time").c_str(), &this->executeTime_, 0.1f, 0.f, FLT_MAX);
 	}
+	ImGui::Checkbox(local.get("general.wait_end").c_str(), &this->waitEnd_);
 	if (indexVehicle != -1) {
 		if (ImGui::Button(local.get("general.record_path").c_str())) {
 			EditByPlayerService::getInstance().editByPlayerVehiclePath(this->path_, vehicles.at(indexVehicle)->getModelId());
@@ -42,7 +43,7 @@ void FollowPathVehicleObjective::draw(Localization& local) {
 ktwait FollowPathVehicleObjective::execute(Scene* scene, Vehicle* vehicle, Result& result, ktcoro_tasklist& tasklist) {
 	using namespace plugin;
 
-	tasklist.add_task([](FollowPathVehicleObjective* _this, Vehicle* vehicle) -> ktwait {
+	auto followPathFunc = [](FollowPathVehicleObjective* _this, Vehicle* vehicle) -> ktwait {
 		auto execute = true;
 		int step = 1;
 		int index = 0;
@@ -54,16 +55,16 @@ ktwait FollowPathVehicleObjective::execute(Scene* scene, Vehicle* vehicle, Resul
 			float z = _this->getPath().at(index)[2];
 			switch (_this->getDriveType()) {
 			case 0:
-					Command<Commands::CAR_GOTO_COORDINATES>(vehicle->getProjectVehicle().value(), x, y, z);
-					break;
-				case 1:
-					Command<Commands::CAR_GOTO_COORDINATES_ACCURATE>(vehicle->getProjectVehicle().value(), x, y, z);
-					break;
-				case 2:
-					Command<Commands::CAR_GOTO_COORDINATES_RACING>(vehicle->getProjectVehicle().value(), x, y, z);
-					break;
-				default:
-					break;
+				Command<Commands::CAR_GOTO_COORDINATES>(vehicle->getProjectVehicle().value(), x, y, z);
+				break;
+			case 1:
+				Command<Commands::CAR_GOTO_COORDINATES_ACCURATE>(vehicle->getProjectVehicle().value(), x, y, z);
+				break;
+			case 2:
+				Command<Commands::CAR_GOTO_COORDINATES_RACING>(vehicle->getProjectVehicle().value(), x, y, z);
+				break;
+			default:
+				break;
 			}
 
 			auto timeCondition = _this->getPathType() == 0 || CTimer::m_snTimeInMilliseconds - startTime < static_cast<unsigned>(_this->getExecuteTime() * 1000.f);
@@ -102,7 +103,12 @@ ktwait FollowPathVehicleObjective::execute(Scene* scene, Vehicle* vehicle, Resul
 				break;
 			}
 		}
-		}, this, vehicle);
+	};
+
+	if (this->waitEnd_)
+		co_await followPathFunc(this, vehicle);
+	else
+		tasklist.add_task(followPathFunc, this, vehicle);
 
 	co_return;
 }

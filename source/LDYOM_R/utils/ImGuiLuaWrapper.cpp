@@ -42,16 +42,18 @@ void ImGuiLuaWrapper::wrap(sol::state& state) {
 		ImGui::EndGroup();
 	});
 	table.set_function("inputFloat", [](const char* name, const sol::object& value) {
-		ImGui::InputFloat(name, static_cast<float*>(const_cast<void*>(value.pointer())));
+		return ImGui::InputFloat(name, static_cast<float*>(const_cast<void*>(value.pointer())));
 	});
 	table.set_function("checkbox", [](const char* name, const sol::object& value) {
-		ImGui::Checkbox(name, static_cast<bool*>(const_cast<void*>(value.pointer())));
+		return ImGui::Checkbox(name, static_cast<bool*>(const_cast<void*>(value.pointer())));
 	});
 	table.set_function("combo", [](const char* name, const sol::object& value, const std::vector<std::string>* arr) {
 		int v = static_cast<int>(*static_cast<float*>(const_cast<void*>(value.pointer())));
-		if (utils::Combo(name, &v, *arr)) {
+		bool result = utils::Combo(name, &v, *arr);
+		if (result) {
 			*static_cast<float*>(const_cast<void*>(value.pointer())) = static_cast<float>(v);
 		}
+		return result;
 	});
 	table.set_function("dummy", [](float x, float y) {
 		ImGui::Dummy(ImVec2(x, y));
@@ -70,6 +72,19 @@ void ImGuiLuaWrapper::wrap(sol::state& state) {
 	});
 	table.set_function("openPopup", [](const char* name) {
 		ImGui::OpenPopup(name);
+	});
+	table.set_function("sliderInt", [](const char* name, const sol::object& value, int min, int max, const char* format) {
+		int v = static_cast<int>(*static_cast<float*>(const_cast<void*>(value.pointer())));
+		bool result = ImGui::SliderInt(name, &v, min, max, format);
+		if (result)
+			*static_cast<float*>(const_cast<void*>(value.pointer())) = static_cast<float>(v);
+		return result;
+	});
+	table.set_function("dragFloat", [](const char* name, const sol::object& value, float speed, float min, float max) {
+		return ImGui::DragFloat(name, static_cast<float*>(const_cast<void*>(value.pointer())), speed, min, max);
+	});
+	table.set_function("button", [](const char* name, float width, float height) {
+		return ImGui::Button(name, ImVec2(width, height));
 	});
 
 

@@ -48,7 +48,7 @@ ImGui = {
     ---@return boolean
     isItemHovered = function() end,
     beginTooltip = function() end,
-    endTooltip = function() end
+    endTooltip = function() end,
 }
 
 
