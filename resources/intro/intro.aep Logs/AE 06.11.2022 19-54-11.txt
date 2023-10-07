@@ -1,0 +1,12 @@
+Adobe After Effects v22.5 Windows 64 render log for project “intro.aep”
+
+Rendering started on 06.11.2022 at 19:54:11
+
+  06.11.2022 19:54:12: Starting composition “Comp 1”.
+
+  Output To: C:\Users\User\Desktop\Comp 1.mov      Render stopped by user.    06.11.2022 19:54:47: Finished composition “Comp 1”.
+
+
+  Total Time Elapsed: 27 Seconds
+Log closed on 06.11.2022 at 19:54:50
+
