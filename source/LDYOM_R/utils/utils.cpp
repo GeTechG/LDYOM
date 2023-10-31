@@ -3,8 +3,6 @@
 #include <CRadar.h>
 #include <filesystem>
 #include <vector>
-#include <curlpp/cURLpp.hpp>
-#include <curlpp/Options.hpp>
 #include <extensions/ScriptCommands.h>
 
 
@@ -109,7 +107,7 @@ bool utils::ToggleButton(const char* strId, bool* v) {
 bool utils::LoadTextureFromFile(const std::filesystem::path filename, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height) {
     // Load texture from disk
     PDIRECT3DTEXTURE9 texture;
-    const HRESULT hr = D3DXCreateTextureFromFileExW(GetD3DDevice(), filename.wstring().c_str(), D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, nullptr, nullptr, &texture);
+    const HRESULT hr = D3DXCreateTextureFromFileExW(GetD3DDevice<IDirect3DDevice9>(), filename.wstring().c_str(), D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, nullptr, nullptr, &texture);
     if (hr != S_OK)
         return false;
 
@@ -135,7 +133,7 @@ std::optional<std::unique_ptr<Texture>> utils::LoadTextureRequiredFromFile(const
 bool utils::LoadTextureFromMemory(const void* pointer, unsigned int size, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height) {
     // Load texture from disk
     PDIRECT3DTEXTURE9 texture;
-    const HRESULT hr = D3DXCreateTextureFromFileInMemoryEx(GetD3DDevice(), pointer, size, D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, nullptr, nullptr, &texture);
+    const HRESULT hr = D3DXCreateTextureFromFileInMemoryEx(GetD3DDevice<IDirect3DDevice9>(), pointer, size, D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, nullptr, nullptr, &texture);
     if (hr != S_OK)
         return false;
 
@@ -161,16 +159,6 @@ std::optional<std::unique_ptr<Texture>> utils::LoadTextureRequiredFromMemory(con
 
 
 std::optional<std::unique_ptr<Texture>> utils::LoadTextureRequiredFromURL(const std::string& url) {
-    try {
-        curlpp::Cleanup myCleanup;
-        std::ostringstream os;
-        os << curlpp::options::Url(url);
-        const auto data = os.str();
-        return LoadTextureRequiredFromMemory(data.data(), data.size());
-    } catch (std::exception e) {
-	    Logger::getInstance().log(e.what());
-    }
-    
     return std::nullopt;
 }
 

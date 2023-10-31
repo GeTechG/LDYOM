@@ -73,10 +73,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.asi</TargetExt>
-    <OutDir>C:\Games\GTA San Andreas Modding\</OutDir>
+    <OutDir>C:\Games\GTA San Andreas\</OutDir>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(IncludePath);$(DIRECTX9_SDK_DIR)\Include\</IncludePath>
-    <LibraryPath>$(LibraryPath);$(DIRECTX9_SDK_DIR)\Lib\x86\;C:\local\boost_1_78_0\lib32-msvc-14.3;$(ProjectDir)LuaJIT-2.0.5\src</LibraryPath>
+    <LibraryPath>$(LibraryPath);$(DIRECTX9_SDK_DIR)\Lib\x86\;C:\local\boost_1_83_0\lib32-msvc-14.3;$(ProjectDir)LuaJIT-2.0.5\src</LibraryPath>
     <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -100,8 +100,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;$(ProjectDir)utils;$(ProjectDir)ImGui;C:\local\boost_1_78_0\;$(ProjectDir)include;$(ProjectDir)LuaJIT-2.0.5\src;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(ProjectDir)sqlite3;C:\Users\User\Documents\vcpkg\installed\x86-windows\include;C:\Users\User\Documents\plugin-sdk\bass;C:\Users\User\Documents\plugin-sdk\CLEO4\source</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;_DX9_SDK_INSTALLED;PLUGIN_SGV_10US;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;$(ProjectDir)utils;$(ProjectDir)ImGui;C:\local\boost_1_83_0;$(ProjectDir)include;$(ProjectDir)LuaJIT-2.0.5\src;$(DIRECTX9_SDK_DIR)\Include;$(ProjectDir)sqlite3;$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4\source;$(ProjectDir)zip</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DX9_SDK_INSTALLED;PLUGIN_SGV_96EN;GBH;_DEBUG;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;PLUGIN_SGV_10US;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- /utf-8 /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -109,8 +109,8 @@
     <Link>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;$(ProjectDir)LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\debug\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Debug;%(AdditionalLibraryDirectories);C:\Users\User\Documents\plugin-sdk\bass;C:\Users\User\Documents\plugin-sdk\CLEO4\output\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libcurl.lib;libcurlpp.lib;%(AdditionalDependencies);bass.lib;CLEO.lib;zip.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;$(ProjectDir)LuaJIT-2.0.5\src;C:\Users\User\Documents\vcpkg\installed\x86-windows\debug\lib;C:\Users\User\Documents\curlpp-0.8.1\build\Debug;%(AdditionalLibraryDirectories);C:\Users\User\Documents\plugin-sdk\bass;C:\Users\User\Documents\plugin-sdk\CLEO4-master\output\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies);bass.lib;CLEO.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -422,6 +422,7 @@
     <ClCompile Include="Windows\utilsRender.cpp" />
     <ClCompile Include="Windows\VehiclesWindow.cpp" />
     <ClCompile Include="Windows\VisualEffectsWindow.cpp" />
+    <ClCompile Include="zip\zip.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Data\ActorObjective.h" />
@@ -592,6 +593,8 @@
     <ClInclude Include="Windows\SettingsWindow.h" />
     <ClInclude Include="Windows\VehiclesWindow.h" />
     <ClInclude Include="Windows\VisualEffectsWindow.h" />
+    <ClInclude Include="zip\miniz.h" />
+    <ClInclude Include="zip\zip.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

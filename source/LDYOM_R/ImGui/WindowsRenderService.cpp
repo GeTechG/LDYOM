@@ -218,7 +218,7 @@ void initImGui() {
 
 	plugin::patch::Nop(0x00531155, 5); // shift trigger fix
 
-	ImGui_ImplDX9_Init(GetD3DDevice());
+	ImGui_ImplDX9_Init(GetD3DDevice<IDirect3DDevice9>());
 
 	oWndProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(RsGlobal.ps->window, GWL_WNDPROC, reinterpret_cast<LRESULT>(wndProc)));
 

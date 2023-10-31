@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <functional>
+#include <string>
+
 #include "../Data/INameable.h"
 
 class PopupWarning: public INameable {

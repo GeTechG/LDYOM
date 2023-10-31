@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <memory>
+
 #include "functional"
 #include "optional"
 #include "../Data/Texture.h"

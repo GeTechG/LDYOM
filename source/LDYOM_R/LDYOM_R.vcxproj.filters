@@ -392,6 +392,9 @@
     <Filter Include="Windows\InfoWindow">
       <UniqueIdentifier>{4c4bee0f-b18c-49d2-ac84-cf04cb3cadc3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="zip">
+      <UniqueIdentifier>{8822db26-54ba-4108-9fa9-7e718e8bfe4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1137,6 +1140,9 @@
     <ClCompile Include="Windows\InfoWindow.cpp">
       <Filter>Windows\InfoWindow</Filter>
     </ClCompile>
+    <ClCompile Include="zip\zip.c">
+      <Filter>zip</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imstb_truetype.h">
@@ -1640,6 +1646,12 @@
     </ClInclude>
     <ClInclude Include="Windows\InfoWindow.h">
       <Filter>Windows\InfoWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="zip\miniz.h">
+      <Filter>zip</Filter>
+    </ClInclude>
+    <ClInclude Include="zip\zip.h">
+      <Filter>zip</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
