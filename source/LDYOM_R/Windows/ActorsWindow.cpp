@@ -2,18 +2,18 @@
 
 #include <CWorld.h>
 
-#include "ProjectsService.h"
-#include "Localization/Localization.h"
-#include "fmt/core.h"
+#include <extensions/ScriptCommands.h>
+#include "CCamera.h"
 #include "fa.h"
 #include "imgui.h"
 #include "ModelsService.h"
 #include "PopupSkinSelector.h"
 #include "PopupWeaponSelector.h"
-#include "utilsRender.h"
+#include "ProjectsService.h"
 #include "utils.h"
-#include "CCamera.h"
-#include <extensions/ScriptCommands.h>
+#include "utilsRender.h"
+#include "fmt/core.h"
+#include "Localization/Localization.h"
 
 #include "EditByPlayerService.h"
 
@@ -27,10 +27,10 @@ std::string Windows::ActorsWindow::getNameOption() {
 
 int Windows::ActorsWindow::getListSize() {
 	return static_cast<int>(ProjectsService::getInstance()
-		.getCurrentProject()
-		.getCurrentScene()
-		->getActors()
-		.size());
+	                        .getCurrentProject()
+	                        .getCurrentScene()
+	                        ->getActors()
+	                        .size());
 }
 
 void Windows::ActorsWindow::createNewElement() {
@@ -38,7 +38,7 @@ void Windows::ActorsWindow::createNewElement() {
 }
 
 void Windows::ActorsWindow::createNewElementFrom(int i) {
-	const auto & actor = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().at(i);
+	const auto &actor = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().at(i);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewActorFrom(*actor);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().back()->spawnEditorPed();
 }
@@ -55,19 +55,20 @@ void Windows::ActorsWindow::deleteElement(const int i) {
 	this->currentElement--;
 }
 
-void weaponsSection(Actor* actor, Localization& local) {
+void weaponsSection(Actor *actor, Localization &local) {
 	if (ImGui::TreeNode(local.get("general.weapons").c_str())) {
-		if (ImGui::BeginTable("##weaponsTable", 4, ImGuiTableFlags_ScrollY, ImVec2(300.0f, 200.0f))) {
-
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 60.0f);
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+		const auto fontSize = ImGui::GetFontSize();
+		if (ImGui::BeginTable("##weaponsTable", 4, ImGuiTableFlags_ScrollY,
+		                      ImVec2(fontSize * 18.5f, fontSize * 7.5f))) {
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, fontSize * 3.75f);
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, fontSize * 7.5f);
 			ImGui::TableSetupColumn(local.get("general.initial").c_str());
 			ImGui::TableSetupColumn("");
 			ImGui::TableSetupScrollFreeze(4, 1);
 			ImGui::TableHeadersRow();
 
 			for (int i = 0; i < static_cast<int>(actor->getWeapons().size()); ++i) {
-				auto& weapon = actor->getWeapons().at(i);
+				auto &weapon = actor->getWeapons().at(i);
 
 				ImGui::PushID(i);
 
@@ -100,7 +101,8 @@ void weaponsSection(Actor* actor, Localization& local) {
 				if (ImGui::Button(ICON_FA_TRASH_ALT, ImVec2(25.0f, 0.0f))) {
 					actor->getWeapons().erase(actor->getWeapons().begin() + i);
 					i = static_cast<int>(actor->getWeapons().size());
-					actor->getDefaultWeapon() = min(actor->getDefaultWeapon(), static_cast<int>(actor->getWeapons().size()) - 1);
+					actor->getDefaultWeapon() = min(actor->getDefaultWeapon(),
+					                                static_cast<int>(actor->getWeapons().size()) - 1);
 					actor->spawnEditorPed();
 				}
 
@@ -117,16 +119,17 @@ void weaponsSection(Actor* actor, Localization& local) {
 	}
 }
 
-void characteristicsSection(Localization& local, Actor* actor) {
+void characteristicsSection(Localization &local, Actor *actor) {
 	if (ImGui::TreeNode(local.get("general.characteristics").c_str())) {
 		ImGui::SetNextItemWidth(150.0f);
 		ImGui::InputInt(local.get("general.health").c_str(), &actor->getHealth(), 0, 0);
 		ImGui::SetNextItemWidth(150.0f);
 		ImGui::DragInt(local.get("actor.accuracy_shooting").c_str(), &actor->getAccuracy(), 0.5f, 0, 100, "%d %%");
 		ImGui::SetNextItemWidth(150.0f);
-		ImGui::SliderInt(local.get("actor.group").c_str(), &actor->getGroup(), 0, 8, 
-			actor->getGroup() == 0 ? local.get("general.player").c_str() : 
-										   fmt::format("{} {}", local.get("actor.group"), actor->getGroup()).c_str());
+		ImGui::SliderInt(local.get("actor.group").c_str(), &actor->getGroup(), 0, 8,
+		                 actor->getGroup() == 0
+			                 ? local.get("general.player").c_str()
+			                 : fmt::format("{} {}", local.get("actor.group"), actor->getGroup()).c_str());
 
 		utils::ToggleButton(local.get("actor.random_spawn").c_str(), &actor->isRandomSpawn());
 		utils::ToggleButton(local.get("general.must_survive").c_str(), &actor->isShouldNotDie());
@@ -146,7 +149,8 @@ void characteristicsSection(Localization& local, Actor* actor) {
 void Windows::ActorsWindow::drawOptions() {
 	auto &local = Localization::getInstance();
 
-	Actor* actor = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().at(this->currentElement).get();
+	Actor *actor = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().at(
+		this->currentElement).get();
 
 	//position
 	InputPosition(actor->getPosition(), [actor] { actor->updateLocation(); });
@@ -162,8 +166,10 @@ void Windows::ActorsWindow::drawOptions() {
 	if (actor->getModelType() == 0 && actor->getModelId() == 0) {
 		if (ImGui::Button(local.get("teleport_player_objective.copy_clothes").c_str())) {
 			const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-			std::memcpy(actor->getClotherMAnTextureKeys().data(), playerClothes->m_anTextureKeys, sizeof playerClothes->m_anTextureKeys);
-			std::memcpy(actor->getClotherMAnModelKeys().data(), playerClothes->m_anModelKeys, sizeof playerClothes->m_anModelKeys);
+			std::memcpy(actor->getClotherMAnTextureKeys().data(), playerClothes->m_anTextureKeys,
+			            sizeof playerClothes->m_anTextureKeys);
+			std::memcpy(actor->getClotherMAnModelKeys().data(), playerClothes->m_anModelKeys,
+			            sizeof playerClothes->m_anModelKeys);
 			actor->getFatStat() = playerClothes->m_fFatStat;
 			actor->getMusculeStat() = playerClothes->m_fMuscleStat;
 			actor->spawnEditorPed();
@@ -182,7 +188,8 @@ void Windows::ActorsWindow::drawOptions() {
 		EditByPlayerService::getInstance().editByPlayerActor(*actor);
 	}
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);

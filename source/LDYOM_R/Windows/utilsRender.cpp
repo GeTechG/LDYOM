@@ -23,7 +23,8 @@ using namespace plugin;
 void InputPosition(float *position, const std::function<void()> &callback) {
 	ImGui::PushID("positionGroup");
 	ImGui::Text(Localization::getInstance().get("general.position").c_str());
-	if (ImGui::Button(ICON_FA_STREET_VIEW, ImVec2(25.0f, 0.0f))) {
+	const float fontSize = ImGui::GetFontSize();
+	if (ImGui::Button(ICON_FA_STREET_VIEW, ImVec2(fontSize * 1.5f, fontSize * 1.5f))) {
 		const CVector playerPosition = FindPlayerPed()->GetPosition();
 		position[0] = playerPosition.x;
 		position[1] = playerPosition.y;
@@ -47,7 +48,8 @@ void InputPosition(float *position, const std::function<void()> &callback) {
 void DragPosition(float *position, const std::function<void()> &callback) {
 	ImGui::PushID("positionGroup");
 	ImGui::Text(Localization::getInstance().get("general.position").c_str());
-	if (ImGui::Button(ICON_FA_STREET_VIEW, ImVec2(25.0f, 0.0f))) {
+	const float fontSize = ImGui::GetFontSize();
+	if (ImGui::Button(ICON_FA_STREET_VIEW, ImVec2(fontSize * 1.5f, fontSize * 1.5f))) {
 		const CVector playerPosition = FindPlayerPed()->GetPosition();
 		position[0] = playerPosition.x;
 		position[1] = playerPosition.y;
@@ -56,7 +58,7 @@ void DragPosition(float *position, const std::function<void()> &callback) {
 	}
 	if (ImGui::IsItemHovered()) {
 		ImGui::BeginTooltip();
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::PushTextWrapPos(fontSize * 35.0f);
 		ImGui::TextUnformatted(Localization::getInstance().get("general.player_position").c_str());
 		ImGui::PopTextWrapPos();
 		ImGui::EndTooltip();
@@ -72,7 +74,8 @@ void DragAngleRotation(float *angleRotation, const std::function<void()> &callba
 	ImGui::PushID("headingGroup");
 
 	ImGui::Text(Localization::getInstance().get("general.angle_rotation").c_str());
-	if (ImGui::Button(ICON_FA_STREET_VIEW, ImVec2(25.0f, 0.0f))) {
+	const float fontSize = ImGui::GetFontSize();
+	if (ImGui::Button(ICON_FA_STREET_VIEW, ImVec2(fontSize * 1.5f, fontSize * 1.5f))) {
 		const float playerAngleRotation = FindPlayerPed()->GetHeading();
 		*angleRotation = DEG(playerAngleRotation);
 		callback();
@@ -584,7 +587,8 @@ void modelSkinSelection(unsigned char &modelType, int &modelId, int &slot, const
 		ImGui::SliderInt(local.get("general.slot").c_str(), &slot, 0, 8);
 	}
 
-	if (ImGui::Button(ICON_FA_TSHIRT, ImVec2(25.0f, 0.0f))) {
+	const float fontSize = ImGui::GetFontSize();
+	if (ImGui::Button(ICON_FA_TSHIRT, ImVec2(fontSize * 1.5f, fontSize * 1.5f))) {
 		PopupSkinSelector::getInstance().showPopup();
 	}
 	ImGui::SameLine();

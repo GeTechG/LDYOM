@@ -85,7 +85,8 @@ void ObjectSelectorPopup::drawTags(const float blockWidth, std::map<int, ObjectI
 	                         sizeof this->newTagName_);
 	ImGui::SameLine();
 	ImGui::BeginDisabled(strlen(this->newTagName_) == 0);
-	if (ImGui::Button(ICON_FA_PLUS, ImVec2(25.0f, .0f))) {
+	const auto fontSize = ImGui::GetFontSize();
+	if (ImGui::Button(ICON_FA_PLUS, ImVec2(fontSize * 1.5, .0f))) {
 		if (const auto newTagID = ModelsService::getInstance().addNewTag(this->newTagName_); newTagID.has_value()) {
 			strcpy(this->newTagName_, "");
 		}
@@ -285,7 +286,8 @@ void ObjectSelectorPopup::drawPreviewObject(ObjectInfo &info) {
 			                         this->newTagName_, sizeof this->newTagName_);
 			ImGui::SameLine();
 			ImGui::BeginDisabled(strlen(this->newTagName_) == 0);
-			if (ImGui::Button(ICON_FA_PLUS, ImVec2(25.0f, .0f))) {
+			const auto fontSize = ImGui::GetFontSize();
+			if (ImGui::Button(ICON_FA_PLUS, ImVec2(fontSize * 1.5, .0f))) {
 				if (const auto newTagID = ModelsService::getInstance().addNewTag(this->newTagName_); newTagID.
 					has_value()) {
 					ModelsService::getInstance().setModelToTag(info.modelId, newTagID.value());
@@ -368,19 +370,23 @@ void ObjectSelectorPopup::draw() {
 	if (ImGui::BeginPopupModal(local.get("object_selector.title").c_str(), &this->isShow())) {
 		static std::map<int, ObjectInfo> models;
 
+		const auto backWidth = ImGui::CalcTextSize(local.get("general.back").c_str()).x + 5;
+		const auto searchWidth = ImGui::CalcTextSize(local.get("object_selector.search").c_str()).x + 5;
+
 		ImGui::BeginDisabled(this->selectorState == 0);
-		if (ImGui::Button(local.get("general.back").c_str(), ImVec2(50.0f, 0))) {
+		if (ImGui::Button(local.get("general.back").c_str(), ImVec2(backWidth, 0))) {
 			this->selectorState = 0;
 		}
 		ImGui::EndDisabled();
 		ImGui::SameLine();
 		ImGui::BeginDisabled(this->selectorState == 2);
 		ImGui::SetNextItemWidth(
-			ImGui::GetWindowContentRegionWidth() - 50.0f - 50.0f - ImGui::GetStyle().ItemSpacing.x * 3.f);
+			ImGui::GetWindowContentRegionWidth() - backWidth * 1.1f - searchWidth * 1.1f -
+			ImGui::GetStyle().ItemSpacing.x * 3.f);
 		ImGui::InputTextWithHint("##searchInput", local.get("object_selector.search_hint").c_str(), this->searchText_,
 		                         sizeof this->searchText_);
 		ImGui::SameLine();
-		if (ImGui::Button(local.get("object_selector.search").c_str(), ImVec2(50.f, .0f))) {
+		if (ImGui::Button(local.get("object_selector.search").c_str(), ImVec2(searchWidth, .0f))) {
 			this->selectorState = 1;
 			this->page_ = 1;
 			updateModels(models);

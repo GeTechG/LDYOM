@@ -16,26 +16,27 @@ private:
 	std::unique_ptr<Texture> unknownIcon_;
 
 	bool isOpen_ = false;
+	float scale = 1.f;
 
 	static std::optional<ModelRenderer> renderer_;
 
 	bool filteringPed(int model) const;
 
-	PopupSkinSelector () = default;
-	PopupSkinSelector (const PopupSkinSelector & root) = delete;
-	PopupSkinSelector & operator=(const PopupSkinSelector &) = delete;
+	PopupSkinSelector() = default;
+	PopupSkinSelector(const PopupSkinSelector &root) = delete;
+	PopupSkinSelector& operator=(const PopupSkinSelector &) = delete;
 
 	void clearUnknownSkins();
 	std::pair<IDirect3DTexture9*, ImVec2> getModelIcon(int modelId, bool special);
+
 public:
-	static PopupSkinSelector & getInstance() {
-		static PopupSkinSelector  instance;
+	static PopupSkinSelector& getInstance() {
+		static PopupSkinSelector instance;
 		return instance;
 	}
 
 	void Init();
 
 	void showPopup();
-	void renderPopup(const std::function<void(int)>& onSelectCallback, bool special = false, int slot = 0);
+	void renderPopup(const std::function<void(int)> &onSelectCallback, bool special = false, int slot = 0);
 };
-

@@ -2,24 +2,24 @@
 
 #include <CPed.h>
 
-#include "imgui.h"
 #include "fa.h"
+#include "imgui.h"
 #include "fmt/core.h"
 #include "Localization/Localization.h"
 
 #include <utility>
 
+#include "CModelInfo.h"
+#include "CPedModelInfo.h"
+#include "CPopulation.h"
 #include "ModelsService.h"
 #include "Settings.h"
 #include "utils.h"
-#include "CPopulation.h"
-#include "CModelInfo.h"
-#include "CPedModelInfo.h"
 
 std::optional<ModelRenderer> PopupSkinSelector::renderer_{};
 
 void PopupSkinSelector::clearUnknownSkins() {
-	for (const auto & pair : this->unknownSkins_) {
+	for (const auto &pair : this->unknownSkins_) {
 		RwTextureDestroy(pair.second);
 	}
 	this->unknownSkins_.clear();
@@ -54,7 +54,8 @@ std::pair<IDirect3DTexture9*, ImVec2> PopupSkinSelector::getModelIcon(int modelI
 	} else {
 		const auto pair = this->unknownSkins_.emplace(modelId, nullptr);
 		if (special)
-			renderer_.value().renderSpecialPed(ModelsService::getInstance().getSpecialsPed().at(modelId), &pair.first->second);
+			renderer_.value().renderSpecialPed(ModelsService::getInstance().getSpecialsPed().at(modelId),
+			                                   &pair.first->second);
 		else
 			renderer_.value().render(modelId, &pair.first->second);
 	}
@@ -70,16 +71,18 @@ void PopupSkinSelector::Init() {
 		int imageWidth = 0;
 		int imageHeight = 0;
 		PDIRECT3DTEXTURE9 texture = nullptr;
-		if (utils::LoadTextureFromFile(fmt::format("LDYOM/Resources/skinsIcons/Skinid{}.jpg", model).c_str(), &texture, &imageWidth, &imageHeight)) {
+		if (utils::LoadTextureFromFile(fmt::format("LDYOM/Resources/skinsIcons/Skinid{}.jpg", model).c_str(), &texture,
+		                               &imageWidth, &imageHeight)) {
 			this->pedsIcons_.emplace(model, std::make_unique<Texture>(texture, imageWidth, imageHeight));
 		}
 	}
 	for (int i = 0; i < static_cast<int>(ModelsService::getInstance().getSpecialsPed().size()); ++i) {
-		const auto & specialPed = ModelsService::getInstance().getSpecialsPed().at(i);
+		const auto &specialPed = ModelsService::getInstance().getSpecialsPed().at(i);
 		int imageWidth = 0;
 		int imageHeight = 0;
 		PDIRECT3DTEXTURE9 texture = nullptr;
-		if (utils::LoadTextureFromFile(fmt::format("LDYOM/Resources/specialsPeds/{}.jpg", specialPed).c_str(), &texture, &imageWidth, &imageHeight)) {
+		if (utils::LoadTextureFromFile(fmt::format("LDYOM/Resources/specialsPeds/{}.jpg", specialPed).c_str(), &texture,
+		                               &imageWidth, &imageHeight)) {
 			this->specialPedIcons_.emplace(i, std::make_unique<Texture>(texture, imageWidth, imageHeight));
 		}
 	}
@@ -106,12 +109,12 @@ struct FilterPed {
 
 inline void filterPopup() {
 	if (ImGui::BeginPopup("filter")) {
-
 		if (ImGui::MenuItem(Localization::getInstance().get("filter_ped.male").c_str(), nullptr, filterPed.male))
 			filterPed.male = !filterPed.male;
 		if (ImGui::MenuItem(Localization::getInstance().get("filter_ped.female").c_str(), nullptr, filterPed.female))
 			filterPed.female ^= TRUE;
-		if (ImGui::MenuItem(Localization::getInstance().get("filter_ped.emergency").c_str(), nullptr, filterPed.emergency))
+		if (ImGui::MenuItem(Localization::getInstance().get("filter_ped.emergency").c_str(), nullptr,
+		                    filterPed.emergency))
 			filterPed.emergency ^= TRUE;
 		if (ImGui::MenuItem(Localization::getInstance().get("filter_ped.cop").c_str(), nullptr, filterPed.cop))
 			filterPed.cop ^= TRUE;
@@ -142,15 +145,14 @@ std::vector<int> getSpecialsModels() {
 	return models;
 }
 
-void PopupSkinSelector::renderPopup(const std::function<void(int)>& onSelectCallback, bool special, int slot) {
+void PopupSkinSelector::renderPopup(const std::function<void(int)> &onSelectCallback, bool special, int slot) {
 	static const std::vector<int> specialsPeds = getSpecialsModels();
 
 	const std::vector<int> *models;
 
 	if (special) {
 		models = &specialsPeds;
-	}
-	else {
+	} else {
 		models = &ModelsService::getInstance().getPedModels();
 	}
 
@@ -158,22 +160,23 @@ void PopupSkinSelector::renderPopup(const std::function<void(int)>& onSelectCall
 
 	const auto &displaySize = ImGui::GetIO().DisplaySize;
 	const auto popupName = fmt::format("{} {}", ICON_FA_TSHIRT, Localization::getInstance().get("skin_selector.title"));
+	ImGui::SetNextWindowSize(ImVec2(displaySize.x * 0.5f, displaySize.y * 0.5f), ImGuiCond_Appearing);
 	if (ImGui::BeginPopupModal(popupName.c_str(), &this->isOpen_, ImGuiWindowFlags_NoCollapse)) {
-
 		/*ImGui::SetNextItemWidth(120);
 		ImGui::InputText(Localization::getInstance().get("skin_selector.search").c_str(), searchBuffer, IM_ARRAYSIZE(searchBuffer));
 		ImGui::SameLine();*/
-		ImGui::SetNextItemWidth(120);
 		if (ImGui::Button(Localization::getInstance().get("skin_selector.filter").c_str())) {
 			ImGui::OpenPopup("filter");
 		}
+		ImGui::SameLine();
+		ImGui::DragFloat("##scale", &scale, 0.01f, 0.1f, NULL, "%.2f");
 
 		filterPopup();
 
 		if (ImGui::BeginChild("##skinsButtons", ImVec2(0.0f, 0.0f), true)) {
 			int filled = 0;
 			for (int i = 0; i < static_cast<int>(models->size()); ++i) {
-				int model = models->at(i);
+				const int model = models->at(i);
 
 				if (!special) {
 					if (filteringPed(model))
@@ -187,14 +190,18 @@ void PopupSkinSelector::renderPopup(const std::function<void(int)>& onSelectCall
 
 				auto icon = getModelIcon(model, special);
 
-				if (static_cast<float>(filled) + icon.second.x < ImGui::GetWindowContentRegionWidth()) {
+				auto size = icon.second;
+				size.x *= scale;
+				size.y *= scale;
+				if (static_cast<float>(filled) + size.x < ImGui::GetWindowContentRegionWidth()) {
 					if (i > 0)
 						ImGui::SameLine();
 				} else {
 					filled = 0;
 				}
 
-				if (ImGui::ImageButton(icon.first, icon.second)) {
+
+				if (ImGui::ImageButton(icon.first, size)) {
 					onSelectCallback(model);
 					ImGui::CloseCurrentPopup();
 				}
