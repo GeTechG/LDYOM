@@ -3,12 +3,15 @@
 
 #include <string>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui.h"
 #include "ProjectsService.h"
 
 namespace Windows {
-	class ListWindow: public AbstractWindow {
+	class ListWindow : public AbstractWindow {
 	private:
-		void drawList();
+		ImVec2 drawList();
+
 	protected:
 		int currentElement = -1;
 		bool dragsItems_ = false;
@@ -16,7 +19,7 @@ namespace Windows {
 		ListWindow() {
 			ProjectsService::getInstance().getCurrentProject().onChangedScene().connect([&] {
 				this->currentElement = -1;
-				});
+			});
 		}
 
 		virtual std::string getNameList() = 0;
@@ -30,6 +33,7 @@ namespace Windows {
 		virtual void drawOptions() = 0;
 		virtual void swapItems(int firstItem, int secondItem) {}
 		virtual void drawListWindow() {}
+
 	public:
 		void draw() override;
 		virtual void selectElement(int i);

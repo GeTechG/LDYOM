@@ -5,6 +5,7 @@
 #include <extensions/ScriptCommands.h>
 
 #include "fa.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "PopupWeaponSelector.h"
 #include "utils.h"
@@ -21,10 +22,10 @@ std::string Windows::PickupsWindow::getNameOption() {
 
 int Windows::PickupsWindow::getListSize() {
 	return static_cast<int>(ProjectsService::getInstance()
-		.getCurrentProject()
-		.getCurrentScene()
-		->getPickups()
-		.size());
+	                        .getCurrentProject()
+	                        .getCurrentScene()
+	                        ->getPickups()
+	                        .size());
 }
 
 void Windows::PickupsWindow::createNewElement() {
@@ -32,7 +33,7 @@ void Windows::PickupsWindow::createNewElement() {
 }
 
 void Windows::PickupsWindow::createNewElementFrom(int i) {
-	const auto& pickup = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().at(i);
+	const auto &pickup = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().at(i);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewPickupFrom(*pickup);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().back()->spawnEditorPickup();
 }
@@ -50,18 +51,20 @@ void Windows::PickupsWindow::deleteElement(int i) {
 }
 
 void Windows::PickupsWindow::drawOptions() {
-	auto& local = Localization::getInstance();
+	auto &local = Localization::getInstance();
 
-	Pickup* pickup = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().at(this->currentElement).get();
+	Pickup *pickup = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().at(
+		this->currentElement).get();
 
 	//position
 	DragPosition(pickup->getPosition(), [pickup] {
 		pickup->updateLocation();
-		});
+	});
 
 	ImGui::Separator();
 
-	ImGui::SliderInt(local.get("pickup.spawn_type").c_str(), &pickup->getSpawnType(), 0, 2,local.getArray("pickup.spawn_types_pickup")[pickup->getSpawnType()].c_str());
+	ImGui::SliderInt(local.get("pickup.spawn_type").c_str(), &pickup->getSpawnType(), 0, 2,
+	                 local.getArray("pickup.spawn_types_pickup")[pickup->getSpawnType()].c_str());
 	if (utils::Combo(local.get("general.type").c_str(), &pickup->getType(), local.getArray("pickup.pickup_types"))) {
 		pickup->spawnEditorPickup();
 	}
@@ -82,7 +85,7 @@ void Windows::PickupsWindow::drawOptions() {
 			objectSelectorPopup_.setCallbackSelect([pickup](int modelId) {
 				pickup->getModelId() = modelId;
 				pickup->spawnEditorPickup();
-				});
+			});
 		}
 		if (ImGui::IsItemHovered()) {
 			ImGui::SetTooltip(local.get("object_selector.title").c_str());
@@ -97,7 +100,8 @@ void Windows::PickupsWindow::drawOptions() {
 
 	ObjectiveDependentInput(pickup);
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);

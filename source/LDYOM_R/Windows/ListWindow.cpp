@@ -1,6 +1,6 @@
 ﻿#include "ListWindow.h"
-#include "imgui.h"
 #include "constants.h"
+#include "imgui.h"
 #include "Localization/Localization.h"
 
 void renamePopup(char *name) {
@@ -13,14 +13,16 @@ void renamePopup(char *name) {
 	}
 }
 
-void Windows::ListWindow::drawList() {
-	static auto& local = Localization::getInstance();
+ImVec2 Windows::ListWindow::drawList() {
+	static auto &local = Localization::getInstance();
 
 	const auto windowSize = ImGui::GetIO().DisplaySize;
 
 	ImGui::SetNextWindowPos(ImVec2(windowSize.x, 0.0f), ImGuiCond_Appearing, ImVec2(1.0f, 0.0f));
 	if (ImGui::Begin(this->getNameList().c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-		const auto listSize = ImVec2(windowSize.x / 3.8f, windowSize.y / 2.0f);
+		const float listWidth = windowSize.x / 3.8f;
+		const float listHeight = windowSize.y / 2.0f;
+		const auto listSize = ImVec2(listWidth, listHeight);
 
 		if (ImGui::BeginChild("##ListElements", listSize, true)) {
 			for (int i = 0; i < this->getListSize(); ++i) {
@@ -40,7 +42,8 @@ void Windows::ListWindow::drawList() {
 				}
 
 				if (ImGui::BeginPopupContextItem("##editElementName")) {
-					ImGui::InputText("##inputNameRename", this->getElementName(i), NAME_SIZE, ImGuiInputTextFlags_EnterReturnsTrue);
+					ImGui::InputText("##inputNameRename", this->getElementName(i), NAME_SIZE,
+					                 ImGuiInputTextFlags_EnterReturnsTrue);
 					if (ImGui::IsItemDeactivatedAfterEdit()) {
 						ImGui::CloseCurrentPopup();
 					}
@@ -73,7 +76,10 @@ void Windows::ListWindow::drawList() {
 
 		drawListWindow();
 	}
+	const auto listWindowSize = ImGui::GetWindowSize();
 	ImGui::End();
+
+	return listWindowSize;
 }
 
 void Windows::ListWindow::onButtonCreateNewElement() {
@@ -92,10 +98,12 @@ int Windows::ListWindow::getElement() {
 
 void Windows::ListWindow::draw() {
 	this->currentElement = min(this->currentElement, getListSize() - 1);
-	drawList();
+	const ImVec2 listSize = drawList();
 	if (this->currentElement != -1) {
-		const auto windowSize = ImGui::GetIO().DisplaySize;
-		ImGui::SetNextWindowPos(ImVec2(windowSize.x - ImGui::GetWindowWidth(), 0.0f), ImGuiCond_Appearing, ImVec2(1.0f, 0.0f));
+		const auto displaySize = ImGui::GetIO().DisplaySize;
+		auto a = ImGui::GetWindowSize();
+		ImGui::SetNextWindowPos(ImVec2(displaySize.x - listSize.x, 0), ImGuiCond_Appearing,
+		                        ImVec2(1.0f, 0.0f));
 		if (ImGui::Begin(this->getNameOption().c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 			drawOptions();
 		}

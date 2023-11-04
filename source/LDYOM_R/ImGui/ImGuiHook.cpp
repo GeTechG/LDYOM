@@ -129,9 +129,7 @@ void ImGuiHook::RenderFrame(void *ptr) {
 }
 
 HRESULT ImGuiHook::Dx9Handler(IDirect3DDevice9 *pDevice) {
-	if (!FrontEndMenuManager.m_bMenuActive) {
-		RenderFrame(pDevice);
-	}
+	RenderFrame(pDevice);
 	return oEndScene(pDevice);
 }
 

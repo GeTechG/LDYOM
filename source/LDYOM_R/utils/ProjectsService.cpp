@@ -50,7 +50,6 @@
 #include "../lz4/lz4hc.h"
 #include "boost/archive/binary_iarchive.hpp"
 #include "boost/archive/binary_oarchive.hpp"
-#include "boost/serialization/array.hpp"
 #include "boost/serialization/split_free.hpp"
 #include "boost/serialization/unique_ptr.hpp"
 #include "boost/serialization/utility.hpp"
@@ -225,7 +224,8 @@ void ProjectsService::saveCurrentProject() {
 		std::ostringstream uncompressedStream;
 		boost::archive::binary_oarchive oa(uncompressedStream);
 		oa << pair.second;
-		for (auto pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["saveScene"].get_or_create<
+		for (const auto &pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["saveScene"].
+		     get_or_create<
 			     sol::table>()) {
 			if (auto result = pairLua.second.as<sol::function>()(pair.first); !result.valid()) {
 				sol::error err = result;

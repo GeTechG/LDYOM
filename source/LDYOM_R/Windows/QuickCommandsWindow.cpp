@@ -11,6 +11,8 @@
 #include "WindowsRenderService.h"
 #include "Localization/Localization.h"
 
+extern bool openWindowsMenu;
+
 void duplicate(Localization &local) {
 	if (ImGui::BeginMenu(local.get("quick_commands.duplicate").c_str())) {
 		auto playerPosition = [](IPositionable &positionable) {
@@ -172,21 +174,24 @@ void Windows::QuickCommandsWindow::draw() {
 
 		if (ImGui::MenuItem(local.get("quick_commands.quick_create_object").c_str())) {
 			const auto fastObjectSelector = WindowsRenderService::getInstance().getWindow<FastObjectSelector>();
+			openWindowsMenu = true;
 			fastObjectSelector->openWithCallback([](int modelId) {
 				const auto currentScene = ProjectsService::getInstance().getCurrentProject().getCurrentScene();
 				currentScene->createNewObject();
 				const auto &object = currentScene->getObjects().back();
 				object->getModelId() = modelId;
 				object->spawnEditorObject();
-				EditByPlayerService::getInstance().positionalObject(object.get()->getEditorObject().value(),
-				                                                    [&object](CMatrix &mat) {
-					                                                    const auto obj = object.get()->getEditorObject()
-						                                                    .value();
-					                                                    CWorld::Remove(obj);
-					                                                    obj->SetMatrix(mat);
-					                                                    obj->UpdateRwFrame();
-					                                                    CWorld::Add(obj);
-				                                                    }, object->getPosition(), object->getRotations());
+				EditByPlayerService::getInstance().positionalObject(
+					object.get()->getEditorObject().value(),
+					[&object](CMatrix &mat) {
+						const auto obj = object.get()->getEditorObject()
+						                       .value();
+						CWorld::Remove(obj);
+						obj->SetMatrix(mat);
+						obj->UpdateRwFrame();
+						CWorld::Add(obj);
+					}, object->getPosition(), object->getRotations()
+				);
 			});
 		}
 	}

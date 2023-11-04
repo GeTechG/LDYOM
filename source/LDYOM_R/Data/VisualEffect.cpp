@@ -2,17 +2,17 @@
 
 #include <array>
 #include <CStreaming.h>
+#include <Events.h>
 #include <boost/uuid/random_generator.hpp>
 #include <extensions/ScriptCommands.h>
-#include <Events.h>
 
 #include "CCoronas.h"
 #include "LuaEngine.h"
 #include "ProjectPlayerService.h"
+#include "Scene.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "easylogging/easylogging++.h"
-#include "Scene.h"
 
 using namespace plugin;
 
@@ -26,26 +26,29 @@ void VisualEffect::drawVisualEffect() {
 	if (this->type_ == 0) {
 		const auto coronaType = static_cast<eCoronaType>(this->effectType_);
 		const auto coronaFlare = static_cast<eCoronaFlareType>(this->flare_);
-		CCoronas::RegisterCorona(reinterpret_cast<unsigned int>(this), nullptr, red, green, blue, alpha, position, this->size_, 150.0f, coronaType, coronaFlare, true, false, 0, 0.0f, false, 0.2f, 0, 15.0f, false, false);
+		CCoronas::RegisterCorona(reinterpret_cast<unsigned int>(this), nullptr, red, green, blue, alpha, position,
+		                         this->size_, 150.0f, coronaType, coronaFlare, true, false, 0, 0.0f, false, 0.2f, 0,
+		                         15.0f, false, false);
 	} else {
 		const auto shadowTextureType = static_cast<unsigned char>(this->effectType_);
-		Command<Commands::DRAW_SHADOW>(shadowTextureType, pos_[0], pos_[1], pos_[2], RAD(this->angle_), this->size_, alpha, red, green, blue);
+		Command<Commands::DRAW_SHADOW>(shadowTextureType, pos_[0], pos_[1], pos_[2], RAD(this->angle_), this->size_,
+		                               alpha, red, green, blue);
 	}
 }
 
-VisualEffect::VisualEffect(const char* name, const CVector& pos): ObjectiveDependent(nullptr),
-													  uuid_(boost::uuids::random_generator()()) {
+VisualEffect::VisualEffect(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
+                                                                  uuid_(boost::uuids::random_generator()()) {
 	strlcpy(this->name_.data(), name, sizeof this->name_);
 	this->pos_[0] = pos.x;
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
 }
 
-VisualEffect::VisualEffect(const VisualEffect& other): ObjectiveDependent{other},
+VisualEffect::VisualEffect(const VisualEffect &other): ObjectiveDependent{other},
                                                        INameable{other},
                                                        IPositionable{other},
                                                        IUuidable{other},
-                                                       uuid_{ boost::uuids::random_generator()() },
+                                                       uuid_{boost::uuids::random_generator()()},
                                                        name_{other.name_},
                                                        pos_{other.pos_},
                                                        type_{other.type_},
@@ -54,10 +57,9 @@ VisualEffect::VisualEffect(const VisualEffect& other): ObjectiveDependent{other}
                                                        flare_{other.flare_},
                                                        color_{other.color_},
                                                        drawing_{other.drawing_},
-													   angle_(other.angle_) {
-}
+                                                       angle_(other.angle_) {}
 
-VisualEffect& VisualEffect::operator=(const VisualEffect& other) {
+VisualEffect& VisualEffect::operator=(const VisualEffect &other) {
 	if (this == &other)
 		return *this;
 	ObjectiveDependent::operator =(other);
@@ -136,6 +138,7 @@ void VisualEffect::spawnEditorVisualEffect() {
 }
 
 extern bool restart;
+
 void VisualEffect::deleteEditorVisualEffect() {
 	if (this->editorVisualEffect_.has_value()) {
 		Events::processScriptsEvent.RemoveById(this->editorVisualEffect_.value());
@@ -155,12 +158,13 @@ void VisualEffect::spawnProjectEntity() {
 
 	this->projectVisualEffect_ = slot;
 
-	auto& scene = ProjectPlayerService::getInstance().getCurrentScene();
+	auto &scene = ProjectPlayerService::getInstance().getCurrentScene();
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onVisualEffectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onVisualEffectSpawn"].get_or_create<sol::table>();
-		for (auto [_, func] : onVisualEffectSpawn) {
+		const auto onVisualEffectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+			"onVisualEffectSpawn"].get_or_create<sol::table>();
+		for (auto func : onVisualEffectSpawn | std::views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
@@ -178,9 +182,11 @@ void VisualEffect::deleteProjectEntity() {
 		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 		if (scene.has_value() && tasklist != nullptr) {
-			const auto onVisualEffectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onVisualEffectDelete"].get_or_create<sol::table>();
-			for (auto [_, func] : onVisualEffectDelete) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+			const auto onVisualEffectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+				"onVisualEffectDelete"].get_or_create<sol::table>();
+			for (auto func : onVisualEffectDelete | std::views::values) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
+					valid()) {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
 				}

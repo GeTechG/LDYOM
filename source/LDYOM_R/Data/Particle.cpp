@@ -5,21 +5,20 @@
 #include <boost/uuid/random_generator.hpp>
 
 #include "components.h"
-#include "ModelsService.h"
-#include "strUtils.h"
-#include "utils.h"
-#include "FxManager_c.h"
 #include "CTheScripts.h"
+#include "FxManager_c.h"
 #include "LuaEngine.h"
+#include "ModelsService.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
-#include "easylogging/easylogging++.h"
 #include "Scene.h"
+#include "strUtils.h"
+#include "utils.h"
+#include "easylogging/easylogging++.h"
 
 using namespace plugin;
 
 std::optional<int> Particle::spawnParticle() {
-
 	RwMatrix mat;
 	auto particleName = ModelsService::getInstance().getParticlesNames()[this->particleType_];
 	const auto fxSystem = g_fxMan.CreateFxSystem(const_cast<char*>(particleName.c_str()), &mat, nullptr, 1);
@@ -29,20 +28,20 @@ std::optional<int> Particle::spawnParticle() {
 	return scriptEffectSystem;
 }
 
-Particle::Particle(const char* name, const CVector& pos): ObjectiveDependent(nullptr),
-													  uuid_(boost::uuids::random_generator()()),
-													  rotate{{0,0,0}, 1}  {
+Particle::Particle(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
+                                                          uuid_(boost::uuids::random_generator()()),
+                                                          rotate{{0, 0, 0}, 1} {
 	strlcpy(this->name_.data(), name, sizeof this->name_);
 	this->pos_[0] = pos.x;
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
 }
 
-Particle::Particle(const Particle& other): ObjectiveDependent{other},
+Particle::Particle(const Particle &other): ObjectiveDependent{other},
                                            INameable{other},
                                            IPositionable{other},
                                            IUuidable{other},
-										   uuid_{ boost::uuids::random_generator()() },
+                                           uuid_{boost::uuids::random_generator()()},
                                            name_(other.name_),
                                            pos_(other.pos_),
                                            rotate{other.rotate},
@@ -50,12 +49,11 @@ Particle::Particle(const Particle& other): ObjectiveDependent{other},
                                            particleType_{other.particleType_},
                                            attachType_{other.attachType_},
                                            attachUuid_{other.attachUuid_},
-										   pedBodeId_{other.pedBodeId_} {
-
+                                           pedBodeId_{other.pedBodeId_} {
 	strlcat(name_.data(), "C", sizeof name_);
 }
 
-Particle& Particle::operator=(const Particle& other) {
+Particle& Particle::operator=(const Particle &other) {
 	if (this == &other)
 		return *this;
 	ObjectiveDependent::operator =(other);
@@ -151,13 +149,14 @@ void Particle::updateLocation() {
 		matrix.UpdateRW(&editorParticle.value()->m_localMatrix);
 	}
 	if (const auto projectParticle = this->getProjectParticle(); projectParticle.has_value()) {
-		RwMatrix* parent;
+		RwMatrix *parent;
 		switch (this->attachType_) {
 		case 1: {
-			const auto& actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+			const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
 			const int index = utils::indexByUuid(actors, this->attachUuid_);
 			if (index != -1) {
-				const auto& actor = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().at(index);
+				const auto &actor = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().
+				                                                   at(index);
 
 				auto animHier = GetAnimHierarchyFromSkinClump(actor->getProjectPed().value()->m_pRwClump);
 				auto boneIndex = RpHAnimIDGetIndex(animHier, this->pedBodeId_);
@@ -190,10 +189,11 @@ void Particle::updateLocation() {
 			break;
 		}
 		case 2: {
-			const auto& vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
+			const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
 			const int index = utils::indexByUuid(vehicles, this->attachUuid_);
 			if (index != -1) {
-				const auto& vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().at(index);
+				const auto &vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                     getVehicles().at(index);
 				parent = reinterpret_cast<RwMatrix*>(vehicle->getProjectVehicle().value()->GetMatrix());
 
 				matrix.SetRotate(rw);
@@ -207,10 +207,11 @@ void Particle::updateLocation() {
 			break;
 		}
 		case 3: {
-			const auto& objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
+			const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
 			const int index = utils::indexByUuid(objects, this->attachUuid_);
 			if (index != -1) {
-				const auto& object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(index);
+				const auto &object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().
+				                                                    at(index);
 				parent = reinterpret_cast<RwMatrix*>(object->getProjectObject().value()->GetMatrix());
 				RwMatrix parentMatRot;
 				CQuaternion parentQuat;
@@ -270,6 +271,7 @@ void Particle::spawnEditorParticle() {
 }
 
 extern bool restart;
+
 void Particle::deleteEditorParticle() {
 	const auto fxSystemC = this->getEditorParticle();
 	if (fxSystemC.has_value() && !restart) {
@@ -291,7 +293,8 @@ void Particle::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onParticleSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onParticleSpawn"].get_or_create<sol::table>();
+		const auto onParticleSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onParticleSpawn"]
+			.get_or_create<sol::table>();
 		for (auto [_, func] : onParticleSpawn) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
@@ -313,7 +316,8 @@ void Particle::deleteProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onParticleDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onParticleDelete"].get_or_create<sol::table>();
+		const auto onParticleDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+			"onParticleDelete"].get_or_create<sol::table>();
 		for (auto [_, func] : onParticleDelete) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;

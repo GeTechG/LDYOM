@@ -12,10 +12,10 @@
 #include "LuaEngine.h"
 #include "ModelsService.h"
 #include "ProjectPlayerService.h"
+#include "Scene.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "easylogging/easylogging++.h"
-#include "Scene.h"
 
 using namespace plugin;
 
@@ -27,7 +27,8 @@ std::optional<CObject*> Object::spawnObject() {
 	CStreaming::LoadAllRequestedModels(false);
 
 	int newObjectHandle;
-	Command<Commands::CREATE_OBJECT_NO_OFFSET>(this->modelId_, this->pos_[0], this->pos_[1], this->pos_[2], &newObjectHandle);
+	Command<Commands::CREATE_OBJECT_NO_OFFSET>(this->modelId_, this->pos_[0], this->pos_[1], this->pos_[2],
+	                                           &newObjectHandle);
 	const auto newObject = CPools::GetObject(newObjectHandle);
 
 	CStreaming::SetMissionDoesntRequireModel(this->modelId_);
@@ -35,9 +36,9 @@ std::optional<CObject*> Object::spawnObject() {
 	return newObject;
 }
 
-Object::Object(const char* name, const CVector& pos): ObjectiveDependent(nullptr),
-													  uuid_(boost::uuids::random_generator()()),
-													  rotate{{0,0,0}, 1},
+Object::Object(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
+                                                      uuid_(boost::uuids::random_generator()()),
+                                                      rotate{{0, 0, 0}, 1},
                                                       modelId_(325) {
 	strlcpy(this->name_, name, sizeof this->name_);
 	this->pos_[0] = pos.x;
@@ -45,11 +46,11 @@ Object::Object(const char* name, const CVector& pos): ObjectiveDependent(nullptr
 	this->pos_[2] = pos.z;
 }
 
-Object::Object(const Object& other): ObjectiveDependent{other},
+Object::Object(const Object &other): ObjectiveDependent{other},
                                      INameable{other},
                                      IPositionable{other},
                                      IUuidable{other},
-                                     uuid_{ boost::uuids::random_generator()() },
+                                     uuid_{boost::uuids::random_generator()()},
                                      rotate{other.rotate},
                                      scale_{other.scale_},
                                      modelId_{other.modelId_} {
@@ -58,7 +59,7 @@ Object::Object(const Object& other): ObjectiveDependent{other},
 	memcpy(this->pos_, other.pos_, sizeof this->pos_);
 }
 
-Object& Object::operator=(const Object& other) {
+Object& Object::operator=(const Object &other) {
 	if (this == &other)
 		return *this;
 	ObjectiveDependent::operator =(other);
@@ -142,40 +143,45 @@ float* Object::getPosition() {
 
 void Object::spawnEditorObject() {
 	if (editorObject_.has_value())
-		this->deleteEditorObject();
+		deleteEditorObject();
 
-	this->editorObject_ = spawnObject();
+	editorObject_ = spawnObject();
 
-	Command<Commands::FREEZE_OBJECT_POSITION>(this->editorObject_.value(), 1);
-	Command<Commands::SET_OBJECT_DYNAMIC>(this->editorObject_.value(), 0);
-	Command<Commands::SET_OBJECT_PROOFS>(this->editorObject_.value(), 1, 1, 1, 1, 1);
+	const auto editorObjectId = editorObject_.value();
+	Command<Commands::FREEZE_OBJECT_POSITION>(editorObjectId, 1);
+	Command<Commands::SET_OBJECT_DYNAMIC>(editorObjectId, 0);
+	Command<Commands::SET_OBJECT_PROOFS>(editorObjectId, 1, 1, 1, 1, 1);
 
 	updateLocation();
 }
 
 extern bool restart;
+
 void Object::deleteEditorObject() {
-	if (this->editorObject_.has_value() && !restart) {
-		int objectRef = CPools::GetObjectRef(this->editorObject_.value());
-		Command<Commands::DELETE_OBJECT>(objectRef);
-		this->editorObject_ = std::nullopt;
+	if (editorObject_.has_value() && !restart) {
+		const auto object = editorObject_.value();
+		if (CPools::ms_pObjectPool->IsObjectValid(object)) {
+			const int objectRef = CPools::GetObjectRef(object);
+			Command<Commands::DELETE_OBJECT>(objectRef);
+		}
+		editorObject_ = std::nullopt;
 	}
 }
 
 void Object::spawnProjectEntity() {
 	if (projectObject_.has_value())
-		this->deleteProjectEntity();
+		deleteProjectEntity();
 
-	this->projectObject_ = spawnObject();
-
+	projectObject_ = spawnObject();
 	updateLocation();
 
 	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onObjectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectSpawn"].get_or_create<sol::table>();
-		for (auto [_, func] : onObjectSpawn) {
+		const auto onObjectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectSpawn"].
+			get_or_create<sol::table>();
+		for (auto func : onObjectSpawn | views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
@@ -185,20 +191,24 @@ void Object::spawnProjectEntity() {
 }
 
 void Object::deleteProjectEntity() {
-	if (this->projectObject_.has_value() && !restart) {
-		int objectRef = CPools::GetObjectRef(this->projectObject_.value());
-		Command<Commands::DELETE_OBJECT>(objectRef);
-		this->projectObject_ = std::nullopt;
+	if (projectObject_.has_value() && !restart) {
+		if (const auto object = projectObject_.value(); CPools::ms_pObjectPool->IsObjectValid(object)) {
+			const int objectRef = CPools::GetObjectRef(object);
+			Command<Commands::DELETE_OBJECT>(objectRef);
+			projectObject_ = std::nullopt;
 
-		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+			auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+			auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
-		if (scene.has_value() && tasklist != nullptr) {
-			const auto onObjectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectDelete"].get_or_create<sol::table>();
-			for (auto [_, func] : onObjectDelete) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
-					const sol::error err = result;
-					CLOG(ERROR, "lua") << err.what();
+			if (scene.has_value() && tasklist != nullptr) {
+				const auto onObjectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+						"onObjectDelete"].
+					get_or_create<sol::table>();
+				for (const auto &func : onObjectDelete | views::values) {
+					if (const auto result = func.as<sol::function>()(scene.value(), tasklist, uuid_); !result.valid()) {
+						const sol::error err = result;
+						CLOG(ERROR, "lua") << err.what();
+					}
 				}
 			}
 		}

@@ -1,4 +1,6 @@
 ﻿#include "WindowsRenderService.h"
+
+#include <CMenuManager.h>
 #include <fmt/core.h>
 
 #include "AbstractWindow.h"
@@ -111,7 +113,7 @@ void Windows::WindowsRenderService::Init() const {
 		this->render();
 	};
 	ImGuiHook::preRenderCallback = [this] {
-		ImGuiHook::m_bShowMouse = this->mouseShown_ && renderWindows_;
+		ImGuiHook::m_bShowMouse = this->mouseShown_ && renderWindows_ && !FrontEndMenuManager.m_bMenuActive;
 	};
 
 	addWindows();
@@ -123,14 +125,16 @@ void Windows::WindowsRenderService::render() const {
 		reloadTheme = false;
 	}
 
-	auto currRenderList = renderList_;
-	for (const auto &function : currRenderList | std::views::values)
-		function();
+	if (!FrontEndMenuManager.m_bMenuActive) {
+		auto currRenderList = renderList_;
+		for (const auto &function : currRenderList | std::views::values)
+			function();
 
-	if (renderWindows_) {
-		for (const auto &window : this->windows_) {
-			if (window->isShow()) {
-				window->draw();
+		if (renderWindows_) {
+			for (const auto &window : this->windows_) {
+				if (window->isShow()) {
+					window->draw();
+				}
 			}
 		}
 	}
@@ -146,6 +150,16 @@ bool& Windows::WindowsRenderService::isRenderWindows() {
 
 void Windows::WindowsRenderService::setRenderWindows(const bool renderWindows) {
 	renderWindows_ = renderWindows;
+}
+
+void Windows::WindowsRenderService::Reset() {
+	this->closeAllWindows();
+	this->renderList_.clear();
+	this->renderWindows_ = true;
+	this->windows_.clear();
+	setMouseShown(false);
+
+	addWindows();
 }
 
 std::list<std::unique_ptr<Windows::AbstractWindow>>& Windows::WindowsRenderService::getWindows() {

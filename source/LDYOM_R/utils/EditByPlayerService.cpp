@@ -567,7 +567,9 @@ ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>> &path) {
 
 		if (KeyCheck::CheckJustDown('M')) {
 			const auto position = FindPlayerPed()->GetPosition();
-			newPath.at(currentIndexPoint) = {position.x, position.y, position.z};
+			if (!newPath.empty()) {
+				newPath.at(currentIndexPoint) = {position.x, position.y, position.z};
+			}
 		}
 
 		if (KeyCheck::CheckJustDown('I')) {
@@ -667,7 +669,9 @@ ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>> &path, int 
 
 		if (KeyCheck::CheckJustDown('M')) {
 			const auto position = FindPlayerVehicle(0, false)->GetPosition();
-			newPath.at(currentIndexPoint) = {position.x, position.y, position.z};
+			if (!newPath.empty()) {
+				newPath.at(currentIndexPoint) = {position.x, position.y, position.z};
+			}
 		}
 
 		if (KeyCheck::CheckJustDown('I')) {

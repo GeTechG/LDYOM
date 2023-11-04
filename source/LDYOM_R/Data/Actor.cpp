@@ -2,12 +2,12 @@
 
 #include <CClothes.h>
 
-#include "CWorld.h"
-#include "utils.h"
-#include "../shared/extensions/ScriptCommands.h"
 #include "CStreaming.h"
 #include "CTheScripts.h"
+#include "CWorld.h"
 #include "ModelsService.h"
+#include "utils.h"
+#include "../shared/extensions/ScriptCommands.h"
 
 #include <boost/uuid/uuid_generators.hpp>
 
@@ -20,10 +20,13 @@
 using namespace plugin;
 
 extern bool restart;
+
 void Actor::deleteEditorPed() {
 	if (this->editorPed_.has_value() && !restart) {
-		int pedRef = CPools::GetPedRef(this->editorPed_.value());
-		Command<Commands::DELETE_CHAR>(pedRef);
+		if (const auto ped = this->editorPed_.value(); CPools::ms_pPedPool->IsObjectValid(ped)) {
+			const int pedRef = CPools::GetPedRef(this->editorPed_.value());
+			Command<Commands::DELETE_CHAR>(pedRef);
+		}
 		this->editorPed_ = std::nullopt;
 	}
 }
@@ -34,8 +37,7 @@ void Actor::spawnProjectEntity() {
 
 	this->projectPed_ = spawnPed();
 
-	if (this->group_ == 0)
-	{
+	if (this->group_ == 0) {
 		int g;
 		Command<Commands::GET_PLAYER_GROUP>(0, &g);
 		Command<Commands::SET_GROUP_MEMBER>(g, CPools::GetPedRef(this->projectPed_.value()));
@@ -49,7 +51,8 @@ void Actor::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].get_or_create<sol::table>();
+		const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].
+			get_or_create<sol::table>();
 		for (auto [_, func] : onActorSpawn) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
@@ -61,19 +64,24 @@ void Actor::spawnProjectEntity() {
 
 void Actor::deleteProjectEntity() {
 	if (this->projectPed_.has_value() && !restart) {
-		int pedRef = CPools::GetPedRef(this->projectPed_.value());
-		Command<Commands::DELETE_CHAR>(pedRef);
-		this->projectPed_ = std::nullopt;
+		if (const auto ped = this->projectPed_.value(); CPools::ms_pPedPool->IsObjectValid(ped)) {
+			int pedRef = CPools::GetPedRef(this->projectPed_.value());
+			Command<Commands::DELETE_CHAR>(pedRef);
+			this->projectPed_ = std::nullopt;
 
-		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+			auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+			auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
-		if (scene.has_value() && tasklist != nullptr) {
-			const auto onActorDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorDelete"].get_or_create<sol::table>();
-			for (auto [_, func] : onActorDelete) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
-					const sol::error err = result;
-					CLOG(ERROR, "lua") << err.what();
+			if (scene.has_value() && tasklist != nullptr) {
+				const auto onActorDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+						"onActorDelete"]
+					.get_or_create<sol::table>();
+				for (auto [_, func] : onActorDelete) {
+					if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
+						valid()) {
+						const sol::error err = result;
+						CLOG(ERROR, "lua") << err.what();
+					}
 				}
 			}
 		}
@@ -99,8 +107,10 @@ CPed* Actor::spawnPed() {
 
 	if (this->modelType_ == 0 && this->modelId_ == 0 && this->dressUp_) {
 		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys_.data(), sizeof playerClothes->m_anTextureKeys);
-		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys_.data(), sizeof playerClothes->m_anModelKeys);
+		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys_.data(),
+		            sizeof playerClothes->m_anTextureKeys);
+		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys_.data(),
+		            sizeof playerClothes->m_anModelKeys);
 		playerClothes->m_fFatStat = this->fatStat;
 		playerClothes->m_fMuscleStat = this->musculeStat;
 		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
@@ -111,7 +121,7 @@ CPed* Actor::spawnPed() {
 		CStreaming::RequestModel(model, GAME_REQUIRED);
 	} else {
 		model = 290 + this->slot_;
-		const auto & specialsPed = ModelsService::getInstance().getSpecialsPed().at(this->modelId_);
+		const auto &specialsPed = ModelsService::getInstance().getSpecialsPed().at(this->modelId_);
 		CStreaming::RequestSpecialChar(this->slot_, specialsPed.c_str(), GAME_REQUIRED);
 	}
 	CStreaming::LoadAllRequestedModels(false);
@@ -120,7 +130,7 @@ CPed* Actor::spawnPed() {
 	Command<Commands::CREATE_CHAR>(23 + this->group_, model, this->pos_[0], this->pos_[1], this->pos_[2], &newPed);
 	CStreaming::SetMissionDoesntRequireModel(model);
 
-	CPed* ped = CPools::GetPed(newPed);
+	CPed *ped = CPools::GetPed(newPed);
 
 	for (const auto &[weaponRaw, ammo] : this->weapons_) {
 		int weapon = ModelsService::validWeaponModel(weaponRaw);
@@ -150,35 +160,37 @@ CPed* Actor::spawnPed() {
 		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
 	}
 
-	Command<Commands::SET_CHAR_STAY_IN_SAME_PLACE>(newPed, (int)this->stayInSamePlace_);
-	Command<Commands::SET_CHAR_KINDA_STAY_IN_SAME_PLACE>(newPed, (int)this->kindaStayInSamePlace_);
+	Command<Commands::SET_CHAR_STAY_IN_SAME_PLACE>(newPed, static_cast<int>(this->stayInSamePlace_));
+	Command<Commands::SET_CHAR_KINDA_STAY_IN_SAME_PLACE>(newPed, static_cast<int>(this->kindaStayInSamePlace_));
 	ped->m_nWeaponAccuracy = this->accuracy_;
-	Command<Commands::SET_CHAR_SUFFERS_CRITICAL_HITS>(newPed, (int)this->headshot_);
+	Command<Commands::SET_CHAR_SUFFERS_CRITICAL_HITS>(newPed, static_cast<int>(this->headshot_));
 	ped->m_nPedFlags.bDoesntDropWeaponsWhenDead = static_cast<unsigned>(!this->dropWeapons_);
 
 	return ped;
 }
 
-Actor::Actor(const char* name, const CVector& pos, float headingAngle): ObjectiveDependent(nullptr),
-																		uuid_(boost::uuids::random_generator()()),
-                                                                        pos_{pos.x, pos.y, pos.z}, headingAngle_(headingAngle),
+Actor::Actor(const char *name, const CVector &pos, float headingAngle): ObjectiveDependent(nullptr),
+                                                                        uuid_(boost::uuids::random_generator()()),
+                                                                        pos_{pos.x, pos.y, pos.z},
+                                                                        headingAngle_(headingAngle),
                                                                         accuracy_(50),
-																		health_(100),
+                                                                        health_(100),
                                                                         headshot_(true) {
 	strcpy(this->name_.data(), name);
 
 	const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-	std::memcpy(this->clotherMAnTextureKeys_.data(), playerClothes->m_anTextureKeys, sizeof playerClothes->m_anTextureKeys);
+	std::memcpy(this->clotherMAnTextureKeys_.data(), playerClothes->m_anTextureKeys,
+	            sizeof playerClothes->m_anTextureKeys);
 	std::memcpy(this->clotherMAnModelKeys_.data(), playerClothes->m_anModelKeys, sizeof playerClothes->m_anModelKeys);
 	this->fatStat = playerClothes->m_fFatStat;
 	this->musculeStat = playerClothes->m_fMuscleStat;
 }
 
-Actor::Actor(const Actor& other): ObjectiveDependent{other},
+Actor::Actor(const Actor &other): ObjectiveDependent{other},
                                   INameable{other},
                                   IPositionable{other},
                                   IUuidable{other},
-                                  uuid_{ boost::uuids::random_generator()() },
+                                  uuid_{boost::uuids::random_generator()()},
                                   name_{other.name_},
                                   pos_{other.pos_},
                                   headingAngle_{other.headingAngle_},
@@ -198,12 +210,12 @@ Actor::Actor(const Actor& other): ObjectiveDependent{other},
                                   dropWeapons_{other.dropWeapons_},
                                   clotherMAnModelKeys_{other.clotherMAnModelKeys_},
                                   clotherMAnTextureKeys_{other.clotherMAnTextureKeys_},
-								  fatStat{other.fatStat},
-								  musculeStat{other.musculeStat} {
+                                  fatStat{other.fatStat},
+                                  musculeStat{other.musculeStat} {
 	strlcat(this->name_.data(), "C", sizeof this->name_);
 }
 
-Actor& Actor::operator=(const Actor& other) {
+Actor& Actor::operator=(const Actor &other) {
 	if (this == &other)
 		return *this;
 	ObjectiveDependent::operator =(other);
@@ -371,4 +383,3 @@ void Actor::spawnEditorPed() {
 
 	updateLocation();
 }
-

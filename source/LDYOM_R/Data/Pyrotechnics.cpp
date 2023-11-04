@@ -8,39 +8,39 @@
 #include <extensions/ScriptCommands.h>
 #include <extensions/scripting/ScriptCommandNames.h>
 
+#include "CFireManager.h"
 #include "components.h"
+#include "LuaEngine.h"
 #include "ModelsService.h"
+#include "ProjectPlayerService.h"
+#include "Scene.h"
 #include "strUtils.h"
 #include "utils.h"
-#include "CFireManager.h"
-#include "LuaEngine.h"
-#include "ProjectPlayerService.h"
 #include "easylogging/easylogging++.h"
-#include "Scene.h"
 
 using namespace plugin;
 
 std::optional<int> Pyrotechnics::spawnFire(bool editor) {
-
 	int scriptFire;
-	Command<Commands::START_SCRIPT_FIRE>(this->pos_[0], this->pos_[1], this->pos_[2], editor ? 0 : this->propagationFire_, this->sizeFire_, &scriptFire);
+	Command<Commands::START_SCRIPT_FIRE>(this->pos_[0], this->pos_[1], this->pos_[2],
+	                                     editor ? 0 : this->propagationFire_, this->sizeFire_, &scriptFire);
 
 	return scriptFire;
 }
 
-Pyrotechnics::Pyrotechnics(const char* name, const CVector& pos): ObjectiveDependent(nullptr),
-													  uuid_(boost::uuids::random_generator()()) {
+Pyrotechnics::Pyrotechnics(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
+                                                                  uuid_(boost::uuids::random_generator()()) {
 	strlcpy(this->name_.data(), name, sizeof this->name_);
 	this->pos_[0] = pos.x;
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
 }
 
-Pyrotechnics::Pyrotechnics(const Pyrotechnics& other): ObjectiveDependent{other},
+Pyrotechnics::Pyrotechnics(const Pyrotechnics &other): ObjectiveDependent{other},
                                                        INameable{other},
                                                        IPositionable{other},
                                                        IUuidable{other},
-                                                       uuid_{ boost::uuids::random_generator()() },
+                                                       uuid_{boost::uuids::random_generator()()},
                                                        name_{other.name_},
                                                        pos_{other.pos_},
                                                        type_{other.type_},
@@ -50,7 +50,7 @@ Pyrotechnics::Pyrotechnics(const Pyrotechnics& other): ObjectiveDependent{other}
 	strlcat(name_.data(), "C", sizeof name_);
 }
 
-Pyrotechnics& Pyrotechnics::operator=(const Pyrotechnics& other) {
+Pyrotechnics& Pyrotechnics::operator=(const Pyrotechnics &other) {
 	if (this == &other)
 		return *this;
 	ObjectiveDependent::operator =(other);
@@ -82,7 +82,7 @@ std::optional<CFire*> Pyrotechnics::getEditorFire() {
 		const auto fire = &gFireManager.m_aFires[actualScriptThingIndex];
 		if (fire->m_nFlags.bActive != 0) {
 			return fire;
-		} 
+		}
 	}
 	return std::nullopt;
 }
@@ -133,7 +133,7 @@ void Pyrotechnics::updateLocation() {
 	}
 
 	if (const auto fire = this->getProjectFire(); fire.has_value()) {
-		fire.value()->m_vecPosition = { this->pos_[0], this->pos_[1], this->pos_[2] };
+		fire.value()->m_vecPosition = {this->pos_[0], this->pos_[1], this->pos_[2]};
 		CMatrix newMatrix(&fire.value()->m_pFxSystem->m_localMatrix, true);
 		newMatrix.SetTranslateOnly(this->pos_[0], this->pos_[1], this->pos_[2]);
 		newMatrix.UpdateRW(&fire.value()->m_pFxSystem->m_localMatrix);
@@ -169,15 +169,21 @@ void Pyrotechnics::spawnEditorPyrotechnics() {
 }
 
 extern bool restart;
+
 void Pyrotechnics::deleteEditorPyrotechnics() {
 	if (this->editorExplosionObject_.has_value() && !restart) {
-		int objectRef = CPools::GetObjectRef(this->editorExplosionObject_.value());
-		Command<Commands::DELETE_OBJECT>(objectRef);
+		const auto object = this->editorExplosionObject_.value();
+		if (CPools::ms_pObjectPool->IsObjectValid(object)) {
+			const int objectRef = CPools::GetObjectRef(object);
+			Command<Commands::DELETE_OBJECT>(objectRef);
+		}
 		this->editorExplosionObject_ = std::nullopt;
 	}
 	if (this->editorFire_.has_value() && !restart) {
 		const int actualScriptThingIndex = CTheScripts::GetActualScriptThingIndex(this->editorFire_.value(), 5);
-		gFireManager.RemoveScriptFire(static_cast<short>(actualScriptThingIndex));
+		if (actualScriptThingIndex != -1) {
+			gFireManager.RemoveScriptFire(static_cast<short>(actualScriptThingIndex));
+		}
 		this->editorFire_ = std::nullopt;
 	}
 }
@@ -198,8 +204,9 @@ void Pyrotechnics::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onPyrotechnicsSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onPyrotechnicsSpawn"].get_or_create<sol::table>();
-		for (auto [_, func] : onPyrotechnicsSpawn) {
+		const auto onPyrotechnicsSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+			"onPyrotechnicsSpawn"].get_or_create<sol::table>();
+		for (auto func : onPyrotechnicsSpawn | views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
@@ -211,16 +218,20 @@ void Pyrotechnics::spawnProjectEntity() {
 void Pyrotechnics::deleteProjectEntity() {
 	if (this->projectFire_.has_value() && !restart) {
 		const int actualScriptThingIndex = CTheScripts::GetActualScriptThingIndex(this->projectFire_.value(), 5);
-		gFireManager.RemoveScriptFire(static_cast<short>(actualScriptThingIndex));
+		if (actualScriptThingIndex != -1) {
+			gFireManager.RemoveScriptFire(static_cast<short>(actualScriptThingIndex));
+		}
 		this->projectFire_ = std::nullopt;
 
 		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
 		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 		if (scene.has_value() && tasklist != nullptr) {
-			const auto onPyrotechnicsDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onPyrotechnicsDelete"].get_or_create<sol::table>();
-			for (auto [_, func] : onPyrotechnicsDelete) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+			const auto onPyrotechnicsDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+				"onPyrotechnicsDelete"].get_or_create<sol::table>();
+			for (auto func : onPyrotechnicsDelete | views::values) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
+					valid()) {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
 				}

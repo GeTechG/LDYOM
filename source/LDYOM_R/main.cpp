@@ -159,29 +159,29 @@ public:
 		};
 
 		Events::reInitGameEvent += [&] {
+			Events::gameProcessEvent.RemoveById(777);
+			Events::gameProcessEvent.RemoveById(778);
+			FileWatcher::stop();
+
 			//MPACK7
 			if (CGame::bMissionPackGame != 7) {
-				Windows::WindowsRenderService::getInstance().closeAllWindows();
-				Windows::WindowsRenderService::getInstance().setMouseShown(false);
-				Events::gameProcessEvent.RemoveById(777);
-				Events::gameProcessEvent.RemoveById(778);
-				FileWatcher::stop();
-				Tasker::getInstance();
 				return;
 			}
 
 			if (!initServices) {
 				initFunc();
 			} else {
+				Tasker::getInstance().Reset();
+				ProjectsService::getInstance().getCurrentProject() = ProjectData();
+				ProjectsService::getInstance().Reset();
+				ProjectPlayerService::getInstance().reset();
+				Windows::WindowsRenderService::getInstance().Reset();
 				Events::gameProcessEvent.AddAtId(777, gameProcces);
 				Events::processScriptsEvent.AddAtId(778, scriptProcess);
 				FileWatcher::start();
 			}
 
 			restart = true;
-			ProjectsService::getInstance().getCurrentProject() = ProjectData();
-			ProjectsService::getInstance().Reset();
-			ProjectPlayerService::getInstance().reset();
 			defaultWindow = Windows::WindowsRenderService::getInstance().getWindow<Windows::MainMenu>();
 			restart = false;
 		};

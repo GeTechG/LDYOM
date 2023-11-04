@@ -4,9 +4,8 @@
 
 #include "Scene.h"
 #include "Texture.h"
-#include "boost/signals2/signal.hpp"
 #include "boost/archive/binary_oarchive.hpp"
-#include "boost/serialization/utility.hpp"
+#include "boost/signals2/signal.hpp"
 
 struct ProjectInfo {
 	char name[NAME_SIZE] = "";
@@ -16,18 +15,13 @@ struct ProjectInfo {
 	std::optional<std::unique_ptr<Texture>> icon;
 };
 
-namespace boost {
-	namespace serialization {
-
-		template<class Archive>
-		void serialize(Archive& ar, ProjectInfo& p, const unsigned int version)
-		{
-			ar & p.name;
-			ar & p.authorName;
-			ar & p.startScene;
-			ar & p.directory;
-		}
-
+namespace boost::serialization {
+	template <class Archive>
+	void serialize(Archive &ar, ProjectInfo &p, const unsigned int version) {
+		ar & p.name;
+		ar & p.authorName;
+		ar & p.startScene;
+		ar & p.directory;
 	}
 }
 
@@ -41,7 +35,7 @@ private:
 
 public:
 	ProjectData();
-	ProjectData& operator=(ProjectData&& other) noexcept;
+	ProjectData& operator=(ProjectData &&other) noexcept;
 
 	Scene* getCurrentScene();
 	int& getCurrentSceneIndex();

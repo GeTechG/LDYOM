@@ -7,9 +7,9 @@
 
 #include "LuaEngine.h"
 #include "ProjectPlayerService.h"
+#include "Scene.h"
 #include "strUtils.h"
 #include "easylogging/easylogging++.h"
-#include "Scene.h"
 
 using namespace plugin;
 
@@ -41,36 +41,37 @@ CTrain* Train::spawnTrain() {
 	case 15:
 		CStreaming::RequestModel(MODEL_STREAK, GAME_REQUIRED);
 		break;
-	default: 
+	default:
 		break;
 	}
 	CStreaming::LoadAllRequestedModels(false);
 
 	int handleTrain;
-	Command<Commands::CREATE_MISSION_TRAIN>(this->trainType_, this->pos_[0], this->pos_[1], this->pos_[2], this->rotate_, &handleTrain);
+	Command<Commands::CREATE_MISSION_TRAIN>(this->trainType_, this->pos_[0], this->pos_[1], this->pos_[2],
+	                                        this->rotate_, &handleTrain);
 	const auto train = static_cast<CTrain*>(CPools::GetVehicle(handleTrain));
 
 	train->m_bStreamingDontDelete = 1;
 	Command<Commands::DONT_REMOVE_CAR>(handleTrain);
-	
+
 	CStreaming::RemoveAllUnusedModels();
 
 	return train;
 }
 
-Train::Train(const char* name, const CVector& pos): ObjectiveDependent(nullptr),
-													uuid_(boost::uuids::random_generator()()) {
+Train::Train(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
+                                                    uuid_(boost::uuids::random_generator()()) {
 	strlcpy(this->name_, name, sizeof this->name_);
 	this->pos_[0] = pos.x;
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
 }
 
-Train::Train(const Train& other): ObjectiveDependent{other},
+Train::Train(const Train &other): ObjectiveDependent{other},
                                   INameable{other},
                                   IPositionable{other},
                                   IUuidable{other},
-                                  uuid_{ boost::uuids::random_generator()() },
+                                  uuid_{boost::uuids::random_generator()()},
                                   rotate_{other.rotate_},
                                   health_{other.health_},
                                   trainType_{other.trainType_},
@@ -81,7 +82,7 @@ Train::Train(const Train& other): ObjectiveDependent{other},
 	memcpy(pos_, other.pos_, sizeof pos_);
 }
 
-Train& Train::operator=(const Train& other) {
+Train& Train::operator=(const Train &other) {
 	if (this == &other)
 		return *this;
 	ObjectiveDependent::operator =(other);
@@ -173,10 +174,14 @@ void Train::spawnEditorTrain() {
 }
 
 extern bool restart;
+
 void Train::deleteEditorTrain() {
 	if (this->editorTrain_.has_value() && !restart) {
-		int vehicleRef = CPools::GetVehicleRef(this->editorTrain_.value());
-		Command<Commands::DELETE_MISSION_TRAIN>(vehicleRef);
+		const auto vehicle = this->editorTrain_.value();
+		if (CPools::ms_pVehiclePool->IsObjectValid(vehicle)) {
+			const int vehicleRef = CPools::GetVehicleRef(vehicle);
+			Command<Commands::DELETE_MISSION_TRAIN>(vehicleRef);
+		}
 		this->editorTrain_ = std::nullopt;
 	}
 }
@@ -191,8 +196,9 @@ void Train::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onTrainSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onTrainSpawn"].get_or_create<sol::table>();
-		for (auto [_, func] : onTrainSpawn) {
+		const auto onTrainSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onTrainSpawn"].
+			get_or_create<sol::table>();
+		for (auto func : onTrainSpawn | std::views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
@@ -203,17 +209,21 @@ void Train::spawnProjectEntity() {
 
 void Train::deleteProjectEntity() {
 	if (this->projectTrain_.has_value() && !restart) {
-		int vehicleRef = CPools::GetVehicleRef(this->projectTrain_.value());
-		Command<Commands::DELETE_MISSION_TRAIN>(vehicleRef);
+		if (const auto vehicle = this->projectTrain_.value(); CPools::ms_pVehiclePool->IsObjectValid(vehicle)) {
+			const int vehicleRef = CPools::GetVehicleRef(this->projectTrain_.value());
+			Command<Commands::DELETE_MISSION_TRAIN>(vehicleRef);
+		}
 		this->projectTrain_ = std::nullopt;
 
 		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
 		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 		if (scene.has_value() && tasklist != nullptr) {
-			const auto onTrainDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onTrainDelete"].get_or_create<sol::table>();
-			for (auto [_, func] : onTrainDelete) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+			const auto onTrainDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onTrainDelete"]
+				.get_or_create<sol::table>();
+			for (auto func : onTrainDelete | std::views::values) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
+					valid()) {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
 				}

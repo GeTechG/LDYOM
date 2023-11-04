@@ -7,19 +7,18 @@
 #include <extensions/scripting/ScriptCommandNames.h>
 
 #include "components.h"
-#include "ModelsService.h"
-#include "strUtils.h"
-#include "utils.h"
 #include "CPickups.h"
 #include "LuaEngine.h"
+#include "ModelsService.h"
 #include "ProjectPlayerService.h"
-#include "easylogging/easylogging++.h"
 #include "Scene.h"
+#include "strUtils.h"
+#include "utils.h"
+#include "easylogging/easylogging++.h"
 
 using namespace plugin;
 
 std::optional<int> Pickup::spawnPickup(int pickupType) {
-
 	if (this->type_ == 0) {
 		auto weaponIds = ModelsService::getInstance().getWeaponIds();
 		const int weaponModel = CWeaponInfo::GetWeaponInfo(static_cast<eWeaponType>(this->weapon_), 1)->m_nModelId1;
@@ -27,7 +26,9 @@ std::optional<int> Pickup::spawnPickup(int pickupType) {
 			CStreaming::RequestModel(weaponModel, 0);
 			CStreaming::LoadAllRequestedModels(false);
 		}
-		const int newPickup = CPickups::GenerateNewOne_WeaponType(CVector(this->pos_[0], this->pos_[1], this->pos_[2]), static_cast<eWeaponType>(this->weapon_), pickupType, ammo_, false, nullptr);
+		const int newPickup = CPickups::GenerateNewOne_WeaponType(CVector(this->pos_[0], this->pos_[1], this->pos_[2]),
+		                                                          static_cast<eWeaponType>(this->weapon_), pickupType,
+		                                                          ammo_, false, nullptr);
 		CStreaming::RemoveAllUnusedModels();
 		return newPickup;
 	}
@@ -54,13 +55,14 @@ std::optional<int> Pickup::spawnPickup(int pickupType) {
 	CStreaming::RequestModel(modelId, 0);
 	CStreaming::LoadAllRequestedModels(false);
 
-	const int newPickup = CPickups::GenerateNewOne(CVector(this->pos_[0], this->pos_[1], this->pos_[2]), modelId, pickupType, this->ammo_, 0, false, nullptr);
+	const int newPickup = CPickups::GenerateNewOne(CVector(this->pos_[0], this->pos_[1], this->pos_[2]), modelId,
+	                                               pickupType, this->ammo_, 0, false, nullptr);
 	CStreaming::RemoveAllUnusedModels();
 	return newPickup;
 }
 
-Pickup::Pickup(const char* name, const CVector& pos): ObjectiveDependent(nullptr),
-													  uuid_(boost::uuids::random_generator()()),
+Pickup::Pickup(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
+                                                      uuid_(boost::uuids::random_generator()()),
                                                       modelId_(325) {
 	strlcpy(this->name_.data(), name, sizeof this->name_);
 	this->pos_[0] = pos.x;
@@ -68,11 +70,11 @@ Pickup::Pickup(const char* name, const CVector& pos): ObjectiveDependent(nullptr
 	this->pos_[2] = pos.z;
 }
 
-Pickup::Pickup(const Pickup& other): ObjectiveDependent{other},
+Pickup::Pickup(const Pickup &other): ObjectiveDependent{other},
                                      INameable{other},
                                      IPositionable{other},
                                      IUuidable{other},
-                                     uuid_{ boost::uuids::random_generator()() },
+                                     uuid_{boost::uuids::random_generator()()},
                                      name_{other.name_},
                                      pos_{other.pos_},
                                      type_{other.type_},
@@ -83,7 +85,7 @@ Pickup::Pickup(const Pickup& other): ObjectiveDependent{other},
 	strlcat(name_.data(), "C", sizeof name_);
 }
 
-Pickup& Pickup::operator=(const Pickup& other) {
+Pickup& Pickup::operator=(const Pickup &other) {
 	if (this == &other)
 		return *this;
 	ObjectiveDependent::operator =(other);
@@ -179,9 +181,12 @@ void Pickup::spawnEditorPickup() {
 }
 
 extern bool restart;
+
 void Pickup::deleteEditorPickup() {
 	if (this->editorPickup_.has_value() && !restart) {
-		Command<Commands::REMOVE_PICKUP>(this->editorPickup_.value());
+		if (CPickups::GetActualPickupIndex(this->editorPickup_.value()) != -1) {
+			Command<Commands::REMOVE_PICKUP>(this->editorPickup_.value());
+		}
 		this->editorPickup_ = std::nullopt;
 	}
 }
@@ -204,8 +209,9 @@ void Pickup::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onPickupSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onPickupSpawn"].get_or_create<sol::table>();
-		for (auto [_, func] : onPickupSpawn) {
+		const auto onPickupSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onPickupSpawn"].
+			get_or_create<sol::table>();
+		for (auto func : onPickupSpawn | views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
@@ -216,16 +222,20 @@ void Pickup::spawnProjectEntity() {
 
 void Pickup::deleteProjectEntity() {
 	if (this->projectPickup_.has_value() && !restart) {
-		Command<Commands::REMOVE_PICKUP>(this->projectPickup_.value());
+		if (CPickups::GetActualPickupIndex(this->projectPickup_.value()) != -1) {
+			Command<Commands::REMOVE_PICKUP>(this->projectPickup_.value());
+		}
 		this->projectPickup_ = std::nullopt;
 
 		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
 		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 		if (scene.has_value() && tasklist != nullptr) {
-			const auto onPickupDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onPickupDelete"].get_or_create<sol::table>();
-			for (auto [_, func] : onPickupDelete) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+			const auto onPickupDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+				"onPickupDelete"].get_or_create<sol::table>();
+			for (auto func : onPickupDelete | views::values) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
+					valid()) {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
 				}

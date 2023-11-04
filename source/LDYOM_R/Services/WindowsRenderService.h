@@ -30,6 +30,7 @@ namespace Windows {
 
 		bool& isRenderWindows();
 		void setRenderWindows(bool renderWindows);
+		void Reset();
 
 		std::list<std::unique_ptr<AbstractWindow>>& getWindows();
 		bool& isMouseShown();

@@ -17,6 +17,10 @@ inline bool openWindowsMenu = false;
 void inline hotkeysExecute() {
 	const auto hotkey = HotKeyService::getInstance().getHotKey(true);
 
+	if (FrontEndMenuManager.m_bMenuActive) {
+		return;
+	}
+
 	static bool openPress = false;
 	static bool openFastMenu = false;
 	static bool saveHotkey = false;

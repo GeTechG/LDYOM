@@ -11,58 +11,62 @@
 #include "LuaEngine.h"
 #include "ModelsService.h"
 #include "ProjectPlayerService.h"
+#include "Scene.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "easylogging/easylogging++.h"
-#include "Scene.h"
 
 using namespace plugin;
 
-void Vehicle::recolorVehicle(const bool recolor, CVehicle* const newVehicle) {
+void Vehicle::recolorVehicle(const bool recolor, CVehicle *const newVehicle) {
 	if (recolor) {
 		colors_.clear();
-		components::extractComObjMatVehicle(newVehicle, [&] (int i, components::VehicleComponent comp, components::VehicleAtomic obj, components::VehicleMaterial mat) {
-			const CRGBA rgba = mat.getColor();
-			CRGBA color;
-			unsigned char type;
-			if (rgba.r == 0x3C && rgba.g == 0xFF && rgba.b == 0x00) {
-				color.Set(utils::getCarColorRgba(newVehicle->m_nPrimaryColor));
-				primaryColor_[0] = static_cast<float>(color.a) / 255.0f;
-				primaryColor_[1] = static_cast<float>(color.b) / 255.0f;
-				primaryColor_[2] = static_cast<float>(color.g) / 255.0f;
-				primaryColor_[3] = static_cast<float>(color.r) / 255.0f;
-				type = 0;
-			}
-			else if (rgba.r == 0xFF && rgba.g == 0x00 && rgba.b == 0xAF) {
-				color.Set(utils::getCarColorRgba(newVehicle->m_nSecondaryColor));
-				secondaryColor_[0] = static_cast<float>(color.a) / 255.0f;
-				secondaryColor_[1] = static_cast<float>(color.b) / 255.0f;
-				secondaryColor_[2] = static_cast<float>(color.g) / 255.0f;
-				secondaryColor_[3] = static_cast<float>(color.r) / 255.0f;
-				type = 1;
-			}
-			else {
-				type = 2;
-			}
-			array color_rgba{ static_cast<float>(rgba.r) / 255.0f,
-				static_cast<float>(rgba.g) / 255.0f,
-				static_cast<float>(rgba.b) / 255.0f,
-				static_cast<float>(rgba.a) / 255.0f };
-			colors_.emplace_back(type, color_rgba);
-		});
+		components::extractComObjMatVehicle(
+			newVehicle, [&](int i, components::VehicleComponent comp, components::VehicleAtomic obj,
+			                components::VehicleMaterial mat) {
+				const CRGBA rgba = mat.getColor();
+				CRGBA color;
+				unsigned char type;
+				if (rgba.r == 0x3C && rgba.g == 0xFF && rgba.b == 0x00) {
+					color.Set(utils::getCarColorRgba(newVehicle->m_nPrimaryColor));
+					primaryColor_[0] = static_cast<float>(color.a) / 255.0f;
+					primaryColor_[1] = static_cast<float>(color.b) / 255.0f;
+					primaryColor_[2] = static_cast<float>(color.g) / 255.0f;
+					primaryColor_[3] = static_cast<float>(color.r) / 255.0f;
+					type = 0;
+				} else if (rgba.r == 0xFF && rgba.g == 0x00 && rgba.b == 0xAF) {
+					color.Set(utils::getCarColorRgba(newVehicle->m_nSecondaryColor));
+					secondaryColor_[0] = static_cast<float>(color.a) / 255.0f;
+					secondaryColor_[1] = static_cast<float>(color.b) / 255.0f;
+					secondaryColor_[2] = static_cast<float>(color.g) / 255.0f;
+					secondaryColor_[3] = static_cast<float>(color.r) / 255.0f;
+					type = 1;
+				} else {
+					type = 2;
+				}
+				array color_rgba{
+					static_cast<float>(rgba.r) / 255.0f,
+					static_cast<float>(rgba.g) / 255.0f,
+					static_cast<float>(rgba.b) / 255.0f,
+					static_cast<float>(rgba.a) / 255.0f
+				};
+				colors_.emplace_back(type, color_rgba);
+			});
 	} else {
-		components::extractComObjMatVehicle(newVehicle, [&](const int i, components::VehicleComponent comp, components::VehicleAtomic obj, components::VehicleMaterial mat) {
-			const float newR = colors_.at(i).second[0],
-				newG = colors_.at(i).second[1],
-				newB = colors_.at(i).second[2],
-				newA = colors_.at(i).second[3];
-			const CRGBA old = mat.getColor();
-			if (!(static_cast<unsigned char>(floorf(newR * 255.0f)) == old.r &&
-				static_cast<unsigned char>(floorf(newG * 255.0f)) == old.g &&
-				static_cast<unsigned char>(floorf(newB * 255.0f)) == old.b &&
-				static_cast<unsigned char>(floorf(newA * 255.0f)) == old.a))
-				mat.setColor(floatColorToCRGBA(colors_[i].second));
-		});
+		components::extractComObjMatVehicle(
+			newVehicle, [&](const int i, components::VehicleComponent comp, components::VehicleAtomic obj,
+			                components::VehicleMaterial mat) {
+				const float newR = colors_.at(i).second[0],
+				            newG = colors_.at(i).second[1],
+				            newB = colors_.at(i).second[2],
+				            newA = colors_.at(i).second[3];
+				const CRGBA old = mat.getColor();
+				if (!(static_cast<unsigned char>(floorf(newR * 255.0f)) == old.r &&
+					static_cast<unsigned char>(floorf(newG * 255.0f)) == old.g &&
+					static_cast<unsigned char>(floorf(newB * 255.0f)) == old.b &&
+					static_cast<unsigned char>(floorf(newA * 255.0f)) == old.a))
+					mat.setColor(floatColorToCRGBA(colors_[i].second));
+			});
 	}
 }
 
@@ -90,8 +94,9 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 	return newVehicle;
 }
 
-Vehicle::Vehicle(const char* name, const CVector& pos, float headingAngle): ObjectiveDependent(nullptr),
-																			uuid_(boost::uuids::random_generator()()), headingAngle_(headingAngle),
+Vehicle::Vehicle(const char *name, const CVector &pos, float headingAngle): ObjectiveDependent(nullptr),
+                                                                            uuid_(boost::uuids::random_generator()()),
+                                                                            headingAngle_(headingAngle),
                                                                             modelId_(400), health_(1000),
                                                                             numberplateCity_(-1) {
 	strlcpy(this->name_, name, sizeof this->name_);
@@ -100,7 +105,7 @@ Vehicle::Vehicle(const char* name, const CVector& pos, float headingAngle): Obje
 	this->pos_[2] = pos.z;
 }
 
-Vehicle::Vehicle(const Vehicle& other): INameable{other},
+Vehicle::Vehicle(const Vehicle &other): INameable{other},
                                         IPositionable{other}, uuid_(boost::uuids::random_generator()()),
                                         headingAngle_{other.headingAngle_},
                                         modelId_{other.modelId_},
@@ -126,7 +131,7 @@ Vehicle::Vehicle(const Vehicle& other): INameable{other},
 	strlcat(numberplate_, other.numberplate_, sizeof numberplate_);
 }
 
-Vehicle& Vehicle::operator=(const Vehicle& other) {
+Vehicle& Vehicle::operator=(const Vehicle &other) {
 	if (this == &other)
 		return *this;
 	ObjectiveDependent::operator =(other);
@@ -267,23 +272,27 @@ float& Vehicle::getHeadingAngle() {
 }
 
 void Vehicle::setEditorPrimaryColor() {
-	components::extractComObjMatVehicle(this->editorVehicle_.value(), [&] (int i, components::VehicleComponent comp, components::VehicleAtomic obj, components::VehicleMaterial mat) {
-		auto &color = colors_[i];
-		if (color.first == 0) {
-			memcpy(color.second.data(), this->primaryColor_, sizeof color.second);
-			mat.setColor(floatColorToCRGBA(color.second));
-		}
-	});
+	components::extractComObjMatVehicle(this->editorVehicle_.value(),
+	                                    [&](int i, components::VehicleComponent comp, components::VehicleAtomic obj,
+	                                        components::VehicleMaterial mat) {
+		                                    auto &color = colors_[i];
+		                                    if (color.first == 0) {
+			                                    memcpy(color.second.data(), this->primaryColor_, sizeof color.second);
+			                                    mat.setColor(floatColorToCRGBA(color.second));
+		                                    }
+	                                    });
 }
 
 void Vehicle::setEditorSecondaryColor() {
-	components::extractComObjMatVehicle(this->editorVehicle_.value(), [&](int i, components::VehicleComponent comp, components::VehicleAtomic obj, components::VehicleMaterial mat) {
-		auto& color = colors_[i];
-		if (color.first == 1) {
-			memcpy(color.second.data(), this->secondaryColor_, sizeof color.second);
-			mat.setColor(floatColorToCRGBA(color.second));
-		}
-	});
+	components::extractComObjMatVehicle(this->editorVehicle_.value(),
+	                                    [&](int i, components::VehicleComponent comp, components::VehicleAtomic obj,
+	                                        components::VehicleMaterial mat) {
+		                                    auto &color = colors_[i];
+		                                    if (color.first == 1) {
+			                                    memcpy(color.second.data(), this->secondaryColor_, sizeof color.second);
+			                                    mat.setColor(floatColorToCRGBA(color.second));
+		                                    }
+	                                    });
 }
 
 void Vehicle::spawnEditorVehicle(const bool recolor) {
@@ -297,16 +306,21 @@ void Vehicle::spawnEditorVehicle(const bool recolor) {
 	this->editorVehicle_.value()->m_nPhysicalFlags.bExplosionProof = 1;
 	this->editorVehicle_.value()->m_nPhysicalFlags.bFireProof = 1;
 	this->editorVehicle_.value()->m_nPhysicalFlags.bMeleeProof = 1;
-	Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(CPools::GetVehicleRef(this->editorVehicle_.value()), 1);
+	Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(CPools::GetVehicleRef(this->editorVehicle_.value()),
+	                                                               1);
 
 	updateLocation();
 }
 
 extern bool restart;
+
 void Vehicle::deleteEditorVehicle() {
 	if (this->editorVehicle_.has_value() && !restart) {
-		int vehicleRef = CPools::GetVehicleRef(this->editorVehicle_.value());
-		Command<Commands::DELETE_CAR>(vehicleRef);
+		const auto vehicle = this->editorVehicle_.value();
+		if (CPools::ms_pVehiclePool->IsObjectValid(vehicle)) {
+			const int vehicleRef = CPools::GetVehicleRef(vehicle);
+			Command<Commands::DELETE_CAR>(vehicleRef);
+		}
 		this->editorVehicle_ = std::nullopt;
 	}
 }
@@ -323,8 +337,9 @@ void Vehicle::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].get_or_create<sol::table>();
-		for (auto [_, func] : onActorSpawn) {
+		const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].
+			get_or_create<sol::table>();
+		for (auto func : onActorSpawn | views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
@@ -335,17 +350,22 @@ void Vehicle::spawnProjectEntity() {
 
 void Vehicle::deleteProjectEntity() {
 	if (this->projectVehicle_.has_value() && !restart) {
-		int vehicleRef = CPools::GetVehicleRef(this->projectVehicle_.value());
-		Command<Commands::DELETE_CAR>(vehicleRef);
+		if (const auto vehicle = this->projectVehicle_.value(); CPools::ms_pVehiclePool->IsObjectValid(vehicle)) {
+			const int vehicleRef = CPools::GetVehicleRef(this->projectVehicle_.value());
+			Command<Commands::DELETE_CAR>(vehicleRef);
+		}
 		this->projectVehicle_ = std::nullopt;
+
 
 		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
 		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 		if (scene.has_value() && tasklist != nullptr) {
-			const auto onVehicleDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onVehicleDelete"].get_or_create<sol::table>();
+			const auto onVehicleDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+				"onVehicleDelete"].get_or_create<sol::table>();
 			for (auto [_, func] : onVehicleDelete) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
+					valid()) {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
 				}

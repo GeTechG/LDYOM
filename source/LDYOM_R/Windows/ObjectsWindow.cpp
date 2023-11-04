@@ -1,5 +1,6 @@
 ﻿#include "ObjectsWindow.h"
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include <CCamera.h>
 #include <CWorld.h>
 #include <extensions/ScriptCommands.h>

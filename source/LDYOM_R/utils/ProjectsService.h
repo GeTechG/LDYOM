@@ -12,10 +12,11 @@ private:
 
 	ProjectsService() = default;
 	~ProjectsService() = default;
-	ProjectsService(const ProjectsService&) = delete;
-	ProjectsService& operator=(ProjectsService&) = delete;
+	ProjectsService(const ProjectsService &) = delete;
+	ProjectsService& operator=(ProjectsService &) = delete;
 
-	void loadProjectData(const std::filesystem::path& projectDirectory);
+	void loadProjectData(const std::filesystem::path &projectDirectory);
+
 public:
 	static ProjectsService& getInstance() {
 		static ProjectsService instance;
