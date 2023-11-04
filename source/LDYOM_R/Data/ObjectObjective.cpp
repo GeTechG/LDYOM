@@ -4,6 +4,7 @@
 #include <CRadar.h>
 #include <extensions/ScriptCommands.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "ProjectsService.h"
 #include "strUtils.h"
@@ -12,29 +13,29 @@
 
 using namespace plugin;
 
-int ObjectObjective::spawnBlip(CObject* object) {
+int ObjectObjective::spawnBlip(CObject *object) {
 	int handle;
 	Command<Commands::ADD_BLIP_FOR_OBJECT>(object, &handle);
 	if (this->colorBlip_ != 10) {
 		CRadar::ChangeBlipColour(handle, this->colorBlip_ - 1);
-	}
-	else {
+	} else {
 		CRadar::SetBlipFriendly(handle, 1);
 	}
 	return handle;
 }
 
-void ObjectObjective::draw(Localization& local) {
-	const auto& objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
+void ObjectObjective::draw(Localization &local) {
+	const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
 	const int indexObject = utils::indexByUuid(objects, this->objectUuid_);
 
 	IncorrectHighlight(indexObject == -1, [&] {
-		utils::Combo(local.get("entities.object").c_str(), &this->objectUuid_, indexObject, static_cast<int>(objects.size()), [&objects](const int i) {
-			return objects.at(i)->getName();
-			}, [&objects](const int i) {
-				return objects.at(i)->getUuid();
-			});
-		});
+		utils::Combo(local.get("entities.object").c_str(), &this->objectUuid_, indexObject, objects.size(),
+		             [&objects](const int i) {
+			             return objects.at(i)->getName();
+		             }, [&objects](const int i) {
+			             return objects.at(i)->getUuid();
+		             });
+	});
 
 	ImGui::Separator();
 
@@ -43,11 +44,13 @@ void ObjectObjective::draw(Localization& local) {
 
 	ImGui::Separator();
 
-	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip_, local.getArray("general.color_marker_enum")))
+	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip_,
+	                 local.getArray("general.color_marker_enum")))
 		this->spawnEditorBlip();
 
 	if (indexObject != -1) {
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -58,7 +61,7 @@ void ObjectObjective::draw(Localization& local) {
 		ImGui::End();
 
 		auto position = objects.at(indexObject)->getPosition();
-		utils::controlCamera({ position[0], position[1], position[2] });
+		utils::controlCamera({position[0], position[1], position[2]});
 	}
 }
 
@@ -72,8 +75,8 @@ void ObjectObjective::close() {
 	this->removeEditorBlip();
 }
 
-ktwait ObjectObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
-	const auto& objects = scene->getObjects();
+ktwait ObjectObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
+	const auto &objects = scene->getObjects();
 	const int indexObject = utils::indexByUuid(objects, this->objectUuid_);
 
 	if (indexObject == -1) {
@@ -81,7 +84,7 @@ ktwait ObjectObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& t
 		co_return;
 	}
 
-	const auto& object = objects.at(indexObject);
+	const auto &object = objects.at(indexObject);
 
 	if (!object->getProjectObject().has_value()) {
 		setObjectiveError(result, *this, NotExists, "The entity of the object does not exist.");
@@ -106,7 +109,7 @@ ktwait ObjectObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& t
 void ObjectObjective::spawnEditorBlip() {
 	removeEditorBlip();
 
-	const auto& objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
+	const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
 	const int indexObject = utils::indexByUuid(objects, this->objectUuid_);
 
 	if (indexObject != -1 && this->colorBlip_ > 0) {

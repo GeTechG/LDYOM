@@ -4,6 +4,7 @@
 #include <CRadar.h>
 #include <extensions/ScriptCommands.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "ProjectsService.h"
 #include "strUtils.h"
@@ -12,7 +13,7 @@
 
 using namespace plugin;
 
-int VehicleObjective::spawnBlip(CVehicle* vehicle) {
+int VehicleObjective::spawnBlip(CVehicle *vehicle) {
 	int handle;
 	Command<Commands::ADD_BLIP_FOR_CAR>(vehicle, &handle);
 	if (this->colorBlip_ != 10) {
@@ -23,16 +24,17 @@ int VehicleObjective::spawnBlip(CVehicle* vehicle) {
 	return handle;
 }
 
-void VehicleObjective::draw(Localization& local) {
-	const auto& vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
+void VehicleObjective::draw(Localization &local) {
+	const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
 	const int indexVehicle = utils::indexByUuid(vehicles, this->vehicleUuid_);
 
 	IncorrectHighlight(indexVehicle == -1, [&] {
-		utils::Combo(local.get("entities.vehicle").c_str(), &this->vehicleUuid_, indexVehicle, static_cast<int>(vehicles.size()), [&vehicles](const int i) {
-			return vehicles.at(i)->getName();
-			}, [&vehicles](const int i) {
-				return vehicles.at(i)->getUuid();
-			});
+		utils::Combo(local.get("entities.vehicle").c_str(), &this->vehicleUuid_, indexVehicle, vehicles.size(),
+		             [&vehicles](const int i) {
+			             return vehicles.at(i)->getName();
+		             }, [&vehicles](const int i) {
+			             return vehicles.at(i)->getUuid();
+		             });
 	});
 
 	ImGui::Separator();
@@ -42,11 +44,13 @@ void VehicleObjective::draw(Localization& local) {
 
 	ImGui::Separator();
 
-	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip_, local.getArray("general.color_marker_enum")))
+	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip_,
+	                 local.getArray("general.color_marker_enum")))
 		this->spawnEditorBlip();
 
 	if (indexVehicle != -1) {
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -57,7 +61,7 @@ void VehicleObjective::draw(Localization& local) {
 		ImGui::End();
 
 		auto position = vehicles.at(indexVehicle)->getPosition();
-		utils::controlCamera({ position[0], position[1], position[2] });
+		utils::controlCamera({position[0], position[1], position[2]});
 	}
 }
 
@@ -71,8 +75,8 @@ void VehicleObjective::close() {
 	this->removeEditorBlip();
 }
 
-ktwait VehicleObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
-	const auto& vehicles = scene->getVehicles();
+ktwait VehicleObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
+	const auto &vehicles = scene->getVehicles();
 	const int indexVehicle = utils::indexByUuid(vehicles, this->vehicleUuid_);
 
 	if (indexVehicle == -1) {
@@ -80,7 +84,7 @@ ktwait VehicleObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& 
 		co_return;
 	}
 
-	const auto& vehicle = vehicles.at(indexVehicle);
+	const auto &vehicle = vehicles.at(indexVehicle);
 
 	if (!vehicle->getProjectVehicle().has_value()) {
 		setObjectiveError(result, *this, NotExists, "The entity of the vehicle does not exist.");
@@ -88,7 +92,7 @@ ktwait VehicleObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& 
 	}
 
 	removeProjectBlip();
-	if (this->colorBlip_ > 0) 
+	if (this->colorBlip_ > 0)
 		this->projectBlip_ = spawnBlip(vehicle->getProjectVehicle().value());
 
 	auto cp1251Text = utf8ToCp1251(this->text_.data());
@@ -105,11 +109,11 @@ ktwait VehicleObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& 
 void VehicleObjective::spawnEditorBlip() {
 	removeEditorBlip();
 
-	const auto& vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
+	const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
 	const int indexVehicle = utils::indexByUuid(vehicles, this->vehicleUuid_);
 
 	if (indexVehicle != -1 && this->colorBlip_ > 0) {
-		if (const auto ped = vehicles.at(indexVehicle)->getEditorVehicle(); ped.has_value()) 
+		if (const auto ped = vehicles.at(indexVehicle)->getEditorVehicle(); ped.has_value())
 			this->editorBlip_ = spawnBlip(ped.value());
 	}
 }

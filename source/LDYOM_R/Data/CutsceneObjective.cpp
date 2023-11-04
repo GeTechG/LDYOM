@@ -1,4 +1,5 @@
 ﻿#define NOMINMAX
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "CutsceneObjective.h"
 
 #include <CCamera.h>
@@ -10,17 +11,17 @@
 
 #include "CutsceneMutex.h"
 #include "EditByPlayerService.h"
-#include "strUtils.h"
-#include "utils.h"
 #include "imgui.h"
 #include "MathUtils.h"
 #include "ProjectsService.h"
-#include "../Windows/utilsRender.h"
+#include "strUtils.h"
 #include "tweeny.h"
+#include "utils.h"
+#include "../Windows/utilsRender.h"
 
 void CutsceneObjective::updateLocation() {
-	const CVector pos = { this->position_[0], this->position_[1], this->position_[2] };
-	CVector up = { 0.f, sinf(RAD(this->xAngle_)), cosf(RAD(this->xAngle_)) };
+	const CVector pos = {this->position_[0], this->position_[1], this->position_[2]};
+	CVector up = {0.f, sinf(RAD(this->xAngle_)), cosf(RAD(this->xAngle_))};
 	TheCamera.SetCamPositionForFixedMode(&pos, &up);
 
 	/*CVector aimPos = {
@@ -30,19 +31,20 @@ void CutsceneObjective::updateLocation() {
 	};*/
 
 	const CMatrix matrix = MathUtils::quatToMatrix(this->rotation_);
-	CVector aimPos = { matrix.right.z, matrix.up.z, matrix.at.z };
+	CVector aimPos = {matrix.right.z, matrix.up.z, matrix.at.z};
 	aimPos += pos;
 	TheCamera.TakeControlNoEntity(&aimPos, 2, 1);
 }
 
-CutsceneObjective::CutsceneObjective(const CVector& position, const CQuaternion& rotation): BaseObjective(nullptr), rotation_(rotation) {
+CutsceneObjective::CutsceneObjective(const CVector &position, const CQuaternion &rotation): BaseObjective(nullptr),
+	rotation_(rotation) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.cutscene"));
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 
 	this->position_ = {position.x, position.y, position.z};
 }
 
-void CutsceneObjective::draw(Localization& local) {
+void CutsceneObjective::draw(Localization &local) {
 	ImGui::InputText(local.get("general.text").c_str(), this->text_.data(), sizeof this->text_);
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->textTime_, 0.001f);
 
@@ -54,7 +56,7 @@ void CutsceneObjective::draw(Localization& local) {
 	});
 
 	//rotations
-	static std::array<float, 3> eularRot = { 0, 0, 0 };
+	static std::array<float, 3> eularRot = {0, 0, 0};
 	InputRotations(eularRot.data(), [&] {
 		this->rotation_.Set(0.f, RAD(eularRot[1]), RAD(eularRot[2]));
 		this->xAngle_ = eularRot[0];
@@ -62,59 +64,70 @@ void CutsceneObjective::draw(Localization& local) {
 	});
 
 	if (ImGui::Button(local.get("general.edit_manually").c_str())) {
-		EditByPlayerService::getInstance().editByPlayerCamera(this->position_.data(), &this->rotation_, this->wideScreen_, [this] {
-			this->xAngle_ = 0.f;
-			this->updateLocation();
-		});
+		EditByPlayerService::getInstance().editByPlayerCamera(this->position_.data(), &this->rotation_,
+		                                                      this->wideScreen_, [this] {
+			                                                      this->xAngle_ = 0.f;
+			                                                      this->updateLocation();
+		                                                      });
 	}
 
 	ImGui::Separator();
 
-	auto entityCombo = [&]<typename T>(const char* name, boost::uuids::uuid* uuid, std::vector<std::unique_ptr<T>>&entities) {
+	auto entityCombo = [&]<typename T>(const char *name, boost::uuids::uuid *uuid,
+	                                   std::vector<std::unique_ptr<T>> &entities) {
 		const int index = utils::indexByUuid(entities, *uuid);
 
 		IncorrectHighlight(index == -1, [&] {
-			utils::Combo(local.get(name).c_str(), uuid, index, static_cast<int>(entities.size()), [&entities](const int i) {
-				return entities.at(i)->getName();
-				}, [&entities](const int i) {
-					return entities.at(i)->getUuid();
-				});
-			});
+			utils::Combo(local.get(name).c_str(), uuid, index, static_cast<int>(entities.size()),
+			             [&entities](const int i) {
+				             return entities.at(i)->getName();
+			             }, [&entities](const int i) {
+				             return entities.at(i)->getUuid();
+			             });
+		});
 	};
 
 	ImGui::PushID("attachGroup");
-	if (ImGui::SliderInt(local.get("cutscene_objective.attach").c_str(), &this->attachType_, 0, 3, local.getArray("cutscene_objective.attach_types")[this->attachType_].c_str()))
+	if (ImGui::SliderInt(local.get("cutscene_objective.attach").c_str(), &this->attachType_, 0, 3,
+	                     local.getArray("cutscene_objective.attach_types")[this->attachType_].c_str()))
 		this->attachUuid_ = boost::uuids::uuid{};
 
 	switch (this->attachType_) {
-		case 1:
-			entityCombo("entities.actor", &this->attachUuid_, ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors());
-			break;
-		case 2:
-			entityCombo("entities.vehicle", &this->attachUuid_, ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles());
-			break;
-		case 3:
-			entityCombo("entities.object", &this->attachUuid_, ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects());
-			break;
-		default: break;
+	case 1:
+		entityCombo("entities.actor", &this->attachUuid_,
+		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors());
+		break;
+	case 2:
+		entityCombo("entities.vehicle", &this->attachUuid_,
+		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles());
+		break;
+	case 3:
+		entityCombo("entities.object", &this->attachUuid_,
+		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects());
+		break;
+	default: break;
 	}
 	ImGui::PopID();
 
 	ImGui::PushID("followGroup");
-	if (ImGui::SliderInt(local.get("cutscene_objective.follow").c_str(), &this->followType_, 0, 3, local.getArray("cutscene_objective.follow_types")[this->followType_].c_str()))
+	if (ImGui::SliderInt(local.get("cutscene_objective.follow").c_str(), &this->followType_, 0, 3,
+	                     local.getArray("cutscene_objective.follow_types")[this->followType_].c_str()))
 		this->followUuid_ = boost::uuids::uuid{};
 
 	switch (this->followType_) {
-		case 1:
-			entityCombo("entities.actor", &this->followUuid_, ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors());
-			break;
-		case 2:
-			entityCombo("entities.vehicle", &this->followUuid_, ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles());
-			break;
-		case 3:
-			entityCombo("entities.object", &this->followUuid_, ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects());
-			break;
-		default: break;
+	case 1:
+		entityCombo("entities.actor", &this->followUuid_,
+		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors());
+		break;
+	case 2:
+		entityCombo("entities.vehicle", &this->followUuid_,
+		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles());
+		break;
+	case 3:
+		entityCombo("entities.object", &this->followUuid_,
+		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects());
+		break;
+	default: break;
 	}
 	ImGui::PopID();
 
@@ -157,7 +170,8 @@ void CutsceneObjective::draw(Localization& local) {
 	utils::ToggleButton(local.get("cutscene_objective.lock_player_control").c_str(), &this->lockPlayerControl_);
 	utils::ToggleButton(local.get("cutscene_objective.asynchronous").c_str(), &this->async_);
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -190,8 +204,7 @@ void CutsceneObjective::draw(Localization& local) {
 			res.Multiply(this->rotation_, temp);
 			this->rotation_ = res;
 			this->updateLocation();
-		}
-		else if (plugin::KeyPressed(VK_RIGHT)) {
+		} else if (plugin::KeyPressed(VK_RIGHT)) {
 			CQuaternion temp;
 			temp.Set(0.f, RAD(1), 0.f);
 			CQuaternion res;
@@ -203,15 +216,14 @@ void CutsceneObjective::draw(Localization& local) {
 		if (plugin::KeyPressed('Q')) {
 			this->xAngle_ += 1.f;
 			this->updateLocation();
-		}
-		else if (plugin::KeyPressed('E')) {
+		} else if (plugin::KeyPressed('E')) {
 			this->xAngle_ += -1.f;
 			this->updateLocation();
 		}
 	}
 }
 
-ktwait CutsceneObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
+ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
 	using namespace plugin;
 
 	while (CutsceneMutex::isLocked()) {
@@ -223,7 +235,7 @@ ktwait CutsceneObjective::execute(Scene* scene, Result& result, ktcoro_tasklist&
 	if (lockPlayerControl)
 		Command<Commands::SET_PLAYER_CONTROL>(0, 0);
 
-	CEntity* targetAttach = nullptr;
+	CEntity *targetAttach = nullptr;
 	int indexAttach = -1;
 	CVector targetPositionOffset = {0.f, 0.f, 0.f};
 	CQuaternion targetOffsetRotation;
@@ -235,9 +247,15 @@ ktwait CutsceneObjective::execute(Scene* scene, Result& result, ktcoro_tasklist&
 			if (indexAttach != -1) {
 				if (const auto ped = scene->getActors().at(indexAttach)->getProjectPed(); ped.has_value()) {
 					targetAttach = ped.value();
-					targetPositionOffset = { this->position_[0] - scene->getActors().at(indexAttach)->getPosition()[0], this->position_[1] - scene->getActors().at(indexAttach)->getPosition()[1], this->position_[2] - scene->getActors().at(indexAttach)->getPosition()[2] };
-					auto m = MathUtils::matrixFromEular(RAD(-scene->getActors().at(indexAttach)->getHeadingAngle()), 0.f, 0.f);
-					rotateVec2(targetPositionOffset.x, targetPositionOffset.y, -scene->getActors().at(indexAttach)->getHeadingAngle());
+					targetPositionOffset = {
+						this->position_[0] - scene->getActors().at(indexAttach)->getPosition()[0],
+						this->position_[1] - scene->getActors().at(indexAttach)->getPosition()[1],
+						this->position_[2] - scene->getActors().at(indexAttach)->getPosition()[2]
+					};
+					auto m = MathUtils::matrixFromEular(
+						RAD(-scene->getActors().at(indexAttach)->getHeadingAngle()), 0.f, 0.f);
+					rotateVec2(targetPositionOffset.x, targetPositionOffset.y,
+					           -scene->getActors().at(indexAttach)->getHeadingAngle());
 					targetOffsetRotation = MathUtils::multiply(this->rotation_, MathUtils::matrixToQuat(m));
 				}
 			}
@@ -245,11 +263,18 @@ ktwait CutsceneObjective::execute(Scene* scene, Result& result, ktcoro_tasklist&
 		case 2:
 			indexAttach = utils::indexByUuid(scene->getVehicles(), this->attachUuid_);
 			if (indexAttach != -1) {
-				if (const auto vehicle = scene->getVehicles().at(indexAttach)->getProjectVehicle(); vehicle.has_value()) {
+				if (const auto vehicle = scene->getVehicles().at(indexAttach)->getProjectVehicle(); vehicle.
+					has_value()) {
 					targetAttach = vehicle.value();
-					targetPositionOffset = { this->position_[0] - scene->getVehicles().at(indexAttach)->getPosition()[0], this->position_[1] - scene->getVehicles().at(indexAttach)->getPosition()[1], this->position_[2] - scene->getVehicles().at(indexAttach)->getPosition()[2] };
-					auto m = MathUtils::matrixFromEular(0.f, RAD(-scene->getVehicles().at(indexAttach)->getHeadingAngle()), 0.f);
-					rotateVec2(targetPositionOffset.x, targetPositionOffset.y, -scene->getVehicles().at(indexAttach)->getHeadingAngle());
+					targetPositionOffset = {
+						this->position_[0] - scene->getVehicles().at(indexAttach)->getPosition()[0],
+						this->position_[1] - scene->getVehicles().at(indexAttach)->getPosition()[1],
+						this->position_[2] - scene->getVehicles().at(indexAttach)->getPosition()[2]
+					};
+					auto m = MathUtils::matrixFromEular(
+						0.f, RAD(-scene->getVehicles().at(indexAttach)->getHeadingAngle()), 0.f);
+					rotateVec2(targetPositionOffset.x, targetPositionOffset.y,
+					           -scene->getVehicles().at(indexAttach)->getHeadingAngle());
 					targetOffsetRotation = MathUtils::multiply(this->rotation_, MathUtils::matrixToQuat(m));
 				}
 			}
@@ -259,7 +284,11 @@ ktwait CutsceneObjective::execute(Scene* scene, Result& result, ktcoro_tasklist&
 			if (indexAttach != -1) {
 				if (const auto object = scene->getObjects().at(indexAttach)->getProjectObject(); object.has_value()) {
 					targetAttach = object.value();
-					targetPositionOffset = { this->position_[0] - scene->getObjects().at(indexAttach)->getPosition()[0], this->position_[1] - scene->getObjects().at(indexAttach)->getPosition()[1], this->position_[2] - scene->getObjects().at(indexAttach)->getPosition()[2] };
+					targetPositionOffset = {
+						this->position_[0] - scene->getObjects().at(indexAttach)->getPosition()[0],
+						this->position_[1] - scene->getObjects().at(indexAttach)->getPosition()[1],
+						this->position_[2] - scene->getObjects().at(indexAttach)->getPosition()[2]
+					};
 					auto q = scene->getObjects().at(indexAttach)->getRotations();
 					q.Conjugate();
 					MathUtils::multiply(MathUtils::quatToMatrix(q), targetPositionOffset);
@@ -282,7 +311,7 @@ ktwait CutsceneObjective::execute(Scene* scene, Result& result, ktcoro_tasklist&
 		}
 	}
 
-	CEntity* targetFollow = nullptr;
+	CEntity *targetFollow = nullptr;
 	int indexFollow = -1;
 
 	if (this->followType_ > 0) {
@@ -333,22 +362,35 @@ ktwait CutsceneObjective::execute(Scene* scene, Result& result, ktcoro_tasklist&
 	CTheScripts::bDisplayHud = false;
 	CHud::bScriptDontDisplayRadar = true;
 
-	static auto task = [](CutsceneObjective* cutscene, CVector targetPositionOffset, CQuaternion targetOffsetRotation, CEntity* targetFollow, CEntity* targetAttach) -> ktwait {
+	static auto task = [](CutsceneObjective *cutscene, CVector targetPositionOffset, CQuaternion targetOffsetRotation,
+	                      CEntity *targetFollow, CEntity *targetAttach) -> ktwait {
 		CutsceneMutexGuard guard;
 		CVector startPos = TheCamera.m_mCameraMatrix.pos;
 		float startUp = atan2f(TheCamera.m_vecFixedModeUpOffSet.x, TheCamera.m_vecFixedModeUpOffSet.z);
 
-		CQuaternion startRotation = MathUtils::lookRotationQuat({ TheCamera.m_mMatInverse.right.y, TheCamera.m_mMatInverse.up.y, TheCamera.m_mMatInverse.at.y }, { 0.f, 0.f, 1.f });
+		CQuaternion startRotation = MathUtils::lookRotationQuat({
+			                                                        TheCamera.m_mMatInverse.right.y,
+			                                                        TheCamera.m_mMatInverse.up.y,
+			                                                        TheCamera.m_mMatInverse.at.y
+		                                                        }, {0.f, 0.f, 1.f});
 
-		auto tweenPositionX = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).via(static_cast<tweeny::easing::enumerated>(cutscene->getPositionXInterpolationType()));
-		auto tweenPositionY = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).via(static_cast<tweeny::easing::enumerated>(cutscene->getPositionYInterpolationType()));
-		auto tweenPositionZ = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).via(static_cast<tweeny::easing::enumerated>(cutscene->getPositionZInterpolationType()));
-		auto tweenRotation = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).via(static_cast<tweeny::easing::enumerated>(cutscene->getRotationInterpolationType()));
+		auto tweenPositionX = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).
+		                                        via(static_cast<tweeny::easing::enumerated>(cutscene->
+			                                        getPositionXInterpolationType()));
+		auto tweenPositionY = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).
+		                                        via(static_cast<tweeny::easing::enumerated>(cutscene->
+			                                        getPositionYInterpolationType()));
+		auto tweenPositionZ = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).
+		                                        via(static_cast<tweeny::easing::enumerated>(cutscene->
+			                                        getPositionZInterpolationType()));
+		auto tweenRotation = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).
+		                                       via(static_cast<tweeny::easing::enumerated>(cutscene->
+			                                       getRotationInterpolationType()));
 
 		auto lastTime = std::chrono::high_resolution_clock::now();
 
 		if (cutscene->isStartFadeOut())
-			plugin::Command<plugin::Commands::DO_FADE>(static_cast<int>(cutscene->getStartFadeOutTime() * 1000.f), 1);
+			plugin::Command<Commands::DO_FADE>(static_cast<int>(cutscene->getStartFadeOutTime() * 1000.f), 1);
 
 		bool useEndFadeIn = false;
 
@@ -357,54 +399,57 @@ ktwait CutsceneObjective::execute(Scene* scene, Result& result, ktcoro_tasklist&
 		CVector endPos;
 
 		while (true) {
-
 			if (tweenPositionX.progress() >= 1.f) {
 				break;
 			}
 
-			const unsigned delta = static_cast<unsigned>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastTime).count());
+			const unsigned delta = static_cast<unsigned>(std::chrono::duration_cast<std::chrono::milliseconds>(
+				std::chrono::high_resolution_clock::now() - lastTime).count());
 			lastTime = std::chrono::high_resolution_clock::now();
-			CVector stepPosition = { tweenPositionX.peek(), tweenPositionY.peek(), tweenPositionZ.peek() };
+			CVector stepPosition = {tweenPositionX.peek(), tweenPositionY.peek(), tweenPositionZ.peek()};
 			auto stepRotation = tweenRotation.peek();
 			if (!FrontEndMenuManager.m_bMenuActive) {
-				stepPosition = { tweenPositionX.step(delta), tweenPositionY.step(delta), tweenPositionZ.step(delta) };
+				stepPosition = {tweenPositionX.step(delta), tweenPositionY.step(delta), tweenPositionZ.step(delta)};
 				stepRotation = tweenRotation.step(delta);
 			}
-			if (static_cast<tweeny::easing::enumerated>(cutscene->getPositionXInterpolationType()) == tweeny::easing::enumerated::stepped)
+			if (static_cast<tweeny::easing::enumerated>(cutscene->getPositionXInterpolationType()) ==
+				tweeny::easing::enumerated::stepped)
 				stepPosition.x = 1.f;
-			if (static_cast<tweeny::easing::enumerated>(cutscene->getPositionYInterpolationType()) == tweeny::easing::enumerated::stepped)
+			if (static_cast<tweeny::easing::enumerated>(cutscene->getPositionYInterpolationType()) ==
+				tweeny::easing::enumerated::stepped)
 				stepPosition.y = 1.f;
-			if (static_cast<tweeny::easing::enumerated>(cutscene->getPositionZInterpolationType()) == tweeny::easing::enumerated::stepped)
+			if (static_cast<tweeny::easing::enumerated>(cutscene->getPositionZInterpolationType()) ==
+				tweeny::easing::enumerated::stepped)
 				stepPosition.z = 1.f;
-			if (static_cast<tweeny::easing::enumerated>(cutscene->getRotationInterpolationType()) == tweeny::easing::enumerated::stepped)
+			if (static_cast<tweeny::easing::enumerated>(cutscene->getRotationInterpolationType()) ==
+				tweeny::easing::enumerated::stepped)
 				stepRotation = 1.f;
 
 
-			
 			float endUp;
 			CQuaternion endRotation;
 
 			if (cutscene->getAttachType() > 0) {
 				endPos = targetPositionOffset;
 				endRotation = targetOffsetRotation;
-			}
-			else {
-				endPos = { cutscene->getPosition()[0], cutscene->getPosition()[1], cutscene->getPosition()[2] };
+			} else {
+				endPos = {cutscene->getPosition()[0], cutscene->getPosition()[1], cutscene->getPosition()[2]};
 				endRotation = cutscene->getRotation();
 			}
 
 			endUp = RAD(cutscene->getXAngle());
 
 			if (cutscene->isInterpolation() && cutscene->getAttachType() == 0) {
-				auto currentPos = MathUtils::multiply(startPos, CVector(1.f, 1.f, 1.f) - stepPosition) + MathUtils::multiply(endPos, stepPosition);
+				auto currentPos = MathUtils::multiply(startPos, CVector(1.f, 1.f, 1.f) - stepPosition) +
+					MathUtils::multiply(endPos, stepPosition);
 
 				auto currentUpAngle = startUp * (1.f - stepRotation) + endUp * stepRotation;
-				CVector currentUp = { sinf(currentUpAngle), 0.f, cosf(currentUpAngle) };
+				CVector currentUp = {sinf(currentUpAngle), 0.f, cosf(currentUpAngle)};
 
 				if (targetFollow != nullptr) {
 					auto lookAt = targetFollow->GetPosition() - currentPos;
 					lookAt.Normalise();
-					endRotation = MathUtils::lookRotationQuat(lookAt, { 0.f, 0.f, 1.f });
+					endRotation = MathUtils::lookRotationQuat(lookAt, {0.f, 0.f, 1.f});
 				}
 
 				auto currentRotation = MathUtils::slerp(startRotation, endRotation, stepRotation, 0);
@@ -412,34 +457,31 @@ ktwait CutsceneObjective::execute(Scene* scene, Result& result, ktcoro_tasklist&
 				TheCamera.SetCamPositionForFixedMode(&currentPos, &currentUp);
 
 				const CMatrix matrix = MathUtils::quatToMatrix(currentRotation);
-				aimPos = { matrix.right.z, matrix.up.z, matrix.at.z };
+				aimPos = {matrix.right.z, matrix.up.z, matrix.at.z};
 				aimPos += currentPos;
 				TheCamera.TakeControlNoEntity(&aimPos, 2, 1);
-
-			}
-			else {
-
+			} else {
 				const CMatrix matrix = MathUtils::quatToMatrix(endRotation);
-				aimPos = { matrix.right.z, matrix.up.z, matrix.at.z };
+				aimPos = {matrix.right.z, matrix.up.z, matrix.at.z};
 
 				if (cutscene->getAttachType() > 0) {
 					TheCamera.TakeControlAttachToEntity(targetFollow, targetAttach, &endPos, &aimPos, endUp, 2, 1);
-				}
-				else {
-					up = { sinf(endUp), 0.f, cosf(endUp) };
+				} else {
+					up = {sinf(endUp), 0.f, cosf(endUp)};
 					TheCamera.SetCamPositionForFixedMode(&endPos, &up);
 
 					aimPos += endPos;
 
 					if (targetFollow != nullptr)
-						TheCamera.TakeControl(targetFollow, eCamMode::MODE_FIXED, 2, 1);
+						TheCamera.TakeControl(targetFollow, MODE_FIXED, 2, 1);
 					else
 						TheCamera.TakeControlNoEntity(&aimPos, 2, 1);
 				}
 			}
 
-			if (tweenPositionX.progress() * cutscene->getTextTime() >= cutscene->getTextTime() - cutscene->getEndFadeInTime() && !useEndFadeIn && cutscene->isEndFadeIn()) {
-				plugin::Command<plugin::Commands::DO_FADE>(static_cast<int>(cutscene->getEndFadeInTime() * 1000.f), 0);
+			if (tweenPositionX.progress() * cutscene->getTextTime() >= cutscene->getTextTime() - cutscene->
+				getEndFadeInTime() && !useEndFadeIn && cutscene->isEndFadeIn()) {
+				plugin::Command<Commands::DO_FADE>(static_cast<int>(cutscene->getEndFadeInTime() * 1000.f), 0);
 				useEndFadeIn = true;
 			}
 

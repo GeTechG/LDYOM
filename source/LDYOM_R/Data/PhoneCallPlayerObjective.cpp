@@ -4,17 +4,17 @@
 #include <CStreaming.h>
 #include <extensions/ScriptCommands.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "strUtils.h"
 #include "utils.h"
 
-PhoneCallPlayerObjective::PhoneCallPlayerObjective(void* _new): BaseObjective(_new) {
+PhoneCallPlayerObjective::PhoneCallPlayerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.phone_call_player"));
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void PhoneCallPlayerObjective::draw(Localization& local) {
-
+void PhoneCallPlayerObjective::draw(Localization &local) {
 	if (ImGui::Button(local.get("general.add").c_str()))
 		this->dialogs_.emplace_back();
 
@@ -41,7 +41,7 @@ void PhoneCallPlayerObjective::draw(Localization& local) {
 	ImGui::BeginChild("##dialogs_list", ImVec2(ImGui::GetFontSize() * 20.f, ImGui::GetFontSize() * 24.f));
 	for (int d = 0; d < this->dialogs_.size(); d++) {
 		if (ImGui::TreeNode(std::to_string(d).c_str())) {
-			auto& dialog = this->dialogs_[d];
+			auto &dialog = this->dialogs_[d];
 			ImGui::InputText(local.get("general.text").c_str(), dialog.text.data(), dialog.text.size());
 			ImGui::InputFloat(local.get("general.time").c_str(), &dialog.textTime);
 			utils::ToggleButton(local.get("general.move_mouth").c_str(), &dialog.moveMouth);
@@ -51,7 +51,7 @@ void PhoneCallPlayerObjective::draw(Localization& local) {
 	ImGui::EndChild();
 }
 
-ktwait PhoneCallPlayerObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
+ktwait PhoneCallPlayerObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
 	using namespace plugin;
 	using namespace std::chrono;
 
@@ -65,7 +65,7 @@ ktwait PhoneCallPlayerObjective::execute(Scene* scene, Result& result, ktcoro_ta
 		auto cp1251Text = utf8ToCp1251(dialog.text.data());
 		gxtEncode(cp1251Text);
 		strlcpy(dialog.gameText.data(), cp1251Text.c_str(), sizeof dialog.gameText);
-		if (dialog.moveMouth) 
+		if (dialog.moveMouth)
 			Command<Commands::START_CHAR_FACIAL_TALK>(static_cast<CPed*>(FindPlayerPed()), -1);
 		CMessages::AddMessageJumpQ(dialog.gameText.data(), static_cast<unsigned>(dialog.textTime * 1000.f), 0, false);
 		co_await milliseconds(static_cast<long long>(dialog.textTime * 1000.f));

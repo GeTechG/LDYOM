@@ -2,17 +2,17 @@
 
 #include "fa.h"
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "ModelsService.h"
 #include "utils.h"
 #include "fmt/core.h"
 #include "Localization/Localization.h"
-#include "imgui_stdlib.h"
 
 std::optional<ModelRenderer> ObjectSelectorPopup::renderer_{};
 
 IconObject::IconObject(std::unique_ptr<Texture> texture) : baseTexture_(std::move(texture)) {}
 
-IconObject::IconObject(RwTexture* texture) : textureRW(texture) {}
+IconObject::IconObject(RwTexture *texture) : textureRW(texture) {}
 
 IDirect3DTexture9* IconObject::getTexture() const {
 	if (this->baseTexture_)
@@ -38,12 +38,13 @@ void ObjectSelectorPopup::open() {
 	ImGui::OpenPopup(Localization::getInstance().get("object_selector.title").c_str());
 }
 
-void ObjectSelectorPopup::drawTags(const float blockWidth, std::map<int, ObjectInfo>& models) {
-	auto& local = Localization::getInstance();
+void ObjectSelectorPopup::drawTags(const float blockWidth, std::map<int, ObjectInfo> &models) {
+	auto &local = Localization::getInstance();
 
 	ImGui::BeginGroup();
 	ImGui::Text(local.get("object_selector.tags").c_str());
-	if (ImGui::BeginChild("##ObjectsTags", ImVec2(blockWidth, -(ImGui::GetFontSize() + 4.f + ImGui::GetStyle().ItemSpacing.y * 2.0f)))) {
+	if (ImGui::BeginChild("##ObjectsTags",
+	                      ImVec2(blockWidth, -(ImGui::GetFontSize() + 4.f + ImGui::GetStyle().ItemSpacing.y * 2.0f)))) {
 		const float maxBlockX = ImGui::GetCursorScreenPos().x + blockWidth - ImGui::GetStyle().ItemSpacing.x * 4.0f;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, ImGui::GetFontSize() / 4.0f);
@@ -55,7 +56,8 @@ void ObjectSelectorPopup::drawTags(const float blockWidth, std::map<int, ObjectI
 			auto str = fmt::format(" {} {}", ICON_FA_TAG, local.get(objectModelTag.name));
 
 			const float lastButtonX2 = ImGui::GetItemRectMax().x;
-			const float nextButtonX2 = lastButtonX2 + ImGui::GetStyle().ItemSpacing.x + ImGui::CalcTextSize(str.c_str()).x + ImGui::GetStyle().FramePadding.x * 2.0f; // Expected position if next button was on same line
+			const float nextButtonX2 = lastButtonX2 + ImGui::GetStyle().ItemSpacing.x + ImGui::CalcTextSize(str.c_str())
+				.x + ImGui::GetStyle().FramePadding.x * 2.0f; // Expected position if next button was on same line
 			if (i > 0 && nextButtonX2 < maxBlockX)
 				ImGui::SameLine();
 
@@ -79,7 +81,8 @@ void ObjectSelectorPopup::drawTags(const float blockWidth, std::map<int, ObjectI
 	}
 
 	ImGui::SetNextItemWidth(blockWidth - 25.0f - ImGui::GetStyle().ItemSpacing.x);
-	ImGui::InputTextWithHint("##newTagInput", local.get("object_selector.name_new_tag_hint").c_str(), this->newTagName_, sizeof this->newTagName_);
+	ImGui::InputTextWithHint("##newTagInput", local.get("object_selector.name_new_tag_hint").c_str(), this->newTagName_,
+	                         sizeof this->newTagName_);
 	ImGui::SameLine();
 	ImGui::BeginDisabled(strlen(this->newTagName_) == 0);
 	if (ImGui::Button(ICON_FA_PLUS, ImVec2(25.0f, .0f))) {
@@ -92,16 +95,17 @@ void ObjectSelectorPopup::drawTags(const float blockWidth, std::map<int, ObjectI
 	ImGui::EndGroup();
 }
 
-ImGuiTreeNodeFlags baseFlagsTreeNode = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+ImGuiTreeNodeFlags baseFlagsTreeNode = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
+	ImGuiTreeNodeFlags_SpanAvailWidth;
 
-void ObjectSelectorPopup::drawNode(const std::vector<ObjectModelCategory>& models, int parent_id, bool isParentSelect) {
-	auto& local = Localization::getInstance();
+void ObjectSelectorPopup::drawNode(const std::vector<ObjectModelCategory> &models, int parent_id, bool isParentSelect) {
+	auto &local = Localization::getInstance();
 
-	for (const auto& modelCategory : models) {
+	for (const auto &modelCategory : models) {
 		if (modelCategory.parentId == parent_id) {
-			auto iterator = std::ranges::find_if(models, [&modelCategory](const ObjectModelCategory& model) {
+			auto iterator = std::ranges::find_if(models, [&modelCategory](const ObjectModelCategory &model) {
 				return model.parentId == modelCategory.id;
-				});
+			});
 
 			auto flags = baseFlagsTreeNode;
 
@@ -117,8 +121,7 @@ void ObjectSelectorPopup::drawNode(const std::vector<ObjectModelCategory>& model
 			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
 				if (isSelectedNode) {
 					this->selectedCategories_.erase(modelCategory.id);
-				}
-				else {
+				} else {
 					this->selectedCategories_.emplace(modelCategory.id);
 				}
 				isSelectedNode = !isSelectedNode;
@@ -128,13 +131,12 @@ void ObjectSelectorPopup::drawNode(const std::vector<ObjectModelCategory>& model
 				drawNode(models, modelCategory.id, isSelectedNode);
 				ImGui::TreePop();
 			}
-
 		}
 	}
 }
 
 void ObjectSelectorPopup::drawCategories(const float blockWidth) {
-	auto& local = Localization::getInstance();
+	auto &local = Localization::getInstance();
 
 	ImGui::BeginGroup();
 	ImGui::Text(local.get("object_selector.categories").c_str());
@@ -154,13 +156,13 @@ void ObjectSelectorPopup::drawBehaviors(const float blockWidth) {
 	ImGui::BeginGroup();
 	ImGui::Text(local.get("object_selector.behaviors").c_str());
 	if (ImGui::BeginChild("##ObjectsBehaviour", ImVec2(blockWidth, 0.f))) {
-		auto drawBehaviourRadio = [&local](const char* icon, const char* description, int* v) {
+		auto drawBehaviourRadio = [&local](const char *icon, const char *description, int *v) {
 			const float dummy = (25.0f - ImGui::CalcTextSize(icon).x) / 2.0f;
 			ImGui::PushID(icon);
 			ImGui::Dummy(ImVec2(dummy, .0f));
 			ImGui::SameLine();
 			ImGui::Text(icon);
-			if (ImGui::IsItemHovered()) 
+			if (ImGui::IsItemHovered())
 				ImGui::SetTooltip(description);
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(dummy, .0f));
@@ -173,9 +175,12 @@ void ObjectSelectorPopup::drawBehaviors(const float blockWidth) {
 			ImGui::PopID();
 		};
 
-		drawBehaviourRadio(ICON_FA_OBJECT_UNGROUP, local.get("object_selector.collision").c_str(), &this->objectBehaviourHasCollision);
-		drawBehaviourRadio(ICON_FA_FRAGILE, local.get("object_selector.destroy_by_hit").c_str(), &this->objectBehaviourDestroyByHit);
-		drawBehaviourRadio(ICON_FA_CLOCK, local.get("object_selector.see_by_time").c_str(), &this->objectBehaviourSeeByTime);
+		drawBehaviourRadio(ICON_FA_OBJECT_UNGROUP, local.get("object_selector.collision").c_str(),
+		                   &this->objectBehaviourHasCollision);
+		drawBehaviourRadio(ICON_FA_FRAGILE, local.get("object_selector.destroy_by_hit").c_str(),
+		                   &this->objectBehaviourDestroyByHit);
+		drawBehaviourRadio(ICON_FA_CLOCK, local.get("object_selector.see_by_time").c_str(),
+		                   &this->objectBehaviourSeeByTime);
 
 		ImGui::EndChild();
 	}
@@ -183,9 +188,11 @@ void ObjectSelectorPopup::drawBehaviors(const float blockWidth) {
 }
 
 std::optional<ModelRenderer> rendererPreviewModel;
-void renderPreviewObject(int model, RwTexture** texture) {
+
+void renderPreviewObject(int model, RwTexture **texture) {
 	if (!rendererPreviewModel.has_value()) {
-		rendererPreviewModel = ModelRenderer(CVector(-10.0f, 0, -135.0f), static_cast<int>(ImGui::GetFontSize() * 16.f));
+		rendererPreviewModel = ModelRenderer(CVector(-10.0f, 0, -135.0f),
+		                                     static_cast<int>(ImGui::GetFontSize() * 16.f));
 		rendererPreviewModel.value().init();
 	}
 	rendererPreviewModel.value().render(model, texture);
@@ -197,28 +204,29 @@ void updateModelTag(int model) {
 	modelTags = ModelsService::getInstance().getModelTags(model);
 }
 
-void ObjectSelectorPopup::drawPreviewObject(ObjectInfo& info) {
+void ObjectSelectorPopup::drawPreviewObject(ObjectInfo &info) {
 	auto &local = Localization::getInstance();
 
 	static std::string newTitleName;
 
-	if (ImGui::BeginPopupModal("##previewModel", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
-
-
+	if (ImGui::BeginPopupModal("##previewModel", nullptr,
+	                           ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
 		if (!this->renderedPreviewModel) {
 			renderPreviewObject(this->selectedObjectModel, &this->previewObjectModel);
-			
+
 			this->renderedPreviewModel = true;
 		}
 
 		if (this->previewObjectModel) {
-			const auto texture9 = *reinterpret_cast<IDirect3DTexture9**>(this->previewObjectModel->raster + 1); 
+			const auto texture9 = *reinterpret_cast<IDirect3DTexture9**>(this->previewObjectModel->raster + 1);
 			ImGui::ImageButton(texture9, ImVec2(256.f, 256.f));
 			if (ImGui::IsItemHovered()) {
 				if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
 					this->renderedPreviewModel = false;
-					rendererPreviewModel.value().getRotateModel().z += ImGui::GetMouseDragDelta(ImGuiMouseButton_Left).x;
-					rendererPreviewModel.value().getRotateModel().x -= ImGui::GetMouseDragDelta(ImGuiMouseButton_Left).y;
+					rendererPreviewModel.value().getRotateModel().z += ImGui::GetMouseDragDelta(ImGuiMouseButton_Left).
+						x;
+					rendererPreviewModel.value().getRotateModel().x -= ImGui::GetMouseDragDelta(ImGuiMouseButton_Left).
+						y;
 					ImGui::ResetMouseDragDelta();
 				}
 				if (abs(ImGui::GetIO().MouseWheel) > FLT_EPSILON) {
@@ -229,25 +237,36 @@ void ObjectSelectorPopup::drawPreviewObject(ObjectInfo& info) {
 			ImGui::SameLine();
 			ImGui::BeginGroup();
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 32.f);
-			ImGui::Text(fmt::format("{}: {}", local.get("object_selector.title_name"), local.get(info.titleName)).c_str());
+			ImGui::Text(
+				fmt::format("{}: {}", local.get("object_selector.title_name"), local.get(info.titleName)).c_str());
 			ImGui::SameLine();
 			if (ImGui::Button(ICON_FA_EDIT, ImVec2(ImGui::GetFontSize() * 1.2f, ImGui::GetFontSize() * 1.2f))) {
 				newTitleName = local.get(info.titleName);
 				ImGui::OpenPopup("##editTitleName");
 			}
-				
+
 
 			ImGui::Text(fmt::format("{}: {}", local.get("object_selector.model_id"), info.modelId).c_str());
 			ImGui::Text(fmt::format("{}: {}", local.get("object_selector.model_name"), info.modelName).c_str());
 
-			ImGui::Text(fmt::format("{}: {}", local.get("object_selector.collision"), info.hasCollision ? local.get("object_selector.beh_yes") : local.get("object_selector.beh_no")).c_str());
-			ImGui::Text(fmt::format("{}: {}", local.get("object_selector.destroy_by_hit"), info.isDestroyByHit ? local.get("object_selector.beh_yes") : local.get("object_selector.beh_no")).c_str());
-			ImGui::Text(fmt::format("{}: {}", local.get("object_selector.see_by_time"), info.seeByTime ? local.get("object_selector.beh_yes") : local.get("object_selector.beh_no")).c_str());
+			ImGui::Text(fmt::format("{}: {}", local.get("object_selector.collision"),
+			                        info.hasCollision
+				                        ? local.get("object_selector.beh_yes")
+				                        : local.get("object_selector.beh_no")).c_str());
+			ImGui::Text(fmt::format("{}: {}", local.get("object_selector.destroy_by_hit"),
+			                        info.isDestroyByHit
+				                        ? local.get("object_selector.beh_yes")
+				                        : local.get("object_selector.beh_no")).c_str());
+			ImGui::Text(fmt::format("{}: {}", local.get("object_selector.see_by_time"),
+			                        info.seeByTime
+				                        ? local.get("object_selector.beh_yes")
+				                        : local.get("object_selector.beh_no")).c_str());
 
 			ImGui::PopTextWrapPos();
 
-			if (ImGui::BeginChild("##SelectedTags", ImVec2(ImGui::GetFontSize() * 16.f, ImGui::GetFontSize() * 6.5f), true)) {
-				const auto & tags = ModelsService::getInstance().getObjectModelTags();
+			if (ImGui::BeginChild("##SelectedTags", ImVec2(ImGui::GetFontSize() * 16.f, ImGui::GetFontSize() * 6.5f),
+			                      true)) {
+				const auto &tags = ModelsService::getInstance().getObjectModelTags();
 				for (const auto &tag : tags) {
 					bool v = modelTags.contains(tag.id);
 					if (ImGui::Checkbox(local.get(tag.name).c_str(), &v)) {
@@ -262,11 +281,13 @@ void ObjectSelectorPopup::drawPreviewObject(ObjectInfo& info) {
 			}
 			ImGui::EndChild();
 			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 16.f - 25.0f - ImGui::GetStyle().ItemSpacing.x);
-			ImGui::InputTextWithHint("##newTagInput", local.get("object_selector.name_new_tag_hint").c_str(), this->newTagName_, sizeof this->newTagName_);
+			ImGui::InputTextWithHint("##newTagInput", local.get("object_selector.name_new_tag_hint").c_str(),
+			                         this->newTagName_, sizeof this->newTagName_);
 			ImGui::SameLine();
 			ImGui::BeginDisabled(strlen(this->newTagName_) == 0);
 			if (ImGui::Button(ICON_FA_PLUS, ImVec2(25.0f, .0f))) {
-				if (const auto newTagID = ModelsService::getInstance().addNewTag(this->newTagName_); newTagID.has_value()) {
+				if (const auto newTagID = ModelsService::getInstance().addNewTag(this->newTagName_); newTagID.
+					has_value()) {
 					ModelsService::getInstance().setModelToTag(info.modelId, newTagID.value());
 					strcpy(this->newTagName_, "");
 				}
@@ -301,7 +322,7 @@ void ObjectSelectorPopup::drawPreviewObject(ObjectInfo& info) {
 	}
 }
 
-void ObjectSelectorPopup::makePreview(const int modelId, const std::string& iconUrl) {
+void ObjectSelectorPopup::makePreview(const int modelId, const std::string &iconUrl) {
 	if (!ModelsService::getInstance().validObjectModel(modelId))
 		return;
 	std::optional<std::unique_ptr<Texture>> texture = ModelsService::getInstance().getModelIcon(modelId);
@@ -323,21 +344,25 @@ void ObjectSelectorPopup::clearPreviews() {
 	this->icons_.clear();
 }
 
-void ObjectSelectorPopup::updateModels(std::map<int, ObjectInfo>& models) {
+void ObjectSelectorPopup::updateModels(std::map<int, ObjectInfo> &models) {
 	if (this->selectorState == 1)
 		models = ModelsService::getInstance().getObjectModelsBySearch(this->searchText_,
-			this->selectedCategories_, this->objectBehaviourHasCollision, this->objectBehaviourDestroyByHit, this->objectBehaviourSeeByTime, this->countOnPage_, this->page_, this->allCount);
+		                                                              this->selectedCategories_,
+		                                                              this->objectBehaviourHasCollision,
+		                                                              this->objectBehaviourDestroyByHit,
+		                                                              this->objectBehaviourSeeByTime,
+		                                                              this->countOnPage_, this->page_, this->allCount);
 	if (this->selectorState == 2)
 		models = ModelsService::getInstance().getObjectModelsByTag(this->selectedTag,
 		                                                           this->page_, this->countOnPage_, this->allCount);
 	selectedObjectModel = 0;
 	clearPreviews();
-	for (const auto& model : models)
+	for (const auto &model : models)
 		makePreview(model.first, model.second.iconUrl);
 }
 
 void ObjectSelectorPopup::draw() {
-	auto& local = Localization::getInstance();
+	auto &local = Localization::getInstance();
 
 	ImGui::SetNextWindowSize(ImVec2(ImGui::GetFontSize() * 64.0f, ImGui::GetFontSize() * 24.0f), ImGuiCond_Appearing);
 	if (ImGui::BeginPopupModal(local.get("object_selector.title").c_str(), &this->isShow())) {
@@ -350,8 +375,10 @@ void ObjectSelectorPopup::draw() {
 		ImGui::EndDisabled();
 		ImGui::SameLine();
 		ImGui::BeginDisabled(this->selectorState == 2);
-		ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth() - 50.0f - 50.0f - ImGui::GetStyle().ItemSpacing.x * 3.f);
-		ImGui::InputTextWithHint("##searchInput", local.get("object_selector.search_hint").c_str(), this->searchText_, sizeof this->searchText_);
+		ImGui::SetNextItemWidth(
+			ImGui::GetWindowContentRegionWidth() - 50.0f - 50.0f - ImGui::GetStyle().ItemSpacing.x * 3.f);
+		ImGui::InputTextWithHint("##searchInput", local.get("object_selector.search_hint").c_str(), this->searchText_,
+		                         sizeof this->searchText_);
 		ImGui::SameLine();
 		if (ImGui::Button(local.get("object_selector.search").c_str(), ImVec2(50.f, .0f))) {
 			this->selectorState = 1;
@@ -401,21 +428,23 @@ void ObjectSelectorPopup::draw() {
 
 
 				int i = 0;
-				for (const auto& pair : models) {
+				for (const auto &pair : models) {
 					if (ModelsService::getInstance().validObjectModel(pair.first)) {
-						IDirect3DTexture9* texture;
+						IDirect3DTexture9 *texture;
 						if (this->icons_.contains(pair.second.modelId)) {
 							texture = this->icons_.at(pair.second.modelId).getTexture();
-						}
-						else {
+						} else {
 							if (!this->preview_.has_value()) {
-								this->preview_ = utils::LoadTextureRequiredFromFile("LDYOM/Resources/preloadObject.jpg");
+								this->preview_ =
+									utils::LoadTextureRequiredFromFile("LDYOM/Resources/preloadObject.jpg");
 							}
 							texture = this->preview_.value()->getTexture();
 						}
 
 						const float lastButtonX2 = ImGui::GetItemRectMax().x;
-						const float nextButtonX2 = lastButtonX2 + ImGui::GetStyle().ItemSpacing.x + ImGui::GetFontSize() * 8.f + ImGui::GetStyle().FramePadding.x * 2.0f; // Expected position if next button was on same line
+						const float nextButtonX2 = lastButtonX2 + ImGui::GetStyle().ItemSpacing.x + ImGui::GetFontSize()
+							* 8.f + ImGui::GetStyle().FramePadding.x * 2.0f;
+						// Expected position if next button was on same line
 						if (i > 0 && nextButtonX2 < windowStartX + ImGui::GetWindowContentRegionWidth())
 							ImGui::SameLine();
 
@@ -442,6 +471,6 @@ void ObjectSelectorPopup::draw() {
 	}
 }
 
-void ObjectSelectorPopup::setCallbackSelect(const std::function<void(int)>& callbackSelect) {
+void ObjectSelectorPopup::setCallbackSelect(const std::function<void(int)> &callbackSelect) {
 	callbackSelect_ = callbackSelect;
 }

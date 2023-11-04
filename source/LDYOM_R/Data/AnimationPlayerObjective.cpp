@@ -3,29 +3,31 @@
 #include <CTimer.h>
 #include <extensions/ScriptCommands.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "common.h"
 #include "imgui.h"
 #include "ModelsService.h"
 #include "strUtils.h"
 #include "utils.h"
-#include "common.h"
 
-AnimationPlayerObjective::AnimationPlayerObjective(void* _new): BaseObjective(_new) {
+AnimationPlayerObjective::AnimationPlayerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.animation_player"));
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void AnimationPlayerObjective::draw(Localization& local) {
+void AnimationPlayerObjective::draw(Localization &local) {
 	using namespace plugin;
 
 	bool play = false;
-	const auto& packsNames = ModelsService::getInstance().getPacksNames();
+	const auto &packsNames = ModelsService::getInstance().getPacksNames();
 	if (utils::Combo(local.get("animation.pack").c_str(), &this->pack_, packsNames)) {
 		this->animation_ = 0;
 		play = true;
 	}
 
 
-	play |= utils::Combo(local.get("animation.title").c_str(), &this->animation_, ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]));
+	play |= utils::Combo(local.get("animation.title").c_str(), &this->animation_,
+	                     ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]));
 	utils::ToggleButton(local.get("animation.looped").c_str(), &this->looped_);
 	ImGui::DragFloat(local.get("animation.smoothness").c_str(), &this->blend_, 0.01f, FLT_EPSILON, 1.f);
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->time_, 1.0f, -1.0f, FLT_MAX);
@@ -44,8 +46,7 @@ void AnimationPlayerObjective::draw(Localization& local) {
 		play = true;
 
 		lastTime = CTimer::m_snTimeInMilliseconds;
-	}
-	else if (ImGui::IsKeyPressed(ImGuiKey_N, true) && CTimer::m_snTimeInMilliseconds - lastTime > 500) {
+	} else if (ImGui::IsKeyPressed(ImGuiKey_N, true) && CTimer::m_snTimeInMilliseconds - lastTime > 500) {
 		this->animation_--;
 		if (this->animation_ < 0) {
 			this->pack_--;
@@ -63,7 +64,7 @@ void AnimationPlayerObjective::draw(Localization& local) {
 	if (play) {
 		if (!Command<Commands::HAS_ANIMATION_LOADED>(packsNames[this->pack_].c_str()))
 			Command<Commands::REQUEST_ANIMATION>(packsNames[this->pack_].c_str());
-		const auto& anims = ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]);
+		const auto &anims = ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]);
 		Command<Commands::TASK_PLAY_ANIM_NON_INTERRUPTABLE>(
 			static_cast<CPed*>(FindPlayerPed()),
 			anims[this->animation_].c_str(),
@@ -71,7 +72,8 @@ void AnimationPlayerObjective::draw(Localization& local) {
 			this->looped_, false, false, false, 0);
 	}
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -81,14 +83,14 @@ void AnimationPlayerObjective::draw(Localization& local) {
 	ImGui::End();
 }
 
-ktwait AnimationPlayerObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
+ktwait AnimationPlayerObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
 	using namespace plugin;
 
-	const auto& packsNames = ModelsService::getInstance().getPacksNames();
+	const auto &packsNames = ModelsService::getInstance().getPacksNames();
 
 	if (!Command<Commands::HAS_ANIMATION_LOADED>(packsNames[this->pack_].c_str()))
 		Command<Commands::REQUEST_ANIMATION>(packsNames[this->pack_].c_str());
-	const auto& anims = ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]);
+	const auto &anims = ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]);
 	Command<Commands::TASK_PLAY_ANIM_NON_INTERRUPTABLE>(
 		static_cast<CPed*>(FindPlayerPed()),
 		anims[this->animation_].c_str(),

@@ -5,7 +5,6 @@
 #include "FileWatcher.h"
 #include "LuaLogger.h"
 #include "LuaWrapper.h"
-#include "NodeEditorUtils.h"
 #include "Settings.h"
 #include "easylogging/easylogging++.h"
 #include "fmt/core.h"
@@ -19,26 +18,28 @@ void LuaEngine::resetState() {
 	Localization::getInstance().clearScriptsLocalization();
 	luaState_ = sol::state();
 
-	luaState_.open_libraries(sol::lib::base, sol::lib::string, sol::lib::os, sol::lib::io, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::jit, sol::lib::ffi, sol::lib::coroutine);
+	luaState_.open_libraries(sol::lib::base, sol::lib::string, sol::lib::os, sol::lib::io, sol::lib::package,
+	                         sol::lib::math, sol::lib::table, sol::lib::jit, sol::lib::ffi, sol::lib::coroutine);
 
 	const std::string basePath = SCRIPT_PATH + "\\libs\\";
 	//luaState_.require_file("class", basePath + "middleclass.lua");
 	luaState_.require_file("bitser", basePath + "bitser.lua");
 	luaState_.require_file("base64", basePath + "base64.lua");
 	//luaState_.require_file("tl", basePath + "tl.lua");
-	luaState_.set_function("print", [](sol::this_state L, const sol::object& obj, const sol::variadic_args args) {
+	luaState_.set_function("print", [](sol::this_state L, const sol::object &obj, const sol::variadic_args args) {
 		LuaLogger::getInstance().print(sol::state_view(L), obj, args);
 	});
 
 	std::string luaPath = luaState_["package"]["path"];
-	luaState_["package"]["path"] = fmt::format("{}\\?.lua;{}", std::filesystem::absolute(SCRIPT_PATH).string(), luaPath);
+	luaState_["package"]["path"] =
+		fmt::format("{}\\?.lua;{}", std::filesystem::absolute(SCRIPT_PATH).string(), luaPath);
 
 	//bind wrapper
 	LuaWrapper::wrap(this->luaState_);
 
 	luaState_.create_table("global_data");
 	auto signals = luaState_["global_data"].get<sol::table>()
-		.create_named("signals");
+	                                       .create_named("signals");
 	signals.create_named("onNewScene");
 	signals.create_named("onDeleteScene");
 	signals.create_named("init");
@@ -88,7 +89,7 @@ void LuaEngine::resetState() {
 				initFile = entry.path() / "init.tl";
 			}
 			if (!initFile.empty())
-				luaState_.safe_script_file(initFile.string() , errorHandler);
+				luaState_.safe_script_file(initFile.string(), errorHandler);
 		}
 	}
 	if (initServices) {
@@ -107,11 +108,11 @@ void LuaEngine::Init() {
 	resetState();
 
 	FileWatcher::addWatch(std::filesystem::path(SCRIPT_PATH) / "scripts",
-		true, 
-		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_DIR_NAME,
-		[this] {
-			this->resetState();
-		});
+	                      true,
+	                      FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_DIR_NAME,
+	                      [this] {
+		                      this->resetState();
+	                      });
 
 	CLOG(INFO, "LDYOM") << "LuaEngine is init.";
 }

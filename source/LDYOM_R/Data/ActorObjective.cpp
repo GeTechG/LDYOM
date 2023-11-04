@@ -4,6 +4,7 @@
 #include <CRadar.h>
 #include <extensions/ScriptCommands.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "ProjectsService.h"
 #include "strUtils.h"
@@ -12,7 +13,7 @@
 
 using namespace plugin;
 
-int ActorObjective::spawnBlip(CPed* ped) {
+int ActorObjective::spawnBlip(CPed *ped) {
 	int handle;
 	Command<Commands::ADD_BLIP_FOR_CHAR>(ped, &handle);
 	if (this->colorBlip_ != 10) {
@@ -23,16 +24,17 @@ int ActorObjective::spawnBlip(CPed* ped) {
 	return handle;
 }
 
-void ActorObjective::draw(Localization& local) {
-	const auto& actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+void ActorObjective::draw(Localization &local) {
+	const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
 	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
 
 	IncorrectHighlight(indexActor == -1, [&] {
-		utils::Combo(local.get("entities.actor").c_str(), &this->actorUuid_, indexActor, static_cast<int>(actors.size()), [&actors](const int i) {
-			return actors.at(i)->getName();
-			}, [&actors](const int i) {
-				return actors.at(i)->getUuid();
-			});
+		utils::Combo(local.get("entities.actor").c_str(), &this->actorUuid_, indexActor, actors.size(),
+		             [&actors](const int i) {
+			             return actors.at(i)->getName();
+		             }, [&actors](const int i) {
+			             return actors.at(i)->getUuid();
+		             });
 	});
 
 	ImGui::Separator();
@@ -42,11 +44,13 @@ void ActorObjective::draw(Localization& local) {
 
 	ImGui::Separator();
 
-	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip_, local.getArray("general.color_marker_enum")))
+	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip_,
+	                 local.getArray("general.color_marker_enum")))
 		this->spawnEditorBlip();
 
 	if (indexActor != -1) {
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -57,7 +61,7 @@ void ActorObjective::draw(Localization& local) {
 		ImGui::End();
 
 		auto position = actors.at(indexActor)->getPosition();
-		utils::controlCamera({ position[0], position[1], position[2] });
+		utils::controlCamera({position[0], position[1], position[2]});
 	}
 }
 
@@ -71,8 +75,8 @@ void ActorObjective::close() {
 	this->removeEditorBlip();
 }
 
-ktwait ActorObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
-	const auto& actors = scene->getActors();
+ktwait ActorObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
+	const auto &actors = scene->getActors();
 	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
 
 	if (indexActor == -1) {
@@ -80,7 +84,7 @@ ktwait ActorObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& ta
 		co_return;
 	}
 
-	const auto& actor = actors.at(indexActor);
+	const auto &actor = actors.at(indexActor);
 
 	if (!actor->getProjectPed().has_value()) {
 		setObjectiveError(result, *this, NotExists, "The entity of the actor does not exist.");
@@ -88,7 +92,7 @@ ktwait ActorObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& ta
 	}
 
 	removeProjectBlip();
-	if (this->colorBlip_ > 0) 
+	if (this->colorBlip_ > 0)
 		this->projectBlip_ = spawnBlip(actor->getProjectPed().value());
 
 	auto cp1251Text = utf8ToCp1251(this->text_.data());
@@ -105,11 +109,11 @@ ktwait ActorObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& ta
 void ActorObjective::spawnEditorBlip() {
 	removeEditorBlip();
 
-	const auto& actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+	const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
 	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
 
 	if (indexActor != -1 && this->colorBlip_ > 0) {
-		if (const auto ped = actors.at(indexActor)->getEditorPed(); ped.has_value()) 
+		if (const auto ped = actors.at(indexActor)->getEditorPed(); ped.has_value())
 			this->editorBlip_ = spawnBlip(ped.value());
 	}
 }

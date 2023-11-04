@@ -4,14 +4,17 @@
 #include <CWorld.h>
 #include <extensions/ScriptCommands.h>
 
+#include <glm/gtc/quaternion.hpp>
 #include "EditByPlayerService.h"
 #include "fa.h"
 #include "HotKeyService.h"
 #include "imgui.h"
 #include "utils.h"
 #include "utilsRender.h"
-#include "Localization/Localization.h"
 #include "fmt/core.h"
+#include "glm/glm.hpp"
+#include "glm/detail/type_quat.hpp"
+#include "Localization/Localization.h"
 
 std::string Windows::ObjectsWindow::getNameList() {
 	return fmt::format("{} {}", ICON_FA_CUBES, Localization::getInstance().get("entities.objects"));
@@ -23,10 +26,10 @@ std::string Windows::ObjectsWindow::getNameOption() {
 
 int Windows::ObjectsWindow::getListSize() {
 	return static_cast<int>(ProjectsService::getInstance()
-		.getCurrentProject()
-		.getCurrentScene()
-		->getObjects()
-		.size());
+	                        .getCurrentProject()
+	                        .getCurrentScene()
+	                        ->getObjects()
+	                        .size());
 }
 
 void Windows::ObjectsWindow::createNewElement() {
@@ -34,7 +37,7 @@ void Windows::ObjectsWindow::createNewElement() {
 }
 
 void Windows::ObjectsWindow::createNewElementFrom(int i) {
-	const auto& object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(i);
+	const auto &object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(i);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectFrom(*object);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().back()->spawnEditorObject();
 }
@@ -52,9 +55,10 @@ void Windows::ObjectsWindow::deleteElement(int i) {
 }
 
 void Windows::ObjectsWindow::drawOptions() {
-	auto& local = Localization::getInstance();
+	auto &local = Localization::getInstance();
 
-	Object* object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(this->currentElement).get();
+	Object *object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(
+		this->currentElement).get();
 
 	const auto matrix = object->getEditorObject().value()->GetMatrix();
 
@@ -72,10 +76,24 @@ void Windows::ObjectsWindow::drawOptions() {
 	DragPosition(object->getPosition(), [object] {
 		object->updateLocation();
 	});
+
+	static CQuaternion lastQ;
+
+	const auto q = object->getRotations();
+	const glm::quat quaternion(q.real, q.imag.x, q.imag.y, q.imag.z);
+	const glm::vec3 eulerAngles = glm::eulerAngles(quaternion);
+
 	//rotations
 	static std::array<float, 3> eularRot = {0, 0, 0};
+	if (abs(q.real - lastQ.real) > FLT_EPSILON || abs(q.imag.x - lastQ.imag.x) > FLT_EPSILON ||
+		abs(q.imag.y - lastQ.imag.y) > FLT_EPSILON || abs(q.imag.z - lastQ.imag.z) > FLT_EPSILON) {
+		eularRot[0] = glm::degrees(eulerAngles.x);
+		eularRot[1] = glm::degrees(eulerAngles.y);
+		eularRot[2] = glm::degrees(eulerAngles.z);
+		lastQ = q;
+	}
 	InputRotations(eularRot.data(), [&] {
-		object->getRotations().Set(RAD(eularRot[0]), RAD(eularRot[1]), RAD(eularRot[2]));
+		object->getRotations().Set(RAD(eularRot[1]), RAD(eularRot[2]), RAD(eularRot[0]));
 		object->updateLocation();
 	});
 	///scale
@@ -90,7 +108,7 @@ void Windows::ObjectsWindow::drawOptions() {
 		objectSelectorPopup_.setCallbackSelect([&object](int modelId) {
 			object->getModelId() = modelId;
 			object->spawnEditorObject();
-			});
+		});
 	}
 	if (ImGui::IsItemHovered()) {
 		ImGui::SetTooltip(local.get("object_selector.title").c_str());
@@ -102,7 +120,7 @@ void Windows::ObjectsWindow::drawOptions() {
 		object->spawnEditorObject();
 	}
 	if (ImGui::Button(local.get("object.edit_by_camera").c_str())) {
-		EditByPlayerService::getInstance().positionalObject(object->getEditorObject().value(), [object](CMatrix& mat) {
+		EditByPlayerService::getInstance().positionalObject(object->getEditorObject().value(), [object](CMatrix &mat) {
 			const auto obj = object->getEditorObject().value();
 			CWorld::Remove(obj);
 			obj->SetMatrix(mat);
@@ -116,7 +134,8 @@ void Windows::ObjectsWindow::drawOptions() {
 
 	ObjectiveDependentInput(object);
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -124,13 +143,16 @@ void Windows::ObjectsWindow::drawOptions() {
 		ImGui::Text(local.get("info_overlay.depend_zoom").c_str());
 		ImGui::Text(local.get("info_overlay.move_element").c_str());
 		char guizmoTranslate[32];
-		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoTranslate")->functionKeys, guizmoTranslate, sizeof guizmoTranslate);
+		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoTranslate")->functionKeys,
+		                       guizmoTranslate, sizeof guizmoTranslate);
 		ImGui::Text(fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoTranslate"), guizmoTranslate).c_str());
 		char guizmoRotate[32];
-		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoRotate")->functionKeys, guizmoRotate, sizeof guizmoRotate);
+		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoRotate")->functionKeys, guizmoRotate,
+		                       sizeof guizmoRotate);
 		ImGui::Text(fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoRotate"), guizmoRotate).c_str());
 		char guizmoScale[32];
-		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoScale")->functionKeys, guizmoScale, sizeof guizmoScale);
+		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoScale")->functionKeys, guizmoScale,
+		                       sizeof guizmoScale);
 		ImGui::Text(fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoScale"), guizmoScale).c_str());
 		ImGui::PopTextWrapPos();
 	}

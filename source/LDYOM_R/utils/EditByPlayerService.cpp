@@ -9,21 +9,21 @@
 #include <CWorld.h>
 #include <extensions/ScriptCommands.h>
 
-#include "ModelsService.h"
-#include "Tasker.h"
-#include "WindowsRenderService.h"
-#include "plugin.h"
-#include "../Data/Actor.h"
-#include "KeyCodes.h"
-#include "utils.h"
 #include "CCamera.h"
 #include "HotKeyService.h"
+#include "KeyCodes.h"
 #include "LuaEngine.h"
 #include "MathUtils.h"
+#include "ModelsService.h"
+#include "plugin.h"
+#include "Tasker.h"
+#include "utils.h"
+#include "WindowsRenderService.h"
+#include "../Data/Actor.h"
 #include "../Data/CutsceneObjective.h"
 #include "../Data/Vehicle.h"
-#include "extensions/KeyCheck.h"
 #include "../Windows/ObjectsWindow.h"
+#include "extensions/KeyCheck.h"
 
 class Vehicle;
 using namespace std::chrono_literals;
@@ -31,22 +31,25 @@ using namespace plugin;
 
 extern bool openWindowsMenu;
 
-ktwait editByPlayerActorTask(Actor& actor) {
+ktwait editByPlayerActorTask(Actor &actor) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
 	TheCamera.Restore();
 	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
-		auto& local = Localization::getInstance();
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		auto &local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
 			char acceptHotKey[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey, sizeof acceptHotKey);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey,
+			                       sizeof acceptHotKey);
 			char cancelHotKey[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey, sizeof cancelHotKey);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey,
+			                       sizeof cancelHotKey);
 			ImGui::Text(local.get("info_overlay.accept_cancel").c_str(), acceptHotKey, cancelHotKey);
 			ImGui::PopTextWrapPos();
 		}
@@ -60,18 +63,16 @@ ktwait editByPlayerActorTask(Actor& actor) {
 	if (actor.getModelType() == 0) {
 		model = ModelsService::validPedModel(actor.getModelId());
 		CStreaming::RequestModel(model, GAME_REQUIRED);
-	}
-	else {
+	} else {
 		model = 290 + actor.getSlot();
-		const auto& specialsPed = ModelsService::getInstance().getSpecialsPed().at(actor.getModelId());
+		const auto &specialsPed = ModelsService::getInstance().getSpecialsPed().at(actor.getModelId());
 		CStreaming::RequestSpecialChar(actor.getSlot(), specialsPed.c_str(), GAME_REQUIRED);
 	}
 	CStreaming::LoadAllRequestedModels(false);
 
 	Command<Commands::SET_PLAYER_MODEL>(0, model);
 
-	while(true) {
-
+	while (true) {
 		const auto hotKey = HotKeyService::getInstance().getHotKey();
 		if (hotKey != nullptr && std::strcmp(hotKey->functionName, "accept") == 0) {
 			const auto position = FindPlayerPed()->GetPosition();
@@ -101,18 +102,19 @@ ktwait editByPlayerActorTask(Actor& actor) {
 	Tasker::getInstance().removeTask("editByPlayerActor");
 }
 
-void EditByPlayerService::editByPlayerActor(Actor& actor) {
+void EditByPlayerService::editByPlayerActor(Actor &actor) {
 	Tasker::getInstance().addTask("editByPlayerActor", editByPlayerActorTask, actor);
 }
 
-ktwait editByPlayerVehicleTask(Vehicle& vehicle) {
+ktwait editByPlayerVehicleTask(Vehicle &vehicle) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
 	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
-		auto& local = Localization::getInstance();
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		auto &local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -120,21 +122,22 @@ ktwait editByPlayerVehicleTask(Vehicle& vehicle) {
 			ImGui::PopTextWrapPos();
 		}
 		ImGui::End();
-		});
+	});
 
 	TheCamera.Restore();
 
-	Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(CPools::GetVehicleRef(vehicle.getEditorVehicle().value()), 0);
+	Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(
+		CPools::GetVehicleRef(vehicle.getEditorVehicle().value()), 0);
 	vehicle.getEditorVehicle().value()->m_bUsesCollision = 1;
 	vehicle.getEditorVehicle().value()->m_nVehicleFlags.bEngineOn = 1;
-	Command<Commands::WARP_CHAR_INTO_CAR>(CPools::GetPedRef(FindPlayerPed()), CPools::GetVehicleRef(vehicle.getEditorVehicle().value()));
+	Command<Commands::WARP_CHAR_INTO_CAR>(CPools::GetPedRef(FindPlayerPed()),
+	                                      CPools::GetVehicleRef(vehicle.getEditorVehicle().value()));
 
-	while(true) {
-
-
-		if (!Command<Commands::IS_CHAR_IN_CAR>(CPools::GetPedRef(FindPlayerPed()), CPools::GetVehicleRef(vehicle.getEditorVehicle().value()))) {
-
-			Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(CPools::GetVehicleRef(vehicle.getEditorVehicle().value()), 1);
+	while (true) {
+		if (!Command<Commands::IS_CHAR_IN_CAR>(CPools::GetPedRef(FindPlayerPed()),
+		                                       CPools::GetVehicleRef(vehicle.getEditorVehicle().value()))) {
+			Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(
+				CPools::GetVehicleRef(vehicle.getEditorVehicle().value()), 1);
 			vehicle.getEditorVehicle().value()->m_nVehicleFlags.bEngineOn = 0;
 			vehicle.getEditorVehicle().value()->m_bUsesCollision = 0;
 
@@ -159,11 +162,11 @@ ktwait editByPlayerVehicleTask(Vehicle& vehicle) {
 	Tasker::getInstance().removeTask("editByPlayerVehicle");
 }
 
-void EditByPlayerService::editByPlayerVehicle(Vehicle& vehicle) {
+void EditByPlayerService::editByPlayerVehicle(Vehicle &vehicle) {
 	Tasker::getInstance().addTask("editByPlayerVehicle", editByPlayerVehicleTask, vehicle);
 }
 
-CVector rotate_vector_by_quaternion(const CVector& v, const CQuaternion& q) {
+CVector rotate_vector_by_quaternion(const CVector &v, const CQuaternion &q) {
 	// Extract the vector part of the quaternion
 	const CVector u(q.imag.x, q.imag.y, q.imag.z);
 
@@ -180,30 +183,34 @@ CVector rotate_vector_by_quaternion(const CVector& v, const CQuaternion& q) {
 		+ 2.0f * s * crossed;
 }
 
-ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMatrix, float* posO, CQuaternion& quat, bool fastCreate) {
+ktwait positionalObjectTask(CEntity *entity, std::function<void(CMatrix &)> setMatrix, float *posO, CQuaternion &quat,
+                            bool fastCreate) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
-		auto& local = Localization::getInstance();
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		auto &local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
 			ImGui::Text(local.get("info_overlay.view_camera_mouse").c_str());
 			ImGui::Text(local.get("info_overlay.move_camera").c_str());
 			char toggleSurfaceRotate[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoRotate")->functionKeys, toggleSurfaceRotate, sizeof toggleSurfaceRotate);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoRotate")->functionKeys,
+			                       toggleSurfaceRotate, sizeof toggleSurfaceRotate);
 			ImGui::Text(local.get("info_overlay.toggle_surface_rotate").c_str(), toggleSurfaceRotate);
 			char acceptHotKey[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey, sizeof acceptHotKey);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey,
+			                       sizeof acceptHotKey);
 			char cancelHotKey[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey, sizeof cancelHotKey);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey,
+			                       sizeof cancelHotKey);
 			ImGui::Text(local.get("info_overlay.accept_cancel").c_str(), acceptHotKey, cancelHotKey);
 			ImGui::PopTextWrapPos();
 		}
 		ImGui::End();
-		});
-
+	});
 
 
 	CWorld::Remove(FindPlayerPed());
@@ -220,22 +227,22 @@ ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMa
 	CVector pos;
 
 	while (true) {
-
 		CVector rot = TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront;
 
 		pos = TheCamera.GetPosition() + rot * 1000.f;
-		
+
 		CColPoint colPoint;
-		CEntity* cEntity;
+		CEntity *cEntity;
 		CWorld::pIgnoreEntity = entity;
-		CWorld::ProcessLineOfSight(TheCamera.GetPosition(), pos, colPoint, cEntity, true, true, false, true, true, true, true, true);
+		CWorld::ProcessLineOfSight(TheCamera.GetPosition(), pos, colPoint, cEntity, true, true, false, true, true, true,
+		                           true, true);
 		CWorld::pIgnoreEntity = nullptr;
 
 		CMatrix newMatrix;
 
 		CQuaternion normalQuat;
 		if (surfaceRotate) {
-			CVector up = CVector(0.f, 0.f, 1.f);
+			auto up = CVector(0.f, 0.f, 1.f);
 			normalQuat = MathUtils::lookRotationQuat(colPoint.m_vecNormal, up);
 			newMatrix.SetRotate(normalQuat);
 		} else {
@@ -245,7 +252,8 @@ ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMa
 
 		CVector newPos = colPoint.m_vecPoint;
 		if (entity) {
-			const auto objSize = entity->GetColModel()->m_boundBox.m_vecMax - entity->GetColModel()->m_boundBox.m_vecMin;
+			const auto objSize = entity->GetColModel()->m_boundBox.m_vecMax - entity->GetColModel()->m_boundBox.
+				m_vecMin;
 			newPos += colPoint.m_vecNormal * (objSize.z / 2.f);
 		}
 
@@ -261,8 +269,12 @@ ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMa
 		}
 
 		if (hotKey != nullptr && std::strcmp(hotKey->functionName, "accept") == 0) {
-			if (surfaceRotate)
-				quat = normalQuat;
+			if (surfaceRotate) {
+				quat.real = normalQuat.real;
+				quat.imag.z = normalQuat.imag.x;
+				quat.imag.x = normalQuat.imag.y;
+				quat.imag.y = -normalQuat.imag.z;
+			}
 
 			posO[0] = newPos.x;
 			posO[1] = newPos.y;
@@ -270,7 +282,8 @@ ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMa
 
 			if (fastCreate) {
 				openWindowsMenu = true;
-				Windows::WindowsRenderService::getInstance().getWindow<Windows::ObjectsWindow>()->selectElement(ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().size() - 1);
+				Windows::WindowsRenderService::getInstance().getWindow<Windows::ObjectsWindow>()->selectElement(
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().size() - 1);
 				Windows::WindowsRenderService::getInstance().getWindow<Windows::ObjectsWindow>()->open();
 			}
 
@@ -278,7 +291,8 @@ ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMa
 		}
 
 		CVector rightCamVec;
-		rightCamVec.Cross(TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront, TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp);
+		rightCamVec.Cross(TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront,
+		                  TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp);
 
 		if (KeyPressed(VK_UP) || KeyPressed('W')) {
 			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront;
@@ -335,13 +349,13 @@ ktwait positionalObjectTask(CEntity* entity, std::function<void(CMatrix&)> setMa
 	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
 }
 
-void EditByPlayerService::positionalObject(CEntity* entity, std::function<void(CMatrix&)> setMatrix, float* posO, CQuaternion& quat, bool fastCreate) {
+void EditByPlayerService::positionalObject(CEntity *entity, std::function<void(CMatrix &)> setMatrix, float *posO,
+                                           CQuaternion &quat, bool fastCreate) {
 	Tasker::getInstance().addTask("createFastObject", positionalObjectTask, entity, setMatrix, posO, quat, fastCreate);
 }
 
 
-
-ktwait editByPlayerCameraTask(float* pos, CQuaternion* rotation, bool widescreen, std::function<void()> callback) {
+ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen, std::function<void()> callback) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
 	static float multiplier = 1.f;
@@ -349,8 +363,9 @@ ktwait editByPlayerCameraTask(float* pos, CQuaternion* rotation, bool widescreen
 	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
-		auto& local = Localization::getInstance();
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		auto &local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -358,38 +373,38 @@ ktwait editByPlayerCameraTask(float* pos, CQuaternion* rotation, bool widescreen
 			ImGui::Text(local.get("info_overlay.move_camera").c_str());
 			ImGui::Text(local.get("info_overlay.speed_move").c_str(), multiplier);
 			char acceptHotKey[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey, sizeof acceptHotKey);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey,
+			                       sizeof acceptHotKey);
 			char cancelHotKey[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey, sizeof cancelHotKey);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey,
+			                       sizeof cancelHotKey);
 			ImGui::Text(local.get("info_overlay.accept_cancel").c_str(), acceptHotKey, cancelHotKey);
 			ImGui::PopTextWrapPos();
 
 			if (ImGui::GetIO().MouseWheel < 0.f) {
 				multiplier -= 0.01f;
 				multiplier = max(multiplier, 0.f);
-			}
-			else if (ImGui::GetIO().MouseWheel > 0.f) {
+			} else if (ImGui::GetIO().MouseWheel > 0.f) {
 				multiplier += 0.01f;
 			}
 		}
 		ImGui::End();
-		});
+	});
 
 	CWorld::Remove(FindPlayerPed());
 
-	CVector posCam = {pos[0], pos[1], pos[2] };
+	CVector posCam = {pos[0], pos[1], pos[2]};
 
 	TheCamera.RestoreWithJumpCut();
 	TheCamera.m_bCameraPersistPosition = true;
 	TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
-	if (widescreen) 
+	if (widescreen)
 		TheCamera.SetWideScreenOn();
 
 	CTheScripts::bDisplayHud = false;
 	CHud::bScriptDontDisplayRadar = true;
 
 	while (true) {
-
 		const auto hotKey = HotKeyService::getInstance().getHotKey(true);
 		if (hotKey != nullptr && std::strcmp(hotKey->functionName, "cancel") == 0) {
 			TheCamera.SetPosn(pos[0], pos[1], pos[2]);
@@ -404,13 +419,17 @@ ktwait editByPlayerCameraTask(float* pos, CQuaternion* rotation, bool widescreen
 
 			auto matInverse = TheCamera.m_mMatInverse;
 			matInverse.Reorthogonalise();
-			*rotation = MathUtils::lookRotationQuat({ TheCamera.m_mMatInverse.right.y, TheCamera.m_mMatInverse.up.y, TheCamera.m_mMatInverse.at.y }, {0.f, 0.f, 1.f});
+			*rotation = MathUtils::lookRotationQuat({
+				                                        TheCamera.m_mMatInverse.right.y, TheCamera.m_mMatInverse.up.y,
+				                                        TheCamera.m_mMatInverse.at.y
+			                                        }, {0.f, 0.f, 1.f});
 
 			break;
 		}
 
 		CVector rightCamVec;
-		rightCamVec.Cross(TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront, TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp);
+		rightCamVec.Cross(TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront,
+		                  TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp);
 
 		if (KeyPressed(VK_UP) || KeyPressed('W')) {
 			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * multiplier;
@@ -444,7 +463,7 @@ ktwait editByPlayerCameraTask(float* pos, CQuaternion* rotation, bool widescreen
 			FindPlayerPed()->SetPosn(posCam);
 		}
 
-		 co_await 1; 
+		co_await 1;
 	}
 
 	TheCamera.m_bCameraPersistPosition = false;
@@ -465,11 +484,12 @@ ktwait editByPlayerCameraTask(float* pos, CQuaternion* rotation, bool widescreen
 	callback();
 }
 
-void EditByPlayerService::editByPlayerCamera(float* pos, CQuaternion* rotation, bool widescreen, std::function<void()> callback) {
+void EditByPlayerService::editByPlayerCamera(float *pos, CQuaternion *rotation, bool widescreen,
+                                             std::function<void()> callback) {
 	Tasker::getInstance().addTask("editByPlayerCamera", editByPlayerCameraTask, pos, rotation, widescreen, callback);
 }
 
-ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>>& path) {
+ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>> &path) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
 	TheCamera.RestoreWithJumpCut();
@@ -481,8 +501,9 @@ ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>>& path) {
 	int currentIndexPoint = 0;
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
-		auto& local = Localization::getInstance();
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		auto &local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -491,9 +512,11 @@ ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>>& path) {
 			ImGui::Text(local.get("info_overlay.select_point").c_str());
 			ImGui::Text(local.get("info_overlay.add_point").c_str());
 			char acceptHotKey[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey, sizeof acceptHotKey);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey,
+			                       sizeof acceptHotKey);
 			char cancelHotKey[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey, sizeof cancelHotKey);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey,
+			                       sizeof cancelHotKey);
 			ImGui::Text(local.get("info_overlay.accept_cancel").c_str(), acceptHotKey, cancelHotKey);
 			ImGui::PopTextWrapPos();
 
@@ -502,16 +525,21 @@ ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>>& path) {
 			if (!newPath.empty()) {
 				RwV3d lastPoint;
 				float w, h;
-				auto lastVisible = CSprite::CalcScreenCoors(RwV3d{ newPath.at(0)[0], newPath.at(0)[1], newPath.at(0)[2]}, &lastPoint, &w, &h, true, true);
-				if (lastVisible) 
-					drawList->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f, currentIndexPoint == 0 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+				auto lastVisible = CSprite::CalcScreenCoors(RwV3d{newPath.at(0)[0], newPath.at(0)[1], newPath.at(0)[2]},
+				                                            &lastPoint, &w, &h, true, true);
+				if (lastVisible)
+					drawList->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f,
+					                          currentIndexPoint == 0 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
 				for (int i = 1; i < newPath.size(); ++i) {
 					RwV3d currentPoint;
-					const auto currentVisible = CSprite::CalcScreenCoors(RwV3d{ newPath.at(i)[0], newPath.at(i)[1], newPath.at(i)[2]}, &currentPoint, &w, &h, true, true);
-					if (lastVisible && currentVisible) 
-						drawList->AddLine(ImVec2(lastPoint.x, lastPoint.y), ImVec2(currentPoint.x, currentPoint.y), IM_COL32_WHITE);
-					if (currentVisible) 
-						drawList->AddCircleFilled(ImVec2(currentPoint.x, currentPoint.y), 5.f, currentIndexPoint == i ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+					const auto currentVisible = CSprite::CalcScreenCoors(
+						RwV3d{newPath.at(i)[0], newPath.at(i)[1], newPath.at(i)[2]}, &currentPoint, &w, &h, true, true);
+					if (lastVisible && currentVisible)
+						drawList->AddLine(ImVec2(lastPoint.x, lastPoint.y), ImVec2(currentPoint.x, currentPoint.y),
+						                  IM_COL32_WHITE);
+					if (currentVisible)
+						drawList->AddCircleFilled(ImVec2(currentPoint.x, currentPoint.y), 5.f,
+						                          currentIndexPoint == i ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
 					lastPoint = currentPoint;
 					lastVisible = currentVisible;
 				}
@@ -521,7 +549,6 @@ ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>>& path) {
 	});
 
 	while (true) {
-
 		const auto hotKey = HotKeyService::getInstance().getHotKey(true);
 		if (hotKey != nullptr && std::strcmp(hotKey->functionName, "cancel") == 0) {
 			break;
@@ -540,7 +567,7 @@ ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>>& path) {
 
 		if (KeyCheck::CheckJustDown('M')) {
 			const auto position = FindPlayerPed()->GetPosition();
-			newPath.at(currentIndexPoint) = {position.x, position.y, position.z };
+			newPath.at(currentIndexPoint) = {position.x, position.y, position.z};
 		}
 
 		if (KeyCheck::CheckJustDown('I')) {
@@ -561,17 +588,17 @@ ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>>& path) {
 
 		co_await 1;
 	}
-	
+
 
 	Windows::WindowsRenderService::getInstance().removeRender("editByPlayerOverlay");
 	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
 }
 
-void EditByPlayerService::editByPlayerActorPath(std::vector<std::array<float, 3>>& path) {
+void EditByPlayerService::editByPlayerActorPath(std::vector<std::array<float, 3>> &path) {
 	Tasker::getInstance().addTask("editByPlayerActorPathTask", editByPlayerActorPathTask, path);
 }
 
-ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>>& path, int model) {
+ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>> &path, int model) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
 	TheCamera.RestoreWithJumpCut();
@@ -581,7 +608,8 @@ ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>>& path, int 
 	auto newPath = path;
 
 	int vehicleHandle;
-	Command<Commands::CREATE_CAR>(model, FindPlayerCoors(0).x, FindPlayerCoors(0).y, FindPlayerCoors(0).z, &vehicleHandle);
+	Command<Commands::CREATE_CAR>(model, FindPlayerCoors(0).x, FindPlayerCoors(0).y, FindPlayerCoors(0).z,
+	                              &vehicleHandle);
 	Command<Commands::TASK_WARP_CHAR_INTO_CAR_AS_DRIVER>(static_cast<CPed*>(FindPlayerPed()), vehicleHandle);
 
 	co_await 100ms;
@@ -589,8 +617,9 @@ ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>>& path, int 
 	int currentIndexPoint = 0;
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
-		auto& local = Localization::getInstance();
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		auto &local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -606,26 +635,30 @@ ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>>& path, int 
 			if (!newPath.empty()) {
 				RwV3d lastPoint;
 				float w, h;
-				auto lastVisible = CSprite::CalcScreenCoors(RwV3d{ newPath.at(0)[0], newPath.at(0)[1], newPath.at(0)[2] }, &lastPoint, &w, &h, true, true);
+				auto lastVisible = CSprite::CalcScreenCoors(RwV3d{newPath.at(0)[0], newPath.at(0)[1], newPath.at(0)[2]},
+				                                            &lastPoint, &w, &h, true, true);
 				if (lastVisible)
-					drawList->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f, currentIndexPoint == 0 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+					drawList->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f,
+					                          currentIndexPoint == 0 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
 				for (int i = 1; i < newPath.size(); ++i) {
 					RwV3d currentPoint;
-					const auto currentVisible = CSprite::CalcScreenCoors(RwV3d{ newPath.at(i)[0], newPath.at(i)[1], newPath.at(i)[2] }, &currentPoint, &w, &h, true, true);
+					const auto currentVisible = CSprite::CalcScreenCoors(
+						RwV3d{newPath.at(i)[0], newPath.at(i)[1], newPath.at(i)[2]}, &currentPoint, &w, &h, true, true);
 					if (lastVisible && currentVisible)
-						drawList->AddLine(ImVec2(lastPoint.x, lastPoint.y), ImVec2(currentPoint.x, currentPoint.y), IM_COL32_WHITE);
+						drawList->AddLine(ImVec2(lastPoint.x, lastPoint.y), ImVec2(currentPoint.x, currentPoint.y),
+						                  IM_COL32_WHITE);
 					if (currentVisible)
-						drawList->AddCircleFilled(ImVec2(currentPoint.x, currentPoint.y), 5.f, currentIndexPoint == i ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+						drawList->AddCircleFilled(ImVec2(currentPoint.x, currentPoint.y), 5.f,
+						                          currentIndexPoint == i ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
 					lastPoint = currentPoint;
 					lastVisible = currentVisible;
 				}
 			}
 		}
 		ImGui::End();
-		});
+	});
 
 	while (Command<Commands::IS_CHAR_IN_CAR>(static_cast<CPed*>(FindPlayerPed()), vehicleHandle)) {
-
 		KeyCheck::Update();
 
 		if (KeyCheck::CheckJustDown('L')) {
@@ -634,7 +667,7 @@ ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>>& path, int 
 
 		if (KeyCheck::CheckJustDown('M')) {
 			const auto position = FindPlayerVehicle(0, false)->GetPosition();
-			newPath.at(currentIndexPoint) = { position.x, position.y, position.z };
+			newPath.at(currentIndexPoint) = {position.x, position.y, position.z};
 		}
 
 		if (KeyCheck::CheckJustDown('I')) {
@@ -649,7 +682,7 @@ ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>>& path, int 
 
 		if (KeyCheck::CheckJustDown('P')) {
 			const auto position = FindPlayerVehicle(0, false)->GetPosition();
-			newPath.emplace_back(std::array{ position.x, position.y, position.z });
+			newPath.emplace_back(std::array{position.x, position.y, position.z});
 			currentIndexPoint = newPath.size() - 1;
 		}
 
@@ -664,7 +697,7 @@ ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>>& path, int 
 	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
 }
 
-void EditByPlayerService::editByPlayerVehiclePath(std::vector<std::array<float, 3>>& path, int model) {
+void EditByPlayerService::editByPlayerVehiclePath(std::vector<std::array<float, 3>> &path, int model) {
 	Tasker::getInstance().addTask("editByPlayerVehiclePathTask", editByPlayerVehiclePathTask, path, model);
 }
 
@@ -675,14 +708,15 @@ ktwait editByPlayerActorPathLuaTask(sol::table path) {
 
 	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
 
-	auto& luaState = LuaEngine::getInstance().getLuaState();
+	auto &luaState = LuaEngine::getInstance().getLuaState();
 	auto newPath = luaState["bitser"]["loads"](luaState["bitser"]["dumps"](path)).get<sol::table>();
 
 	int currentIndexPoint = 1;
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
-		auto& local = Localization::getInstance();
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		auto &local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -691,9 +725,11 @@ ktwait editByPlayerActorPathLuaTask(sol::table path) {
 			ImGui::Text(local.get("info_overlay.select_point").c_str());
 			ImGui::Text(local.get("info_overlay.add_point").c_str());
 			char acceptHotKey[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey, sizeof acceptHotKey);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey,
+			                       sizeof acceptHotKey);
 			char cancelHotKey[32];
-			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey, sizeof cancelHotKey);
+			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("cancel")->functionKeys, cancelHotKey,
+			                       sizeof cancelHotKey);
 			ImGui::Text(local.get("info_overlay.accept_cancel").c_str(), acceptHotKey, cancelHotKey);
 			ImGui::PopTextWrapPos();
 
@@ -703,27 +739,33 @@ ktwait editByPlayerActorPathLuaTask(sol::table path) {
 				RwV3d lastPoint;
 				float w, h;
 				const auto pointer = static_cast<float*>(const_cast<void*>(newPath[1].get<sol::object>().pointer()));
-				auto lastVisible = CSprite::CalcScreenCoors(RwV3d{ pointer[0], pointer[1], pointer[2] }, &lastPoint, &w, &h, true, true);
+				auto lastVisible = CSprite::CalcScreenCoors(RwV3d{pointer[0], pointer[1], pointer[2]}, &lastPoint, &w,
+				                                            &h, true, true);
 				if (lastVisible)
-					drawList->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f, currentIndexPoint == 1 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+					drawList->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f,
+					                          currentIndexPoint == 1 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
 				for (int i = 2; i <= newPath.size(); ++i) {
 					RwV3d currentPoint;
-					const auto currentPointer = static_cast<float*>(const_cast<void*>(newPath[i].get<sol::object>().pointer()));
-					const auto currentVisible = CSprite::CalcScreenCoors(RwV3d{ currentPointer[0], currentPointer[1], currentPointer[2] }, &currentPoint, &w, &h, true, true);
+					const auto currentPointer = static_cast<float*>(const_cast<void*>(newPath[i].get<sol::object>().
+						pointer()));
+					const auto currentVisible = CSprite::CalcScreenCoors(
+						RwV3d{currentPointer[0], currentPointer[1], currentPointer[2]}, &currentPoint, &w, &h, true,
+						true);
 					if (lastVisible && currentVisible)
-						drawList->AddLine(ImVec2(lastPoint.x, lastPoint.y), ImVec2(currentPoint.x, currentPoint.y), IM_COL32_WHITE);
+						drawList->AddLine(ImVec2(lastPoint.x, lastPoint.y), ImVec2(currentPoint.x, currentPoint.y),
+						                  IM_COL32_WHITE);
 					if (currentVisible)
-						drawList->AddCircleFilled(ImVec2(currentPoint.x, currentPoint.y), 5.f, currentIndexPoint == i ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+						drawList->AddCircleFilled(ImVec2(currentPoint.x, currentPoint.y), 5.f,
+						                          currentIndexPoint == i ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
 					lastPoint = currentPoint;
 					lastVisible = currentVisible;
 				}
 			}
 		}
 		ImGui::End();
-		});
+	});
 
 	while (true) {
-
 		const auto hotKey = HotKeyService::getInstance().getHotKey(true);
 		if (hotKey != nullptr && std::strcmp(hotKey->functionName, "cancel") == 0) {
 			break;
@@ -745,7 +787,8 @@ ktwait editByPlayerActorPathLuaTask(sol::table path) {
 
 		if (KeyCheck::CheckJustDown('M')) {
 			const auto position = FindPlayerPed()->GetPosition();
-			const auto curr = static_cast<float*>(const_cast<void*>(newPath[currentIndexPoint].get<sol::object>().pointer()));
+			const auto curr = static_cast<float*>(const_cast<void*>(newPath[currentIndexPoint].get<sol::object>().
+				pointer()));
 			curr[0] = position.x;
 			curr[1] = position.y;
 			curr[2] = position.z;
@@ -764,7 +807,7 @@ ktwait editByPlayerActorPathLuaTask(sol::table path) {
 		if (KeyCheck::CheckJustDown('P')) {
 			const auto position = FindPlayerPed()->GetPosition();
 			newPath.add(LuaEngine::getInstance().getLuaState()
-				.do_string("return ffi.new(\"float[3]\", {0})").get<sol::object>());
+			                                    .do_string("return ffi.new(\"float[3]\", {0})").get<sol::object>());
 			auto newPosObj = newPath[newPath.size()].get<sol::object>();
 			auto newPos = static_cast<float*>(const_cast<void*>(newPosObj.pointer()));
 			newPos[0] = position.x;
@@ -791,20 +834,22 @@ ktwait editByPlayerVehiclePathLuaTask(sol::table path, int model) {
 
 	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
 
-	auto& luaState = LuaEngine::getInstance().getLuaState();
+	auto &luaState = LuaEngine::getInstance().getLuaState();
 	auto newPath = luaState["bitser"]["loads"](luaState["bitser"]["dumps"](path)).get<sol::table>();
 
 	int currentIndexPoint = 1;
 
 	int vehicleHandle;
-	Command<Commands::CREATE_CAR>(model, FindPlayerCoors(0).x, FindPlayerCoors(0).y, FindPlayerCoors(0).z, &vehicleHandle);
+	Command<Commands::CREATE_CAR>(model, FindPlayerCoors(0).x, FindPlayerCoors(0).y, FindPlayerCoors(0).z,
+	                              &vehicleHandle);
 	Command<Commands::TASK_WARP_CHAR_INTO_CAR_AS_DRIVER>(static_cast<CPed*>(FindPlayerPed()), vehicleHandle);
 
 	co_await 100ms;
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
-		auto& local = Localization::getInstance();
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		auto &local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -821,27 +866,33 @@ ktwait editByPlayerVehiclePathLuaTask(sol::table path, int model) {
 				RwV3d lastPoint;
 				float w, h;
 				const auto pointer = static_cast<float*>(const_cast<void*>(newPath[1].get<sol::object>().pointer()));
-				auto lastVisible = CSprite::CalcScreenCoors(RwV3d{ pointer[0], pointer[1], pointer[2] }, &lastPoint, &w, &h, true, true);
+				auto lastVisible = CSprite::CalcScreenCoors(RwV3d{pointer[0], pointer[1], pointer[2]}, &lastPoint, &w,
+				                                            &h, true, true);
 				if (lastVisible)
-					drawList->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f, currentIndexPoint == 1 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+					drawList->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f,
+					                          currentIndexPoint == 1 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
 				for (int i = 2; i <= newPath.size(); ++i) {
 					RwV3d currentPoint;
-					const auto currentPointer = static_cast<float*>(const_cast<void*>(newPath[i].get<sol::object>().pointer()));
-					const auto currentVisible = CSprite::CalcScreenCoors(RwV3d{ currentPointer[0], currentPointer[1], currentPointer[2] }, &currentPoint, &w, &h, true, true);
+					const auto currentPointer = static_cast<float*>(const_cast<void*>(newPath[i].get<sol::object>().
+						pointer()));
+					const auto currentVisible = CSprite::CalcScreenCoors(
+						RwV3d{currentPointer[0], currentPointer[1], currentPointer[2]}, &currentPoint, &w, &h, true,
+						true);
 					if (lastVisible && currentVisible)
-						drawList->AddLine(ImVec2(lastPoint.x, lastPoint.y), ImVec2(currentPoint.x, currentPoint.y), IM_COL32_WHITE);
+						drawList->AddLine(ImVec2(lastPoint.x, lastPoint.y), ImVec2(currentPoint.x, currentPoint.y),
+						                  IM_COL32_WHITE);
 					if (currentVisible)
-						drawList->AddCircleFilled(ImVec2(currentPoint.x, currentPoint.y), 5.f, currentIndexPoint == i ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
+						drawList->AddCircleFilled(ImVec2(currentPoint.x, currentPoint.y), 5.f,
+						                          currentIndexPoint == i ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
 					lastPoint = currentPoint;
 					lastVisible = currentVisible;
 				}
 			}
 		}
 		ImGui::End();
-		});
+	});
 
 	while (Command<Commands::IS_CHAR_IN_CAR>(static_cast<CPed*>(FindPlayerPed()), vehicleHandle)) {
-
 		KeyCheck::Update();
 
 		if (KeyCheck::CheckJustDown('L')) {
@@ -850,7 +901,8 @@ ktwait editByPlayerVehiclePathLuaTask(sol::table path, int model) {
 
 		if (KeyCheck::CheckJustDown('M')) {
 			const auto position = FindPlayerVehicle(0, false)->GetPosition();
-			const auto curr = static_cast<float*>(const_cast<void*>(newPath[currentIndexPoint].get<sol::object>().pointer()));
+			const auto curr = static_cast<float*>(const_cast<void*>(newPath[currentIndexPoint].get<sol::object>().
+				pointer()));
 			curr[0] = position.x;
 			curr[1] = position.y;
 			curr[2] = position.z;
@@ -869,7 +921,7 @@ ktwait editByPlayerVehiclePathLuaTask(sol::table path, int model) {
 		if (KeyCheck::CheckJustDown('P')) {
 			const auto position = FindPlayerVehicle(0, false)->GetPosition();
 			newPath.add(LuaEngine::getInstance().getLuaState()
-				.do_string("return ffi.new(\"float[3]\", {0})").get<sol::object>());
+			                                    .do_string("return ffi.new(\"float[3]\", {0})").get<sol::object>());
 			auto newPosObj = newPath[newPath.size()].get<sol::object>();
 			auto newPos = static_cast<float*>(const_cast<void*>(newPosObj.pointer()));
 			newPos[0] = position.x;

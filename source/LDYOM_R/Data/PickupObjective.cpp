@@ -4,6 +4,7 @@
 #include <CRadar.h>
 #include <extensions/ScriptCommands.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "ProjectsService.h"
 #include "strUtils.h"
@@ -17,24 +18,24 @@ int PickupObjective::spawnBlip(int pickup) {
 	Command<Commands::ADD_BLIP_FOR_PICKUP>(pickup, &handle);
 	if (this->colorBlip_ != 10) {
 		CRadar::ChangeBlipColour(handle, this->colorBlip_ - 1);
-	}
-	else {
+	} else {
 		CRadar::SetBlipFriendly(handle, 1);
 	}
 	return handle;
 }
 
-void PickupObjective::draw(Localization& local) {
-	const auto& pickups = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups();
+void PickupObjective::draw(Localization &local) {
+	const auto &pickups = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups();
 	const int indexPickup = utils::indexByUuid(pickups, this->pickupUuid_);
 
 	IncorrectHighlight(indexPickup == -1, [&] {
-		utils::Combo(local.get("entities.pickup").c_str(), &this->pickupUuid_, indexPickup, static_cast<int>(pickups.size()), [&pickups](const int i) {
-			return pickups.at(i)->getName();
-			}, [&pickups](const int i) {
-				return pickups.at(i)->getUuid();
-			});
-		});
+		utils::Combo(local.get("entities.pickup").c_str(), &this->pickupUuid_, indexPickup, pickups.size(),
+		             [&pickups](const int i) {
+			             return pickups.at(i)->getName();
+		             }, [&pickups](const int i) {
+			             return pickups.at(i)->getUuid();
+		             });
+	});
 
 	ImGui::Separator();
 
@@ -43,11 +44,13 @@ void PickupObjective::draw(Localization& local) {
 
 	ImGui::Separator();
 
-	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip_, local.getArray("general.color_marker_enum")))
+	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip_,
+	                 local.getArray("general.color_marker_enum")))
 		this->spawnEditorBlip();
 
 	if (indexPickup != -1) {
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 		if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -58,7 +61,7 @@ void PickupObjective::draw(Localization& local) {
 		ImGui::End();
 
 		auto position = pickups.at(indexPickup)->getPosition();
-		utils::controlCamera({ position[0], position[1], position[2] });
+		utils::controlCamera({position[0], position[1], position[2]});
 	}
 }
 
@@ -72,8 +75,8 @@ void PickupObjective::close() {
 	this->removeEditorBlip();
 }
 
-ktwait PickupObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
-	const auto& pickups = scene->getPickups();
+ktwait PickupObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
+	const auto &pickups = scene->getPickups();
 	const int indexPickup = utils::indexByUuid(pickups, this->pickupUuid_);
 
 	if (indexPickup == -1) {
@@ -81,7 +84,7 @@ ktwait PickupObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& t
 		co_return;
 	}
 
-	const auto& pickup = pickups.at(indexPickup);
+	const auto &pickup = pickups.at(indexPickup);
 
 	if (!pickup->getProjectPickup().has_value()) {
 		setObjectiveError(result, *this, NotExists, "The entity of the pickup does not exist.");
@@ -106,7 +109,7 @@ ktwait PickupObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& t
 void PickupObjective::spawnEditorBlip() {
 	removeEditorBlip();
 
-	const auto& pickups = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups();
+	const auto &pickups = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups();
 	const int indexPickup = utils::indexByUuid(pickups, this->pickupUuid_);
 
 	if (indexPickup != -1 && this->colorBlip_ > 0) {

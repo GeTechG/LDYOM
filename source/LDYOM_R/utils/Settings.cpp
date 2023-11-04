@@ -24,8 +24,7 @@ const nlohmann::json defaultSettings = R"(
 }
 )"_json;
 
-nlohmann::json& Settings::getSettings()
-{
+nlohmann::json& Settings::getSettings() {
 	return this->settings_;
 }
 
@@ -33,56 +32,45 @@ boost::signals2::signal<void()>& Settings::onUpdate() {
 	return onUpdate_;
 }
 
-std::vector<std::string> getListLocalizations()
-{
+std::vector<std::string> getListLocalizations() {
 	std::vector<std::string> localizations{};
-	for (const auto& file : std::filesystem::directory_iterator(localizationsDirectory))
-	{
-		if (!file.is_directory() && file.path().extension() == ".toml")
-		{
+	for (const auto &file : std::filesystem::directory_iterator(localizationsDirectory)) {
+		if (!file.is_directory() && file.path().extension() == ".toml") {
 			localizations.emplace_back(reinterpret_cast<const char*>(file.path().stem().generic_u8string().c_str()));
 		}
 	}
 	return localizations;
 }
 
-std::vector<std::string>& Settings::listLocalizations()
-{
+std::vector<std::string>& Settings::listLocalizations() {
 	return listLocalizations_;
 }
 
-std::vector<std::string> getListThemes()
-{
+std::vector<std::string> getListThemes() {
 	std::vector<std::string> themes{};
-	for (const auto& file : std::filesystem::directory_iterator(themesDirectory))
-	{
-		if (!file.is_directory() && file.path().extension() == ".toml")
-		{
+	for (const auto &file : std::filesystem::directory_iterator(themesDirectory)) {
+		if (!file.is_directory() && file.path().extension() == ".toml") {
 			themes.emplace_back(reinterpret_cast<const char*>(file.path().stem().generic_u8string().c_str()));
 		}
 	}
 	return themes;
 }
 
-std::vector<std::string>& Settings::listThemes()
-{
+std::vector<std::string>& Settings::listThemes() {
 	return listThemes_;
 }
 
-void Settings::Init()
-{
-	if (exists(settingsPath))
-	{
+void Settings::Init() {
+	if (exists(settingsPath)) {
 		std::ifstream settingsFile(settingsPath);
 		try {
 			settingsFile >> settings_;
-		} catch(std::exception e) {
+		} catch (std::exception e) {
 			const std::string error = fmt::format("error read settings, error: {}", e.what());
 			Logger::getInstance().log(error);
 			throw std::exception(error.c_str());
 		}
-	} else
-	{
+	} else {
 		settings_ = defaultSettings;
 		Save();
 	}
@@ -91,9 +79,9 @@ void Settings::Init()
 	//auto settingsUpdateThead = std::thread(settingsWatcher, &this->onUpdate_);
 	//settingsUpdateThead.detach();
 	FileWatcher::addWatch(
-		localizationsDirectory, 
-		false, 
-		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE, 
+		localizationsDirectory,
+		false,
+		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE,
 		[&] {
 			this->listLocalizations() = getListLocalizations();
 			Localization::getInstance().Update();
@@ -105,13 +93,12 @@ void Settings::Init()
 		FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE,
 		[&] {
 			this->listThemes() = getListThemes();
-			Windows::WindowsRenderService::getInstance().style();
+			Windows::WindowsRenderService::style();
 			this->onUpdate();
 		});
 }
 
-void Settings::Save() const
-{
+void Settings::Save() const {
 	std::ofstream settingsFile(settingsPath);
 	settingsFile << settings_.dump(4);
 	settingsFile.close();

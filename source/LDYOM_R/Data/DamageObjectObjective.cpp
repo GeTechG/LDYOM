@@ -2,22 +2,24 @@
 
 #include <extensions/ScriptCommands.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "Object.h"
 #include "strUtils.h"
 #include "../Windows/PopupWeaponSelector.h"
 
-DamageObjectObjective::DamageObjectObjective(void* _new): BaseObjective(_new) {
+DamageObjectObjective::DamageObjectObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.damage_object"));
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void DamageObjectObjective::draw(Localization& local) {
+void DamageObjectObjective::draw(Localization &local) {
 	ObjectObjective::draw(local);
 
 	ImGui::Separator();
 
-	ImGui::SliderInt(local.get("general.type").c_str(), &this->type_, 0, 1, local.getArray("damage_object_objective.types").at(this->type_).c_str());
+	ImGui::SliderInt(local.get("general.type").c_str(), &this->type_, 0, 1,
+	                 local.getArray("damage_object_objective.types").at(this->type_).c_str());
 
 	if (this->type_ == 1) {
 		PopupWeaponSelector::getInstance().weaponButton(&this->weaponId_);
@@ -27,7 +29,7 @@ void DamageObjectObjective::draw(Localization& local) {
 	}
 }
 
-ktwait DamageObjectObjective::execute(Scene* scene, Object* object, Result& result, ktcoro_tasklist& tasklist) {
+ktwait DamageObjectObjective::execute(Scene *scene, Object *object, Result &result, ktcoro_tasklist &tasklist) {
 	using namespace plugin;
 
 	if (this->type_ == 0) {
@@ -35,7 +37,8 @@ ktwait DamageObjectObjective::execute(Scene* scene, Object* object, Result& resu
 			co_await 1;
 		}
 	} else {
-		while (!Command<Commands::HAS_OBJECT_BEEN_DAMAGED_BY_WEAPON>(object->getProjectObject().value(), this->weaponId_)) {
+		while (!Command<Commands::HAS_OBJECT_BEEN_DAMAGED_BY_WEAPON>(object->getProjectObject().value(),
+		                                                             this->weaponId_)) {
 			co_await 1;
 		}
 	}

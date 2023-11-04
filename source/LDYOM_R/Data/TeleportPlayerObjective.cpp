@@ -7,9 +7,10 @@
 #include <CStreaming.h>
 #include <CVector.h>
 #include <CWorld.h>
-#include "CClothes.h"
 #include <extensions/ScriptCommands.h>
+#include "CClothes.h"
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "ModelsService.h"
 #include "strUtils.h"
@@ -35,8 +36,10 @@ CPed* TeleportPlayerObjective::spawnPed() {
 
 	if (this->modelType_ == 0 && this->modelId_ == 0) {
 		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys_.data(), sizeof playerClothes->m_anTextureKeys);
-		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys_.data(), sizeof playerClothes->m_anModelKeys);
+		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys_.data(),
+		            sizeof playerClothes->m_anTextureKeys);
+		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys_.data(),
+		            sizeof playerClothes->m_anModelKeys);
 		playerClothes->m_fFatStat = this->fatStat;
 		playerClothes->m_fMuscleStat = this->musculeStat;
 		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
@@ -46,10 +49,9 @@ CPed* TeleportPlayerObjective::spawnPed() {
 	if (this->modelType_ == 0) {
 		model = ModelsService::validPedModel(this->modelId_);
 		CStreaming::RequestModel(model, GAME_REQUIRED);
-	}
-	else {
+	} else {
 		model = 290 + this->slot_;
-		const auto& specialsPed = ModelsService::getInstance().getSpecialsPed().at(this->modelId_);
+		const auto &specialsPed = ModelsService::getInstance().getSpecialsPed().at(this->modelId_);
 		CStreaming::RequestSpecialChar(this->slot_, specialsPed.c_str(), GAME_REQUIRED);
 	}
 	CStreaming::LoadAllRequestedModels(false);
@@ -58,7 +60,7 @@ CPed* TeleportPlayerObjective::spawnPed() {
 	Command<Commands::CREATE_CHAR>(23, model, this->pos_[0], this->pos_[1], this->pos_[2], &newPed);
 	CStreaming::SetMissionDoesntRequireModel(model);
 
-	CPed* ped = CPools::GetPed(newPed);
+	CPed *ped = CPools::GetPed(newPed);
 
 	{
 		Command<Commands::SET_PLAYER_MODEL>(0, playerModel);
@@ -75,7 +77,7 @@ CPed* TeleportPlayerObjective::spawnPed() {
 	return ped;
 }
 
-void TeleportPlayerObjective::characteristicsSection(Localization& local) {
+void TeleportPlayerObjective::characteristicsSection(Localization &local) {
 	if (ImGui::TreeNode(local.get("general.characteristics").c_str())) {
 		ImGui::SetNextItemWidth(150.0f);
 		ImGui::InputInt(local.get("general.health").c_str(), &this->health_, 0, 0);
@@ -84,13 +86,13 @@ void TeleportPlayerObjective::characteristicsSection(Localization& local) {
 	}
 }
 
-TeleportPlayerObjective::TeleportPlayerObjective(CVector& pos, const float heading): BaseObjective(nullptr),
-                                                                                     pos_{ pos.x, pos.y, pos.z },
-                                                                                     headingAngle_(heading),
-                                                                                     interiorID_(CGame::currArea) {
-
+TeleportPlayerObjective::TeleportPlayerObjective(CVector &pos, const float heading): BaseObjective(nullptr),
+	pos_{pos.x, pos.y, pos.z},
+	headingAngle_(heading),
+	interiorID_(CGame::currArea) {
 	const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-	std::memcpy(this->clotherMAnTextureKeys_.data(), playerClothes->m_anTextureKeys, sizeof playerClothes->m_anTextureKeys);
+	std::memcpy(this->clotherMAnTextureKeys_.data(), playerClothes->m_anTextureKeys,
+	            sizeof playerClothes->m_anTextureKeys);
 	std::memcpy(this->clotherMAnModelKeys_.data(), playerClothes->m_anModelKeys, sizeof playerClothes->m_anModelKeys);
 	this->fatStat = playerClothes->m_fFatStat;
 	this->musculeStat = playerClothes->m_fMuscleStat;
@@ -105,7 +107,7 @@ TeleportPlayerObjective::~TeleportPlayerObjective() {
 }
 
 
-void TeleportPlayerObjective::draw(Localization& local) {
+void TeleportPlayerObjective::draw(Localization &local) {
 	//position
 	InputPosition(this->pos_.data(), [this] {
 		this->interiorID_ = CGame::currArea;
@@ -120,12 +122,13 @@ void TeleportPlayerObjective::draw(Localization& local) {
 
 	utils::ToggleButton(local.get("teleport_player_objective.dress_up").c_str(), &this->dressUp_);
 
-	if (this->modelType_ == 0 && this->modelId_ == 0)
-	{
+	if (this->modelType_ == 0 && this->modelId_ == 0) {
 		if (ImGui::Button(local.get("teleport_player_objective.copy_clothes").c_str())) {
 			const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-			std::memcpy(this->clotherMAnTextureKeys_.data(), playerClothes->m_anTextureKeys, sizeof playerClothes->m_anTextureKeys);
-			std::memcpy(this->clotherMAnModelKeys_.data(), playerClothes->m_anModelKeys, sizeof playerClothes->m_anModelKeys);
+			std::memcpy(this->clotherMAnTextureKeys_.data(), playerClothes->m_anTextureKeys,
+			            sizeof playerClothes->m_anTextureKeys);
+			std::memcpy(this->clotherMAnModelKeys_.data(), playerClothes->m_anModelKeys,
+			            sizeof playerClothes->m_anModelKeys);
 			this->fatStat = playerClothes->m_fFatStat;
 			this->musculeStat = playerClothes->m_fMuscleStat;
 			spawnEditorPed();
@@ -136,7 +139,8 @@ void TeleportPlayerObjective::draw(Localization& local) {
 
 	characteristicsSection(local);
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -146,15 +150,15 @@ void TeleportPlayerObjective::draw(Localization& local) {
 	}
 	ImGui::End();
 
-	auto& position = this->pos_;
-	utils::controlCamera({ position[0], position[1], position[2] });
+	auto &position = this->pos_;
+	utils::controlCamera({position[0], position[1], position[2]});
 }
 
-ktwait TeleportPlayerObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
+ktwait TeleportPlayerObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
 	using namespace plugin;
 	using namespace std::chrono;
 
-	CPed* playerPed = FindPlayerPed();
+	CPed *playerPed = FindPlayerPed();
 	auto playerInVehicle = Command<Commands::IS_CHAR_IN_ANY_CAR>(playerPed) ||
 		Command<Commands::IS_CHAR_IN_ANY_BOAT>(playerPed) ||
 		Command<Commands::IS_CHAR_IN_ANY_HELI>(playerPed) ||
@@ -181,7 +185,7 @@ ktwait TeleportPlayerObjective::execute(Scene* scene, Result& result, ktcoro_tas
 		CStreaming::RequestModel(model, GAME_REQUIRED);
 	} else {
 		model = 290 + this->slot_;
-		const auto& specialsPed = ModelsService::getInstance().getSpecialsPed().at(this->modelId_);
+		const auto &specialsPed = ModelsService::getInstance().getSpecialsPed().at(this->modelId_);
 		CStreaming::RequestSpecialChar(this->slot_, specialsPed.c_str(), GAME_REQUIRED);
 	}
 
@@ -194,8 +198,10 @@ ktwait TeleportPlayerObjective::execute(Scene* scene, Result& result, ktcoro_tas
 
 	if (this->modelType_ == 0 && this->modelId_ == 0 && this->dressUp_) {
 		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys_.data(), sizeof playerClothes->m_anTextureKeys);
-		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys_.data(), sizeof playerClothes->m_anModelKeys);
+		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys_.data(),
+		            sizeof playerClothes->m_anTextureKeys);
+		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys_.data(),
+		            sizeof playerClothes->m_anModelKeys);
 		playerClothes->m_fFatStat = this->fatStat;
 		playerClothes->m_fMuscleStat = this->musculeStat;
 		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
@@ -205,7 +211,7 @@ ktwait TeleportPlayerObjective::execute(Scene* scene, Result& result, ktcoro_tas
 }
 
 void TeleportPlayerObjective::spawnEditorPed() {
-	using namespace plugin; 
+	using namespace plugin;
 
 	if (editorPed_.has_value())
 		this->deleteEditorPed();
@@ -223,6 +229,7 @@ void TeleportPlayerObjective::spawnEditorPed() {
 }
 
 extern bool restart;
+
 void TeleportPlayerObjective::deleteEditorPed() {
 	using namespace plugin;
 

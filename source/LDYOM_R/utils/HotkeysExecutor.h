@@ -1,8 +1,9 @@
 #pragma once
 #include "HotKeyService.h"
 #include "ProjectPlayerService.h"
+#include "ProjectsService.h"
+#include "QuickCommandsWindow.h"
 #include "WindowsRenderService.h"
-#include "../Windows/QuickCommandsWindow.h"
 
 namespace Windows {
 	class QuickCommandsWindow;
@@ -12,15 +13,15 @@ namespace Windows {
 inline std::optional<Windows::AbstractWindow*> defaultWindow;
 
 inline bool openWindowsMenu = false;
-void inline hotkeysExecute() {
 
+void inline hotkeysExecute() {
 	const auto hotkey = HotKeyService::getInstance().getHotKey(true);
 
 	static bool openPress = false;
 	static bool openFastMenu = false;
 	static bool saveHotkey = false;
 	if (hotkey != nullptr) {
-		if (std::strcmp(hotkey->functionName,"openMenu") == 0 && !openPress) {
+		if (std::strcmp(hotkey->functionName, "openMenu") == 0 && !openPress) {
 			openWindowsMenu ^= TRUE;
 			if (openWindowsMenu && defaultWindow.has_value())
 				defaultWindow.value()->open();
@@ -45,7 +46,7 @@ void inline hotkeysExecute() {
 		Windows::WindowsRenderService::getInstance().getWindow<Windows::QuickCommandsWindow>()->close();
 
 	bool editorMouseState = openFastMenu;
-	for (auto && window : Windows::WindowsRenderService::getInstance().getWindows()) {
+	for (auto &&window : Windows::WindowsRenderService::getInstance().getWindows()) {
 		editorMouseState |= window->isShow();
 	}
 

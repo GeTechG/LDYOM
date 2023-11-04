@@ -25,57 +25,49 @@
 // SOFTWARE.
 
 #pragma once
-#include "singleton.h"
 #include "forward_declarations.h"
 #include "pool_object_extender.h"
-#include "plugin.h"
+#include "singleton.h"
 
-class VehicleRenderer : public Singleton<VehicleRenderer>
-{
-	struct MaterialProperties
-	{
+class VehicleRenderer : public Singleton<VehicleRenderer> {
+	struct MaterialProperties {
 		MaterialProperties() :
-			_color{ 0, 0, 0, 0 },
+			_color{0, 0, 0, 0},
 			_recolor(false),
 			_retexture(false),
-			_originalColor{ 0, 0, 0, 0 },
+			_geometry(nullptr),
+			_originalColor{0, 0, 0, 0},
 			_originalTexture(nullptr),
-			_originalGeometryFlags(0),
-			_geometry(nullptr)
-		{
-		}
+			_originalGeometryFlags(0) { }
 
 		RwRGBA _color;
 		std::weak_ptr<lua_texture::Texture> _texture;
 		bool _recolor;
 		bool _retexture;
-		RpGeometry* _geometry;
+		RpGeometry *_geometry;
 		RwRGBA _originalColor;
-		RwTexture* _originalTexture;
+		RwTexture *_originalTexture;
 		RwInt32 _originalGeometryFlags;
 	};
 
-	struct VehicleData
-	{
-		VehicleData(const CVehicle* veh)
-		{
-		}
+	struct VehicleData {
+		VehicleData(const CVehicle *veh) { }
 
 		std::unordered_map<RpMaterial*, MaterialProperties> _materialProperties;
 	};
 
 public:
-	void setMaterialColor(CVehicle* veh, RpMaterial* material, RpGeometry* geometry, RwRGBA color);
-	void setMaterialTexture(CVehicle* veh, RpMaterial* material, std::shared_ptr<lua_texture::Texture> texture);
-	void resetMaterialColor(CVehicle* veh, RpMaterial* material);
-	void resetMaterialTexture(CVehicle* veh, RpMaterial* material);
-	void processRender(CVehicle* veh);
-	void postRender(CVehicle* veh);
+	void setMaterialColor(CVehicle *veh, RpMaterial *material, RpGeometry *geometry, RwRGBA color);
+	void setMaterialTexture(CVehicle *veh, RpMaterial *material, std::shared_ptr<lua_texture::Texture> texture);
+	void resetMaterialColor(CVehicle *veh, RpMaterial *material);
+	void resetMaterialTexture(CVehicle *veh, RpMaterial *material);
+	void processRender(CVehicle *veh);
+	void postRender(CVehicle *veh);
 	bool isInitialized() const { return _vehicleData != nullptr; }
 
 private:
-	auto& getVehicleMaterialProperties(CVehicle* veh);
-	auto& getVehicleData(CVehicle* veh);
+	auto& getVehicleMaterialProperties(CVehicle *veh);
+	auto& getVehicleData(CVehicle *veh);
 
 	std::unique_ptr<VehicleDataExtended<VehicleData>> _vehicleData;
 };

@@ -221,7 +221,7 @@ namespace ImHotKey
 
         for (int i = 0; i < 512; i++)
         {
-            if (ImGui::IsKeyPressed(i, false))
+            if (ImGui::IsKeyPressed((ImGuiKey)i, false))
             {
                 int imKey;
                 imKey = MapVirtualKeyA(i, MAPVK_VK_TO_VSC);
@@ -320,7 +320,7 @@ namespace ImHotKey
         int scanCodeCount = 0;
         for (int i = 0; i < 256; i++)
         {
-            if (ImGui::IsKeyDown(i))
+            if (ImGui::IsKeyDown((ImGuiKey)i))
             {
                 int imKey;
                 imKey = MapVirtualKeyA(i, MAPVK_VK_TO_VSC);

@@ -3,20 +3,21 @@
 #include <CMessages.h>
 #include <extensions/ScriptCommands.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "strUtils.h"
 
-CountdownObjective::CountdownObjective(void* _new): BaseObjective(_new) {
+CountdownObjective::CountdownObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.countdown"));
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void CountdownObjective::draw(Localization& local) {
+void CountdownObjective::draw(Localization &local) {
 	ImGui::InputInt(local.get("general.time").c_str(), &this->time_);
 	ImGui::InputText(local.get("general.text").c_str(), this->textGo_.data(), sizeof this->textGo_);
 }
 
-ktwait CountdownObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
+ktwait CountdownObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
 	using namespace plugin;
 	using namespace std::chrono;
 
@@ -27,7 +28,7 @@ ktwait CountdownObjective::execute(Scene* scene, Result& result, ktcoro_tasklist
 	strlcpy(this->gameTextGo_.data(), cp1251Text.c_str(), sizeof this->gameTextGo_);
 
 	for (int i = this->time_; i >= 0; i--) {
-		char* text;
+		char *text;
 		auto str = std::to_string(i);
 		if (i > 0) {
 			text = str.data();

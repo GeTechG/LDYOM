@@ -3,15 +3,16 @@
 
 #include <CCamera.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include <tweeny.h>
+#include "CWorld.h"
 #include "fa.h"
 #include "imgui.h"
-#include "Localization/Localization.h"
 #include "plugin.h"
-#include "CWorld.h"
 #include "ProjectsService.h"
 #include "utils.h"
 #include "ImGuizmo/ImGuizmo.h"
-#include <tweeny.h>
+#include "Localization/Localization.h"
 
 #include "HotKeyService.h"
 #include "ModelsService.h"
@@ -19,7 +20,7 @@
 
 using namespace plugin;
 
-void InputPosition(float* position, const std::function<void()>& callback) {
+void InputPosition(float *position, const std::function<void()> &callback) {
 	ImGui::PushID("positionGroup");
 	ImGui::Text(Localization::getInstance().get("general.position").c_str());
 	if (ImGui::Button(ICON_FA_STREET_VIEW, ImVec2(25.0f, 0.0f))) {
@@ -29,8 +30,7 @@ void InputPosition(float* position, const std::function<void()>& callback) {
 		position[2] = playerPosition.z;
 		callback();
 	}
-	if (ImGui::IsItemHovered())
-	{
+	if (ImGui::IsItemHovered()) {
 		ImGui::BeginTooltip();
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 		ImGui::TextUnformatted(Localization::getInstance().get("general.player_position").c_str());
@@ -44,7 +44,7 @@ void InputPosition(float* position, const std::function<void()>& callback) {
 	ImGui::PopID();
 }
 
-void DragPosition(float* position, const std::function<void()>& callback) {
+void DragPosition(float *position, const std::function<void()> &callback) {
 	ImGui::PushID("positionGroup");
 	ImGui::Text(Localization::getInstance().get("general.position").c_str());
 	if (ImGui::Button(ICON_FA_STREET_VIEW, ImVec2(25.0f, 0.0f))) {
@@ -54,8 +54,7 @@ void DragPosition(float* position, const std::function<void()>& callback) {
 		position[2] = playerPosition.z;
 		callback();
 	}
-	if (ImGui::IsItemHovered())
-	{
+	if (ImGui::IsItemHovered()) {
 		ImGui::BeginTooltip();
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 		ImGui::TextUnformatted(Localization::getInstance().get("general.player_position").c_str());
@@ -69,7 +68,7 @@ void DragPosition(float* position, const std::function<void()>& callback) {
 	ImGui::PopID();
 }
 
-void DragAngleRotation(float* angleRotation, const std::function<void()>& callback) {
+void DragAngleRotation(float *angleRotation, const std::function<void()> &callback) {
 	ImGui::PushID("headingGroup");
 
 	ImGui::Text(Localization::getInstance().get("general.angle_rotation").c_str());
@@ -78,8 +77,7 @@ void DragAngleRotation(float* angleRotation, const std::function<void()>& callba
 		*angleRotation = DEG(playerAngleRotation);
 		callback();
 	}
-	if (ImGui::IsItemHovered())
-	{
+	if (ImGui::IsItemHovered()) {
 		ImGui::BeginTooltip();
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
 		ImGui::TextUnformatted(Localization::getInstance().get("general.player_angle_rotation").c_str());
@@ -93,31 +91,36 @@ void DragAngleRotation(float* angleRotation, const std::function<void()>& callba
 	ImGui::PopID();
 }
 
-void ObjectiveDependentInput(ObjectiveDependent* objectiveDependent) {
-	utils::ToggleButton(Localization::getInstance().get("general.use_objectives").c_str(), &objectiveDependent->isUseObjective());
+void ObjectiveDependentInput(ObjectiveDependent *objectiveDependent) {
+	utils::ToggleButton(Localization::getInstance().get("general.use_objectives").c_str(),
+	                    &objectiveDependent->isUseObjective());
 
 	ImGui::BeginDisabled(!objectiveDependent->isUseObjective());
-	const auto& objectives = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives();
+	const auto &objectives = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives();
 
 	const int spawnObjectiveIdx = utils::indexByUuid(objectives, objectiveDependent->getSpawnObjectiveUuid());
 	IncorrectHighlight(spawnObjectiveIdx == -1 && objectiveDependent->isUseObjective(), [&] {
-		utils::Combo(Localization::getInstance().get("general.spawn_before").c_str(), &objectiveDependent->getSpawnObjectiveUuid(), spawnObjectiveIdx, static_cast<int>(objectives.size()), [&objectives](const int i) {
-			return objectives.at(i)->getName();
-			}, [&objectives](const int i) {
-				return objectives.at(i)->getUuid();
-			});
+		utils::Combo(Localization::getInstance().get("general.spawn_before").c_str(),
+		             &objectiveDependent->getSpawnObjectiveUuid(), spawnObjectiveIdx, objectives.size(),
+		             [&objectives](const int i) {
+			             return objectives.at(i)->getName();
+		             }, [&objectives](const int i) {
+			             return objectives.at(i)->getUuid();
+		             });
 	});
 
 	const int deleteObjectiveIdx = utils::indexByUuid(objectives, objectiveDependent->getDeleteObjectiveUuid());
-	utils::Combo(Localization::getInstance().get("general.delete_after").c_str(), &objectiveDependent->getDeleteObjectiveUuid(), deleteObjectiveIdx, static_cast<int>(objectives.size()), [&objectives](const int i) {
-		return objectives.at(i)->getName();
-		}, [&objectives](const int i) {
-			return objectives.at(i)->getUuid();
-		});
+	utils::Combo(Localization::getInstance().get("general.delete_after").c_str(),
+	             &objectiveDependent->getDeleteObjectiveUuid(), deleteObjectiveIdx, objectives.size(),
+	             [&objectives](const int i) {
+		             return objectives.at(i)->getName();
+	             }, [&objectives](const int i) {
+		             return objectives.at(i)->getUuid();
+	             });
 	ImGui::EndDisabled();
 }
 
-void DragRotations(float* rotations, const std::function<void()>& callback) {
+void DragRotations(float *rotations, const std::function<void()> &callback) {
 	ImGui::PushID("rotationsGroup");
 	ImGui::Text(Localization::getInstance().get("general.rotate").c_str());
 	if (ImGui::DragFloat3("##inputRots", rotations, 0.5f, -180.0f, 180.0f, "%.3f °"))
@@ -126,7 +129,7 @@ void DragRotations(float* rotations, const std::function<void()>& callback) {
 	ImGui::PopID();
 }
 
-void InputRotations(float* rotations, const std::function<void()>& callback) {
+void InputRotations(float *rotations, const std::function<void()> &callback) {
 	ImGui::PushID("rotationsGroup");
 	ImGui::Text(Localization::getInstance().get("general.rotate").c_str());
 	ImGui::InputFloat3("##inputRots", rotations, "%.3f °");
@@ -137,7 +140,7 @@ void InputRotations(float* rotations, const std::function<void()>& callback) {
 	ImGui::PopID();
 }
 
-void Frustum(float left, float right, float bottom, float top, float znear, float zfar, float* m16) {
+void Frustum(float left, float right, float bottom, float top, float znear, float zfar, float *m16) {
 	const float temp = 2.0f * znear;
 	const float temp2 = right - left;
 	const float temp3 = top - bottom;
@@ -160,28 +163,24 @@ void Frustum(float left, float right, float bottom, float top, float znear, floa
 	m16[15] = 0.0;
 }
 
-void Cross(const float* a, const float* b, float* r)
-{
+void Cross(const float *a, const float *b, float *r) {
 	r[0] = a[1] * b[2] - a[2] * b[1];
 	r[1] = a[2] * b[0] - a[0] * b[2];
 	r[2] = a[0] * b[1] - a[1] * b[0];
 }
 
-float Dot(const float* a, const float* b)
-{
+float Dot(const float *a, const float *b) {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-void Normalize(const float* a, float* r)
-{
+void Normalize(const float *a, float *r) {
 	const float il = 1.f / (sqrtf(Dot(a, a)) + FLT_EPSILON);
 	r[0] = a[0] * il;
 	r[1] = a[1] * il;
 	r[2] = a[2] * il;
 }
 
-void LookAt(const float* eye, const float* at, const float* up, float* m16)
-{
+void LookAt(const float *eye, const float *at, const float *up, float *m16) {
 	float X[3], Y[3], Z[3], tmp[3];
 
 	tmp[0] = eye[0] - at[0];
@@ -214,27 +213,26 @@ void LookAt(const float* eye, const float* at, const float* up, float* m16)
 	m16[15] = 1.0f;
 }
 
-void Perspective(float fovyInDegrees, float aspectRatio, float znear, float zfar, float* m16)
-{
+void Perspective(float fovyInDegrees, float aspectRatio, float znear, float zfar, float *m16) {
 	const float ymax = znear * tanf(fovyInDegrees * 3.141592f / 180.0f);
 	const float xmax = ymax * aspectRatio;
 	Frustum(-xmax, xmax, -ymax, ymax, znear, zfar, m16);
 }
 
-void EditTransform(const float* cameraView, const float* cameraProjection, float* matrix, const bool editTransformDecomposition) {
-	auto& local = Localization::getInstance();
+void EditTransform(const float *cameraView, const float *cameraProjection, float *matrix,
+                   const bool editTransformDecomposition) {
+	auto &local = Localization::getInstance();
 
 	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
 	static bool useSnap = false;
-	static float snap[3] = { 1.f, 1.f, 1.f };
-	static float bounds[] = { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
-	static float boundsSnap[] = { 0.1f, 0.1f, 0.1f };
+	static float snap[3] = {1.f, 1.f, 1.f};
+	static float bounds[] = {-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f};
+	static float boundsSnap[] = {0.1f, 0.1f, 0.1f};
 	static bool boundSizing = false;
 	static bool boundSizingSnap = false;
 
-	if (editTransformDecomposition)
-	{
+	if (editTransformDecomposition) {
 		const auto hotKey = HotKeyService::getInstance().getHotKey();
 		if (hotKey != nullptr) {
 			if (std::strcmp(hotKey->functionName, "guizmoTranslate") == 0) // key Z
@@ -259,21 +257,19 @@ void EditTransform(const float* cameraView, const float* cameraProjection, float
 			mCurrentGizmoOperation = ImGuizmo::UNIVERSAL;
 		ImGui::PopID();
 
-		if (mCurrentGizmoOperation != ImGuizmo::SCALE)
-		{
+		if (mCurrentGizmoOperation != ImGuizmo::SCALE) {
 			if (ImGui::RadioButton(local.get("general.local").c_str(), mCurrentGizmoMode == ImGuizmo::LOCAL))
 				mCurrentGizmoMode = ImGuizmo::LOCAL;
 			ImGui::SameLine();
 			if (ImGui::RadioButton(local.get("general.world").c_str(), mCurrentGizmoMode == ImGuizmo::WORLD))
 				mCurrentGizmoMode = ImGuizmo::WORLD;
 		}
-		if (ImGui::IsKeyPressed(83))
+		if (ImGui::IsKeyPressed(static_cast<ImGuiKey>(83)))
 			useSnap = !useSnap;
 		ImGui::Checkbox("##UseSnap", &useSnap);
 		ImGui::SameLine();
 
-		switch (mCurrentGizmoOperation)
-		{
+		switch (mCurrentGizmoOperation) {
 		case ImGuizmo::TRANSLATE:
 			ImGui::InputFloat3(local.get("general.snap").c_str(), &snap[0]);
 			break;
@@ -294,26 +290,25 @@ void EditTransform(const float* cameraView, const float* cameraProjection, float
 		}
 	}
 
-	const ImGuiIO& io = ImGui::GetIO();
+	const ImGuiIO &io = ImGui::GetIO();
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
-	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, nullptr, useSnap ? &snap[0] : nullptr, boundSizing ? bounds : nullptr, boundSizingSnap ? boundsSnap : nullptr);
+	Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, nullptr,
+	           useSnap ? &snap[0] : nullptr, boundSizing ? bounds : nullptr, boundSizingSnap ? boundsSnap : nullptr);
 }
 
 std::array<float, 3> toEular(std::array<float, 16> m) {
-	auto sy = sqrt(static_cast<double>(m[0]) * static_cast<double>(m[0]) + static_cast<double>(m[4]) * static_cast<double>(m[4]));
+	auto sy = sqrt(
+		static_cast<double>(m[0]) * static_cast<double>(m[0]) + static_cast<double>(m[4]) * static_cast<double>(m[4]));
 
 	bool singular = sy < 1e-6; // If
 
 	float x, y, z;
-	if (!singular)
-	{
+	if (!singular) {
 		x = atan2(m[9], m[10]);
 		y = atan2(-m[8], sy);
 		z = atan2(m[4], m[0]);
-	}
-	else
-	{
+	} else {
 		x = atan2(-m[6], m[5]);
 		y = atan2(-m[8], sy);
 		z = 0;
@@ -322,7 +317,7 @@ std::array<float, 3> toEular(std::array<float, 16> m) {
 	return {-x, -y, -z};
 }
 
-void makeMatrix(std::array<float, 16>& m, CQuaternion& q, const CVector& position, float* scale) {
+void makeMatrix(std::array<float, 16> &m, CQuaternion &q, const CVector &position, float *scale) {
 	float sqw = q.real * q.real;
 	float sqx = q.imag.x * q.imag.x;
 	float sqy = q.imag.y * q.imag.y;
@@ -354,10 +349,10 @@ void makeMatrix(std::array<float, 16>& m, CQuaternion& q, const CVector& positio
 	m[15] = 1.f;
 }
 
-bool TransformEditor(float* translate, CQuaternion& rotates, float* scale) {
+bool TransformEditor(float *translate, CQuaternion &rotates, float *scale) {
 	float cameraProjection[16];
 	float cameraView[16];
-	const auto& cameraMatrix = TheCamera.m_mCameraMatrix;
+	const auto &cameraMatrix = TheCamera.m_mCameraMatrix;
 
 	const float camXAngle = atan2f(cameraMatrix.up.z, cameraMatrix.at.z);
 	//const float camYAngle = atan2f(-cameraMatrix.right.z, sqrtf(cameraMatrix.up.z * cameraMatrix.up.z + cameraMatrix.at.z * cameraMatrix.at.z));
@@ -365,19 +360,25 @@ bool TransformEditor(float* translate, CQuaternion& rotates, float* scale) {
 
 	const auto dist = DistanceBetweenPoints(TheCamera.GetPosition(), CVector(translate[0], translate[1], translate[2]));
 
-	float eye[] = { cosf(camZAngle) * cosf(-camXAngle) * dist, sinf(-camXAngle) * dist, sinf(camZAngle) * cosf(camXAngle) * dist };
-	constexpr float at[] = { 0.f, 0.f, 0.f };
-	constexpr float up[] = { 0.f, 1.f, 0.f };
+	float eye[] = {
+		cosf(camZAngle) * cosf(-camXAngle) * dist, sinf(-camXAngle) * dist, sinf(camZAngle) * cosf(camXAngle) * dist
+	};
+	constexpr float at[] = {0.f, 0.f, 0.f};
+	constexpr float up[] = {0.f, 1.f, 0.f};
 	LookAt(eye, at, up, cameraView);
 
-	const CVector pos = { -(translate[1] - (cameraMatrix.pos.y + eye[0])), translate[2] - (cameraMatrix.pos.z + -eye[1]), -(translate[0] - (cameraMatrix.pos.x + eye[2])) };
+	const CVector pos = {
+		-(translate[1] - (cameraMatrix.pos.y + eye[0])), translate[2] - (cameraMatrix.pos.z + -eye[1]),
+		-(translate[0] - (cameraMatrix.pos.x + eye[2]))
+	};
 	//std::array scaleVec = { scale, scale, scale };
 	//std::array rot = { -rotates[1] + 360, rotates[2], -rotates[0]};
 	std::array<float, 16> matrix{};
 	//ImGuizmo::RecomposeMatrixFromComponents(pos.data(), rot.data(), scaleVec.data(), matrix.data());
 	makeMatrix(matrix, rotates, pos, scale);
 
-	Perspective(TheCamera.FindCamFOV() / 2.0f, ImGui::GetIO().DisplaySize.x / ImGui::GetIO().DisplaySize.y, 0.1f, 100.f, cameraProjection);
+	Perspective(TheCamera.FindCamFOV() / 2.0f, ImGui::GetIO().DisplaySize.x / ImGui::GetIO().DisplaySize.y, 0.1f, 100.f,
+	            cameraProjection);
 
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::BeginFrame();
@@ -515,16 +516,16 @@ const char* to_string(tweeny::easing::enumerated e) {
 }
 
 std::map<tweeny::easing::enumerated, std::array<ImVec2, 256>> generatePreviewEasing() {
-
 	std::map<tweeny::easing::enumerated, std::array<ImVec2, 256>> result;
-	for (int i = static_cast<int>(tweeny::easing::enumerated::linear); i <= static_cast<int>(tweeny::easing::enumerated::backInOut); ++i) {
+	for (int i = static_cast<int>(tweeny::easing::enumerated::linear); i <= static_cast<int>(
+		     tweeny::easing::enumerated::backInOut); ++i) {
 		std::array<ImVec2, 256> easing;
 		auto tween = tweeny::from(0.f).to(128.f).during(256).via(static_cast<tweeny::easing::enumerated>(i));
 		for (int j = 0; j < 256; ++j) {
 			if (static_cast<tweeny::easing::enumerated>(i) == tweeny::easing::enumerated::stepped)
-				easing[j] = { static_cast<float>(j), 0.f };
+				easing[j] = {static_cast<float>(j), 0.f};
 			else
-				easing[j] = {static_cast<float>(j), 128.f - tween.step(1) };
+				easing[j] = {static_cast<float>(j), 128.f - tween.step(1)};
 		}
 		result.emplace(static_cast<tweeny::easing::enumerated>(i), easing);
 	}
@@ -532,27 +533,31 @@ std::map<tweeny::easing::enumerated, std::array<ImVec2, 256>> generatePreviewEas
 	return result;
 }
 
-void EasingCombo(const char* name, int* v) {
+void EasingCombo(const char *name, int *v) {
 	using namespace tweeny;
 
 	static auto easingPreviewPoints = generatePreviewEasing();
 
-	if (ImGui::BeginCombo(name, to_string(static_cast<tweeny::easing::enumerated>(*v)))) {
-
-		for (int i = static_cast<int>(easing::enumerated::linear); i <= static_cast<int>(easing::enumerated::backInOut); ++i) {
+	if (ImGui::BeginCombo(name, to_string(static_cast<easing::enumerated>(*v)))) {
+		for (int i = static_cast<int>(easing::enumerated::linear); i <= static_cast<int>(easing::enumerated::backInOut);
+		     ++i) {
 			if (ImGui::Selectable(to_string(static_cast<easing::enumerated>(i)), i == *v)) {
 				*v = i;
 			}
 			if (ImGui::IsItemHovered()) {
 				ImGui::BeginTooltip();
-				const auto & originalPoints = easingPreviewPoints.at(static_cast<tweeny::easing::enumerated>(i));
+				const auto &originalPoints = easingPreviewPoints.at(static_cast<easing::enumerated>(i));
 				const ImU32 color = ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Text));
 				auto offsetedPoints = originalPoints;
-				for (auto& point : offsetedPoints)
+				for (auto &point : offsetedPoints)
 					point += ImGui::GetCursorScreenPos() + ImVec2(0.f, 64.f);
 				ImGui::GetWindowDrawList()->AddPolyline(offsetedPoints.data(), offsetedPoints.size(), color, 0, 1);
-				ImGui::GetWindowDrawList()->AddRect(ImGui::GetCursorScreenPos() + ImVec2(0.f, 64.f), ImGui::GetCursorScreenPos() + ImVec2(256.f, 128.f + 64.f), IM_COL32(255, 255, 255, 100));
-				ImGui::GetWindowDrawList()->AddCircleFilled(offsetedPoints[static_cast<unsigned>(ImGui::GetTime() * 100.0) % 255u], 5.f, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Button)));
+				ImGui::GetWindowDrawList()->AddRect(ImGui::GetCursorScreenPos() + ImVec2(0.f, 64.f),
+				                                    ImGui::GetCursorScreenPos() + ImVec2(256.f, 128.f + 64.f),
+				                                    IM_COL32(255, 255, 255, 100));
+				ImGui::GetWindowDrawList()->AddCircleFilled(
+					offsetedPoints[static_cast<unsigned>(ImGui::GetTime() * 100.0) % 255u], 5.f,
+					ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Button)));
 				ImGui::Dummy(ImVec2(256.f, 256.f));
 				ImGui::EndTooltip();
 			}
@@ -562,13 +567,15 @@ void EasingCombo(const char* name, int* v) {
 	}
 }
 
-void modelSkinSelection(unsigned char& modelType, int& modelId, int& slot, const std::function<void()>& editCallback) {
-	auto& local = Localization::getInstance();
+void modelSkinSelection(unsigned char &modelType, int &modelId, int &slot, const std::function<void()> &editCallback) {
+	auto &local = Localization::getInstance();
 
 	static char unsigned minActorModelType = 0;
 	static char unsigned maxActorModelType = 1;
 	if (ImGui::SliderScalar("##actorModelType", ImGuiDataType_U8, &modelType, &minActorModelType, &maxActorModelType,
-		(modelType == 0) ? local.get("actor_model_type.ped").c_str() : local.get("actor_model_type.special").c_str())) {
+	                        (modelType == 0)
+		                        ? local.get("actor_model_type.ped").c_str()
+		                        : local.get("actor_model_type.special").c_str())) {
 		modelId = 0;
 		editCallback();
 	}
@@ -594,5 +601,5 @@ void modelSkinSelection(unsigned char& modelType, int& modelId, int& slot, const
 	PopupSkinSelector::getInstance().renderPopup([&modelId, editCallback](const int model) {
 		modelId = model;
 		editCallback();
-		}, modelType == 1, slot);
+	}, modelType == 1, slot);
 }
