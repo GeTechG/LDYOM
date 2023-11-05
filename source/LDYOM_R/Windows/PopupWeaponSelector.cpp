@@ -43,9 +43,11 @@ void PopupWeaponSelector::weaponButton(const int *value) {
 
 void PopupWeaponSelector::renderPopup(const std::function<void(int)> &onSelectCallback) {
 	auto scale = ImGui::GetFontSize() / 16;
-	ImGui::SetNextWindowSize(ImVec2(static_cast<float>(8 * (50 + 8)) * scale, 200.0f * scale));
+	const float popupWidth = static_cast<float>(8 * (50 + 8)) * scale;
+	ImGui::SetNextWindowSize(ImVec2(popupWidth, 200.0f * scale));
 	if (ImGui::BeginPopup("##weaponSelector")) {
 		if (ImGui::BeginChild("##weaponsContainer")) {
+			float filled = 0;
 			for (int i = 0; i < static_cast<int>(ModelsService::getInstance().getWeaponIds().size()); ++i) {
 				int weaponId = ModelsService::getInstance().getWeaponIds().at(i);
 
@@ -56,12 +58,23 @@ void PopupWeaponSelector::renderPopup(const std::function<void(int)> &onSelectCa
 					ImGui::SameLine();
 				}
 
+
+				float width = static_cast<float>(icon->getWidth()) * scale;
+				float height = static_cast<float>(icon->getHeight()) * scale;
+				if (filled + width < ImGui::GetWindowContentRegionWidth()) {
+					if (i > 0)
+						ImGui::SameLine();
+				} else {
+					filled = 0;
+				}
+
 				if (ImGui::ImageButton(icon->getTexture(),
-				                       ImVec2(static_cast<float>(icon->getWidth()) * scale,
-				                              static_cast<float>(icon->getHeight()) * scale))) {
+				                       ImVec2(width,
+				                              height))) {
 					onSelectCallback(weaponId);
 					ImGui::CloseCurrentPopup();
 				}
+				filled += ImGui::GetItemRectSize().x;
 
 				if (ImGui::IsItemHovered())
 					ImGui::SetTooltip(CWeaponInfo::ms_aWeaponNames[weaponId]);

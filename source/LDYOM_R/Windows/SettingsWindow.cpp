@@ -159,7 +159,7 @@ namespace Windows {
 			}
 
 			ImGui::SetNextItemWidth(scale * 150.0f);
-			ImGui::DragFloat(local.get("settings.scaleUi").c_str(), &this->settings_.scaleUi, 0.05f, 0.1f, 3.f);
+			ImGui::DragFloat(local.get("settings.scaleUi").c_str(), &this->settings_.scaleUi, 0.01f, 0.1f, 3.f);
 			ImGui::SameLine();
 			if (ImGui::Button(local.get("general.apply").c_str())) {
 				ImGuiHook::scaleUi = this->settings_.scaleUi;
