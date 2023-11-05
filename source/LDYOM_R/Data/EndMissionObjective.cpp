@@ -19,7 +19,7 @@ void EndMissionObjective::draw(Localization &local, std::vector<std::string> &li
 	ImGui::BeginDisabled(!this->showEndTextMission_);
 
 	ImGui::InputText(local.get("general.text").c_str(), this->endTextMission_.data(), this->endTextMission_.size());
-	ImGui::SliderInt(local.get("general.text_style").c_str(), &this->styleTypeEndText_, 0, 6,
+	ImGui::SliderInt(local.get("general.text_style").c_str(), &this->styleTypeEndText_, 0, 5,
 	                 local.getArray("general.text_styles").at(this->styleTypeEndText_).c_str());
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->endTextMissionTime_, 0.1f, 0.f, FLT_MAX);
 
