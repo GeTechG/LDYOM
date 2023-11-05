@@ -94,6 +94,7 @@ public:
 			PopupSpriteBlipSelector::Init();
 			SaveService::getInstance().Init();
 
+			ImGuiHook::scaleUi = Settings::getInstance().get<float>("main.scaleUi").value_or(1.0f);
 			ImGuiHook::Hook();
 			Windows::WindowsRenderService::getInstance().Init();
 

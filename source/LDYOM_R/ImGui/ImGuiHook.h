@@ -26,10 +26,12 @@ private:
 
 public:
 	static inline bool m_bShowMouse = false;
+	static inline float scaleUi = 1.0f;
 	static inline std::function<void()> windowCallback = nullptr;
 	static inline std::function<void()> preRenderCallback = nullptr;
 
 	static void ApplyMouseFix();
+	static ImVec2 Rescale();
 
 	static void Hook();
 

@@ -5,6 +5,7 @@
 #include "imgui.h"
 
 #include "HotKeyService.h"
+#include "ImGuiHook.h"
 #include "imgui_stdlib.h"
 #include "imHotKey.h"
 #include "ModelsService.h"
@@ -33,6 +34,7 @@ namespace Windows {
 		this->settings_.showEntitiesName = Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false);
 		this->settings_.distanceShowNames = Settings::getInstance().get<float>("main.distanceShowNames").
 		                                                            value_or(100.0f);
+		this->settings_.scaleUi = Settings::getInstance().get<float>("main.scaleUi").value_or(1.0f);
 
 		if (const auto userPedsModels = Settings::getInstance().get<std::vector<int>>("data.pedModels"); userPedsModels.
 			has_value())
@@ -124,6 +126,7 @@ namespace Windows {
 		                        ImVec2(.5f, .5f));
 		if (ImGui::Begin(fmt::format("{} {}", ICON_FA_COGS, local.get("settings.title")).c_str(), nullptr,
 		                 ImGuiWindowFlags_AlwaysAutoResize)) {
+			const auto &scale = ImGui::GetFontSize() / 23;
 			ImGui::SetNextItemWidth(150.0f);
 			if (utils::Combo(local.get("settings.languages").c_str(), &this->settings_.currentLanguage,
 			                 Settings::getInstance().listLocalizations())) {
@@ -133,7 +136,7 @@ namespace Windows {
 				Localization::getInstance().Update();
 				Settings::getInstance().Save();
 			}
-			ImGui::SetNextItemWidth(150.0f);
+			ImGui::SetNextItemWidth(scale * 150.0f);
 			if (utils::Combo(local.get("settings.themes").c_str(), &this->settings_.currentTheme,
 			                 Settings::getInstance().listThemes())) {
 				Settings::getInstance().set("main.theme",
@@ -148,10 +151,19 @@ namespace Windows {
 				Settings::getInstance().Save();
 			}
 
-			ImGui::SetNextItemWidth(150.0f);
+			ImGui::SetNextItemWidth(scale * 150.0f);
 			if (ImGui::InputFloat(local.get("settings.distance_show_names").c_str(), &this->settings_.distanceShowNames,
 			                      0.0f, 0.0f)) {
 				Settings::getInstance().set("main.distanceShowNames", this->settings_.distanceShowNames);
+				Settings::getInstance().Save();
+			}
+
+			ImGui::SetNextItemWidth(scale * 150.0f);
+			ImGui::DragFloat(local.get("settings.scaleUi").c_str(), &this->settings_.scaleUi, 0.05f, 0.1f, 3.f);
+			ImGui::SameLine();
+			if (ImGui::Button(local.get("general.apply").c_str())) {
+				ImGuiHook::scaleUi = this->settings_.scaleUi;
+				Settings::getInstance().set("main.scaleUi", this->settings_.scaleUi);
 				Settings::getInstance().Save();
 			}
 
@@ -184,7 +196,7 @@ namespace Windows {
 			}
 			ImGui::Separator();
 
-			ImGui::SetNextItemWidth(150.0f);
+			ImGui::SetNextItemWidth(scale * 150.0f);
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_FIRE, local.get("settings.edit_hotkeys").c_str()).c_str())) {
 				ImGui::OpenPopup(local.get("hotkey_editor.title").c_str());
 			}

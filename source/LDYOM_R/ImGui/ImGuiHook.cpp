@@ -34,6 +34,46 @@ HRESULT ImGuiHook::Reset(IDirect3DDevice9 *pDevice, D3DPRESENT_PARAMETERS *pPres
 	return oReset(pDevice, pPresentationParameters);
 }
 
+ImVec2 ImGuiHook::Rescale() {
+	ImVec2 size(screen::GetScreenWidth(), screen::GetScreenHeight());
+	ImGui::GetIO().Fonts->Clear();
+	const int fontSize = static_cast<int>(size.y / 54.85f * scaleUi); // manually tested
+
+	const auto allocate_fira_regular = new char[firaSans_compressed_data_base85_size];
+	memcpy(allocate_fira_regular, firaSans_compressed_data_base85, firaSans_compressed_data_base85_size);
+
+	static constexpr ImWchar lang_ranges[] = {0x0020, 0xFFFF, 0};
+	ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(allocate_fira_regular,
+	                                                           static_cast<float>(fontSize), nullptr,
+	                                                           lang_ranges);
+
+	const auto allocate_fa = new unsigned int[fa_compressed_size / 4];
+	memcpy(allocate_fa, fa_compressed_data, fa_compressed_size);
+
+	static constexpr ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
+	ImFontConfig icons_config;
+	icons_config.MergeMode = true;
+	ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(allocate_fa, static_cast<int>(fa_compressed_size),
+	                                                     static_cast<float>(fontSize), &icons_config,
+	                                                     icons_ranges);
+
+	ImGui::GetIO().Fonts->Build();
+
+	ImGui_ImplDX9_InvalidateDeviceObjects();
+
+	ImGuiStyle *style = &ImGui::GetStyle();
+	const float scaleX = size.x / 1366.0f * scaleUi;
+	const float scaleY = size.y / 768.0f * scaleUi;
+
+	style->FramePadding = ImVec2(5 * scaleX, 3 * scaleY);
+	style->ItemSpacing = ImVec2(8 * scaleX, 4 * scaleY);
+	style->ScrollbarSize = 12 * scaleX;
+	style->IndentSpacing = 20 * scaleX;
+	style->ItemInnerSpacing = ImVec2(4 * scaleX, 4 * scaleY);
+
+	return size;
+}
+
 void ImGuiHook::RenderFrame(void *ptr) {
 	if (!ImGui::GetCurrentContext()) {
 		return;
@@ -50,43 +90,12 @@ void ImGuiHook::RenderFrame(void *ptr) {
 
 		// handle window scaling here
 		static auto fScreenSize = ImVec2(-1, -1);
+		static auto lastScaleUi = 1.0f;
 		const ImVec2 size(screen::GetScreenWidth(), screen::GetScreenHeight());
-		if (fScreenSize.x != size.x && fScreenSize.y != size.y) {
-			const int fontSize = static_cast<int>(size.y / 70.85f); // manually tested
-
-			const auto allocate_fira_regular = new char[firaSans_compressed_data_base85_size];
-			memcpy(allocate_fira_regular, firaSans_compressed_data_base85, firaSans_compressed_data_base85_size);
-
-			static constexpr ImWchar lang_ranges[] = {0x0020, 0xFFFF, 0};
-			ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(allocate_fira_regular,
-			                                                           static_cast<float>(fontSize), nullptr,
-			                                                           lang_ranges);
-
-			const auto allocate_fa = new unsigned int[fa_compressed_size / 4];
-			memcpy(allocate_fa, fa_compressed_data, fa_compressed_size);
-
-			static constexpr ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
-			ImFontConfig icons_config;
-			icons_config.MergeMode = true;
-			ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(allocate_fa, static_cast<int>(fa_compressed_size),
-			                                                     static_cast<float>(fontSize), &icons_config,
-			                                                     icons_ranges);
-
-			ImGui::GetIO().Fonts->Build();
-
-			ImGui_ImplDX9_InvalidateDeviceObjects();
-
-			ImGuiStyle *style = &ImGui::GetStyle();
-			const float scaleX = size.x / 1366.0f;
-			const float scaleY = size.y / 768.0f;
-
-			style->FramePadding = ImVec2(5 * scaleX, 3 * scaleY);
-			style->ItemSpacing = ImVec2(8 * scaleX, 4 * scaleY);
-			style->ScrollbarSize = 12 * scaleX;
-			style->IndentSpacing = 20 * scaleX;
-			style->ItemInnerSpacing = ImVec2(4 * scaleX, 4 * scaleY);
-
-			fScreenSize = size;
+		if (abs(fScreenSize.x - size.x) > FLT_EPSILON || abs(fScreenSize.y - size.y) > FLT_EPSILON ||
+			abs(lastScaleUi - scaleUi) > FLT_EPSILON) {
+			fScreenSize = Rescale();
+			lastScaleUi = scaleUi;
 		}
 
 		ImGui_ImplWin32_NewFrame();
