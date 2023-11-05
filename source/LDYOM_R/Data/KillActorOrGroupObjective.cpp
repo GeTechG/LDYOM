@@ -9,18 +9,18 @@
 
 using namespace plugin;
 
-KillActorOrGroupObjective::KillActorOrGroupObjective(void* _new): BaseObjective(_new) {
+KillActorOrGroupObjective::KillActorOrGroupObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.kill_actor_or_group"));
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void KillActorOrGroupObjective::draw(Localization& local) {
-	ActorObjective::draw(local);
+void KillActorOrGroupObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
+	ActorObjective::draw(local, listOverlay);
 
 	utils::ToggleButton(local.get("actor.group").c_str(), &this->killGroup_);
 }
 
-ktwait KillActorOrGroupObjective::execute(Scene* scene, Actor* actor, Result& result, ktcoro_tasklist& tasklist) {
+ktwait KillActorOrGroupObjective::execute(Scene *scene, Actor *actor, Result &result, ktcoro_tasklist &tasklist) {
 	std::map<Actor*, int> actorsToKill;
 
 	if (this->killGroup_) {
@@ -44,7 +44,6 @@ ktwait KillActorOrGroupObjective::execute(Scene* scene, Actor* actor, Result& re
 	unsigned countNeedKill = actorsToKill.size();
 
 	while (true) {
-
 		std::vector<Actor*> killedActors;
 		for (const auto &[actorToKill, blip] : actorsToKill) {
 			if (actorToKill->getProjectPed().has_value()) {
@@ -54,11 +53,13 @@ ktwait KillActorOrGroupObjective::execute(Scene* scene, Actor* actor, Result& re
 					--countNeedKill;
 				}
 			} else {
-				setObjectiveError(result, *this, NotExists, fmt::format("The entity of the actor does not exist. Actor: {}", actorToKill->getName()));
+				setObjectiveError(result, *this, NotExists,
+				                  fmt::format("The entity of the actor does not exist. Actor: {}",
+				                              actorToKill->getName()));
 				co_return;
 			}
 		}
-		for (const auto & killedActor : killedActors)
+		for (const auto &killedActor : killedActors)
 			actorsToKill.erase(killedActor);
 
 		if (countNeedKill == 0) {

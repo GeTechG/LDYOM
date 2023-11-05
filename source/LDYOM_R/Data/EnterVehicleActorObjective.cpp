@@ -14,7 +14,7 @@ EnterVehicleActorObjective::EnterVehicleActorObjective(void *_new): BaseObjectiv
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void EnterVehicleActorObjective::draw(Localization &local) {
+void EnterVehicleActorObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
 	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
 

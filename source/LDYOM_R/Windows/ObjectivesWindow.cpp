@@ -294,7 +294,9 @@ void Windows::ObjectivesWindow::drawOptions() {
 	BaseObjective *objective = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().at(
 		this->currentElement).get();
 
-	objective->draw(local);
+	listOverlays.emplace_back(local.get("info_overlay.objective_window"));
+
+	objective->draw(local, this->listOverlays);
 }
 
 void Windows::ObjectivesWindow::onButtonCreateNewElement() {
@@ -584,7 +586,7 @@ void Windows::ObjectivesWindow::open() {
 }
 
 Windows::ObjectivesWindow::ObjectivesWindow(): ListWindow() {
-	this->dragsItems_ = true;
+	this->dragsItems = true;
 }
 
 void Windows::ObjectivesWindow::selectElement(int i) {

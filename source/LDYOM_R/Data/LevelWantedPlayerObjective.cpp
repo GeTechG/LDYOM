@@ -11,7 +11,7 @@ LevelWantedPlayerObjective::LevelWantedPlayerObjective(void *_new): BaseObjectiv
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void LevelWantedPlayerObjective::draw(Localization &local) {
+void LevelWantedPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::SliderInt(local.get("general.wanted").c_str(), &this->levelWanted_, 0, 6);
 }
 

@@ -13,8 +13,8 @@ DamageObjectObjective::DamageObjectObjective(void *_new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void DamageObjectObjective::draw(Localization &local) {
-	ObjectObjective::draw(local);
+void DamageObjectObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
+	ObjectObjective::draw(local, listOverlay);
 
 	ImGui::Separator();
 

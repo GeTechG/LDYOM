@@ -16,7 +16,7 @@ AddWeaponsPlayerObjective::AddWeaponsPlayerObjective(void *_new): BaseObjective(
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void AddWeaponsPlayerObjective::draw(Localization &local) {
+void AddWeaponsPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	if (ImGui::BeginTable("##weaponsTable", 4, ImGuiTableFlags_ScrollY, ImVec2(300.0f, 200.0f))) {
 		ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 60.0f);
 		ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 120.0f);

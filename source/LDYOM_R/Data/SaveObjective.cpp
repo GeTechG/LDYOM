@@ -22,7 +22,7 @@ SaveObjective::SaveObjective(void *_new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void SaveObjective::draw(Localization &local) {
+void SaveObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::Checkbox(local.get("save_objective.show_confirm").c_str(), &this->confirmSave_);
 	ImGui::Dummy(ImVec2(200.f, 0.f));
 }

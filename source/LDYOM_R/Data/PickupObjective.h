@@ -11,20 +11,21 @@ private:
 	friend class boost::serialization::access;
 
 	template <class Archive>
-	void serialize(Archive& ar, const unsigned version) {
-		ar& boost::serialization::base_object<BaseObjective>(*this);
-		ar& pickupUuid_;
-		ar& boost::serialization::make_array(text_.data(), text_.size());
-		ar& textTime_;
-		ar& colorBlip_;
+	void serialize(Archive &ar, const unsigned version) {
+		ar & boost::serialization::base_object<BaseObjective>(*this);
+		ar & pickupUuid_;
+		ar & boost::serialization::make_array(text_.data(), text_.size());
+		ar & textTime_;
+		ar & colorBlip_;
 	}
 
 	boost::uuids::uuid pickupUuid_{};
-	std::array<char, TEXT_SIZE> text_{ "" };
+	std::array<char, TEXT_SIZE> text_{""};
 	float textTime_ = 1.f;
 	int colorBlip_ = 0;
 
-	std::array<char, TEXT_SIZE> gameText_ = { "" };
+	std::array<char, TEXT_SIZE> gameText_ = {""};
+
 protected:
 	PickupObjective() = default;
 
@@ -45,7 +46,8 @@ protected:
 	std::optional<int>& getEditorBlip();
 	std::optional<int>& getProjectBlip();
 
-	virtual ktwait execute(Scene* scene, Pickup* pickup, Result& result, ktcoro_tasklist& tasklist) = 0;
+	virtual ktwait execute(Scene *scene, Pickup *pickup, Result &result, ktcoro_tasklist &tasklist) = 0;
+
 public:
 	~PickupObjective() override;
 
@@ -53,8 +55,8 @@ public:
 		return 4;
 	}
 
-	void draw(Localization& local) override;
+	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
 	void open() override;
 	void close() override;
-	ktwait execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) override;
+	ktwait execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) override;
 };

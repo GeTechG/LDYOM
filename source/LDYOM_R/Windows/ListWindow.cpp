@@ -31,7 +31,7 @@ ImVec2 Windows::ListWindow::drawList() {
 					selectElement(i);
 				}
 
-				if (this->dragsItems_) {
+				if (this->dragsItems) {
 					if (ImGui::IsItemActive() && !ImGui::IsItemHovered()) {
 						const int nextItem = i + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
 						if (nextItem >= 0 && nextItem < this->getListSize()) {
@@ -79,6 +79,8 @@ ImVec2 Windows::ListWindow::drawList() {
 	const auto listWindowSize = ImGui::GetWindowSize();
 	ImGui::End();
 
+	listOverlays.emplace_back(local.get("info_overlay.list_window"));
+
 	return listWindowSize;
 }
 
@@ -96,12 +98,27 @@ int Windows::ListWindow::getElement() {
 	return this->currentElement;
 }
 
+void Windows::ListWindow::drawOverlay() const {
+	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
+		for (const auto &overlayText : this->listOverlays) {
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
+			ImGui::Text(overlayText.c_str());
+			ImGui::PopTextWrapPos();
+		}
+	}
+	ImGui::End();
+}
+
 void Windows::ListWindow::draw() {
+	this->listOverlays.clear();
+
 	this->currentElement = min(this->currentElement, getListSize() - 1);
 	const ImVec2 listSize = drawList();
 	if (this->currentElement != -1) {
 		const auto displaySize = ImGui::GetIO().DisplaySize;
-		auto a = ImGui::GetWindowSize();
 		ImGui::SetNextWindowPos(ImVec2(displaySize.x - listSize.x, 0), ImGuiCond_Appearing,
 		                        ImVec2(1.0f, 0.0f));
 		if (ImGui::Begin(this->getNameOption().c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
@@ -109,6 +126,9 @@ void Windows::ListWindow::draw() {
 		}
 		ImGui::End();
 	}
+
+	if (!this->listOverlays.empty())
+		drawOverlay();
 }
 
 void Windows::ListWindow::unselect() {

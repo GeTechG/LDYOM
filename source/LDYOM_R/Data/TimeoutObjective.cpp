@@ -9,7 +9,7 @@ TimeoutObjective::TimeoutObjective(void *_new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void TimeoutObjective::draw(Localization &local) {
+void TimeoutObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::InputText(local.get("general.text").c_str(), this->text_.data(), sizeof this->text_);
 	ImGui::InputFloat(local.get("objective.timeout").c_str(), &this->time_);
 }

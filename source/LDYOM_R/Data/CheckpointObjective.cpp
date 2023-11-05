@@ -191,7 +191,7 @@ ktwait CheckpointObjective::execute(Scene *scene, Result &result, ktcoro_tasklis
 	this->removeProjectComeBackBlip();
 }
 
-void CheckpointObjective::draw(Localization &local) {
+void CheckpointObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &checkpoints = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getCheckpoints();
 	const int indexCheckpoint = utils::indexByUuid(checkpoints, this->checkpointUuid_);
 
@@ -231,16 +231,9 @@ void CheckpointObjective::draw(Localization &local) {
 	}
 
 	if (indexCheckpoint != -1) {
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-		if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-			ImGui::Text(local.get("info_overlay.camera_view").c_str());
-			ImGui::Text(local.get("info_overlay.depend_zoom").c_str());
-			ImGui::PopTextWrapPos();
-		}
-		ImGui::End();
+		listOverlay.emplace_back(local.get("info_overlay.camera_view"));
+		listOverlay.emplace_back(local.get("info_overlay.depend_zoom"));
+
 
 		auto position = checkpoints.at(indexCheckpoint)->getPosition();
 		utils::controlCamera({position[0], position[1], position[2]});

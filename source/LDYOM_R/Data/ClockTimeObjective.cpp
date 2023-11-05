@@ -11,7 +11,7 @@ ClockTimeObjective::ClockTimeObjective(void *_new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void ClockTimeObjective::draw(Localization &local) {
+void ClockTimeObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	bool timeChanged = false;
 	constexpr auto hourMin = static_cast<ImS8>(0);
 	constexpr auto hourMax = static_cast<ImS8>(23);

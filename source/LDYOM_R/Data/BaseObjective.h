@@ -3,36 +3,38 @@
 #include <ktcoro_wait.hpp>
 #include <boost/serialization/access.hpp>
 
+#include <boost/serialization/array.hpp>
 #include "constants.h"
 #include "INameable.h"
 #include "IUuidable.h"
-#include "Localization/Localization.h"
 #include "boost/uuid/uuid_serialize.hpp"
-#include <boost/serialization/array.hpp>
 #include "fmt/core.h"
+#include "Localization/Localization.h"
 
 #include "Result.h"
 
 class Result;
 class Scene;
 
-class BaseObjective: public INameable, public IUuidable {
+class BaseObjective : public INameable, public IUuidable {
 private:
 	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
+
+	template <class Archive>
+	void serialize(Archive &ar, const unsigned int version) {
 		ar & this->uuid_;
 		ar & boost::serialization::make_array(this->name_.data(), this->name_.size());
 	}
+
 protected:
 	BaseObjective();
-	BaseObjective(void* _new);
-	BaseObjective(const BaseObjective& other);
+	BaseObjective(void *_new);
+	BaseObjective(const BaseObjective &other);
 
 	boost::uuids::uuid uuid_;
 
 	std::array<char, NAME_SIZE> name_;
+
 public:
 	~BaseObjective() override = default;
 
@@ -44,10 +46,10 @@ public:
 	virtual int getTypeCategory() = 0;
 	virtual void open() {}
 	virtual void close() {}
-	virtual void draw(Localization& local) = 0;
-	virtual ktwait execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) = 0;
+	virtual void draw(Localization &local, std::vector<std::string> &listOverlay) = 0;
+	virtual ktwait execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) = 0;
 };
 
-inline void setObjectiveError(Result& result, BaseObjective& objective, unsigned code, std::string message) {
+inline void setObjectiveError(Result &result, BaseObjective &objective, unsigned code, std::string message) {
 	result.setError(code, fmt::format("{}\nObjective: {}", message, objective.getName()));
 }

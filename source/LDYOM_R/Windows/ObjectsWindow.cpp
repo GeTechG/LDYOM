@@ -135,29 +135,24 @@ void Windows::ObjectsWindow::drawOptions() {
 
 	ObjectiveDependentInput(object);
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-		ImGui::Text(local.get("info_overlay.camera_view").c_str());
-		ImGui::Text(local.get("info_overlay.depend_zoom").c_str());
-		ImGui::Text(local.get("info_overlay.move_element").c_str());
-		char guizmoTranslate[32];
-		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoTranslate")->functionKeys,
-		                       guizmoTranslate, sizeof guizmoTranslate);
-		ImGui::Text(fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoTranslate"), guizmoTranslate).c_str());
-		char guizmoRotate[32];
-		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoRotate")->functionKeys, guizmoRotate,
-		                       sizeof guizmoRotate);
-		ImGui::Text(fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoRotate"), guizmoRotate).c_str());
-		char guizmoScale[32];
-		ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoScale")->functionKeys, guizmoScale,
-		                       sizeof guizmoScale);
-		ImGui::Text(fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoScale"), guizmoScale).c_str());
-		ImGui::PopTextWrapPos();
-	}
-	ImGui::End();
+	this->listOverlays.emplace_back(local.get("info_overlay.camera_view"));
+	this->listOverlays.emplace_back(local.get("info_overlay.depend_zoom"));
+	this->listOverlays.emplace_back(local.get("info_overlay.move_element"));
+	char guizmoTranslate[32];
+	ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoTranslate")->functionKeys,
+	                       guizmoTranslate, sizeof guizmoTranslate);
+	this->listOverlays.emplace_back(
+		fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoTranslate"), guizmoTranslate));
+	char guizmoRotate[32];
+	ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoRotate")->functionKeys, guizmoRotate,
+	                       sizeof guizmoRotate);
+	this->listOverlays.emplace_back(
+		fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoRotate"), guizmoRotate));
+	char guizmoScale[32];
+	ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoScale")->functionKeys, guizmoScale,
+	                       sizeof guizmoScale);
+	this->listOverlays.emplace_back(
+		fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoScale"), guizmoScale));
 
 	if (utils::controlCameraWithMove(object->getPosition())) {
 		object->updateLocation();

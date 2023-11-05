@@ -15,7 +15,7 @@ AnimationPlayerObjective::AnimationPlayerObjective(void *_new): BaseObjective(_n
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void AnimationPlayerObjective::draw(Localization &local) {
+void AnimationPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	using namespace plugin;
 
 	bool play = false;

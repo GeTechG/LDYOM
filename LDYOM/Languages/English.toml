@@ -301,6 +301,7 @@ pulse_fraction = "Pulse fraction"
 rotate_rate = "Rotate rate"
 
 [info_overlay]
+list_window = "Hold and drag - Raise/lower an item in the list\nRCM - Rename item"
 camera_view = "Move Camera - RMB, Zoom - Shift + MWheel"
 move_element = "Move current element - Arrows, QE"
 depend_zoom = "Speed depends on the zoom"

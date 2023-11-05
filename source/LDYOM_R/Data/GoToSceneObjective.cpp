@@ -19,7 +19,7 @@ GoToSceneObjective::GoToSceneObjective(void *_new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void GoToSceneObjective::draw(Localization &local) {
+void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	if (ImGui::SliderInt(local.get("general.type").c_str(), &this->type_, 0, 2,
 	                     local.getArray("go_to_scene_objective.types").at(this->type_).c_str())) {
 		this->triggerUuid_ = boost::uuids::uuid{};
@@ -127,16 +127,8 @@ void GoToSceneObjective::draw(Localization &local) {
 	}
 
 	if (position) {
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-		if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-			ImGui::Text(local.get("info_overlay.camera_view").c_str());
-			ImGui::Text(local.get("info_overlay.depend_zoom").c_str());
-			ImGui::PopTextWrapPos();
-		}
-		ImGui::End();
+		listOverlay.emplace_back(local.get("info_overlay.camera_view"));
+		listOverlay.emplace_back(local.get("info_overlay.depend_zoom"));
 
 		utils::controlCamera({position[0], position[1], position[2]});
 	}

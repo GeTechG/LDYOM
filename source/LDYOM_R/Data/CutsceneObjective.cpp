@@ -44,7 +44,7 @@ CutsceneObjective::CutsceneObjective(const CVector &position, const CQuaternion 
 	this->position_ = {position.x, position.y, position.z};
 }
 
-void CutsceneObjective::draw(Localization &local) {
+void CutsceneObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::InputText(local.get("general.text").c_str(), this->text_.data(), sizeof this->text_);
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->textTime_, 0.001f);
 
@@ -170,15 +170,7 @@ void CutsceneObjective::draw(Localization &local) {
 	utils::ToggleButton(local.get("cutscene_objective.lock_player_control").c_str(), &this->lockPlayerControl_);
 	utils::ToggleButton(local.get("cutscene_objective.asynchronous").c_str(), &this->async_);
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-		ImGui::Text(local.get("info_overlay.rotate_with_shift").c_str());
-		ImGui::PopTextWrapPos();
-	}
-	ImGui::End();
+	listOverlay.emplace_back(local.get("info_overlay.rotate_with_shift"));
 
 	if (plugin::KeyPressed(VK_SHIFT)) {
 		if (plugin::KeyPressed(VK_UP)) {

@@ -14,7 +14,7 @@ JumpToObjectiveObjective::JumpToObjectiveObjective(void *_new): BaseObjective(_n
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void JumpToObjectiveObjective::draw(Localization &local) {
+void JumpToObjectiveObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &objectives = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives();
 
 	const int jumpObjectiveIdx = utils::indexByUuid(objectives, this->goToObjectiveUuid_);

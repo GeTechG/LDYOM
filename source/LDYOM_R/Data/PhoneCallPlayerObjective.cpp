@@ -14,7 +14,7 @@ PhoneCallPlayerObjective::PhoneCallPlayerObjective(void *_new): BaseObjective(_n
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void PhoneCallPlayerObjective::draw(Localization &local) {
+void PhoneCallPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	if (ImGui::Button(local.get("general.add").c_str()))
 		this->dialogs_.emplace_back();
 

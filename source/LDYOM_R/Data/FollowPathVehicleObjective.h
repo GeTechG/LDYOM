@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "VehicleObjective.h"
 
-class FollowPathVehicleObjective final: public virtual VehicleObjective {
+class FollowPathVehicleObjective final : public virtual VehicleObjective {
 private:
 	friend class boost::serialization::access;
 
 	template <class Archive>
-	void serialize(Archive& ar, const unsigned version) {
+	void serialize(Archive &ar, const unsigned version) {
 		ar & boost::serialization::base_object<VehicleObjective>(*this);
 		ar & driveType_;
 		ar & pathType_;
@@ -20,17 +20,18 @@ private:
 	float executeTime_ = 1.f;
 	std::vector<std::array<float, 3>> path_;
 	bool waitEnd_ = false;
+
 public:
 	FollowPathVehicleObjective() = default;
-	explicit FollowPathVehicleObjective(void* _new);
+	explicit FollowPathVehicleObjective(void *_new);
 	~FollowPathVehicleObjective() override = default;
 
 	int getTypeCategory() override {
 		return 2;
 	}
 
-	void draw(Localization& local) override;
-	ktwait execute(Scene* scene, Vehicle* vehicle, Result& result, ktcoro_tasklist& tasklist) override;
+	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
+	ktwait execute(Scene *scene, Vehicle *vehicle, Result &result, ktcoro_tasklist &tasklist) override;
 
 	int& getDriveType();
 	int& getPathType();

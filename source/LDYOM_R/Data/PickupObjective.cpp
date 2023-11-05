@@ -24,7 +24,7 @@ int PickupObjective::spawnBlip(int pickup) {
 	return handle;
 }
 
-void PickupObjective::draw(Localization &local) {
+void PickupObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &pickups = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups();
 	const int indexPickup = utils::indexByUuid(pickups, this->pickupUuid_);
 
@@ -49,16 +49,8 @@ void PickupObjective::draw(Localization &local) {
 		this->spawnEditorBlip();
 
 	if (indexPickup != -1) {
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-		if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-			ImGui::Text(local.get("info_overlay.camera_view").c_str());
-			ImGui::Text(local.get("info_overlay.depend_zoom").c_str());
-			ImGui::PopTextWrapPos();
-		}
-		ImGui::End();
+		listOverlay.emplace_back(local.get("info_overlay.camera_view"));
+		listOverlay.emplace_back(local.get("info_overlay.depend_zoom"));
 
 		auto position = pickups.at(indexPickup)->getPosition();
 		utils::controlCamera({position[0], position[1], position[2]});

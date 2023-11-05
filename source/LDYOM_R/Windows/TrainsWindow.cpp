@@ -19,10 +19,10 @@ std::string Windows::TrainsWindow::getNameOption() {
 
 int Windows::TrainsWindow::getListSize() {
 	return static_cast<int>(ProjectsService::getInstance()
-		.getCurrentProject()
-		.getCurrentScene()
-		->getTrains()
-		.size());
+	                        .getCurrentProject()
+	                        .getCurrentScene()
+	                        ->getTrains()
+	                        .size());
 }
 
 void Windows::TrainsWindow::createNewElement() {
@@ -30,7 +30,7 @@ void Windows::TrainsWindow::createNewElement() {
 }
 
 void Windows::TrainsWindow::createNewElementFrom(int i) {
-	const auto& train = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains().at(i);
+	const auto &train = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains().at(i);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewTrainFrom(*train);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains().back()->spawnEditorTrain();
 }
@@ -47,7 +47,7 @@ void Windows::TrainsWindow::deleteElement(int i) {
 	this->currentElement--;
 }
 
-void characteristicsSection(Localization& local, Train* train) {
+void characteristicsSection(Localization &local, Train *train) {
 	if (ImGui::TreeNode(local.get("general.characteristics").c_str())) {
 		ImGui::PushItemWidth(150.0f);
 		ImGui::InputInt(local.get("general.health").c_str(), &train->getHealth(), 0, 0);
@@ -64,9 +64,10 @@ void characteristicsSection(Localization& local, Train* train) {
 }
 
 void Windows::TrainsWindow::drawOptions() {
-	auto& local = Localization::getInstance();
+	auto &local = Localization::getInstance();
 
-	Train* train = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains().at(this->currentElement).get();
+	Train *train = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains().at(
+		this->currentElement).get();
 
 	//position
 	InputPosition(train->getPosition(), [train] { train->updateLocation(); });
@@ -77,14 +78,7 @@ void Windows::TrainsWindow::drawOptions() {
 
 	ObjectiveDependentInput(train);
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-		ImGui::Text(local.get("info_overlay.camera_view").c_str());
-		ImGui::PopTextWrapPos();
-	}
-	ImGui::End();
+	this->listOverlays.emplace_back(local.get("info_overlay.camera_view"));
 
 	utils::controlCamera(CVector(train->getPosition()[0], train->getPosition()[1], train->getPosition()[2] + 1.0f));
 }

@@ -9,7 +9,7 @@ WaitSignalObjective::WaitSignalObjective(void *_new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void WaitSignalObjective::draw(Localization &local) {
+void WaitSignalObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::Dummy(ImVec2(400.f, 0.f));
 }
 

@@ -19,10 +19,10 @@ std::string Windows::PyrotechnicsWindow::getNameOption() {
 
 int Windows::PyrotechnicsWindow::getListSize() {
 	return static_cast<int>(ProjectsService::getInstance()
-		.getCurrentProject()
-		.getCurrentScene()
-		->getPyrotechnics()
-		.size());
+	                        .getCurrentProject()
+	                        .getCurrentScene()
+	                        ->getPyrotechnics()
+	                        .size());
 }
 
 void Windows::PyrotechnicsWindow::createNewElement() {
@@ -30,9 +30,11 @@ void Windows::PyrotechnicsWindow::createNewElement() {
 }
 
 void Windows::PyrotechnicsWindow::createNewElementFrom(int i) {
-	const auto& pyrotechnics = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().at(i);
+	const auto &pyrotechnics = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().
+	                                                          at(i);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewPyrotechnicsFrom(*pyrotechnics);
-	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().back()->spawnEditorPyrotechnics();
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().back()->
+	                               spawnEditorPyrotechnics();
 }
 
 char* Windows::PyrotechnicsWindow::getElementName(int i) {
@@ -40,7 +42,8 @@ char* Windows::PyrotechnicsWindow::getElementName(int i) {
 }
 
 void Windows::PyrotechnicsWindow::deleteElement(int i) {
-	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().at(i)->deleteEditorPyrotechnics();
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().at(i)->
+	                               deleteEditorPyrotechnics();
 
 	const auto begin = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().begin();
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().erase(begin + i);
@@ -48,19 +51,20 @@ void Windows::PyrotechnicsWindow::deleteElement(int i) {
 }
 
 void Windows::PyrotechnicsWindow::drawOptions() {
-	auto& local = Localization::getInstance();
+	auto &local = Localization::getInstance();
 
-	Pyrotechnics* pyrotechnics = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().at(this->currentElement).get();
+	Pyrotechnics *pyrotechnics = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics()
+	                                                           .at(this->currentElement).get();
 
 	//position
 	DragPosition(pyrotechnics->getPosition(), [pyrotechnics] {
 		pyrotechnics->updateLocation();
-		});
+	});
 
 	ImGui::Separator();
 
 	if (ImGui::SliderInt(local.get("general.type").c_str(), &pyrotechnics->getType(), 0, 1,
-		local.getArray("pyrotechnics.types")[pyrotechnics->getType()].c_str())) {
+	                     local.getArray("pyrotechnics.types")[pyrotechnics->getType()].c_str())) {
 		pyrotechnics->spawnEditorPyrotechnics();
 	}
 	if (pyrotechnics->getType() == 0) {
@@ -68,22 +72,18 @@ void Windows::PyrotechnicsWindow::drawOptions() {
 			pyrotechnics->spawnEditorPyrotechnics();
 		}
 		ImGui::SetNextItemWidth(120);
-		ImGui::DragInt(local.get("pyrotechnics.propagation_fire").c_str(), &pyrotechnics->getPropagationFire(), 0.1f, 0, 36);
+		ImGui::DragInt(local.get("pyrotechnics.propagation_fire").c_str(), &pyrotechnics->getPropagationFire(), 0.1f, 0,
+		               36);
 	} else {
-		ImGui::DragInt(local.get("pyrotechnics.type_explosion").c_str(), &pyrotechnics->getTypeExplosion(), 0.1f, 0, 13);
+		ImGui::DragInt(local.get("pyrotechnics.type_explosion").c_str(), &pyrotechnics->getTypeExplosion(), 0.1f, 0,
+		               13);
 	}
 
 	ObjectiveDependentInput(pyrotechnics);
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-		ImGui::Text(local.get("info_overlay.camera_view").c_str());
-		ImGui::Text(local.get("info_overlay.depend_zoom").c_str());
-		ImGui::Text(local.get("info_overlay.move_element").c_str());
-	}
-	ImGui::End();
+	this->listOverlays.emplace_back(local.get("info_overlay.camera_view"));
+	this->listOverlays.emplace_back(local.get("info_overlay.depend_zoom"));
+	this->listOverlays.emplace_back(local.get("info_overlay.move_element"));
 
 	if (utils::controlCameraWithMove(pyrotechnics->getPosition())) {
 		pyrotechnics->updateLocation();
@@ -100,7 +100,8 @@ void Windows::PyrotechnicsWindow::close() {
 void Windows::PyrotechnicsWindow::open() {
 	ListWindow::open();
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
-	for (const auto & pyrotechnics : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics()) {
+	for (const auto &pyrotechnics : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+	                                                               getPyrotechnics()) {
 		pyrotechnics->spawnEditorPyrotechnics();
 	}
 }

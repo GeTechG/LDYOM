@@ -16,7 +16,7 @@ FollowPathVehicleObjective::FollowPathVehicleObjective(void *_new): BaseObjectiv
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void FollowPathVehicleObjective::draw(Localization &local) {
+void FollowPathVehicleObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
 	const int indexVehicle = utils::indexByUuid(vehicles, this->vehicleUuid_);
 

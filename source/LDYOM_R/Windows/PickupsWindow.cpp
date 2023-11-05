@@ -100,16 +100,9 @@ void Windows::PickupsWindow::drawOptions() {
 
 	ObjectiveDependentInput(pickup);
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-		ImGui::Text(local.get("info_overlay.camera_view").c_str());
-		ImGui::Text(local.get("info_overlay.depend_zoom").c_str());
-		ImGui::Text(local.get("info_overlay.move_element").c_str());
-	}
-	ImGui::End();
+	this->listOverlays.emplace_back(local.get("info_overlay.camera_view"));
+	this->listOverlays.emplace_back(local.get("info_overlay.depend_zoom"));
+	this->listOverlays.emplace_back(local.get("info_overlay.move_element"));
 
 	if (utils::controlCameraWithMove(pickup->getPosition())) {
 		pickup->updateLocation();

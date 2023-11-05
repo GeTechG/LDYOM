@@ -26,10 +26,10 @@ std::string Windows::AudioWindow::getNameOption() {
 
 int Windows::AudioWindow::getListSize() {
 	return static_cast<int>(ProjectsService::getInstance()
-		.getCurrentProject()
-		.getCurrentScene()
-		->getAudio()
-		.size());
+	                        .getCurrentProject()
+	                        .getCurrentScene()
+	                        ->getAudio()
+	                        .size());
 }
 
 void Windows::AudioWindow::createNewElement() {
@@ -37,7 +37,7 @@ void Windows::AudioWindow::createNewElement() {
 }
 
 void Windows::AudioWindow::createNewElementFrom(int i) {
-	const auto& audio = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().at(i);
+	const auto &audio = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().at(i);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewAudioFrom(*audio);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().back()->spawnEditorAudio();
 }
@@ -54,13 +54,12 @@ void Windows::AudioWindow::deleteElement(int i) {
 	this->currentElement--;
 }
 
-bool AudioCombo(Localization& local, Audio* audio) {
+bool AudioCombo(Localization &local, Audio *audio) {
 	bool activate = false;
 
-	const auto & audioFilesList = Audio::getAudioFilesList();
-	const auto & iterator = std::ranges::find(audioFilesList, audio->getAudioName());
-	if (ImGui::BeginCombo("##audioFilesList", iterator == audioFilesList.end()? "" : iterator->c_str())) {
-
+	const auto &audioFilesList = Audio::getAudioFilesList();
+	const auto &iterator = std::ranges::find(audioFilesList, audio->getAudioName());
+	if (ImGui::BeginCombo("##audioFilesList", iterator == audioFilesList.end() ? "" : iterator->c_str())) {
 		for (int i = 0; i < static_cast<int>(audioFilesList.size()); ++i) {
 			if (ImGui::Selectable(audioFilesList.at(i).c_str(), i == iterator - audioFilesList.begin())) {
 				audio->getAudioName() = audioFilesList.at(i);
@@ -74,12 +73,14 @@ bool AudioCombo(Localization& local, Audio* audio) {
 }
 
 void Windows::AudioWindow::drawOptions() {
-	auto& local = Localization::getInstance();
+	auto &local = Localization::getInstance();
 
-	Audio* audio = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().at(this->currentElement).get();
+	Audio *audio = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().at(
+		this->currentElement).get();
 
 
-	const bool isProjectDontHaveDirectory = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->directory.empty();
+	const bool isProjectDontHaveDirectory = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->
+	                                                                       directory.empty();
 
 	if (isProjectDontHaveDirectory) {
 		ImGui::SetNextItemWidth(12.5f * ImGui::GetFontSize());
@@ -92,7 +93,7 @@ void Windows::AudioWindow::drawOptions() {
 		audio->spawnEditorAudio();
 	}
 	auto audioFilesList = Audio::getAudioFilesList();
-	const auto& iterator = std::ranges::find(audioFilesList, audio->getAudioName());
+	const auto &iterator = std::ranges::find(audioFilesList, audio->getAudioName());
 	if (iterator != audioFilesList.end()) {
 		if (audio->getEditorAudio().has_value()) {
 			ImGui::SameLine();
@@ -111,7 +112,8 @@ void Windows::AudioWindow::drawOptions() {
 	}
 
 	ImGui::SetNextItemWidth(20.f);
-	if (ImGuiKnobs::Knob(local.get("audio.volume").c_str(), &audio->getVolume(), 0.0f, 2.0f, 0.01f, "%.2f", ImGuiKnobVariant_Wiper)) {
+	if (ImGuiKnobs::Knob(local.get("audio.volume").c_str(), &audio->getVolume(), 0.0f, 2.0f, 0.01f, "%.2f",
+	                     ImGuiKnobVariant_Wiper)) {
 		if (audio->getEditorAudio().has_value()) {
 			const auto audioStream = reinterpret_cast<CLEO::CAudioStream*>(audio->getEditorAudio().value());
 			audioStream->SetVolume(audio->getVolume());
@@ -128,62 +130,66 @@ void Windows::AudioWindow::drawOptions() {
 		ImGui::SetTooltip(local.get("audio.desclaimer_3d_audio").c_str());
 	}
 
-	float* attachPos = nullptr;
+	float *attachPos = nullptr;
 	if (audio->isAudio3D()) {
 		//position
 		DragPosition(audio->getPosition(), [audio] {
 			audio->updateLocation();
-			});
-		if (ImGui::SliderInt(local.get("general.type").c_str(), &audio->getAttachType3d(), 0, 3, local.getArray("audio.attach_type_3d").at(audio->getAttachType3d()).c_str())) {
+		});
+		if (ImGui::SliderInt(local.get("general.type").c_str(), &audio->getAttachType3d(), 0, 3,
+		                     local.getArray("audio.attach_type_3d").at(audio->getAttachType3d()).c_str())) {
 			audio->getAttachUuid() = boost::uuids::uuid{};
 			audio->spawnEditorAudio();
 		}
 
 		switch (audio->getAttachType3d()) {
-			case 1: {
-				const auto& actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
-				const int index = utils::indexByUuid(actors, audio->getAttachUuid());
-				if (utils::Combo(local.get("entities.actor").c_str(), &audio->getAttachUuid(), index, static_cast<int>(actors.size()), [&actors](const int i) {
-	                                           return actors.at(i)->getName();
-                                           }, [&actors](const int i) {
-	                                           return actors.at(i)->getUuid();
-                                           })) {
-					audio->spawnEditorAudio();
-				}
-				if (index != -1)
-					attachPos = actors.at(index)->getPosition();
-				break;
+		case 1: {
+			const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+			const int index = utils::indexByUuid(actors, audio->getAttachUuid());
+			if (utils::Combo(local.get("entities.actor").c_str(), &audio->getAttachUuid(), index, actors.size(),
+			                 [&actors](const int i) {
+				                 return actors.at(i)->getName();
+			                 }, [&actors](const int i) {
+				                 return actors.at(i)->getUuid();
+			                 })) {
+				audio->spawnEditorAudio();
 			}
-			case 2: {
-				const auto& vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
-				const int index = utils::indexByUuid(vehicles, audio->getAttachUuid());
-				if (utils::Combo(local.get("entities.vehicle").c_str(), &audio->getAttachUuid(), index, static_cast<int>(vehicles.size()), [&vehicles](const int i) {
-	                                           return vehicles.at(i)->getName();
-                                           }, [&vehicles](const int i) {
-	                                           return vehicles.at(i)->getUuid();
-                                           })) {
-					audio->spawnEditorAudio();
-				}
-				if (index != -1)
-					attachPos = vehicles.at(index)->getPosition();
-				break;
+			if (index != -1)
+				attachPos = actors.at(index)->getPosition();
+			break;
+		}
+		case 2: {
+			const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
+			const int index = utils::indexByUuid(vehicles, audio->getAttachUuid());
+			if (utils::Combo(local.get("entities.vehicle").c_str(), &audio->getAttachUuid(), index, vehicles.size(),
+			                 [&vehicles](const int i) {
+				                 return vehicles.at(i)->getName();
+			                 }, [&vehicles](const int i) {
+				                 return vehicles.at(i)->getUuid();
+			                 })) {
+				audio->spawnEditorAudio();
 			}
-			case 3: {
-				const auto& objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
-				const int index = utils::indexByUuid(objects, audio->getAttachUuid());
-				if (utils::Combo(local.get("entities.object").c_str(), &audio->getAttachUuid(), index, static_cast<int>(objects.size()), [&objects](const int i) {
-	                                           return objects.at(i)->getName();
-                                           }, [&objects](const int i) {
-	                                           return objects.at(i)->getUuid();
-                                           })) {
-					audio->spawnEditorAudio();
-				}
-				if (index != -1)
-					attachPos = objects.at(index)->getPosition();
-				break;
+			if (index != -1)
+				attachPos = vehicles.at(index)->getPosition();
+			break;
+		}
+		case 3: {
+			const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
+			const int index = utils::indexByUuid(objects, audio->getAttachUuid());
+			if (utils::Combo(local.get("entities.object").c_str(), &audio->getAttachUuid(), index, objects.size(),
+			                 [&objects](const int i) {
+				                 return objects.at(i)->getName();
+			                 }, [&objects](const int i) {
+				                 return objects.at(i)->getUuid();
+			                 })) {
+				audio->spawnEditorAudio();
 			}
-			default:
-				break;
+			if (index != -1)
+				attachPos = objects.at(index)->getPosition();
+			break;
+		}
+		default:
+			break;
 		}
 	}
 
@@ -194,23 +200,17 @@ void Windows::AudioWindow::drawOptions() {
 	ObjectiveDependentInput(audio);
 
 	if (audio->isAudio3D()) {
-		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-		if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-			ImGui::Text(local.get("info_overlay.camera_view").c_str());
-			ImGui::Text(local.get("info_overlay.depend_zoom").c_str());
-			if (audio->getAttachType3d() == 0)
-				ImGui::Text(local.get("info_overlay.move_element").c_str());
-		}
-		ImGui::End();
+		this->listOverlays.emplace_back(local.get("info_overlay.camera_view"));
+		this->listOverlays.emplace_back(local.get("info_overlay.depend_zoom"));
+		if (audio->getAttachType3d() == 0)
+			this->listOverlays.emplace_back(local.get("info_overlay.move_element"));
 
 		if (audio->getAttachType3d() == 0) {
 			if (utils::controlCameraWithMove(audio->getPosition())) {
 				audio->updateLocation();
 			}
 		} else if (attachPos != nullptr) {
-			utils::controlCamera({ attachPos[0], attachPos[1], attachPos[2] });
+			utils::controlCamera({attachPos[0], attachPos[1], attachPos[2]});
 		}
 	}
 }

@@ -12,7 +12,7 @@ CountdownObjective::CountdownObjective(void *_new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void CountdownObjective::draw(Localization &local) {
+void CountdownObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::InputInt(local.get("general.time").c_str(), &this->time_);
 	ImGui::InputText(local.get("general.text").c_str(), this->textGo_.data(), sizeof this->textGo_);
 }

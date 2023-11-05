@@ -13,7 +13,7 @@ AddTimerObjective::AddTimerObjective(void *_new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void AddTimerObjective::draw(Localization &local) {
+void AddTimerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	utils::Combo(local.get("general.type").c_str(), &this->typeTimer_, local.getArray("timer.types"));
 	ImGui::SameLine();
 	if (ImGui::IsItemHovered())

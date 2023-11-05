@@ -160,6 +160,7 @@ void ImGuiHook::ShowMouse(bool state) {
 		CPad::NewMouseControllerState.y = 0;
 		CPad::ClearMouseHistory();
 		CPad::UpdatePads();
+		SetCursorPos(screen::GetScreenWidth() / 2, screen::GetScreenHeight() / 2);
 		m_bMouseVisibility = m_bShowMouse;
 	}
 }

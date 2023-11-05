@@ -10,7 +10,7 @@ WeatherObjective::WeatherObjective(void* _new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void WeatherObjective::draw(Localization& local) {
+void WeatherObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	if (utils::Combo(local.get("general.weather").c_str(), &this->weather_, local.getArray("general.weathers_types"))) {
 		CWeather::ForceWeatherNow(static_cast<short>(this->weather_));
 	}

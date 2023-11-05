@@ -14,7 +14,8 @@ namespace Windows {
 
 	protected:
 		int currentElement = -1;
-		bool dragsItems_ = false;
+		bool dragsItems = false;
+		std::vector<std::string> listOverlays;
 
 		ListWindow() {
 			ProjectsService::getInstance().getCurrentProject().onChangedScene().connect([&] {
@@ -38,6 +39,7 @@ namespace Windows {
 		void draw() override;
 		virtual void selectElement(int i);
 		int getElement();
+		void drawOverlay() const;
 		void unselect();
 	};
 }

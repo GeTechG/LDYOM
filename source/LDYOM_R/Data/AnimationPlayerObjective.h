@@ -29,7 +29,7 @@ public:
 		return 1;
 	}
 
-	void draw(Localization & local) override;
+	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
 	ktwait execute(Scene * scene, Result & result, ktcoro_tasklist & tasklist) override;
 
 	void close() override;

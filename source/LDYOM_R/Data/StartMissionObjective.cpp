@@ -17,7 +17,7 @@ StartMissionObjective::StartMissionObjective(void *_new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void StartMissionObjective::draw(Localization &local) {
+void StartMissionObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	utils::ToggleButton(local.get("mission.show_name").c_str(), &this->showNameMission_);
 	ImGui::BeginDisabled(!this->showNameMission_);
 

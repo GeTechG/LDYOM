@@ -14,7 +14,7 @@ TeleportToVehiclePlayerObjective::TeleportToVehiclePlayerObjective(void *_new): 
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void TeleportToVehiclePlayerObjective::draw(Localization &local) {
+void TeleportToVehiclePlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
 	const int indexVehicle = utils::indexByUuid(vehicles, this->vehicleUuid_);
 

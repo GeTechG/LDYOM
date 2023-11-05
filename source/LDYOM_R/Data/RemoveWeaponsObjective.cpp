@@ -8,7 +8,7 @@ RemoveWeaponsObjective::RemoveWeaponsObjective(void* _new): BaseObjective(_new) 
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void RemoveWeaponsObjective::draw(Localization& local) {
+void RemoveWeaponsObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 }
 
 ktwait RemoveWeaponsObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {

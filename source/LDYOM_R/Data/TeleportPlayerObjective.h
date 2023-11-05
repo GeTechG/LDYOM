@@ -5,12 +5,12 @@
 
 class CVector;
 
-class TeleportPlayerObjective final: public virtual PlayerObjective {
+class TeleportPlayerObjective final : public virtual PlayerObjective {
 private:
 	friend class boost::serialization::access;
 
 	template <class Archive>
-	void serialize(Archive& ar, const unsigned version) {
+	void serialize(Archive &ar, const unsigned version) {
 		ar & boost::serialization::base_object<PlayerObjective>(*this);
 		ar & boost::serialization::make_array(pos_.data(), pos_.size());
 		ar & headingAngle_;
@@ -42,18 +42,19 @@ private:
 	std::optional<CPed*> editorPed_;
 
 	CPed* spawnPed();
-	void characteristicsSection(Localization& local);
+	void characteristicsSection(Localization &local);
+
 public:
 	TeleportPlayerObjective() = default;
-	explicit TeleportPlayerObjective(CVector& pos, float heading);
+	explicit TeleportPlayerObjective(CVector &pos, float heading);
 	~TeleportPlayerObjective() override;
 
 	int getTypeCategory() override {
 		return 0;
 	}
 
-	void draw(Localization& local) override;
-	ktwait execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) override;
+	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
+	ktwait execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) override;
 
 	void spawnEditorPed();
 	void deleteEditorPed();

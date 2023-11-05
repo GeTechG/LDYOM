@@ -26,7 +26,7 @@ public:
 		return 3;
 	}
 
-	void draw(Localization & local) override;
+	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
 	ktwait execute(Scene * scene, Result & result, ktcoro_tasklist & tasklist) override;
 	static void saveGame(bool confirm, int nodeSave, Scene* scene, ktcoro_tasklist& tasklist, std::function<void()> callback);
 };

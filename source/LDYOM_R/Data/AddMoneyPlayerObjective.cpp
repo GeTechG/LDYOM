@@ -11,7 +11,7 @@ AddMoneyPlayerObjective::AddMoneyPlayerObjective(void *_new): BaseObjective(_new
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void AddMoneyPlayerObjective::draw(Localization &local) {
+void AddMoneyPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::DragInt(local.get("general.add").c_str(), &this->money_, 100, 0, 0, "%d $");
 }
 

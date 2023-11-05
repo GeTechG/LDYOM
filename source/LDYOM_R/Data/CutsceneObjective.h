@@ -5,13 +5,12 @@
 #include "WorldObjective.h"
 
 
-
 class CutsceneObjective final : virtual public WorldObjective {
 private:
 	friend class boost::serialization::access;
 
 	template <class Archive>
-	void serialize(Archive& ar, const unsigned version) {
+	void serialize(Archive &ar, const unsigned version) {
 		ar & boost::serialization::base_object<WorldObjective>(*this);
 		ar & attachType_;
 		ar & attachUuid_;
@@ -59,21 +58,22 @@ private:
 	float endFadeInTime = 1.f;
 	bool endCutscene_ = true;
 	bool lockPlayerControl_ = true;
-	
-	std::array<char, TEXT_SIZE> gameText_ = { "" };
+
+	std::array<char, TEXT_SIZE> gameText_ = {""};
 
 	void updateLocation();
+
 public:
 	CutsceneObjective() = default;
-	explicit CutsceneObjective(const CVector& position, const CQuaternion& rotation);
+	explicit CutsceneObjective(const CVector &position, const CQuaternion &rotation);
 	~CutsceneObjective() override = default;
 
 	int getTypeCategory() override {
 		return 1;
 	}
 
-	void draw(Localization& local) override;
-	ktwait execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) override;
+	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
+	ktwait execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) override;
 
 	void open() override;
 

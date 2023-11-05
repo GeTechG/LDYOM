@@ -19,10 +19,10 @@ std::string Windows::VisualEffectsWindow::getNameOption() {
 
 int Windows::VisualEffectsWindow::getListSize() {
 	return static_cast<int>(ProjectsService::getInstance()
-		.getCurrentProject()
-		.getCurrentScene()
-		->getVisualEffects()
-		.size());
+	                        .getCurrentProject()
+	                        .getCurrentScene()
+	                        ->getVisualEffects()
+	                        .size());
 }
 
 void Windows::VisualEffectsWindow::createNewElement() {
@@ -30,9 +30,11 @@ void Windows::VisualEffectsWindow::createNewElement() {
 }
 
 void Windows::VisualEffectsWindow::createNewElementFrom(int i) {
-	const auto& checkpoint = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().at(i);
+	const auto &checkpoint = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().
+	                                                        at(i);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewVisualEffectFrom(*checkpoint);
-	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().back()->spawnEditorVisualEffect();
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().back()->
+	                               spawnEditorVisualEffect();
 }
 
 char* Windows::VisualEffectsWindow::getElementName(int i) {
@@ -40,7 +42,8 @@ char* Windows::VisualEffectsWindow::getElementName(int i) {
 }
 
 void Windows::VisualEffectsWindow::deleteElement(int i) {
-	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().at(i)->deleteEditorVisualEffect();
+	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().at(i)->
+	                               deleteEditorVisualEffect();
 
 	const auto begin = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().begin();
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().erase(begin + i);
@@ -48,16 +51,18 @@ void Windows::VisualEffectsWindow::deleteElement(int i) {
 }
 
 void Windows::VisualEffectsWindow::drawOptions() {
-	auto& local = Localization::getInstance();
+	auto &local = Localization::getInstance();
 
-	VisualEffect* visualEffect = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().at(this->currentElement).get();
+	VisualEffect *visualEffect = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+	                                                            getVisualEffects().at(this->currentElement).get();
 
 	//position
 	DragPosition(visualEffect->getPosition(), [] {});
 
 	ImGui::Separator();
 
-	if (ImGui::SliderInt(local.get("general.type").c_str(), &visualEffect->getType(), 0, 1, local.getArray("visual_effect.types")[visualEffect->getType()].c_str())) {
+	if (ImGui::SliderInt(local.get("general.type").c_str(), &visualEffect->getType(), 0, 1,
+	                     local.getArray("visual_effect.types")[visualEffect->getType()].c_str())) {
 		visualEffect->getEffectType() = 0;
 	}
 
@@ -71,19 +76,14 @@ void Windows::VisualEffectsWindow::drawOptions() {
 		ImGui::DragFloat(local.get("general.rotate").c_str(), &visualEffect->getAngle(), 0.1f, -180.f, 180.f, "%.2f°");
 	}
 
-	ImGui::ColorEdit4(local.get("general.color").c_str(), visualEffect->getColor().data(), ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs);
+	ImGui::ColorEdit4(local.get("general.color").c_str(), visualEffect->getColor().data(),
+	                  ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs);
 
 	ObjectiveDependentInput(visualEffect);
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-		ImGui::Text(local.get("info_overlay.camera_view").c_str());
-		ImGui::Text(local.get("info_overlay.depend_zoom").c_str());
-		ImGui::Text(local.get("info_overlay.move_element").c_str());
-	}
-	ImGui::End();
+	this->listOverlays.emplace_back(local.get("info_overlay.camera_view"));
+	this->listOverlays.emplace_back(local.get("info_overlay.depend_zoom"));
+	this->listOverlays.emplace_back(local.get("info_overlay.move_element"));
 
 	utils::controlCameraWithMove(visualEffect->getPosition());
 }

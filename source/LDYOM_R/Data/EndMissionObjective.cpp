@@ -14,7 +14,7 @@ EndMissionObjective::EndMissionObjective(void *_new): BaseObjective(_new) {
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void EndMissionObjective::draw(Localization &local) {
+void EndMissionObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	utils::ToggleButton(local.get("general.show_text").c_str(), &this->showEndTextMission_);
 	ImGui::BeginDisabled(!this->showEndTextMission_);
 

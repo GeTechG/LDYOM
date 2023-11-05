@@ -11,8 +11,8 @@
 #include "ProjectsService.h"
 #include "utils.h"
 #include "utilsRender.h"
-#include "Localization/Localization.h"
 #include "fmt/core.h"
+#include "Localization/Localization.h"
 
 std::string Windows::VehiclesWindow::getNameList() {
 	return fmt::format("{} {}", ICON_FA_CARS, Localization::getInstance().get("entities.vehicles"));
@@ -24,10 +24,10 @@ std::string Windows::VehiclesWindow::getNameOption() {
 
 int Windows::VehiclesWindow::getListSize() {
 	return static_cast<int>(ProjectsService::getInstance()
-		.getCurrentProject()
-		.getCurrentScene()
-		->getVehicles()
-		.size());
+	                        .getCurrentProject()
+	                        .getCurrentScene()
+	                        ->getVehicles()
+	                        .size());
 }
 
 void Windows::VehiclesWindow::createNewElement() {
@@ -35,7 +35,7 @@ void Windows::VehiclesWindow::createNewElement() {
 }
 
 void Windows::VehiclesWindow::createNewElementFrom(int i) {
-	const auto& vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().at(i);
+	const auto &vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().at(i);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewVehicleFrom(*vehicle);
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().back()->spawnEditorVehicle();
 }
@@ -52,41 +52,48 @@ void Windows::VehiclesWindow::deleteElement(int i) {
 	this->currentElement--;
 }
 
-void characteristicsSection(Localization& local, Vehicle* vehicle) {
+void characteristicsSection(Localization &local, Vehicle *vehicle) {
 	if (ImGui::TreeNode(local.get("general.characteristics").c_str())) {
 		utils::ToggleButton(local.get("vehicle.extended_colors").c_str(), &vehicle->isExtendedColor());
-		if (vehicle->isExtendedColor())
-		{
+		if (vehicle->isExtendedColor()) {
 			if (ImGui::TreeNode(local.get("general.colors").c_str())) {
-				components::extractComObjMatVehicle(vehicle->getEditorVehicle().value(), [&] (int i, components::VehicleComponent comp, components::VehicleAtomic obj, components::VehicleMaterial mat) {
-					ImGui::PushID(i);
-					if (ImGui::ColorEdit4(std::to_string(i).c_str(), vehicle->getColors()[i].second.data(),
-						ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
-						ImGuiColorEditFlags_NoLabel)) {
-						mat.setColor(floatColorToCRGBA(vehicle->getColors()[i].second));
-					}
-					ImGui::SameLine();
-					const auto& nameC = fmt::format("{}:{}:{}", comp.getName(), !mat._material->texture ?
-						"[no texture]"
-						:
-						mat._material->texture->name, mat.getRawPointer());
-					ImGui::Text(nameC.c_str());
-					ImGui::PopID();
-				});
+				components::extractComObjMatVehicle(vehicle->getEditorVehicle().value(),
+				                                    [&](int i, components::VehicleComponent comp,
+				                                        components::VehicleAtomic obj,
+				                                        components::VehicleMaterial mat) {
+					                                    ImGui::PushID(i);
+					                                    if (ImGui::ColorEdit4(
+						                                    std::to_string(i).c_str(),
+						                                    vehicle->getColors()[i].second.data(),
+						                                    ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs
+						                                    +
+						                                    ImGuiColorEditFlags_NoLabel)) {
+						                                    mat.setColor(
+							                                    floatColorToCRGBA(vehicle->getColors()[i].second));
+					                                    }
+					                                    ImGui::SameLine();
+					                                    const auto &nameC = fmt::format(
+						                                    "{}:{}:{}", comp.getName(), !mat._material->texture
+								                                    ? "[no texture]"
+								                                    : mat._material->texture->name,
+						                                    mat.getRawPointer());
+					                                    ImGui::Text(nameC.c_str());
+					                                    ImGui::PopID();
+				                                    });
 				ImGui::TreePop();
 			}
 		} else {
 			if (ImGui::ColorEdit4("##primaryColorE", vehicle->getPrimaryColor(),
-				ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
-				ImGuiColorEditFlags_NoLabel)) {
+			                      ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
+			                      ImGuiColorEditFlags_NoLabel)) {
 				vehicle->setEditorPrimaryColor();
 			}
 			ImGui::SameLine();
 			ImGui::Text(local.get("vehicle.primary_color").c_str());
 
 			if (ImGui::ColorEdit4("##secondaryColorE", vehicle->getSecondaryColor(),
-				ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
-				ImGuiColorEditFlags_NoLabel)) {
+			                      ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
+			                      ImGuiColorEditFlags_NoLabel)) {
 				vehicle->setEditorSecondaryColor();
 			}
 			ImGui::SameLine();
@@ -98,18 +105,21 @@ void characteristicsSection(Localization& local, Vehicle* vehicle) {
 		ImGui::PushItemWidth(150.0f);
 		ImGui::InputInt(local.get("general.health").c_str(), &vehicle->getHealth(), 0, 0);
 
-		if (ImGui::SliderInt(fmt::format("{} A", local.get("vehicle.component")).c_str(), &vehicle->getComponentTypeA(), -1, 5)) {
+		if (ImGui::SliderInt(fmt::format("{} A", local.get("vehicle.component")).c_str(), &vehicle->getComponentTypeA(),
+		                     -1, 5)) {
 			vehicle->spawnEditorVehicle(true);
 		}
-		if (ImGui::SliderInt(fmt::format("{} B", local.get("vehicle.component")).c_str(), &vehicle->getComponentTypeB(), -1, 5)) {
+		if (ImGui::SliderInt(fmt::format("{} B", local.get("vehicle.component")).c_str(), &vehicle->getComponentTypeB(),
+		                     -1, 5)) {
 			vehicle->spawnEditorVehicle(true);
 		}
 		if (ImGui::InputText(local.get("vehicle.numberplate").c_str(), vehicle->getNumberplate(), 9))
 			vehicle->spawnEditorVehicle();
 
-		static const std::string cities_names[3] = { "Los Santos", "San Fierro", "Las Veturas" };
+		static const std::string cities_names[3] = {"Los Santos", "San Fierro", "Las Veturas"};
 
-		if (ImGui::SliderInt(local.get("general.city").c_str(), &vehicle->getNumberplateCity(), -1, 1, cities_names[vehicle->getNumberplateCity() + 1].c_str()))
+		if (ImGui::SliderInt(local.get("general.city").c_str(), &vehicle->getNumberplateCity(), -1, 1,
+		                     cities_names[vehicle->getNumberplateCity() + 1].c_str()))
 			vehicle->spawnEditorVehicle();
 
 		ImGui::PopItemWidth();
@@ -132,9 +142,10 @@ void characteristicsSection(Localization& local, Vehicle* vehicle) {
 }
 
 void Windows::VehiclesWindow::drawOptions() {
-	auto& local = Localization::getInstance();
+	auto &local = Localization::getInstance();
 
-	Vehicle* vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().at(this->currentElement).get();
+	Vehicle *vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().at(
+		this->currentElement).get();
 
 	//position
 	InputPosition(vehicle->getPosition(), [vehicle] { vehicle->updateLocation(); });
@@ -143,8 +154,7 @@ void Windows::VehiclesWindow::drawOptions() {
 
 	//modelSelection(vehicle, local);
 
-	if (ImGui::Button(local.get("general.model").c_str()))
-	{
+	if (ImGui::Button(local.get("general.model").c_str())) {
 		popupVehicleSelector_.show();
 	}
 
@@ -153,7 +163,7 @@ void Windows::VehiclesWindow::drawOptions() {
 	popupVehicleSelector_.draw([&](const int model) {
 		vehicle->getModelId() = model;
 		vehicle->spawnEditorVehicle(true);
-		});
+	});
 
 	ObjectiveDependentInput(vehicle);
 
@@ -161,26 +171,21 @@ void Windows::VehiclesWindow::drawOptions() {
 		EditByPlayerService::getInstance().editByPlayerVehicle(*vehicle);
 	}
 
-	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
-	if (ImGui::Begin("##controlOverlay", nullptr, windowFlags)) {
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
-		ImGui::Text(local.get("info_overlay.camera_view").c_str());
-		ImGui::PopTextWrapPos();
-	}
-	ImGui::End();
+	this->listOverlays.emplace_back(local.get("info_overlay.camera_view"));
 
-	utils::controlCamera(CVector(vehicle->getPosition()[0], vehicle->getPosition()[1], vehicle->getPosition()[2] + 1.0f));
+
+	utils::controlCamera(
+		CVector(vehicle->getPosition()[0], vehicle->getPosition()[1], vehicle->getPosition()[2] + 1.0f));
 }
 
 void Windows::VehiclesWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
-	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
-	plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
+	plugin::Command<Commands::SET_PLAYER_CONTROL>(0, true);
+	plugin::Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 }
 
 void Windows::VehiclesWindow::open() {
 	ListWindow::open();
-	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
+	plugin::Command<Commands::SET_PLAYER_CONTROL>(0, false);
 }

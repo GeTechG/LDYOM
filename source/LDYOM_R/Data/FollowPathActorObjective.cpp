@@ -17,7 +17,7 @@ FollowPathActorObjective::FollowPathActorObjective(void *_new): BaseObjective(_n
 	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
 }
 
-void FollowPathActorObjective::draw(Localization &local) {
+void FollowPathActorObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
 	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
 
