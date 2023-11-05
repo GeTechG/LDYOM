@@ -16,30 +16,29 @@ AnimationActorObjective::AnimationActorObjective(void *_new): BaseObjective(_new
 }
 
 void AnimationActorObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
+	ActorObjective::draw(local, listOverlay);
+
 	const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
 	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
 
-	IncorrectHighlight(indexActor == -1, [&] {
-		utils::Combo(local.get("entities.actor").c_str(), &this->actorUuid_, indexActor, actors.size(),
-		             [&actors](const int i) {
-			             return actors.at(i)->getName();
-		             }, [&actors](const int i) {
-			             return actors.at(i)->getUuid();
-		             });
-	});
-
 	using namespace plugin;
 
-	bool play = false;
 	const auto &packsNames = ModelsService::getInstance().getPacksNames();
+	bool play = false;
+
+	ImGui::BeginDisabled(indexActor == -1);
 	if (utils::Combo(local.get("animation.pack").c_str(), &this->pack_, packsNames)) {
 		this->animation_ = 0;
 		play = true;
 	}
 
+	const auto animations = ModelsService::getInstance().getAnimations();
+	if (utils::Combo(local.get("animation.title").c_str(), &this->animation_,
+	                 animations.at(packsNames[this->pack_]))) {
+		play |= true;
+	}
+	ImGui::EndDisabled();
 
-	play |= utils::Combo(local.get("animation.title").c_str(), &this->animation_,
-	                     ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]));
 	utils::ToggleButton(local.get("animation.looped").c_str(), &this->looped_);
 	ImGui::DragFloat(local.get("animation.smoothness").c_str(), &this->blend_, 0.01f, FLT_EPSILON, 1.f);
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->time_, 1.0f, -1.0f, FLT_MAX);
@@ -48,12 +47,12 @@ void AnimationActorObjective::draw(Localization &local, std::vector<std::string>
 	static auto lastTime = 0u;
 	if (ImGui::IsKeyPressed(ImGuiKey_Y, true) && CTimer::m_snTimeInMilliseconds - lastTime > 500) {
 		this->animation_++;
-		if (this->animation_ >= ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]).size()) {
+		if (this->animation_ >= static_cast<int>(animations.at(packsNames[this->pack_]).size())) {
 			this->pack_++;
-			this->animation_ %= ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]).size();
-		}
-		if (this->pack_ >= packsNames.size()) {
-			this->pack_ %= packsNames.size();
+			if (this->pack_ >= static_cast<int>(packsNames.size())) {
+				this->pack_ %= static_cast<int>(packsNames.size());
+			}
+			this->animation_ %= static_cast<int>(animations.at(packsNames[this->pack_]).size());
 		}
 
 		play = true;
@@ -63,10 +62,10 @@ void AnimationActorObjective::draw(Localization &local, std::vector<std::string>
 		this->animation_--;
 		if (this->animation_ < 0) {
 			this->pack_--;
-			this->animation_ = ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]).size() - 1;
-		}
-		if (this->pack_ < 0) {
-			this->pack_ = packsNames.size() - 1;
+			if (this->pack_ < 0) {
+				this->pack_ = static_cast<int>(packsNames.size()) - 1;
+			}
+			this->animation_ = static_cast<int>(animations.at(packsNames[this->pack_]).size()) - 1;
 		}
 
 		play = true;
@@ -74,12 +73,13 @@ void AnimationActorObjective::draw(Localization &local, std::vector<std::string>
 		lastTime = CTimer::m_snTimeInMilliseconds;
 	}
 
-	if (play) {
+	if (play && indexActor != -1) {
+		const auto &actor = actors.at(indexActor);
 		if (!Command<Commands::HAS_ANIMATION_LOADED>(packsNames[this->pack_].c_str()))
 			Command<Commands::REQUEST_ANIMATION>(packsNames[this->pack_].c_str());
-		const auto &anims = ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]);
+		const auto &anims = animations.at(packsNames[this->pack_]);
 		Command<Commands::TASK_PLAY_ANIM_NON_INTERRUPTABLE>(
-			static_cast<CPed*>(FindPlayerPed()),
+			actor->getEditorPed().value(),
 			anims[this->animation_].c_str(),
 			packsNames[this->pack_].c_str(), 10.f * (1.f - (this->blend_ - FLT_EPSILON)),
 			this->looped_, false, false, false, 0);
@@ -125,5 +125,8 @@ ktwait AnimationActorObjective::execute(Scene *scene, Actor *actor, Result &resu
 
 void AnimationActorObjective::close() {
 	ActorObjective::close();
-	FindPlayerPed()->m_pIntelligence->ClearTasks(true, true);
+	const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
+	if (indexActor != -1)
+		actors[indexActor]->getEditorPed().value()->m_pIntelligence->ClearTasks(true, true);
 }
