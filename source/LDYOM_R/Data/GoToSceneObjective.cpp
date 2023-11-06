@@ -66,7 +66,7 @@ void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &lis
 
 		if (this->blipType_ == 0) {
 			if (utils::Combo(local.get("general.color_marker").c_str(), &this->blipColor_,
-			                 local.getArray("general.color_marker_enum"), 9)) {
+			                 local.getArray("general.color_marker_enum"), 6)) {
 				this->spawnEditorBlip();
 			}
 		} else {

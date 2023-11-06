@@ -1,7 +1,7 @@
 ﻿#include <sol.hpp>
 #include "../Data/Checkpoint.h"
 
-void CheckpointLuaWrap(sol::state& state) {
+void CheckpointLuaWrap(sol::state &state) {
 	auto clazz = state.new_usertype<Checkpoint>("Checkpoint");
 	clazz["getUuid"] = &Checkpoint::getUuid;
 	clazz["getEditorCheckpoint"] = &Checkpoint::getEditorCheckpoint;
@@ -16,9 +16,6 @@ void CheckpointLuaWrap(sol::state& state) {
 	clazz["getBlipColor"] = &Checkpoint::getBlipColor;
 	clazz["getColor"] = &Checkpoint::getColor;
 	clazz["getCheckpointType"] = &Checkpoint::getCheckpointType;
-	clazz["getPulsePeriod"] = &Checkpoint::getPulsePeriod;
-	clazz["getPulseFraction"] = &Checkpoint::getPulseFraction;
-	clazz["getRotateRate"] = &Checkpoint::getRotateRate;
 	clazz["getBlipType"] = &Checkpoint::getBlipType;
 	clazz["getBlipSprite"] = &Checkpoint::getBlipSprite;
 	clazz["getAngle"] = &Checkpoint::getAngle;

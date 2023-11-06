@@ -16,11 +16,7 @@ using namespace plugin;
 int VehicleObjective::spawnBlip(CVehicle *vehicle) {
 	int handle;
 	Command<Commands::ADD_BLIP_FOR_CAR>(vehicle, &handle);
-	if (this->colorBlip_ != 10) {
-		CRadar::ChangeBlipColour(handle, this->colorBlip_ - 1);
-	} else {
-		CRadar::SetBlipFriendly(handle, 1);
-	}
+	CRadar::ChangeBlipColour(handle, this->colorBlip_ - 1);
 	return handle;
 }
 
@@ -45,7 +41,7 @@ void VehicleObjective::draw(Localization &local, std::vector<std::string> &listO
 	ImGui::Separator();
 
 	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip_,
-	                 local.getArray("general.color_marker_enum")))
+	                 local.getArray("general.color_marker_enum"), 6))
 		this->spawnEditorBlip();
 
 	if (indexVehicle != -1) {

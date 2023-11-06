@@ -140,8 +140,14 @@ ktwait CheckpointObjective::execute(Scene *scene, Result &result, ktcoro_tasklis
 				                                                    radius, radius, radius, false);
 			break;
 		case 3: {
-			auto vehicle = scene->getVehicles().at(vehicleIdx)->getProjectVehicle().value();
-			bool isPlayerInCar = Command<Commands::IS_CHAR_IN_CAR>(playerPed, vehicle);
+			auto &vehicle = scene->getVehicles().at(vehicleIdx);
+			if (!vehicle->getProjectVehicle().has_value()) {
+				setObjectiveError(result, *this, NotExists, "The entity of the vehicle does not exist.");
+				co_return;
+			}
+
+			const auto vehicleRef = vehicle->getProjectVehicle().value();
+			bool isPlayerInCar = Command<Commands::IS_CHAR_IN_CAR>(playerPed, vehicleRef);
 
 			if (!isPlayerInCar) {
 				checkpoint->deleteProjectBlip();
@@ -153,17 +159,13 @@ ktwait CheckpointObjective::execute(Scene *scene, Result &result, ktcoro_tasklis
 				int blipComeBack;
 
 				if (this->colorBlipComeBackVehicle_ > 0) {
-					Command<Commands::ADD_BLIP_FOR_CAR>(vehicle, &blipComeBack);
+					Command<Commands::ADD_BLIP_FOR_CAR>(vehicleRef, &blipComeBack);
 					this->projectComeBackBlip_ = blipComeBack;
-					if (this->colorBlipComeBackVehicle_ != 10) {
-						CRadar::ChangeBlipColour(blipComeBack, this->colorBlipComeBackVehicle_ - 1);
-					} else {
-						CRadar::SetBlipFriendly(blipComeBack, 1);
-					}
+					CRadar::ChangeBlipColour(blipComeBack, this->colorBlipComeBackVehicle_ - 1);
 				}
 
 				while (!isPlayerInCar) {
-					isPlayerInCar = Command<Commands::IS_CHAR_IN_CAR>(playerPed, vehicle);
+					isPlayerInCar = Command<Commands::IS_CHAR_IN_CAR>(playerPed, vehicleRef);
 					co_await 1;
 				}
 				this->removeProjectComeBackBlip();
@@ -226,7 +228,7 @@ void CheckpointObjective::draw(Localization &local, std::vector<std::string> &li
 		ImGui::InputText(local.get("general.text").c_str(), this->textComeBackVehicle_.data(),
 		                 sizeof this->textComeBackVehicle_);
 		utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlipComeBackVehicle_,
-		             local.getArray("general.color_marker_enum"));
+		             local.getArray("general.color_marker_enum"), 6);
 		ImGui::PopID();
 	}
 

@@ -22,10 +22,13 @@
 
 using namespace plugin;
 
-std::optional<int> Checkpoint::spawnCheckpoint() {
-	const int scriptCheckpoint = CTheScripts::AddScriptCheckpoint(this->pos_[0], this->pos_[1], this->pos_[2],
-	                                                              this->pos_[0], this->pos_[1], this->pos_[2],
-	                                                              this->radius_, this->checkpointType_);
+constexpr int CHECKPOINT_TYPES[] = {0, 1, 2, 5};
+
+std::optional<int> Checkpoint::spawnCheckpoint() const {
+	int scriptCheckpoint;
+	Command<Commands::CREATE_CHECKPOINT>(this->checkpointType_, this->pos_[0], this->pos_[1], this->pos_[2],
+	                                     this->pos_[0], this->pos_[1],
+	                                     this->pos_[2], this->radius_, &scriptCheckpoint);
 	if (scriptCheckpoint == 0)
 		return std::nullopt;
 	return scriptCheckpoint;
@@ -42,14 +45,11 @@ void Checkpoint::drawSphere() {
 	const auto blue = static_cast<unsigned char>(color_[2] * 255);
 	const auto alpha = static_cast<unsigned char>(color_[3] * 255);
 	if (this->type == 0) {
-		C3dMarkers::PlaceMarkerSet(reinterpret_cast<unsigned>(this), static_cast<unsigned short>(this->checkpointType_),
-		                           pos, this->radius_, red, green, blue, alpha,
-		                           static_cast<unsigned short>(this->pulsePeriod), this->pulseFraction,
-		                           static_cast<short>(this->rotateRate));
+		C3dMarkers::PlaceMarkerSet(reinterpret_cast<unsigned>(this), CHECKPOINT_TYPES[this->checkpointType_],
+		                           pos, this->radius_, red, green, blue, alpha, 2048, 0.1f, 228u);
 	} else {
-		C3dMarkers::PlaceMarkerCone(reinterpret_cast<unsigned>(this), pos, this->radius_, red, green, blue, alpha,
-		                            static_cast<unsigned short>(this->pulsePeriod), this->pulseFraction,
-		                            static_cast<short>(this->rotateRate), false);
+		C3dMarkers::PlaceMarkerCone(reinterpret_cast<unsigned>(this), pos, this->radius_, red, green, blue, alpha, 2048,
+		                            0.1f, 228u, false);
 	}
 }
 
@@ -85,9 +85,6 @@ Checkpoint::Checkpoint(const Checkpoint &other): ObjectiveDependent{other},
                                                  blipColor_{other.blipColor_},
                                                  color_{other.color_},
                                                  checkpointType_{other.checkpointType_},
-                                                 pulsePeriod{other.pulsePeriod},
-                                                 pulseFraction{other.pulseFraction},
-                                                 rotateRate{other.rotateRate},
                                                  blipType_{other.blipType_},
                                                  blipSprite_{other.blipSprite_},
                                                  angle{other.angle} {
@@ -109,9 +106,6 @@ Checkpoint& Checkpoint::operator=(const Checkpoint &other) {
 	blipColor_ = other.blipColor_;
 	color_ = other.color_;
 	checkpointType_ = other.checkpointType_;
-	pulsePeriod = other.pulsePeriod;
-	pulseFraction = other.pulseFraction;
-	rotateRate = other.rotateRate;
 	blipType_ = other.blipType_;
 	blipSprite_ = other.blipSprite_;
 	angle = other.angle;
@@ -197,18 +191,6 @@ std::array<float, 4>& Checkpoint::getColor() {
 
 int& Checkpoint::getCheckpointType() {
 	return checkpointType_;
-}
-
-int& Checkpoint::getPulsePeriod() {
-	return pulsePeriod;
-}
-
-float& Checkpoint::getPulseFraction() {
-	return pulseFraction;
-}
-
-int& Checkpoint::getRotateRate() {
-	return rotateRate;
 }
 
 int& Checkpoint::getBlipType() {

@@ -3,33 +3,31 @@
 #include <CCheckpoint.h>
 #include <optional>
 #include <boost/serialization/access.hpp>
-#include "boost/uuid/uuid.hpp"
 #include <boost/serialization/base_object.hpp>
+#include "boost/uuid/uuid.hpp"
 
+#include <boost/serialization/array.hpp>
 #include "constants.h"
 #include "INameable.h"
 #include "IPositionable.h"
 #include "IUuidable.h"
 #include "ObjectiveDependent.h"
-#include <boost/serialization/array.hpp>
 
 class Checkpoint final : public ObjectiveDependent, public INameable, public IPositionable, public IUuidable {
 private:
 	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version) {
+
+	template <class Archive>
+	void serialize(Archive &ar, const unsigned int version) {
 		ar & boost::serialization::base_object<ObjectiveDependent>(*this);
 		ar & this->uuid_;
-		ar& boost::serialization::make_array(this->name_.data(), this->name_.size());
-		ar& boost::serialization::make_array(this->pos_.data(), this->pos_.size());
+		ar & boost::serialization::make_array(this->name_.data(), this->name_.size());
+		ar & boost::serialization::make_array(this->pos_.data(), this->pos_.size());
 		ar & type;
 		ar & radius_;
 		ar & blipColor_;
 		ar & boost::serialization::make_array(color_.data(), color_.size());
 		ar & checkpointType_;
-		ar & pulsePeriod;
-		ar & pulseFraction;
-		ar & rotateRate;
 		ar & blipType_;
 		ar & blipSprite_;
 		ar & angle;
@@ -48,24 +46,22 @@ private:
 	std::array<float, 3> pos_{};
 	int type = 0;
 	float radius_ = 1.f;
-	int   blipColor_ = 0;
-	std::array<float, 4> color_ = { 1.f, 0.f, 0.f, 0.894f };
+	int blipColor_ = 0;
+	std::array<float, 4> color_ = {1.f, 0.f, 0.f, 0.894f};
 	int checkpointType_ = 0;
-	int pulsePeriod = 2048;
-	float pulseFraction = 0.1f;
-	int rotateRate = 0;
 	int blipType_ = 0;
 	int blipSprite_ = 0;
 	float angle = 0.f;
 	bool rerender = false;
 
-	std::optional<int> spawnCheckpoint();
+	std::optional<int> spawnCheckpoint() const;
+
 public:
 	Checkpoint() = default;
-	Checkpoint(const char* name, const CVector& pos);
+	Checkpoint(const char *name, const CVector &pos);
 
-	Checkpoint(const Checkpoint& other);
-	Checkpoint& operator=(const Checkpoint& other);
+	Checkpoint(const Checkpoint &other);
+	Checkpoint& operator=(const Checkpoint &other);
 
 	~Checkpoint() override;
 
@@ -85,9 +81,6 @@ public:
 	int& getBlipColor();
 	std::array<float, 4>& getColor();
 	int& getCheckpointType();
-	int& getPulsePeriod();
-	float& getPulseFraction();
-	int& getRotateRate();
 	int& getBlipType();
 	int& getBlipSprite();
 	float& getAngle();

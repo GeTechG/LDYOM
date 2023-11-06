@@ -269,7 +269,7 @@ int utils::createBlip(float *pos, int blipType, int blipColor, int blipSprite) {
 	int blip;
 	if (blipType == 0) {
 		Command<Commands::ADD_BLIP_FOR_COORD>(pos[0], pos[1], pos[2], &blip);
-		if (blipColor != 10) {
+		if (blipColor != 6) {
 			CRadar::ChangeBlipColour(blip, blipColor - 1);
 		} else {
 			CRadar::SetBlipFriendly(blip, 1);

@@ -16,7 +16,7 @@ using namespace plugin;
 int ActorObjective::spawnBlip(CPed *ped) {
 	int handle;
 	Command<Commands::ADD_BLIP_FOR_CHAR>(ped, &handle);
-	if (this->colorBlip_ != 10) {
+	if (this->colorBlip_ != 6) {
 		CRadar::ChangeBlipColour(handle, this->colorBlip_ - 1);
 	} else {
 		CRadar::SetBlipFriendly(handle, 1);

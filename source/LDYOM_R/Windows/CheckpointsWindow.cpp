@@ -72,20 +72,13 @@ void Windows::CheckpointsWindow::drawOptions() {
 
 	bool changed = false;
 
+	auto &checkpointType = checkpoint->getCheckpointType();
 	if (checkpoint->getType() == 0) {
-		changed |= ImGui::SliderInt(local.get("checkpoint.type_sphere").c_str(), &checkpoint->getCheckpointType(), 0,
-		                            6);
-
+		changed |= ImGui::SliderInt(local.get("checkpoint.type_sphere").c_str(), &checkpointType, 0, 3);
 		changed |= ImGui::ColorEdit4(local.get("checkpoint.color").c_str(), checkpoint->getColor().data());
-		changed |= ImGui::DragInt(local.get("checkpoint_objective.pulse_period").c_str(), &checkpoint->getPulsePeriod(),
-		                          64, 0, USHRT_MAX);
-		changed |= ImGui::InputFloat(local.get("checkpoint_objective.pulse_fraction").c_str(),
-		                             &checkpoint->getPulseFraction(), .0f, .0f);
-		changed |= ImGui::DragInt(local.get("checkpoint_objective.rotate_rate").c_str(), &checkpoint->getRotateRate(),
-		                          10, SHRT_MIN, SHRT_MAX);
 		changed |= ImGui::DragFloat(local.get("general.radius").c_str(), &checkpoint->getRadius(), 0.05f, 0.0f, 100.0f);
 	} else {
-		if (ImGui::SliderInt(local.get("checkpoint.type_sphere").c_str(), &checkpoint->getCheckpointType(), 0, 8))
+		if (ImGui::SliderInt(local.get("checkpoint.type_sphere").c_str(), &checkpointType, 0, 3))
 			checkpoint->spawnEditorCheckpoint();
 		changed |= ImGui::DragFloat(local.get("general.rotate").c_str(), &checkpoint->getAngle(), 0.1f, -180.f, 180.f,
 		                            "%.2f°");
@@ -105,7 +98,7 @@ void Windows::CheckpointsWindow::drawOptions() {
 
 	if (checkpoint->getBlipType() == 0) {
 		if (utils::Combo(local.get("general.color_marker").c_str(), &checkpoint->getBlipColor(),
-		                 local.getArray("general.color_marker_enum"), 9)) {
+		                 local.getArray("general.color_marker_enum"), 6)) {
 			checkpoint->spawnEditorBlip();
 		}
 	} else {
