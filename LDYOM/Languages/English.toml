@@ -30,7 +30,7 @@ must_survive = "Must survive"
 edit_manually = "Edit manually"
 radius = "Radius"
 color_marker = "Color marker"
-color_marker_enum = ["No marker", "Red", "Green", "Light Blue", "White", "Yellow", "Purple", "Cyan", "Threat", "Destination", "Blue"]
+color_marker_enum = ["No marker", "Red", "Green", "Light Blue", "White", "Yellow", "Blue"]
 text = "Text"
 time = "Time (sec)"
 type_marker = "Type marker"
@@ -125,6 +125,7 @@ follow_path_vehicle = "Follow path vehicle"
 jump_to_objective = "Jump to objective"
 set_global_variable = "Set Global Variable"
 save = "Save"
+nothing_params = "This objective has no parameters"
 
 [objective_categories]
 world = "World"
@@ -301,7 +302,8 @@ pulse_fraction = "Pulse fraction"
 rotate_rate = "Rotate rate"
 
 [info_overlay]
-list_window = "Hold and drag - Raise/lower an item in the list\nRCM - Rename item"
+list_window = "RCM - Rename item"
+objective_window = "Hold and drag - Raise/lower an item in the list"
 camera_view = "Move Camera - RMB, Zoom - Shift + MWheel"
 move_element = "Move current element - Arrows, QE"
 depend_zoom = "Speed depends on the zoom"
@@ -424,6 +426,7 @@ custom_special_ped_models = "Custom special ped models"
 custom_vehicle_models = "Custom vehicle models"
 custom_weapon_models = "Custom weapon models"
 custom_ped_animations = "Custom ped animations"
+scaleUi = "Scale"
 
 [console_window]
 title = "Console"
