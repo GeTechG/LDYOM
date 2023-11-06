@@ -196,8 +196,8 @@ public:
 		};
 		Events::initRwEvent += [] {};
 		Events::shutdownPoolsEvent.before += [] {
-			/*ProjectsService::getInstance().getCurrentProject().getCurrentScene()->unloadProjectScene();
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->unloadEditorScene();*/
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->unloadProjectScene();
+			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->unloadEditorScene();
 		};
 	}
 } ldyomr;

@@ -227,7 +227,7 @@ void Checkpoint::spawnEditorCheckpoint() {
 	this->deleteEditorCheckpoint();
 
 	if (this->type == 0) {
-		auto slot = reinterpret_cast<unsigned>(&this->editorSphere);
+		auto slot = reinterpret_cast<unsigned>(this) + 1;
 		Events::processScriptsEvent.AddAtId(slot, [this] {
 			this->drawSphere();
 		});
@@ -286,7 +286,7 @@ void Checkpoint::spawnProjectEntity() {
 	this->deleteProjectEntity();
 
 	if (this->type == 0) {
-		unsigned slot = reinterpret_cast<unsigned>(&this->projectSphere);
+		auto slot = reinterpret_cast<unsigned>(this) + 2;
 		Events::processScriptsEvent.AddAtId(slot, [this] {
 			this->drawSphere();
 		});
@@ -304,7 +304,7 @@ void Checkpoint::spawnProjectEntity() {
 	if (scene.has_value() && tasklist != nullptr) {
 		const auto onCheckpointSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 			"onCheckpointSpawn"].get_or_create<sol::table>();
-		for (auto [_, func] : onCheckpointSpawn) {
+		for (auto func : onCheckpointSpawn | std::views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();

@@ -10,7 +10,7 @@ WaitSignalObjective::WaitSignalObjective(void *_new): BaseObjective(_new) {
 }
 
 void WaitSignalObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
-	ImGui::Dummy(ImVec2(400.f, 0.f));
+	ImGui::Text(local.get("objective.nothing_params").c_str());
 }
 
 ktwait WaitSignalObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {

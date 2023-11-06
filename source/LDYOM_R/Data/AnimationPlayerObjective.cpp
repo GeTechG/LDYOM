@@ -35,12 +35,14 @@ void AnimationPlayerObjective::draw(Localization &local, std::vector<std::string
 	static auto lastTime = 0u;
 	if (ImGui::IsKeyPressed(ImGuiKey_Y, true) && CTimer::m_snTimeInMilliseconds - lastTime > 500) {
 		this->animation_++;
-		if (this->animation_ >= ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]).size()) {
+		if (this->animation_ >= static_cast<int>(ModelsService::getInstance().getAnimations().at(
+			packsNames[this->pack_]).size())) {
 			this->pack_++;
-			this->animation_ %= ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]).size();
-		}
-		if (this->pack_ >= packsNames.size()) {
-			this->pack_ %= packsNames.size();
+			if (this->pack_ >= static_cast<int>(packsNames.size())) {
+				this->pack_ %= static_cast<int>(packsNames.size());
+			}
+			this->animation_ %= static_cast<int>(ModelsService::getInstance().getAnimations().at(
+				packsNames[this->pack_]).size());
 		}
 
 		play = true;
@@ -50,10 +52,11 @@ void AnimationPlayerObjective::draw(Localization &local, std::vector<std::string
 		this->animation_--;
 		if (this->animation_ < 0) {
 			this->pack_--;
-			this->animation_ = ModelsService::getInstance().getAnimations().at(packsNames[this->pack_]).size() - 1;
-		}
-		if (this->pack_ < 0) {
-			this->pack_ = packsNames.size() - 1;
+			if (this->pack_ < 0) {
+				this->pack_ = static_cast<int>(packsNames.size()) - 1;
+			}
+			this->animation_ = static_cast<int>(ModelsService::getInstance().getAnimations().at(packsNames[this->pack_])
+			                                                                .size()) - 1;
 		}
 
 		play = true;
