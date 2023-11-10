@@ -448,6 +448,16 @@ error_2 = """Error 1 (Not Selected)
 This error means that a mandatory field has not been entered somewhere, usually such fields are highlighted in red when not filled in, check the place where the error is indicated.
 """
 
+[tools]
+title = "Tools"
+tp_to_marker = "Teleport to marker"
+jetpack = "Jetpack"
+enexMarker = "Disable ENEX markers"
+tp_to_actor = "Teleport to actor"
+tp_to_vehicle = "Teleport to vehicle"
+tp_to_object = "Teleport to object"
+antifreez = "Antifreez"
+
 [info]
 title = "Info"
 author_ldyom = "Author LDYOM: %s"
@@ -469,9 +479,9 @@ hk_accept = "Accept"
 hk_cancel = "Cancel"
 hk_save = "Save"
 hk_save_desc = "Save current project"
-hk_guizmoTranslate = "Guizmo - Translate"
-hk_guizmoRotate = "Guizmo - Rotate"
-hk_guizmoScale = "Guizmo - Scale"
+hk_guizmoTranslate = "Gizmo - Translate"
+hk_guizmoRotate = "Gizmo - Rotate"
+hk_guizmoScale = "Gizmo - Scale"
 
 [object_categories]
 c_all = "All object models"
