@@ -335,6 +335,7 @@
     <ClCompile Include="Windows\SaveConfirmPopup.cpp" />
     <ClCompile Include="Windows\SceneSettingsPopup.cpp" />
     <ClCompile Include="Windows\SettingsWindow.cpp" />
+    <ClCompile Include="Windows\ToolsWindow.cpp" />
     <ClCompile Include="Windows\TrainsWindow.cpp" />
     <ClCompile Include="Windows\utilsRender.cpp" />
     <ClCompile Include="Windows\VehiclesWindow.cpp" />
@@ -414,6 +415,19 @@
     <ClInclude Include="ImGui\ImGuiHook.h" />
     <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\easylogging\easylogging++.h" />
+    <ClInclude Include="include\fmt\args.h" />
+    <ClInclude Include="include\fmt\chrono.h" />
+    <ClInclude Include="include\fmt\color.h" />
+    <ClInclude Include="include\fmt\compile.h" />
+    <ClInclude Include="include\fmt\core.h" />
+    <ClInclude Include="include\fmt\format-inl.h" />
+    <ClInclude Include="include\fmt\format.h" />
+    <ClInclude Include="include\fmt\locale.h" />
+    <ClInclude Include="include\fmt\os.h" />
+    <ClInclude Include="include\fmt\ostream.h" />
+    <ClInclude Include="include\fmt\printf.h" />
+    <ClInclude Include="include\fmt\ranges.h" />
+    <ClInclude Include="include\fmt\xchar.h" />
     <ClInclude Include="include\forward_declarations.h" />
     <ClInclude Include="include\imgui_notify.h" />
     <ClInclude Include="include\ktcoro_wait.hpp" />
@@ -783,6 +797,7 @@
     <ClInclude Include="Windows\PopupWeaponSelector.h" />
     <ClInclude Include="Windows\SaveConfirmPopup.h" />
     <ClInclude Include="Windows\SceneSettingsPopup.h" />
+    <ClInclude Include="Windows\ToolsWindow.h" />
     <ClInclude Include="Windows\TrainsWindow.h" />
     <ClInclude Include="Windows\utilsRender.h" />
     <ClInclude Include="Windows\AbstractWindow.h" />

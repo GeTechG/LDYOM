@@ -395,6 +395,12 @@
     <Filter Include="thirdparty\glm">
       <UniqueIdentifier>{9a8620b4-15b4-43fe-9337-0b26df8e9c2f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Windows\ToolsWindow">
+      <UniqueIdentifier>{a5d59aac-1160-40b9-8465-80af7fcdbf0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\fmt">
+      <UniqueIdentifier>{075bdd2c-76e1-4819-896e-73c59d2f5e2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -905,6 +911,9 @@
     </ClCompile>
     <ClCompile Include="thirdparty\glm\glm\detail\glm.cpp">
       <Filter>thirdparty\glm</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ToolsWindow.cpp">
+      <Filter>Windows\ToolsWindow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2261,6 +2270,48 @@
     </ClInclude>
     <ClInclude Include="thirdparty\glm\glm\vector_relational.hpp">
       <Filter>thirdparty\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ToolsWindow.h">
+      <Filter>Windows\ToolsWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\args.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\chrono.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\color.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\compile.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\core.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\format-inl.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\format.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\locale.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\os.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\ostream.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\printf.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\ranges.h">
+      <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\xchar.h">
+      <Filter>Utils\fmt</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

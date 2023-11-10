@@ -32,6 +32,7 @@
 #include "SaveConfirmPopup.h"
 #include "Settings.h"
 #include "SettingsWindow.h"
+#include "ToolsWindow.h"
 #include "TrainsWindow.h"
 #include "VehiclesWindow.h"
 #include "VisualEffectsWindow.h"
@@ -46,54 +47,57 @@ void loadTheme() {
 }
 
 void addWindows() {
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	auto &windows = Windows::WindowsRenderService::getInstance().getWindows();
+	windows.emplace_back(
 		std::make_unique<Windows::MainMenu>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::ProjectInfoWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::ObjectivesWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::EntitiesWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
-		std::make_unique<Windows::SettingsWindow>());
-	Windows::WindowsRenderService::getInstance().getWindow<Windows::SettingsWindow>()->Init();
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	auto settingsWindow = std::make_unique<Windows::SettingsWindow>();
+	settingsWindow->Init();
+	windows.emplace_back(std::move(settingsWindow));
+	windows.emplace_back(
 		std::make_unique<Windows::ActorsWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::VehiclesWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::ObjectsWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::TrainsWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::ParticlesWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::FastObjectSelector>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::PickupsWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::PyrotechnicsWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::AudioWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::VisualEffectsWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::CheckpointsWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::ConsoleWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::SaveConfirmPopup>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::FAQWindow>());
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::InfoWindow>());
+	windows.emplace_back(
+		std::make_unique<Windows::ToolsWindow>());
 	Windows::WindowsRenderService::getInstance().addRender("showEntitiesName", [] {
 		if (!ProjectPlayerService::getInstance().isProjectRunning()) {
 			if (Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false))
 				NameEntitiesRender::draw();
 		}
 	});
-	Windows::WindowsRenderService::getInstance().getWindows().emplace_back(
+	windows.emplace_back(
 		std::make_unique<Windows::QuickCommandsWindow>());
 
 	Windows::WindowsRenderService::getInstance().addRender("renderNotifications", [] {

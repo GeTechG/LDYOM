@@ -16,6 +16,7 @@
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
 #include "Tasker.h"
+#include "ToolsWindow.h"
 #include "WindowsRenderService.h"
 
 namespace Windows {
@@ -98,6 +99,12 @@ namespace Windows {
 			                  ImVec2(200.0f, .0f))) {
 				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
 				WindowsRenderService::getInstance().toggleWindow<InfoWindow>(true);
+			}
+
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_TOOLS, local.get("tools.title")).c_str(),
+			                  ImVec2(200.0f, .0f))) {
+				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
+				WindowsRenderService::getInstance().toggleWindow<ToolsWindow>(true);
 			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_COGS, local.get("settings.title")).c_str(),
