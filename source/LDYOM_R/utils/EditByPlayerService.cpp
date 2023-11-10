@@ -9,6 +9,9 @@
 #include <CWorld.h>
 #include <extensions/ScriptCommands.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "CCamera.h"
 #include "HotKeyService.h"
 #include "KeyCodes.h"
@@ -20,10 +23,12 @@
 #include "utils.h"
 #include "WindowsRenderService.h"
 #include "../Data/Actor.h"
-#include "../Data/CutsceneObjective.h"
 #include "../Data/Vehicle.h"
 #include "../Windows/ObjectsWindow.h"
 #include "extensions/KeyCheck.h"
+
+#include "glm/gtx/quaternion.hpp"
+
 
 class Vehicle;
 using namespace std::chrono_literals;
@@ -354,6 +359,27 @@ void EditByPlayerService::positionalObject(CEntity *entity, std::function<void(C
 	Tasker::getInstance().addTask("createFastObject", positionalObjectTask, entity, setMatrix, posO, quat, fastCreate);
 }
 
+glm::mat4 CMatrixToGlmMat4(const CMatrix &cMatrix) {
+	glm::mat4 result(1.0f);
+
+	result[0][0] = cMatrix.right.x;
+	result[0][1] = cMatrix.up.x;
+	result[0][2] = cMatrix.at.x;
+
+	result[1][0] = cMatrix.right.y;
+	result[1][1] = cMatrix.up.y;
+	result[1][2] = cMatrix.at.y;
+
+	result[2][0] = cMatrix.right.z;
+	result[2][1] = cMatrix.up.z;
+	result[2][2] = cMatrix.at.z;
+
+	result[3][0] = cMatrix.pos.x;
+	result[3][1] = cMatrix.pos.y;
+	result[3][2] = cMatrix.pos.z;
+
+	return result;
+}
 
 ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen, std::function<void()> callback) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
@@ -383,7 +409,7 @@ ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen
 
 			if (ImGui::GetIO().MouseWheel < 0.f) {
 				multiplier -= 0.01f;
-				multiplier = max(multiplier, 0.f);
+				multiplier = std::max(multiplier, 0.f);
 			} else if (ImGui::GetIO().MouseWheel > 0.f) {
 				multiplier += 0.01f;
 			}
@@ -417,12 +443,12 @@ ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen
 			pos[1] = TheCamera.m_mCameraMatrix.pos.y;
 			pos[2] = TheCamera.m_mCameraMatrix.pos.z;
 
-			auto matInverse = TheCamera.m_mMatInverse;
-			matInverse.Reorthogonalise();
-			*rotation = MathUtils::lookRotationQuat({
-				                                        TheCamera.m_mMatInverse.right.y, TheCamera.m_mMatInverse.up.y,
-				                                        TheCamera.m_mMatInverse.at.y
-			                                        }, {0.f, 0.f, 1.f});
+			const glm::vec3 direction = {
+				TheCamera.m_mViewMatrix.right.z, TheCamera.m_mViewMatrix.up.z,
+				TheCamera.m_mViewMatrix.at.z
+			};
+			auto quat = quatLookAtLH(direction, glm::vec3(0, 0, 1));
+			*rotation = {.imag = CVector(quat.x, quat.y, quat.z), .real = quat.w};
 
 			break;
 		}
@@ -574,12 +600,12 @@ ktwait editByPlayerActorPathTask(std::vector<std::array<float, 3>> &path) {
 
 		if (KeyCheck::CheckJustDown('I')) {
 			currentIndexPoint++;
-			currentIndexPoint = min(currentIndexPoint, newPath.size() - 1);
+			currentIndexPoint = std::min(currentIndexPoint, static_cast<int>(newPath.size()) - 1);
 		}
 
 		if (KeyCheck::CheckJustDown('O')) {
 			currentIndexPoint--;
-			currentIndexPoint = max(currentIndexPoint, 0);
+			currentIndexPoint = std::max(currentIndexPoint, 0);
 		}
 
 		if (KeyCheck::CheckJustDown('P')) {
@@ -676,12 +702,12 @@ ktwait editByPlayerVehiclePathTask(std::vector<std::array<float, 3>> &path, int 
 
 		if (KeyCheck::CheckJustDown('I')) {
 			currentIndexPoint++;
-			currentIndexPoint = min(currentIndexPoint, newPath.size() - 1);
+			currentIndexPoint = std::min(currentIndexPoint, static_cast<int>(newPath.size()) - 1);
 		}
 
 		if (KeyCheck::CheckJustDown('O')) {
 			currentIndexPoint--;
-			currentIndexPoint = max(currentIndexPoint, 0);
+			currentIndexPoint = std::max(currentIndexPoint, 0);
 		}
 
 		if (KeyCheck::CheckJustDown('P')) {
@@ -800,12 +826,12 @@ ktwait editByPlayerActorPathLuaTask(sol::table path) {
 
 		if (KeyCheck::CheckJustDown('I')) {
 			currentIndexPoint++;
-			currentIndexPoint = min(currentIndexPoint, newPath.size());
+			currentIndexPoint = std::min(currentIndexPoint, static_cast<int>(newPath.size()));
 		}
 
 		if (KeyCheck::CheckJustDown('O')) {
 			currentIndexPoint--;
-			currentIndexPoint = max(currentIndexPoint, 1);
+			currentIndexPoint = std::max(currentIndexPoint, 1);
 		}
 
 		if (KeyCheck::CheckJustDown('P')) {
@@ -914,12 +940,12 @@ ktwait editByPlayerVehiclePathLuaTask(sol::table path, int model) {
 
 		if (KeyCheck::CheckJustDown('I')) {
 			currentIndexPoint++;
-			currentIndexPoint = min(currentIndexPoint, newPath.size());
+			currentIndexPoint = std::min(currentIndexPoint, static_cast<int>(newPath.size()));
 		}
 
 		if (KeyCheck::CheckJustDown('O')) {
 			currentIndexPoint--;
-			currentIndexPoint = max(currentIndexPoint, 1);
+			currentIndexPoint = std::max(currentIndexPoint, 1);
 		}
 
 		if (KeyCheck::CheckJustDown('P')) {

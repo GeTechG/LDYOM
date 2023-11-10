@@ -21,11 +21,6 @@ private:
 		ar & xAngle_;
 		ar & boost::serialization::make_array(text_.data(), text_.size());
 		ar & textTime_;
-		ar & interpolation_;
-		ar & positionXInterpolationType_;
-		ar & positionYInterpolationType_;
-		ar & positionZInterpolationType_;
-		ar & rotationInterpolationType_;
 		ar & wideScreen_;
 		ar & async_;
 		ar & startFadeOut;
@@ -34,6 +29,7 @@ private:
 		ar & endFadeInTime;
 		ar & endCutscene_;
 		ar & lockPlayerControl_;
+		ar & move;
 	}
 
 	int attachType_ = 0;
@@ -45,11 +41,7 @@ private:
 	float xAngle_ = 0.0f;
 	std::array<char, TEXT_SIZE> text_ = {""};
 	float textTime_ = 1.f;
-	bool interpolation_ = false;
-	int positionXInterpolationType_ = 1;
-	int positionYInterpolationType_ = 1;
-	int positionZInterpolationType_ = 1;
-	int rotationInterpolationType_ = 1;
+	int move = 0;
 	bool wideScreen_ = false;
 	bool async_ = false;
 	bool startFadeOut = false;
@@ -86,11 +78,6 @@ public:
 	float& getXAngle();
 	std::array<char, TEXT_SIZE>& getText();
 	float& getTextTime();
-	bool& isInterpolation();
-	int& getPositionXInterpolationType();
-	int& getPositionYInterpolationType();
-	int& getPositionZInterpolationType();
-	int& getRotationInterpolationType();
 	bool& isWideScreen();
 	bool& isAsync();
 	bool& isStartFadeOut();
@@ -99,4 +86,5 @@ public:
 	float& getEndFadeInTime();
 	bool& isEndCutscene();
 	std::array<char, TEXT_SIZE>& getGameText();
+	int getMove() const;
 };

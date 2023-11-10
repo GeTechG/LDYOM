@@ -65,213 +65,213 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 	const auto &objective = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().at(i);
 
 	switch (objective->getCategory()) {
-	case 0:
-		switch (objective->getTypeCategory()) {
-		//World
 		case 0:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<CheckpointObjective&>(*objective));
+			switch (objective->getTypeCategory()) {
+				//World
+				case 0:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<CheckpointObjective&>(*objective));
+					break;
+				case 1:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<CutsceneObjective&>(*objective));
+					break;
+				case 2:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<CountdownObjective&>(*objective));
+					break;
+				case 3:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<TimeoutObjective&>(*objective));
+					break;
+				case 4:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<WeatherObjective&>(*objective));
+					break;
+				case 5:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<ClockTimeObjective&>(*objective));
+					break;
+				case 6:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<TrafficObjective&>(*objective));
+					break;
+				case 7:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<AddTimerObjective&>(*objective));
+					break;
+				case 8:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<RemoveTimerObjective&>(*objective));
+					break;
+
+				default:
+					break;
+			}
 			break;
+
 		case 1:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<CutsceneObjective&>(*objective));
+			switch (objective->getTypeCategory()) {
+				//Actor
+				case 0:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<KillActorOrGroupObjective&>(*objective));
+					break;
+
+				case 1:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<DamageActorObjective&>(*objective));
+					break;
+				case 2:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<FollowPathActorObjective&>(*objective));
+					break;
+				case 3:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<AnimationActorObjective&>(*objective));
+					break;
+				case 4:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<EnterVehicleActorObjective&>(*objective));
+					break;
+
+				default:
+					break;
+			}
 			break;
+
 		case 2:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<CountdownObjective&>(*objective));
+			switch (objective->getTypeCategory()) {
+				//Vehicle
+				case 0:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<GetInVehicleObjective&>(*objective));
+					break;
+				case 1:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<DestroyVehicleObjective&>(*objective));
+					break;
+				case 2:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<FollowPathVehicleObjective&>(*objective));
+					break;
+
+				default:
+					break;
+			}
 			break;
 		case 3:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<TimeoutObjective&>(*objective));
+			switch (objective->getTypeCategory()) {
+				//Object
+				case 0:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<DamageObjectObjective&>(*objective));
+					break;
+				case 1:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<PhotographObjectObjective&>(*objective));
+					break;
+				case 2:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<TouchObjectObjective&>(*objective));
+					break;
+
+				default:
+					break;
+			}
 			break;
 		case 4:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<WeatherObjective&>(*objective));
+			switch (objective->getTypeCategory()) {
+				//Pickup
+				case 0:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<CollectPickupObjective&>(*objective));
+					break;
+
+				default:
+					break;
+			}
 			break;
 		case 5:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<ClockTimeObjective&>(*objective));
+			switch (objective->getTypeCategory()) {
+				//Player
+				case 0:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<TeleportPlayerObjective&>(*objective));
+					break;
+				case 1:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<AnimationPlayerObjective&>(*objective));
+					break;
+				case 2:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<TeleportToVehiclePlayerObjective&>(*objective));
+					break;
+				case 3:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<LevelWantedPlayerObjective&>(*objective));
+					break;
+				case 4:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<RemoveWeaponsObjective&>(*objective));
+					break;
+				case 5:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<AddWeaponsPlayerObjective&>(*objective));
+					break;
+				case 6:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<PhoneCallPlayerObjective&>(*objective));
+					break;
+				case 7:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<AddMoneyPlayerObjective&>(*objective));
+					break;
+
+				default:
+					break;
+			}
 			break;
 		case 6:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<TrafficObjective&>(*objective));
+			switch (objective->getTypeCategory()) {
+				//Mission
+				case 0:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<StartMissionObjective&>(*objective));
+					break;
+				case 1:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<EndMissionObjective&>(*objective));
+					break;
+				default:
+					break;
+			}
 			break;
 		case 7:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<AddTimerObjective&>(*objective));
-			break;
-		case 8:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<RemoveTimerObjective&>(*objective));
-			break;
-
-		default:
-			break;
-		}
-		break;
-
-	case 1:
-		switch (objective->getTypeCategory()) {
-		//Actor
-		case 0:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<KillActorOrGroupObjective&>(*objective));
-			break;
-
-		case 1:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<DamageActorObjective&>(*objective));
-			break;
-		case 2:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<FollowPathActorObjective&>(*objective));
-			break;
-		case 3:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<AnimationActorObjective&>(*objective));
-			break;
-		case 4:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<EnterVehicleActorObjective&>(*objective));
-			break;
-
-		default:
-			break;
-		}
-		break;
-
-	case 2:
-		switch (objective->getTypeCategory()) {
-		//Vehicle
-		case 0:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<GetInVehicleObjective&>(*objective));
-			break;
-		case 1:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<DestroyVehicleObjective&>(*objective));
-			break;
-		case 2:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<FollowPathVehicleObjective&>(*objective));
-			break;
-
-		default:
-			break;
-		}
-		break;
-	case 3:
-		switch (objective->getTypeCategory()) {
-		//Object
-		case 0:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<DamageObjectObjective&>(*objective));
-			break;
-		case 1:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<PhotographObjectObjective&>(*objective));
-			break;
-		case 2:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<TouchObjectObjective&>(*objective));
-			break;
-
-		default:
-			break;
-		}
-		break;
-	case 4:
-		switch (objective->getTypeCategory()) {
-		//Pickup
-		case 0:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<CollectPickupObjective&>(*objective));
-			break;
-
-		default:
-			break;
-		}
-		break;
-	case 5:
-		switch (objective->getTypeCategory()) {
-		//Player
-		case 0:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<TeleportPlayerObjective&>(*objective));
-			break;
-		case 1:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<AnimationPlayerObjective&>(*objective));
-			break;
-		case 2:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<TeleportToVehiclePlayerObjective&>(*objective));
-			break;
-		case 3:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<LevelWantedPlayerObjective&>(*objective));
-			break;
-		case 4:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<RemoveWeaponsObjective&>(*objective));
-			break;
-		case 5:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<AddWeaponsPlayerObjective&>(*objective));
-			break;
-		case 6:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<PhoneCallPlayerObjective&>(*objective));
-			break;
-		case 7:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<AddMoneyPlayerObjective&>(*objective));
-			break;
-
-		default:
-			break;
-		}
-		break;
-	case 6:
-		switch (objective->getTypeCategory()) {
-		//Mission
-		case 0:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<StartMissionObjective&>(*objective));
-			break;
-		case 1:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<EndMissionObjective&>(*objective));
+			switch (objective->getTypeCategory()) {
+				//Scene
+				case 0:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<GoToSceneObjective&>(*objective));
+					break;
+				case 1:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<WaitSignalObjective&>(*objective));
+					break;
+				case 2:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<JumpToObjectiveObjective&>(*objective));
+					break;
+				case 3:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<SaveObjective&>(*objective));
+					break;
+				default:
+					break;
+			}
 			break;
 		default:
 			break;
-		}
-		break;
-	case 7:
-		switch (objective->getTypeCategory()) {
-		//Scene
-		case 0:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<GoToSceneObjective&>(*objective));
-			break;
-		case 1:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<WaitSignalObjective&>(*objective));
-			break;
-		case 2:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<JumpToObjectiveObjective&>(*objective));
-			break;
-		case 3:
-			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
-				fast_dynamic_cast<SaveObjective&>(*objective));
-			break;
-		default:
-			break;
-		}
-		break;
-	default:
-		break;
 	}
 }
 
@@ -589,10 +589,15 @@ Windows::ObjectivesWindow::ObjectivesWindow(): ListWindow() {
 	this->dragsItems = true;
 }
 
+void Windows::ObjectivesWindow::selectElementFirstCall(int i) {
+	ListWindow::selectElement(i);
+}
+
 void Windows::ObjectivesWindow::selectElement(int i) {
 	if (this->currentElement != -1)
 		ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().at(this->currentElement)->
 		                               close();
+
 	ListWindow::selectElement(i);
 	if (this->currentElement != -1)
 		ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().at(this->currentElement)->

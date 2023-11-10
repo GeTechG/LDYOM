@@ -9,31 +9,75 @@
 #include <CTheScripts.h>
 #include <extensions/ScriptCommands.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include "CutsceneMutex.h"
 #include "EditByPlayerService.h"
 #include "imgui.h"
-#include "MathUtils.h"
 #include "ProjectsService.h"
 #include "strUtils.h"
 #include "tweeny.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
 
+
 void CutsceneObjective::updateLocation() {
+	const auto currentScene = ProjectsService::getInstance().getCurrentProject().getCurrentScene();
+	CEntity *followEntity = nullptr;
+	int index = -1;
+	switch (this->followType_) {
+		case 1:
+			index = utils::indexByUuid(
+				currentScene->getActors(), this->followUuid_);
+			if (index != -1) {
+				if (const auto ped = currentScene->getActors().at(
+					index)->getEditorPed(); ped.has_value()) {
+					followEntity = ped.value();
+				}
+			}
+			break;
+		case 2:
+			index = utils::indexByUuid(
+				currentScene->getVehicles(), this->followUuid_);
+			if (index != -1) {
+				if (const auto vehicle = currentScene->getVehicles().at(
+					index)->getEditorVehicle(); vehicle.has_value()) {
+					followEntity = vehicle.value();
+				}
+			}
+			break;
+		case 3:
+			index = utils::indexByUuid(
+				currentScene->getObjects(), this->followUuid_);
+			if (index != -1) {
+				if (const auto object = currentScene->getObjects().at(
+					index)->getEditorObject(); object.has_value()) {
+					followEntity = object.value();
+				}
+			}
+			break;
+		default:
+			break;
+	}
+
 	const CVector pos = {this->position_[0], this->position_[1], this->position_[2]};
 	CVector up = {0.f, sinf(RAD(this->xAngle_)), cosf(RAD(this->xAngle_))};
+	TheCamera.Restore();
 	TheCamera.SetCamPositionForFixedMode(&pos, &up);
 
-	/*CVector aimPos = {
-		2.f * (rotation_.imag.x * rotation_.imag.y - rotation_.real * rotation_.imag.z),
-		1.f - 2.f * (rotation_.imag.x * rotation_.imag.x + rotation_.imag.z * rotation_.imag.z),
-		2.f * (rotation_.imag.y * rotation_.imag.z + rotation_.real * rotation_.imag.x)
-	};*/
-
-	const CMatrix matrix = MathUtils::quatToMatrix(this->rotation_);
-	CVector aimPos = {matrix.right.z, matrix.up.z, matrix.at.z};
+	glm::quat q = {rotation_.real, rotation_.imag.x, rotation_.imag.y, rotation_.imag.z};
+	glm::vec3 directionVector(0, 0, 1);
+	directionVector = q * directionVector;
+	CVector aimPos = {directionVector.x, directionVector.y, directionVector.z};
 	aimPos += pos;
-	TheCamera.TakeControlNoEntity(&aimPos, 2, 1);
+
+	if (this->getFollowType() != 0 && followEntity != nullptr && this->move == 0) {
+		CVector offset(0, 0, 0);
+		TheCamera.TakeControlNoEntity(&followEntity->GetPosition(), 2, 1);
+	} else {
+		TheCamera.TakeControlNoEntity(&aimPos, 2, 1);
+	}
 }
 
 CutsceneObjective::CutsceneObjective(const CVector &position, const CQuaternion &rotation): BaseObjective(nullptr),
@@ -55,11 +99,23 @@ void CutsceneObjective::draw(Localization &local, std::vector<std::string> &list
 		this->updateLocation();
 	});
 
+	static CQuaternion lastQ;
+
+	const auto q = this->getRotation();
+	const glm::quat quaternion(q.real, q.imag.x, q.imag.y, q.imag.z);
+	const glm::vec3 eulerAngles = glm::eulerAngles(quaternion);
+
 	//rotations
 	static std::array<float, 3> eularRot = {0, 0, 0};
-	InputRotations(eularRot.data(), [&] {
-		this->rotation_.Set(0.f, RAD(eularRot[1]), RAD(eularRot[2]));
-		this->xAngle_ = eularRot[0];
+	if (abs(q.real - lastQ.real) > FLT_EPSILON || abs(q.imag.x - lastQ.imag.x) > FLT_EPSILON ||
+		abs(q.imag.y - lastQ.imag.y) > FLT_EPSILON || abs(q.imag.z - lastQ.imag.z) > FLT_EPSILON) {
+		eularRot[0] = glm::degrees(eulerAngles.x);
+		eularRot[1] = glm::degrees(eulerAngles.y);
+		eularRot[2] = glm::degrees(eulerAngles.z);
+		lastQ = q;
+	}
+	DragRotations(eularRot.data(), [&] {
+		this->getRotation().Set(RAD(eularRot[1]), RAD(eularRot[2]), RAD(eularRot[0]));
 		this->updateLocation();
 	});
 
@@ -73,83 +129,94 @@ void CutsceneObjective::draw(Localization &local, std::vector<std::string> &list
 
 	ImGui::Separator();
 
+	if (utils::Combo(local.get("cutscene_objective.move_type").c_str(), &this->move,
+	                 local.getArray("cutscene_objective.move_types"))) {
+		this->updateLocation();
+	}
+
+
 	auto entityCombo = [&]<typename T>(const char *name, boost::uuids::uuid *uuid,
-	                                   std::vector<std::unique_ptr<T>> &entities) {
+	                                   std::vector<std::unique_ptr<T>> &entities) -> bool {
 		const int index = utils::indexByUuid(entities, *uuid);
 
+		bool result = false;
 		IncorrectHighlight(index == -1, [&] {
-			utils::Combo(local.get(name).c_str(), uuid, index, static_cast<int>(entities.size()),
-			             [&entities](const int i) {
-				             return entities.at(i)->getName();
-			             }, [&entities](const int i) {
-				             return entities.at(i)->getUuid();
-			             });
+			result = utils::Combo(local.get(name).c_str(), uuid, index, static_cast<int>(entities.size()),
+			                      [&entities](const int i) {
+				                      return entities.at(i)->getName();
+			                      }, [&entities](const int i) {
+				                      return entities.at(i)->getUuid();
+			                      });
 		});
+
+		return result;
 	};
 
-	ImGui::PushID("attachGroup");
-	if (ImGui::SliderInt(local.get("cutscene_objective.attach").c_str(), &this->attachType_, 0, 3,
-	                     local.getArray("cutscene_objective.attach_types")[this->attachType_].c_str()))
-		this->attachUuid_ = boost::uuids::uuid{};
+	ImGui::BeginDisabled(this->move != 0);
+	{
+		ImGui::PushID("attachGroup");
+		if (ImGui::SliderInt(local.get("cutscene_objective.attach").c_str(), &this->attachType_, 0, 3,
+		                     local.getArray("cutscene_objective.attach_types")[this->attachType_].c_str()))
+			this->attachUuid_ = boost::uuids::uuid{};
 
-	switch (this->attachType_) {
-	case 1:
-		entityCombo("entities.actor", &this->attachUuid_,
-		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors());
-		break;
-	case 2:
-		entityCombo("entities.vehicle", &this->attachUuid_,
-		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles());
-		break;
-	case 3:
-		entityCombo("entities.object", &this->attachUuid_,
-		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects());
-		break;
-	default: break;
+		bool updateLocation = false;
+
+		switch (this->attachType_) {
+			case 1:
+				updateLocation = entityCombo("entities.actor", &this->attachUuid_,
+				                             ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                            getActors());
+				break;
+			case 2:
+				updateLocation = entityCombo("entities.vehicle", &this->attachUuid_,
+				                             ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                            getVehicles());
+				break;
+			case 3:
+				updateLocation = entityCombo("entities.object", &this->attachUuid_,
+				                             ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                            getObjects());
+				break;
+			default:
+				break;
+		}
+		ImGui::PopID();
+
+		ImGui::PushID("followGroup");
+		if (ImGui::SliderInt(local.get("cutscene_objective.follow").c_str(), &this->followType_, 0, 3,
+		                     local.getArray("cutscene_objective.follow_types")[this->followType_].c_str())) {
+			this->followUuid_ = boost::uuids::uuid{};
+			this->updateLocation();
+		}
+
+		switch (this->followType_) {
+			case 1:
+				updateLocation = entityCombo("entities.actor", &this->followUuid_,
+				                             ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                            getActors());
+				break;
+			case 2:
+				updateLocation = entityCombo("entities.vehicle", &this->followUuid_,
+				                             ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                            getVehicles());
+				break;
+			case 3:
+				updateLocation = entityCombo("entities.object", &this->followUuid_,
+				                             ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                            getObjects());
+				break;
+			default:
+				break;
+		}
+		if (updateLocation)
+			this->updateLocation();
+		ImGui::PopID();
 	}
-	ImGui::PopID();
-
-	ImGui::PushID("followGroup");
-	if (ImGui::SliderInt(local.get("cutscene_objective.follow").c_str(), &this->followType_, 0, 3,
-	                     local.getArray("cutscene_objective.follow_types")[this->followType_].c_str()))
-		this->followUuid_ = boost::uuids::uuid{};
-
-	switch (this->followType_) {
-	case 1:
-		entityCombo("entities.actor", &this->followUuid_,
-		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors());
-		break;
-	case 2:
-		entityCombo("entities.vehicle", &this->followUuid_,
-		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles());
-		break;
-	case 3:
-		entityCombo("entities.object", &this->followUuid_,
-		            ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects());
-		break;
-	default: break;
-	}
-	ImGui::PopID();
+	ImGui::EndDisabled();
 
 	ImGui::BeginDisabled(this->attachType_ != 0);
 
 	ImGui::Separator();
-
-	utils::ToggleButton(local.get("cutscene_objective.interpolation").c_str(), &this->interpolation_);
-
-	ImGui::BeginDisabled(!this->interpolation_);
-	ImGui::Text(local.get("cutscene_objective.position_interpolation").c_str());
-
-	ImGui::PushItemWidth(ImGui::GetFontSize() * 5.f);
-	EasingCombo("X", &this->positionXInterpolationType_);
-	ImGui::SameLine();
-	EasingCombo("Y", &this->positionYInterpolationType_);
-	ImGui::SameLine();
-	EasingCombo("Z", &this->positionZInterpolationType_);
-	ImGui::PopItemWidth();
-
-	EasingCombo(local.get("cutscene_objective.rotation_interpolation").c_str(), &this->rotationInterpolationType_);
-	ImGui::EndDisabled();
 
 	ImGui::EndDisabled();
 
@@ -173,38 +240,6 @@ void CutsceneObjective::draw(Localization &local, std::vector<std::string> &list
 	listOverlay.emplace_back(local.get("info_overlay.rotate_with_shift"));
 
 	if (plugin::KeyPressed(VK_SHIFT)) {
-		if (plugin::KeyPressed(VK_UP)) {
-			CQuaternion temp;
-			temp.Set(0.f, 0.f, RAD(1));
-			CQuaternion res;
-			res.Multiply(this->rotation_, temp);
-			this->rotation_ = res;
-			this->updateLocation();
-		} else if (plugin::KeyPressed(VK_DOWN)) {
-			CQuaternion temp;
-			temp.Set(0.f, 0.f, RAD(-1));
-			CQuaternion res;
-			res.Multiply(this->rotation_, temp);
-			this->rotation_ = res;
-			this->updateLocation();
-		}
-
-		if (plugin::KeyPressed(VK_LEFT)) {
-			CQuaternion temp;
-			temp.Set(0.f, RAD(-1), 0.f);
-			CQuaternion res;
-			res.Multiply(this->rotation_, temp);
-			this->rotation_ = res;
-			this->updateLocation();
-		} else if (plugin::KeyPressed(VK_RIGHT)) {
-			CQuaternion temp;
-			temp.Set(0.f, RAD(1), 0.f);
-			CQuaternion res;
-			res.Multiply(this->rotation_, temp);
-			this->rotation_ = res;
-			this->updateLocation();
-		}
-
 		if (plugin::KeyPressed('Q')) {
 			this->xAngle_ += 1.f;
 			this->updateLocation();
@@ -222,74 +257,124 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 		co_await 1;
 	}
 
-	bool lockPlayerControl = this->lockPlayerControl_ && !Command<Commands::IS_PLAYER_CONTROL_ON>(0);
+
+	bool lockPlayerControl = this->lockPlayerControl_ && Command<Commands::IS_PLAYER_CONTROL_ON>(0);
 
 	if (lockPlayerControl)
-		Command<Commands::SET_PLAYER_CONTROL>(0, 0);
+		Command<Commands::SET_PLAYER_CONTROL>(0, false);
+
+	if (this->isWideScreen())
+		TheCamera.SetWideScreenOn();
 
 	CEntity *targetAttach = nullptr;
 	int indexAttach = -1;
-	CVector targetPositionOffset = {0.f, 0.f, 0.f};
+	glm::vec3 targetPositionOffset = {0.f, 0.f, 0.f};
 	CQuaternion targetOffsetRotation;
 
 	if (this->attachType_ > 0) {
 		switch (this->attachType_) {
-		case 1:
-			indexAttach = utils::indexByUuid(scene->getActors(), this->attachUuid_);
-			if (indexAttach != -1) {
-				if (const auto ped = scene->getActors().at(indexAttach)->getProjectPed(); ped.has_value()) {
-					targetAttach = ped.value();
-					targetPositionOffset = {
-						this->position_[0] - scene->getActors().at(indexAttach)->getPosition()[0],
-						this->position_[1] - scene->getActors().at(indexAttach)->getPosition()[1],
-						this->position_[2] - scene->getActors().at(indexAttach)->getPosition()[2]
-					};
-					auto m = MathUtils::matrixFromEular(
-						RAD(-scene->getActors().at(indexAttach)->getHeadingAngle()), 0.f, 0.f);
-					rotateVec2(targetPositionOffset.x, targetPositionOffset.y,
-					           -scene->getActors().at(indexAttach)->getHeadingAngle());
-					targetOffsetRotation = MathUtils::multiply(this->rotation_, MathUtils::matrixToQuat(m));
+			case 1:
+				indexAttach = utils::indexByUuid(scene->getActors(), this->attachUuid_);
+				if (indexAttach != -1) {
+					if (const auto ped = scene->getActors().at(indexAttach)->getProjectPed(); ped.has_value()) {
+						targetAttach = ped.value();
+						targetPositionOffset = {
+							this->position_[0] - scene->getActors().at(indexAttach)->getPosition()[0],
+							this->position_[1] - scene->getActors().at(indexAttach)->getPosition()[1],
+							this->position_[2] - scene->getActors().at(indexAttach)->getPosition()[2]
+						};
+						glm::quat rotQuaternion = angleAxis(glm::radians(
+							                                    -scene->getActors().at(indexAttach)->
+							                                            getHeadingAngle()),
+						                                    glm::vec3(0.0f, 0.0f, 1.0f));
+						targetPositionOffset = glm::quat(
+							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y,
+							rotQuaternion.z) * targetPositionOffset;
+						glm::quat quat(this->rotation_.real, this->rotation_.imag.x,
+						               this->rotation_.imag.y,
+						               this->rotation_.imag.z);
+						quat = normalize(quat);
+						auto anglePre = degrees(eulerAngles(quat));
+						glm::quat q = normalize(glm::quat(
+							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y, rotQuaternion.z) * quat);
+						auto angle = degrees(eulerAngles(q));
+						targetOffsetRotation = {.imag = CVector(q.x, q.y, q.z), .real = q.w};
+						auto ang2 = degrees(eulerAngles(glm::quat(targetOffsetRotation.real,
+						                                          targetOffsetRotation.imag.x,
+						                                          targetOffsetRotation.imag.y,
+						                                          targetOffsetRotation.imag.z)));
+					}
 				}
-			}
-			break;
-		case 2:
-			indexAttach = utils::indexByUuid(scene->getVehicles(), this->attachUuid_);
-			if (indexAttach != -1) {
-				if (const auto vehicle = scene->getVehicles().at(indexAttach)->getProjectVehicle(); vehicle.
-					has_value()) {
-					targetAttach = vehicle.value();
-					targetPositionOffset = {
-						this->position_[0] - scene->getVehicles().at(indexAttach)->getPosition()[0],
-						this->position_[1] - scene->getVehicles().at(indexAttach)->getPosition()[1],
-						this->position_[2] - scene->getVehicles().at(indexAttach)->getPosition()[2]
-					};
-					auto m = MathUtils::matrixFromEular(
-						0.f, RAD(-scene->getVehicles().at(indexAttach)->getHeadingAngle()), 0.f);
-					rotateVec2(targetPositionOffset.x, targetPositionOffset.y,
-					           -scene->getVehicles().at(indexAttach)->getHeadingAngle());
-					targetOffsetRotation = MathUtils::multiply(this->rotation_, MathUtils::matrixToQuat(m));
+				break;
+			case 2:
+				indexAttach = utils::indexByUuid(scene->getVehicles(), this->attachUuid_);
+				if (indexAttach != -1) {
+					if (const auto vehicle = scene->getVehicles().at(indexAttach)->getProjectVehicle(); vehicle.
+						has_value()) {
+						targetAttach = vehicle.value();
+						targetPositionOffset = {
+							this->position_[0] - scene->getVehicles().at(indexAttach)->getPosition()[0],
+							this->position_[1] - scene->getVehicles().at(indexAttach)->getPosition()[1],
+							this->position_[2] - scene->getVehicles().at(indexAttach)->getPosition()[2]
+						};
+						glm::quat rotQuaternion = angleAxis(glm::radians(
+							                                    -scene->getVehicles().at(indexAttach)->
+							                                            getHeadingAngle()),
+						                                    glm::vec3(0.0f, 0.0f, 1.0f));
+						targetPositionOffset = glm::quat(
+							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y,
+							rotQuaternion.z) * targetPositionOffset;
+						glm::quat quat(this->rotation_.real, this->rotation_.imag.x,
+						               this->rotation_.imag.y,
+						               this->rotation_.imag.z);
+						quat = normalize(quat);
+						auto anglePre = degrees(eulerAngles(quat));
+						glm::quat q = normalize(glm::quat(
+							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y, rotQuaternion.z) * quat);
+						auto angle = degrees(eulerAngles(q));
+						targetOffsetRotation = {.imag = CVector(q.x, q.y, q.z), .real = q.w};
+						auto ang2 = degrees(eulerAngles(glm::quat(targetOffsetRotation.real,
+						                                          targetOffsetRotation.imag.x,
+						                                          targetOffsetRotation.imag.y,
+						                                          targetOffsetRotation.imag.z)));
+					}
 				}
-			}
-			break;
-		case 3:
-			indexAttach = utils::indexByUuid(scene->getObjects(), this->attachUuid_);
-			if (indexAttach != -1) {
-				if (const auto object = scene->getObjects().at(indexAttach)->getProjectObject(); object.has_value()) {
-					targetAttach = object.value();
-					targetPositionOffset = {
-						this->position_[0] - scene->getObjects().at(indexAttach)->getPosition()[0],
-						this->position_[1] - scene->getObjects().at(indexAttach)->getPosition()[1],
-						this->position_[2] - scene->getObjects().at(indexAttach)->getPosition()[2]
-					};
-					auto q = scene->getObjects().at(indexAttach)->getRotations();
-					q.Conjugate();
-					MathUtils::multiply(MathUtils::quatToMatrix(q), targetPositionOffset);
-					targetOffsetRotation = MathUtils::multiply(this->rotation_, q);
+				break;
+			case 3:
+				indexAttach = utils::indexByUuid(scene->getObjects(), this->attachUuid_);
+				if (indexAttach != -1) {
+					auto &objectRef = scene->getObjects().at(indexAttach);
+					if (const auto object = objectRef->getProjectObject(); object.
+						has_value()) {
+						targetAttach = object.value();
+						targetPositionOffset = {
+							this->position_[0] - objectRef->getPosition()[0],
+							this->position_[1] - objectRef->getPosition()[1],
+							this->position_[2] - objectRef->getPosition()[2]
+						};
+						glm::quat rotQuaternion(objectRef->getRotations().real, objectRef->getRotations().imag.x,
+						                        objectRef->getRotations().imag.y, objectRef->getRotations().imag.z);
+						targetPositionOffset = glm::quat(
+							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y,
+							rotQuaternion.z) * targetPositionOffset;
+						glm::quat quat(this->rotation_.real, this->rotation_.imag.x,
+						               this->rotation_.imag.y,
+						               this->rotation_.imag.z);
+						quat = normalize(quat);
+						auto anglePre = degrees(eulerAngles(quat));
+						glm::quat q = normalize(glm::quat(
+							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y, rotQuaternion.z) * quat);
+						auto angle = degrees(eulerAngles(q));
+						targetOffsetRotation = {.imag = CVector(q.x, q.y, q.z), .real = q.w};
+						auto ang2 = degrees(eulerAngles(glm::quat(targetOffsetRotation.real,
+						                                          targetOffsetRotation.imag.x,
+						                                          targetOffsetRotation.imag.y,
+						                                          targetOffsetRotation.imag.z)));
+					}
 				}
-			}
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
 		}
 
 		if (indexAttach == -1) {
@@ -308,30 +393,31 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 
 	if (this->followType_ > 0) {
 		switch (this->followType_) {
-		case 1:
-			indexFollow = utils::indexByUuid(scene->getActors(), this->followUuid_);
-			if (indexFollow != -1) {
-				if (const auto ped = scene->getActors().at(indexFollow)->getProjectPed(); ped.has_value()) {
-					targetFollow = ped.value();
+			case 1:
+				indexFollow = utils::indexByUuid(scene->getActors(), this->followUuid_);
+				if (indexFollow != -1) {
+					if (const auto ped = scene->getActors().at(indexFollow)->getProjectPed(); ped.has_value()) {
+						targetFollow = ped.value();
+					}
 				}
-			}
-			break;
-		case 2:
-			indexFollow = utils::indexByUuid(scene->getVehicles(), this->followUuid_);
-			if (indexFollow != -1) {
-				if (const auto vehicle = scene->getVehicles().at(indexFollow)->getProjectVehicle(); vehicle.has_value())
-					targetFollow = vehicle.value();
-			}
-			break;
-		case 3:
-			indexFollow = utils::indexByUuid(scene->getObjects(), this->followUuid_);
-			if (indexFollow != -1) {
-				if (const auto object = scene->getObjects().at(indexFollow)->getProjectObject(); object.has_value())
-					targetFollow = object.value();
-			}
-			break;
-		default:
-			break;
+				break;
+			case 2:
+				indexFollow = utils::indexByUuid(scene->getVehicles(), this->followUuid_);
+				if (indexFollow != -1) {
+					if (const auto vehicle = scene->getVehicles().at(indexFollow)->getProjectVehicle(); vehicle.
+						has_value())
+						targetFollow = vehicle.value();
+				}
+				break;
+			case 3:
+				indexFollow = utils::indexByUuid(scene->getObjects(), this->followUuid_);
+				if (indexFollow != -1) {
+					if (const auto object = scene->getObjects().at(indexFollow)->getProjectObject(); object.has_value())
+						targetFollow = object.value();
+				}
+				break;
+			default:
+				break;
 		}
 
 		if (indexFollow == -1) {
@@ -354,130 +440,72 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 	CTheScripts::bDisplayHud = false;
 	CHud::bScriptDontDisplayRadar = true;
 
-	static auto task = [](CutsceneObjective *cutscene, CVector targetPositionOffset, CQuaternion targetOffsetRotation,
-	                      CEntity *targetFollow, CEntity *targetAttach) -> ktwait {
+	static auto task = [](CutsceneObjective *cutscene, glm::vec3 targetPositionOffset,
+	                      CQuaternion targetOffsetRotation,
+	                      CEntity *targetFollow, CEntity *targetAttach, bool lockPlayerControl) -> ktwait {
 		CutsceneMutexGuard guard;
-		CVector startPos = TheCamera.m_mCameraMatrix.pos;
-		float startUp = atan2f(TheCamera.m_vecFixedModeUpOffSet.x, TheCamera.m_vecFixedModeUpOffSet.z);
-
-		CQuaternion startRotation = MathUtils::lookRotationQuat({
-			                                                        TheCamera.m_mMatInverse.right.y,
-			                                                        TheCamera.m_mMatInverse.up.y,
-			                                                        TheCamera.m_mMatInverse.at.y
-		                                                        }, {0.f, 0.f, 1.f});
-
-		auto tweenPositionX = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).
-		                                        via(static_cast<tweeny::easing::enumerated>(cutscene->
-			                                        getPositionXInterpolationType()));
-		auto tweenPositionY = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).
-		                                        via(static_cast<tweeny::easing::enumerated>(cutscene->
-			                                        getPositionYInterpolationType()));
-		auto tweenPositionZ = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).
-		                                        via(static_cast<tweeny::easing::enumerated>(cutscene->
-			                                        getPositionZInterpolationType()));
-		auto tweenRotation = tweeny::from(0.f).to(1.f).during(static_cast<unsigned>(cutscene->getTextTime() * 1000.f)).
-		                                       via(static_cast<tweeny::easing::enumerated>(cutscene->
-			                                       getRotationInterpolationType()));
-
-		auto lastTime = std::chrono::high_resolution_clock::now();
 
 		if (cutscene->isStartFadeOut())
 			plugin::Command<Commands::DO_FADE>(static_cast<int>(cutscene->getStartFadeOutTime() * 1000.f), 1);
 
 		bool useEndFadeIn = false;
 
-		CVector aimPos;
-		CVector up;
-		CVector endPos;
+		const CVector pos = {cutscene->getPosition()[0], cutscene->getPosition()[1], cutscene->getPosition()[2]};
+		auto endUp = RAD(cutscene->getXAngle());
 
-		while (true) {
-			if (tweenPositionX.progress() >= 1.f) {
-				break;
-			}
+		const CVector up = {0.f, sinf(RAD(cutscene->getXAngle())), cosf(RAD(cutscene->getXAngle()))};
 
-			const unsigned delta = static_cast<unsigned>(std::chrono::duration_cast<std::chrono::milliseconds>(
-				std::chrono::high_resolution_clock::now() - lastTime).count());
-			lastTime = std::chrono::high_resolution_clock::now();
-			CVector stepPosition = {tweenPositionX.peek(), tweenPositionY.peek(), tweenPositionZ.peek()};
-			auto stepRotation = tweenRotation.peek();
-			if (!FrontEndMenuManager.m_bMenuActive) {
-				stepPosition = {tweenPositionX.step(delta), tweenPositionY.step(delta), tweenPositionZ.step(delta)};
-				stepRotation = tweenRotation.step(delta);
-			}
-			if (static_cast<tweeny::easing::enumerated>(cutscene->getPositionXInterpolationType()) ==
-				tweeny::easing::enumerated::stepped)
-				stepPosition.x = 1.f;
-			if (static_cast<tweeny::easing::enumerated>(cutscene->getPositionYInterpolationType()) ==
-				tweeny::easing::enumerated::stepped)
-				stepPosition.y = 1.f;
-			if (static_cast<tweeny::easing::enumerated>(cutscene->getPositionZInterpolationType()) ==
-				tweeny::easing::enumerated::stepped)
-				stepPosition.z = 1.f;
-			if (static_cast<tweeny::easing::enumerated>(cutscene->getRotationInterpolationType()) ==
-				tweeny::easing::enumerated::stepped)
-				stepRotation = 1.f;
+		glm::quat q = {
+			cutscene->getRotation().real, cutscene->getRotation().imag.x, cutscene->getRotation().imag.y,
+			cutscene->getRotation().imag.z
+		};
+		//q = conjugate(q);
 
-
-			float endUp;
-			CQuaternion endRotation;
-
-			if (cutscene->getAttachType() > 0) {
-				endPos = targetPositionOffset;
-				endRotation = targetOffsetRotation;
-			} else {
-				endPos = {cutscene->getPosition()[0], cutscene->getPosition()[1], cutscene->getPosition()[2]};
-				endRotation = cutscene->getRotation();
-			}
-
-			endUp = RAD(cutscene->getXAngle());
-
-			if (cutscene->isInterpolation() && cutscene->getAttachType() == 0) {
-				auto currentPos = MathUtils::multiply(startPos, CVector(1.f, 1.f, 1.f) - stepPosition) +
-					MathUtils::multiply(endPos, stepPosition);
-
-				auto currentUpAngle = startUp * (1.f - stepRotation) + endUp * stepRotation;
-				CVector currentUp = {sinf(currentUpAngle), 0.f, cosf(currentUpAngle)};
-
-				if (targetFollow != nullptr) {
-					auto lookAt = targetFollow->GetPosition() - currentPos;
-					lookAt.Normalise();
-					endRotation = MathUtils::lookRotationQuat(lookAt, {0.f, 0.f, 1.f});
-				}
-
-				auto currentRotation = MathUtils::slerp(startRotation, endRotation, stepRotation, 0);
-
-				TheCamera.SetCamPositionForFixedMode(&currentPos, &currentUp);
-
-				const CMatrix matrix = MathUtils::quatToMatrix(currentRotation);
-				aimPos = {matrix.right.z, matrix.up.z, matrix.at.z};
-				aimPos += currentPos;
+		if (cutscene->move == 0) {
+			TheCamera.SetCamPositionForFixedMode(&pos, &up);
+			if (cutscene->getAttachType() == 0 && cutscene->getFollowType() == 0) {
+				glm::vec3 directionVector(0, 0, 1);
+				directionVector = q * directionVector;
+				CVector aimPos = {directionVector.x, directionVector.y, directionVector.z};
+				aimPos += pos;
 				TheCamera.TakeControlNoEntity(&aimPos, 2, 1);
 			} else {
-				const CMatrix matrix = MathUtils::quatToMatrix(endRotation);
-				aimPos = {matrix.right.z, matrix.up.z, matrix.at.z};
-
-				if (cutscene->getAttachType() > 0) {
-					TheCamera.TakeControlAttachToEntity(targetFollow, targetAttach, &endPos, &aimPos, endUp, 2, 1);
-				} else {
-					up = {sinf(endUp), 0.f, cosf(endUp)};
-					TheCamera.SetCamPositionForFixedMode(&endPos, &up);
-
-					aimPos += endPos;
-
-					if (targetFollow != nullptr)
-						TheCamera.TakeControl(targetFollow, MODE_FIXED, 2, 1);
-					else
-						TheCamera.TakeControlNoEntity(&aimPos, 2, 1);
+				if (targetFollow == nullptr) {
+					q = {
+						targetOffsetRotation.real, targetOffsetRotation.imag.x, targetOffsetRotation.imag.y,
+						targetOffsetRotation.imag.z
+					};
 				}
+				glm::vec3 directionVector(0, 0, 1);
+				directionVector = q * directionVector;
+				CVector aimPos = {directionVector.x, directionVector.y, directionVector.z};
+				auto targetPosOffset = CVector(targetPositionOffset.x, targetPositionOffset.y, targetPositionOffset.z);
+				aimPos += targetPosOffset;
+				TheCamera.TakeControlAttachToEntity(targetFollow, targetAttach, &targetPosOffset, &aimPos, endUp, 2,
+				                                    1);
 			}
+		} else {
+			auto startPos = TheCamera.GetPosition();
+			glm::vec3 directionVector(0, 0, 1);
+			directionVector = q * directionVector;
+			CVector aimPos = {directionVector.x, directionVector.y, directionVector.z};
+			aimPos += pos;
+			auto startPoint = startPos + CVector(TheCamera.m_mViewMatrix.right.z, TheCamera.m_mViewMatrix.up.z,
+			                                     TheCamera.m_mViewMatrix.at.z);
 
-			if (tweenPositionX.progress() * cutscene->getTextTime() >= cutscene->getTextTime() - cutscene->
-				getEndFadeInTime() && !useEndFadeIn && cutscene->isEndFadeIn()) {
-				plugin::Command<Commands::DO_FADE>(static_cast<int>(cutscene->getEndFadeInTime() * 1000.f), 0);
-				useEndFadeIn = true;
-			}
+			TheCamera.VectorTrackLinear(&aimPos, &startPoint, cutscene->getTextTime() * 1000.f, cutscene->move == 2);
+			TheCamera.VectorMoveLinear(const_cast<CVector*>(&pos), &startPos, cutscene->getTextTime() * 1000.f,
+			                           cutscene->move == 2);
+		}
 
-			co_await 1;
+		const std::chrono::milliseconds duration(static_cast<unsigned>(cutscene->getTextTime() * 1000.f));
+		if (cutscene->isEndFadeIn()) {
+			const std::chrono::milliseconds fadeInDuration(static_cast<int>(cutscene->getEndFadeInTime() * 1000.f));
+			co_await (duration - fadeInDuration);
+			plugin::Command<Commands::DO_FADE>(static_cast<int>(fadeInDuration.count()), 0);
+			co_await fadeInDuration;
+		} else {
+			co_await duration;
 		}
 
 		if (cutscene->isEndCutscene()) {
@@ -485,15 +513,19 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 			CHud::bScriptDontDisplayRadar = false;
 			TheCamera.RestoreWithJumpCut();
 		}
+
+		if (lockPlayerControl)
+			Command<Commands::SET_PLAYER_CONTROL>(0, true);
+
+		if (cutscene->isWideScreen())
+			TheCamera.SetWideScreenOff();
 	};
 
-	if (lockPlayerControl)
-		Command<Commands::SET_PLAYER_CONTROL>(0, 1);
-
 	if (this->async_)
-		tasklist.add_task(task, this, targetPositionOffset, targetOffsetRotation, targetFollow, targetAttach);
+		tasklist.add_task(task, this, targetPositionOffset, targetOffsetRotation, targetFollow, targetAttach,
+		                  lockPlayerControl);
 	else
-		co_await task(this, targetPositionOffset, targetOffsetRotation, targetFollow, targetAttach);
+		co_await task(this, targetPositionOffset, targetOffsetRotation, targetFollow, targetAttach, lockPlayerControl);
 }
 
 void CutsceneObjective::open() {
@@ -537,26 +569,6 @@ float& CutsceneObjective::getTextTime() {
 	return textTime_;
 }
 
-bool& CutsceneObjective::isInterpolation() {
-	return interpolation_;
-}
-
-int& CutsceneObjective::getPositionXInterpolationType() {
-	return positionXInterpolationType_;
-}
-
-int& CutsceneObjective::getPositionYInterpolationType() {
-	return positionYInterpolationType_;
-}
-
-int& CutsceneObjective::getPositionZInterpolationType() {
-	return positionZInterpolationType_;
-}
-
-int& CutsceneObjective::getRotationInterpolationType() {
-	return rotationInterpolationType_;
-}
-
 bool& CutsceneObjective::isWideScreen() {
 	return wideScreen_;
 }
@@ -587,4 +599,8 @@ bool& CutsceneObjective::isEndCutscene() {
 
 std::array<char, TEXT_SIZE>& CutsceneObjective::getGameText() {
 	return gameText_;
+}
+
+int CutsceneObjective::getMove() const {
+	return move;
 }

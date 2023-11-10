@@ -155,6 +155,8 @@ end_fade_in = "Fade in at the end"
 fade_in_time = "Fade in time"
 final_scene = "Final scene"
 lock_player_control = "Lock player control"
+move_types = ["None", "Linear", "Smooth"]
+move_type = "Move type"
 
 [damage_object_objective]
 types = ["Anything", "Weapon ..."]
@@ -312,7 +314,7 @@ speed_move = "Speed of movement: %.2f, Edit - Mouse wheel"
 view_camera_mouse = "View - Move mouse"
 accept_cancel = "Accept - %s\nCancel - %s"
 toggle_surface_rotate = "On/Off surface rotate - %s"
-rotate_with_shift = "Rotate - Shift + Arrows, QE"
+rotate_with_shift = "Rotate - Shift + QE"
 delete_all_points = "Delete all points - L"
 move_point = "Move point - M"
 select_point = "Next/Previous point - I/O"

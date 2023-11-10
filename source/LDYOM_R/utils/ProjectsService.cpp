@@ -309,15 +309,6 @@ void ProjectsService::loadProjectData(const std::filesystem::path &projectDirect
 			boost::archive::binary_iarchive ia(ss);
 			std::unique_ptr<Scene> scene;
 			ia >> scene;
-			for (auto pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["loadScene"].
-			     get_or_create<sol::table>()) {
-				std::string data;
-				ia >> data;
-				if (auto result = pairLua.second.as<sol::function>()(sceneId, data); !result.valid()) {
-					sol::error err = result;
-					CLOG(ERROR, "lua") << err.what();
-				}
-			}
 
 
 			getCurrentProject().getScenes().emplace(sceneId, std::move(scene));
@@ -343,7 +334,7 @@ void ProjectsService::loadProject(int projectIdx) {
 
 	getCurrentProject().onChangedScene()();
 
-	Windows::WindowsRenderService::getInstance().getWindow<Windows::ObjectivesWindow>()->selectElement(
+	Windows::WindowsRenderService::getInstance().getWindow<Windows::ObjectivesWindow>()->selectElementFirstCall(
 		this->getCurrentProject().getCurrentScene()->getObjectives().size() - 1);
 
 	this->onUpdate_();
