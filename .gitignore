@@ -53,3 +53,6 @@ Generated\ Files/
 *.pidb
 *.svclog
 *.scc
+
+#custom
+**/.env
