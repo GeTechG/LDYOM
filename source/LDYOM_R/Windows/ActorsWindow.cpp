@@ -59,9 +59,9 @@ void weaponsSection(Actor *actor, Localization &local) {
 	if (ImGui::TreeNode(local.get("general.weapons").c_str())) {
 		const auto fontSize = ImGui::GetFontSize();
 		if (ImGui::BeginTable("##weaponsTable", 4, ImGuiTableFlags_ScrollY,
-		                      ImVec2(fontSize * 18.5f, fontSize * 7.5f))) {
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, fontSize * 3.75f);
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, fontSize * 7.5f);
+		                      ImVec2(0, fontSize * 7.5f))) {
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, fontSize * 3.75f);
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, fontSize * 7.5f);
 			ImGui::TableSetupColumn(local.get("general.initial").c_str());
 			ImGui::TableSetupColumn("");
 			ImGui::TableSetupScrollFreeze(4, 1);
