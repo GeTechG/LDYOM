@@ -9,14 +9,19 @@ from os import walk
 load_dotenv()
 
 client = OpenAI()
-instruction = """"You are an advanced artificial intelligence translator. In your request, you will receive a JSON object with keys and {} text for translation. This text is intended for the interface of a mod for the game GTA SA, focused on creating custom missions. Please consider this context when translating. Your response should include a JSON object with the same keys, but the values should be the translated text. Translation language - {}."""
+instruction = """"You are an advanced artificial intelligence translator. In your request, you will receive a JSON 
+object with the value being the text in {} for translation. This text is intended for the interface of a mod for 
+the GTA SA game, focused on creating custom missions. Please consider this context when translating. Your response 
+should include a JSON object with the same structure, but with the translated text as the value. The language of 
+translation is {}."""
 
-default_lang_name = 'Russian'
+default_lang_name = 'English'
+
 
 def translate(fields: dict, current_lang: str) -> dict:
     completion = client.chat.completions.create(
-        model="gpt-3.5-turbo-1106",
-        response_format={"type": "json_object"},
+        model="gpt-3.5-turbo-16k",
+        # response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": instruction.format(default_lang_name, current_lang)},
             {"role": "user", "content": json.dumps(fields)}
@@ -36,7 +41,7 @@ for root, dirs, files in walk(folder_path):
                 lang = toml.load(f)
                 langs[file[:-5]] = lang
 
-needs_langs = ['English']
+needs_langs = ['Russian', 'Portuguese', 'Polish']
 
 
 def translate_langs():
