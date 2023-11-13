@@ -73,12 +73,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.asi</TargetExt>
-    <OutDir>C:\Games\GTA San Andreas\</OutDir>
+    <OutDir>$(GTA_SA_DIR)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.asi</TargetExt>
-    <OutDir>C:\Games\GTA San Andreas Modding\</OutDir>
+    <OutDir>$(GTA_SA_DIR)/</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -114,8 +114,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;$(ProjectDir)utils;$(ProjectDir)ImGui;C:\local\boost_1_83_0;$(ProjectDir)include;$(ProjectDir)LuaJIT-2.0.5\src;$(DIRECTX9_SDK_DIR)\Include;$(ProjectDir)sqlite3;$(PLUGIN_SDK_DIR)\bass;C:\Users\User\Documents\plugin-sdk\CLEO4-master\source;$(ProjectDir)zip;$(ProjectDir)\thirdparty\ktsignal\include;$(ProjectDir)thirdparty\kthook\include;$(ProjectDir)thirdparty\xbyak;$(ProjectDir)thirdparty\kthook;$(ProjectDir)thirdparty\imgui;$(ProjectDir)thirdparty\kiero;$(ProjectDir)thirdparty\kiero\minhook\include;$(ProjectDir)thirdparty;$(ProjectDir)fonts;$(ProjectDir)Services;$(ProjectDir)Windows;$(ProjectDir)thirdparty\glm</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_USE_MATH_DEFINES;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_NDEBUG;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;_DX9_SDK_INSTALLED;PLUGIN_SGV_10US;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;$(ProjectDir)utils;$(ProjectDir)ImGui;C:\local\boost_1_83_0;$(ProjectDir)include;$(ProjectDir)LuaJIT-2.0.5\src;$(DIRECTX9_SDK_DIR)\Include;$(ProjectDir)sqlite3;$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4\source;$(ProjectDir)zip;$(ProjectDir)\thirdparty\ktsignal\include;$(ProjectDir)thirdparty\kthook\include;$(ProjectDir)thirdparty\xbyak;$(ProjectDir)thirdparty\kthook;$(ProjectDir)thirdparty\imgui;$(ProjectDir)thirdparty\kiero;$(ProjectDir)thirdparty\kiero\minhook\include;$(ProjectDir)thirdparty;$(ProjectDir)fonts;$(ProjectDir)Services;$(ProjectDir)Windows;$(ProjectDir)thirdparty\glm</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_USE_MATH_DEFINES;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DX9_SDK_INSTALLED;GTASA;PLUGIN_SGV_10US;RW;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- /utf-8 /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>

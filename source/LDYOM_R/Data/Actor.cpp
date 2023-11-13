@@ -51,14 +51,14 @@ void Actor::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].
+		/*const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].
 			get_or_create<sol::table>();
 		for (auto [_, func] : onActorSpawn) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
-		}
+		}*/
 	}
 }
 
@@ -73,7 +73,7 @@ void Actor::deleteProjectEntity() {
 			auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 			if (scene.has_value() && tasklist != nullptr) {
-				const auto onActorDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+				/*const auto onActorDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 						"onActorDelete"]
 					.get_or_create<sol::table>();
 				for (auto [_, func] : onActorDelete) {
@@ -82,7 +82,7 @@ void Actor::deleteProjectEntity() {
 						const sol::error err = result;
 						CLOG(ERROR, "lua") << err.what();
 					}
-				}
+				}*/
 			}
 		}
 	}

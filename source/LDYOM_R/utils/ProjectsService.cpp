@@ -207,7 +207,7 @@ void ProjectsService::saveCurrentProject() {
 		boost::archive::binary_oarchive oa(file);
 		oa << this->getCurrentProject().getProjectInfo().get();
 
-		for (const auto &pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["saveProject"].
+		/*for (const auto &pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["saveProject"].
 		     get_or_create<sol::table>()) {
 			if (auto result = pairLua.second.as<sol::function>()(); !result.valid()) {
 				sol::error err = result;
@@ -215,7 +215,7 @@ void ProjectsService::saveCurrentProject() {
 			} else {
 				oa << result.get<std::string>();
 			}
-		}
+		}*/
 		file.close();
 	}
 
@@ -224,7 +224,7 @@ void ProjectsService::saveCurrentProject() {
 		std::ostringstream uncompressedStream;
 		boost::archive::binary_oarchive oa(uncompressedStream);
 		oa << pair.second;
-		for (const auto &pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["saveScene"].
+		/*for (const auto &pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["saveScene"].
 		     get_or_create<
 			     sol::table>()) {
 			if (auto result = pairLua.second.as<sol::function>()(pair.first); !result.valid()) {
@@ -233,7 +233,7 @@ void ProjectsService::saveCurrentProject() {
 			} else {
 				oa << result.get<std::string>();
 			}
-		}
+		}*/
 
 		auto ucString = uncompressedStream.str();
 
@@ -268,7 +268,7 @@ void ProjectsService::loadProjectData(const std::filesystem::path &projectDirect
 		ProjectInfo *projectInfo;
 		ia >> projectInfo;
 		this->getCurrentProject().getProjectInfo() = std::unique_ptr<ProjectInfo>(projectInfo);
-		for (auto pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["loadProject"].
+		/*for (auto pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["loadProject"].
 		     get_or_create<sol::table>()) {
 			std::string data;
 			ia >> data;
@@ -276,7 +276,7 @@ void ProjectsService::loadProjectData(const std::filesystem::path &projectDirect
 				sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
-		}
+		}*/
 		file.close();
 	}
 

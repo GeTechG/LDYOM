@@ -13,8 +13,6 @@
 #include "ImGuiHook.h"
 #include "ktcoro_wait.hpp"
 #include "Logger.h"
-#include "LuaEngine.h"
-#include "LuaLogger.h"
 #include "MainMenu.h"
 #include "ModelsService.h"
 #include "plugin.h"
@@ -85,7 +83,7 @@ public:
 			Logger::getInstance().Init();
 			Settings::getInstance().Init();
 			Localization::getInstance().Init();
-			LuaEngine::getInstance().Init();
+			//LuaEngine::getInstance().Init();
 			HotKeyService::getInstance().Init();
 			ProjectsService::getInstance().Init();
 			ModelsService::getInstance().Init();
@@ -107,7 +105,7 @@ public:
 			////init is complete
 			initServices = true;
 
-			const auto initFuncs = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["init"].
+			/*const auto initFuncs = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["init"].
 				get_or_create<sol::table>();
 			for (auto pair : initFuncs) {
 				if (auto result = pair.second.as<sol::function>()(); !result.valid()) {
@@ -115,7 +113,7 @@ public:
 					CLOG(ERROR, "lua") << err.what();
 					LuaLogger::getInstance().print(err.what());
 				}
-			}
+			}*/
 
 			Tasker::getInstance().getKtcoroTaskList().add_task([]() -> ktwait {
 				co_await 5s;

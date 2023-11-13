@@ -3,18 +3,20 @@
 #include "LuaEngine.h"
 #include "LuaLogger.h"
 #include "easylogging/easylogging++.h"
-#include "Localization/Localization.h"
 #include "fmt/core.h"
+#include "Localization/Localization.h"
 
 ProjectData::ProjectData() {
 	newScene(false);
 	this->projectInfo_ = std::make_unique<ProjectInfo>();
-	strncpy_s(this->projectInfo_->name, fmt::format("{} #{}", Localization::getInstance().get("projects.project").c_str(), time(nullptr)).c_str(), sizeof this->projectInfo_->name);
+	strncpy_s(this->projectInfo_->name,
+	          fmt::format("{} #{}", Localization::getInstance().get("projects.project").c_str(), time(nullptr)).c_str(),
+	          sizeof this->projectInfo_->name);
 	this->projectInfo_->startScene = this->currentScene_;
 	this->projectInfo_->directory.clear();
 }
 
-ProjectData& ProjectData::operator=(ProjectData&& other) noexcept {
+ProjectData& ProjectData::operator=(ProjectData &&other) noexcept {
 	if (this == &other)
 		return *this;
 	scenes_ = std::move(other.scenes_);
@@ -37,7 +39,7 @@ boost::signals2::signal<void()>& ProjectData::onChangedScene() {
 }
 
 void ProjectData::newScene(bool change) {
-	auto& local = Localization::getInstance();
+	auto &local = Localization::getInstance();
 	const auto newName = fmt::format("{} #{}", local.get("scenes.scene").c_str(), this->scenes_.size());
 	auto scene = std::make_unique<Scene>(newName.c_str());
 	int sceneId = reinterpret_cast<int>(scene.get());
@@ -49,13 +51,13 @@ void ProjectData::newScene(bool change) {
 		this->getCurrentScene()->loadEditorScene();
 		this->onChangedScene_();
 	}
-	for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onNewScene"].get_or_create<sol::table>()) {
+	/*for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onNewScene"].get_or_create<sol::table>()) {
 		if (auto result = pair.second.as<sol::function>()(sceneId); !result.valid()) {
 			sol::error err = result;
 			CLOG(ERROR, "lua") << err.what();
 			LuaLogger::getInstance().print(err.what());
 		}
-	}
+	}*/
 }
 
 void ProjectData::changeScene(int scene) {
@@ -63,13 +65,13 @@ void ProjectData::changeScene(int scene) {
 	this->currentScene_ = scene;
 	this->getCurrentScene()->loadEditorScene();
 	this->onChangedScene_();
-	for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onChangeScene"].get_or_create<sol::table>()) {
+	/*for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onChangeScene"].get_or_create<sol::table>()) {
 		if (auto result = pair.second.as<sol::function>()(scene); !result.valid()) {
 			sol::error err = result;
 			CLOG(ERROR, "lua") << err.what();
 			LuaLogger::getInstance().print(err.what());
 		}
-	}
+	}*/
 }
 
 void ProjectData::deleteScene(int scene) {
@@ -80,13 +82,13 @@ void ProjectData::deleteScene(int scene) {
 		this->currentScene_ = this->scenes_.begin()->first;
 		this->getCurrentScene()->loadEditorScene();
 	}
-	for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onDeleteScene"].get<sol::table>()) {
+	/*for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onDeleteScene"].get<sol::table>()) {
 		if (auto result = pair.second.as<sol::function>()(scene); !result.valid()) {
 			sol::error err = result;
 			CLOG(ERROR, "lua") << err.what();
 			LuaLogger::getInstance().print(err.what());
 		}
-	}
+	}*/
 }
 
 std::unordered_map<int, std::unique_ptr<Scene>>& ProjectData::getScenes() {
