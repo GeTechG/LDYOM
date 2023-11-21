@@ -1,29 +1,46 @@
 ﻿#pragma once
 
 #include <filesystem>
+#include <nlohmann/json.hpp>
 
+#include "jsonUtils.h"
 #include "Scene.h"
 #include "Texture.h"
 #include "boost/archive/binary_oarchive.hpp"
 #include "boost/signals2/signal.hpp"
 
+
+using json = nlohmann::json;
+
 struct ProjectInfo {
-	char name[NAME_SIZE] = "";
-	char authorName[NAME_SIZE] = "UFO";
+	std::string name;
+	std::string authorName = "UFO";
 	int startScene = NULL;
 	std::filesystem::path directory;
 	std::optional<std::unique_ptr<Texture>> icon;
 };
 
-namespace boost::serialization {
-	template <class Archive>
-	void serialize(Archive &ar, ProjectInfo &p, const unsigned int version) {
-		ar & p.name;
-		ar & p.authorName;
-		ar & p.startScene;
-		ar & p.directory;
-	}
-}
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<ProjectInfo> {
+		static void to_json(json &j, const ProjectInfo &p) {
+			j = json{
+				{"name", p.name},
+				{"authorName", p.authorName},
+				{"startScene", p.startScene},
+				{"directory", p.directory}
+			};
+		}
+
+		static void from_json(const json &j, ProjectInfo &p) {
+			j.at("name").get_to(p.name);
+			j.at("authorName").get_to(p.authorName);
+			j.at("startScene").get_to(p.startScene);
+			j.at("directory").get_to(p.directory);
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END
 
 class ProjectData {
 private:

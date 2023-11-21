@@ -37,7 +37,7 @@ void Windows::VisualEffectsWindow::createNewElementFrom(int i) {
 	                               spawnEditorVisualEffect();
 }
 
-char* Windows::VisualEffectsWindow::getElementName(int i) {
+std::string& Windows::VisualEffectsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVisualEffects().at(i)->getName();
 }
 

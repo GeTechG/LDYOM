@@ -6,7 +6,7 @@
 
 WaitSignalObjective::WaitSignalObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.wait_signal"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
 
 void WaitSignalObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {

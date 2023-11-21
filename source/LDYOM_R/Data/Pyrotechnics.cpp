@@ -30,41 +30,18 @@ std::optional<int> Pyrotechnics::spawnFire(bool editor) {
 
 Pyrotechnics::Pyrotechnics(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
                                                                   uuid_(boost::uuids::random_generator()()) {
-	strlcpy(this->name_.data(), name, sizeof this->name_);
+	this->name_ = name;
 	this->pos_[0] = pos.x;
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
 }
 
-Pyrotechnics::Pyrotechnics(const Pyrotechnics &other): ObjectiveDependent{other},
-                                                       INameable{other},
-                                                       IPositionable{other},
-                                                       IUuidable{other},
-                                                       uuid_{boost::uuids::random_generator()()},
-                                                       name_{other.name_},
-                                                       pos_{other.pos_},
-                                                       type_{other.type_},
-                                                       typeExplosion_{other.typeExplosion_},
-                                                       sizeFire_{other.sizeFire_},
-                                                       propagationFire_{other.propagationFire_} {
-	strlcat(name_.data(), "C", sizeof name_);
-}
+Pyrotechnics Pyrotechnics::copy() const {
+	Pyrotechnics copy(*this);
+	copy.uuid_ = boost::uuids::random_generator()();
+	copy.name_ += " (copy)";
 
-Pyrotechnics& Pyrotechnics::operator=(const Pyrotechnics &other) {
-	if (this == &other)
-		return *this;
-	ObjectiveDependent::operator =(other);
-	INameable::operator =(other);
-	IPositionable::operator =(other);
-	IUuidable::operator =(other);
-	uuid_ = other.uuid_;
-	name_ = other.name_;
-	pos_ = other.pos_;
-	type_ = other.type_;
-	typeExplosion_ = other.typeExplosion_;
-	sizeFire_ = other.sizeFire_;
-	propagationFire_ = other.propagationFire_;
-	return *this;
+	return copy;
 }
 
 Pyrotechnics::~Pyrotechnics() {
@@ -140,8 +117,8 @@ void Pyrotechnics::updateLocation() {
 	}
 }
 
-char* Pyrotechnics::getName() {
-	return this->name_.data();
+std::string& Pyrotechnics::getName() {
+	return this->name_;
 }
 
 float* Pyrotechnics::getPosition() {
@@ -204,14 +181,14 @@ void Pyrotechnics::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onPyrotechnicsSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+		/*const auto onPyrotechnicsSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 			"onPyrotechnicsSpawn"].get_or_create<sol::table>();
 		for (auto func : onPyrotechnicsSpawn | views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
-		}
+		}*/
 	}
 }
 
@@ -227,7 +204,7 @@ void Pyrotechnics::deleteProjectEntity() {
 		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 		if (scene.has_value() && tasklist != nullptr) {
-			const auto onPyrotechnicsDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+			/*const auto onPyrotechnicsDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 				"onPyrotechnicsDelete"].get_or_create<sol::table>();
 			for (auto func : onPyrotechnicsDelete | views::values) {
 				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
@@ -235,7 +212,7 @@ void Pyrotechnics::deleteProjectEntity() {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
 				}
-			}
+			}*/
 		}
 	}
 }

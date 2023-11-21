@@ -2,36 +2,12 @@
 #include <CObject.h>
 #include <CQuaternion.h>
 
+#include "jsonUtils.h"
 #include "WorldObjective.h"
 
 
 class CutsceneObjective final : virtual public WorldObjective {
 private:
-	friend class boost::serialization::access;
-
-	template <class Archive>
-	void serialize(Archive &ar, const unsigned version) {
-		ar & boost::serialization::base_object<WorldObjective>(*this);
-		ar & attachType_;
-		ar & attachUuid_;
-		ar & followType_;
-		ar & followUuid_;
-		ar & boost::serialization::make_array(position_.data(), position_.size());
-		ar & rotation_;
-		ar & xAngle_;
-		ar & boost::serialization::make_array(text_.data(), text_.size());
-		ar & textTime_;
-		ar & wideScreen_;
-		ar & async_;
-		ar & startFadeOut;
-		ar & startFadeOutTime;
-		ar & endFadeIn;
-		ar & endFadeInTime;
-		ar & endCutscene_;
-		ar & lockPlayerControl_;
-		ar & move;
-	}
-
 	int attachType_ = 0;
 	boost::uuids::uuid attachUuid_{};
 	int followType_ = 0;
@@ -39,7 +15,7 @@ private:
 	std::array<float, 3> position_{};
 	CQuaternion rotation_{};
 	float xAngle_ = 0.0f;
-	std::array<char, TEXT_SIZE> text_ = {""};
+	std::string text;
 	float textTime_ = 1.f;
 	int move = 0;
 	bool wideScreen_ = false;
@@ -51,7 +27,7 @@ private:
 	bool endCutscene_ = true;
 	bool lockPlayerControl_ = true;
 
-	std::array<char, TEXT_SIZE> gameText_ = {""};
+	std::string gameText;
 
 	void updateLocation();
 
@@ -76,7 +52,7 @@ public:
 	std::array<float, 3>& getPosition();
 	CQuaternion& getRotation();
 	float& getXAngle();
-	std::array<char, TEXT_SIZE>& getText();
+	std::string& getText();
 	float& getTextTime();
 	bool& isWideScreen();
 	bool& isAsync();
@@ -85,6 +61,60 @@ public:
 	bool& isEndFadeIn();
 	float& getEndFadeInTime();
 	bool& isEndCutscene();
-	std::array<char, TEXT_SIZE>& getGameText();
-	int getMove() const;
+	std::string& getGameText();
+	int& getMove();
+	bool& isLockPlayerControl();
 };
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<CutsceneObjective> {
+		static void to_json(json &j, const CutsceneObjective &obj) {
+			auto &worldObjective = static_cast<const WorldObjective&>(obj);
+			adl_serializer<WorldObjective>::to_json(j, worldObjective);
+			auto &a = const_cast<CutsceneObjective&>(obj);
+			j["attachType"] = a.getAttachType();
+			j["attachUuid"] = a.getAttachUuid();
+			j["followType"] = a.getFollowType();
+			j["followUuid"] = a.getFollowUuid();
+			j["position"] = a.getPosition();
+			j["rotation"] = a.getRotation();
+			j["xAngle"] = a.getXAngle();
+			j["text"] = a.getText();
+			j["textTime"] = a.getTextTime();
+			j["wideScreen"] = a.isWideScreen();
+			j["async"] = a.isAsync();
+			j["startFadeOut"] = a.isStartFadeOut();
+			j["startFadeOutTime"] = a.getStartFadeOutTime();
+			j["endFadeIn"] = a.isEndFadeIn();
+			j["endFadeInTime"] = a.getEndFadeInTime();
+			j["endCutscene"] = a.isEndCutscene();
+			j["lockPlayerControl"] = a.isLockPlayerControl();
+			j["move"] = a.getMove();
+		}
+
+		static void from_json(const json &j, CutsceneObjective &obj) {
+			auto &worldObjective = static_cast<WorldObjective&>(obj);
+			j.get_to(worldObjective);
+			j.at("attachType").get_to(obj.getAttachType());
+			j.at("attachUuid").get_to(obj.getAttachUuid());
+			j.at("followType").get_to(obj.getFollowType());
+			j.at("followUuid").get_to(obj.getFollowUuid());
+			j.at("position").get_to(obj.getPosition());
+			j.at("rotation").get_to(obj.getRotation());
+			j.at("xAngle").get_to(obj.getXAngle());
+			j.at("text").get_to(obj.getText());
+			j.at("textTime").get_to(obj.getTextTime());
+			j.at("wideScreen").get_to(obj.isWideScreen());
+			j.at("async").get_to(obj.isAsync());
+			j.at("startFadeOut").get_to(obj.isStartFadeOut());
+			j.at("startFadeOutTime").get_to(obj.getStartFadeOutTime());
+			j.at("endFadeIn").get_to(obj.isEndFadeIn());
+			j.at("endFadeInTime").get_to(obj.getEndFadeInTime());
+			j.at("endCutscene").get_to(obj.isEndCutscene());
+			j.at("lockPlayerControl").get_to(obj.isLockPlayerControl());
+			j.at("move").get_to(obj.getMove());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

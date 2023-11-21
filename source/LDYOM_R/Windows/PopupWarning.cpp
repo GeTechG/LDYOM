@@ -5,15 +5,14 @@
 
 PopupWarning::PopupWarning(std::string name) : name(std::move(name)) {}
 
-char* PopupWarning::getName() {
-	return const_cast<char*>(Localization::getInstance().get(name).c_str());
+std::string& PopupWarning::getName() {
+	return const_cast<std::string&>(Localization::getInstance().get(name));
 }
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
-void PopupWarning::draw(const std::function<void()>& onDelete, const std::function<void()>& onCancel) {
+void PopupWarning::draw(const std::function<void()> &onDelete, const std::function<void()> &onCancel) {
 	auto &local = Localization::getInstance();
-	if (ImGui::BeginPopupModal(getName(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-
+	if (ImGui::BeginPopupModal(getName().c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		ImGui::Text(local.get("warning_popup.text").c_str());
 		const float width = ImGui::GetContentRegionAvail().x / 2.0f - 3.0f;
 		if (ImGui::Button(local.get("warning_popup.yes").c_str(), ImVec2(width, 0.0f))) {

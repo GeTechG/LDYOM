@@ -8,8 +8,10 @@
 
 ClockTimeObjective::ClockTimeObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.clock_time"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+std::array<signed char, 2>& ClockTimeObjective::getTime() { return time_; }
 
 void ClockTimeObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	bool timeChanged = false;

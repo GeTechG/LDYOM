@@ -13,7 +13,7 @@
 
 FollowPathVehicleObjective::FollowPathVehicleObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.follow_path_vehicle"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
 
 void FollowPathVehicleObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
@@ -23,7 +23,7 @@ void FollowPathVehicleObjective::draw(Localization &local, std::vector<std::stri
 	IncorrectHighlight(indexVehicle == -1, [&] {
 		utils::Combo(local.get("entities.vehicle").c_str(), &this->vehicleUuid_, indexVehicle, vehicles.size(),
 		             [&vehicles](const int i) {
-			             return vehicles.at(i)->getName();
+			             return std::ref(vehicles.at(i)->getName());
 		             }, [&vehicles](const int i) {
 			             return vehicles.at(i)->getUuid();
 		             });
@@ -59,17 +59,17 @@ ktwait FollowPathVehicleObjective::execute(Scene *scene, Vehicle *vehicle, Resul
 			float y = _this->getPath().at(index)[1];
 			float z = _this->getPath().at(index)[2];
 			switch (_this->getDriveType()) {
-			case 0:
-				Command<Commands::CAR_GOTO_COORDINATES>(vehicle->getProjectVehicle().value(), x, y, z);
-				break;
-			case 1:
-				Command<Commands::CAR_GOTO_COORDINATES_ACCURATE>(vehicle->getProjectVehicle().value(), x, y, z);
-				break;
-			case 2:
-				Command<Commands::CAR_GOTO_COORDINATES_RACING>(vehicle->getProjectVehicle().value(), x, y, z);
-				break;
-			default:
-				break;
+				case 0:
+					Command<Commands::CAR_GOTO_COORDINATES>(vehicle->getProjectVehicle().value(), x, y, z);
+					break;
+				case 1:
+					Command<Commands::CAR_GOTO_COORDINATES_ACCURATE>(vehicle->getProjectVehicle().value(), x, y, z);
+					break;
+				case 2:
+					Command<Commands::CAR_GOTO_COORDINATES_RACING>(vehicle->getProjectVehicle().value(), x, y, z);
+					break;
+				default:
+					break;
 			}
 
 			auto timeCondition = _this->getPathType() == 0 || CTimer::m_snTimeInMilliseconds - startTime < static_cast<
@@ -87,27 +87,27 @@ ktwait FollowPathVehicleObjective::execute(Scene *scene, Vehicle *vehicle, Resul
 				execute = false;
 
 			switch (_this->getPathType()) {
-			case 0:
-				if (index == static_cast<int>(_this->getPath().size())) {
-					execute = false;
-				}
-				break;
-			case 1:
-				if (index == static_cast<int>(_this->getPath().size())) {
-					index = 0;
-				}
-				break;
-			case 2:
-				if (index == static_cast<int>(_this->getPath().size())) {
-					step = -1;
-					index -= 2;
-				} else if (index < 0) {
-					step = 1;
-					index += 2;
-				}
-				break;
-			default:
-				break;
+				case 0:
+					if (index == static_cast<int>(_this->getPath().size())) {
+						execute = false;
+					}
+					break;
+				case 1:
+					if (index == static_cast<int>(_this->getPath().size())) {
+						index = 0;
+					}
+					break;
+				case 2:
+					if (index == static_cast<int>(_this->getPath().size())) {
+						step = -1;
+						index -= 2;
+					} else if (index < 0) {
+						step = 1;
+						index += 2;
+					}
+					break;
+				default:
+					break;
 			}
 		}
 	};
@@ -135,3 +135,5 @@ float& FollowPathVehicleObjective::getExecuteTime() {
 std::vector<std::array<float, 3>>& FollowPathVehicleObjective::getPath() {
 	return path_;
 }
+
+bool& FollowPathVehicleObjective::isWaitEnd() { return waitEnd_; }

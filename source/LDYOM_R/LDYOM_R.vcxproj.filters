@@ -401,6 +401,9 @@
     <Filter Include="Utils\fmt">
       <UniqueIdentifier>{075bdd2c-76e1-4819-896e-73c59d2f5e2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="thirdparty\boost_json_archive">
+      <UniqueIdentifier>{2cc85a41-eb8f-4c34-8a73-69e18c1c852f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -914,6 +917,21 @@
     </ClCompile>
     <ClCompile Include="Windows\ToolsWindow.cpp">
       <Filter>Windows\ToolsWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\boost_json_archive\src\JsonContext.cpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\boost_json_archive\src\json_iarchive.cpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\boost_json_archive\src\json_oarchive.cpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\boost_json_archive\src\polymorphic_json_iarchive.cpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\boost_json_archive\src\polymorphic_json_oarchive.cpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2312,6 +2330,27 @@
     </ClInclude>
     <ClInclude Include="include\fmt\xchar.h">
       <Filter>Utils\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\boost_json_archive\include\boost\archive\json_iarchive.hpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\boost_json_archive\include\boost\archive\json_oarchive.hpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\boost_json_archive\include\boost\archive\polymorphic_json_iarchive.hpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\boost_json_archive\include\boost\archive\polymorphic_json_oarchive.hpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\boost_json_archive\include\boost\archive\TraitsDetailsHelper.hpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\boost_json_archive\include\boost\JsonContext.hpp">
+      <Filter>thirdparty\boost_json_archive</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\jsonUtils.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

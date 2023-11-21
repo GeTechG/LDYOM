@@ -26,9 +26,9 @@ constexpr int CHECKPOINT_TYPES[] = {0, 1, 2, 5};
 
 std::optional<int> Checkpoint::spawnCheckpoint() const {
 	int scriptCheckpoint;
-	Command<Commands::CREATE_CHECKPOINT>(this->checkpointType_, this->pos_[0], this->pos_[1], this->pos_[2],
-	                                     this->pos_[0], this->pos_[1],
-	                                     this->pos_[2], this->radius_, &scriptCheckpoint);
+	Command<Commands::CREATE_CHECKPOINT>(this->checkpointType, this->pos[0], this->pos[1], this->pos[2],
+	                                     this->pos[0], this->pos[1],
+	                                     this->pos[2], this->radius, &scriptCheckpoint);
 	if (scriptCheckpoint == 0)
 		return std::nullopt;
 	return scriptCheckpoint;
@@ -39,16 +39,16 @@ void Checkpoint::drawSphere() {
 		this->rerender = false;
 		return;
 	}
-	CVector pos = {this->pos_[0], this->pos_[1], this->pos_[2]};
-	const auto red = static_cast<unsigned char>(color_[0] * 255);
-	const auto green = static_cast<unsigned char>(color_[1] * 255);
-	const auto blue = static_cast<unsigned char>(color_[2] * 255);
-	const auto alpha = static_cast<unsigned char>(color_[3] * 255);
+	CVector pos = {this->pos[0], this->pos[1], this->pos[2]};
+	const auto red = static_cast<unsigned char>(color[0] * 255);
+	const auto green = static_cast<unsigned char>(color[1] * 255);
+	const auto blue = static_cast<unsigned char>(color[2] * 255);
+	const auto alpha = static_cast<unsigned char>(color[3] * 255);
 	if (this->type == 0) {
-		C3dMarkers::PlaceMarkerSet(reinterpret_cast<unsigned>(this), CHECKPOINT_TYPES[this->checkpointType_],
-		                           pos, this->radius_, red, green, blue, alpha, 2048, 0.1f, 228u);
+		C3dMarkers::PlaceMarkerSet(reinterpret_cast<unsigned>(this), CHECKPOINT_TYPES[this->checkpointType],
+		                           pos, this->radius, red, green, blue, alpha, 2048, 0.1f, 228u);
 	} else {
-		C3dMarkers::PlaceMarkerCone(reinterpret_cast<unsigned>(this), pos, this->radius_, red, green, blue, alpha, 2048,
+		C3dMarkers::PlaceMarkerCone(reinterpret_cast<unsigned>(this), pos, this->radius, red, green, blue, alpha, 2048,
 		                            0.1f, 228u, false);
 	}
 }
@@ -59,57 +59,26 @@ bool Checkpoint::existProjectEntity() {
 
 CVector Checkpoint::getProjectEntityPosition() {
 	if (this->type == 0) {
-		return {this->pos_[0], this->pos_[1], this->pos_[2]};
+		return {this->pos[0], this->pos[1], this->pos[2]};
 	}
 	return this->getProjectCheckpoint().value()->m_vecPosition;
 }
 
 Checkpoint::Checkpoint(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
-                                                              uuid_(boost::uuids::random_generator()()),
-                                                              checkpointType_(1) {
-	strlcpy(this->name_.data(), name, sizeof this->name_);
-	this->pos_[0] = pos.x;
-	this->pos_[1] = pos.y;
-	this->pos_[2] = CWorld::FindGroundZForCoord(pos.x, pos.y);
+                                                              uuid(boost::uuids::random_generator()()),
+                                                              checkpointType(1) {
+	this->name = name;
+	this->pos[0] = pos.x;
+	this->pos[1] = pos.y;
+	this->pos[2] = CWorld::FindGroundZForCoord(pos.x, pos.y);
 }
 
-Checkpoint::Checkpoint(const Checkpoint &other): ObjectiveDependent{other},
-                                                 INameable{other},
-                                                 IPositionable{other},
-                                                 IUuidable{other},
-                                                 uuid_{boost::uuids::random_generator()()},
-                                                 name_{other.name_},
-                                                 pos_{other.pos_},
-                                                 type{other.type},
-                                                 radius_{other.radius_},
-                                                 blipColor_{other.blipColor_},
-                                                 color_{other.color_},
-                                                 checkpointType_{other.checkpointType_},
-                                                 blipType_{other.blipType_},
-                                                 blipSprite_{other.blipSprite_},
-                                                 angle{other.angle} {
-	strlcat(this->name_.data(), "C", sizeof this->name_);
-}
+Checkpoint Checkpoint::copy() const {
+	Checkpoint copy(*this);
+	copy.uuid = boost::uuids::random_generator()();
+	copy.name += " (copy)";
 
-Checkpoint& Checkpoint::operator=(const Checkpoint &other) {
-	if (this == &other)
-		return *this;
-	ObjectiveDependent::operator =(other);
-	INameable::operator =(other);
-	IPositionable::operator =(other);
-	IUuidable::operator =(other);
-	uuid_ = other.uuid_;
-	name_ = other.name_;
-	pos_ = other.pos_;
-	type = other.type;
-	radius_ = other.radius_;
-	blipColor_ = other.blipColor_;
-	color_ = other.color_;
-	checkpointType_ = other.checkpointType_;
-	blipType_ = other.blipType_;
-	blipSprite_ = other.blipSprite_;
-	angle = other.angle;
-	return *this;
+	return copy;
 }
 
 Checkpoint::~Checkpoint() {
@@ -118,7 +87,7 @@ Checkpoint::~Checkpoint() {
 }
 
 boost::uuids::uuid& Checkpoint::getUuid() {
-	return uuid_;
+	return uuid;
 }
 
 std::optional<CCheckpoint*> Checkpoint::getEditorCheckpoint() {
@@ -154,23 +123,23 @@ std::optional<unsigned>& Checkpoint::getProjectSphere() {
 void Checkpoint::updateLocation() {
 	const auto &editorCheckpoint = this->getEditorCheckpoint();
 	if (editorCheckpoint.has_value()) {
-		editorCheckpoint.value()->m_vecPosition = {this->pos_[0], this->pos_[1], this->pos_[2]};
+		editorCheckpoint.value()->m_vecPosition = {this->pos[0], this->pos[1], this->pos[2]};
 		CCheckpoints::SetHeading(editorCheckpoint.value()->m_nIdentifier, this->angle);
 	}
 	const auto &projectCheckpoint = this->getProjectCheckpoint();
 	if (projectCheckpoint.has_value()) {
-		projectCheckpoint.value()->m_vecPosition = {this->pos_[0], this->pos_[1], this->pos_[2]};
+		projectCheckpoint.value()->m_vecPosition = {this->pos[0], this->pos[1], this->pos[2]};
 		CCheckpoints::SetHeading(projectCheckpoint.value()->m_nIdentifier, this->angle);
 	}
 	this->rerender = true;
 }
 
-char* Checkpoint::getName() {
-	return this->name_.data();
+std::string& Checkpoint::getName() {
+	return this->name;
 }
 
 float* Checkpoint::getPosition() {
-	return pos_.data();
+	return pos.data();
 }
 
 int& Checkpoint::getType() {
@@ -178,27 +147,27 @@ int& Checkpoint::getType() {
 }
 
 float& Checkpoint::getRadius() {
-	return radius_;
+	return radius;
 }
 
 int& Checkpoint::getBlipColor() {
-	return blipColor_;
+	return blipColor;
 }
 
 std::array<float, 4>& Checkpoint::getColor() {
-	return color_;
+	return color;
 }
 
 int& Checkpoint::getCheckpointType() {
-	return checkpointType_;
+	return checkpointType;
 }
 
 int& Checkpoint::getBlipType() {
-	return blipType_;
+	return blipType;
 }
 
 int& Checkpoint::getBlipSprite() {
-	return blipSprite_;
+	return blipSprite;
 }
 
 float& Checkpoint::getAngle() {
@@ -238,8 +207,8 @@ void Checkpoint::deleteEditorCheckpoint() {
 
 void Checkpoint::spawnEditorBlip() {
 	deleteEditorBlip();
-	if (this->blipColor_ != 0 || this->blipType_ == 1)
-		this->editorBlip = utils::createBlip(this->pos_.data(), this->blipType_, this->blipColor_, this->blipSprite_);
+	if (this->blipColor != 0 || this->blipType == 1)
+		this->editorBlip = utils::createBlip(this->pos.data(), this->blipType, this->blipColor, this->blipSprite);
 }
 
 void Checkpoint::deleteEditorBlip() {
@@ -252,8 +221,8 @@ void Checkpoint::deleteEditorBlip() {
 
 void Checkpoint::spawnProjectBlip() {
 	deleteProjectBlip();
-	if (this->blipColor_ != 0 || this->blipType_ == 1)
-		this->projectBlip = utils::createBlip(this->pos_.data(), this->blipType_, this->blipColor_, this->blipSprite_);
+	if (this->blipColor != 0 || this->blipType == 1)
+		this->projectBlip = utils::createBlip(this->pos.data(), this->blipType, this->blipColor, this->blipSprite);
 }
 
 void Checkpoint::deleteProjectBlip() {
@@ -284,14 +253,14 @@ void Checkpoint::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onCheckpointSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+		/*const auto onCheckpointSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 			"onCheckpointSpawn"].get_or_create<sol::table>();
 		for (auto func : onCheckpointSpawn | std::views::values) {
-			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
-		}
+		}*/
 	}
 }
 
@@ -309,14 +278,14 @@ void Checkpoint::deleteProjectEntity() {
 	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
-	if (scene.has_value() && tasklist != nullptr) {
-		const auto onCheckpointDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
-			"onCheckpointDelete"].get_or_create<sol::table>();
-		for (auto [_, func] : onCheckpointDelete) {
-			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
-				const sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}
-	}
+	//if (scene.has_value() && tasklist != nullptr) {
+	//	const auto onCheckpointDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+	//		"onCheckpointDelete"].get_or_create<sol::table>();
+	//	for (auto [_, func] : onCheckpointDelete) {
+	//		if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid); !result.valid()) {
+	//			const sol::error err = result;
+	//			CLOG(ERROR, "lua") << err.what();
+	//		}
+	//	}
+	//}
 }

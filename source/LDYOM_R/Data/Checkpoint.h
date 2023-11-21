@@ -2,38 +2,19 @@
 #include <array>
 #include <CCheckpoint.h>
 #include <optional>
-#include <boost/serialization/access.hpp>
-#include <boost/serialization/base_object.hpp>
 #include "boost/uuid/uuid.hpp"
 
-#include <boost/serialization/array.hpp>
-#include "constants.h"
 #include "INameable.h"
 #include "IPositionable.h"
 #include "IUuidable.h"
+#include "jsonUtils.h"
 #include "ObjectiveDependent.h"
+#include "utils.h"
+
 
 class Checkpoint final : public ObjectiveDependent, public INameable, public IPositionable, public IUuidable {
 private:
-	friend class boost::serialization::access;
-
-	template <class Archive>
-	void serialize(Archive &ar, const unsigned int version) {
-		ar & boost::serialization::base_object<ObjectiveDependent>(*this);
-		ar & this->uuid_;
-		ar & boost::serialization::make_array(this->name_.data(), this->name_.size());
-		ar & boost::serialization::make_array(this->pos_.data(), this->pos_.size());
-		ar & type;
-		ar & radius_;
-		ar & blipColor_;
-		ar & boost::serialization::make_array(color_.data(), color_.size());
-		ar & checkpointType_;
-		ar & blipType_;
-		ar & blipSprite_;
-		ar & angle;
-	}
-
-	boost::uuids::uuid uuid_{};
+	boost::uuids::uuid uuid{};
 
 	std::optional<int> editorCheckpoint_;
 	std::optional<int> projectCheckpoint_;
@@ -42,15 +23,15 @@ private:
 	std::optional<unsigned> editorSphere;
 	std::optional<unsigned> projectSphere;
 
-	std::array<char, NAME_SIZE> name_{};
-	std::array<float, 3> pos_{};
+	std::string name{};
+	std::array<float, 3> pos{};
 	int type = 0;
-	float radius_ = 1.f;
-	int blipColor_ = 0;
-	std::array<float, 4> color_ = {1.f, 0.f, 0.f, 0.894f};
-	int checkpointType_ = 0;
-	int blipType_ = 0;
-	int blipSprite_ = 0;
+	float radius = 1.f;
+	int blipColor = 0;
+	std::array<float, 4> color = {1.f, 0.f, 0.f, 0.894f};
+	int checkpointType = 0;
+	int blipType = 0;
+	int blipSprite = 0;
 	float angle = 0.f;
 	bool rerender = false;
 
@@ -59,9 +40,10 @@ private:
 public:
 	Checkpoint() = default;
 	Checkpoint(const char *name, const CVector &pos);
+	Checkpoint(const Checkpoint &other) = default;
+	Checkpoint& operator=(const Checkpoint &other) = default;
 
-	Checkpoint(const Checkpoint &other);
-	Checkpoint& operator=(const Checkpoint &other);
+	Checkpoint copy() const;
 
 	~Checkpoint() override;
 
@@ -74,7 +56,7 @@ public:
 
 	void updateLocation();
 
-	char* getName() override;
+	std::string& getName() override;
 	float* getPosition() override;
 	int& getType();
 	float& getRadius();
@@ -102,3 +84,42 @@ public:
 	bool existProjectEntity();
 	CVector getProjectEntityPosition();
 };
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<Checkpoint> {
+		static void to_json(json &j, const Checkpoint &obj) {
+			auto &base = static_cast<const ObjectiveDependent&>(obj);
+			j = base;
+			auto &a = const_cast<Checkpoint&>(obj);
+			j["uuid"] = a.getUuid();
+			j["name"] = a.getName();
+			j["pos"] = arrayPtrToJson(a.getPosition(), 3);
+			j["type"] = a.getType();
+			j["radius"] = a.getRadius();
+			j["blipColor"] = a.getBlipColor();
+			j["color"] = utils::floatArrayColorToHex(a.getColor());
+			j["checkpointType"] = a.getCheckpointType();
+			j["blipType"] = a.getBlipType();
+			j["blipSprite"] = a.getBlipSprite();
+			j["angle"] = a.getAngle();
+		}
+
+		static void from_json(const json &j, Checkpoint &obj) {
+			auto &base = static_cast<ObjectiveDependent&>(obj);
+			j.get_to(base);
+			j.at("uuid").get_to(obj.getUuid());
+			j.at("name").get_to(obj.getName());
+			jsonToArrayPtr(j.at("pos"), obj.getPosition(), 3);
+			j.at("type").get_to(obj.getType());
+			j.at("radius").get_to(obj.getRadius());
+			j.at("blipColor").get_to(obj.getBlipColor());
+			obj.getColor() = utils::hexToFloatArrayColor(j.at("color").get<std::string>());
+			j.at("checkpointType").get_to(obj.getCheckpointType());
+			j.at("blipType").get_to(obj.getBlipType());
+			j.at("blipSprite").get_to(obj.getBlipSprite());
+			j.at("angle").get_to(obj.getAngle());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

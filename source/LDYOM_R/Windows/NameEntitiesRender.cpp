@@ -31,7 +31,7 @@ void NameEntitiesRender::draw() {
 	auto entitiesNamesRender = []<typename T>(std::vector<std::unique_ptr<T>> &entities, float zOffset = 1.f) {
 		for (const auto &entity : entities) {
 			const auto position = entity->getPosition();
-			drawEntityName(position, zOffset, entity->getName());
+			drawEntityName(position, zOffset, entity->getName().c_str());
 		}
 	};
 
@@ -40,7 +40,7 @@ void NameEntitiesRender::draw() {
 	for (const auto &objective : currentScene->getObjectives()) {
 		if (auto *positionable = dynamic_cast<IPositionable*>(objective.get())) {
 			const auto position = positionable->getPosition();
-			drawEntityName(position, 1.f, objective->getName());
+			drawEntityName(position, 1.f, objective->getName().c_str());
 		}
 	}
 

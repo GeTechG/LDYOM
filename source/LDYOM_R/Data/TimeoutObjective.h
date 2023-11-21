@@ -3,28 +3,44 @@
 
 class TimeoutObjective final : virtual public WorldObjective {
 private:
-	friend class boost::serialization::access;
-
-	template <class Archive>
-	void serialize(Archive& ar, const unsigned version) {
-		ar& boost::serialization::base_object<WorldObjective>(*this);
-		ar& time_;
-		ar& boost::serialization::make_array(text_.data(), text_.size());
-	}
-
 	float time_ = 1.f;
-	std::array<char, TEXT_SIZE> text_{""};
+	std::string text;
 
-	std::array<char, TEXT_SIZE> gameText_{};
+	std::string gameText;
+
 public:
 	TimeoutObjective() = default;
-	explicit TimeoutObjective(void* _new);
+	explicit TimeoutObjective(void *_new);
 	~TimeoutObjective() override = default;
 
 	int getTypeCategory() override {
 		return 3;
 	}
 
+	float& getTime();
+	std::string& getText();
+
 	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
-	ktwait execute(Scene * scene, Result & result, ktcoro_tasklist & tasklist) override;
+	ktwait execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) override;
 };
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<TimeoutObjective> {
+		static void to_json(json &j, const TimeoutObjective &obj) {
+			auto &worldObjective = static_cast<const WorldObjective&>(obj);
+			adl_serializer<WorldObjective>::to_json(j, worldObjective);
+			auto &a = const_cast<TimeoutObjective&>(obj);
+			j["time"] = a.getTime();
+			j["text"] = a.getText();
+		}
+
+		static void from_json(const json &j, TimeoutObjective &obj) {
+			auto &worldObjective = static_cast<WorldObjective&>(obj);
+			j.get_to(worldObjective);
+			j.at("time").get_to(obj.getTime());
+			j.at("text").get_to(obj.getText());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

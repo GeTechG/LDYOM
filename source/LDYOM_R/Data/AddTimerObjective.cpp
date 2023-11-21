@@ -4,13 +4,14 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "strUtils.h"
 #include "TimerService.h"
 #include "utils.h"
 
 AddTimerObjective::AddTimerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.add_timer"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
 
 void AddTimerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
@@ -27,7 +28,7 @@ void AddTimerObjective::draw(Localization &local, std::vector<std::string> &list
 	             local.getArray("general.comparings"));
 	ImGui::InputInt("##conditionValue", &this->compareValue_);
 	utils::ToggleButton(local.get("timer.backwards").c_str(), &this->backward_);
-	ImGui::InputText(local.get("general.text").c_str(), this->text_.data(), this->text_.size());
+	ImGui::InputText(local.get("general.text").c_str(), &this->text);
 }
 
 ktwait AddTimerObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
@@ -38,11 +39,11 @@ ktwait AddTimerObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 		co_return;
 	}
 
-	auto cp1251Text = utf8ToCp1251(this->text_.data());
+	auto cp1251Text = utf8ToCp1251(this->text);
 	gxtEncode(cp1251Text);
-	strlcpy(this->gameText_.data(), cp1251Text.c_str(), sizeof this->gameText_);
+	this->gameText = cp1251Text;
 
-	Command<0x0ADF>("LDTIMER0", this->gameText_.data());
+	Command<0x0ADF>("LDTIMER0", this->gameText.data());
 
 	TimerService::getInstance().addTimer("LDTIMER0", this->backward_, this->startTime_ * 1000);
 
@@ -57,30 +58,30 @@ ktwait AddTimerObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 			};
 		while (TimerService::getInstance().isTimerOn()) {
 			switch (this_->getCompareType()) {
-			case Equal:
-				if (TimerService::getInstance().getTimerTime() == this_->getCompareValue() * 1000)
-					action();
-				break;
-			case NotEqual:
-				if (TimerService::getInstance().getTimerTime() != this_->getCompareValue() * 1000)
-					action();
-				break;
-			case More:
-				if (TimerService::getInstance().getTimerTime() > this_->getCompareValue() * 1000)
-					action();
-				break;
-			case MoreOrEqual:
-				if (TimerService::getInstance().getTimerTime() >= this_->getCompareValue() * 1000)
-					action();
-				break;
-			case Less:
-				if (TimerService::getInstance().getTimerTime() < this_->getCompareValue() * 1000)
-					action();
-				break;
-			case LessOrEqual:
-				if (TimerService::getInstance().getTimerTime() <= this_->getCompareValue() * 1000)
-					action();
-				break;
+				case Equal:
+					if (TimerService::getInstance().getTimerTime() == this_->getCompareValue() * 1000)
+						action();
+					break;
+				case NotEqual:
+					if (TimerService::getInstance().getTimerTime() != this_->getCompareValue() * 1000)
+						action();
+					break;
+				case More:
+					if (TimerService::getInstance().getTimerTime() > this_->getCompareValue() * 1000)
+						action();
+					break;
+				case MoreOrEqual:
+					if (TimerService::getInstance().getTimerTime() >= this_->getCompareValue() * 1000)
+						action();
+					break;
+				case Less:
+					if (TimerService::getInstance().getTimerTime() < this_->getCompareValue() * 1000)
+						action();
+					break;
+				case LessOrEqual:
+					if (TimerService::getInstance().getTimerTime() <= this_->getCompareValue() * 1000)
+						action();
+					break;
 			}
 
 			co_await 1;
@@ -105,3 +106,7 @@ MathCondition& AddTimerObjective::getCompareType() {
 int& AddTimerObjective::getCompareValue() {
 	return compareValue_;
 }
+
+bool& AddTimerObjective::isBackward() { return backward_; }
+int& AddTimerObjective::getStartTime() { return startTime_; }
+std::string& AddTimerObjective::getText() { return text; }

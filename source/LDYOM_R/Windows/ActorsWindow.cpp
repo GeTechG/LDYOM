@@ -43,7 +43,7 @@ void Windows::ActorsWindow::createNewElementFrom(int i) {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().back()->spawnEditorPed();
 }
 
-char* Windows::ActorsWindow::getElementName(const int i) {
+std::string& Windows::ActorsWindow::getElementName(const int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().at(i)->getName();
 }
 

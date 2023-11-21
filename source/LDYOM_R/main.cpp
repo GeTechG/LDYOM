@@ -7,6 +7,7 @@
 #include "additional_events.h"
 #include "CGame.h"
 #include "chrono"
+#include "constants.h"
 #include "FileWatcher.h"
 #include "HotKeyService.h"
 #include "HotkeysExecutor.h"
@@ -125,18 +126,16 @@ public:
 			Tasker::getInstance().getKtcoroTaskList().add_task([]() -> ktwait {
 				co_await 4s;
 
-				static std::array<char, TEXT_SIZE> welcomeS;
-
 				char openMenuHotKey[32];
 				ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("openMenu")->functionKeys,
 				                       openMenuHotKey, sizeof openMenuHotKey);
 
 				const auto welcomeTemplate = Localization::getInstance().get("welcome_box.text");
-				const std::string welcome = utils::stringFormat(welcomeTemplate, LDYOM_VERSION_STRING, openMenuHotKey);
+				std::string welcome = utils::stringFormat(welcomeTemplate, LDYOM_VERSION_STRING, openMenuHotKey);
 
 				auto cp1251Text = utf8ToCp1251(welcome);
 				gxtEncode(cp1251Text);
-				strlcpy(welcomeS.data(), cp1251Text.c_str(), sizeof welcomeS);
+				welcome = cp1251Text;
 
 				CHud::SetHelpMessage(welcome.c_str(), false, false, false);
 				CHud::DrawHelpText();

@@ -38,45 +38,18 @@ void VisualEffect::drawVisualEffect() {
 
 VisualEffect::VisualEffect(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
                                                                   uuid_(boost::uuids::random_generator()()) {
-	strlcpy(this->name_.data(), name, sizeof this->name_);
+	this->name_ = name;
 	this->pos_[0] = pos.x;
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
 }
 
-VisualEffect::VisualEffect(const VisualEffect &other): ObjectiveDependent{other},
-                                                       INameable{other},
-                                                       IPositionable{other},
-                                                       IUuidable{other},
-                                                       uuid_{boost::uuids::random_generator()()},
-                                                       name_{other.name_},
-                                                       pos_{other.pos_},
-                                                       type_{other.type_},
-                                                       size_{other.size_},
-                                                       effectType_{other.effectType_},
-                                                       flare_{other.flare_},
-                                                       color_{other.color_},
-                                                       drawing_{other.drawing_},
-                                                       angle_(other.angle_) {}
+VisualEffect VisualEffect::copy() const {
+	VisualEffect copy(*this);
+	copy.uuid_ = boost::uuids::random_generator()();
+	copy.name_ += " (copy)";
 
-VisualEffect& VisualEffect::operator=(const VisualEffect &other) {
-	if (this == &other)
-		return *this;
-	ObjectiveDependent::operator =(other);
-	INameable::operator =(other);
-	IPositionable::operator =(other);
-	IUuidable::operator =(other);
-	uuid_ = other.uuid_;
-	name_ = other.name_;
-	pos_ = other.pos_;
-	type_ = other.type_;
-	size_ = other.size_;
-	effectType_ = other.effectType_;
-	flare_ = other.flare_;
-	color_ = other.color_;
-	drawing_ = other.drawing_;
-	angle_ = other.angle_;
-	return *this;
+	return copy;
 }
 
 VisualEffect::~VisualEffect() {
@@ -116,8 +89,8 @@ float& VisualEffect::getAngle() {
 	return angle_;
 }
 
-char* VisualEffect::getName() {
-	return this->name_.data();
+std::string& VisualEffect::getName() {
+	return this->name_;
 }
 
 float* VisualEffect::getPosition() {
@@ -162,14 +135,14 @@ void VisualEffect::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onVisualEffectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+		/*const auto onVisualEffectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 			"onVisualEffectSpawn"].get_or_create<sol::table>();
 		for (auto func : onVisualEffectSpawn | std::views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
-		}
+		}*/
 	}
 }
 
@@ -182,7 +155,7 @@ void VisualEffect::deleteProjectEntity() {
 		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 		if (scene.has_value() && tasklist != nullptr) {
-			const auto onVisualEffectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+			/*const auto onVisualEffectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 				"onVisualEffectDelete"].get_or_create<sol::table>();
 			for (auto func : onVisualEffectDelete | std::views::values) {
 				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
@@ -190,7 +163,7 @@ void VisualEffect::deleteProjectEntity() {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
 				}
-			}
+			}*/
 		}
 	}
 }

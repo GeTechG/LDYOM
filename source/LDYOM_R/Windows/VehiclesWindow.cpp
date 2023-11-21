@@ -8,6 +8,7 @@
 #include "EditByPlayerService.h"
 #include "fa.h"
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "ProjectsService.h"
 #include "utils.h"
 #include "utilsRender.h"
@@ -40,7 +41,7 @@ void Windows::VehiclesWindow::createNewElementFrom(int i) {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().back()->spawnEditorVehicle();
 }
 
-char* Windows::VehiclesWindow::getElementName(int i) {
+std::string& Windows::VehiclesWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles().at(i)->getName();
 }
 
@@ -113,7 +114,7 @@ void characteristicsSection(Localization &local, Vehicle *vehicle) {
 		                     -1, 5)) {
 			vehicle->spawnEditorVehicle(true);
 		}
-		if (ImGui::InputText(local.get("vehicle.numberplate").c_str(), vehicle->getNumberplate(), 9))
+		if (ImGui::InputText(local.get("vehicle.numberplate").c_str(), &vehicle->getNumberplate()))
 			vehicle->spawnEditorVehicle();
 
 		static const std::string cities_names[3] = {"Los Santos", "San Fierro", "Las Veturas"};

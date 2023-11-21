@@ -8,20 +8,33 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "fa.h"
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "ModelsService.h"
 #include "strUtils.h"
 #include "utils.h"
 
 StartMissionObjective::StartMissionObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.start_mission"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+bool& StartMissionObjective::isFade() { return fade_; }
+float& StartMissionObjective::getFadeInTime() { return fadeInTime_; }
+float& StartMissionObjective::getFadeOutTime() { return fadeOutTime_; }
+bool& StartMissionObjective::isShowNameMission() { return showNameMission_; }
+std::string& StartMissionObjective::getNameMission() { return nameMission_; }
+int& StartMissionObjective::getStyleTypeName() { return styleTypeName_; }
+float& StartMissionObjective::getNameMissionTime() { return nameMissionTime_; }
+std::array<std::array<int, 9>, 8>& StartMissionObjective::getGroupRelations() { return groupRelations; }
+int& StartMissionObjective::getWantedMin() { return wantedMin; }
+int& StartMissionObjective::getWantedMax() { return wantedMax; }
+bool& StartMissionObjective::isRiot() { return riot; }
 
 void StartMissionObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	utils::ToggleButton(local.get("mission.show_name").c_str(), &this->showNameMission_);
 	ImGui::BeginDisabled(!this->showNameMission_);
 
-	ImGui::InputText(local.get("mission.name_mission").c_str(), this->nameMission_.data(), this->nameMission_.size());
+	ImGui::InputText(local.get("mission.name_mission").c_str(), &this->nameMission_);
 	ImGui::SliderInt(local.get("general.text_style").c_str(), &this->styleTypeName_, 0, 5,
 	                 local.getArray("general.text_styles").at(this->styleTypeName_).c_str());
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->nameMissionTime_, 0.1f, 0.f, FLT_MAX);
@@ -110,7 +123,7 @@ ktwait StartMissionObjective::execute(Scene *scene, Result &result, ktcoro_taskl
 
 	if (this->showNameMission_) {
 		static std::string cp1251Text;
-		cp1251Text = utf8ToCp1251(this->nameMission_.data());
+		cp1251Text = utf8ToCp1251(this->nameMission_);
 		gxtEncode(cp1251Text);
 		CMessages::AddBigMessage(const_cast<char*>(cp1251Text.c_str()),
 		                         static_cast<unsigned>(this->nameMissionTime_ * 1000.f),

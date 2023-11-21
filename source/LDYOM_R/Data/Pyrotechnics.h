@@ -2,39 +2,23 @@
 #include <array>
 #include <CObject.h>
 #include <optional>
-#include <boost/serialization/access.hpp>
+#include "jsonUtils.h"
 #include "boost/uuid/uuid.hpp"
-#include <boost/serialization/base_object.hpp>
 
-#include "constants.h"
 #include "INameable.h"
 #include "IPositionable.h"
 #include "IUuidable.h"
 #include "ObjectiveDependent.h"
-#include <boost/serialization/array.hpp>
 
 class Pyrotechnics final : public ObjectiveDependent, public INameable, public IPositionable, public IUuidable {
 private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar & boost::serialization::base_object<ObjectiveDependent>(*this);
-		ar & this->uuid_;
-		ar& boost::serialization::make_array(this->name_.data(), this->name_.size());
-		ar& boost::serialization::make_array(this->pos_.data(), this->pos_.size());
-		ar& this->type_;
-		ar& this->typeExplosion_;
-		ar& this->sizeFire_;
-		ar & this->propagationFire_;
-	}
-
 	boost::uuids::uuid uuid_{};
 
 	std::optional<CObject*> editorExplosionObject_;
 	std::optional<int> editorFire_;
 	std::optional<int> projectFire_;
 
-	std::array<char, NAME_SIZE> name_{};
+	std::string name_;
 	std::array<float, 3> pos_{};
 	int type_ = 0;
 	int typeExplosion_ = 0;
@@ -43,13 +27,16 @@ private:
 
 
 	std::optional<int> spawnFire(bool editor = false);
+
 public:
 	Pyrotechnics() = default;
-	Pyrotechnics(const char* name, const CVector& pos);
+	Pyrotechnics(const char *name, const CVector &pos);
 
-	Pyrotechnics(const Pyrotechnics& other);
+	Pyrotechnics(const Pyrotechnics &other) = default;
 
-	Pyrotechnics& operator=(const Pyrotechnics& other);
+	Pyrotechnics& operator=(const Pyrotechnics &other) = default;
+
+	Pyrotechnics copy() const;
 
 	~Pyrotechnics() override;
 
@@ -66,7 +53,7 @@ public:
 
 	void updateLocation();
 
-	char* getName() override;
+	std::string& getName() override;
 	float* getPosition() override;
 
 	void spawnEditorPyrotechnics();
@@ -75,3 +62,35 @@ public:
 	void spawnProjectEntity() override;
 	void deleteProjectEntity() override;
 };
+
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<Pyrotechnics> {
+		static void to_json(json &j, const Pyrotechnics &obj) {
+			auto &objectiveDependent = static_cast<const ObjectiveDependent&>(obj);
+			adl_serializer<ObjectiveDependent>::to_json(j, objectiveDependent);
+			auto &a = const_cast<Pyrotechnics&>(obj);
+			j["uuid"] = a.getUuid();
+			j["name"] = a.getName();
+			j["pos"] = arrayPtrToJson(a.getPosition(), 3);
+			j["type"] = a.getType();
+			j["typeExplosion"] = a.getTypeExplosion();
+			j["sizeFire"] = a.getSizeFire();
+			j["propagationFire"] = a.getPropagationFire();
+		}
+
+		static void from_json(const json &j, Pyrotechnics &obj) {
+			auto &objectiveDependent = static_cast<ObjectiveDependent&>(obj);
+			j.get_to(objectiveDependent);
+			j.at("uuid").get_to(obj.getUuid());
+			j.at("name").get_to(obj.getName());
+			jsonToArrayPtr(j.at("pos"), obj.getPosition(), 3);
+			j.at("type").get_to(obj.getType());
+			j.at("typeExplosion").get_to(obj.getTypeExplosion());
+			j.at("sizeFire").get_to(obj.getSizeFire());
+			j.at("propagationFire").get_to(obj.getPropagationFire());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

@@ -2,39 +2,22 @@
 #include <array>
 #include <CPickup.h>
 #include <optional>
-#include <boost/serialization/access.hpp>
+#include "jsonUtils.h"
 #include "boost/uuid/uuid.hpp"
-#include <boost/serialization/base_object.hpp>
 
-#include "constants.h"
 #include "INameable.h"
 #include "IPositionable.h"
 #include "IUuidable.h"
 #include "ObjectiveDependent.h"
-#include <boost/serialization/array.hpp>
 
 class Pickup final : public ObjectiveDependent, public INameable, public IPositionable, public IUuidable {
 private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar & boost::serialization::base_object<ObjectiveDependent>(*this);
-		ar & this->uuid_;
-		ar& boost::serialization::make_array(this->name_.data(), this->name_.size());
-		ar& boost::serialization::make_array(this->pos_.data(), this->pos_.size());
-		ar& this->modelId_;
-		ar& this->type_;
-		ar& this->spawnType_;
-		ar& this->weapon_;
-		ar& this->ammo_;
-	}
-
 	boost::uuids::uuid uuid_{};
 
 	std::optional<int> editorPickup_;
 	std::optional<int> projectPickup_;
 
-	std::array<char, NAME_SIZE> name_{};
+	std::string name_;
 	std::array<float, 3> pos_{};
 	int type_ = 0;
 	int spawnType_ = 0;
@@ -43,12 +26,15 @@ private:
 	int modelId_ = 0;
 
 	std::optional<int> spawnPickup(int pickupType);
+
 public:
 	Pickup() = default;
-	Pickup(const char* name, const CVector& pos);
+	Pickup(const char *name, const CVector &pos);
 
-	Pickup(const Pickup& other);
-	Pickup& operator=(const Pickup& other);
+	Pickup(const Pickup &other) = default;
+	Pickup& operator=(const Pickup &other) = default;
+
+	Pickup copy() const;
 
 	~Pickup() override;
 
@@ -67,7 +53,7 @@ public:
 
 	void updateLocation();
 
-	char* getName() override;
+	std::string& getName() override;
 	float* getPosition() override;
 
 	void spawnEditorPickup();
@@ -76,3 +62,37 @@ public:
 	void spawnProjectEntity() override;
 	void deleteProjectEntity() override;
 };
+
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<Pickup> {
+		static void to_json(json &j, const Pickup &obj) {
+			auto &objectiveDependent = static_cast<const ObjectiveDependent&>(obj);
+			adl_serializer<ObjectiveDependent>::to_json(j, objectiveDependent);
+			auto &a = const_cast<Pickup&>(obj);
+			j["uuid"] = a.getUuid();
+			j["name"] = a.getName();
+			j["pos"] = arrayPtrToJson(a.getPosition(), 3);
+			j["modelId"] = a.getModelId();
+			j["type"] = a.getType();
+			j["spawnType"] = a.getSpawnType();
+			j["weapon"] = a.getWeapon();
+			j["ammo"] = a.getAmmo();
+		}
+
+		static void from_json(const json &j, Pickup &obj) {
+			auto &objectiveDependent = static_cast<ObjectiveDependent&>(obj);
+			j.get_to(objectiveDependent);
+			j.at("uuid").get_to(obj.getUuid());
+			j.at("name").get_to(obj.getName());
+			jsonToArrayPtr(j.at("pos"), obj.getPosition(), 3);
+			j.at("modelId").get_to(obj.getModelId());
+			j.at("type").get_to(obj.getType());
+			j.at("spawnType").get_to(obj.getSpawnType());
+			j.at("weapon").get_to(obj.getWeapon());
+			j.at("ammo").get_to(obj.getAmmo());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

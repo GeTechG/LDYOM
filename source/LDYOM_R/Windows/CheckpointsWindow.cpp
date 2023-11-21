@@ -38,7 +38,7 @@ void Windows::CheckpointsWindow::createNewElementFrom(int i) {
 	                               spawnEditorCheckpoint();
 }
 
-char* Windows::CheckpointsWindow::getElementName(int i) {
+std::string& Windows::CheckpointsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getCheckpoints().at(i)->getName();
 }
 

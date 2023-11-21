@@ -37,7 +37,7 @@ public:
 	void deleteProject(int projectIdx) const;
 	void deleteProductionProject(int projectIdx) const;
 
-	void makeProjectProduction(int projectIdx);
+	void makeProjectProduction(int projectIdx) const;
 
 	std::vector<std::unique_ptr<ProjectInfo>>& getProjectsInfos();
 	std::vector<std::unique_ptr<ProjectInfo>>& getProductionProjectsInfos();

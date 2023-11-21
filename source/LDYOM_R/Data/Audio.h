@@ -2,61 +2,49 @@
 #include <array>
 #include <CObject.h>
 #include <optional>
-#include <boost/serialization/access.hpp>
-#include "boost/uuid/uuid.hpp"
-#include <boost/serialization/base_object.hpp>
 #include <boost/signals2.hpp>
+#include "boost/uuid/uuid.hpp"
 
-#include "constants.h"
 #include "INameable.h"
 #include "IPositionable.h"
 #include "IUuidable.h"
+#include "jsonUtils.h"
 #include "ObjectiveDependent.h"
-#include <boost/serialization/array.hpp>
 
 class Audio final : public ObjectiveDependent, public INameable, public IPositionable, public IUuidable {
 private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar & boost::serialization::base_object<ObjectiveDependent>(*this);
-		ar & this->uuid_;
-		ar& boost::serialization::make_array(this->name_.data(), this->name_.size());
-		ar& boost::serialization::make_array(this->pos_.data(), this->pos_.size());
-		ar& this->audioName_;
-		ar& this->audio3D_;
-		ar& this->attachType3d_;
-		ar& this->attachUuid_;
-		ar& this->isLooped;
-		ar& this->volume_;
-	}
-
-	boost::uuids::uuid uuid_{};
+	boost::uuids::uuid uuid{};
 
 	std::optional<CObject*> editorAudioObject_;
 	std::optional<int> editorAudio_;
 	std::optional<int> projectAudio_;
 
-	std::array<char, NAME_SIZE> name_{};
-	std::array<float, 3> pos_{};
-	std::string audioName_;
-	bool audio3D_ = false;
-	int attachType3d_ = 0;
-	boost::uuids::uuid attachUuid_{};
+	std::string name{};
+	std::array<float, 3> pos{};
+	std::string audioName;
+	bool audio3D = false;
+	int attachType3d = 0;
+	boost::uuids::uuid attachUuid{};
 	bool isLooped = false;
-	float volume_ = 1.f;
-
-	std::optional<boost::signals2::connection> attachDeleterConnection_;
+	float volume = 1.f;
 
 	static std::vector<std::string> audioFilesList_;
 
 	std::optional<int> loadAudio();
+
 public:
 	Audio() = default;
-	Audio(const char* name, const CVector& pos);
+	Audio(const char *name, const CVector &pos);
+	Audio(const Audio &other) = default;
+	Audio(Audio &&other) = default;
 
-	Audio(const Audio& other);
-	Audio& operator=(const Audio& other);
+	Audio copy() const;
+
+	Audio& operator=(Audio other) {
+		using std::swap;
+		swap(*this, other);
+		return *this;
+	}
 
 	~Audio() override;
 
@@ -74,7 +62,7 @@ public:
 
 	void updateLocation();
 
-	char* getName() override;
+	std::string& getName() override;
 	float* getPosition() override;
 
 	void spawnEditorAudio();
@@ -89,3 +77,38 @@ public:
 
 	static void loadAudioFilesList();
 };
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<Audio> {
+		static void to_json(json &j, const Audio &obj) {
+			auto &base = static_cast<const ObjectiveDependent&>(obj);
+			j = base;
+			auto &a = const_cast<Audio&>(obj);
+			j["uuid"] = a.getUuid();
+			j["name"] = a.getName();
+			j["pos"] = arrayPtrToJson(a.getPosition(), 3);
+			j["audioName"] = a.getAudioName();
+			j["audio3D"] = a.isAudio3D();
+			j["attachType3d"] = a.getAttachType3d();
+			j["attachUuid"] = a.getAttachUuid();
+			j["isLooped"] = a.isIsLooped();
+			j["volume"] = a.getVolume();
+		}
+
+		static void from_json(const json &j, Audio &obj) {
+			auto &base = static_cast<ObjectiveDependent&>(obj);
+			j.get_to(base);
+			j.at("uuid").get_to(obj.getUuid());
+			j.at("name").get_to(obj.getName());
+			jsonToArrayPtr(j.at("pos"), obj.getPosition(), 3);
+			j.at("audioName").get_to(obj.getAudioName());
+			j.at("audio3D").get_to(obj.isAudio3D());
+			j.at("attachType3d").get_to(obj.getAttachType3d());
+			j.at("attachUuid").get_to(obj.getAttachUuid());
+			j.at("isLooped").get_to(obj.isIsLooped());
+			j.at("volume").get_to(obj.getVolume());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

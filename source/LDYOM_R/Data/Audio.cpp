@@ -25,13 +25,13 @@ std::vector<std::string> Audio::audioFilesList_{};
 std::vector<std::string> audioFileExtensions = {".mp3", ".mp2", ".mp1", ".ogg", ".wav", ".aiff"};
 
 std::optional<int> Audio::loadAudio() {
-	const auto iterator = ranges::find(audioFilesList_, this->audioName_);
+	const auto iterator = ranges::find(audioFilesList_, this->audioName);
 	if (iterator != audioFilesList_.end()) {
 		const auto &audioPath = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->directory /
 			L"Audio" / utils::stringToPathString(iterator->c_str());
 
 		int audioHandle;
-		if (this->audio3D_) {
+		if (this->audio3D) {
 			Command<0x0AC1>(audioPath.string().c_str(), &audioHandle); //load3dAudioStream
 		} else {
 			Command<0x0AAC>(audioPath.string().c_str(), &audioHandle); //loadAudioStream
@@ -49,46 +49,21 @@ std::optional<int> Audio::loadAudio() {
 }
 
 Audio::Audio(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
-                                                    uuid_(boost::uuids::random_generator()()) {
-	strlcpy(this->name_.data(), name, sizeof this->name_);
-	this->pos_[0] = pos.x;
-	this->pos_[1] = pos.y;
-	this->pos_[2] = pos.z;
+                                                    uuid(boost::uuids::random_generator()()) {
+	this->name = name;
+	this->pos[0] = pos.x;
+	this->pos[1] = pos.y;
+	this->pos[2] = pos.z;
 }
 
-Audio::Audio(const Audio &other): ObjectiveDependent{other},
-                                  INameable{other},
-                                  IPositionable{other},
-                                  IUuidable{other},
-                                  uuid_(boost::uuids::random_generator()()),
-                                  name_{other.name_},
-                                  pos_{other.pos_},
-                                  audioName_{other.audioName_},
-                                  audio3D_{other.audio3D_},
-                                  attachType3d_{other.attachType3d_},
-                                  attachUuid_{other.attachUuid_},
-                                  isLooped{other.isLooped},
-                                  volume_{other.volume_} {
-	strlcat(name_.data(), "C", sizeof name_);
-}
-
-Audio& Audio::operator=(const Audio &other) {
-	if (this == &other)
-		return *this;
-	ObjectiveDependent::operator =(other);
-	INameable::operator =(other);
-	IPositionable::operator =(other);
-	IUuidable::operator =(other);
-	uuid_ = other.uuid_;
-	name_ = other.name_;
-	pos_ = other.pos_;
-	audioName_ = other.audioName_;
-	audio3D_ = other.audio3D_;
-	attachType3d_ = other.attachType3d_;
-	attachUuid_ = other.attachUuid_;
-	isLooped = other.isLooped;
-	volume_ = other.volume_;
-	return *this;
+Audio Audio::copy() const {
+	Audio audio(*this);
+	audio.uuid = boost::uuids::random_generator()();
+	audio.name += " (copy)";
+	audio.editorAudio_ = std::nullopt;
+	audio.editorAudioObject_ = std::nullopt;
+	audio.projectAudio_ = std::nullopt;
+	return audio;
 }
 
 Audio::~Audio() {
@@ -97,7 +72,7 @@ Audio::~Audio() {
 }
 
 boost::uuids::uuid& Audio::getUuid() {
-	return uuid_;
+	return uuid;
 }
 
 std::optional<int>& Audio::getEditorAudio() {
@@ -109,19 +84,19 @@ std::optional<int>& Audio::getProjectAudio() {
 }
 
 std::string& Audio::getAudioName() {
-	return audioName_;
+	return audioName;
 }
 
 bool& Audio::isAudio3D() {
-	return audio3D_;
+	return audio3D;
 }
 
 int& Audio::getAttachType3d() {
-	return attachType3d_;
+	return attachType3d;
 }
 
 boost::uuids::uuid& Audio::getAttachUuid() {
-	return attachUuid_;
+	return attachUuid;
 }
 
 bool& Audio::isIsLooped() {
@@ -129,21 +104,21 @@ bool& Audio::isIsLooped() {
 }
 
 float& Audio::getVolume() {
-	return volume_;
+	return volume;
 }
 
 void Audio::updateLocation() {
 	if (this->editorAudioObject_.has_value()) {
 		CWorld::Remove(this->editorAudioObject_.value());
-		this->editorAudioObject_.value()->SetPosn(this->pos_[0], this->pos_[1], this->pos_[2]);
+		this->editorAudioObject_.value()->SetPosn(this->pos[0], this->pos[1], this->pos[2]);
 		this->editorAudioObject_.value()->UpdateRwFrame();
 		CWorld::Add(this->editorAudioObject_.value());
 	}
-	if (this->editorAudio_.has_value() && this->audio3D_) {
-		switch (this->attachType3d_) {
+	if (this->editorAudio_.has_value() && this->audio3D) {
+		switch (this->attachType3d) {
 			case 1: {
 				const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
-				const int index = utils::indexByUuid(actors, this->attachUuid_);
+				const int index = utils::indexByUuid(actors, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_CHAR
 					Command<0x0AC4>(this->editorAudio_.value(), actors.at(index).get()->getEditorPed().value());
@@ -153,7 +128,7 @@ void Audio::updateLocation() {
 			case 2: {
 				const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
 				                                                      getVehicles();
-				const int index = utils::indexByUuid(vehicles, this->attachUuid_);
+				const int index = utils::indexByUuid(vehicles, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_CAR
 					Command<0x0AC5>(this->editorAudio_.value(), vehicles.at(index).get()->getEditorVehicle().value());
@@ -163,7 +138,7 @@ void Audio::updateLocation() {
 			case 3: {
 				const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
 				                                                     getObjects();
-				const int index = utils::indexByUuid(objects, this->attachUuid_);
+				const int index = utils::indexByUuid(objects, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_OBJECT
 					Command<0x0AC3>(this->editorAudio_.value(), objects.at(index).get()->getEditorObject().value());
@@ -172,16 +147,16 @@ void Audio::updateLocation() {
 			}
 			default: {
 				//SET_PLAY_3D_AUDIO_STREAM_AT_COORDS
-				Command<0x0AC2>(this->editorAudio_.value(), this->pos_[0], this->pos_[1], this->pos_[2]);
+				Command<0x0AC2>(this->editorAudio_.value(), this->pos[0], this->pos[1], this->pos[2]);
 				break;
 			}
 		}
 	}
-	if (this->projectAudio_.has_value() && this->audio3D_) {
-		switch (this->attachType3d_) {
+	if (this->projectAudio_.has_value() && this->audio3D) {
+		switch (this->attachType3d) {
 			case 1: {
 				const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
-				const int index = utils::indexByUuid(actors, this->attachUuid_);
+				const int index = utils::indexByUuid(actors, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_CHAR
 					Command<0x0AC4>(this->projectAudio_.value(), actors.at(index).get()->getProjectPed().value());
@@ -191,7 +166,7 @@ void Audio::updateLocation() {
 			case 2: {
 				const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
 				                                                      getVehicles();
-				const int index = utils::indexByUuid(vehicles, this->attachUuid_);
+				const int index = utils::indexByUuid(vehicles, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_CAR
 					Command<0x0AC5>(this->projectAudio_.value(), vehicles.at(index).get()->getProjectVehicle().value());
@@ -201,7 +176,7 @@ void Audio::updateLocation() {
 			case 3: {
 				const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
 				                                                     getObjects();
-				const int index = utils::indexByUuid(objects, this->attachUuid_);
+				const int index = utils::indexByUuid(objects, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_OBJECT
 					Command<0x0AC3>(this->projectAudio_.value(), objects.at(index).get()->getProjectObject().value());
@@ -210,19 +185,19 @@ void Audio::updateLocation() {
 			}
 			default: {
 				//SET_PLAY_3D_AUDIO_STREAM_AT_COORDS
-				Command<0x0AC2>(this->projectAudio_.value(), this->pos_[0], this->pos_[1], this->pos_[2]);
+				Command<0x0AC2>(this->projectAudio_.value(), this->pos[0], this->pos[1], this->pos[2]);
 				break;
 			}
 		}
 	}
 }
 
-char* Audio::getName() {
-	return this->name_.data();
+std::string& Audio::getName() {
+	return this->name;
 }
 
 float* Audio::getPosition() {
-	return pos_.data();
+	return pos.data();
 }
 
 void Audio::spawnEditorAudio() {
@@ -231,12 +206,12 @@ void Audio::spawnEditorAudio() {
 
 	this->editorAudio_ = loadAudio();
 
-	if (this->audio3D_ && this->attachType3d_ == 0) {
+	if (this->audio3D && this->attachType3d == 0) {
 		CStreaming::RequestModel(2231, 0);
 		CStreaming::LoadAllRequestedModels(false);
 
 		this->editorAudioObject_ = CObject::Create(2231);
-		this->editorAudioObject_.value()->SetPosn(this->pos_[0], this->pos_[1], this->pos_[2]);
+		this->editorAudioObject_.value()->SetPosn(this->pos[0], this->pos[1], this->pos[2]);
 		this->editorAudioObject_.value()->m_bUsesCollision = false;
 
 		CWorld::Add(this->editorAudioObject_.value());
@@ -275,7 +250,7 @@ void Audio::spawnProjectEntity() {
 			/*const auto onAudioSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onAudioSpawn"].
 				get_or_create<sol::table>();
 			for (auto func : onAudioSpawn | views::values) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid); !result.
 					valid()) {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
@@ -295,15 +270,15 @@ void Audio::deleteProjectEntity() {
 
 		if (auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 			scene.has_value() && tasklist != nullptr) {
-			const auto onAudioDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onAudioDelete"]
+			/*const auto onAudioDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onAudioDelete"]
 				.get_or_create<sol::table>();
 			for (auto func : onAudioDelete | views::values) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
+				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid); !result.
 					valid()) {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
 				}
-			}
+			}*/
 		}
 	}
 }

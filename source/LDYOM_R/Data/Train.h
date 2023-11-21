@@ -1,36 +1,22 @@
 ﻿#pragma once
 #include <optional>
-#include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
-#include "constants.h"
+#include "CTrain.h"
 #include "INameable.h"
 #include "IPositionable.h"
 #include "IUuidable.h"
+#include "jsonUtils.h"
 #include "ObjectiveDependent.h"
-#include "CTrain.h"
+
 
 class Train final : public ObjectiveDependent, public INameable, public IPositionable, public IUuidable {
 private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar& boost::serialization::base_object<ObjectiveDependent>(*this);
-		ar& this->uuid_;
-		ar& this->name_;
-		ar& this->pos_;
-		ar& this->rotate_;
-		ar& this->health_;
-		ar& this->trainType_;
-		ar& this->speed_;
-		ar& this->cruiseSpeed_;
-	}
-
 	boost::uuids::uuid uuid_{};
 
 	std::optional<CTrain*> editorTrain_;
 	std::optional<CTrain*> projectTrain_;
-	char name_[NAME_SIZE]{};
+	std::string name_;
 	float pos_[3]{};
 	bool rotate_ = false;
 	int health_ = 1000;
@@ -39,12 +25,15 @@ private:
 	float cruiseSpeed_ = 0.0f;
 
 	CTrain* spawnTrain();
+
 public:
 	Train() = default;
-	Train(const char* name, const CVector & pos);
-	Train(const Train& other);
-	Train& operator=(const Train& other);
+	Train(const char *name, const CVector &pos);
+	Train(const Train &other) = default;
+	Train& operator=(const Train &other) = default;
 	~Train() override;
+
+	Train copy() const;
 
 	boost::uuids::uuid& getUuid() override;
 
@@ -59,7 +48,7 @@ public:
 
 	void updateLocation();
 
-	char* getName() override;
+	std::string& getName() override;
 	float* getPosition() override;
 
 	void spawnEditorTrain();
@@ -68,3 +57,37 @@ public:
 	void spawnProjectEntity() override;
 	void deleteProjectEntity() override;
 };
+
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<Train> {
+		static void to_json(json &j, const Train &obj) {
+			auto &objectiveDependent = static_cast<const ObjectiveDependent&>(obj);
+			adl_serializer<ObjectiveDependent>::to_json(j, objectiveDependent);
+			auto &a = const_cast<Train&>(obj);
+			j["uuid"] = a.getUuid();
+			j["name"] = a.getName();
+			j["pos"] = arrayPtrToJson(a.getPosition(), 3);
+			j["rotate"] = a.isRotate();
+			j["health"] = a.getHealth();
+			j["trainType"] = a.getTrainType();
+			j["speed"] = a.getSpeed();
+			j["cruiseSpeed"] = a.getCruiseSpeed();
+		}
+
+		static void from_json(const json &j, Train &obj) {
+			auto &objectiveDependent = static_cast<ObjectiveDependent&>(obj);
+			j.get_to(objectiveDependent);
+			j.at("uuid").get_to(obj.getUuid());
+			j.at("name").get_to(obj.getName());
+			jsonToArrayPtr(j.at("pos"), obj.getPosition(), 3);
+			j.at("rotate").get_to(obj.isRotate());
+			j.at("health").get_to(obj.getHealth());
+			j.at("trainType").get_to(obj.getTrainType());
+			j.at("speed").get_to(obj.getSpeed());
+			j.at("cruiseSpeed").get_to(obj.getCruiseSpeed());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

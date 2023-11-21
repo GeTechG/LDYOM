@@ -39,7 +39,7 @@ bool utils::Combo(const char *label, int *currentItem, const std::vector<std::st
 }
 
 bool utils::Combo(const char *label, boost::uuids::uuid *currentItem, int currentElement, int size,
-                  const std::function<const char*(int)> &getName,
+                  const std::function<std::string&(int)> &getName,
                   const std::function<boost::uuids::uuid(int)> &getUuid) {
 	bool action = false;
 
@@ -50,7 +50,7 @@ bool utils::Combo(const char *label, boost::uuids::uuid *currentItem, int curren
 	if (ImGui::BeginCombo(label, previewText.c_str())) {
 		for (int i = 0; i < size; ++i) {
 			bool isSelected = i == currentElement;
-			if (ImGui::Selectable(getName(i), &isSelected)) {
+			if (ImGui::Selectable(getName(i).c_str(), &isSelected)) {
 				*currentItem = getUuid(i);
 				action = true;
 			}
@@ -298,4 +298,39 @@ std::vector<std::string> utils::getFilenameList(const std::filesystem::path &pat
 	}
 
 	return filesNames;
+}
+
+std::string utils::floatArrayColorToHex(const std::array<float, 4> &color) {
+	int r = static_cast<int>(color[0] * 255);
+	int g = static_cast<int>(color[1] * 255);
+	int b = static_cast<int>(color[2] * 255);
+	int a = static_cast<int>(color[3] * 255);
+
+	r = std::clamp(r, 0, 255);
+	g = std::clamp(g, 0, 255);
+	b = std::clamp(b, 0, 255);
+	a = std::clamp(a, 0, 255);
+
+	std::stringstream stream;
+	stream << std::hex << std::setw(2) << std::setfill('0') << r
+		<< std::hex << std::setw(2) << std::setfill('0') << g
+		<< std::hex << std::setw(2) << std::setfill('0') << b
+		<< std::hex << std::setw(2) << std::setfill('0') << a;
+
+	return "#" + stream.str();
+}
+
+std::array<float, 4> utils::hexToFloatArrayColor(const std::string &hexColor) {
+	const std::string hexValue = (hexColor[0] == '#') ? hexColor.substr(1) : hexColor;
+
+	if (hexValue.size() != 8) {
+		throw std::invalid_argument("Invalid HEX color string");
+	}
+
+	const float r = static_cast<float>(std::stoul(hexValue.substr(0, 2), nullptr, 16)) / 255.0f;
+	const float g = static_cast<float>(std::stoul(hexValue.substr(2, 2), nullptr, 16)) / 255.0f;
+	const float b = static_cast<float>(std::stoul(hexValue.substr(4, 2), nullptr, 16)) / 255.0f;
+	const float a = static_cast<float>(std::stoul(hexValue.substr(6, 2), nullptr, 16)) / 255.0f;
+
+	return {r, g, b, a};
 }

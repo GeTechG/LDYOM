@@ -11,17 +11,22 @@
 
 EnterVehicleActorObjective::EnterVehicleActorObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.enter_vehicle_actor"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+boost::uuids::uuid& EnterVehicleActorObjective::getVehicleUuid() { return vehicleUuid_; }
+int& EnterVehicleActorObjective::getPlace() { return place_; }
+bool& EnterVehicleActorObjective::isTeleport() { return teleport_; }
+bool& EnterVehicleActorObjective::isWaitExecute() { return waitExecute_; }
 
 void EnterVehicleActorObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
-	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
+	const int indexActor = utils::indexByUuid(actors, this->actorUuid);
 
 	IncorrectHighlight(indexActor == -1, [&] {
-		utils::Combo(local.get("entities.actor").c_str(), &this->actorUuid_, indexActor, actors.size(),
+		utils::Combo(local.get("entities.actor").c_str(), &this->actorUuid, indexActor, actors.size(),
 		             [&actors](const int i) {
-			             return actors.at(i)->getName();
+			             return std::ref(actors.at(i)->getName());
 		             }, [&actors](const int i) {
 			             return actors.at(i)->getUuid();
 		             });
@@ -33,7 +38,7 @@ void EnterVehicleActorObjective::draw(Localization &local, std::vector<std::stri
 	IncorrectHighlight(indexVehicle == -1, [&] {
 		utils::Combo(local.get("entities.vehicle").c_str(), &this->vehicleUuid_, indexVehicle, vehicles.size(),
 		             [&vehicles](const int i) {
-			             return vehicles.at(i)->getName();
+			             return std::ref(vehicles.at(i)->getName());
 		             }, [&vehicles](const int i) {
 			             return vehicles.at(i)->getUuid();
 		             });

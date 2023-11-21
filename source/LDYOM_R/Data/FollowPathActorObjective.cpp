@@ -14,17 +14,17 @@
 
 FollowPathActorObjective::FollowPathActorObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.follow_path_actor"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
 
 void FollowPathActorObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
-	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
+	const int indexActor = utils::indexByUuid(actors, this->actorUuid);
 
 	IncorrectHighlight(indexActor == -1, [&] {
-		utils::Combo(local.get("entities.actor").c_str(), &this->actorUuid_, indexActor, actors.size(),
+		utils::Combo(local.get("entities.actor").c_str(), &this->actorUuid, indexActor, actors.size(),
 		             [&actors](const int i) {
-			             return actors.at(i)->getName();
+			             return std::ref(actors.at(i)->getName());
 		             }, [&actors](const int i) {
 			             return actors.at(i)->getUuid();
 		             });
@@ -77,27 +77,27 @@ ktwait FollowPathActorObjective::execute(Scene *scene, Actor *actor, Result &res
 				execute = false;
 
 			switch (_this->getPathType()) {
-			case 0:
-				if (index == static_cast<int>(_this->getPath().size())) {
-					execute = false;
-				}
-				break;
-			case 1:
-				if (index == static_cast<int>(_this->getPath().size())) {
-					index = 0;
-				}
-				break;
-			case 2:
-				if (index == static_cast<int>(_this->getPath().size())) {
-					step = -1;
-					index -= 2;
-				} else if (index < 0) {
-					step = 1;
-					index += 2;
-				}
-				break;
-			default:
-				break;
+				case 0:
+					if (index == static_cast<int>(_this->getPath().size())) {
+						execute = false;
+					}
+					break;
+				case 1:
+					if (index == static_cast<int>(_this->getPath().size())) {
+						index = 0;
+					}
+					break;
+				case 2:
+					if (index == static_cast<int>(_this->getPath().size())) {
+						step = -1;
+						index -= 2;
+					} else if (index < 0) {
+						step = 1;
+						index += 2;
+					}
+					break;
+				default:
+					break;
 			}
 		}
 	};
@@ -125,3 +125,5 @@ float& FollowPathActorObjective::getExecuteTime() {
 std::vector<std::array<float, 3>>& FollowPathActorObjective::getPath() {
 	return path_;
 }
+
+bool& FollowPathActorObjective::isWaitEnd() { return waitEnd; }

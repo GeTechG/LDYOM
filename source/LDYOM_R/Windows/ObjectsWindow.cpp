@@ -43,7 +43,7 @@ void Windows::ObjectsWindow::createNewElementFrom(int i) {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().back()->spawnEditorObject();
 }
 
-char* Windows::ObjectsWindow::getElementName(int i) {
+std::string& Windows::ObjectsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().at(i)->getName();
 }
 

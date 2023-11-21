@@ -8,8 +8,10 @@
 
 AddMoneyPlayerObjective::AddMoneyPlayerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.add_money_player"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+int& AddMoneyPlayerObjective::getMoney() { return money_; }
 
 void AddMoneyPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::DragInt(local.get("general.add").c_str(), &this->money_, 100, 0, 0, "%d $");

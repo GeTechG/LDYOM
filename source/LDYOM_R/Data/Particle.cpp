@@ -20,7 +20,7 @@ using namespace plugin;
 
 std::optional<int> Particle::spawnParticle() {
 	RwMatrix mat;
-	auto particleName = ModelsService::getInstance().getParticlesNames()[this->particleType_];
+	const auto particleName = ModelsService::getInstance().getParticlesNames()[this->particleType_];
 	const auto fxSystem = g_fxMan.CreateFxSystem(const_cast<char*>(particleName.c_str()), &mat, nullptr, 1);
 	const auto scriptEffectSystem = CTheScripts::AddScriptEffectSystem(fxSystem);
 	fxSystem->Play();
@@ -31,47 +31,18 @@ std::optional<int> Particle::spawnParticle() {
 Particle::Particle(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
                                                           uuid_(boost::uuids::random_generator()()),
                                                           rotate{{0, 0, 0}, 1} {
-	strlcpy(this->name_.data(), name, sizeof this->name_);
+	this->name_ = name;
 	this->pos_[0] = pos.x;
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
 }
 
-Particle::Particle(const Particle &other): ObjectiveDependent{other},
-                                           INameable{other},
-                                           IPositionable{other},
-                                           IUuidable{other},
-                                           uuid_{boost::uuids::random_generator()()},
-                                           name_(other.name_),
-                                           pos_(other.pos_),
-                                           rotate{other.rotate},
-                                           scale_{other.scale_},
-                                           particleType_{other.particleType_},
-                                           attachType_{other.attachType_},
-                                           attachUuid_{other.attachUuid_},
-                                           pedBodeId_{other.pedBodeId_} {
-	strlcat(name_.data(), "C", sizeof name_);
-}
+Particle Particle::copy() const {
+	Particle particle(*this);
+	particle.uuid_ = boost::uuids::random_generator()();
+	particle.name_ += " (copy)";
 
-Particle& Particle::operator=(const Particle &other) {
-	if (this == &other)
-		return *this;
-	ObjectiveDependent::operator =(other);
-	INameable::operator =(other);
-	IPositionable::operator =(other);
-	IUuidable::operator =(other);
-	uuid_ = other.uuid_;
-	editorParticle_ = other.editorParticle_;
-	projectParticle_ = other.projectParticle_;
-	rotate = other.rotate;
-	scale_ = other.scale_;
-	particleType_ = other.particleType_;
-	attachType_ = other.attachType_;
-	attachUuid_ = other.attachUuid_;
-	pedBodeId_ = other.pedBodeId_;
-	name_ = other.name_;
-	pos_ = other.pos_;
-	return *this;
+	return particle;
 }
 
 Particle::~Particle() {
@@ -151,96 +122,100 @@ void Particle::updateLocation() {
 	if (const auto projectParticle = this->getProjectParticle(); projectParticle.has_value()) {
 		RwMatrix *parent;
 		switch (this->attachType_) {
-		case 1: {
-			const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
-			const int index = utils::indexByUuid(actors, this->attachUuid_);
-			if (index != -1) {
-				const auto &actor = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors().
-				                                                   at(index);
+			case 1: {
+				const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+				const int index = utils::indexByUuid(actors, this->attachUuid_);
+				if (index != -1) {
+					const auto &actor = ProjectsService::getInstance().
+					                    getCurrentProject().getCurrentScene()->getActors().
+					                    at(index);
 
-				auto animHier = GetAnimHierarchyFromSkinClump(actor->getProjectPed().value()->m_pRwClump);
-				auto boneIndex = RpHAnimIDGetIndex(animHier, this->pedBodeId_);
-				parent = &RpHAnimHierarchyGetMatrixArray(animHier)[boneIndex];
-				actor->getProjectPed().value()->Update();
-				actor->getProjectPed().value()->UpdateAnim();
-				actor->getProjectPed().value()->UpdateRpHAnim();
-				actor->getProjectPed().value()->UpdateRwFrame();
+					auto animHier = GetAnimHierarchyFromSkinClump(actor->getProjectPed().value()->m_pRwClump);
+					auto boneIndex = RpHAnimIDGetIndex(animHier, this->pedBodeId_);
+					parent = &RpHAnimHierarchyGetMatrixArray(animHier)[boneIndex];
+					actor->getProjectPed().value()->Update();
+					actor->getProjectPed().value()->UpdateAnim();
+					actor->getProjectPed().value()->UpdateRpHAnim();
+					actor->getProjectPed().value()->UpdateRwFrame();
 
-				CQuaternion parentQuat;
-				parentQuat.Set(*parent);
-				parentQuat.Normalise();
-				parentQuat.Conjugate();
-				CMatrix parentNewMat;
-				parentNewMat.SetRotate(parentQuat);
+					CQuaternion parentQuat;
+					parentQuat.Set(*parent);
+					parentQuat.Normalise();
+					parentQuat.Conjugate();
+					CMatrix parentNewMat;
+					parentNewMat.SetRotate(parentQuat);
 
-				CQuaternion newRw;
-				newRw.Multiply(parentQuat, rw);
+					CQuaternion newRw;
+					newRw.Multiply(parentQuat, rw);
 
-				matrix.SetRotate(newRw);
-				CVector pos = {
-					this->getPosition()[0] - parent->pos.x,
-					this->getPosition()[1] - parent->pos.y,
-					this->getPosition()[2] - parent->pos.z
-				};
-				CVector newPos;
-				newPos.FromMultiply3x3(parentNewMat, pos);
-				matrix.SetTranslateOnly(newPos.x, newPos.y, newPos.z);
+					matrix.SetRotate(newRw);
+					CVector pos = {
+						this->getPosition()[0] - parent->pos.x,
+						this->getPosition()[1] - parent->pos.y,
+						this->getPosition()[2] - parent->pos.z
+					};
+					CVector newPos;
+					newPos.FromMultiply3x3(parentNewMat, pos);
+					matrix.SetTranslateOnly(newPos.x, newPos.y, newPos.z);
+				}
+				break;
 			}
-			break;
-		}
-		case 2: {
-			const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
-			const int index = utils::indexByUuid(vehicles, this->attachUuid_);
-			if (index != -1) {
-				const auto &vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
-				                                                     getVehicles().at(index);
-				parent = reinterpret_cast<RwMatrix*>(vehicle->getProjectVehicle().value()->GetMatrix());
+			case 2: {
+				const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                      getVehicles();
+				const int index = utils::indexByUuid(vehicles, this->attachUuid_);
+				if (index != -1) {
+					const auto &vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+					                                                     getVehicles().at(index);
+					parent = reinterpret_cast<RwMatrix*>(vehicle->getProjectVehicle().value()->GetMatrix());
 
+					matrix.SetRotate(rw);
+					matrix.RotateZ(RAD(-vehicle->getHeadingAngle()));
+					float x = this->getPosition()[0] - vehicle->getPosition()[0];
+					float y = this->getPosition()[1] - vehicle->getPosition()[1];
+					float z = this->getPosition()[2] - vehicle->getPosition()[2];
+					rotateVec2(x, y, -vehicle->getHeadingAngle());
+					matrix.SetTranslateOnly(x, y, z);
+				}
+				break;
+			}
+			case 3: {
+				const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                     getObjects();
+				const int index = utils::indexByUuid(objects, this->attachUuid_);
+				if (index != -1) {
+					const auto &object = ProjectsService::getInstance().
+					                     getCurrentProject().getCurrentScene()->getObjects().
+					                     at(index);
+					parent = reinterpret_cast<RwMatrix*>(object->getProjectObject().value()->GetMatrix());
+					RwMatrix parentMatRot;
+					CQuaternion parentQuat;
+					parentQuat.real = object->getRotations().real;
+					parentQuat.imag.x = object->getRotations().imag.z;
+					parentQuat.imag.y = object->getRotations().imag.x;
+					parentQuat.imag.z = -object->getRotations().imag.y;
+					parentQuat.Normalise();
+					parentQuat.Conjugate();
+					parentQuat.Get(&parentMatRot);
+					CQuaternion newRw;
+					newRw.Multiply(parentQuat, rw);
+					CVector pos = {
+						this->getPosition()[0] - object->getPosition()[0],
+						this->getPosition()[1] - object->getPosition()[1],
+						this->getPosition()[2] - object->getPosition()[2]
+					};
+					CVector rotatedPos;
+					rotatedPos.FromMultiply3x3(reinterpret_cast<CMatrix&>(parentMatRot), pos);
+
+					matrix.SetRotate(newRw);
+					matrix.SetTranslateOnly(rotatedPos.x, rotatedPos.y, rotatedPos.z);
+				}
+				break;
+			}
+			default:
 				matrix.SetRotate(rw);
-				matrix.RotateZ(RAD(-vehicle->getHeadingAngle()));
-				float x = this->getPosition()[0] - vehicle->getPosition()[0];
-				float y = this->getPosition()[1] - vehicle->getPosition()[1];
-				float z = this->getPosition()[2] - vehicle->getPosition()[2];
-				rotateVec2(x, y, -vehicle->getHeadingAngle());
-				matrix.SetTranslateOnly(x, y, z);
-			}
-			break;
-		}
-		case 3: {
-			const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
-			const int index = utils::indexByUuid(objects, this->attachUuid_);
-			if (index != -1) {
-				const auto &object = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects().
-				                                                    at(index);
-				parent = reinterpret_cast<RwMatrix*>(object->getProjectObject().value()->GetMatrix());
-				RwMatrix parentMatRot;
-				CQuaternion parentQuat;
-				parentQuat.real = object->getRotations().real;
-				parentQuat.imag.x = object->getRotations().imag.z;
-				parentQuat.imag.y = object->getRotations().imag.x;
-				parentQuat.imag.z = -object->getRotations().imag.y;
-				parentQuat.Normalise();
-				parentQuat.Conjugate();
-				parentQuat.Get(&parentMatRot);
-				CQuaternion newRw;
-				newRw.Multiply(parentQuat, rw);
-				CVector pos = {
-					this->getPosition()[0] - object->getPosition()[0],
-					this->getPosition()[1] - object->getPosition()[1],
-					this->getPosition()[2] - object->getPosition()[2]
-				};
-				CVector rotatedPos;
-				rotatedPos.FromMultiply3x3(reinterpret_cast<CMatrix&>(parentMatRot), pos);
-
-				matrix.SetRotate(newRw);
-				matrix.SetTranslateOnly(rotatedPos.x, rotatedPos.y, rotatedPos.z);
-			}
-			break;
-		}
-		default:
-			matrix.SetRotate(rw);
-			matrix.SetTranslateOnly(this->getPosition()[0], this->getPosition()[1], this->getPosition()[2]);
-			break;
+				matrix.SetTranslateOnly(this->getPosition()[0], this->getPosition()[1], this->getPosition()[2]);
+				break;
 		}
 
 		matrix.right *= this->scale_[2];
@@ -253,8 +228,8 @@ void Particle::updateLocation() {
 	}
 }
 
-char* Particle::getName() {
-	return this->name_.data();
+std::string& Particle::getName() {
+	return this->name_;
 }
 
 float* Particle::getPosition() {
@@ -293,14 +268,14 @@ void Particle::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onParticleSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onParticleSpawn"]
+		/*const auto onParticleSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onParticleSpawn"]
 			.get_or_create<sol::table>();
 		for (auto [_, func] : onParticleSpawn) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
-		}
+		}*/
 	}
 }
 
@@ -316,13 +291,13 @@ void Particle::deleteProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onParticleDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+		/*const auto onParticleDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 			"onParticleDelete"].get_or_create<sol::table>();
 		for (auto [_, func] : onParticleDelete) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
-		}
+		}*/
 	}
 }

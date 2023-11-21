@@ -13,5 +13,6 @@ add_subdirectory(xbyak)
 add_subdirectory(ktsignal)
 add_subdirectory(kthook)
 add_subdirectory(glm)
+add_subdirectory(json_archive-master)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SOURCE_DIR}/lib)

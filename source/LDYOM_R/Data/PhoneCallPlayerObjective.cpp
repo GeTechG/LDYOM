@@ -6,13 +6,16 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "strUtils.h"
 #include "utils.h"
 
 PhoneCallPlayerObjective::PhoneCallPlayerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.phone_call_player"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+std::vector<Dialog> & PhoneCallPlayerObjective::getDialogs() { return dialogs_; }
 
 void PhoneCallPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	if (ImGui::Button(local.get("general.add").c_str()))
@@ -42,7 +45,7 @@ void PhoneCallPlayerObjective::draw(Localization &local, std::vector<std::string
 	for (int d = 0; d < this->dialogs_.size(); d++) {
 		if (ImGui::TreeNode(std::to_string(d).c_str())) {
 			auto &dialog = this->dialogs_[d];
-			ImGui::InputText(local.get("general.text").c_str(), dialog.text.data(), dialog.text.size());
+			ImGui::InputText(local.get("general.text").c_str(), &dialog.text);
 			ImGui::InputFloat(local.get("general.time").c_str(), &dialog.textTime);
 			utils::ToggleButton(local.get("general.move_mouth").c_str(), &dialog.moveMouth);
 			ImGui::TreePop();
@@ -62,12 +65,13 @@ ktwait PhoneCallPlayerObjective::execute(Scene *scene, Result &result, ktcoro_ta
 	co_await 2.5s;
 
 	for (auto dialog : this->dialogs_) {
-		auto cp1251Text = utf8ToCp1251(dialog.text.data());
+		auto cp1251Text = utf8ToCp1251(dialog.text);
 		gxtEncode(cp1251Text);
-		strlcpy(dialog.gameText.data(), cp1251Text.c_str(), sizeof dialog.gameText);
+		dialog.gameText = cp1251Text;
 		if (dialog.moveMouth)
 			Command<Commands::START_CHAR_FACIAL_TALK>(static_cast<CPed*>(FindPlayerPed()), -1);
-		CMessages::AddMessageJumpQ(dialog.gameText.data(), static_cast<unsigned>(dialog.textTime * 1000.f), 0, false);
+		CMessages::AddMessageJumpQ(const_cast<char*>(dialog.gameText.c_str()),
+		                           static_cast<unsigned>(dialog.textTime * 1000.f), 0, false);
 		co_await milliseconds(static_cast<long long>(dialog.textTime * 1000.f));
 		Command<Commands::STOP_CHAR_FACIAL_TALK>(static_cast<CPed*>(FindPlayerPed()));
 	}

@@ -5,12 +5,12 @@
 #include "Object.h"
 #include "strUtils.h"
 
-PhotographObjectObjective::PhotographObjectObjective(void* _new): BaseObjective(_new) {
+PhotographObjectObjective::PhotographObjectObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.photograph_object"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
 
-ktwait PhotographObjectObjective::execute(Scene* scene, Object* object, Result& result, ktcoro_tasklist& tasklist) {
+ktwait PhotographObjectObjective::execute(Scene *scene, Object *object, Result &result, ktcoro_tasklist &tasklist) {
 	using namespace plugin;
 
 	while (!Command<Commands::HAS_OBJECT_BEEN_PHOTOGRAPHED>(object->getProjectObject().value())) {

@@ -3,7 +3,7 @@
 
 #include "CFire.h"
 
-void PyrotechnicsLuaWrap(sol::state& state) {
+void PyrotechnicsLuaWrap(sol::state &state) {
 	auto clazz = state.new_usertype<Pyrotechnics>("Pyrotechnics");
 	clazz["getUuid"] = &Pyrotechnics::getUuid;
 	clazz["getEditorFire"] = &Pyrotechnics::getEditorFire;

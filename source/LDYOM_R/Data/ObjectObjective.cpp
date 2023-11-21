@@ -6,6 +6,7 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "ProjectsService.h"
 #include "strUtils.h"
 #include "utils.h"
@@ -27,7 +28,7 @@ void ObjectObjective::draw(Localization &local, std::vector<std::string> &listOv
 	IncorrectHighlight(indexObject == -1, [&] {
 		utils::Combo(local.get("entities.object").c_str(), &this->objectUuid_, indexObject, objects.size(),
 		             [&objects](const int i) {
-			             return objects.at(i)->getName();
+			             return std::ref(objects.at(i)->getName());
 		             }, [&objects](const int i) {
 			             return objects.at(i)->getUuid();
 		             });
@@ -35,7 +36,7 @@ void ObjectObjective::draw(Localization &local, std::vector<std::string> &listOv
 
 	ImGui::Separator();
 
-	ImGui::InputText(local.get("general.text").c_str(), this->text_.data(), sizeof this->text_);
+	ImGui::InputText(local.get("general.text").c_str(), &this->text);
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->textTime_, 0.001f);
 
 	ImGui::Separator();
@@ -83,11 +84,12 @@ ktwait ObjectObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &t
 	if (this->colorBlip_ > 0)
 		this->projectBlip_ = spawnBlip(object->getProjectObject().value());
 
-	auto cp1251Text = utf8ToCp1251(this->text_.data());
+	auto cp1251Text = utf8ToCp1251(this->text);
 	gxtEncode(cp1251Text);
-	strlcpy(this->gameText_.data(), cp1251Text.c_str(), sizeof this->gameText_);
+	this->gameText = cp1251Text;
 
-	CMessages::AddMessage(this->gameText_.data(), static_cast<unsigned>(this->textTime_ * 1000.0f), 0, false);
+	CMessages::AddMessage(const_cast<char*>(this->gameText.c_str()), static_cast<unsigned>(this->textTime_ * 1000.0f),
+	                      0, false);
 
 	co_await this->execute(scene, object.get(), result, tasklist);
 
@@ -122,8 +124,8 @@ boost::uuids::uuid& ObjectObjective::getObjectUuid() {
 	return objectUuid_;
 }
 
-std::array<char, TEXT_SIZE>& ObjectObjective::getText() {
-	return text_;
+std::string& ObjectObjective::getText() {
+	return text;
 }
 
 float& ObjectObjective::getTextTime() {

@@ -52,15 +52,6 @@ void LuaWrapper::wrap(sol::state &state) {
 	});
 	state.set("LDYOM_VERSION", LDYOM_VERSION);
 
-	state.set("UuidCombo", [](const char *label, sol::object currentItem_, int currentElement, int size,
-	                          const std::function<const char*(int)> &getName,
-	                          const std::function<boost::uuids::uuid&(int)> &getUuid) {
-		boost::uuids::uuid currentItem{};
-		memcpy(currentItem.data, currentItem_.pointer(), sizeof currentItem.data);
-		const auto result = utils::Combo(label, &currentItem, currentElement, size, getName, getUuid);
-		memcpy(const_cast<void*>(currentItem_.pointer()), currentItem.data, sizeof currentItem.data);
-		return result;
-	});
 	state.set("IncorrectHighlight", IncorrectHighlight);
 	auto indexByUuuidGeneric = []<typename T>(const std::vector<std::unique_ptr<T>> &vector, sol::object uuid) {
 		boost::uuids::uuid uuid_{};

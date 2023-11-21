@@ -40,7 +40,7 @@ void Windows::ToolsWindow::draw() {
 		const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
 		utils::Combo(local.get("tools.tp_to_actor").c_str(), &this->actorUuid_, indexActor, actors.size(),
 		             [&actors](const int i) {
-			             return actors.at(i)->getName();
+			             return std::ref(actors.at(i)->getName());
 		             }, [&actors](const int i) {
 			             return actors.at(i)->getUuid();
 		             });
@@ -58,7 +58,7 @@ void Windows::ToolsWindow::draw() {
 		const int indexVehicle = utils::indexByUuid(vehicles, this->vehicleUuid_);
 		utils::Combo(local.get("tools.tp_to_vehicle").c_str(), &this->vehicleUuid_, indexVehicle, vehicles.size(),
 		             [&vehicles](const int i) {
-			             return vehicles.at(i)->getName();
+			             return std::ref(vehicles.at(i)->getName());
 		             }, [&vehicles](const int i) {
 			             return vehicles.at(i)->getUuid();
 		             });
@@ -77,7 +77,7 @@ void Windows::ToolsWindow::draw() {
 		const int indexObject = utils::indexByUuid(objects, this->objectUuid_);
 		utils::Combo(local.get("tools.tp_to_object").c_str(), &this->objectUuid_, indexObject, objects.size(),
 		             [&objects](const int i) {
-			             return objects.at(i)->getName();
+			             return std::ref(objects.at(i)->getName());
 		             }, [&objects](const int i) {
 			             return objects.at(i)->getUuid();
 		             });

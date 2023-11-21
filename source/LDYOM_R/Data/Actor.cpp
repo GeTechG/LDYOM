@@ -37,13 +37,13 @@ void Actor::spawnProjectEntity() {
 
 	this->projectPed_ = spawnPed();
 
-	if (this->group_ == 0) {
+	if (this->group == 0) {
 		int g;
 		Command<Commands::GET_PLAYER_GROUP>(0, &g);
 		Command<Commands::SET_GROUP_MEMBER>(g, CPools::GetPedRef(this->projectPed_.value()));
 	}
-	this->projectPed_.value()->m_fMaxHealth = max(this->projectPed_.value()->m_fMaxHealth, this->health_);
-	this->projectPed_.value()->m_fHealth = static_cast<float>(this->health_);
+	this->projectPed_.value()->m_fMaxHealth = max(this->projectPed_.value()->m_fMaxHealth, this->health);
+	this->projectPed_.value()->m_fHealth = static_cast<float>(this->health);
 
 	updateLocation();
 
@@ -54,7 +54,7 @@ void Actor::spawnProjectEntity() {
 		/*const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].
 			get_or_create<sol::table>();
 		for (auto [_, func] : onActorSpawn) {
-			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
@@ -77,7 +77,7 @@ void Actor::deleteProjectEntity() {
 						"onActorDelete"]
 					.get_or_create<sol::table>();
 				for (auto [_, func] : onActorDelete) {
-					if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
+					if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid); !result.
 						valid()) {
 						const sol::error err = result;
 						CLOG(ERROR, "lua") << err.what();
@@ -87,6 +87,16 @@ void Actor::deleteProjectEntity() {
 		}
 	}
 }
+
+Actor Actor::copy() const {
+	Actor copy(*this);
+	copy.name = copy.name + " (copy)";
+	copy.uuid = boost::uuids::random_generator()();
+	copy.editorPed_ = std::nullopt;
+	copy.projectPed_ = std::nullopt;
+	return copy;
+}
+
 
 CPed* Actor::spawnPed() {
 	int model;
@@ -105,34 +115,34 @@ CPed* Actor::spawnPed() {
 		fats = playerClothes->m_fMuscleStat;
 	}
 
-	if (this->modelType_ == 0 && this->modelId_ == 0 && this->dressUp_) {
+	if (this->modelType == 0 && this->modelId == 0 && this->dressUp) {
 		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys_.data(),
+		std::memcpy(playerClothes->m_anTextureKeys, this->clotherMAnTextureKeys.data(),
 		            sizeof playerClothes->m_anTextureKeys);
-		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys_.data(),
+		std::memcpy(playerClothes->m_anModelKeys, this->clotherMAnModelKeys.data(),
 		            sizeof playerClothes->m_anModelKeys);
 		playerClothes->m_fFatStat = this->fatStat;
 		playerClothes->m_fMuscleStat = this->musculeStat;
 		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
 	}
 
-	if (this->modelType_ == 0) {
-		model = ModelsService::validPedModel(this->modelId_);
+	if (this->modelType == 0) {
+		model = ModelsService::validPedModel(this->modelId);
 		CStreaming::RequestModel(model, GAME_REQUIRED);
 	} else {
-		model = 290 + this->slot_;
-		const auto &specialsPed = ModelsService::getInstance().getSpecialsPed().at(this->modelId_);
-		CStreaming::RequestSpecialChar(this->slot_, specialsPed.c_str(), GAME_REQUIRED);
+		model = 290 + this->slot;
+		const auto &specialsPed = ModelsService::getInstance().getSpecialsPed().at(this->modelId);
+		CStreaming::RequestSpecialChar(this->slot, specialsPed.c_str(), GAME_REQUIRED);
 	}
 	CStreaming::LoadAllRequestedModels(false);
 
 	int newPed;
-	Command<Commands::CREATE_CHAR>(23 + this->group_, model, this->pos_[0], this->pos_[1], this->pos_[2], &newPed);
+	Command<Commands::CREATE_CHAR>(23 + this->group, model, this->pos[0], this->pos[1], this->pos[2], &newPed);
 	CStreaming::SetMissionDoesntRequireModel(model);
 
 	CPed *ped = CPools::GetPed(newPed);
 
-	for (const auto &[weaponRaw, ammo] : this->weapons_) {
+	for (const auto &[weaponRaw, ammo] : this->weapons) {
 		int weapon = ModelsService::validWeaponModel(weaponRaw);
 		const int weaponModel = CWeaponInfo::GetWeaponInfo(static_cast<eWeaponType>(weapon), 1)->m_nModelId1;
 
@@ -143,14 +153,14 @@ CPed* Actor::spawnPed() {
 
 		CStreaming::SetMissionDoesntRequireModel(weaponModel);
 	}
-	if (!this->weapons_.empty()) {
-		int currentWeapon = this->weapons_.at(this->defaultWeapon_).weapon;
+	if (!this->weapons.empty()) {
+		int currentWeapon = this->weapons.at(this->defaultWeapon).weapon;
 		ped->SetCurrentWeapon(static_cast<eWeaponType>(currentWeapon));
 	}
 
 	ped->DisablePedSpeech(1);
 
-	if (this->modelType_ == 0 && this->modelId_ == 0 && this->dressUp_) {
+	if (this->modelType == 0 && this->modelId == 0 && this->dressUp) {
 		Command<Commands::SET_PLAYER_MODEL>(0, playerModel);
 		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
 		std::memcpy(playerClothes->m_anTextureKeys, textures.data(), sizeof playerClothes->m_anTextureKeys);
@@ -160,91 +170,30 @@ CPed* Actor::spawnPed() {
 		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
 	}
 
-	Command<Commands::SET_CHAR_STAY_IN_SAME_PLACE>(newPed, static_cast<int>(this->stayInSamePlace_));
-	Command<Commands::SET_CHAR_KINDA_STAY_IN_SAME_PLACE>(newPed, static_cast<int>(this->kindaStayInSamePlace_));
-	ped->m_nWeaponAccuracy = this->accuracy_;
-	Command<Commands::SET_CHAR_SUFFERS_CRITICAL_HITS>(newPed, static_cast<int>(this->headshot_));
-	ped->m_nPedFlags.bDoesntDropWeaponsWhenDead = static_cast<unsigned>(!this->dropWeapons_);
+	Command<Commands::SET_CHAR_STAY_IN_SAME_PLACE>(newPed, static_cast<int>(this->stayInSamePlace));
+	Command<Commands::SET_CHAR_KINDA_STAY_IN_SAME_PLACE>(newPed, static_cast<int>(this->kindaStayInSamePlace));
+	ped->m_nWeaponAccuracy = this->accuracy;
+	Command<Commands::SET_CHAR_SUFFERS_CRITICAL_HITS>(newPed, static_cast<int>(this->headshot));
+	ped->m_nPedFlags.bDoesntDropWeaponsWhenDead = static_cast<unsigned>(!this->dropWeapons);
 
 	return ped;
 }
 
 Actor::Actor(const char *name, const CVector &pos, float headingAngle): ObjectiveDependent(nullptr),
-                                                                        uuid_(boost::uuids::random_generator()()),
-                                                                        pos_{pos.x, pos.y, pos.z},
-                                                                        headingAngle_(headingAngle),
-                                                                        accuracy_(50),
-                                                                        health_(100),
-                                                                        headshot_(true) {
-	strcpy(this->name_.data(), name);
+                                                                        uuid(boost::uuids::random_generator()()),
+                                                                        pos{pos.x, pos.y, pos.z},
+                                                                        headingAngle(headingAngle),
+                                                                        accuracy(50),
+                                                                        health(100),
+                                                                        headshot(true) {
+	this->name = name;
 
 	const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-	std::memcpy(this->clotherMAnTextureKeys_.data(), playerClothes->m_anTextureKeys,
+	std::memcpy(this->clotherMAnTextureKeys.data(), playerClothes->m_anTextureKeys,
 	            sizeof playerClothes->m_anTextureKeys);
-	std::memcpy(this->clotherMAnModelKeys_.data(), playerClothes->m_anModelKeys, sizeof playerClothes->m_anModelKeys);
+	std::memcpy(this->clotherMAnModelKeys.data(), playerClothes->m_anModelKeys, sizeof playerClothes->m_anModelKeys);
 	this->fatStat = playerClothes->m_fFatStat;
 	this->musculeStat = playerClothes->m_fMuscleStat;
-}
-
-Actor::Actor(const Actor &other): ObjectiveDependent{other},
-                                  INameable{other},
-                                  IPositionable{other},
-                                  IUuidable{other},
-                                  uuid_{boost::uuids::random_generator()()},
-                                  name_{other.name_},
-                                  pos_{other.pos_},
-                                  headingAngle_{other.headingAngle_},
-                                  group_{other.group_},
-                                  modelType_{other.modelType_},
-                                  slot_{other.slot_},
-                                  modelId_{other.modelId_},
-                                  weapons_{other.weapons_},
-                                  defaultWeapon_{other.defaultWeapon_},
-                                  accuracy_{other.accuracy_},
-                                  health_{other.health_},
-                                  randomSpawn_{other.randomSpawn_},
-                                  shouldNotDie_{other.shouldNotDie_},
-                                  stayInSamePlace_{other.stayInSamePlace_},
-                                  kindaStayInSamePlace_{other.kindaStayInSamePlace_},
-                                  headshot_{other.headshot_},
-                                  dropWeapons_{other.dropWeapons_},
-                                  clotherMAnModelKeys_{other.clotherMAnModelKeys_},
-                                  clotherMAnTextureKeys_{other.clotherMAnTextureKeys_},
-                                  fatStat{other.fatStat},
-                                  musculeStat{other.musculeStat} {
-	strlcat(this->name_.data(), "C", sizeof this->name_);
-}
-
-Actor& Actor::operator=(const Actor &other) {
-	if (this == &other)
-		return *this;
-	ObjectiveDependent::operator =(other);
-	INameable::operator =(other);
-	IPositionable::operator =(other);
-	IUuidable::operator =(other);
-	uuid_ = other.uuid_;
-	name_ = other.name_;
-	pos_ = other.pos_;
-	headingAngle_ = other.headingAngle_;
-	group_ = other.group_;
-	modelType_ = other.modelType_;
-	slot_ = other.slot_;
-	modelId_ = other.modelId_;
-	weapons_ = other.weapons_;
-	defaultWeapon_ = other.defaultWeapon_;
-	accuracy_ = other.accuracy_;
-	health_ = other.health_;
-	randomSpawn_ = other.randomSpawn_;
-	shouldNotDie_ = other.shouldNotDie_;
-	stayInSamePlace_ = other.stayInSamePlace_;
-	kindaStayInSamePlace_ = other.kindaStayInSamePlace_;
-	headshot_ = other.headshot_;
-	dropWeapons_ = other.dropWeapons_;
-	clotherMAnTextureKeys_ = other.clotherMAnTextureKeys_;
-	clotherMAnModelKeys_ = other.clotherMAnModelKeys_;
-	fatStat = other.fatStat;
-	musculeStat = other.musculeStat;
-	return *this;
 }
 
 Actor::~Actor() {
@@ -253,12 +202,12 @@ Actor::~Actor() {
 	this->signalDeleteActor();
 }
 
-char* Actor::getName() {
-	return this->name_.data();
+std::string& Actor::getName() {
+	return this->name;
 }
 
 float* Actor::getPosition() {
-	return this->pos_.data();
+	return this->pos.data();
 }
 
 std::optional<CPed*>& Actor::getEditorPed() {
@@ -270,75 +219,75 @@ std::optional<CPed*>& Actor::getProjectPed() {
 }
 
 float& Actor::getHeadingAngle() {
-	return headingAngle_;
+	return headingAngle;
 }
 
 int& Actor::getGroup() {
-	return group_;
+	return group;
 }
 
 int& Actor::getModelId() {
-	return modelId_;
+	return modelId;
 }
 
 std::vector<Weapon>& Actor::getWeapons() {
-	return weapons_;
+	return weapons;
 }
 
 int& Actor::getDefaultWeapon() {
-	return defaultWeapon_;
+	return defaultWeapon;
 }
 
 unsigned char& Actor::getModelType() {
-	return modelType_;
+	return modelType;
 }
 
 int& Actor::getSlot() {
-	return slot_;
+	return slot;
 }
 
 int& Actor::getAccuracy() {
-	return accuracy_;
+	return accuracy;
 }
 
 int& Actor::getHealth() {
-	return health_;
+	return health;
 }
 
 bool& Actor::isRandomSpawn() {
-	return randomSpawn_;
+	return randomSpawn;
 }
 
 bool& Actor::isShouldNotDie() {
-	return shouldNotDie_;
+	return shouldNotDie;
 }
 
 bool& Actor::isStayInSamePlace() {
-	return stayInSamePlace_;
+	return stayInSamePlace;
 }
 
 bool& Actor::isKindaStayInSamePlace() {
-	return kindaStayInSamePlace_;
+	return kindaStayInSamePlace;
 }
 
 bool& Actor::isHeadshot() {
-	return headshot_;
+	return headshot;
 }
 
 bool& Actor::isDropWeapons() {
-	return dropWeapons_;
+	return dropWeapons;
 }
 
 bool& Actor::isDressUp() {
-	return dressUp_;
+	return dressUp;
 }
 
 std::array<unsigned, 10>& Actor::getClotherMAnModelKeys() {
-	return clotherMAnModelKeys_;
+	return clotherMAnModelKeys;
 }
 
 std::array<unsigned, 18>& Actor::getClotherMAnTextureKeys() {
-	return clotherMAnTextureKeys_;
+	return clotherMAnTextureKeys;
 }
 
 float& Actor::getFatStat() {
@@ -350,7 +299,7 @@ float& Actor::getMusculeStat() {
 }
 
 boost::uuids::uuid& Actor::getUuid() {
-	return uuid_;
+	return uuid;
 }
 
 boost::signals2::signal<void()>& Actor::getSignalDeleteActor() {
@@ -359,12 +308,12 @@ boost::signals2::signal<void()>& Actor::getSignalDeleteActor() {
 
 void Actor::updateLocation() const {
 	if (this->editorPed_.has_value()) {
-		this->editorPed_.value()->SetPosn(this->pos_[0], this->pos_[1], this->pos_[2]);
-		Command<Commands::SET_CHAR_HEADING>(this->editorPed_.value(), this->headingAngle_);
+		this->editorPed_.value()->SetPosn(this->pos[0], this->pos[1], this->pos[2]);
+		Command<Commands::SET_CHAR_HEADING>(this->editorPed_.value(), this->headingAngle);
 	}
 	if (this->projectPed_.has_value()) {
-		this->projectPed_.value()->SetPosn(this->pos_[0], this->pos_[1], this->pos_[2]);
-		Command<Commands::SET_CHAR_HEADING>(this->projectPed_.value(), this->headingAngle_);
+		this->projectPed_.value()->SetPosn(this->pos[0], this->pos[1], this->pos[2]);
+		Command<Commands::SET_CHAR_HEADING>(this->projectPed_.value(), this->headingAngle);
 	}
 }
 

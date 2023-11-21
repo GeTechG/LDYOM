@@ -1,6 +1,10 @@
 ﻿#include "ProjectsService.h"
 
+#include <fast_dynamic_cast.h>
 #include <filesystem>
+#include <boost/uuid/string_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include "Logger.h"
 
 #include "FileWatcher.h"
@@ -41,6 +45,7 @@
 #include "../Data/TeleportToVehiclePlayerObjective.h"
 #include "../Data/TimeoutObjective.h"
 #include "../Data/TouchObjectObjective.h"
+#include "../Data/TrafficObjective.h"
 #include "../Data/WaitSignalObjective.h"
 #include "../Data/WeatherObjective.h"
 #include "../Windows/ObjectivesWindow.h"
@@ -48,52 +53,518 @@
 
 #include "zip.h"
 #include "../lz4/lz4hc.h"
-#include "boost/archive/binary_iarchive.hpp"
-#include "boost/archive/binary_oarchive.hpp"
+#include "boost/archive/xml_iarchive.hpp"
+#include "boost/archive/xml_oarchive.hpp"
 #include "boost/serialization/split_free.hpp"
 #include "boost/serialization/unique_ptr.hpp"
 #include "boost/serialization/utility.hpp"
 #include "boost/serialization/vector.hpp"
-#include "boost/uuid/uuid_serialize.hpp"
 #include "easylogging/easylogging++.h"
 
 
 const std::filesystem::path PROJECTS_PATH = L"LDYOM\\Projects\\";
 const std::filesystem::path BACKUPS_PATH = L"LDYOM\\Backups\\";
 
+constexpr int FLAGS = boost::archive::archive_flags::no_header + boost::archive::archive_flags::no_tracking;
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<Scene> {
+		static void to_json(json &j, const Scene &cs) {
+			auto &c = const_cast<Scene&>(cs);
+			j = json{
+				{"name", c.getName()},
+				{"id", c.getId()},
+				{"actors", c.getActors()},
+				{"vehicles", c.getVehicles()},
+				{"objects", c.getObjects()},
+				{"trains", c.getTrains()},
+				{"particles", c.getParticles()},
+				{"pickups", c.getPickups()},
+				{"pyrotechnics", c.getPyrotechnics()},
+				{"audio", c.getAudio()},
+				{"visualEffects", c.getVisualEffects()},
+				{"checkpoints", c.getCheckpoints()},
+				{"sceneSettings", c.getSceneSettings()},
+				{"toggleSceneSettings", c.isToggleSceneSettings()},
+			};
+			auto jsonObjectives = json::array();
+			for (auto &objective : c.getObjectives()) {
+				switch (objective->getCategory()) {
+					case 0:
+						switch (objective->getTypeCategory()) {
+							//World
+							case 0:
+								jsonObjectives.push_back(fast_dynamic_cast<CheckpointObjective&>(*objective));
+								break;
+							case 1:
+								jsonObjectives.push_back(fast_dynamic_cast<CutsceneObjective&>(*objective));
+								break;
+							case 2:
+								jsonObjectives.push_back(fast_dynamic_cast<CountdownObjective&>(*objective));
+								break;
+							case 3:
+								jsonObjectives.push_back(fast_dynamic_cast<TimeoutObjective&>(*objective));
+								break;
+							case 4:
+								jsonObjectives.push_back(fast_dynamic_cast<WeatherObjective&>(*objective));
+								break;
+							case 5:
+								jsonObjectives.push_back(fast_dynamic_cast<ClockTimeObjective&>(*objective));
+								break;
+							case 6:
+								jsonObjectives.push_back(fast_dynamic_cast<TrafficObjective&>(*objective));
+								break;
+							case 7:
+								jsonObjectives.push_back(fast_dynamic_cast<AddTimerObjective&>(*objective));
+								break;
+							case 8:
+								jsonObjectives.push_back(fast_dynamic_cast<RemoveTimerObjective&>(*objective));
+								break;
+
+							default:
+								break;
+						}
+						break;
+					case 1:
+						switch (objective->getTypeCategory()) {
+							// Actor
+							case 0:
+								jsonObjectives.push_back(fast_dynamic_cast<KillActorOrGroupObjective&>(*objective));
+								break;
+							case 1:
+								jsonObjectives.push_back(fast_dynamic_cast<DamageActorObjective&>(*objective));
+								break;
+							case 2:
+								jsonObjectives.push_back(fast_dynamic_cast<FollowPathActorObjective&>(*objective));
+								break;
+							case 3:
+								jsonObjectives.push_back(fast_dynamic_cast<AnimationActorObjective&>(*objective));
+								break;
+							case 4:
+								jsonObjectives.push_back(fast_dynamic_cast<EnterVehicleActorObjective&>(*objective));
+								break;
+
+							default:
+								break;
+						}
+						break;
+
+					case 2:
+						switch (objective->getTypeCategory()) {
+							// Vehicle
+							case 0:
+								jsonObjectives.push_back(fast_dynamic_cast<GetInVehicleObjective&>(*objective));
+								break;
+							case 1:
+								jsonObjectives.push_back(fast_dynamic_cast<DestroyVehicleObjective&>(*objective));
+								break;
+							case 2:
+								jsonObjectives.push_back(fast_dynamic_cast<FollowPathVehicleObjective&>(*objective));
+								break;
+
+							default:
+								break;
+						}
+						break;
+					case 3:
+						switch (objective->getTypeCategory()) {
+							//Object
+							case 0:
+								jsonObjectives.push_back(fast_dynamic_cast<DamageObjectObjective&>(*objective));
+								break;
+							case 1:
+								jsonObjectives.push_back(fast_dynamic_cast<PhotographObjectObjective&>(*objective));
+								break;
+							case 2:
+								jsonObjectives.push_back(fast_dynamic_cast<TouchObjectObjective&>(*objective));
+								break;
+
+							default:
+								break;
+						}
+						break;
+					case 4:
+						switch (objective->getTypeCategory()) {
+							//Pickup
+							case 0:
+								jsonObjectives.push_back(fast_dynamic_cast<CollectPickupObjective&>(*objective));
+								break;
+
+							default:
+								break;
+						}
+						break;
+					case 5:
+						switch (objective->getTypeCategory()) {
+							// Player
+							case 0:
+								jsonObjectives.push_back(fast_dynamic_cast<TeleportPlayerObjective&>(*objective));
+								break;
+							case 1:
+								jsonObjectives.push_back(fast_dynamic_cast<AnimationPlayerObjective&>(*objective));
+								break;
+							case 2:
+								jsonObjectives.push_back(
+									fast_dynamic_cast<TeleportToVehiclePlayerObjective&>(*objective));
+								break;
+							case 3:
+								jsonObjectives.push_back(fast_dynamic_cast<LevelWantedPlayerObjective&>(*objective));
+								break;
+							case 4:
+								jsonObjectives.push_back(fast_dynamic_cast<RemoveWeaponsObjective&>(*objective));
+								break;
+							case 5:
+								jsonObjectives.push_back(fast_dynamic_cast<AddWeaponsPlayerObjective&>(*objective));
+								break;
+							case 6:
+								jsonObjectives.push_back(fast_dynamic_cast<PhoneCallPlayerObjective&>(*objective));
+								break;
+							case 7:
+								jsonObjectives.push_back(fast_dynamic_cast<AddMoneyPlayerObjective&>(*objective));
+								break;
+
+							default:
+								break;
+						}
+						break;
+					case 6:
+						switch (objective->getTypeCategory()) {
+							//Mission
+							case 0:
+								jsonObjectives.push_back(fast_dynamic_cast<StartMissionObjective&>(*objective));
+								break;
+							case 1:
+								jsonObjectives.push_back(fast_dynamic_cast<EndMissionObjective&>(*objective));
+								break;
+							default:
+								break;
+						}
+						break;
+					case 7:
+						switch (objective->getTypeCategory()) {
+							//Other
+							case 0:
+								jsonObjectives.push_back(fast_dynamic_cast<SaveObjective&>(*objective));
+								break;
+							case 1:
+								jsonObjectives.push_back(fast_dynamic_cast<GoToSceneObjective&>(*objective));
+								break;
+							case 2:
+								jsonObjectives.push_back(fast_dynamic_cast<JumpToObjectiveObjective&>(*objective));
+								break;
+							case 3:
+								jsonObjectives.push_back(fast_dynamic_cast<WaitSignalObjective&>(*objective));
+								break;
+							default:
+								break;
+						}
+						break;
+					default:
+						break;
+				}
+			}
+			j["objectives"] = jsonObjectives;
+		}
+
+		static Scene from_json(const json &j) {
+			std::vector<std::unique_ptr<BaseObjective>> objectives;
+			auto jsonObjectives = j.at("objectives");
+			for (const auto &jsonObjective : jsonObjectives) {
+				const int category = jsonObjective["category"].get<int>();
+				const int typeCategory = jsonObjective["typeCategory"].get<int>();
+				switch (category) {
+					case 0:
+						switch (typeCategory) {
+							//World
+							case 0: {
+								objectives.emplace_back(
+									std::make_unique<CheckpointObjective>(jsonObjective.get<CheckpointObjective>()));
+							}
+							break;
+							case 1:
+								objectives.emplace_back(
+									std::make_unique<CutsceneObjective>(jsonObjective.get<CutsceneObjective>()));
+								break;
+							case 2:
+								objectives.emplace_back(
+									std::make_unique<CountdownObjective>(jsonObjective.get<CountdownObjective>()));
+								break;
+							case 3:
+								objectives.emplace_back(
+									std::make_unique<TimeoutObjective>(jsonObjective.get<TimeoutObjective>()));
+								break;
+							case 4:
+								objectives.emplace_back(
+									std::make_unique<WeatherObjective>(jsonObjective.get<WeatherObjective>()));
+								break;
+							case 5:
+								objectives.emplace_back(
+									std::make_unique<ClockTimeObjective>(jsonObjective.get<ClockTimeObjective>()));
+								break;
+							case 6:
+								objectives.emplace_back(
+									std::make_unique<TrafficObjective>(jsonObjective.get<TrafficObjective>()));
+								break;
+							case 7:
+								objectives.emplace_back(
+									std::make_unique<AddTimerObjective>(jsonObjective.get<AddTimerObjective>()));
+								break;
+							case 8:
+								objectives.emplace_back(
+									std::make_unique<RemoveTimerObjective>(jsonObjective.get<RemoveTimerObjective>()));
+								break;
+							default:
+								break;
+						}
+						break;
+					case 1:
+						switch (typeCategory) {
+							// Actor
+							case 0:
+								objectives.emplace_back(
+									std::make_unique<KillActorOrGroupObjective>(
+										jsonObjective.get<KillActorOrGroupObjective>()));
+								break;
+							case 1:
+								objectives.emplace_back(
+									std::make_unique<DamageActorObjective>(jsonObjective.get<DamageActorObjective>()));
+								break;
+							case 2:
+								objectives.emplace_back(
+									std::make_unique<FollowPathActorObjective>(
+										jsonObjective.get<FollowPathActorObjective>()));
+								break;
+							case 3:
+								objectives.emplace_back(
+									std::make_unique<AnimationActorObjective>(
+										jsonObjective.get<AnimationActorObjective>()));
+								break;
+							case 4:
+								objectives.emplace_back(
+									std::make_unique<EnterVehicleActorObjective>(
+										jsonObjective.get<EnterVehicleActorObjective>()));
+								break;
+							default:
+								break;
+						}
+						break;
+
+
+					case 2:
+						switch (typeCategory) {
+							// Vehicle
+							case 0:
+								objectives.emplace_back(
+									std::make_unique<GetInVehicleObjective>(
+										jsonObjective.get<GetInVehicleObjective>()));
+								break;
+							case 1:
+								objectives.emplace_back(
+									std::make_unique<DestroyVehicleObjective>(
+										jsonObjective.get<DestroyVehicleObjective>()));
+								break;
+							case 2:
+								objectives.emplace_back(
+									std::make_unique<FollowPathVehicleObjective>(
+										jsonObjective.get<FollowPathVehicleObjective>()));
+								break;
+							default:
+								break;
+						}
+						break;
+
+					case 3:
+						switch (typeCategory) {
+							// Object
+							case 0:
+								objectives.emplace_back(
+									std::make_unique<DamageObjectObjective>(
+										jsonObjective.get<DamageObjectObjective>()));
+								break;
+							case 1:
+								objectives.emplace_back(
+									std::make_unique<PhotographObjectObjective>(
+										jsonObjective.get<PhotographObjectObjective>()));
+								break;
+							case 2:
+								objectives.emplace_back(
+									std::make_unique<TouchObjectObjective>(jsonObjective.get<TouchObjectObjective>()));
+								break;
+							default:
+								break;
+						}
+						break;
+
+					case 4:
+						switch (typeCategory) {
+							// Pickup
+							case 0:
+								objectives.emplace_back(
+									std::make_unique<CollectPickupObjective>(
+										jsonObjective.get<CollectPickupObjective>()));
+								break;
+							default:
+								break;
+						}
+						break;
+
+					case 5:
+						switch (typeCategory) {
+							// Player
+							case 0:
+								objectives.emplace_back(
+									std::make_unique<TeleportPlayerObjective>(
+										jsonObjective.get<TeleportPlayerObjective>()));
+								break;
+							case 1:
+								objectives.emplace_back(
+									std::make_unique<AnimationPlayerObjective>(
+										jsonObjective.get<AnimationPlayerObjective>()));
+								break;
+							case 2:
+								objectives.emplace_back(
+									std::make_unique<TeleportToVehiclePlayerObjective>(
+										jsonObjective.get<TeleportToVehiclePlayerObjective>()));
+								break;
+							case 3:
+								objectives.emplace_back(
+									std::make_unique<LevelWantedPlayerObjective>(
+										jsonObjective.get<LevelWantedPlayerObjective>()));
+								break;
+							case 4:
+								objectives.emplace_back(
+									std::make_unique<RemoveWeaponsObjective>(
+										jsonObjective.get<RemoveWeaponsObjective>()));
+								break;
+							case 5:
+								objectives.emplace_back(
+									std::make_unique<AddWeaponsPlayerObjective>(
+										jsonObjective.get<AddWeaponsPlayerObjective>()));
+								break;
+							case 6:
+								objectives.emplace_back(
+									std::make_unique<PhoneCallPlayerObjective>(
+										jsonObjective.get<PhoneCallPlayerObjective>()));
+								break;
+							case 7:
+								objectives.emplace_back(
+									std::make_unique<AddMoneyPlayerObjective>(
+										jsonObjective.get<AddMoneyPlayerObjective>()));
+								break;
+							default:
+								break;
+						}
+						break;
+
+					case 6:
+						switch (typeCategory) {
+							// Mission
+							case 0:
+								objectives.emplace_back(
+									std::make_unique<StartMissionObjective>(
+										jsonObjective.get<StartMissionObjective>()));
+								break;
+							case 1:
+								objectives.emplace_back(
+									std::make_unique<EndMissionObjective>(jsonObjective.get<EndMissionObjective>()));
+								break;
+							default:
+								break;
+						}
+						break;
+
+					case 7:
+						switch (typeCategory) {
+							// Other
+							case 0:
+								objectives.emplace_back(
+									std::make_unique<SaveObjective>(jsonObjective.get<SaveObjective>()));
+								break;
+							case 1:
+								objectives.emplace_back(
+									std::make_unique<GoToSceneObjective>(jsonObjective.get<GoToSceneObjective>()));
+								break;
+							case 2:
+								objectives.emplace_back(
+									std::make_unique<JumpToObjectiveObjective>(
+										jsonObjective.get<JumpToObjectiveObjective>()));
+								break;
+							case 3:
+								objectives.emplace_back(
+									std::make_unique<WaitSignalObjective>(jsonObjective.get<WaitSignalObjective>()));
+								break;
+							default:
+								break;
+						}
+						break;
+
+					default:
+						break;
+				}
+			}
+			return {
+				j.at("name").get<std::string>(),
+				j.at("id").get<int>(),
+				std::move(objectives),
+				j.at("actors").get<std::vector<std::unique_ptr<Actor>>>(),
+				j.at("vehicles").get<std::vector<std::unique_ptr<Vehicle>>>(),
+				j.at("objects").get<std::vector<std::unique_ptr<Object>>>(),
+				j.at("particles").get<std::vector<std::unique_ptr<Particle>>>(),
+				j.at("trains").get<std::vector<std::unique_ptr<Train>>>(),
+				j.at("pickups").get<std::vector<std::unique_ptr<Pickup>>>(),
+				j.at("pyrotechnics").get<std::vector<std::unique_ptr<Pyrotechnics>>>(),
+				j.at("audio").get<std::vector<std::unique_ptr<Audio>>>(),
+				j.at("visualEffects").get<std::vector<std::unique_ptr<VisualEffect>>>(),
+				j.at("checkpoints").get<std::vector<std::unique_ptr<Checkpoint>>>(),
+				j.at("sceneSettings").get<SceneSettings>(),
+				j.at("toggleSceneSettings").get<bool>()
+			};
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END
+
 void ProjectsService::update() {
 	this->projectsInfos_.clear();
 	this->productionProjectsInfos_.clear();
 	for (const auto &entry : std::filesystem::directory_iterator(PROJECTS_PATH)) {
 		if (entry.is_directory()) {
-			auto missionFile = entry.path() / "index.dat";
+			auto missionFile = entry.path() / "index.json";
 			if (exists(missionFile)) {
-				std::ifstream file(missionFile, std::ios_base::binary);
-				boost::archive::binary_iarchive ia(file);
-				ProjectInfo *projectInfo;
-				ia >> projectInfo;
+				std::unique_ptr<ProjectInfo> projectInfo;
+
+				std::ifstream file(missionFile);
+				{
+					json j = json::parse(file);
+					j.get_to(projectInfo);
+				}
 				file.close();
+
 				if (auto icon = entry.path() / L"icon.png"; exists(icon)) {
 					projectInfo->icon = utils::LoadTextureRequiredFromFile(icon);
 				}
 
 				projectInfo->directory = entry.path();
 
-				this->projectsInfos_.emplace_back(std::unique_ptr<ProjectInfo>(projectInfo));
+				this->projectsInfos_.emplace_back(std::move(projectInfo));
 			}
+			auto a = 1;
 		} else {
 			if (entry.path().extension() == ".ldpack") {
 				auto zip = zip_open(entry.path().string().c_str(), NULL, 'r');
-				if (zip_entry_open(zip, "index.dat") == 0) {
+				if (zip_entry_open(zip, "index.json") == 0) {
 					size_t indexSize;
 					void *indexBytes;
 					zip_entry_read(zip, &indexBytes, &indexSize);
 
+					std::unique_ptr<ProjectInfo> projectInfo;
 					std::istringstream stream(std::string(static_cast<const char*>(indexBytes), indexSize));
 					stream.rdbuf()->pubsetbuf(static_cast<char*>(indexBytes), indexSize);
-					boost::archive::binary_iarchive ia(stream);
-					ProjectInfo *projectInfo;
-					ia >> projectInfo;
+					{
+						json j = json::parse(stream);
+						j.get_to(projectInfo);
+					}
 
 					free(indexBytes);
 					zip_entry_close(zip);
@@ -111,7 +582,7 @@ void ProjectsService::update() {
 						zip_entry_close(zip);
 					}
 
-					this->productionProjectsInfos_.emplace_back(std::unique_ptr<ProjectInfo>(projectInfo));
+					this->productionProjectsInfos_.emplace_back(std::move(projectInfo));
 				}
 				zip_close(zip);
 			}
@@ -203,53 +674,21 @@ void ProjectsService::saveCurrentProject() {
 
 	{
 		//save index file
-		std::ofstream file(projectDirectory / "index.dat", std::ios_base::binary);
-		boost::archive::binary_oarchive oa(file);
-		oa << this->getCurrentProject().getProjectInfo().get();
+		auto &projectInfo = this->getCurrentProject().getProjectInfo();
 
-		/*for (const auto &pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["saveProject"].
-		     get_or_create<sol::table>()) {
-			if (auto result = pairLua.second.as<sol::function>()(); !result.valid()) {
-				sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			} else {
-				oa << result.get<std::string>();
-			}
-		}*/
+		std::ofstream file(projectDirectory / "index.json");
+		nlohmann::json j = projectInfo;
+		file << j.dump(4);
 		file.close();
 	}
 
 	//save scenes
 	for (const auto &pair : this->getCurrentProject().getScenes()) {
-		std::ostringstream uncompressedStream;
-		boost::archive::binary_oarchive oa(uncompressedStream);
-		oa << pair.second;
-		/*for (const auto &pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["saveScene"].
-		     get_or_create<
-			     sol::table>()) {
-			if (auto result = pairLua.second.as<sol::function>()(pair.first); !result.valid()) {
-				sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			} else {
-				oa << result.get<std::string>();
-			}
-		}*/
-
-		auto ucString = uncompressedStream.str();
-
-		std::vector<char> compressedVector;
-		unsigned inputSize = ucString.size();
-		compressedVector.resize(LZ4_compressBound(inputSize), '\0');
-		int result = LZ4_compress_HC(ucString.c_str(), compressedVector.data(), static_cast<int>(inputSize),
-		                             compressedVector.size(), LZ4HC_CLEVEL_MAX);
-		if (result == 0) {
-			CLOG(ERROR, "LDYOM") << "Failed compress";
-			return;
+		std::ofstream file(scenesDirectory / fmt::format("{}.json", pair.first));
+		{
+			json j = *pair.second;
+			file << j.dump(4);
 		}
-
-		std::ofstream file(scenesDirectory / fmt::format("{}.dat", pair.first), std::ios_base::binary);
-		file.write(reinterpret_cast<char*>(&inputSize), sizeof inputSize);
-		std::ranges::copy(compressedVector.begin(), compressedVector.begin() + result, std::ostreambuf_iterator(file));
 		file.close();
 	}
 
@@ -263,53 +702,43 @@ void ProjectsService::loadProjectData(const std::filesystem::path &projectDirect
 
 	{
 		//load index file
-		std::ifstream file(projectDirectory / "index.dat", std::ios_base::binary);
-		boost::archive::binary_iarchive ia(file);
-		ProjectInfo *projectInfo;
-		ia >> projectInfo;
-		this->getCurrentProject().getProjectInfo() = std::unique_ptr<ProjectInfo>(projectInfo);
-		/*for (auto pairLua : LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["loadProject"].
-		     get_or_create<sol::table>()) {
-			std::string data;
-			ia >> data;
-			if (auto result = pairLua.second.as<sol::function>()(data); !result.valid()) {
-				sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}*/
+		std::unique_ptr<ProjectInfo> projectInfo;
+		std::ifstream file(projectDirectory / "index.json");
+		{
+			json j = json::parse(file);
+			j.get_to(projectInfo);
+		}
 		file.close();
+		this->getCurrentProject().getProjectInfo().swap(projectInfo);
 	}
 
 	//load scenes
 	for (auto &path : std::filesystem::directory_iterator(scenesDirectory)) {
-		if (path.is_regular_file() && path.path().extension() == ".dat") {
-			std::string compressed;
-			unsigned uncompressedSize;
+		if (path.is_regular_file() && path.path().extension() == ".json") {
+			auto scene = std::make_unique<Scene>();
+			std::ifstream file(path.path(), std::ios_base::binary);
 			{
-				std::ifstream file(path.path(), std::ios_base::binary);
-				file.read(reinterpret_cast<char*>(&uncompressedSize), sizeof uncompressedSize);
-				std::ostringstream ss;
-				ss << file.rdbuf();
-				compressed = ss.str();
-				file.close();
+				json j = json::parse(file);
+				auto s = j.get<Scene>();
+				scene->getName() = s.getName();
+				scene->getId() = s.getId();
+				scene->getActors().swap(s.getActors());
+				scene->getVehicles().swap(s.getVehicles());
+				scene->getObjects().swap(s.getObjects());
+				scene->getParticles().swap(s.getParticles());
+				scene->getTrains().swap(s.getTrains());
+				scene->getPickups().swap(s.getPickups());
+				scene->getPyrotechnics().swap(s.getPyrotechnics());
+				scene->getAudio().swap(s.getAudio());
+				scene->getVisualEffects().swap(s.getVisualEffects());
+				scene->getCheckpoints().swap(s.getCheckpoints());
+				scene->getSceneSettings() = s.getSceneSettings();
+				scene->isToggleSceneSettings() = s.isToggleSceneSettings();
+				scene->getObjectives().swap(s.getObjectives());
 			}
-
-			std::vector<char> uncompressedVector;
-			uncompressedVector.resize(uncompressedSize, '\0');
-			int result = LZ4_decompress_safe(compressed.c_str(), uncompressedVector.data(),
-			                                 static_cast<int>(compressed.size()), static_cast<int>(uncompressedSize));
-			if (result == 0) {
-				CLOG(ERROR, "LDYOM") << "Failed compress";
-				return;
-			}
-			std::istringstream ss(std::string(uncompressedVector.begin(), uncompressedVector.end()));
+			file.close();
 
 			int sceneId = std::stoi(path.path().stem().wstring());
-
-			boost::archive::binary_iarchive ia(ss);
-			std::unique_ptr<Scene> scene;
-			ia >> scene;
-
 
 			getCurrentProject().getScenes().emplace(sceneId, std::move(scene));
 		}
@@ -371,7 +800,7 @@ void ProjectsService::deleteProductionProject(int projectIdx) const {
 	remove(projectDirectory);
 }
 
-void ProjectsService::makeProjectProduction(int projectIdx) {
+void ProjectsService::makeProjectProduction(int projectIdx) const {
 	auto zip = zip_open(
 		(PROJECTS_PATH / fmt::format("{}.ldpack", this->projectsInfos_.at(projectIdx)->name)).string().c_str(), 9, 'w');
 	if (!zipWalk(zip, this->projectsInfos_.at(projectIdx)->directory))
@@ -408,95 +837,3 @@ void ProjectsService::Init() {
 ProjectData& ProjectsService::getCurrentProject() {
 	return currentProject_;
 }
-
-namespace boost::serialization {
-	template <class Archive>
-	void serialize(Archive &ar, CQuaternion &p, const unsigned int version) {
-		ar & p.real;
-		ar & p.imag.x;
-		ar & p.imag.y;
-		ar & p.imag.z;
-	}
-
-	template <class Archive>
-	void serialize(Archive &ar, Scene &p, const unsigned int version) {
-		ar & make_array(p.getName(), NAME_SIZE);
-		ar & p.getId();
-		ar & p.getActors();
-		ar & p.getVehicles();
-		ar & p.getObjects();
-		ar & p.getTrains();
-		ar & p.getParticles();
-		ar & p.getPickups();
-		ar & p.getPyrotechnics();
-		ar & p.getAudio();
-		ar & p.getVisualEffects();
-		ar & p.getCheckpoints();
-
-		ar & p.getSceneSettings();
-		ar & p.isToggleSceneSettings();
-
-		ar.template register_type<CheckpointObjective>();
-		ar.template register_type<KillActorOrGroupObjective>();
-		ar.template register_type<DamageActorObjective>();
-		ar.template register_type<GetInVehicleObjective>();
-		ar.template register_type<DestroyVehicleObjective>();
-		ar.template register_type<CutsceneObjective>();
-		ar.template register_type<CountdownObjective>();
-		ar.template register_type<TimeoutObjective>();
-		ar.template register_type<WeatherObjective>();
-		ar.template register_type<ClockTimeObjective>();
-		ar.template register_type<DamageObjectObjective>();
-		ar.template register_type<PhotographObjectObjective>();
-		ar.template register_type<TouchObjectObjective>();
-		ar.template register_type<CollectPickupObjective>();
-		ar.template register_type<TeleportPlayerObjective>();
-		ar.template register_type<AnimationPlayerObjective>();
-		ar.template register_type<TeleportToVehiclePlayerObjective>();
-		ar.template register_type<LevelWantedPlayerObjective>();
-		ar.template register_type<RemoveWeaponsObjective>();
-		ar.template register_type<AddWeaponsPlayerObjective>();
-		ar.template register_type<PhoneCallPlayerObjective>();
-		ar.template register_type<AddMoneyPlayerObjective>();
-		ar.template register_type<AddTimerObjective>();
-		ar.template register_type<RemoveTimerObjective>();
-		ar.template register_type<StartMissionObjective>();
-		ar.template register_type<EndMissionObjective>();
-		ar.template register_type<GoToSceneObjective>();
-		ar.template register_type<WaitSignalObjective>();
-		ar.template register_type<FollowPathActorObjective>();
-		ar.template register_type<AnimationActorObjective>();
-		ar.template register_type<EnterVehicleActorObjective>();
-		ar.template register_type<FollowPathVehicleObjective>();
-		ar.template register_type<JumpToObjectiveObjective>();
-		ar.template register_type<SaveObjective>();
-
-		ar & p.getObjectives();
-	}
-
-	template <class Archive>
-	void serialize(Archive &ar, SceneSettings &p, const unsigned int version) {
-		ar & make_array(p.groupRelations.data(), p.groupRelations.size());
-		ar & make_array(p.time.data(), p.time.size());
-		ar & p.trafficPed;
-		ar & p.trafficCar;
-		ar & p.wantedMin;
-		ar & p.wantedMax;
-		ar & p.weather;
-		ar & p.riot;
-	}
-
-	template <class Archive>
-	void save(Archive &ar, const std::filesystem::path &p, const unsigned int version) {
-		ar & p.string();
-	}
-
-	template <class Archive>
-	void load(Archive &ar, std::filesystem::path &p, const unsigned int version) {
-		std::string path;
-		ar & path;
-		p = path;
-	}
-}
-
-BOOST_SERIALIZATION_SPLIT_FREE(std::filesystem::path)

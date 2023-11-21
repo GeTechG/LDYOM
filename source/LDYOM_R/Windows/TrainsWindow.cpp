@@ -35,7 +35,7 @@ void Windows::TrainsWindow::createNewElementFrom(int i) {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains().back()->spawnEditorTrain();
 }
 
-char* Windows::TrainsWindow::getElementName(int i) {
+std::string& Windows::TrainsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getTrains().at(i)->getName();
 }
 

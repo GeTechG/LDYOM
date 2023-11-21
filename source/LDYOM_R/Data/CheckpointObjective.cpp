@@ -4,6 +4,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "CRadar.h"
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "ProjectsService.h"
 #include "Result.h"
 #include "strUtils.h"
@@ -25,7 +26,7 @@ CheckpointObjective::CheckpointObjective(void *_new): WorldObjective(nullptr),
                                                       textComeBackVehicle_(""),
                                                       colorBlipComeBackVehicle_(0) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.checkpoint"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
 
 CheckpointObjective::CheckpointObjective(const CheckpointObjective &other): WorldObjective{other}, BaseObjective{other},
@@ -84,11 +85,12 @@ ktwait CheckpointObjective::execute(Scene *scene, Result &result, ktcoro_tasklis
 
 	auto playerPed = static_cast<CPed*>(FindPlayerPed());
 
-	auto cp1251Text = utf8ToCp1251(this->text_.data());
+	auto cp1251Text = utf8ToCp1251(this->text_);
 	gxtEncode(cp1251Text);
-	strlcpy(this->gameText_.data(), cp1251Text.c_str(), sizeof this->gameText_);
+	this->gameText_ = cp1251Text;
 
-	CMessages::AddMessage(this->gameText_.data(), static_cast<unsigned>(this->textTime_ * 1000.0f), 0, false);
+	CMessages::AddMessage(const_cast<char*>(this->gameText_.c_str()), static_cast<unsigned>(this->textTime_ * 1000.0f),
+	                      0, false);
 	checkpoint->spawnProjectBlip();
 
 	int vehicleIdx = -1;
@@ -115,76 +117,82 @@ ktwait CheckpointObjective::execute(Scene *scene, Result &result, ktcoro_tasklis
 		}
 
 		switch (this->onWhatArrive_) {
-		case 0:
-			if (is2d)
-				isLocate = Command<Commands::LOCATE_CHAR_ANY_MEANS_2D>(playerPed, position.x, position.y, radius,
-				                                                       radius, false);
-			else
-				isLocate = Command<Commands::LOCATE_CHAR_ANY_MEANS_3D>(playerPed, position.x, position.y, position.z,
-				                                                       radius, radius, radius, false);
-			break;
-		case 1:
-			if (is2d)
-				isLocate = Command<Commands::LOCATE_CHAR_ON_FOOT_2D>(playerPed, position.x, position.y, radius, radius,
-				                                                     false);
-			else
-				isLocate = Command<Commands::LOCATE_CHAR_ON_FOOT_3D>(playerPed, position.x, position.y, position.z,
-				                                                     radius, radius, radius, false);
-			break;
-		case 2:
-			if (is2d)
-				isLocate = Command<Commands::LOCATE_CHAR_IN_CAR_2D>(playerPed, position.x, position.y, radius, radius,
-				                                                    false);
-			else
-				isLocate = Command<Commands::LOCATE_CHAR_IN_CAR_3D>(playerPed, position.x, position.y, position.z,
-				                                                    radius, radius, radius, false);
-			break;
-		case 3: {
-			auto &vehicle = scene->getVehicles().at(vehicleIdx);
-			if (!vehicle->getProjectVehicle().has_value()) {
-				setObjectiveError(result, *this, NotExists, "The entity of the vehicle does not exist.");
-				co_return;
-			}
-
-			const auto vehicleRef = vehicle->getProjectVehicle().value();
-			bool isPlayerInCar = Command<Commands::IS_CHAR_IN_CAR>(playerPed, vehicleRef);
-
-			if (!isPlayerInCar) {
-				checkpoint->deleteProjectBlip();
-
-				auto cp1251TextComeBack = utf8ToCp1251(this->textComeBackVehicle_.data());
-				gxtEncode(cp1251TextComeBack);
-				CMessages::AddMessageJumpQ(const_cast<char*>(cp1251TextComeBack.c_str()), 2000u, 0, true);
-
-				int blipComeBack;
-
-				if (this->colorBlipComeBackVehicle_ > 0) {
-					Command<Commands::ADD_BLIP_FOR_CAR>(vehicleRef, &blipComeBack);
-					this->projectComeBackBlip_ = blipComeBack;
-					CRadar::ChangeBlipColour(blipComeBack, this->colorBlipComeBackVehicle_ - 1);
+			case 0:
+				if (is2d)
+					isLocate = Command<Commands::LOCATE_CHAR_ANY_MEANS_2D>(playerPed, position.x, position.y, radius,
+					                                                       radius, false);
+				else
+					isLocate = Command<Commands::LOCATE_CHAR_ANY_MEANS_3D>(
+						playerPed, position.x, position.y, position.z,
+						radius, radius, radius, false);
+				break;
+			case 1:
+				if (is2d)
+					isLocate = Command<Commands::LOCATE_CHAR_ON_FOOT_2D>(
+						playerPed, position.x, position.y, radius, radius,
+						false);
+				else
+					isLocate = Command<Commands::LOCATE_CHAR_ON_FOOT_3D>(playerPed, position.x, position.y, position.z,
+					                                                     radius, radius, radius, false);
+				break;
+			case 2:
+				if (is2d)
+					isLocate = Command<Commands::LOCATE_CHAR_IN_CAR_2D>(playerPed, position.x, position.y, radius,
+					                                                    radius,
+					                                                    false);
+				else
+					isLocate = Command<Commands::LOCATE_CHAR_IN_CAR_3D>(playerPed, position.x, position.y, position.z,
+					                                                    radius, radius, radius, false);
+				break;
+			case 3: {
+				auto &vehicle = scene->getVehicles().at(vehicleIdx);
+				if (!vehicle->getProjectVehicle().has_value()) {
+					setObjectiveError(result, *this, NotExists, "The entity of the vehicle does not exist.");
+					co_return;
 				}
 
-				while (!isPlayerInCar) {
-					isPlayerInCar = Command<Commands::IS_CHAR_IN_CAR>(playerPed, vehicleRef);
-					co_await 1;
+				const auto vehicleRef = vehicle->getProjectVehicle().value();
+				bool isPlayerInCar = Command<Commands::IS_CHAR_IN_CAR>(playerPed, vehicleRef);
+
+				if (!isPlayerInCar) {
+					checkpoint->deleteProjectBlip();
+
+					auto cp1251TextComeBack = utf8ToCp1251(this->textComeBackVehicle_);
+					gxtEncode(cp1251TextComeBack);
+					CMessages::AddMessageJumpQ(const_cast<char*>(cp1251TextComeBack.c_str()), 2000u, 0, true);
+
+					int blipComeBack;
+
+					if (this->colorBlipComeBackVehicle_ > 0) {
+						Command<Commands::ADD_BLIP_FOR_CAR>(vehicleRef, &blipComeBack);
+						this->projectComeBackBlip_ = blipComeBack;
+						CRadar::ChangeBlipColour(blipComeBack, this->colorBlipComeBackVehicle_ - 1);
+					}
+
+					while (!isPlayerInCar) {
+						isPlayerInCar = Command<Commands::IS_CHAR_IN_CAR>(playerPed, vehicleRef);
+						co_await 1;
+					}
+					this->removeProjectComeBackBlip();
+
+					CMessages::AddMessageJumpQ(const_cast<char*>(this->gameText_.c_str()),
+					                           static_cast<unsigned>(this->textTime_ * 1000.0f),
+					                           0,
+					                           false);
+					checkpoint->spawnProjectBlip();
 				}
-				this->removeProjectComeBackBlip();
 
-				CMessages::AddMessageJumpQ(this->gameText_.data(), static_cast<unsigned>(this->textTime_ * 1000.0f), 0,
-				                           false);
-				checkpoint->spawnProjectBlip();
+				if (is2d)
+					isLocate = Command<Commands::LOCATE_CHAR_IN_CAR_2D>(playerPed, position.x, position.y, radius,
+					                                                    radius,
+					                                                    false);
+				else
+					isLocate = Command<Commands::LOCATE_CHAR_IN_CAR_3D>(playerPed, position.x, position.y, position.z,
+					                                                    radius, radius, radius, false);
+				break;
 			}
-
-			if (is2d)
-				isLocate = Command<Commands::LOCATE_CHAR_IN_CAR_2D>(playerPed, position.x, position.y, radius, radius,
-				                                                    false);
-			else
-				isLocate = Command<Commands::LOCATE_CHAR_IN_CAR_3D>(playerPed, position.x, position.y, position.z,
-				                                                    radius, radius, radius, false);
-			break;
-		}
-		default:
-			break;
+			default:
+				break;
 		}
 
 		co_await 1;
@@ -200,13 +208,13 @@ void CheckpointObjective::draw(Localization &local, std::vector<std::string> &li
 	IncorrectHighlight(indexCheckpoint == -1, [&] {
 		utils::Combo(local.get("entities.checkpoint").c_str(), &this->checkpointUuid_, indexCheckpoint,
 		             checkpoints.size(), [&checkpoints](const int i) {
-			             return checkpoints.at(i)->getName();
+			             return std::ref(checkpoints.at(i)->getName());
 		             }, [&checkpoints](const int i) {
 			             return checkpoints.at(i)->getUuid();
 		             });
 	});
 
-	ImGui::InputText(local.get("general.text").c_str(), this->text_.data(), sizeof this->text_);
+	ImGui::InputText(local.get("general.text").c_str(), &this->text_);
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->textTime_, 0.001f);
 	ImGui::Separator();
 	utils::Combo(local.get("checkpoint_objective.how_to_arrive").c_str(), &this->onWhatArrive_,
@@ -220,12 +228,12 @@ void CheckpointObjective::draw(Localization &local, std::vector<std::string> &li
 		IncorrectHighlight(indexVehicle == -1, [&] {
 			utils::Combo(local.get("entities.vehicle").c_str(), &this->comeBackVehicle_, indexVehicle, vehicles.size(),
 			             [&vehicles](const int i) {
-				             return vehicles.at(i)->getName();
+				             return std::ref(vehicles.at(i)->getName());
 			             }, [&vehicles](const int i) {
 				             return vehicles.at(i)->getUuid();
 			             });
 		});
-		ImGui::InputText(local.get("general.text").c_str(), this->textComeBackVehicle_.data(),
+		ImGui::InputText(local.get("general.text").c_str(), &this->textComeBackVehicle_,
 		                 sizeof this->textComeBackVehicle_);
 		utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlipComeBackVehicle_,
 		             local.getArray("general.color_marker_enum"), 6);
@@ -246,7 +254,7 @@ boost::uuids::uuid& CheckpointObjective::getCheckpointUuid() {
 	return checkpointUuid_;
 }
 
-std::array<char, TEXT_SIZE>& CheckpointObjective::getText() {
+std::string& CheckpointObjective::getText() {
 	return text_;
 }
 
@@ -262,7 +270,7 @@ boost::uuids::uuid& CheckpointObjective::getComeBackVehicle() {
 	return comeBackVehicle_;
 }
 
-std::array<char, TEXT_SIZE>& CheckpointObjective::getTextComeBackVehicle() {
+std::string& CheckpointObjective::getTextComeBackVehicle() {
 	return textComeBackVehicle_;
 }
 
@@ -274,7 +282,7 @@ std::optional<int>& CheckpointObjective::getProjectComeBackBlip() {
 	return projectComeBackBlip_;
 }
 
-std::array<char, TEXT_SIZE>& CheckpointObjective::getGameText() {
+std::string& CheckpointObjective::getGameText() {
 	return gameText_;
 }
 

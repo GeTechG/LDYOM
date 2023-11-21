@@ -3,42 +3,64 @@
 
 
 struct Dialog {
-	std::array<char, TEXT_SIZE> text = {""};
+	std::string text;
 	float textTime = 2.f;
 	bool moveMouth = true;
-	std::array<char, TEXT_SIZE> gameText = { "" };
+	std::string gameText;
 };
 
-namespace boost::serialization {
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<Dialog> {
+		static void to_json(json &j, const Dialog &obj) {
+			j["text"] = obj.text;
+			j["moveMouth"] = obj.moveMouth;
+			j["textTime"] = obj.textTime;
+		}
 
-	template<class Archive>
-	void serialize(Archive& ar, Dialog& p, const unsigned int version) {
-		ar & make_array(p.text.data(), p.text.size());
-		ar & p.moveMouth;
-		ar & p.textTime;
-	}
-}
+		static void from_json(const json &j, Dialog &obj) {
+			j.at("text").get_to(obj.text);
+			j.at("moveMouth").get_to(obj.moveMouth);
+			j.at("textTime").get_to(obj.textTime);
+		}
+	};
 
-class PhoneCallPlayerObjective final: public virtual PlayerObjective {
-private:
-	friend class boost::serialization::access;
+NLOHMANN_JSON_NAMESPACE_END
 
-	template <class Archive>
-	void serialize(Archive& ar, const unsigned version) {
-		ar & boost::serialization::base_object<PlayerObjective>(*this);
-		ar & dialogs_;
-	}
-
+class PhoneCallPlayerObjective final : public virtual PlayerObjective {
 	std::vector<Dialog> dialogs_;
+
 public:
 	PhoneCallPlayerObjective() = default;
-	explicit PhoneCallPlayerObjective(void* _new);
+	explicit PhoneCallPlayerObjective(void *_new);
 	~PhoneCallPlayerObjective() override = default;
 
 	int getTypeCategory() override {
 		return 6;
 	}
 
+	std::vector<Dialog>& getDialogs();
+
 	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
-	ktwait execute(Scene * scene, Result & result, ktcoro_tasklist & tasklist) override;
+	ktwait execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) override;
 };
+
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<PhoneCallPlayerObjective> {
+		static void to_json(json &j, const PhoneCallPlayerObjective &obj) {
+			auto &playerObjective = static_cast<const PlayerObjective&>(obj);
+			adl_serializer<PlayerObjective>::to_json(j, playerObjective);
+			auto &a = const_cast<PhoneCallPlayerObjective&>(obj);
+			j["dialogs"] = a.getDialogs(); // Assuming getDialogs() returns the dialogs_ member.
+		}
+
+		static void from_json(const json &j, PhoneCallPlayerObjective &obj) {
+			auto &playerObjective = static_cast<PlayerObjective&>(obj);
+			j.get_to(playerObjective);
+			j.at("dialogs").get_to(obj.getDialogs()); // Assuming getDialogs() exists to set the dialogs_ member.
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

@@ -11,8 +11,12 @@
 
 TeleportToVehiclePlayerObjective::TeleportToVehiclePlayerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.teleport_to_vehicle_player"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+boost::uuids::uuid& TeleportToVehiclePlayerObjective::getVehicleUuid() { return vehicleUuid_; }
+
+int& TeleportToVehiclePlayerObjective::getPlace() { return place_; }
 
 void TeleportToVehiclePlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
@@ -21,7 +25,7 @@ void TeleportToVehiclePlayerObjective::draw(Localization &local, std::vector<std
 	IncorrectHighlight(indexVehicle == -1, [&] {
 		utils::Combo(local.get("entities.vehicle").c_str(), &this->vehicleUuid_, indexVehicle, vehicles.size(),
 		             [&vehicles](const int i) {
-			             return vehicles.at(i)->getName();
+			             return std::ref(vehicles.at(i)->getName());
 		             }, [&vehicles](const int i) {
 			             return vehicles.at(i)->getUuid();
 		             });

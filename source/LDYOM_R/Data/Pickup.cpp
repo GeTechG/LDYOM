@@ -36,20 +36,20 @@ std::optional<int> Pickup::spawnPickup(int pickupType) {
 
 	int modelId;
 	switch (this->type_) {
-	case 1:
-		modelId = 1240;
-		break;
-	case 2:
-		modelId = 1242;
-		break;
-	case 3:
-		modelId = 1247;
-		break;
-	case 4:
-		modelId = 1241;
-		break;
-	default:
-		modelId = this->modelId_;
+		case 1:
+			modelId = 1240;
+			break;
+		case 2:
+			modelId = 1242;
+			break;
+		case 3:
+			modelId = 1247;
+			break;
+		case 4:
+			modelId = 1241;
+			break;
+		default:
+			modelId = this->modelId_;
 	}
 
 	CStreaming::RequestModel(modelId, 0);
@@ -64,43 +64,18 @@ std::optional<int> Pickup::spawnPickup(int pickupType) {
 Pickup::Pickup(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
                                                       uuid_(boost::uuids::random_generator()()),
                                                       modelId_(325) {
-	strlcpy(this->name_.data(), name, sizeof this->name_);
+	this->name_ = name;
 	this->pos_[0] = pos.x;
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
 }
 
-Pickup::Pickup(const Pickup &other): ObjectiveDependent{other},
-                                     INameable{other},
-                                     IPositionable{other},
-                                     IUuidable{other},
-                                     uuid_{boost::uuids::random_generator()()},
-                                     name_{other.name_},
-                                     pos_{other.pos_},
-                                     type_{other.type_},
-                                     spawnType_{other.spawnType_},
-                                     weapon_{other.weapon_},
-                                     ammo_{other.ammo_},
-                                     modelId_{other.modelId_} {
-	strlcat(name_.data(), "C", sizeof name_);
-}
+Pickup Pickup::copy() const {
+	Pickup pickup(*this);
+	pickup.uuid_ = boost::uuids::random_generator()();
+	pickup.name_ = this->name_;
 
-Pickup& Pickup::operator=(const Pickup &other) {
-	if (this == &other)
-		return *this;
-	ObjectiveDependent::operator =(other);
-	INameable::operator =(other);
-	IPositionable::operator =(other);
-	IUuidable::operator =(other);
-	uuid_ = other.uuid_;
-	name_ = other.name_;
-	pos_ = other.pos_;
-	type_ = other.type_;
-	spawnType_ = other.spawnType_;
-	weapon_ = other.weapon_;
-	ammo_ = other.ammo_;
-	modelId_ = other.modelId_;
-	return *this;
+	return pickup;
 }
 
 Pickup::~Pickup() {
@@ -165,8 +140,8 @@ void Pickup::updateLocation() {
 	}
 }
 
-char* Pickup::getName() {
-	return this->name_.data();
+std::string& Pickup::getName() {
+	return this->name_;
 }
 
 float* Pickup::getPosition() {
@@ -209,14 +184,14 @@ void Pickup::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onPickupSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onPickupSpawn"].
+		/*const auto onPickupSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onPickupSpawn"].
 			get_or_create<sol::table>();
 		for (auto func : onPickupSpawn | views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
-		}
+		}*/
 	}
 }
 
@@ -231,7 +206,7 @@ void Pickup::deleteProjectEntity() {
 		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 		if (scene.has_value() && tasklist != nullptr) {
-			const auto onPickupDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+			/*const auto onPickupDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 				"onPickupDelete"].get_or_create<sol::table>();
 			for (auto func : onPickupDelete | views::values) {
 				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
@@ -239,7 +214,7 @@ void Pickup::deleteProjectEntity() {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
 				}
-			}
+			}*/
 		}
 	}
 }

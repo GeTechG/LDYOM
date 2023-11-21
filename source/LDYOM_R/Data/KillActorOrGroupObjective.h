@@ -3,14 +3,6 @@
 
 class KillActorOrGroupObjective final : virtual public ActorObjective {
 private:
-	friend class boost::serialization::access;
-
-	template <class Archive>
-	void serialize(Archive &ar, const unsigned version) {
-		ar & boost::serialization::base_object<ActorObjective>(*this);
-		ar & killGroup_;
-	}
-
 	bool killGroup_ = false;
 
 public:
@@ -27,3 +19,23 @@ public:
 
 	bool& isKillGroup();
 };
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<KillActorOrGroupObjective> {
+		static void to_json(json &j, const KillActorOrGroupObjective &obj) {
+			auto &actorObjective = static_cast<const ActorObjective&>(obj);
+			j = actorObjective; // Serialize ActorObjective part
+			auto &a = const_cast<KillActorOrGroupObjective&>(obj);
+			j["killGroup"] = a.isKillGroup();
+		}
+
+		static void from_json(const json &j, KillActorOrGroupObjective &obj) {
+			auto &actorObjective = static_cast<ActorObjective&>(obj);
+			j.get_to(actorObjective); // Deserialize ActorObjective part)
+
+			j.at("killGroup").get_to(obj.isKillGroup());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

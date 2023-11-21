@@ -12,8 +12,14 @@
 
 AnimationPlayerObjective::AnimationPlayerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.animation_player"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+int& AnimationPlayerObjective::getPack() { return pack_; }
+int& AnimationPlayerObjective::getAnimation() { return animation_; }
+bool& AnimationPlayerObjective::isLooped() { return looped_; }
+float& AnimationPlayerObjective::getBlend() { return blend_; }
+float& AnimationPlayerObjective::getTime() { return time_; }
 
 void AnimationPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	using namespace plugin;

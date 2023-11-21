@@ -8,8 +8,10 @@
 
 LevelWantedPlayerObjective::LevelWantedPlayerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.level_wanted_player"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+int& LevelWantedPlayerObjective::getLevelWanted() { return levelWanted_; }
 
 void LevelWantedPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::SliderInt(local.get("general.wanted").c_str(), &this->levelWanted_, 0, 6);

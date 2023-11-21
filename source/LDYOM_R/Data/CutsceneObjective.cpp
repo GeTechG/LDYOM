@@ -15,6 +15,7 @@
 #include "CutsceneMutex.h"
 #include "EditByPlayerService.h"
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "ProjectsService.h"
 #include "strUtils.h"
 #include "tweeny.h"
@@ -83,13 +84,13 @@ void CutsceneObjective::updateLocation() {
 CutsceneObjective::CutsceneObjective(const CVector &position, const CQuaternion &rotation): BaseObjective(nullptr),
 	rotation_(rotation) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.cutscene"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 
 	this->position_ = {position.x, position.y, position.z};
 }
 
 void CutsceneObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
-	ImGui::InputText(local.get("general.text").c_str(), this->text_.data(), sizeof this->text_);
+	ImGui::InputText(local.get("general.text").c_str(), &this->text);
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->textTime_, 0.001f);
 
 	ImGui::Separator();
@@ -143,7 +144,7 @@ void CutsceneObjective::draw(Localization &local, std::vector<std::string> &list
 		IncorrectHighlight(index == -1, [&] {
 			result = utils::Combo(local.get(name).c_str(), uuid, index, static_cast<int>(entities.size()),
 			                      [&entities](const int i) {
-				                      return entities.at(i)->getName();
+				                      return std::ref(entities.at(i)->getName());
 			                      }, [&entities](const int i) {
 				                      return entities.at(i)->getUuid();
 			                      });
@@ -431,11 +432,11 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 		}
 	}
 
-	auto cp1251Text = utf8ToCp1251(this->text_.data());
+	auto cp1251Text = utf8ToCp1251(this->text);
 	gxtEncode(cp1251Text);
-	strlcpy(this->gameText_.data(), cp1251Text.c_str(), sizeof this->gameText_);
+	this->gameText = cp1251Text;
 
-	CMessages::AddMessage(this->gameText_.data(), static_cast<unsigned>(this->textTime_ * 1000.0f), 0, false);
+	CMessages::AddMessage(this->gameText.data(), static_cast<unsigned>(this->textTime_ * 1000.0f), 0, false);
 
 	CTheScripts::bDisplayHud = false;
 	CHud::bScriptDontDisplayRadar = true;
@@ -561,8 +562,8 @@ float& CutsceneObjective::getXAngle() {
 	return xAngle_;
 }
 
-std::array<char, TEXT_SIZE>& CutsceneObjective::getText() {
-	return text_;
+std::string& CutsceneObjective::getText() {
+	return text;
 }
 
 float& CutsceneObjective::getTextTime() {
@@ -597,10 +598,10 @@ bool& CutsceneObjective::isEndCutscene() {
 	return endCutscene_;
 }
 
-std::array<char, TEXT_SIZE>& CutsceneObjective::getGameText() {
-	return gameText_;
+std::string& CutsceneObjective::getGameText() {
+	return gameText;
 }
 
-int CutsceneObjective::getMove() const {
-	return move;
-}
+int& CutsceneObjective::getMove() { return move; }
+
+bool& CutsceneObjective::isLockPlayerControl() { return lockPlayerControl_; }

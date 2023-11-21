@@ -98,13 +98,27 @@ TeleportPlayerObjective::TeleportPlayerObjective(CVector &pos, const float headi
 	this->musculeStat = playerClothes->m_fMuscleStat;
 
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.teleport_player"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 	this->spawnEditorPed();
 }
 
 TeleportPlayerObjective::~TeleportPlayerObjective() {
 	this->deleteEditorPed();
 }
+
+std::array<float, 3>& TeleportPlayerObjective::getPos() { return pos_; }
+float& TeleportPlayerObjective::getHeadingAngle() { return headingAngle_; }
+unsigned char& TeleportPlayerObjective::getModelType() { return modelType_; }
+int& TeleportPlayerObjective::getSlot() { return slot_; }
+int& TeleportPlayerObjective::getModelId() { return modelId_; }
+int& TeleportPlayerObjective::getHealth() { return health_; }
+int& TeleportPlayerObjective::getInteriorId() { return interiorID_; }
+bool& TeleportPlayerObjective::isDressUp() { return dressUp_; }
+std::array<unsigned, 10>& TeleportPlayerObjective::getClotherMAnModelKeys() { return clotherMAnModelKeys_; }
+std::array<unsigned, 18>& TeleportPlayerObjective::getClotherMAnTextureKeys() { return clotherMAnTextureKeys_; }
+float& TeleportPlayerObjective::getFatStat() { return fatStat; }
+float& TeleportPlayerObjective::getMusculeStat() { return musculeStat; }
+std::optional<CPed*>& TeleportPlayerObjective::getEditorPed() { return editorPed_; }
 
 
 void TeleportPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {

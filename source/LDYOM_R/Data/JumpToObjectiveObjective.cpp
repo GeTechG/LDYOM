@@ -11,8 +11,15 @@
 
 JumpToObjectiveObjective::JumpToObjectiveObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.jump_to_objective"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+boost::uuids::uuid& JumpToObjectiveObjective::getGoToObjectiveUuid() { return goToObjectiveUuid_; }
+bool& JumpToObjectiveObjective::isCondition() { return condition_; }
+int& JumpToObjectiveObjective::getConditionType() { return conditionType_; }
+int& JumpToObjectiveObjective::getVarId() { return varId_; }
+float& JumpToObjectiveObjective::getConditionValueNumber() { return conditionValueNumber_; }
+bool& JumpToObjectiveObjective::isConditionValueBoolean() { return conditionValueBoolean_; }
 
 void JumpToObjectiveObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &objectives = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives();
@@ -21,7 +28,7 @@ void JumpToObjectiveObjective::draw(Localization &local, std::vector<std::string
 	IncorrectHighlight(jumpObjectiveIdx == -1 && this->condition_, [&] {
 		utils::Combo(Localization::getInstance().get("objective.title").c_str(), &this->goToObjectiveUuid_,
 		             jumpObjectiveIdx, objectives.size(), [&objectives](const int i) {
-			             return objectives.at(i)->getName();
+			             return std::ref(objectives.at(i)->getName());
 		             }, [&objectives](const int i) {
 			             return objectives.at(i)->getUuid();
 		             });
@@ -31,17 +38,17 @@ void JumpToObjectiveObjective::draw(Localization &local, std::vector<std::string
 
 	ImGui::BeginDisabled(!this->condition_);
 
-	std::optional<sol::table> currentVariable;
-	for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["variables"].get_or_create<sol::table>()) {
-		if (pair.first.as<int>() == this->varId_) {
-			currentVariable = pair.second;
-		}
-	}
+	//std::optional<sol::table> currentVariable;
+	//for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["variables"].get_or_create<sol::table>()) {
+	//	if (pair.first.as<int>() == this->varId_) {
+	//		currentVariable = pair.second;
+	//	}
+	//}
 
-	auto preview = "";
-	if (currentVariable.has_value())
-		preview = static_cast<const char*>(const_cast<void*>(currentVariable.value()["name"].get<sol::object>().
-			pointer()));
+	//auto preview = "";
+	//if (currentVariable.has_value())
+	//	preview = static_cast<const char*>(const_cast<void*>(currentVariable.value()["name"].get<sol::object>().
+	//		pointer()));
 	/*IncorrectHighlight(strlen(preview) == 0, [&] {
 		if (ImGui::BeginCombo(local.get("general.global_variables").c_str(), preview)) {
 			for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["variables"].get_or_create<

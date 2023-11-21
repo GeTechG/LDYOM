@@ -275,7 +275,7 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 	}
 }
 
-char* Windows::ObjectivesWindow::getElementName(int i) {
+std::string& Windows::ObjectivesWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().at(i)->getName();
 }
 

@@ -7,23 +7,12 @@ class Object;
 
 class ObjectObjective : virtual public BaseObjective {
 private:
-	friend class boost::serialization::access;
-
-	template <class Archive>
-	void serialize(Archive &ar, const unsigned version) {
-		ar & boost::serialization::base_object<BaseObjective>(*this);
-		ar & objectUuid_;
-		ar & boost::serialization::make_array(text_.data(), text_.size());
-		ar & textTime_;
-		ar & colorBlip_;
-	}
-
 	boost::uuids::uuid objectUuid_{};
-	std::array<char, TEXT_SIZE> text_{""};
+	std::string text{""};
 	float textTime_ = 1.f;
 	int colorBlip_ = 0;
 
-	std::array<char, TEXT_SIZE> gameText_ = {""};
+	std::string gameText = {""};
 
 protected:
 	ObjectObjective() = default;
@@ -38,13 +27,6 @@ protected:
 
 	void removeProjectBlip();
 
-	boost::uuids::uuid& getObjectUuid();
-	std::array<char, TEXT_SIZE>& getText();
-	float& getTextTime();
-	int& getColorBlip();
-	std::optional<int>& getEditorBlip();
-	std::optional<int>& getProjectBlip();
-
 	virtual ktwait execute(Scene *scene, Object *object, Result &result, ktcoro_tasklist &tasklist) = 0;
 
 public:
@@ -54,8 +36,41 @@ public:
 		return 3;
 	}
 
+	boost::uuids::uuid& getObjectUuid();
+	std::string& getText();
+	float& getTextTime();
+	int& getColorBlip();
+	std::optional<int>& getEditorBlip();
+	std::optional<int>& getProjectBlip();
+
 	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
 	void open() override;
 	void close() override;
 	ktwait execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) override;
 };
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<ObjectObjective> {
+		static void to_json(json &j, const ObjectObjective &obj) {
+			auto &baseObjective = static_cast<const BaseObjective&>(obj);
+			adl_serializer<BaseObjective>::to_json(j, baseObjective);
+			auto &a = const_cast<ObjectObjective&>(obj);
+			j["objectUuid"] = a.getObjectUuid();
+			j["text"] = a.getText();
+			j["textTime"] = a.getTextTime();
+			j["colorBlip"] = a.getColorBlip();
+		}
+
+		static void from_json(const json &j, ObjectObjective &obj) {
+			auto &baseObjective = static_cast<BaseObjective&>(obj);
+			adl_serializer<BaseObjective>::from_json(j, baseObjective);
+
+			j.at("objectUuid").get_to(obj.getObjectUuid());
+			j.at("text").get_to(obj.getText());
+			j.at("textTime").get_to(obj.getTextTime());
+			j.at("colorBlip").get_to(obj.getColorBlip());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

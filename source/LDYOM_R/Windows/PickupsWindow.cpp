@@ -38,7 +38,7 @@ void Windows::PickupsWindow::createNewElementFrom(int i) {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().back()->spawnEditorPickup();
 }
 
-char* Windows::PickupsWindow::getElementName(int i) {
+std::string& Windows::PickupsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups().at(i)->getName();
 }
 

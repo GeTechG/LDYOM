@@ -76,8 +76,9 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 	CStreaming::LoadAllRequestedModels(false);
 
 	Command<Commands::SET_CAR_MODEL_COMPONENTS>(model, componentTypeA_, componentTypeB_);
-	if (std::strcmp(numberplate_, "") != 0)
-		Command<Commands::CUSTOM_PLATE_FOR_NEXT_CAR>(model, numberplate_);
+	if (!numberplate_.empty()) {
+		Command<Commands::CUSTOM_PLATE_FOR_NEXT_CAR>(model, numberplate_.c_str());
+	}
 	Command<Commands::CUSTOM_PLATE_DESIGN_FOR_NEXT_CAR>(model, numberplateCity_);
 
 	int newVehicleHandle;
@@ -99,63 +100,18 @@ Vehicle::Vehicle(const char *name, const CVector &pos, float headingAngle): Obje
                                                                             headingAngle_(headingAngle),
                                                                             modelId_(400), health_(1000),
                                                                             numberplateCity_(-1) {
-	strlcpy(this->name_, name, sizeof this->name_);
+	this->name = name;
 	this->pos_[0] = pos.x;
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
 }
 
-Vehicle::Vehicle(const Vehicle &other): INameable{other},
-                                        IPositionable{other}, uuid_(boost::uuids::random_generator()()),
-                                        headingAngle_{other.headingAngle_},
-                                        modelId_{other.modelId_},
-                                        shouldNotDie_{other.shouldNotDie_},
-                                        health_{other.health_},
-                                        bulletproof_{other.bulletproof_},
-                                        fireproof_{other.fireproof_},
-                                        explosionproof_{other.explosionproof_},
-                                        collisionproof_{other.collisionproof_},
-                                        meleeproof_{other.meleeproof_},
-                                        tiresVulnerability_{other.tiresVulnerability_},
-                                        extendedColor_{other.extendedColor_},
-                                        locked_{other.locked_},
-                                        colors_{other.colors_},
-                                        componentTypeA_{other.componentTypeA_},
-                                        componentTypeB_{other.componentTypeB_},
-                                        numberplateCity_{other.numberplateCity_} {
-	strlcat(name_, other.name_, sizeof name_);
-	strlcat(name_, "C", sizeof name_);
-	memcpy(pos_, other.pos_, sizeof pos_);
-	memcpy(primaryColor_, other.primaryColor_, sizeof primaryColor_);
-	memcpy(secondaryColor_, other.secondaryColor_, sizeof secondaryColor_);
-	strlcat(numberplate_, other.numberplate_, sizeof numberplate_);
-}
+Vehicle Vehicle::copy() const {
+	Vehicle vehicle(*this);
+	vehicle.uuid_ = boost::uuids::random_generator()();
+	vehicle.name += " (copy)";
 
-Vehicle& Vehicle::operator=(const Vehicle &other) {
-	if (this == &other)
-		return *this;
-	ObjectiveDependent::operator =(other);
-	INameable::operator =(other);
-	IPositionable::operator =(other);
-	IUuidable::operator =(other);
-	uuid_ = other.uuid_;
-	headingAngle_ = other.headingAngle_;
-	modelId_ = other.modelId_;
-	shouldNotDie_ = other.shouldNotDie_;
-	health_ = other.health_;
-	bulletproof_ = other.bulletproof_;
-	fireproof_ = other.fireproof_;
-	explosionproof_ = other.explosionproof_;
-	collisionproof_ = other.collisionproof_;
-	meleeproof_ = other.meleeproof_;
-	tiresVulnerability_ = other.tiresVulnerability_;
-	extendedColor_ = other.extendedColor_;
-	locked_ = other.locked_;
-	colors_ = other.colors_;
-	componentTypeA_ = other.componentTypeA_;
-	componentTypeB_ = other.componentTypeB_;
-	numberplateCity_ = other.numberplateCity_;
-	return *this;
+	return vehicle;
 }
 
 Vehicle::~Vehicle() {
@@ -243,7 +199,7 @@ float* Vehicle::getSecondaryColor() {
 	return this->secondaryColor_;
 }
 
-char* Vehicle::getNumberplate() {
+std::string& Vehicle::getNumberplate() {
 	return this->numberplate_;
 }
 
@@ -259,8 +215,8 @@ void Vehicle::updateLocation() const {
 	}
 }
 
-char* Vehicle::getName() {
-	return this->name_;
+std::string& Vehicle::getName() {
+	return this->name;
 }
 
 float* Vehicle::getPosition() {
@@ -337,20 +293,24 @@ void Vehicle::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].
+		/*const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].
 			get_or_create<sol::table>();
 		for (auto func : onActorSpawn | views::values) {
 			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
-		}
+		}*/
 	}
 }
 
 void Vehicle::deleteProjectEntity() {
 	if (this->projectVehicle_.has_value() && !restart) {
 		if (const auto vehicle = this->projectVehicle_.value(); CPools::ms_pVehiclePool->IsObjectValid(vehicle)) {
+			if (FindPlayerPed()->m_pVehicle == vehicle) {
+				const auto destination = FindPlayerPed()->m_pVehicle->GetPosition() + CVector(0, 0, 1);
+				FindPlayerPed()->Teleport(destination, false);
+			}
 			const int vehicleRef = CPools::GetVehicleRef(this->projectVehicle_.value());
 			Command<Commands::DELETE_CAR>(vehicleRef);
 		}
@@ -361,7 +321,7 @@ void Vehicle::deleteProjectEntity() {
 		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 		if (scene.has_value() && tasklist != nullptr) {
-			const auto onVehicleDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+			/*const auto onVehicleDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 				"onVehicleDelete"].get_or_create<sol::table>();
 			for (auto [_, func] : onVehicleDelete) {
 				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
@@ -369,7 +329,7 @@ void Vehicle::deleteProjectEntity() {
 					const sol::error err = result;
 					CLOG(ERROR, "lua") << err.what();
 				}
-			}
+			}*/
 		}
 	}
 }

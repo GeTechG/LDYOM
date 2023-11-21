@@ -6,6 +6,7 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "ProjectsService.h"
 #include "strUtils.h"
 #include "utils.h"
@@ -16,8 +17,8 @@ using namespace plugin;
 int ActorObjective::spawnBlip(CPed *ped) {
 	int handle;
 	Command<Commands::ADD_BLIP_FOR_CHAR>(ped, &handle);
-	if (this->colorBlip_ != 6) {
-		CRadar::ChangeBlipColour(handle, this->colorBlip_ - 1);
+	if (this->colorBlip != 6) {
+		CRadar::ChangeBlipColour(handle, this->colorBlip - 1);
 	} else {
 		CRadar::SetBlipFriendly(handle, 1);
 	}
@@ -26,12 +27,12 @@ int ActorObjective::spawnBlip(CPed *ped) {
 
 void ActorObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
-	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
+	const int indexActor = utils::indexByUuid(actors, this->actorUuid);
 
 	IncorrectHighlight(indexActor == -1, [&] {
-		utils::Combo(local.get("entities.actor").c_str(), &this->actorUuid_, indexActor, actors.size(),
+		utils::Combo(local.get("entities.actor").c_str(), &this->actorUuid, indexActor, actors.size(),
 		             [&actors](const int i) {
-			             return actors.at(i)->getName();
+			             return std::ref(actors.at(i)->getName());
 		             }, [&actors](const int i) {
 			             return actors.at(i)->getUuid();
 		             });
@@ -39,12 +40,12 @@ void ActorObjective::draw(Localization &local, std::vector<std::string> &listOve
 
 	ImGui::Separator();
 
-	ImGui::InputText(local.get("general.text").c_str(), this->text_.data(), sizeof this->text_);
-	ImGui::DragFloat(local.get("general.time").c_str(), &this->textTime_, 0.001f);
+	ImGui::InputText(local.get("general.text").c_str(), &this->text);
+	ImGui::DragFloat(local.get("general.time").c_str(), &this->textTime, 0.001f);
 
 	ImGui::Separator();
 
-	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip_,
+	if (utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlip,
 	                 local.getArray("general.color_marker_enum")))
 		this->spawnEditorBlip();
 
@@ -69,7 +70,7 @@ void ActorObjective::close() {
 
 ktwait ActorObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
 	const auto &actors = scene->getActors();
-	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
+	const int indexActor = utils::indexByUuid(actors, this->actorUuid);
 
 	if (indexActor == -1) {
 		setObjectiveError(result, *this, NotSelected, "The actor for the objective is not selected.");
@@ -84,14 +85,15 @@ ktwait ActorObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &ta
 	}
 
 	removeProjectBlip();
-	if (this->colorBlip_ > 0)
-		this->projectBlip_ = spawnBlip(actor->getProjectPed().value());
+	if (this->colorBlip > 0)
+		this->projectBlip = spawnBlip(actor->getProjectPed().value());
 
-	auto cp1251Text = utf8ToCp1251(this->text_.data());
+	auto cp1251Text = utf8ToCp1251(this->text);
 	gxtEncode(cp1251Text);
-	strlcpy(this->gameText_.data(), cp1251Text.c_str(), sizeof this->gameText_);
+	this->gameText = cp1251Text;
 
-	CMessages::AddMessage(this->gameText_.data(), static_cast<unsigned>(this->textTime_ * 1000.0f), 0, false);
+	CMessages::AddMessage(const_cast<char*>(this->gameText.c_str()), static_cast<unsigned>(this->textTime * 1000.0f), 0,
+	                      false);
 
 	co_await this->execute(scene, actor.get(), result, tasklist);
 
@@ -102,48 +104,48 @@ void ActorObjective::spawnEditorBlip() {
 	removeEditorBlip();
 
 	const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
-	const int indexActor = utils::indexByUuid(actors, this->actorUuid_);
+	const int indexActor = utils::indexByUuid(actors, this->actorUuid);
 
-	if (indexActor != -1 && this->colorBlip_ > 0) {
+	if (indexActor != -1 && this->colorBlip > 0) {
 		if (const auto ped = actors.at(indexActor)->getEditorPed(); ped.has_value())
-			this->editorBlip_ = spawnBlip(ped.value());
+			this->editorBlip = spawnBlip(ped.value());
 	}
 }
 
 void ActorObjective::removeEditorBlip() {
-	if (this->editorBlip_.has_value())
-		Command<Commands::REMOVE_BLIP>(this->editorBlip_.value());
-	this->editorBlip_ = std::nullopt;
+	if (this->editorBlip.has_value())
+		Command<Commands::REMOVE_BLIP>(this->editorBlip.value());
+	this->editorBlip = std::nullopt;
 }
 
 void ActorObjective::removeProjectBlip() {
-	if (this->projectBlip_.has_value())
-		Command<Commands::REMOVE_BLIP>(this->projectBlip_.value());
-	this->projectBlip_ = std::nullopt;
+	if (this->projectBlip.has_value())
+		Command<Commands::REMOVE_BLIP>(this->projectBlip.value());
+	this->projectBlip = std::nullopt;
 }
 
 boost::uuids::uuid& ActorObjective::getActorUuid() {
-	return actorUuid_;
+	return actorUuid;
 }
 
-std::array<char, TEXT_SIZE>& ActorObjective::getText() {
-	return text_;
+std::string& ActorObjective::getText() {
+	return text;
 }
 
 float& ActorObjective::getTextTime() {
-	return textTime_;
+	return textTime;
 }
 
 int& ActorObjective::getColorBlip() {
-	return colorBlip_;
+	return colorBlip;
 }
 
 std::optional<int>& ActorObjective::getEditorBlip() {
-	return editorBlip_;
+	return editorBlip;
 }
 
 std::optional<int>& ActorObjective::getProjectBlip() {
-	return projectBlip_;
+	return projectBlip;
 }
 
 ActorObjective::~ActorObjective() {

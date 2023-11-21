@@ -106,7 +106,7 @@ void ObjectiveDependentInput(ObjectiveDependent *objectiveDependent) {
 		utils::Combo(Localization::getInstance().get("general.spawn_before").c_str(),
 		             &objectiveDependent->getSpawnObjectiveUuid(), spawnObjectiveIdx, objectives.size(),
 		             [&objectives](const int i) {
-			             return objectives.at(i)->getName();
+			             return std::ref(objectives.at(i)->getName());
 		             }, [&objectives](const int i) {
 			             return objectives.at(i)->getUuid();
 		             });
@@ -116,7 +116,7 @@ void ObjectiveDependentInput(ObjectiveDependent *objectiveDependent) {
 	utils::Combo(Localization::getInstance().get("general.delete_after").c_str(),
 	             &objectiveDependent->getDeleteObjectiveUuid(), deleteObjectiveIdx, objectives.size(),
 	             [&objectives](const int i) {
-		             return objectives.at(i)->getName();
+		             return std::ref(objectives.at(i)->getName());
 	             }, [&objectives](const int i) {
 		             return objectives.at(i)->getUuid();
 	             });
@@ -273,15 +273,15 @@ void EditTransform(const float *cameraView, const float *cameraProjection, float
 		ImGui::SameLine();
 
 		switch (mCurrentGizmoOperation) {
-		case ImGuizmo::TRANSLATE:
-			ImGui::InputFloat3(local.get("general.snap").c_str(), &snap[0]);
-			break;
-		case ImGuizmo::ROTATE:
-			ImGui::InputFloat(local.get("general.angle_snap").c_str(), &snap[0]);
-			break;
-		case ImGuizmo::SCALE:
-			ImGui::InputFloat(local.get("general.scale_snap").c_str(), &snap[0]);
-			break;
+			case ImGuizmo::TRANSLATE:
+				ImGui::InputFloat3(local.get("general.snap").c_str(), &snap[0]);
+				break;
+			case ImGuizmo::ROTATE:
+				ImGui::InputFloat(local.get("general.angle_snap").c_str(), &snap[0]);
+				break;
+			case ImGuizmo::SCALE:
+				ImGui::InputFloat(local.get("general.scale_snap").c_str(), &snap[0]);
+				break;
 		}
 		ImGui::Checkbox(local.get("general.bound_sizing").c_str(), &boundSizing);
 		if (boundSizing) {
@@ -447,74 +447,74 @@ void IncorrectHighlight(const bool cond, const std::function<void()> render) {
 
 const char* to_string(tweeny::easing::enumerated e) {
 	switch (e) {
-	case tweeny::easing::enumerated::def:
-		return "def";
-	case tweeny::easing::enumerated::linear:
-		return "linear";
-	case tweeny::easing::enumerated::stepped:
-		return "stepped";
-	case tweeny::easing::enumerated::quadraticIn:
-		return "quadraticIn";
-	case tweeny::easing::enumerated::quadraticOut:
-		return "quadraticOut";
-	case tweeny::easing::enumerated::quadraticInOut:
-		return "quadraticInOut";
-	case tweeny::easing::enumerated::cubicIn:
-		return "cubicIn";
-	case tweeny::easing::enumerated::cubicOut:
-		return "cubicOut";
-	case tweeny::easing::enumerated::cubicInOut:
-		return "cubicInOut";
-	case tweeny::easing::enumerated::quarticIn:
-		return "quarticIn";
-	case tweeny::easing::enumerated::quarticOut:
-		return "quarticOut";
-	case tweeny::easing::enumerated::quarticInOut:
-		return "quarticInOut";
-	case tweeny::easing::enumerated::quinticIn:
-		return "quinticIn";
-	case tweeny::easing::enumerated::quinticOut:
-		return "quinticOut";
-	case tweeny::easing::enumerated::quinticInOut:
-		return "quinticInOut";
-	case tweeny::easing::enumerated::sinusoidalIn:
-		return "sinusoidalIn";
-	case tweeny::easing::enumerated::sinusoidalOut:
-		return "sinusoidalOut";
-	case tweeny::easing::enumerated::sinusoidalInOut:
-		return "sinusoidalInOut";
-	case tweeny::easing::enumerated::exponentialIn:
-		return "exponentialIn";
-	case tweeny::easing::enumerated::exponentialOut:
-		return "exponentialOut";
-	case tweeny::easing::enumerated::exponentialInOut:
-		return "exponentialInOut";
-	case tweeny::easing::enumerated::circularIn:
-		return "circularIn";
-	case tweeny::easing::enumerated::circularOut:
-		return "circularOut";
-	case tweeny::easing::enumerated::circularInOut:
-		return "circularInOut";
-	case tweeny::easing::enumerated::bounceIn:
-		return "bounceIn";
-	case tweeny::easing::enumerated::bounceOut:
-		return "bounceOut";
-	case tweeny::easing::enumerated::bounceInOut:
-		return "bounceInOut";
-	case tweeny::easing::enumerated::elasticIn:
-		return "elasticIn";
-	case tweeny::easing::enumerated::elasticOut:
-		return "elasticOut";
-	case tweeny::easing::enumerated::elasticInOut:
-		return "elasticInOut";
-	case tweeny::easing::enumerated::backIn:
-		return "backIn";
-	case tweeny::easing::enumerated::backOut:
-		return "backOut";
-	case tweeny::easing::enumerated::backInOut:
-		return "backInOut";
-	default:
-		return "unknown";
+		case tweeny::easing::enumerated::def:
+			return "def";
+		case tweeny::easing::enumerated::linear:
+			return "linear";
+		case tweeny::easing::enumerated::stepped:
+			return "stepped";
+		case tweeny::easing::enumerated::quadraticIn:
+			return "quadraticIn";
+		case tweeny::easing::enumerated::quadraticOut:
+			return "quadraticOut";
+		case tweeny::easing::enumerated::quadraticInOut:
+			return "quadraticInOut";
+		case tweeny::easing::enumerated::cubicIn:
+			return "cubicIn";
+		case tweeny::easing::enumerated::cubicOut:
+			return "cubicOut";
+		case tweeny::easing::enumerated::cubicInOut:
+			return "cubicInOut";
+		case tweeny::easing::enumerated::quarticIn:
+			return "quarticIn";
+		case tweeny::easing::enumerated::quarticOut:
+			return "quarticOut";
+		case tweeny::easing::enumerated::quarticInOut:
+			return "quarticInOut";
+		case tweeny::easing::enumerated::quinticIn:
+			return "quinticIn";
+		case tweeny::easing::enumerated::quinticOut:
+			return "quinticOut";
+		case tweeny::easing::enumerated::quinticInOut:
+			return "quinticInOut";
+		case tweeny::easing::enumerated::sinusoidalIn:
+			return "sinusoidalIn";
+		case tweeny::easing::enumerated::sinusoidalOut:
+			return "sinusoidalOut";
+		case tweeny::easing::enumerated::sinusoidalInOut:
+			return "sinusoidalInOut";
+		case tweeny::easing::enumerated::exponentialIn:
+			return "exponentialIn";
+		case tweeny::easing::enumerated::exponentialOut:
+			return "exponentialOut";
+		case tweeny::easing::enumerated::exponentialInOut:
+			return "exponentialInOut";
+		case tweeny::easing::enumerated::circularIn:
+			return "circularIn";
+		case tweeny::easing::enumerated::circularOut:
+			return "circularOut";
+		case tweeny::easing::enumerated::circularInOut:
+			return "circularInOut";
+		case tweeny::easing::enumerated::bounceIn:
+			return "bounceIn";
+		case tweeny::easing::enumerated::bounceOut:
+			return "bounceOut";
+		case tweeny::easing::enumerated::bounceInOut:
+			return "bounceInOut";
+		case tweeny::easing::enumerated::elasticIn:
+			return "elasticIn";
+		case tweeny::easing::enumerated::elasticOut:
+			return "elasticOut";
+		case tweeny::easing::enumerated::elasticInOut:
+			return "elasticInOut";
+		case tweeny::easing::enumerated::backIn:
+			return "backIn";
+		case tweeny::easing::enumerated::backOut:
+			return "backOut";
+		case tweeny::easing::enumerated::backInOut:
+			return "backInOut";
+		default:
+			return "unknown";
 	}
 }
 

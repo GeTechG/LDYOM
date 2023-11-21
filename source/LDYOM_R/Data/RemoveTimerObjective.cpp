@@ -6,7 +6,7 @@
 
 RemoveTimerObjective::RemoveTimerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.remove_timer"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
 
 void RemoveTimerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {

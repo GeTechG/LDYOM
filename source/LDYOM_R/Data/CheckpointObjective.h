@@ -8,30 +8,16 @@
 
 class CheckpointObjective final : virtual public WorldObjective {
 private:
-	friend class boost::serialization::access;
-
-	template <class Archive>
-	void serialize(Archive &ar, const unsigned int version) {
-		ar & boost::serialization::base_object<WorldObjective>(*this);
-		ar & this->checkpointUuid_;
-		ar & this->text_;
-		ar & this->onWhatArrive_;
-		ar & this->textTime_;
-		ar & this->comeBackVehicle_;
-		ar & this->textComeBackVehicle_;
-		ar & this->colorBlipComeBackVehicle_;
-	}
-
 	boost::uuids::uuid checkpointUuid_;
-	std::array<char, TEXT_SIZE> text_;
+	std::string text_;
 	int onWhatArrive_;
 	float textTime_;
 	boost::uuids::uuid comeBackVehicle_;
-	std::array<char, TEXT_SIZE> textComeBackVehicle_;
+	std::string textComeBackVehicle_;
 	int colorBlipComeBackVehicle_;
 	std::optional<int> projectComeBackBlip_;
 
-	std::array<char, TEXT_SIZE> gameText_ = {""};
+	std::string gameText_ = {""};
 	PopupSpriteBlipSelector popupSpriteBlipSelector_;
 
 public:
@@ -50,14 +36,45 @@ public:
 	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
 
 	boost::uuids::uuid& getCheckpointUuid();
-	std::array<char, TEXT_SIZE>& getText();
+	std::string& getText();
 	int& getOnWhatArrive();
 	float& getTextTime();
 	boost::uuids::uuid& getComeBackVehicle();
-	std::array<char, TEXT_SIZE>& getTextComeBackVehicle();
+	std::string& getTextComeBackVehicle();
 	int& getColorBlipComeBackVehicle();
 	std::optional<int>& getProjectComeBackBlip();
-	std::array<char, TEXT_SIZE>& getGameText();
+	std::string& getGameText();
 
 	void removeProjectComeBackBlip();
 };
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<CheckpointObjective> {
+		static void to_json(json &j, const CheckpointObjective &obj) {
+			auto &worldObjective = static_cast<const WorldObjective&>(obj);
+			adl_serializer<WorldObjective>::to_json(j, worldObjective);
+			auto &a = const_cast<CheckpointObjective&>(obj);
+			j["checkpointUuid"] = a.getCheckpointUuid();
+			j["text"] = a.getText();
+			j["onWhatArrive"] = a.getOnWhatArrive();
+			j["textTime"] = a.getTextTime();
+			j["comeBackVehicle"] = a.getComeBackVehicle();
+			j["textComeBackVehicle"] = a.getTextComeBackVehicle();
+			j["colorBlipComeBackVehicle"] = a.getColorBlipComeBackVehicle();
+		}
+
+		static void from_json(const json &j, CheckpointObjective &obj) {
+			auto &worldObjective = static_cast<WorldObjective&>(obj);
+			j.get_to(worldObjective);
+			j.at("checkpointUuid").get_to(obj.getCheckpointUuid());
+			j.at("text").get_to(obj.getText());
+			j.at("onWhatArrive").get_to(obj.getOnWhatArrive());
+			j.at("textTime").get_to(obj.getTextTime());
+			j.at("comeBackVehicle").get_to(obj.getComeBackVehicle());
+			j.at("textComeBackVehicle").get_to(obj.getTextComeBackVehicle());
+			j.at("colorBlipComeBackVehicle").get_to(obj.getColorBlipComeBackVehicle());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

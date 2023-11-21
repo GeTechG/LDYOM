@@ -10,8 +10,12 @@
 
 DamageObjectObjective::DamageObjectObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.damage_object"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+int& DamageObjectObjective::getType() { return type_; }
+
+int& DamageObjectObjective::getWeaponId() { return weaponId_; }
 
 void DamageObjectObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ObjectObjective::draw(local, listOverlay);

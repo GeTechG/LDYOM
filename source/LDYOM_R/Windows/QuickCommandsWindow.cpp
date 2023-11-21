@@ -32,7 +32,7 @@ void duplicate(Localization &local) {
 			if (ImGui::BeginMenu(local.get(nameCategory).c_str())) {
 				for (const auto &entity : entities) {
 					ImGui::PushID(reinterpret_cast<int>(entity.get()));
-					if (ImGui::MenuItem(entity->getName())) {
+					if (ImGui::MenuItem(entity->getName().c_str())) {
 						newEntityCall(ProjectsService::getInstance().getCurrentProject().getCurrentScene(), entity);
 						auto &newEntity = entities.back();
 						playerPosition(*newEntity);
@@ -154,7 +154,7 @@ void duplicate(Localization &local) {
 void loadScene(Localization &local) {
 	if (ImGui::BeginMenu(local.get("scenes.load_scene").c_str())) {
 		for (auto &pair : ProjectsService::getInstance().getCurrentProject().getScenes()) {
-			if (ImGui::MenuItem(pair.second->getName())) {
+			if (ImGui::MenuItem(pair.second->getName().c_str())) {
 				ProjectsService::getInstance().getCurrentProject().changeScene(pair.first);
 			}
 		}

@@ -1,46 +1,38 @@
 ﻿#pragma once
 #include <array>
 #include <ktcoro_wait.hpp>
-#include <boost/serialization/access.hpp>
 
-#include <boost/serialization/array.hpp>
-#include "constants.h"
+#include <nlohmann/json.hpp>
+
 #include "INameable.h"
 #include "IUuidable.h"
 #include "boost/uuid/uuid_serialize.hpp"
 #include "fmt/core.h"
 #include "Localization/Localization.h"
 
+#include "jsonUtils.h"
 #include "Result.h"
+
 
 class Result;
 class Scene;
 
 class BaseObjective : public INameable, public IUuidable {
-private:
-	friend class boost::serialization::access;
-
-	template <class Archive>
-	void serialize(Archive &ar, const unsigned int version) {
-		ar & this->uuid_;
-		ar & boost::serialization::make_array(this->name_.data(), this->name_.size());
-	}
-
 protected:
 	BaseObjective();
 	BaseObjective(void *_new);
-	BaseObjective(const BaseObjective &other);
+	BaseObjective(const BaseObjective &other) = default;
 
-	boost::uuids::uuid uuid_;
+	boost::uuids::uuid uuid;
 
-	std::array<char, NAME_SIZE> name_;
+	std::string name;
 
 public:
 	~BaseObjective() override = default;
 
 	boost::uuids::uuid& getUuid() override;
 
-	char* getName() override;
+	std::string& getName() override;
 
 	virtual int getCategory() = 0;
 	virtual int getTypeCategory() = 0;
@@ -53,3 +45,22 @@ public:
 inline void setObjectiveError(Result &result, BaseObjective &objective, unsigned code, std::string message) {
 	result.setError(code, fmt::format("{}\nObjective: {}", message, objective.getName()));
 }
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<BaseObjective> {
+		static void to_json(json &j, const BaseObjective &obj) {
+			auto &o = const_cast<BaseObjective&>(obj);
+			j["uuid"] = o.getUuid();
+			j["name"] = o.getName();
+			j["category"] = o.getCategory();
+			j["typeCategory"] = o.getTypeCategory();
+		}
+
+		static void from_json(const json &j, BaseObjective &obj) {
+			j.at("uuid").get_to(obj.getUuid());
+			j.at("name").get_to(obj.getName());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

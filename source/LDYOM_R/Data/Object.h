@@ -2,50 +2,37 @@
 #include <array>
 #include <CObject.h>
 #include <optional>
-#include <boost/serialization/access.hpp>
 #include "boost/uuid/uuid.hpp"
-#include <boost/serialization/base_object.hpp>
 
-#include "constants.h"
 #include "INameable.h"
 #include "IPositionable.h"
 #include "IUuidable.h"
+#include "jsonUtils.h"
 #include "ObjectiveDependent.h"
-#include <boost/serialization/array.hpp>
+
 
 class Object final : public ObjectiveDependent, public INameable, public IPositionable, public IUuidable {
 private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version) {
-		ar & boost::serialization::base_object<ObjectiveDependent>(*this);
-		ar & this->uuid_;
-		ar & this->name_;
-		ar & this->pos_;
-		ar & this->rotate;
-		ar & boost::serialization::make_array(this->scale_.data(), this->scale_.size());
-		ar & this->modelId_;
-	}
-
-	boost::uuids::uuid uuid_{};
+	boost::uuids::uuid uuid{};
 
 	std::optional<CObject*> editorObject_;
 	std::optional<CObject*> projectObject_;
 
-	char name_[NAME_SIZE]{};
-	float pos_[3]{};
+	std::string name{};
+	float pos[3]{};
 	CQuaternion rotate;
-	std::array<float, 3> scale_ = { 1.f, 1.f, 1.f };
-	int modelId_{};
+	std::array<float, 3> scale = {1.f, 1.f, 1.f};
+	int modelId{};
 
 	std::optional<CObject*> spawnObject();
+
 public:
 	Object() = default;
-	Object(const char* name, const CVector& pos);
+	Object(const char *name, const CVector &pos);
+	Object(const Object &other) = default;
+	Object& operator=(const Object &other) = default;
 
-	Object(const Object& other);
-
-	Object& operator=(const Object& other);
+	Object copy() const;
 
 	~Object() override;
 
@@ -60,7 +47,7 @@ public:
 
 	void updateLocation();
 
-	char* getName() override;
+	std::string& getName() override;
 	float* getPosition() override;
 
 	void spawnEditorObject();
@@ -69,3 +56,32 @@ public:
 	void spawnProjectEntity() override;
 	void deleteProjectEntity() override;
 };
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<Object> {
+		static void to_json(json &j, const Object &obj) {
+			auto &base = static_cast<const ObjectiveDependent&>(obj);
+			j = base;
+			auto &a = const_cast<Object&>(obj);
+			j["uuid"] = a.getUuid();
+			j["name"] = a.getName();
+			j["pos"] = arrayPtrToJson(a.getPosition(), 3);
+			j["rotate"] = a.getRotations();
+			j["scale"] = a.getScale();
+			j["modelId"] = a.getModelId();
+		}
+
+		static void from_json(const json &j, Object &obj) {
+			auto &base = static_cast<ObjectiveDependent&>(obj);
+			j.get_to(base);
+			j.at("uuid").get_to(obj.getUuid());
+			j.at("name").get_to(obj.getName());
+			jsonToArrayPtr(j.at("pos"), obj.getPosition(), 3);
+			j.at("rotate").get_to(obj.getRotations());
+			j.at("scale").get_to(obj.getScale());
+			j.at("modelId").get_to(obj.getModelId());
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

@@ -42,7 +42,7 @@ void Windows::ParticlesWindow::createNewElementFrom(int i) {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getParticles().back()->spawnEditorParticle();
 }
 
-char* Windows::ParticlesWindow::getElementName(int i) {
+std::string& Windows::ParticlesWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getParticles().at(i)->getName();
 }
 
@@ -98,68 +98,69 @@ void Windows::ParticlesWindow::drawOptions() {
 		particle->getAttachUuid() = boost::uuids::uuid{};
 	}
 	switch (particle->getAttachType()) {
-	case 1: {
-		const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
-		const int index = utils::indexByUuid(actors, particle->getAttachUuid());
-		utils::Combo(local.get("entities.actor").c_str(), &particle->getAttachUuid(), index, actors.size(),
-		             [&actors](const int i) {
-			             return actors.at(i)->getName();
-		             }, [&actors](const int i) {
-			             return actors.at(i)->getUuid();
-		             });
+		case 1: {
+			const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+			const int index = utils::indexByUuid(actors, particle->getAttachUuid());
+			utils::Combo(local.get("entities.actor").c_str(), &particle->getAttachUuid(), index, actors.size(),
+			             [&actors](const int i) {
+				             return std::ref(actors.at(i)->getName());
+			             }, [&actors](const int i) {
+				             return actors.at(i)->getUuid();
+			             });
 
 
-		const auto &pedBones = ModelsService::getInstance().getPedBones();
-		if (ImGui::BeginCombo(local.get("general.bone").c_str(), pedBones.at(particle->getPedBodeId()).c_str())) {
-			for (auto pair : pedBones) {
-				bool isSelected = pair.first == particle->getPedBodeId();
-				if (ImGui::Selectable(pair.second.c_str(), &isSelected)) {
-					particle->getPedBodeId() = pair.first;
-					particle->updateLocation();
+			const auto &pedBones = ModelsService::getInstance().getPedBones();
+			if (ImGui::BeginCombo(local.get("general.bone").c_str(), pedBones.at(particle->getPedBodeId()).c_str())) {
+				for (auto pair : pedBones) {
+					bool isSelected = pair.first == particle->getPedBodeId();
+					if (ImGui::Selectable(pair.second.c_str(), &isSelected)) {
+						particle->getPedBodeId() = pair.first;
+						particle->updateLocation();
+					}
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
 				}
-				if (isSelected)
-					ImGui::SetItemDefaultFocus();
+				ImGui::EndCombo();
 			}
-			ImGui::EndCombo();
+
+			if (index != -1) {
+				RwV3d bonePos;
+				actors.at(index)->getEditorPed().value()->GetBonePosition(bonePos, particle->getPedBodeId(), false);
+
+				RwV3d screenCoords;
+				CSprite::CalcScreenCoors(bonePos, &screenCoords, &ImGui::GetIO().DisplaySize.x,
+				                         &ImGui::GetIO().DisplaySize.y, false, false);
+				ImGui::GetBackgroundDrawList()->AddCircleFilled(ImVec2(screenCoords.x, screenCoords.y), 5.f,
+				                                                ImGui::ColorConvertFloat4ToU32(
+					                                                ImVec4(1.f, 0.f, 0.f, 1.f)));
+			}
+
+			break;
 		}
-
-		if (index != -1) {
-			RwV3d bonePos;
-			actors.at(index)->getEditorPed().value()->GetBonePosition(bonePos, particle->getPedBodeId(), false);
-
-			RwV3d screenCoords;
-			CSprite::CalcScreenCoors(bonePos, &screenCoords, &ImGui::GetIO().DisplaySize.x,
-			                         &ImGui::GetIO().DisplaySize.y, false, false);
-			ImGui::GetBackgroundDrawList()->AddCircleFilled(ImVec2(screenCoords.x, screenCoords.y), 5.f,
-			                                                ImGui::ColorConvertFloat4ToU32(ImVec4(1.f, 0.f, 0.f, 1.f)));
+		case 2: {
+			const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
+			const int index = utils::indexByUuid(vehicles, particle->getAttachUuid());
+			utils::Combo(local.get("entities.vehicle").c_str(), &particle->getAttachUuid(), index, vehicles.size(),
+			             [&vehicles](const int i) {
+				             return std::ref(vehicles.at(i)->getName());
+			             }, [&vehicles](const int i) {
+				             return vehicles.at(i)->getUuid();
+			             });
+			break;
 		}
-
-		break;
-	}
-	case 2: {
-		const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
-		const int index = utils::indexByUuid(vehicles, particle->getAttachUuid());
-		utils::Combo(local.get("entities.vehicle").c_str(), &particle->getAttachUuid(), index, vehicles.size(),
-		             [&vehicles](const int i) {
-			             return vehicles.at(i)->getName();
-		             }, [&vehicles](const int i) {
-			             return vehicles.at(i)->getUuid();
-		             });
-		break;
-	}
-	case 3: {
-		const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
-		const int index = utils::indexByUuid(objects, particle->getAttachUuid());
-		utils::Combo(local.get("entities.object").c_str(), &particle->getAttachUuid(), index, objects.size(),
-		             [&objects](const int i) {
-			             return objects.at(i)->getName();
-		             }, [&objects](const int i) {
-			             return objects.at(i)->getUuid();
-		             });
-		break;
-	}
-	default:
-		break;
+		case 3: {
+			const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
+			const int index = utils::indexByUuid(objects, particle->getAttachUuid());
+			utils::Combo(local.get("entities.object").c_str(), &particle->getAttachUuid(), index, objects.size(),
+			             [&objects](const int i) {
+				             return std::ref(objects.at(i)->getName());
+			             }, [&objects](const int i) {
+				             return objects.at(i)->getUuid();
+			             });
+			break;
+		}
+		default:
+			break;
 	}
 
 	if (ImGui::Button(local.get("object.edit_by_camera").c_str())) {

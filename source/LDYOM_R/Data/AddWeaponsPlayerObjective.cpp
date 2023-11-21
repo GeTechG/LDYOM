@@ -13,8 +13,12 @@
 
 AddWeaponsPlayerObjective::AddWeaponsPlayerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.add_weapons_player"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+std::vector<Weapon>& AddWeaponsPlayerObjective::getWeapons() { return weapons_; }
+
+int& AddWeaponsPlayerObjective::getDefaultWeapon() { return defaultWeapon_; }
 
 void AddWeaponsPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	if (ImGui::BeginTable("##weaponsTable", 4, ImGuiTableFlags_ScrollY, ImVec2(300.0f, 200.0f))) {

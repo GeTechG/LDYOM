@@ -13,7 +13,7 @@ void Windows::PopupScenes::open() {
 void scenesList(int &selected_scene, const ImVec2 window_size) {
 	ImGui::BeginChild("##scenesList", ImVec2(window_size.x / 3.0f, window_size.y / 3.0f), true);
 	for (const auto &pair : ProjectsService::getInstance().getCurrentProject().getScenes()) {
-		if (ImGui::Selectable(pair.second->getName(), selected_scene == pair.first)) {
+		if (ImGui::Selectable(pair.second->getName().c_str(), selected_scene == pair.first)) {
 			selected_scene = pair.first;
 		}
 	}
@@ -54,7 +54,7 @@ void Windows::PopupScenes::draw() {
 
 			ImGui::BeginDisabled(currentProject.getScenes().size() <= 1);
 			if (ImGui::Button(local.get("scenes.delete_scene").c_str(), ImVec2(widthButton, .0f))) {
-				ImGui::OpenPopup(popupDelete_.getName());
+				ImGui::OpenPopup(popupDelete_.getName().c_str());
 			}
 			ImGui::EndDisabled();
 		}

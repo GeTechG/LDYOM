@@ -8,8 +8,12 @@
 
 TrafficObjective::TrafficObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.traffic"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+float& TrafficObjective::getTrafficPed() { return trafficPed_; }
+
+float& TrafficObjective::getTrafficCar() { return trafficCar_; }
 
 void TrafficObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::DragFloat(local.get("general.ped_traffic").c_str(), &this->trafficPed_, 0.01f, 0.f, 2.f);

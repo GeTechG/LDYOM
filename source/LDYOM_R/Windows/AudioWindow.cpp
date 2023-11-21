@@ -42,7 +42,7 @@ void Windows::AudioWindow::createNewElementFrom(int i) {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().back()->spawnEditorAudio();
 }
 
-char* Windows::AudioWindow::getElementName(int i) {
+std::string& Windows::AudioWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().at(i)->getName();
 }
 
@@ -99,14 +99,14 @@ void Windows::AudioWindow::drawOptions() {
 			ImGui::SameLine();
 			const auto audioStream = reinterpret_cast<CLEO::CAudioStream*>(audio->getEditorAudio().value());
 			switch (audioStream->GetState()) {
-			case 1:
-				if (ImGui::Button(ICON_FA_STOP, ImVec2(20.f, 20.f)))
-					audioStream->Stop();
-				break;
-			default:
-				if (ImGui::Button(ICON_FA_PLAY, ImVec2(20.f, 20.f)))
-					audioStream->Play();
-				break;
+				case 1:
+					if (ImGui::Button(ICON_FA_STOP, ImVec2(20.f, 20.f)))
+						audioStream->Stop();
+					break;
+				default:
+					if (ImGui::Button(ICON_FA_PLAY, ImVec2(20.f, 20.f)))
+						audioStream->Play();
+					break;
 			}
 		}
 	}
@@ -143,53 +143,55 @@ void Windows::AudioWindow::drawOptions() {
 		}
 
 		switch (audio->getAttachType3d()) {
-		case 1: {
-			const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
-			const int index = utils::indexByUuid(actors, audio->getAttachUuid());
-			if (utils::Combo(local.get("entities.actor").c_str(), &audio->getAttachUuid(), index, actors.size(),
-			                 [&actors](const int i) {
-				                 return actors.at(i)->getName();
-			                 }, [&actors](const int i) {
-				                 return actors.at(i)->getUuid();
-			                 })) {
-				audio->spawnEditorAudio();
+			case 1: {
+				const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+				const int index = utils::indexByUuid(actors, audio->getAttachUuid());
+				if (utils::Combo(local.get("entities.actor").c_str(), &audio->getAttachUuid(), index, actors.size(),
+				                 [&actors](const int i) {
+					                 return std::ref(actors.at(i)->getName());
+				                 }, [&actors](const int i) {
+					                 return actors.at(i)->getUuid();
+				                 })) {
+					audio->spawnEditorAudio();
+				}
+				if (index != -1)
+					attachPos = actors.at(index)->getPosition();
+				break;
 			}
-			if (index != -1)
-				attachPos = actors.at(index)->getPosition();
-			break;
-		}
-		case 2: {
-			const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
-			const int index = utils::indexByUuid(vehicles, audio->getAttachUuid());
-			if (utils::Combo(local.get("entities.vehicle").c_str(), &audio->getAttachUuid(), index, vehicles.size(),
-			                 [&vehicles](const int i) {
-				                 return vehicles.at(i)->getName();
-			                 }, [&vehicles](const int i) {
-				                 return vehicles.at(i)->getUuid();
-			                 })) {
-				audio->spawnEditorAudio();
+			case 2: {
+				const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                      getVehicles();
+				const int index = utils::indexByUuid(vehicles, audio->getAttachUuid());
+				if (utils::Combo(local.get("entities.vehicle").c_str(), &audio->getAttachUuid(), index, vehicles.size(),
+				                 [&vehicles](const int i) {
+					                 return std::ref(vehicles.at(i)->getName());
+				                 }, [&vehicles](const int i) {
+					                 return vehicles.at(i)->getUuid();
+				                 })) {
+					audio->spawnEditorAudio();
+				}
+				if (index != -1)
+					attachPos = vehicles.at(index)->getPosition();
+				break;
 			}
-			if (index != -1)
-				attachPos = vehicles.at(index)->getPosition();
-			break;
-		}
-		case 3: {
-			const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjects();
-			const int index = utils::indexByUuid(objects, audio->getAttachUuid());
-			if (utils::Combo(local.get("entities.object").c_str(), &audio->getAttachUuid(), index, objects.size(),
-			                 [&objects](const int i) {
-				                 return objects.at(i)->getName();
-			                 }, [&objects](const int i) {
-				                 return objects.at(i)->getUuid();
-			                 })) {
-				audio->spawnEditorAudio();
+			case 3: {
+				const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                     getObjects();
+				const int index = utils::indexByUuid(objects, audio->getAttachUuid());
+				if (utils::Combo(local.get("entities.object").c_str(), &audio->getAttachUuid(), index, objects.size(),
+				                 [&objects](const int i) {
+					                 return std::ref(objects.at(i)->getName());
+				                 }, [&objects](const int i) {
+					                 return objects.at(i)->getUuid();
+				                 })) {
+					audio->spawnEditorAudio();
+				}
+				if (index != -1)
+					attachPos = objects.at(index)->getPosition();
+				break;
 			}
-			if (index != -1)
-				attachPos = objects.at(index)->getPosition();
-			break;
-		}
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 

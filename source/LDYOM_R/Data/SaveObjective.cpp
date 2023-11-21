@@ -19,8 +19,10 @@
 
 SaveObjective::SaveObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.save"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
+
+bool& SaveObjective::isConfirmSave() { return confirmSave_; }
 
 void SaveObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	ImGui::Checkbox(local.get("save_objective.show_confirm").c_str(), &this->confirmSave_);
@@ -43,7 +45,7 @@ void SaveObjective::saveGame(bool confirm, int nodeSave, Scene *scene, ktcoro_ta
 	tasklist.add_task(
 		[](const bool confirm, const int nodeSave, Scene *scene, std::function<void()> callback) -> ktwait {
 			auto saveGame = [&]() {
-				auto &luaState = LuaEngine::getInstance().getLuaState();
+				/*auto &luaState = LuaEngine::getInstance().getLuaState();
 				auto luaData = luaState.create_table();
 				for (auto pairLua : luaState["global_data"]["signals"]["saveGame"].get_or_create<sol::table>()) {
 					if (auto resultLua = pairLua.second.as<sol::function>()(scene->getId(), luaData); !resultLua.
@@ -52,7 +54,7 @@ void SaveObjective::saveGame(bool confirm, int nodeSave, Scene *scene, ktcoro_ta
 						CLOG(ERROR, "lua") << err.what();
 					}
 				}
-				const std::string luaDataStr = luaState["base64"]["encode"](luaState["bitser"]["dumps"](luaData));
+				const std::string luaDataStr = luaState["base64"]["encode"](luaState["bitser"]["dumps"](luaData));*/
 
 				std::array<unsigned, 18> textures{};
 				std::array<unsigned, 10> models{};
@@ -68,7 +70,7 @@ void SaveObjective::saveGame(bool confirm, int nodeSave, Scene *scene, ktcoro_ta
 					ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name,
 					SaveData{
 						scene->getId(),
-						luaDataStr,
+						{},
 						to_string(ProjectPlayerService::getInstance().getCurrentObjective().value()->getUuid()),
 						nodeSave,
 						static_cast<int>(playerModel),

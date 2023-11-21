@@ -20,61 +20,38 @@
 using namespace plugin;
 
 std::optional<CObject*> Object::spawnObject() {
-	if (!ModelsService::getInstance().validObjectModel(this->modelId_))
+	if (!ModelsService::getInstance().validObjectModel(this->modelId))
 		return std::nullopt;
 
-	CStreaming::RequestModel(this->modelId_, GAME_REQUIRED);
+	CStreaming::RequestModel(this->modelId, GAME_REQUIRED);
 	CStreaming::LoadAllRequestedModels(false);
 
 	int newObjectHandle;
-	Command<Commands::CREATE_OBJECT_NO_OFFSET>(this->modelId_, this->pos_[0], this->pos_[1], this->pos_[2],
+	Command<Commands::CREATE_OBJECT_NO_OFFSET>(this->modelId, this->pos[0], this->pos[1], this->pos[2],
 	                                           &newObjectHandle);
 	const auto newObject = CPools::GetObject(newObjectHandle);
 
-	CStreaming::SetMissionDoesntRequireModel(this->modelId_);
+	CStreaming::SetMissionDoesntRequireModel(this->modelId);
 
 	return newObject;
 }
 
 Object::Object(const char *name, const CVector &pos): ObjectiveDependent(nullptr),
-                                                      uuid_(boost::uuids::random_generator()()),
+                                                      uuid(boost::uuids::random_generator()()),
                                                       rotate{{0, 0, 0}, 1},
-                                                      modelId_(325) {
-	strlcpy(this->name_, name, sizeof this->name_);
-	this->pos_[0] = pos.x;
-	this->pos_[1] = pos.y;
-	this->pos_[2] = pos.z;
+                                                      modelId(325) {
+	this->name = name;
+	this->pos[0] = pos.x;
+	this->pos[1] = pos.y;
+	this->pos[2] = pos.z;
 }
 
-Object::Object(const Object &other): ObjectiveDependent{other},
-                                     INameable{other},
-                                     IPositionable{other},
-                                     IUuidable{other},
-                                     uuid_{boost::uuids::random_generator()()},
-                                     rotate{other.rotate},
-                                     scale_{other.scale_},
-                                     modelId_{other.modelId_} {
-	strlcat(name_, other.name_, sizeof name_);
-	strlcat(name_, "C", sizeof name_);
-	memcpy(this->pos_, other.pos_, sizeof this->pos_);
-}
+Object Object::copy() const {
+	Object copy(*this);
+	copy.name += " (copy)";
+	copy.uuid = boost::uuids::random_generator()();
 
-Object& Object::operator=(const Object &other) {
-	if (this == &other)
-		return *this;
-	ObjectiveDependent::operator =(other);
-	INameable::operator =(other);
-	IPositionable::operator =(other);
-	IUuidable::operator =(other);
-	uuid_ = other.uuid_;
-	editorObject_ = other.editorObject_;
-	projectObject_ = other.projectObject_;
-	rotate = other.rotate;
-	scale_ = other.scale_;
-	modelId_ = other.modelId_;
-	strlcat(name_, other.name_, sizeof name_);
-	memcpy(this->pos_, other.pos_, sizeof this->pos_);
-	return *this;
+	return copy;
 }
 
 Object::~Object() {
@@ -83,7 +60,7 @@ Object::~Object() {
 }
 
 boost::uuids::uuid& Object::getUuid() {
-	return uuid_;
+	return uuid;
 }
 
 std::optional<CObject*>& Object::getEditorObject() {
@@ -99,11 +76,11 @@ CQuaternion& Object::getRotations() {
 }
 
 std::array<float, 3>& Object::getScale() {
-	return scale_;
+	return scale;
 }
 
 int& Object::getModelId() {
-	return modelId_;
+	return modelId;
 }
 
 void Object::updateLocation() {
@@ -114,10 +91,10 @@ void Object::updateLocation() {
 	rw.imag.z = -this->rotate.imag.y;
 	CMatrix newMatrix;
 	newMatrix.SetRotate(rw);
-	newMatrix.SetTranslateOnly(this->pos_[0], this->pos_[1], this->pos_[2]);
-	newMatrix.right *= this->scale_[2];
-	newMatrix.up *= this->scale_[0];
-	newMatrix.at *= this->scale_[1];
+	newMatrix.SetTranslateOnly(this->pos[0], this->pos[1], this->pos[2]);
+	newMatrix.right *= this->scale[2];
+	newMatrix.up *= this->scale[0];
+	newMatrix.at *= this->scale[1];
 
 	if (this->editorObject_.has_value()) {
 		CWorld::Remove(this->editorObject_.value());
@@ -133,12 +110,12 @@ void Object::updateLocation() {
 	}
 }
 
-char* Object::getName() {
-	return this->name_;
+std::string& Object::getName() {
+	return this->name;
 }
 
 float* Object::getPosition() {
-	return pos_;
+	return pos;
 }
 
 void Object::spawnEditorObject() {
@@ -179,14 +156,14 @@ void Object::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (scene.has_value() && tasklist != nullptr) {
-		const auto onObjectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectSpawn"].
+		/*const auto onObjectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectSpawn"].
 			get_or_create<sol::table>();
 		for (auto func : onObjectSpawn | views::values) {
-			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
+			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid); !result.valid()) {
 				const sol::error err = result;
 				CLOG(ERROR, "lua") << err.what();
 			}
-		}
+		}*/
 	}
 }
 
@@ -201,15 +178,15 @@ void Object::deleteProjectEntity() {
 			auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 			if (scene.has_value() && tasklist != nullptr) {
-				const auto onObjectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
+				/*const auto onObjectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
 						"onObjectDelete"].
 					get_or_create<sol::table>();
 				for (const auto &func : onObjectDelete | views::values) {
-					if (const auto result = func.as<sol::function>()(scene.value(), tasklist, uuid_); !result.valid()) {
+					if (const auto result = func.as<sol::function>()(scene.value(), tasklist, uuid); !result.valid()) {
 						const sol::error err = result;
 						CLOG(ERROR, "lua") << err.what();
 					}
-				}
+				}*/
 			}
 		}
 	}

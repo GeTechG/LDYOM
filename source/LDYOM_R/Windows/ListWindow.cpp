@@ -1,11 +1,12 @@
 ﻿#include "ListWindow.h"
 #include "constants.h"
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "Localization/Localization.h"
 
-void renamePopup(char *name) {
+void renamePopup(std::string &name) {
 	if (ImGui::BeginPopup("##renameElementPopup")) {
-		ImGui::InputText("##inputNameRename", name, NAME_SIZE, ImGuiInputTextFlags_EnterReturnsTrue);
+		ImGui::InputText("##inputNameRename", &name, ImGuiInputTextFlags_EnterReturnsTrue);
 		if (ImGui::IsItemDeactivatedAfterEdit()) {
 			ImGui::CloseCurrentPopup();
 		}
@@ -27,7 +28,7 @@ ImVec2 Windows::ListWindow::drawList() {
 		if (ImGui::BeginChild("##ListElements", listSize, true)) {
 			for (int i = 0; i < this->getListSize(); ++i) {
 				ImGui::PushID(i);
-				if (ImGui::Selectable(this->getElementName(i), this->currentElement == i)) {
+				if (ImGui::Selectable(this->getElementName(i).c_str(), this->currentElement == i)) {
 					selectElement(i);
 				}
 
@@ -42,7 +43,7 @@ ImVec2 Windows::ListWindow::drawList() {
 				}
 
 				if (ImGui::BeginPopupContextItem("##editElementName")) {
-					ImGui::InputText("##inputNameRename", this->getElementName(i), NAME_SIZE,
+					ImGui::InputText("##inputNameRename", &this->getElementName(i),
 					                 ImGuiInputTextFlags_EnterReturnsTrue);
 					if (ImGui::IsItemDeactivatedAfterEdit()) {
 						ImGui::CloseCurrentPopup();

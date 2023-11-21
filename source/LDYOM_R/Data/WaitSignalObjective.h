@@ -5,13 +5,6 @@ class WaitSignalObjective final : public virtual SceneObjective {
 private:
 	inline static bool isEmitSignal_ = false;
 
-	friend class boost::serialization::access;
-
-	template <class Archive>
-	void serialize(Archive &ar, const unsigned version) {
-		ar & boost::serialization::base_object<SceneObjective>(*this);
-	}
-
 public:
 	WaitSignalObjective() = default;
 	explicit WaitSignalObjective(void *_new);
@@ -25,3 +18,21 @@ public:
 	ktwait execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) override;
 	static void emitSignal();
 };
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+	template <>
+	struct adl_serializer<WaitSignalObjective> {
+		static void to_json(json &j, const WaitSignalObjective &obj) {
+			auto &sceneObjective = static_cast<const SceneObjective&>(obj);
+			adl_serializer<SceneObjective>::to_json(j, sceneObjective);
+			// Add additional serialization for WaitSignalObjective if needed
+		}
+
+		static void from_json(const json &j, WaitSignalObjective &obj) {
+			auto &sceneObjective = static_cast<SceneObjective&>(obj);
+			j.get_to(sceneObjective);
+			// Add additional deserialization for WaitSignalObjective if needed
+		}
+	};
+
+NLOHMANN_JSON_NAMESPACE_END

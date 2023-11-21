@@ -29,7 +29,7 @@ namespace Windows {
 		virtual void onButtonCreateNewElement();
 		virtual void createNewElement() = 0;
 		virtual void createNewElementFrom(int i) = 0;
-		virtual char* getElementName(int i) = 0;
+		virtual std::string& getElementName(int i) = 0;
 		virtual void deleteElement(int i) = 0;
 		virtual void drawOptions() = 0;
 		virtual void swapItems(int firstItem, int secondItem) {}

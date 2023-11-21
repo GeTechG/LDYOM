@@ -16,7 +16,7 @@ using namespace plugin;
 
 GoToSceneObjective::GoToSceneObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.go_to_scene"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
 
 void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
@@ -28,60 +28,60 @@ void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &lis
 	float *position = nullptr;
 
 	switch (this->type_) {
-	case 1: {
-		const auto &checkpoints = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
-		                                                         getCheckpoints();
-		const int indexCheckpoint = utils::indexByUuid(checkpoints, this->triggerUuid_);
+		case 1: {
+			const auto &checkpoints = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+			                                                         getCheckpoints();
+			const int indexCheckpoint = utils::indexByUuid(checkpoints, this->triggerUuid_);
 
-		IncorrectHighlight(indexCheckpoint == -1, [&] {
-			utils::Combo(local.get("entities.checkpoint").c_str(), &this->triggerUuid_, indexCheckpoint,
-			             checkpoints.size(), [&checkpoints](const int i) {
-				             return checkpoints.at(i)->getName();
-			             }, [&checkpoints](const int i) {
-				             return checkpoints.at(i)->getUuid();
-			             });
-		});
-
-		if (indexCheckpoint != -1)
-			position = checkpoints.at(indexCheckpoint)->getPosition();
-
-		break;
-	}
-	case 2: {
-		const auto &pickups = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups();
-		const int indexPickup = utils::indexByUuid(pickups, this->triggerUuid_);
-
-		IncorrectHighlight(indexPickup == -1, [&] {
-			utils::Combo(local.get("entities.pickup").c_str(), &this->triggerUuid_, indexPickup, pickups.size(),
-			             [&pickups](const int i) {
-				             return pickups.at(i)->getName();
-			             }, [&pickups](const int i) {
-				             return pickups.at(i)->getUuid();
-			             });
-		});
-
-		if (ImGui::SliderInt(local.get("general.type_marker").c_str(), &this->blipType_, 0, 1,
-		                     local.getArray("general.type_marker_enum").at(this->blipType_).c_str()))
-			this->spawnEditorBlip();
-
-		if (this->blipType_ == 0) {
-			if (utils::Combo(local.get("general.color_marker").c_str(), &this->blipColor_,
-			                 local.getArray("general.color_marker_enum"), 6)) {
-				this->spawnEditorBlip();
-			}
-		} else {
-			popupSpriteBlipSelector_.draw(&this->blipSprite_, [this](int i) {
-				this->spawnEditorBlip();
+			IncorrectHighlight(indexCheckpoint == -1, [&] {
+				utils::Combo(local.get("entities.checkpoint").c_str(), &this->triggerUuid_, indexCheckpoint,
+				             checkpoints.size(), [&checkpoints](const int i) {
+					             return std::ref(checkpoints.at(i)->getName());
+				             }, [&checkpoints](const int i) {
+					             return checkpoints.at(i)->getUuid();
+				             });
 			});
+
+			if (indexCheckpoint != -1)
+				position = checkpoints.at(indexCheckpoint)->getPosition();
+
+			break;
 		}
+		case 2: {
+			const auto &pickups = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPickups();
+			const int indexPickup = utils::indexByUuid(pickups, this->triggerUuid_);
 
-		if (indexPickup != -1)
-			position = pickups.at(indexPickup)->getPosition();
+			IncorrectHighlight(indexPickup == -1, [&] {
+				utils::Combo(local.get("entities.pickup").c_str(), &this->triggerUuid_, indexPickup, pickups.size(),
+				             [&pickups](const int i) {
+					             return std::ref(pickups.at(i)->getName());
+				             }, [&pickups](const int i) {
+					             return pickups.at(i)->getUuid();
+				             });
+			});
 
-		break;
-	}
-	default:
-		break;
+			if (ImGui::SliderInt(local.get("general.type_marker").c_str(), &this->blipType_, 0, 1,
+			                     local.getArray("general.type_marker_enum").at(this->blipType_).c_str()))
+				this->spawnEditorBlip();
+
+			if (this->blipType_ == 0) {
+				if (utils::Combo(local.get("general.color_marker").c_str(), &this->blipColor_,
+				                 local.getArray("general.color_marker_enum"), 6)) {
+					this->spawnEditorBlip();
+				}
+			} else {
+				popupSpriteBlipSelector_.draw(&this->blipSprite_, [this](int i) {
+					this->spawnEditorBlip();
+				});
+			}
+
+			if (indexPickup != -1)
+				position = pickups.at(indexPickup)->getPosition();
+
+			break;
+		}
+		default:
+			break;
 	}
 
 	ImGui::Separator();
@@ -100,9 +100,9 @@ void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &lis
 
 	IncorrectHighlight(this->sceneId_ == 0, [&] {
 		const auto previewValue = this->sceneId_ == 0 ? "" : scenes.at(this->sceneId_)->getName();
-		if (ImGui::BeginCombo(local.get("scenes.scene").c_str(), previewValue)) {
+		if (ImGui::BeginCombo(local.get("scenes.scene").c_str(), previewValue.c_str())) {
 			for (auto &pair : ProjectsService::getInstance().getCurrentProject().getScenes()) {
-				if (ImGui::Selectable(pair.second->getName(), this->sceneId_ == pair.first)) {
+				if (ImGui::Selectable(pair.second->getName().c_str(), this->sceneId_ == pair.first)) {
 					this->sceneId_ = pair.first;
 					this->startObjective_ = 0;
 				}
@@ -116,9 +116,9 @@ void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &lis
 		                                                        getObjectives();
 		this->startObjective_ = max(min(this->startObjective_, objectives.size() - 1), 0);
 		const auto previewValue = objectives.empty() ? "" : objectives.at(this->startObjective_)->getName();
-		if (ImGui::BeginCombo(local.get("objective.title").c_str(), previewValue)) {
+		if (ImGui::BeginCombo(local.get("objective.title").c_str(), previewValue.c_str())) {
 			for (int i = 0; i < objectives.size(); ++i) {
-				if (ImGui::Selectable(objectives.at(i)->getName(), this->startObjective_ == i)) {
+				if (ImGui::Selectable(objectives.at(i)->getName().c_str(), this->startObjective_ == i)) {
 					this->startObjective_ = i;
 				}
 			}
@@ -144,81 +144,81 @@ ktwait GoToSceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist
 
 	this->deleteProjectBlip();
 	switch (this->type_) {
-	case 1: {
-		const auto &checkpoints = scene->getCheckpoints();
-		const int indexCheckpoint = utils::indexByUuid(checkpoints, this->triggerUuid_);
+		case 1: {
+			const auto &checkpoints = scene->getCheckpoints();
+			const int indexCheckpoint = utils::indexByUuid(checkpoints, this->triggerUuid_);
 
-		if (indexCheckpoint == -1) {
-			setObjectiveError(result, *this, NotSelected, "The checkpoint for the objective is not selected.");
-			co_return;
-		}
+			if (indexCheckpoint == -1) {
+				setObjectiveError(result, *this, NotSelected, "The checkpoint for the objective is not selected.");
+				co_return;
+			}
 
-		const auto &checkpoint = checkpoints.at(indexCheckpoint);
+			const auto &checkpoint = checkpoints.at(indexCheckpoint);
 
-		if (this->blipColor_ != 0 || this->blipType_ == 1)
-			this->projectBlip = utils::createBlip(checkpoint->getPosition(), this->blipType_, this->blipColor_,
-			                                      this->blipSprite_);
+			if (this->blipColor_ != 0 || this->blipType_ == 1)
+				this->projectBlip = utils::createBlip(checkpoint->getPosition(), this->blipType_, this->blipColor_,
+				                                      this->blipSprite_);
 
-		auto playerPed = static_cast<CPed*>(FindPlayerPed());
+			auto playerPed = static_cast<CPed*>(FindPlayerPed());
 
-		if (!checkpoint->existProjectEntity()) {
-			setObjectiveError(result, *this, NotExists, "The entity of the checkpoint does not exist.");
-			co_return;
-		}
+			if (!checkpoint->existProjectEntity()) {
+				setObjectiveError(result, *this, NotExists, "The entity of the checkpoint does not exist.");
+				co_return;
+			}
 
-		triggerWait = [&checkpoint, playerPed]() -> ktwait {
-			bool isLocate = false;
-			while (!isLocate) {
-				auto position = checkpoint->getProjectEntityPosition();
-				float radius = checkpoint->getRadius();
-				bool is2d = false;
-				if (checkpoint->getType() == 1 && checkpoint->getCheckpointType() <= 2) {
-					is2d = true;
+			triggerWait = [&checkpoint, playerPed]() -> ktwait {
+				bool isLocate = false;
+				while (!isLocate) {
+					auto position = checkpoint->getProjectEntityPosition();
+					float radius = checkpoint->getRadius();
+					bool is2d = false;
+					if (checkpoint->getType() == 1 && checkpoint->getCheckpointType() <= 2) {
+						is2d = true;
+					}
+
+					if (is2d)
+						isLocate = Command<Commands::LOCATE_CHAR_ANY_MEANS_2D>(
+							playerPed, position.x, position.y, radius, radius, false);
+					else
+						isLocate = Command<Commands::LOCATE_CHAR_ANY_MEANS_3D>(
+							playerPed, position.x, position.y, position.z, radius, radius, radius, false);
+
+					co_await 1;
 				}
+			};
 
-				if (is2d)
-					isLocate = Command<Commands::LOCATE_CHAR_ANY_MEANS_2D>(
-						playerPed, position.x, position.y, radius, radius, false);
-				else
-					isLocate = Command<Commands::LOCATE_CHAR_ANY_MEANS_3D>(
-						playerPed, position.x, position.y, position.z, radius, radius, radius, false);
-
-				co_await 1;
-			}
-		};
-
-		break;
-	}
-	case 2: {
-		const auto &pickups = scene->getPickups();
-		const int indexPickup = utils::indexByUuid(pickups, this->triggerUuid_);
-
-		if (indexPickup == -1) {
-			setObjectiveError(result, *this, NotSelected, "The pickup for the objective is not selected.");
-			co_return;
+			break;
 		}
+		case 2: {
+			const auto &pickups = scene->getPickups();
+			const int indexPickup = utils::indexByUuid(pickups, this->triggerUuid_);
 
-		const auto &pickup = pickups.at(indexPickup);
-
-		if (!pickup->getProjectPickup().has_value()) {
-			setObjectiveError(result, *this, NotExists, "The entity of the pickup does not exist.");
-			co_return;
-		}
-
-		if (this->blipColor_ != 0 || this->blipType_ == 1)
-			this->projectBlip = utils::createBlip(pickup->getPosition(), this->blipType_, this->blipColor_,
-			                                      this->blipSprite_);
-
-		triggerWait = [&pickup]() -> ktwait {
-			while (!CPickups::IsPickUpPickedUp(pickup->getProjectPickupIndex().value())) {
-				co_await 1;
+			if (indexPickup == -1) {
+				setObjectiveError(result, *this, NotSelected, "The pickup for the objective is not selected.");
+				co_return;
 			}
-		};
 
-		break;
-	}
-	default:
-		break;
+			const auto &pickup = pickups.at(indexPickup);
+
+			if (!pickup->getProjectPickup().has_value()) {
+				setObjectiveError(result, *this, NotExists, "The entity of the pickup does not exist.");
+				co_return;
+			}
+
+			if (this->blipColor_ != 0 || this->blipType_ == 1)
+				this->projectBlip = utils::createBlip(pickup->getPosition(), this->blipType_, this->blipColor_,
+				                                      this->blipSprite_);
+
+			triggerWait = [&pickup]() -> ktwait {
+				while (!CPickups::IsPickUpPickedUp(pickup->getProjectPickupIndex().value())) {
+					co_await 1;
+				}
+			};
+
+			break;
+		}
+		default:
+			break;
 	}
 
 	tasklist.add_task([](GoToSceneObjective *_this, const std::function<ktwait()> triggerWait) -> ktwait {
@@ -293,3 +293,9 @@ int& GoToSceneObjective::getSceneId() {
 int& GoToSceneObjective::getStartObjective() {
 	return startObjective_;
 }
+
+int& GoToSceneObjective::getType() { return type_; }
+boost::uuids::uuid& GoToSceneObjective::getTriggerUuid() { return triggerUuid_; }
+int& GoToSceneObjective::getBlipColor() { return blipColor_; }
+int& GoToSceneObjective::getBlipType() { return blipType_; }
+int& GoToSceneObjective::getBlipSprite() { return blipSprite_; }

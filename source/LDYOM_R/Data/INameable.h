@@ -1,8 +1,9 @@
 ﻿#pragma once
+#include <string>
 
 class INameable {
 public:
 	virtual ~INameable() = default;
 
-	virtual char* getName() = 0;
+	virtual std::string& getName() = 0;
 };

@@ -37,7 +37,7 @@ void Windows::PyrotechnicsWindow::createNewElementFrom(int i) {
 	                               spawnEditorPyrotechnics();
 }
 
-char* Windows::PyrotechnicsWindow::getElementName(int i) {
+std::string& Windows::PyrotechnicsWindow::getElementName(int i) {
 	return ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getPyrotechnics().at(i)->getName();
 }
 

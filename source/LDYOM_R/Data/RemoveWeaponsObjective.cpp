@@ -1,17 +1,16 @@
 ﻿#include "RemoveWeaponsObjective.h"
 
-#include "strUtils.h"
 #include "common.h"
+#include "strUtils.h"
 
-RemoveWeaponsObjective::RemoveWeaponsObjective(void* _new): BaseObjective(_new) {
+RemoveWeaponsObjective::RemoveWeaponsObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.remove_weapons_player"));
-	strlcat(this->name_.data(), suffix.c_str(), sizeof this->name_);
+	this->name += suffix;
 }
 
-void RemoveWeaponsObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
-}
+void RemoveWeaponsObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {}
 
-ktwait RemoveWeaponsObjective::execute(Scene* scene, Result& result, ktcoro_tasklist& tasklist) {
+ktwait RemoveWeaponsObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
 	FindPlayerPed()->ClearWeapons();
 	co_return;
 }
