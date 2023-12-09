@@ -135,6 +135,7 @@ how_to_arrive = "Как прибыть"
 how_to_arrive_enum = [ "На чем угодно", "Пешком", "На любом ТС", "На ...",]
 type_sphere = "Тип сферы"
 color_sphere = "Цвет сферы"
+comeBackText = "Текст сесть в ТС"
 
 [cutscene_objective]
 attach_types = [ "Отсутствует", "К актеру", "К транспорту", "К объекту",]

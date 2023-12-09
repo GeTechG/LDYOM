@@ -135,6 +135,7 @@ how_to_arrive = "Jak dotrzeć"
 how_to_arrive_enum = [ "W dowolny sposób", "Pieszo", "W dowolnym pojeździe", "Przez...",]
 type_sphere = "Rodzaj sfery"
 color_sphere = "Kolor sfery"
+comeBackText = "Wróć do pojazdu"
 
 [cutscene_objective]
 attach_types = [ "Brak", "Do aktora", "Do pojazdu", "Do obiektu",]

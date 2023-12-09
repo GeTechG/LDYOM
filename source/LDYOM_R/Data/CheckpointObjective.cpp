@@ -233,8 +233,7 @@ void CheckpointObjective::draw(Localization &local, std::vector<std::string> &li
 				             return vehicles.at(i)->getUuid();
 			             });
 		});
-		ImGui::InputText(local.get("general.text").c_str(), &this->textComeBackVehicle_,
-		                 sizeof this->textComeBackVehicle_);
+		ImGui::InputText(local.get("checkpoint_objective.comeBackText").c_str(), &this->textComeBackVehicle_);
 		utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlipComeBackVehicle_,
 		             local.getArray("general.color_marker_enum"), 6);
 		ImGui::PopID();

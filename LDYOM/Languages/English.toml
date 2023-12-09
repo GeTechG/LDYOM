@@ -135,6 +135,7 @@ how_to_arrive = "How to arrive"
 how_to_arrive_enum = [ "By any means", "On foot", "In any vehicle", "By ...",]
 type_sphere = "Type of sphere"
 color_sphere = "Color of sphere"
+comeBackText = "Get in the vehicle"
 
 [cutscene_objective]
 attach_types = [ "None", "To actor", "To vehicle", "To object",]
@@ -370,6 +371,7 @@ delete_project_warning = "Warning! : Delete Project"
 development = "Development"
 production = "Production"
 make_production = "Make Production"
+save_project = "Save"
 
 [project_info]
 title = "About the Project"
@@ -942,3 +944,6 @@ o_273_wedding_cake = "Wedding cake"
 o_306_wooden_fence_section = "Wooden fence section"
 o_284_wooden_foot_bridge = "Wooden foot bridge"
 o_286_woozie_s_apartment = "Woozie's apartment"
+
+[discord]
+activity_type = [ "In the editor", "Playing",]
