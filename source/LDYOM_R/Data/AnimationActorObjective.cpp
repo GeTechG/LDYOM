@@ -1,4 +1,4 @@
-﻿#include "AnimationActorObjective.h"
+#include "AnimationActorObjective.h"
 
 #include <CTimer.h>
 #include <extensions/ScriptCommands.h>
@@ -117,6 +117,11 @@ ktwait AnimationActorObjective::execute(Scene *scene, Actor *actor, Result &resu
 			anims[_this->animation].c_str(),
 			packsNames[_this->pack].c_str(), 10.f * (1.f - (_this->blend - FLT_EPSILON)),
 			_this->looped, false, false, false, static_cast<int>(_this->time * 1000.f));
+
+		while (!Command<
+			Commands::IS_CHAR_PLAYING_ANIM>(actor->getProjectPed().value(), anims[_this->animation].c_str())) {
+			co_await 1;
+		}
 
 		while (Command<
 			Commands::IS_CHAR_PLAYING_ANIM>(actor->getProjectPed().value(), anims[_this->animation].c_str())) {
