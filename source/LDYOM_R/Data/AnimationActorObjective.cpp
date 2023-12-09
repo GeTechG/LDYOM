@@ -48,7 +48,7 @@ void AnimationActorObjective::draw(Localization &local, std::vector<std::string>
 
 	utils::ToggleButton(local.get("animation.looped").c_str(), &this->looped);
 	ImGui::DragFloat(local.get("animation.smoothness").c_str(), &this->blend, 0.01f, FLT_EPSILON, 1.f);
-	ImGui::DragFloat(local.get("general.time").c_str(), &this->time, 1.0f, -1.0f, FLT_MAX);
+	ImGui::DragFloat((local.get("general.time") + "##animTime").c_str(), &this->time, 1.0f, -1.0f, FLT_MAX);
 	ImGui::Checkbox(local.get("general.wait_end").c_str(), &this->endWait);
 
 	static auto lastTime = 0u;
