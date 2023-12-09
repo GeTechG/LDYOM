@@ -370,6 +370,7 @@ delete_project_warning = "Ostrzeżenie! : Usuń Projekt"
 development = "Rozwój"
 production = "Produkcja"
 make_production = "Utwórz Produkcję"
+save_project = "Zapisz"
 
 [project_info]
 title = "O projekcie"
@@ -942,3 +943,6 @@ o_273_wedding_cake = "Tort weselny"
 o_306_wooden_fence_section = "Sekcja drewnianego ogrodzenia"
 o_284_wooden_foot_bridge = "Drewniany mostek dla pieszych"
 o_286_woozie_s_apartment = "Apartament Wooziego"
+
+[discord]
+activity_type = [ "W edytorze", "Gra",]

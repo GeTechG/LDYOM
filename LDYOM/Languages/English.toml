@@ -30,11 +30,11 @@ must_survive = "Must Survive"
 edit_manually = "Edit Manually"
 radius = "Radius"
 color_marker = "Color Marker"
-color_marker_enum = [ "No Marker", "Red", "Green", "Light Blue", "White", "Yellow", "Blue"]
+color_marker_enum = [ "No Marker", "Red", "Green", "Light Blue", "White", "Yellow", "Blue",]
 text = "Text"
 time = "Time (sec)"
 type_marker = "Marker Type"
-type_marker_enum = [ "Colored Marker", "Icon Marker"]
+type_marker_enum = [ "Colored Marker", "Icon Marker",]
 icon = "Icon"
 play = "Play"
 spawn_before = "Spawn Before"
@@ -60,14 +60,14 @@ weather = "Weather"
 riot_mode = "Riot Mode"
 wanted = "Wanted"
 game_time = "Game Time"
-weathers_types = [ "Very Sunny (LS)", "Sunny (LS)", "Very Sunny, Smoggy (LS)", "Sunny, Smoggy (LS)", "Cloudy (LS)", "Sunny (SF)", "Very Sunny (SF)", "Cloudy (SF)", "Rainy (SF)", "Foggy (SF)", "Sunny (LV)", "Very Sunny (LV)", "Cloudy (LV)", "Very Sunny (CS)", "Sunny (CS)", "Cloudy (CS)", "Rainy (CS)", "Very Sunny (Des)", "Sunny (Des)", "Sandstorm (Des)", "Underwater", "Extra 1", "Extra 2"]
+weathers_types = [ "Very Sunny (LS)", "Sunny (LS)", "Very Sunny, Smoggy (LS)", "Sunny, Smoggy (LS)", "Cloudy (LS)", "Sunny (SF)", "Very Sunny (SF)", "Cloudy (SF)", "Rainy (SF)", "Foggy (SF)", "Sunny (LV)", "Very Sunny (LV)", "Cloudy (LV)", "Very Sunny (CS)", "Sunny (CS)", "Cloudy (CS)", "Rainy (CS)", "Very Sunny (Des)", "Sunny (Des)", "Sandstorm (Des)", "Underwater", "Extra 1", "Extra 2",]
 place = "Place"
-places_in_car = [ "Driver's Seat", "Passenger's Seat", "Back Left Seat", "Back Right Seat"]
+places_in_car = [ "Driver's Seat", "Passenger's Seat", "Back Left Seat", "Back Right Seat",]
 move_mouth = "Move Mouth"
-comparings = [ "Equal", "Not Equal", "Greater", "Greater or Equal", "Less", "Less or Equal"]
+comparings = [ "Equal", "Not Equal", "Greater", "Greater or Equal", "Less", "Less or Equal",]
 condition = "Condition"
 text_style = "Text Style"
-text_styles = [ "Medium", "Bottom Right", "Medium Less", "Medium Less More", "White Medium Less", "Blue Upper"]
+text_styles = [ "Medium", "Bottom Right", "Medium Less", "Medium Less More", "White Medium Less", "Blue Upper",]
 fade = "Fade"
 fade_in_time = "Fade In Time"
 fade_out_time = "Fade Out Time"
@@ -132,14 +132,14 @@ world = "World"
 
 [checkpoint_objective]
 how_to_arrive = "How to arrive"
-how_to_arrive_enum = [ "By any means", "On foot", "In any vehicle", "By ..."]
+how_to_arrive_enum = [ "By any means", "On foot", "In any vehicle", "By ...",]
 type_sphere = "Type of sphere"
 color_sphere = "Color of sphere"
 
 [cutscene_objective]
-attach_types = [ "None", "To actor", "To vehicle", "To object"]
+attach_types = [ "None", "To actor", "To vehicle", "To object",]
 attach = "Attach"
-follow_types = [ "None", "Actor", "Vehicle", "Object"]
+follow_types = [ "None", "Actor", "Vehicle", "Object",]
 follow = "Follow"
 asynchronous = "Asynchronous"
 widescreen = "Widescreen"
@@ -149,11 +149,11 @@ end_fade_in = "Fade in at end"
 fade_in_time = "Fade in time"
 final_scene = "Final scene"
 lock_player_control = "Lock player control"
-move_types = [ "None", "Linear", "Smooth"]
+move_types = [ "None", "Linear", "Smooth",]
 move_type = "Movement type"
 
 [damage_object_objective]
-types = [ "Any", "Weapon ..."]
+types = [ "Any", "Weapon ...",]
 
 [teleport_player_objective]
 copy_clothes = "Copy Clothes"
@@ -161,18 +161,18 @@ help_copy_clothes = "Copies the clothes that the player is currently wearing. To
 dress_up = "Dress Up"
 
 [go_to_scene_objective]
-types = [ "Direct", "Through checkpoint", "Over the pickup"]
+types = [ "Direct", "Through checkpoint", "Over the pickup",]
 
 [follow_path_actor_objective]
 move_type = "Movement Type"
-move_states = [ "Walk", "Run", "Sprint"]
+move_states = [ "Walk", "Run", "Sprint",]
 path_type = "Path Type"
-path_types = [ "Once", "Loop", "Ping-pong"]
+path_types = [ "Once", "Loop", "Ping-pong",]
 execute_time = "Execution Time"
 
 [follow_path_vehicle_objective]
 drive_type = "Drive Type"
-drive_types = [ "Any", "Precise", "Race"]
+drive_types = [ "Any", "Precise", "Race",]
 
 [save_objective]
 show_confirm = "Show Confirmation Popup"
@@ -198,7 +198,7 @@ preview = "Preview"
 help = "Y - Next animation\nN - Previous animation"
 
 [timer]
-types = [ "Wait", "Limit"]
+types = [ "Wait", "Limit",]
 help_timer_types = "Wait - wait and proceed to the next target after the timer expires.\nLimit - immediately proceed to the next target, and if the timer expires, the mission is failed."
 backwards = "Back"
 
@@ -220,7 +220,7 @@ primary_color = "Primary Color"
 secondary_color = "Secondary Color"
 component = "Component"
 numberplate = "Number Plate"
-vehicle_unbreakable = [ "Bulletproof", "Fireproof", "Explosionproof", "Collisionproof", "Meleeproof", "Tire Vulnerability"]
+vehicle_unbreakable = [ "Bulletproof", "Fireproof", "Explosionproof", "Collisionproof", "Meleeproof", "Tire Vulnerability",]
 locked = "Locked"
 edit_by_player_overlay = "Exit the player to apply."
 
@@ -229,22 +229,22 @@ speed = "Speed"
 cruise_speed = "Cruise Speed"
 
 [particle]
-attach_type = [ "None", "Actor", "Vehicle", "Object"]
+attach_type = [ "None", "Actor", "Vehicle", "Object",]
 attach_to = "Attach to"
 
 [audio]
 warning = "Please save the project, without this audio function will not work."
 audio3D = "3D Audio"
-attach_type_3d = [ "Position", "Actor", "Vehicle", "Object"]
+attach_type_3d = [ "Position", "Actor", "Vehicle", "Object",]
 looped = "Looped"
 desclaimer_3d_audio = "The audio file must be mono"
 volume = "Volume"
 
 [vehicle_selector]
 searchType = "Search Type"
-searchTypeEnum = [ "Name", "ID"]
+searchTypeEnum = [ "Name", "ID",]
 filters = "Filters"
-filtersEnum = [ "Car", "Bike", "Mtrack", "Quad", "Heli", "Plane", "BMX", "Trailer", "Boat"]
+filtersEnum = [ "Car", "Bike", "Mtrack", "Quad", "Heli", "Plane", "BMX", "Trailer", "Boat",]
 icons_scale = "Icons Scale"
 
 [object]
@@ -273,22 +273,22 @@ model_id = "Model ID"
 
 [pickup]
 spawn_type = "Spawn type"
-pickup_types = [ "Weapon", "Health", "Armor", "Remove wanted", "Drugs", "Other"]
-spawn_types_pickup = [ "Once", "Every 30 seconds", "Every 6 minutes"]
+pickup_types = [ "Weapon", "Health", "Armor", "Remove wanted", "Drugs", "Other",]
+spawn_types_pickup = [ "Once", "Every 30 seconds", "Every 6 minutes",]
 
 [pyrotechnics]
-types = [ "Fire", "Explosion"]
+types = [ "Fire", "Explosion",]
 size_fire = "Fire size"
 propagation_fire = "Fire spread"
 type_explosion = "Explosion type"
 
 [visual_effect]
-types = [ "Crowns", "Projections"]
+types = [ "Crowns", "Projections",]
 effect_type = "Effect type"
 flare = "Flashing"
 
 [checkpoint]
-types = [ "Sphere", "Race"]
+types = [ "Sphere", "Race",]
 type_sphere = "Sphere type"
 color = "Color"
 pulse_period = "Pulse period"
@@ -389,7 +389,7 @@ title = "Scene Settings"
 ped_car_traffic = "Ped/Car Traffic"
 apply = "Apply Scene Settings"
 group_relations = "Group Relations"
-relationship_types = [ "Respect", "Like", "Ignore", "Dislike", "Hate"]
+relationship_types = [ "Respect", "Like", "Ignore", "Dislike", "Hate",]
 
 [node_editor]
 title = "Node Editor"
