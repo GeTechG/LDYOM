@@ -95,7 +95,7 @@ void Windows::ToolsWindow::draw() {
 		ImGui::PopID();
 		ImGui::Separator();
 
-		if (ImGui::Button(local.get("antifreez").c_str())) {
+		if (ImGui::Button(local.get("tools.antifreez").c_str())) {
 			Command<Commands::SET_PLAYER_CONTROL>(0, true);
 			playerPed->SetPosn(playerPed->GetPosition() + CVector(1, 1, 1));
 		}

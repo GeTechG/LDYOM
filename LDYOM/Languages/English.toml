@@ -84,7 +84,7 @@ true = "True"
 false = "False"
 yes = "Yes"
 no = "No"
-wait_end = "Wait End"
+wait_end = "Wait till the end"
 
 [objective]
 title = "Objective"
@@ -222,7 +222,7 @@ component = "Component"
 numberplate = "Number Plate"
 vehicle_unbreakable = [ "Bulletproof", "Fireproof", "Explosionproof", "Collisionproof", "Meleeproof", "Tire Vulnerability",]
 locked = "Locked"
-edit_by_player_overlay = "Exit the player to apply."
+edit_by_player_overlay = "Log out of the vehicle to apply."
 
 [train]
 speed = "Speed"
@@ -298,7 +298,7 @@ rotate_rate = "Rotation rate"
 [info_overlay]
 list_window = "Right-click - Rename element"
 objective_window = "Hold and drag - Lift/lower element in the list"
-camera_view = "Camera movement - Right-click, Scaling - Shift + Mouse wheel"
+camera_view = "Camera movement - Right-click, Zooming - Shift + Mouse wheel"
 move_element = "Move current element - Arrows, QE"
 depend_zoom = "Speed depends on zoom level"
 move_camera = "Camera movement - Arrows or WASD, QE"
