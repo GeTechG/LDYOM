@@ -5,6 +5,7 @@
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include "DiscordService.h"
 #include "Logger.h"
 
 #include "FileWatcher.h"
@@ -767,6 +768,8 @@ void ProjectsService::loadProject(int projectIdx) {
 		this->getCurrentProject().getCurrentScene()->getObjectives().size() - 1);
 
 	this->onUpdate_();
+
+	DiscordService::getInstance().updateActivity(projectsInfos_.at(projectIdx)->name, DiscordActivityType::CREATING);
 
 	ImGui::InsertNotification({ImGuiToastType_Success, 3000, "Loaded!"});
 }

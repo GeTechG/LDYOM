@@ -404,6 +404,9 @@
     <Filter Include="thirdparty\boost_json_archive">
       <UniqueIdentifier>{2cc85a41-eb8f-4c34-8a73-69e18c1c852f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="thirdparty\discordSDK">
+      <UniqueIdentifier>{fd6b59d3-5885-4c7f-bcd3-ccdd7f2a360e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -932,6 +935,51 @@
     </ClCompile>
     <ClCompile Include="thirdparty\boost_json_archive\src\polymorphic_json_oarchive.cpp">
       <Filter>thirdparty\boost_json_archive</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\relationship_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\storage_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\store_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\types.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\user_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\voice_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\achievement_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\activity_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\application_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\core.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\image_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\lobby_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\network_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\discordSDK\overlay_manager.cpp">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="Services\DiscordService.cpp">
+      <Filter>Services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2351,6 +2399,60 @@
     </ClInclude>
     <ClInclude Include="utils\jsonUtils.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\relationship_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\storage_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\store_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\types.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\user_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\voice_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\achievement_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\activity_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\application_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\core.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\discord.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\event.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\ffi.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\image_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\lobby_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\network_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\discordSDK\overlay_manager.h">
+      <Filter>thirdparty\discordSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\DiscordService.h">
+      <Filter>Services</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

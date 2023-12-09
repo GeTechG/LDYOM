@@ -92,7 +92,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;$(ProjectDir)utils;$(ProjectDir)ImGui;C:\local\boost_1_83_0;$(ProjectDir)include;$(ProjectDir)LuaJIT-2.0.5\src;$(DIRECTX9_SDK_DIR)\Include;$(ProjectDir)sqlite3;$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4\source;$(ProjectDir)zip;$(ProjectDir)\thirdparty\ktsignal\include;$(ProjectDir)thirdparty\kthook\include;$(ProjectDir)thirdparty\xbyak;$(ProjectDir)thirdparty\kthook;$(ProjectDir)thirdparty\imgui;$(ProjectDir)thirdparty\kiero;$(ProjectDir)thirdparty\kiero\minhook\include;$(ProjectDir)thirdparty;$(ProjectDir)fonts;$(ProjectDir)Services;$(ProjectDir)Windows;$(ProjectDir)thirdparty\glm;$(ProjectDir)thirdparty\boost_json_archive\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;$(ProjectDir)utils;$(ProjectDir)ImGui;C:\local\boost_1_83_0;$(ProjectDir)include;$(ProjectDir)LuaJIT-2.0.5\src;$(DIRECTX9_SDK_DIR)\Include;$(ProjectDir)sqlite3;$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4\source;$(ProjectDir)zip;$(ProjectDir)\thirdparty\ktsignal\include;$(ProjectDir)thirdparty\kthook\include;$(ProjectDir)thirdparty\xbyak;$(ProjectDir)thirdparty\kthook;$(ProjectDir)thirdparty\imgui;$(ProjectDir)thirdparty\kiero;$(ProjectDir)thirdparty\kiero\minhook\include;$(ProjectDir)thirdparty;$(ProjectDir)fonts;$(ProjectDir)Services;$(ProjectDir)Windows;$(ProjectDir)thirdparty\glm;$(ProjectDir)thirdparty\boost_json_archive\include;$(ProjectDir)thirdparty\discordSDK</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_USE_MATH_DEFINES;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DX9_SDK_INSTALLED;PLUGIN_SGV_96EN;GBH;_NDEBUG;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;PLUGIN_SGV_10US;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- /utf-8 /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
@@ -101,8 +101,8 @@
     <Link>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;$(ProjectDir)LuaJIT-2.0.5\src;%(AdditionalLibraryDirectories);$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4-master\output\Debug;$(ProjectDir)thirdparty\lib\Debug;$(DIRECTX9_SDK_DIR)\Lib\x86;C:\local\boost_1_83_0\lib32-msvc-14.3</AdditionalLibraryDirectories>
-      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies);bass.lib;CLEO.lib;hde.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;$(ProjectDir)LuaJIT-2.0.5\src;%(AdditionalLibraryDirectories);$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4-master\output\Debug;$(ProjectDir)thirdparty\lib\Debug;$(DIRECTX9_SDK_DIR)\Lib\x86;C:\local\boost_1_83_0\lib32-msvc-14.3;$(ProjectDir)thirdparty\discordSDK\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>plugin_d.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies);bass.lib;CLEO.lib;hde.lib;discord_game_sdk.dll.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -114,7 +114,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;$(ProjectDir)utils;$(ProjectDir)ImGui;C:\local\boost_1_83_0;$(ProjectDir)include;$(ProjectDir)LuaJIT-2.0.5\src;$(DIRECTX9_SDK_DIR)\Include;$(ProjectDir)sqlite3;$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4\source;$(ProjectDir)zip;$(ProjectDir)\thirdparty\ktsignal\include;$(ProjectDir)thirdparty\kthook\include;$(ProjectDir)thirdparty\xbyak;$(ProjectDir)thirdparty\kthook;$(ProjectDir)thirdparty\imgui;$(ProjectDir)thirdparty\kiero;$(ProjectDir)thirdparty\kiero\minhook\include;$(ProjectDir)thirdparty;$(ProjectDir)fonts;$(ProjectDir)Services;$(ProjectDir)Windows;$(ProjectDir)thirdparty\glm;$(ProjectDir)thirdparty\boost_json_archive\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;$(ProjectDir)utils;$(ProjectDir)ImGui;C:\local\boost_1_83_0;$(ProjectDir)include;$(ProjectDir)LuaJIT-2.0.5\src;$(DIRECTX9_SDK_DIR)\Include;$(ProjectDir)sqlite3;$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4\source;$(ProjectDir)zip;$(ProjectDir)\thirdparty\ktsignal\include;$(ProjectDir)thirdparty\kthook\include;$(ProjectDir)thirdparty\xbyak;$(ProjectDir)thirdparty\kthook;$(ProjectDir)thirdparty\imgui;$(ProjectDir)thirdparty\kiero;$(ProjectDir)thirdparty\kiero\minhook\include;$(ProjectDir)thirdparty;$(ProjectDir)fonts;$(ProjectDir)Services;$(ProjectDir)Windows;$(ProjectDir)thirdparty\glm;$(ProjectDir)thirdparty\boost_json_archive\include;$(ProjectDir)thirdparty\discordSDK</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_USE_MATH_DEFINES;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DX9_SDK_INSTALLED;GTASA;PLUGIN_SGV_10US;RW;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- /utf-8 /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
@@ -234,6 +234,7 @@
     <ClCompile Include="lz4\lz4.c" />
     <ClCompile Include="lz4\lz4hc.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Services\DiscordService.cpp" />
     <ClCompile Include="Services\WindowsRenderService.cpp" />
     <ClCompile Include="sqlcpp\sqliteBackup.cpp" />
     <ClCompile Include="sqlcpp\sqliteColumn.cpp" />
@@ -247,6 +248,20 @@
     <ClCompile Include="thirdparty\boost_json_archive\src\json_oarchive.cpp" />
     <ClCompile Include="thirdparty\boost_json_archive\src\polymorphic_json_iarchive.cpp" />
     <ClCompile Include="thirdparty\boost_json_archive\src\polymorphic_json_oarchive.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\achievement_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\activity_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\application_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\core.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\image_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\lobby_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\network_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\overlay_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\relationship_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\storage_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\store_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\types.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\user_manager.cpp" />
+    <ClCompile Include="thirdparty\discordSDK\voice_manager.cpp" />
     <ClCompile Include="thirdparty\glm\glm\detail\glm.cpp" />
     <ClCompile Include="thirdparty\imgui\imgui.cpp" />
     <ClCompile Include="thirdparty\imgui\imgui_demo.cpp" />
@@ -436,6 +451,7 @@
     <ClInclude Include="include\singleton.h" />
     <ClInclude Include="lz4\lz4.h" />
     <ClInclude Include="lz4\lz4hc.h" />
+    <ClInclude Include="Services\DiscordService.h" />
     <ClInclude Include="Services\WindowsRenderService.h" />
     <ClInclude Include="sqlite3\sqlite3.h" />
     <ClInclude Include="thirdparty\boost_json_archive\include\boost\archive\json_iarchive.hpp" />
@@ -444,6 +460,23 @@
     <ClInclude Include="thirdparty\boost_json_archive\include\boost\archive\polymorphic_json_oarchive.hpp" />
     <ClInclude Include="thirdparty\boost_json_archive\include\boost\archive\TraitsDetailsHelper.hpp" />
     <ClInclude Include="thirdparty\boost_json_archive\include\boost\JsonContext.hpp" />
+    <ClInclude Include="thirdparty\discordSDK\achievement_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\activity_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\application_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\core.h" />
+    <ClInclude Include="thirdparty\discordSDK\discord.h" />
+    <ClInclude Include="thirdparty\discordSDK\event.h" />
+    <ClInclude Include="thirdparty\discordSDK\ffi.h" />
+    <ClInclude Include="thirdparty\discordSDK\image_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\lobby_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\network_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\overlay_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\relationship_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\storage_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\store_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\types.h" />
+    <ClInclude Include="thirdparty\discordSDK\user_manager.h" />
+    <ClInclude Include="thirdparty\discordSDK\voice_manager.h" />
     <ClInclude Include="thirdparty\glm\glm\common.hpp" />
     <ClInclude Include="thirdparty\glm\glm\detail\compute_common.hpp" />
     <ClInclude Include="thirdparty\glm\glm\detail\compute_vector_relational.hpp" />

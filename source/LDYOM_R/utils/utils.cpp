@@ -5,11 +5,11 @@
 #include <vector>
 #include <extensions/ScriptCommands.h>
 
-#define IMGUI_DEFINE_MATH_OPERATORS
+#include <CSprite.h>
+
 #include "CCamera.h"
 #include "d3dx9tex.h"
 #include "HttpRequester.h"
-#include "imgui.h"
 #include "imgui_internal.h"
 #include "KeyCodes.h"
 #include "Logger.h"
@@ -333,4 +333,14 @@ std::array<float, 4> utils::hexToFloatArrayColor(const std::string &hexColor) {
 	const float a = static_cast<float>(std::stoul(hexValue.substr(6, 2), nullptr, 16)) / 255.0f;
 
 	return {r, g, b, a};
+}
+
+bool utils::getScreenPositionFromGamePosition(const CVector &position, ImVec2 &out) {
+	RwV3d point;
+	float w, h;
+	const bool isVisible = CSprite::CalcScreenCoors(
+		RwV3d{position.x, position.y, position.z}, &point, &w,
+		&h, true, true);
+	out = ImVec2(point.x, point.y);
+	return isVisible;
 }

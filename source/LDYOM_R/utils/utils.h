@@ -12,6 +12,8 @@
 #include <CVector.h>
 #include <filesystem>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui.h"
 #include "../Data/Texture.h"
 
 #include "../Data/IUuidable.h"
@@ -83,6 +85,7 @@ public:
 	static std::string stringFormat(const std::string &format, Args... args);
 	static std::string floatArrayColorToHex(const std::array<float, 4> &color);
 	static std::array<float, 4> hexToFloatArrayColor(const std::string &hexColor);
+	static bool getScreenPositionFromGamePosition(const CVector &position, ImVec2 &out);
 };
 
 template <class T>

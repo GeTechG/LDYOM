@@ -1,5 +1,6 @@
 ﻿#include <CHud.h>
 #include <CMenuManager.h>
+#include <CSprite.h>
 #include <CTheScripts.h>
 #include <CWorld.h>
 
@@ -8,6 +9,7 @@
 #include "CGame.h"
 #include "chrono"
 #include "constants.h"
+#include "DiscordService.h"
 #include "FileWatcher.h"
 #include "HotKeyService.h"
 #include "HotkeysExecutor.h"
@@ -49,6 +51,7 @@ public:
 				hotkeysExecute();
 
 			FileWatcher::runTasks();
+			DiscordService::getInstance().runCallbacks();
 
 			static bool lastFrameMenuActive = false;
 			if (lastFrameMenuActive && !FrontEndMenuManager.m_bMenuActive) {
@@ -92,6 +95,10 @@ public:
 			PopupWeaponSelector::getInstance().Init();
 			PopupSpriteBlipSelector::Init();
 			SaveService::getInstance().Init();
+			DiscordService::getInstance().Init();
+
+			const auto projectName = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name;
+			DiscordService::getInstance().updateActivity(projectName, DiscordActivityType::CREATING);
 
 			ImGuiHook::scaleUi = Settings::getInstance().get<float>("main.scaleUi").value_or(1.0f);
 			ImGuiHook::Hook();

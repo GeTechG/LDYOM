@@ -11,6 +11,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include "CFireManager.h"
+#include "DiscordService.h"
 #include "imgui_notify.h"
 #include "LuaEngine.h"
 #include "ProjectsService.h"
@@ -262,6 +263,9 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 0, 0, 0, 0, 0);
 	this->projectRunning = true;
 
+	const auto projectName = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name;
+	DiscordService::getInstance().updateActivity(projectName, DiscordActivityType::PLAYING);
+
 	const auto startScene = ProjectsService::getInstance().getCurrentProject().getScenes().at(sceneIdx).get();
 	setNextScene(startScene);
 	setNextObjective(startObjective);
@@ -392,6 +396,8 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	openWindowsMenu = false;
 
 	this->projectRunning = false;
+
+	DiscordService::getInstance().updateActivity(projectName, DiscordActivityType::CREATING);
 }
 
 bool& ProjectPlayerService::isProjectRunning() {
