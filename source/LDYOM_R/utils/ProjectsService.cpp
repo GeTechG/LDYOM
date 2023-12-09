@@ -679,7 +679,7 @@ void ProjectsService::saveCurrentProject() {
 
 		std::ofstream file(projectDirectory / "index.json");
 		nlohmann::json j = projectInfo;
-		file << j.dump(4);
+		file << j.dump(4, ' ', false, json::error_handler_t::ignore);
 		file.close();
 	}
 
@@ -688,7 +688,7 @@ void ProjectsService::saveCurrentProject() {
 		std::ofstream file(scenesDirectory / fmt::format("{}.json", pair.first));
 		{
 			json j = *pair.second;
-			file << j.dump(4);
+			file << j.dump(4, ' ', false, json::error_handler_t::ignore);
 		}
 		file.close();
 	}

@@ -28,7 +28,6 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 				{"name", p.name},
 				{"authorName", p.authorName},
 				{"startScene", p.startScene},
-				{"directory", p.directory}
 			};
 		}
 
@@ -36,7 +35,6 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j.at("name").get_to(p.name);
 			j.at("authorName").get_to(p.authorName);
 			j.at("startScene").get_to(p.startScene);
-			j.at("directory").get_to(p.directory);
 		}
 	};
 
