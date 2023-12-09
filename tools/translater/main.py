@@ -19,12 +19,14 @@ default_lang_name = 'Russian'
 
 
 def translate(fields: dict, current_lang: str) -> dict:
+    a = instruction.format(default_lang_name, current_lang)
+    b = json.dumps(fields, ensure_ascii=False)
     completion = client.chat.completions.create(
-        model="gpt-3.5-turbo-16k",
-        # response_format={"type": "json_object"},
+        model="gpt-3.5-turbo-1106",
+        response_format={"type": "json_object"},
         messages=[
-            {"role": "system", "content": instruction.format(default_lang_name, current_lang)},
-            {"role": "user", "content": json.dumps(fields)}
+            {"role": "system", "content": a},
+            {"role": "user", "content": b}
         ]
     )
 
@@ -41,7 +43,7 @@ for root, dirs, files in walk(folder_path):
                 lang = toml.load(f)
                 langs[file[:-5]] = lang
 
-needs_langs = ['Russian', 'Portuguese', 'Polish']
+needs_langs = ['Portuguese', 'Polish', "English"]
 
 
 def translate_langs():
@@ -70,6 +72,7 @@ def translate_langs():
                     if i == 3:
                         time.sleep(62)
                         i = 0
+        time.sleep(10)
 
 
 try:
