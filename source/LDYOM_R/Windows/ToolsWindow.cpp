@@ -29,6 +29,7 @@ void Windows::ToolsWindow::draw() {
 			playerPed->SetPosn(x, y, z);
 			Command<Commands::SET_CHAR_AREA_VISIBLE>(playerPed, 0);
 			Command<Commands::SET_AREA_VISIBLE>(0);
+			Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 		}
 		if (ImGui::Button(local.get("tools.jetpack").c_str())) {
 			Command<Commands::TASK_JETPACK>(static_cast<CPed*>(playerPed));
