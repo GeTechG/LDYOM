@@ -15,7 +15,7 @@ the GTA SA game, focused on creating custom missions. Please consider this conte
 should include a JSON object with the same structure, but with the translated text as the value. The language of 
 translation is {}."""
 
-default_lang_name = 'English'
+default_lang_name = 'Russian'
 
 
 def translate(fields: dict, current_lang: str) -> dict:
