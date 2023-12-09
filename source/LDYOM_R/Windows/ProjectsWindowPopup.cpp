@@ -110,6 +110,10 @@ void Windows::ProjectsWindowPopup::draw() {
 					ImGui::OpenPopup(popupWarningNewProject_.getName().c_str());
 				}
 				ImGui::SameLine();
+				if (ImGui::Button(local.get("projects.save_project").c_str(), ImVec2(widthButton, .0f))) {
+					ProjectsService::getInstance().saveCurrentProject();
+				}
+				ImGui::SameLine();
 				ImGui::BeginDisabled(selected_project == -1);
 				if (ImGui::Button(local.get("projects.load_project").c_str(), ImVec2(widthButton, .0f))) {
 					ImGui::OpenPopup(popupWarningLoadProject_.getName().c_str());
