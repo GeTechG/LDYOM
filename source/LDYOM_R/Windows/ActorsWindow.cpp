@@ -1,4 +1,4 @@
-﻿#include "ActorsWindow.h"
+#include "ActorsWindow.h"
 
 #include <CWorld.h>
 
@@ -61,7 +61,7 @@ void weaponsSection(Actor *actor, Localization &local) {
 		if (ImGui::BeginTable("##weaponsTable", 4, ImGuiTableFlags_ScrollY,
 		                      ImVec2(0, fontSize * 7.5f))) {
 			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, fontSize * 3.75f);
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, fontSize * 7.5f);
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, fontSize * 8.f);
 			ImGui::TableSetupColumn(local.get("general.initial").c_str());
 			ImGui::TableSetupColumn("");
 			ImGui::TableSetupScrollFreeze(4, 1);
@@ -85,9 +85,11 @@ void weaponsSection(Actor *actor, Localization &local) {
 				ImGui::TableNextColumn();
 				ImGui::BeginGroup();
 
+				ImGui::SetNextItemWidth(fontSize * 3);
 				if (ImGui::InputInt(local.get("general.model").c_str(), &weapon.weapon, 0, 0)) {
 					actor->spawnEditorPed();
 				}
+				ImGui::SetNextItemWidth(fontSize * 3);
 				ImGui::InputInt(local.get("weapons.ammo").c_str(), &weapon.ammo, 0, 0);
 				ImGui::EndGroup();
 
