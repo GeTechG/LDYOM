@@ -468,6 +468,7 @@ hk_save_desc = "Save current project"
 hk_guizmoTranslate = "Gizmo - Translate"
 hk_guizmoRotate = "Gizmo - Rotate"
 hk_guizmoScale = "Gizmo - Scale"
+hk_backWindow = "Back to menu"
 
 [object_categories]
 c_all = "All object models"

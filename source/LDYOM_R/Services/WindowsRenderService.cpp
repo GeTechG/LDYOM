@@ -111,7 +111,7 @@ void addWindows() {
 	});
 }
 
-void Windows::WindowsRenderService::Init() const {
+void Windows::WindowsRenderService::Init() {
 	ImGuiHook::windowCallback = [this] {
 		reloadTheme = true;
 		this->render();
@@ -123,19 +123,19 @@ void Windows::WindowsRenderService::Init() const {
 	addWindows();
 }
 
-void Windows::WindowsRenderService::render() const {
+void Windows::WindowsRenderService::render() {
 	if (reloadTheme) {
 		loadTheme();
 		reloadTheme = false;
 	}
 
 	if (!FrontEndMenuManager.m_bMenuActive) {
-		auto currRenderList = renderList_;
+		auto currRenderList = renderList;
 		for (const auto &function : currRenderList | std::views::values)
 			function();
 
 		if (renderWindows_) {
-			for (const auto &window : this->windows_) {
+			for (const auto &window : this->windows) {
 				if (window->isShow()) {
 					window->draw();
 				}
@@ -158,16 +158,16 @@ void Windows::WindowsRenderService::setRenderWindows(const bool renderWindows) {
 
 void Windows::WindowsRenderService::Reset() {
 	this->closeAllWindows();
-	this->renderList_.clear();
+	this->renderList.clear();
 	this->renderWindows_ = true;
-	this->windows_.clear();
+	this->windows.clear();
 	setMouseShown(false);
 
 	addWindows();
 }
 
 std::list<std::unique_ptr<Windows::AbstractWindow>>& Windows::WindowsRenderService::getWindows() {
-	return windows_;
+	return windows;
 }
 
 bool& Windows::WindowsRenderService::isMouseShown() {
@@ -178,17 +178,25 @@ void Windows::WindowsRenderService::setMouseShown(bool mouseShown) {
 	mouseShown_ = mouseShown;
 }
 
+void Windows::WindowsRenderService::undoLastCommand() {
+	if (!commands.empty()) {
+		commands.top()->undo();
+		commands.pop();
+	}
+}
+
 void Windows::WindowsRenderService::addRender(std::string name, std::function<void()> renderFunc) {
-	this->renderList_.emplace(name, renderFunc);
+	this->renderList.emplace(name, renderFunc);
 }
 
 void Windows::WindowsRenderService::removeRender(const std::string name) {
-	this->renderList_.erase(name);
+	this->renderList.erase(name);
 }
 
-void Windows::WindowsRenderService::closeAllWindows() const {
-	for (const auto &window : windows_) {
+void Windows::WindowsRenderService::closeAllWindows() {
+	for (const auto &window : windows) {
 		if (window->isShow())
 			window->close();
 	}
+	this->commands = std::stack<std::unique_ptr<WindowsRenderCommand>>();
 }

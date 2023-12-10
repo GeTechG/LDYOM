@@ -468,6 +468,7 @@ hk_save_desc = "Zapisuje bieżący projekt"
 hk_guizmoTranslate = "Gizmo - Przesuń"
 hk_guizmoRotate = "Gizmo - Obróć"
 hk_guizmoScale = "Gizmo - Skaluj"
+hk_backWindow = "Powrót do poprzedniego menu"
 
 [object_categories]
 c_all = "Wszystkie modele obiektów"

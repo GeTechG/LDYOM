@@ -26,56 +26,46 @@ void Windows::EntitiesWindow::draw() {
 	                 ImGuiWindowFlags_AlwaysAutoResize)) {
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_RUNNING, local.get("entities.actors")).c_str(),
 		                  ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
-			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<ActorsWindow>(true);
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, ActorsWindow>();
 		}
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_CARS, local.get("entities.vehicles")).c_str(),
 		                  ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
-			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<VehiclesWindow>(true);
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, VehiclesWindow>();
 		}
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_CUBES, local.get("entities.objects")).c_str(),
 		                  ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
-			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<ObjectsWindow>(true);
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, ObjectsWindow>();
 		}
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_SPARKLES, local.get("entities.particles")).c_str(),
 		                  ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
-			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<ParticlesWindow>(true);
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, ParticlesWindow>();
 		}
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_TRAIN, local.get("entities.trains")).c_str(),
 		                  ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
-			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<TrainsWindow>(true);
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, TrainsWindow>();
 		}
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_HEART, local.get("entities.pickups")).c_str(),
 		                  ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
-			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<PickupsWindow>(true);
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, PickupsWindow>();
 		}
 		if (ImGui::Button(fmt::format("{} {}", ICON_FA_FIRE_ALT, local.get("entities.pyrotechnics")).c_str(),
 		                  ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
-			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<PyrotechnicsWindow>(true);
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, PyrotechnicsWindow>();
 		}
 		if (ImGui::Button(
 			fmt::format("{} {}", ICON_FA_VOLUME, Localization::getInstance().get("entities.audio")).c_str(),
 			ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
-			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<AudioWindow>(true);
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, AudioWindow>();
 		}
 		if (ImGui::Button(
 			fmt::format("{} {}", ICON_FA_SPARKLES, Localization::getInstance().get("entities.visual_effects")).c_str(),
 			ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
-			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<VisualEffectsWindow>(true);
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, VisualEffectsWindow>();
 		}
 		if (ImGui::Button(
 			fmt::format("{} {}", ICON_FA_MAP_MARKER_ALT, Localization::getInstance().get("entities.checkpoints")).
 			c_str(), ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
-			WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(false);
-			WindowsRenderService::getInstance().toggleWindow<CheckpointsWindow>(true);
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, CheckpointsWindow>();
 		}
 	}
 	ImGui::End();

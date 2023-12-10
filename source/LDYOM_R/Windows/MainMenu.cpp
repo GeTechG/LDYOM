@@ -29,13 +29,11 @@ namespace Windows {
 		if (ImGui::Begin(local.get("main_menu.title").c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_TASKS, local.get("objective.objectives")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
-				WindowsRenderService::getInstance().toggleWindow<ObjectivesWindow>(true);
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, ObjectivesWindow>();
 			}
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SHAPES, local.get("entities.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
-				WindowsRenderService::getInstance().toggleWindow<EntitiesWindow>(true);
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, EntitiesWindow>();
 			}
 
 			ImGui::Separator();
@@ -47,8 +45,7 @@ namespace Windows {
 			}
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_ADDRESS_CARD, local.get("project_info.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
-				WindowsRenderService::getInstance().toggleWindow<ProjectInfoWindow>(true);
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, ProjectInfoWindow>();
 			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SAVE, local.get("general.save")).c_str(),
@@ -91,32 +88,27 @@ namespace Windows {
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_QUESTION_CIRCLE, local.get("faq.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
-				WindowsRenderService::getInstance().toggleWindow<FAQWindow>(true);
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, FAQWindow>();
 			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_INFO, local.get("info.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
-				WindowsRenderService::getInstance().toggleWindow<InfoWindow>(true);
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, InfoWindow>();
 			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_TOOLS, local.get("tools.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
-				WindowsRenderService::getInstance().toggleWindow<ToolsWindow>(true);
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, ToolsWindow>();
 			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_COGS, local.get("settings.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
-				WindowsRenderService::getInstance().toggleWindow<SettingsWindow>(true);
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, SettingsWindow>();
 			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SCROLL, local.get("console_window.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				WindowsRenderService::getInstance().toggleWindow<MainMenu>(false);
-				WindowsRenderService::getInstance().toggleWindow<ConsoleWindow>(true);
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, ConsoleWindow>();
 			}
 
 			this->projectsWindowPopup_.draw();

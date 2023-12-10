@@ -1,17 +1,21 @@
 ﻿#pragma once
+#include <stack>
 #include <boost/signals2/signal.hpp>
 
 #include "AbstractWindow.h"
+#include "WindowsRenderCommand.h"
 
 namespace Windows {
 	class AbstractWindow;
 
 	class WindowsRenderService {
 	private:
-		std::list<std::unique_ptr<AbstractWindow>> windows_;
-		std::map<std::string, std::function<void()>> renderList_;
+		std::list<std::unique_ptr<AbstractWindow>> windows;
+		std::map<std::string, std::function<void()>> renderList;
 		bool mouseShown_ = false;
 		bool renderWindows_ = true;
+		std::stack<std::unique_ptr<WindowsRenderCommand>> commands;
+
 
 		WindowsRenderService() = default;
 		WindowsRenderService(const WindowsRenderService &root) = delete;
@@ -23,9 +27,9 @@ namespace Windows {
 			return instance;
 		}
 
-		void Init() const;
+		void Init();
 
-		void render() const;
+		void render();
 		static void style();
 
 		bool& isRenderWindows();
@@ -37,7 +41,12 @@ namespace Windows {
 		void setMouseShown(bool mouseShown);
 
 		template <typename Base>
-		void toggleWindow(bool status) const;
+		void toggleWindow(bool status);
+
+		template <typename Base, typename Replace>
+		void replaceWindow();
+
+		void undoLastCommand();
 
 		template <typename Base>
 		Base* getWindow() const;
@@ -45,21 +54,24 @@ namespace Windows {
 		void addRender(std::string name, std::function<void()> renderFunc);
 		void removeRender(std::string name);
 
-		void closeAllWindows() const;
+		void closeAllWindows();
 	};
 
 	template <typename Base>
-	void WindowsRenderService::toggleWindow(bool status) const {
-		AbstractWindow *window = getWindow<Base>();
-		if (status)
-			window->open();
-		else
-			window->close();
+	void WindowsRenderService::toggleWindow(bool status) {
+		this->commands.push(std::make_unique<ToggleWindowsRenderCommand>(getWindow<Base>(), status));
+		this->commands.top()->execute();
+	}
+
+	template <typename Base, typename Replace>
+	void WindowsRenderService::replaceWindow() {
+		this->commands.push(std::make_unique<ReplaceWindowsRenderCommand>(getWindow<Base>(), getWindow<Replace>()));
+		this->commands.top()->execute();
 	}
 
 	template <typename Base>
 	Base* WindowsRenderService::getWindow() const {
-		for (const auto &window : windows_) {
+		for (const auto &window : windows) {
 			if (dynamic_cast<const Base*>(window.get()) != nullptr) {
 				return reinterpret_cast<Base*>(window.get());
 			}

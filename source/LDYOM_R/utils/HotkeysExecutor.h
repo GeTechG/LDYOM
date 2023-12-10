@@ -24,6 +24,7 @@ void inline hotkeysExecute() {
 	static bool openPress = false;
 	static bool openFastMenu = false;
 	static bool saveHotkey = false;
+	static bool backWindow = false;
 	if (hotkey != nullptr) {
 		if (std::strcmp(hotkey->functionName, "openMenu") == 0 && !openPress) {
 			openWindowsMenu ^= TRUE;
@@ -37,11 +38,15 @@ void inline hotkeysExecute() {
 		} else if (std::strcmp(hotkey->functionName, "save") == 0 && !saveHotkey) {
 			ProjectsService::getInstance().saveCurrentProject();
 			saveHotkey = true;
+		} else if (std::strcmp(hotkey->functionName, "backWindow") == 0 && !backWindow) {
+			Windows::WindowsRenderService::getInstance().undoLastCommand();
+			backWindow = true;
 		}
 	} else {
 		openPress = false;
 		openFastMenu = false;
 		saveHotkey = false;
+		backWindow = false;
 	}
 
 	if (openFastMenu)

@@ -25,6 +25,7 @@ void HotKeyService::Init() {
 	hotkeys_.emplace_back("guizmoTranslate", 0xFFFFFF14);
 	hotkeys_.emplace_back("guizmoRotate", 0xFFFFFF13);
 	hotkeys_.emplace_back("guizmoScale", 0xFFFFFF1F);
+	hotkeys_.emplace_back("backWindow", 0xFFFFFF21);
 	try {
 		loadHotKeys();
 	} catch (std::exception exception) {

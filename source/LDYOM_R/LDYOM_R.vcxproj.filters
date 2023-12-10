@@ -407,6 +407,9 @@
     <Filter Include="thirdparty\discordSDK">
       <UniqueIdentifier>{fd6b59d3-5885-4c7f-bcd3-ccdd7f2a360e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\WindowsRenderService">
+      <UniqueIdentifier>{b4fcb99e-24ad-4334-8ac9-006111158315}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -909,9 +912,6 @@
     <ClCompile Include="ImGui\ImGuiHook.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Services\WindowsRenderService.cpp">
-      <Filter>Services</Filter>
-    </ClCompile>
     <ClCompile Include="utils\pch.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
@@ -980,6 +980,12 @@
     </ClCompile>
     <ClCompile Include="Services\DiscordService.cpp">
       <Filter>Services</Filter>
+    </ClCompile>
+    <ClCompile Include="Services\WindowsRenderCommand.cpp">
+      <Filter>Services\WindowsRenderService</Filter>
+    </ClCompile>
+    <ClCompile Include="Services\WindowsRenderService.cpp">
+      <Filter>Services\WindowsRenderService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1472,9 +1478,6 @@
     </ClInclude>
     <ClInclude Include="ImGui\ImGuiHook.h">
       <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Services\WindowsRenderService.h">
-      <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="thirdparty\glm\glm\common.hpp">
       <Filter>thirdparty\glm</Filter>
@@ -2453,6 +2456,12 @@
     </ClInclude>
     <ClInclude Include="Services\DiscordService.h">
       <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\WindowsRenderCommand.h">
+      <Filter>Services\WindowsRenderService</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\WindowsRenderService.h">
+      <Filter>Services\WindowsRenderService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
