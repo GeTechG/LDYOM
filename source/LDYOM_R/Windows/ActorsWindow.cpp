@@ -1,3 +1,4 @@
+﻿#define NOMINMAX
 #include "ActorsWindow.h"
 
 #include <CWorld.h>
@@ -103,8 +104,8 @@ void weaponsSection(Actor *actor, Localization &local) {
 				if (ImGui::Button(ICON_FA_TRASH_ALT, ImVec2(25.0f, 0.0f))) {
 					actor->getWeapons().erase(actor->getWeapons().begin() + i);
 					i = static_cast<int>(actor->getWeapons().size());
-					actor->getDefaultWeapon() = CLAMP(actor->getDefaultWeapon(), 0,
-					                                  static_cast<int>(actor->getWeapons().size() - 1));
+					actor->getDefaultWeapon() = std::max(
+						std::min(static_cast<int>(actor->getWeapons().size() - 1), actor->getDefaultWeapon()), 0);
 					actor->spawnEditorPed();
 				}
 

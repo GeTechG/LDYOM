@@ -1,4 +1,5 @@
-﻿#include "AddWeaponsPlayerObjective.h"
+﻿#define NOMINMAX
+#include "AddWeaponsPlayerObjective.h"
 
 #include <CStreaming.h>
 #include <CWeaponInfo.h>
@@ -57,7 +58,8 @@ void AddWeaponsPlayerObjective::draw(Localization &local, std::vector<std::strin
 			if (ImGui::Button(ICON_FA_TRASH, ImVec2(25.0f, 0.0f))) {
 				this->weapons_.erase(this->weapons_.begin() + i);
 				i = static_cast<int>(this->weapons_.size());
-				this->defaultWeapon_ = min(this->defaultWeapon_, static_cast<int>(this->weapons_.size()) - 1);
+				this->defaultWeapon_ = std::max(std::min(static_cast<int>(this->weapons_.size()) - 1,
+				                                         this->defaultWeapon_), 0);
 			}
 
 			ImGui::PopID();
