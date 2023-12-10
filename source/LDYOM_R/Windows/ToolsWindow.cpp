@@ -32,7 +32,9 @@ void Windows::ToolsWindow::draw() {
 			Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 		}
 		if (ImGui::Button(local.get("tools.jetpack").c_str())) {
-			Command<Commands::TASK_JETPACK>(static_cast<CPed*>(playerPed));
+			if (!Command<Commands::IS_PLAYER_USING_JETPACK>(0)) {
+				Command<Commands::TASK_JETPACK>(static_cast<CPed*>(playerPed));
+			}
 		}
 		if (ImGui::Checkbox(local.get("tools.enexMarker").c_str(), &enexMarker)) {
 			Command<Commands::DISABLE_ALL_ENTRY_EXITS>(static_cast<int>(enexMarker));
