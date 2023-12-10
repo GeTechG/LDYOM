@@ -11,6 +11,7 @@
 #include "FileWatcher.h"
 #include "imgui_notify.h"
 #include "LuaEngine.h"
+#include "strUtils.h"
 #include "utils.h"
 #include "WindowsRenderService.h"
 #include "../Data/AddMoneyPlayerObjective.h"
@@ -553,7 +554,8 @@ void ProjectsService::update() {
 			auto a = 1;
 		} else {
 			if (entry.path().extension() == ".ldpack") {
-				auto zip = zip_open(entry.path().string().c_str(), NULL, 'r');
+				auto entryPath = wstrToUtf8Str(entry.path().wstring());
+				auto zip = zip_open(entryPath.c_str(), NULL, 'r');
 				if (zip_entry_open(zip, "index.json") == 0) {
 					size_t indexSize;
 					void *indexBytes;
@@ -605,9 +607,10 @@ void ProjectsService::createNewProject() {
 bool zipWalk(zip_t *zip, const std::filesystem::path &path) {
 	for (const auto &entry : std::filesystem::recursive_directory_iterator(path)) {
 		if (entry.is_regular_file()) {
-			zip_entry_open(zip, entry.path().lexically_relative(path).string().c_str());
+			auto entryPath = wstrToUtf8Str(entry.path().lexically_relative(path).wstring());
+			zip_entry_open(zip, entryPath.c_str());
 
-			auto filePath = entry.path().string();
+			auto filePath = wstrToUtf8Str(entry.path().wstring());
 			if (const int resultWrite = zip_entry_fwrite(zip, filePath.c_str()); resultWrite < 0) {
 				CLOG(ERROR, "LDYOM") << "Error archive directory - " << path.string() << ", error: " << resultWrite;
 				return false;
@@ -642,8 +645,8 @@ void ProjectsService::saveCurrentProject() {
 			if (checkError(ec)) return;
 		}
 
-		auto backupPath = (BACKUPS_PATH / fmt::format("{}_{}.zip", projectDirectoryName.string(), time(nullptr))).
-			string();
+		auto backupPath = (BACKUPS_PATH / fmt::format("{}_{}.zip", this->getCurrentProject().getProjectInfo()->name,
+		                                              time(nullptr))).string();
 		auto zip = zip_open(backupPath.c_str(), 9, 'w');
 		if (!zipWalk(zip, this->currentDirectory_.value()))
 			return;
@@ -786,8 +789,10 @@ void ProjectsService::loadProductionProject(int projectIdx) {
 		remove_all(projectDirectory);
 	}
 	if (create_directory(projectDirectory)) {
-		auto code = zip_extract(productionProjectsInfos_.at(projectIdx)->directory.string().c_str(),
-		                        projectDirectory.string().c_str(), nullptr, nullptr);
+		const auto extractPath = wstrToUtf8Str(productionProjectsInfos_.at(projectIdx)->directory.wstring());
+		const auto extractToDir = wstrToUtf8Str(projectDirectory.wstring());
+		auto code = zip_extract(extractPath.c_str(),
+		                        extractToDir.c_str(), nullptr, nullptr);
 		this->loadProjectData(projectDirectory);
 		this->getCurrentProject().getCurrentSceneIndex() = productionProjectsInfos_.at(projectIdx)->startScene;
 	}
@@ -804,8 +809,9 @@ void ProjectsService::deleteProductionProject(int projectIdx) const {
 }
 
 void ProjectsService::makeProjectProduction(int projectIdx) const {
-	auto zip = zip_open(
-		(PROJECTS_PATH / fmt::format("{}.ldpack", this->projectsInfos_.at(projectIdx)->name)).string().c_str(), 9, 'w');
+	const auto pathToPack = (PROJECTS_PATH / fmt::format("{}.ldpack", this->projectsInfos_.at(projectIdx)->name)).
+		string();
+	const auto zip = zip_open(pathToPack.c_str(), 9, 'w');
 	if (!zipWalk(zip, this->projectsInfos_.at(projectIdx)->directory))
 		return;
 	zip_close(zip);
