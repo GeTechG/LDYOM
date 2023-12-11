@@ -1,4 +1,5 @@
-﻿#include "TeleportPlayerObjective.h"
+﻿#define NOMINMAX
+#include "TeleportPlayerObjective.h"
 
 #include <CCamera.h>
 #include <CGame.h>
@@ -11,8 +12,10 @@
 #include "CClothes.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include "fa.h"
 #include "imgui.h"
 #include "ModelsService.h"
+#include "PopupWeaponSelector.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
@@ -72,6 +75,22 @@ CPed* TeleportPlayerObjective::spawnPed() {
 		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
 	}
 
+	for (const auto &[weaponRaw, ammo] : this->weapons) {
+		int weapon = ModelsService::validWeaponModel(weaponRaw);
+		const int weaponModel = CWeaponInfo::GetWeaponInfo(static_cast<eWeaponType>(weapon), 1)->m_nModelId1;
+
+		CStreaming::RequestModel(weaponModel, GAME_REQUIRED);
+		CStreaming::LoadAllRequestedModels(false);
+
+		ped->GiveWeapon(static_cast<eWeaponType>(weapon), ammo, false);
+
+		CStreaming::SetMissionDoesntRequireModel(weaponModel);
+	}
+	if (!this->weapons.empty()) {
+		int currentWeapon = this->weapons.at(this->defaultWeapon).weapon;
+		ped->SetCurrentWeapon(static_cast<eWeaponType>(currentWeapon));
+	}
+
 	ped->DisablePedSpeech(1);
 
 	return ped;
@@ -118,8 +137,77 @@ std::array<unsigned, 10>& TeleportPlayerObjective::getClotherMAnModelKeys() { re
 std::array<unsigned, 18>& TeleportPlayerObjective::getClotherMAnTextureKeys() { return clotherMAnTextureKeys_; }
 float& TeleportPlayerObjective::getFatStat() { return fatStat; }
 float& TeleportPlayerObjective::getMusculeStat() { return musculeStat; }
+std::vector<Weapon>& TeleportPlayerObjective::getWeapons() { return weapons; }
+int& TeleportPlayerObjective::getDefaultWeapon() { return defaultWeapon; }
 std::optional<CPed*>& TeleportPlayerObjective::getEditorPed() { return editorPed_; }
 
+
+void weaponsSection(TeleportPlayerObjective *objective, Localization &local) {
+	if (ImGui::TreeNode(local.get("general.weapons").c_str())) {
+		const auto fontSize = ImGui::GetFontSize();
+		if (ImGui::BeginTable("##weaponsTable", 4, ImGuiTableFlags_ScrollY,
+		                      ImVec2(0, fontSize * 7.5f))) {
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, fontSize * 3.75f);
+			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, fontSize * 8.f);
+			ImGui::TableSetupColumn(local.get("general.initial").c_str());
+			ImGui::TableSetupColumn("");
+			ImGui::TableSetupScrollFreeze(4, 1);
+			ImGui::TableHeadersRow();
+
+			for (int i = 0; i < static_cast<int>(objective->getWeapons().size()); ++i) {
+				auto &weapon = objective->getWeapons().at(i);
+
+				ImGui::PushID(i);
+
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				PopupWeaponSelector::getInstance().weaponButton(&weapon.weapon);
+
+				PopupWeaponSelector::getInstance().renderPopup([&weapon, &objective](const int weaponId) {
+					weapon.weapon = weaponId;
+					objective->spawnEditorPed();
+				});
+
+
+				ImGui::TableNextColumn();
+				ImGui::BeginGroup();
+
+				ImGui::SetNextItemWidth(fontSize * 3);
+				if (ImGui::InputInt(local.get("general.model").c_str(), &weapon.weapon, 0, 0)) {
+					objective->spawnEditorPed();
+				}
+				ImGui::SetNextItemWidth(fontSize * 3);
+				ImGui::InputInt(local.get("weapons.ammo").c_str(), &weapon.ammo, 0, 0);
+				ImGui::EndGroup();
+
+				ImGui::TableNextColumn();
+				if (ImGui::RadioButton(fmt::format("##{}", i).c_str(), &objective->getDefaultWeapon(), i)) {
+					if (objective->getEditorPed().has_value())
+						objective->getEditorPed().value()->SetCurrentWeapon(static_cast<eWeaponType>(weapon.weapon));
+				}
+
+				ImGui::TableNextColumn();
+				if (ImGui::Button(ICON_FA_TRASH_ALT, ImVec2(25.0f, 0.0f))) {
+					objective->getWeapons().erase(objective->getWeapons().begin() + i);
+					i = static_cast<int>(objective->getWeapons().size());
+					objective->getDefaultWeapon() = std::max(
+						std::min(static_cast<int>(objective->getWeapons().size() - 1), objective->getDefaultWeapon()),
+						0);
+					objective->spawnEditorPed();
+				}
+
+				ImGui::PopID();
+			}
+			ImGui::EndTable();
+		}
+		if (ImGui::Button(local.get("general.add").c_str(), ImVec2(ImGui::GetContentRegionAvail().x - 1.0f, 0.0f))) {
+			objective->getWeapons().emplace_back(1, 0);
+			objective->spawnEditorPed();
+		}
+
+		ImGui::TreePop();
+	}
+}
 
 void TeleportPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	//position
@@ -152,6 +240,8 @@ void TeleportPlayerObjective::draw(Localization &local, std::vector<std::string>
 	}
 
 	characteristicsSection(local);
+
+	weaponsSection(this, local);
 
 	listOverlay.emplace_back(local.get("info_overlay.camera_view"));
 	listOverlay.emplace_back(local.get("info_overlay.depend_zoom"));
@@ -211,6 +301,22 @@ ktwait TeleportPlayerObjective::execute(Scene *scene, Result &result, ktcoro_tas
 		playerClothes->m_fFatStat = this->fatStat;
 		playerClothes->m_fMuscleStat = this->musculeStat;
 		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
+	}
+
+	for (const auto &[weaponRaw, ammo] : this->weapons) {
+		int weapon = ModelsService::validWeaponModel(weaponRaw);
+		const int weaponModel = CWeaponInfo::GetWeaponInfo(static_cast<eWeaponType>(weapon), 1)->m_nModelId1;
+
+		CStreaming::RequestModel(weaponModel, GAME_REQUIRED);
+		CStreaming::LoadAllRequestedModels(false);
+
+		playerPed->GiveWeapon(static_cast<eWeaponType>(weapon), ammo, false);
+
+		CStreaming::SetMissionDoesntRequireModel(weaponModel);
+	}
+	if (!this->weapons.empty()) {
+		int currentWeapon = this->weapons.at(this->defaultWeapon).weapon;
+		playerPed->SetCurrentWeapon(static_cast<eWeaponType>(currentWeapon));
 	}
 
 	co_return;

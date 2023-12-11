@@ -2,6 +2,7 @@
 #include <CPed.h>
 
 #include "PlayerObjective.h"
+#include "Weapon.h"
 
 class CVector;
 
@@ -19,6 +20,8 @@ private:
 	std::array<unsigned, 18> clotherMAnTextureKeys_{};
 	float fatStat = 1.f;
 	float musculeStat = 1.f;
+	std::vector<Weapon> weapons;
+	int defaultWeapon{};
 
 	std::optional<CPed*> editorPed_;
 
@@ -46,6 +49,8 @@ public:
 	std::array<unsigned, 18>& getClotherMAnTextureKeys();
 	float& getFatStat();
 	float& getMusculeStat();
+	std::vector<Weapon>& getWeapons();
+	int& getDefaultWeapon();
 	std::optional<CPed*>& getEditorPed();
 
 	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
@@ -75,6 +80,8 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j["clotherMAnTextureKeys"] = a.getClotherMAnTextureKeys();
 			j["fatStat"] = a.getFatStat();
 			j["musculeStat"] = a.getMusculeStat();
+			j["weapons"] = a.getWeapons();
+			j["defaultWeapon"] = a.getDefaultWeapon();
 		}
 
 		static void from_json(const json &j, TeleportPlayerObjective &obj) {
@@ -93,6 +100,8 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j.at("clotherMAnTextureKeys").get_to(obj.getClotherMAnTextureKeys());
 			j.at("fatStat").get_to(obj.getFatStat());
 			j.at("musculeStat").get_to(obj.getMusculeStat());
+			j.at("weapons").get_to(obj.getWeapons());
+			j.at("defaultWeapon").get_to(obj.getDefaultWeapon());
 		}
 	};
 
