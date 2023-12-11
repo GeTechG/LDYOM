@@ -347,7 +347,8 @@ void TeleportPlayerObjective::deleteEditorPed() {
 
 	if (this->editorPed_.has_value() && !restart) {
 		int pedRef = CPools::GetPedRef(this->editorPed_.value());
-		Command<Commands::DELETE_CHAR>(pedRef);
+		if (CPools::ms_pPedPool->IsObjectValid(this->editorPed_.value()))
+			Command<Commands::DELETE_CHAR>(pedRef);
 		this->editorPed_ = std::nullopt;
 	}
 }
