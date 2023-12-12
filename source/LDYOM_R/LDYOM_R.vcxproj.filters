@@ -410,6 +410,9 @@
     <Filter Include="Services\WindowsRenderService">
       <UniqueIdentifier>{b4fcb99e-24ad-4334-8ac9-006111158315}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\PedExtended">
+      <UniqueIdentifier>{0722d294-3b52-4401-9650-ce9bfac4bcfe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -986,6 +989,9 @@
     </ClCompile>
     <ClCompile Include="Services\WindowsRenderService.cpp">
       <Filter>Services\WindowsRenderService</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\PedExtended.cpp">
+      <Filter>Data\PedExtended</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2462,6 +2468,9 @@
     </ClInclude>
     <ClInclude Include="Services\WindowsRenderService.h">
       <Filter>Services\WindowsRenderService</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\PedExtended.h">
+      <Filter>Data\PedExtended</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

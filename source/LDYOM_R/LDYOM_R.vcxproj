@@ -197,6 +197,7 @@
     <ClCompile Include="Data\ObjectiveDependent.cpp" />
     <ClCompile Include="Data\ObjectObjective.cpp" />
     <ClCompile Include="Data\Particle.cpp" />
+    <ClCompile Include="Data\PedExtended.cpp" />
     <ClCompile Include="Data\PhoneCallPlayerObjective.cpp" />
     <ClCompile Include="Data\PhotographObjectObjective.cpp" />
     <ClCompile Include="Data\Pickup.cpp" />
@@ -396,6 +397,7 @@
     <ClInclude Include="Data\ObjectiveDependent.h" />
     <ClInclude Include="Data\ObjectObjective.h" />
     <ClInclude Include="Data\Particle.h" />
+    <ClInclude Include="Data\PedExtended.h" />
     <ClInclude Include="Data\PhoneCallPlayerObjective.h" />
     <ClInclude Include="Data\PhotographObjectObjective.h" />
     <ClInclude Include="Data\Pickup.h" />
