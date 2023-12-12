@@ -7,9 +7,11 @@
 #include "EditByPlayerService.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
+#include "PedExtended.h"
 #include "ProjectsService.h"
 #include "strUtils.h"
 #include "utils.h"
+#include "WindowsRenderService.h"
 #include "../Windows/utilsRender.h"
 
 FollowPathActorObjective::FollowPathActorObjective(void *_new): BaseObjective(_new) {
@@ -54,20 +56,49 @@ ktwait FollowPathActorObjective::execute(Scene *scene, Actor *actor, Result &res
 		int step = 1;
 		int index = 0;
 		const auto startTime = CTimer::m_snTimeInMilliseconds;
+
+		auto startFindTime = CTimer::m_snTimeInMilliseconds;
+
 		while (execute) {
 			float x = _this->getPath().at(index)[0];
 			float y = _this->getPath().at(index)[1];
 			float z = _this->getPath().at(index)[2];
-			Command<Commands::TASK_GO_STRAIGHT_TO_COORD>(actor->getProjectPed().value(), x, y, z,
+			auto ped = actor->getProjectPed().value();
+			Command<Commands::TASK_GO_STRAIGHT_TO_COORD>(ped, x, y, z,
 			                                             moveState[_this->getMoveType()], -1);
 
 			auto timeCondition = _this->getPathType() == 0 || CTimer::m_snTimeInMilliseconds - startTime < static_cast<
 				unsigned>(_this->getExecuteTime() * 1000.f);
 			const auto reachDistance = _this->getMoveType() == 0 ? 0.5f : 1.f;
-			while (DistanceBetweenPoints(CVector(x, y, z), actor->getProjectPed().value()->GetPosition()) >
+			while (DistanceBetweenPoints(CVector(x, y, z), ped->GetPosition()) >
 				reachDistance && timeCondition) {
 				timeCondition = _this->getPathType() == 0 || CTimer::m_snTimeInMilliseconds - startTime < static_cast<
 					unsigned>(_this->getExecuteTime() * 1000.f);
+
+				for (auto &m_aPrimaryTask : ped->m_pIntelligence->m_TaskMgr.m_aPrimaryTasks) {
+					auto aPrimaryTask = m_aPrimaryTask;
+					if (aPrimaryTask != nullptr) {
+						if (aPrimaryTask->GetId() == TASK_COMPLEX_KILL_PED_ON_FOOT) {
+							const auto target = *reinterpret_cast<CPed**>(reinterpret_cast<uintptr_t>(aPrimaryTask) +
+								16);
+							if (target != nullptr) {
+								if (!Command<Commands::HAS_CHAR_SPOTTED_CHAR>(ped, target)) {
+									if (startFindTime == 0) {
+										startFindTime = CTimer::m_snTimeInMilliseconds;
+									} else if (CTimer::m_snTimeInMilliseconds - startFindTime > 5000) {
+										delete aPrimaryTask;
+										m_aPrimaryTask = nullptr;
+										Command<Commands::TASK_GO_STRAIGHT_TO_COORD>(ped, x, y, z,
+											moveState[_this->getMoveType()], -1);
+									}
+								} else {
+									startFindTime = 0;
+								}
+							}
+						}
+					}
+				}
+
 				co_await 1;
 			}
 
