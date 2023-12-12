@@ -1,6 +1,7 @@
 ﻿#define NOMINMAX
 #include "ActorsWindow.h"
 
+#include <CGame.h>
 #include <CWorld.h>
 
 #include <extensions/ScriptCommands.h>
@@ -156,7 +157,10 @@ void Windows::ActorsWindow::drawOptions() {
 		this->currentElement).get();
 
 	//position
-	InputPosition(actor->getPosition(), [actor] { actor->updateLocation(); });
+	InputPosition(actor->getPosition(), [actor] {
+		actor->getInteriorId() = CGame::currArea;
+		actor->updateLocation();
+	});
 	//heading
 	DragAngleRotation(&actor->getHeadingAngle(), [actor] { actor->updateLocation(); });
 

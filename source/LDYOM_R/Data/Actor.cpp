@@ -176,6 +176,8 @@ CPed* Actor::spawnPed() {
 	Command<Commands::SET_CHAR_SUFFERS_CRITICAL_HITS>(newPed, static_cast<int>(this->headshot));
 	ped->m_nPedFlags.bDoesntDropWeaponsWhenDead = static_cast<unsigned>(!this->dropWeapons);
 
+	Command<Commands::SET_CHAR_AREA_VISIBLE>(ped, this->interiorId);
+
 	return ped;
 }
 
@@ -297,6 +299,8 @@ float& Actor::getFatStat() {
 float& Actor::getMusculeStat() {
 	return musculeStat;
 }
+
+int& Actor::getInteriorId() { return interiorId; }
 
 boost::uuids::uuid& Actor::getUuid() {
 	return uuid;

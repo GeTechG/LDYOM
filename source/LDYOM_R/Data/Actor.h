@@ -39,6 +39,7 @@ private:
 	std::array<unsigned, 18> clotherMAnTextureKeys{};
 	float fatStat = 1.f;
 	float musculeStat = 1.f;
+	int interiorId = 0;
 
 	boost::signals2::signal<void()> signalDeleteActor;
 
@@ -77,7 +78,8 @@ public:
 		  clotherMAnModelKeys(other.clotherMAnModelKeys),
 		  clotherMAnTextureKeys(other.clotherMAnTextureKeys),
 		  fatStat(other.fatStat),
-		  musculeStat(other.musculeStat) {}
+		  musculeStat(other.musculeStat),
+		  interiorId(other.interiorId) {}
 
 	Actor(Actor &&other) noexcept
 		: ObjectiveDependent(other),
@@ -108,7 +110,8 @@ public:
 		  clotherMAnModelKeys(other.clotherMAnModelKeys),
 		  clotherMAnTextureKeys(other.clotherMAnTextureKeys),
 		  fatStat(other.fatStat),
-		  musculeStat(other.musculeStat) {}
+		  musculeStat(other.musculeStat),
+		  interiorId(other.interiorId) {}
 
 	Actor& operator=(const Actor &other) {
 		if (this == &other)
@@ -142,6 +145,7 @@ public:
 		clotherMAnTextureKeys = other.clotherMAnTextureKeys;
 		fatStat = other.fatStat;
 		musculeStat = other.musculeStat;
+		interiorId = other.interiorId;
 		return *this;
 	}
 
@@ -177,6 +181,7 @@ public:
 		clotherMAnTextureKeys = other.clotherMAnTextureKeys;
 		fatStat = other.fatStat;
 		musculeStat = other.musculeStat;
+		interiorId = other.interiorId;
 		return *this;
 	}
 
@@ -208,6 +213,7 @@ public:
 	std::array<unsigned, 18>& getClotherMAnTextureKeys();
 	float& getFatStat();
 	float& getMusculeStat();
+	int& getInteriorId();
 	boost::uuids::uuid& getUuid() override;
 
 	boost::signals2::signal<void()>& getSignalDeleteActor();
@@ -253,6 +259,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j["clotherMAnTextureKeys"] = a.getClotherMAnTextureKeys();
 			j["musculeStat"] = a.getMusculeStat();
 			j["fatStat"] = a.getFatStat();
+			j["interiorId"] = a.getInteriorId();
 		}
 
 		static void from_json(const json &j, Actor &obj) {
@@ -281,6 +288,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j.at("clotherMAnTextureKeys").get_to(obj.getClotherMAnTextureKeys());
 			j.at("musculeStat").get_to(obj.getMusculeStat());
 			j.at("fatStat").get_to(obj.getFatStat());
+			j.at("interiorId").get_to(obj.getInteriorId());
 		}
 	};
 
