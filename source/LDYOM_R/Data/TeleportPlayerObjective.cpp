@@ -93,6 +93,8 @@ CPed* TeleportPlayerObjective::spawnPed() {
 
 	ped->DisablePedSpeech(1);
 
+	Command<Commands::SET_CHAR_AREA_VISIBLE>(ped, this->interiorID_);
+
 	return ped;
 }
 
