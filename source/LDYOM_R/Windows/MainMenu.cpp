@@ -40,8 +40,12 @@ namespace Windows {
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_THEATER_MASKS, local.get("projects.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				this->projectsWindowPopup_.setShow(true);
-				ImGui::OpenPopup(fmt::format("{} {}", ICON_FA_THEATER_MASKS, local.get("projects.title")).c_str());
+				WindowsRenderService::getInstance().addCommand(std::make_unique<CustomWindowsRenderCommand>([&] {
+					this->projectsWindowPopup_.setShow(true);
+					ImGui::OpenPopup(fmt::format("{} {}", ICON_FA_THEATER_MASKS, local.get("projects.title")).c_str());
+				}, [&] {
+					this->projectsWindowPopup_.setShow(false);
+				}));
 			}
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_ADDRESS_CARD, local.get("project_info.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
@@ -55,14 +59,23 @@ namespace Windows {
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_LANDMARK, local.get("scenes.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				this->popupScenes_.open();
-				ImGui::OpenPopup(fmt::format("{} {}", ICON_FA_LANDMARK, local.get("scenes.title")).c_str());
+				WindowsRenderService::getInstance().addCommand(std::make_unique<CustomWindowsRenderCommand>([&] {
+					this->popupScenes_.open();
+					ImGui::OpenPopup(fmt::format("{} {}", ICON_FA_LANDMARK, local.get("scenes.title")).c_str());
+				}, [&] {
+					this->popupScenes_.close();
+				}));
 			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SLIDERS_H, local.get("scene_settings.title")).c_str(),
 			                  ImVec2(200.0f, .0f))) {
-				this->sceneSettings_.setShow(true);
-				ImGui::OpenPopup(fmt::format("{} {}", ICON_FA_SLIDERS_H, local.get("scene_settings.title")).c_str());
+				WindowsRenderService::getInstance().addCommand(std::make_unique<CustomWindowsRenderCommand>([&] {
+					this->sceneSettings_.setShow(true);
+					ImGui::OpenPopup(
+						fmt::format("{} {}", ICON_FA_SLIDERS_H, local.get("scene_settings.title")).c_str());
+				}, [&] {
+					this->sceneSettings_.setShow(false);
+				}));
 			}
 
 			if (ImGui::IsItemHovered()) {

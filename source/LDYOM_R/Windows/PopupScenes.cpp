@@ -10,6 +10,10 @@ void Windows::PopupScenes::open() {
 	AbstractWindow::open();
 }
 
+void Windows::PopupScenes::close() {
+	AbstractWindow::close();
+}
+
 void scenesList(int &selected_scene, const ImVec2 window_size) {
 	ImGui::BeginChild("##scenesList", ImVec2(window_size.x / 3.0f, window_size.y / 3.0f), true);
 	for (const auto &pair : ProjectsService::getInstance().getCurrentProject().getScenes()) {

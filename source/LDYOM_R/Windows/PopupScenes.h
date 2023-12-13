@@ -4,11 +4,13 @@
 #include "PopupWarning.h"
 
 namespace Windows {
-	class PopupScenes: AbstractWindow {
+	class PopupScenes : AbstractWindow {
 	private:
 		PopupWarning popupDelete_;
+
 	public:
 		void open() override;
+		void close() override;
 		void draw() override;
 	};
 }
