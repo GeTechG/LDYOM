@@ -1,6 +1,5 @@
 ﻿#include <CHud.h>
 #include <CMenuManager.h>
-#include <CSprite.h>
 #include <CTheScripts.h>
 #include <CWorld.h>
 
@@ -30,7 +29,6 @@
 #include "vehicle_renderer.h"
 #include "WindowsRenderService.h"
 #include "Data/Audio.h"
-#include "easylogging/easylogging++.h"
 #include "Localization/Localization.h"
 
 using namespace plugin;
