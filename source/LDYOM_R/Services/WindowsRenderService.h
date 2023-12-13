@@ -46,6 +46,8 @@ namespace Windows {
 		template <typename Base, typename Replace>
 		void replaceWindow();
 
+		void addCommand(std::unique_ptr<WindowsRenderCommand> command);
+
 		void undoLastCommand();
 
 		template <typename Base>

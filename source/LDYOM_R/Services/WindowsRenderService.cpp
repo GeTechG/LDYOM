@@ -178,6 +178,11 @@ void Windows::WindowsRenderService::setMouseShown(bool mouseShown) {
 	mouseShown_ = mouseShown;
 }
 
+void Windows::WindowsRenderService::addCommand(std::unique_ptr<WindowsRenderCommand> command) {
+	commands.push(std::move(command));
+	commands.top()->execute();
+}
+
 void Windows::WindowsRenderService::undoLastCommand() {
 	if (!commands.empty()) {
 		commands.top()->undo();

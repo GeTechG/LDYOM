@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <functional>
+
 #include "AbstractWindow.h"
 
 class WindowsRenderCommand {
@@ -49,5 +51,23 @@ public:
 	void undo() const override {
 		window->open();
 		replace->close();
+	}
+};
+
+class CustomWindowsRenderCommand final : public WindowsRenderCommand {
+private:
+	std::function<void()> executeFunc;
+	std::function<void()> undoFunc;
+
+public:
+	CustomWindowsRenderCommand(const std::function<void()> &executeFunc, std::function<void()> undoFunc)
+		: executeFunc{executeFunc}, undoFunc{std::move(undoFunc)} { }
+
+	void execute() const override {
+		executeFunc();
+	}
+
+	void undo() const override {
+		undoFunc();
 	}
 };
