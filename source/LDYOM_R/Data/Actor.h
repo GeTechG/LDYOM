@@ -5,6 +5,7 @@
 #include "INameable.h"
 #include "IPositionable.h"
 #include "IUuidable.h"
+#include "ktcoro_wait.hpp"
 #include "ObjectiveDependent.h"
 #include "plugin.h"
 #include "Weapon.h"
@@ -40,8 +41,11 @@ private:
 	float fatStat = 1.f;
 	float musculeStat = 1.f;
 	int interiorId = 0;
+	bool showHealthBarCounter = false;
+	std::string healthBarCounterText{};
 
 	boost::signals2::signal<void()> signalDeleteActor;
+	std::optional<int> projectHealthBarCounter;
 
 	CPed* spawnPed();
 
@@ -79,7 +83,10 @@ public:
 		  clotherMAnTextureKeys(other.clotherMAnTextureKeys),
 		  fatStat(other.fatStat),
 		  musculeStat(other.musculeStat),
-		  interiorId(other.interiorId) {}
+		  interiorId(other.interiorId),
+		  showHealthBarCounter(other.showHealthBarCounter),
+		  healthBarCounterText(other.healthBarCounterText) {}
+
 
 	Actor(Actor &&other) noexcept
 		: ObjectiveDependent(other),
@@ -111,7 +118,9 @@ public:
 		  clotherMAnTextureKeys(other.clotherMAnTextureKeys),
 		  fatStat(other.fatStat),
 		  musculeStat(other.musculeStat),
-		  interiorId(other.interiorId) {}
+		  interiorId(other.interiorId),
+		  showHealthBarCounter(other.showHealthBarCounter),
+		  healthBarCounterText(other.healthBarCounterText) {}
 
 	Actor& operator=(const Actor &other) {
 		if (this == &other)
@@ -146,6 +155,8 @@ public:
 		fatStat = other.fatStat;
 		musculeStat = other.musculeStat;
 		interiorId = other.interiorId;
+		showHealthBarCounter = other.showHealthBarCounter;
+		healthBarCounterText = other.healthBarCounterText;
 		return *this;
 	}
 
@@ -182,6 +193,8 @@ public:
 		fatStat = other.fatStat;
 		musculeStat = other.musculeStat;
 		interiorId = other.interiorId;
+		showHealthBarCounter = other.showHealthBarCounter;
+		healthBarCounterText = other.healthBarCounterText;
 		return *this;
 	}
 
@@ -214,9 +227,12 @@ public:
 	float& getFatStat();
 	float& getMusculeStat();
 	int& getInteriorId();
+	bool& isShowHealthBarCounter();
+	std::string& getHealthBarCounterText();
 	boost::uuids::uuid& getUuid() override;
 
 	boost::signals2::signal<void()>& getSignalDeleteActor();
+	std::optional<int>& getProjectHealthBarCounter();
 
 	void updateLocation() const;
 
@@ -260,6 +276,8 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j["musculeStat"] = a.getMusculeStat();
 			j["fatStat"] = a.getFatStat();
 			j["interiorId"] = a.getInteriorId();
+			j["showHealthBarCounter"] = a.isShowHealthBarCounter();
+			j["healthBarCounterText"] = a.getHealthBarCounterText();
 		}
 
 		static void from_json(const json &j, Actor &obj) {
@@ -289,6 +307,8 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j.at("musculeStat").get_to(obj.getMusculeStat());
 			j.at("fatStat").get_to(obj.getFatStat());
 			j.at("interiorId").get_to(obj.getInteriorId());
+			j.at("showHealthBarCounter").get_to(obj.isShowHealthBarCounter());
+			j.at("healthBarCounterText").get_to(obj.getHealthBarCounterText());
 		}
 	};
 

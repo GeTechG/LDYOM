@@ -214,6 +214,8 @@ kinda_stay_in_same_place_description = "Задает, не должен ли а�
 headshot = "Выстрел в голову"
 drop_weapons = "Выбросить оружие"
 edit_by_player = "Редактировать"
+show_health_bar_counter = "Показать бар здоровья"
+health_bar_counter_text = "Заголовок бара"
 
 [vehicle]
 extended_colors = "Дополнительные цвета"

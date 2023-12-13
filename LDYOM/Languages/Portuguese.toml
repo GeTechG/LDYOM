@@ -214,6 +214,8 @@ kinda_stay_in_same_place_description = "Define se o ator não deve perseguir sua
 headshot = "Tiro na cabeça"
 drop_weapons = "Descartar armas"
 edit_by_player = "Editar pelo jogador"
+show_health_bar_counter = "Mostrar barra de saúde"
+health_bar_counter_text = "Texto do contador de barra de vida"
 
 [vehicle]
 extended_colors = "Cores adicionais"

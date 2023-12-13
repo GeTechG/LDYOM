@@ -214,6 +214,8 @@ kinda_stay_in_same_place_description = "Określa, czy aktor nie powinien gonić 
 headshot = "Strzał w głowę"
 drop_weapons = "Upuszczenie broni"
 edit_by_player = "Edytowane przez gracza"
+show_health_bar_counter = "Pokaż licznik paska zdrowia"
+health_bar_counter_text = "Tekst licznika paska zdrowia"
 
 [vehicle]
 extended_colors = "Dodatkowe kolory"

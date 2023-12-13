@@ -214,6 +214,8 @@ kinda_stay_in_same_place_description = "Specifies whether the actor should not p
 headshot = "Headshot"
 drop_weapons = "Drop Weapons"
 edit_by_player = "Edit by Player"
+show_health_bar_counter = "Show Health Bar"
+health_bar_counter_text = "Health Bar Title"
 
 [vehicle]
 extended_colors = "Additional Colors"

@@ -8,6 +8,7 @@
 #include "CCamera.h"
 #include "fa.h"
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "ModelsService.h"
 #include "PopupSkinSelector.h"
 #include "PopupWeaponSelector.h"
@@ -124,12 +125,21 @@ void weaponsSection(Actor *actor, Localization &local) {
 }
 
 void characteristicsSection(Localization &local, Actor *actor) {
+	const auto widthInput = ImGui::GetFontSize() * 9.3f;
+
 	if (ImGui::TreeNode(local.get("general.characteristics").c_str())) {
-		ImGui::SetNextItemWidth(150.0f);
+		ImGui::SetNextItemWidth(widthInput);
 		ImGui::InputInt(local.get("general.health").c_str(), &actor->getHealth(), 0, 0);
-		ImGui::SetNextItemWidth(150.0f);
+		utils::ToggleButton(local.get("actor.show_health_bar_counter").c_str(), &actor->isShowHealthBarCounter());
+
+		ImGui::BeginDisabled(!actor->isShowHealthBarCounter());
+		ImGui::SetNextItemWidth(widthInput);
+		ImGui::InputText(local.get("actor.health_bar_counter_text").c_str(), &actor->getHealthBarCounterText());
+		ImGui::EndDisabled();
+
+		ImGui::SetNextItemWidth(widthInput);
 		ImGui::DragInt(local.get("actor.accuracy_shooting").c_str(), &actor->getAccuracy(), 0.5f, 0, 100, "%d %%");
-		ImGui::SetNextItemWidth(150.0f);
+		ImGui::SetNextItemWidth(widthInput);
 		ImGui::SliderInt(local.get("actor.group").c_str(), &actor->getGroup(), 0, 8,
 		                 actor->getGroup() == 0
 			                 ? local.get("general.player").c_str()

@@ -11,6 +11,7 @@
 
 #include <boost/uuid/uuid_generators.hpp>
 
+#include "CounterService.h"
 #include "LuaEngine.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
@@ -50,6 +51,25 @@ void Actor::spawnProjectEntity() {
 	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
+	if (this->isShowHealthBarCounter()) {
+		const auto initialHealth = static_cast<int>(static_cast<float>(this->getHealth()) / static_cast<float>(max(
+			this->getHealth(), 100)) * 100.f);
+		this->projectHealthBarCounter = CounterService::getInstance().addBarCounter(
+			this->getHealthBarCounterText(), initialHealth);
+	}
+
+	tasklist->add_task([](Actor *actor) -> ktwait {
+		while (actor->getProjectPed().has_value()) {
+			if (actor->getProjectHealthBarCounter().has_value()) {
+				const auto counterHealth = static_cast<int>(actor->getProjectPed().value()->m_fHealth / max(
+					actor->getProjectPed().value()->m_fMaxHealth, 100) * 100.f);
+				CounterService::getInstance().updateCounter(actor->getProjectHealthBarCounter().value(), counterHealth);
+			}
+
+			co_await 1;
+		}
+	}, this);
+
 	if (scene.has_value() && tasklist != nullptr) {
 		/*const auto onActorSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onActorSpawn"].
 			get_or_create<sol::table>();
@@ -71,6 +91,11 @@ void Actor::deleteProjectEntity() {
 
 			auto scene = ProjectPlayerService::getInstance().getCurrentScene();
 			auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
+
+			if (this->isShowHealthBarCounter()) {
+				CounterService::getInstance().clearCounter(this->projectHealthBarCounter.value());
+				this->projectHealthBarCounter = std::nullopt;
+			}
 
 			if (scene.has_value() && tasklist != nullptr) {
 				/*const auto onActorDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
@@ -301,6 +326,8 @@ float& Actor::getMusculeStat() {
 }
 
 int& Actor::getInteriorId() { return interiorId; }
+bool& Actor::isShowHealthBarCounter() { return showHealthBarCounter; }
+std::string& Actor::getHealthBarCounterText() { return healthBarCounterText; }
 
 boost::uuids::uuid& Actor::getUuid() {
 	return uuid;
@@ -309,6 +336,8 @@ boost::uuids::uuid& Actor::getUuid() {
 boost::signals2::signal<void()>& Actor::getSignalDeleteActor() {
 	return signalDeleteActor;
 }
+
+std::optional<int>& Actor::getProjectHealthBarCounter() { return projectHealthBarCounter; }
 
 void Actor::updateLocation() const {
 	if (this->editorPed_.has_value()) {
