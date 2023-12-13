@@ -600,7 +600,9 @@ void ProjectsService::Reset() {
 void ProjectsService::createNewProject() {
 	this->getCurrentProject().onChangedScene()();
 	this->getCurrentProject().getCurrentScene()->unloadEditorScene();
-	this->currentProject_ = ProjectData();
+	ProjectData projectData;
+	projectData.onChangedScene().swap(this->getCurrentProject().onChangedScene());
+	this->currentProject_ = std::move(projectData);
 	this->currentDirectory_ = std::nullopt;
 }
 
