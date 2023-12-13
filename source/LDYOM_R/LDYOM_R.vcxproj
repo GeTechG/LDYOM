@@ -282,6 +282,7 @@
     <ClCompile Include="utils\AudioLuaWrapper.cpp" />
     <ClCompile Include="utils\BaseObjectiveLuaWrapper.cpp" />
     <ClCompile Include="utils\CheckpointLuaWrapper.cpp" />
+    <ClCompile Include="utils\CounterService.cpp" />
     <ClCompile Include="utils\DataLuaWrapper.cpp" />
     <ClCompile Include="utils\EditByPlayerService.cpp" />
     <ClCompile Include="utils\FilesystemLuaWrapper.cpp" />
@@ -782,6 +783,7 @@
     <ClInclude Include="thirdparty\kiero\minhook\src\trampoline.h" />
     <ClInclude Include="utils\additional_events.h" />
     <ClInclude Include="utils\components.h" />
+    <ClInclude Include="utils\CounterService.h" />
     <ClInclude Include="utils\DataLuaWrapper.h" />
     <ClInclude Include="utils\EditByPlayerService.h" />
     <ClInclude Include="utils\FilesystemLuaWrapper.h" />

@@ -413,6 +413,9 @@
     <Filter Include="Data\PedExtended">
       <UniqueIdentifier>{0722d294-3b52-4401-9650-ce9bfac4bcfe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\CounterService">
+      <UniqueIdentifier>{72521648-1b71-4a7c-a307-b9791fb61734}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -992,6 +995,9 @@
     </ClCompile>
     <ClCompile Include="Data\PedExtended.cpp">
       <Filter>Data\PedExtended</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\CounterService.cpp">
+      <Filter>Utils\CounterService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2471,6 +2477,9 @@
     </ClInclude>
     <ClInclude Include="Data\PedExtended.h">
       <Filter>Data\PedExtended</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\CounterService.h">
+      <Filter>Utils\CounterService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
