@@ -91,6 +91,12 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 
 	recolorVehicle(recolor, newVehicle);
 
+	newVehicle->m_nPhysicalFlags.bBulletProof = static_cast<unsigned>(this->isBulletproof());
+	newVehicle->m_nPhysicalFlags.bCollisionProof = static_cast<unsigned>(this->isCollisionproof());
+	newVehicle->m_nPhysicalFlags.bExplosionProof = static_cast<unsigned>(this->isExplosionproof());
+	newVehicle->m_nPhysicalFlags.bFireProof = static_cast<unsigned>(this->isFireproof());
+	newVehicle->m_nPhysicalFlags.bMeleeProof = static_cast<unsigned>(this->isMeleeproof());
+
 	return newVehicle;
 }
 
