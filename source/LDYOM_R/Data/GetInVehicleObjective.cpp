@@ -3,7 +3,6 @@
 #include <common.h>
 #include <extensions/ScriptCommands.h>
 
-#include "strUtils.h"
 #include "Vehicle.h"
 
 using namespace plugin;

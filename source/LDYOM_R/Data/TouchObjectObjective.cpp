@@ -4,8 +4,6 @@
 #include "common.h"
 #include "Object.h"
 
-#include "strUtils.h"
-
 TouchObjectObjective::TouchObjectObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.touch_object"));
 	this->name += suffix;

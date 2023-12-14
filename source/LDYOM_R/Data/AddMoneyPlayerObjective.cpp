@@ -4,7 +4,6 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
-#include "strUtils.h"
 
 AddMoneyPlayerObjective::AddMoneyPlayerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.add_money_player"));

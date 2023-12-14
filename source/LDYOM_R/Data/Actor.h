@@ -5,7 +5,6 @@
 #include "INameable.h"
 #include "IPositionable.h"
 #include "IUuidable.h"
-#include "ktcoro_wait.hpp"
 #include "ObjectiveDependent.h"
 #include "plugin.h"
 #include "Weapon.h"

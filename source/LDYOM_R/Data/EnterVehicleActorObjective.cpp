@@ -5,7 +5,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "ProjectsService.h"
-#include "strUtils.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
 

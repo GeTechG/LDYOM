@@ -2,7 +2,6 @@
 
 #include <CWeather.h>
 
-#include "strUtils.h"
 #include "utils.h"
 
 WeatherObjective::WeatherObjective(void *_new): BaseObjective(_new) {

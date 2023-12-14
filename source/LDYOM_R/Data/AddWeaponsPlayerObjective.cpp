@@ -9,7 +9,6 @@
 #include "fa.h"
 #include "imgui.h"
 #include "ModelsService.h"
-#include "strUtils.h"
 #include "../Windows/PopupWeaponSelector.h"
 
 AddWeaponsPlayerObjective::AddWeaponsPlayerObjective(void *_new): BaseObjective(_new) {

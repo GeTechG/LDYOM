@@ -2,7 +2,6 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
-#include "strUtils.h"
 
 WaitSignalObjective::WaitSignalObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.wait_signal"));

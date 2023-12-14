@@ -11,7 +11,6 @@
 #include <CWorld.h>
 #include "CTheScripts.h"
 #include "ModelsService.h"
-#include "strUtils.h"
 #include "utils.h"
 
 #include "Events.h"

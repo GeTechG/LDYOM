@@ -3,7 +3,6 @@
 #include <extensions/ScriptCommands.h>
 
 #include "Object.h"
-#include "strUtils.h"
 
 PhotographObjectObjective::PhotographObjectObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.photograph_object"));

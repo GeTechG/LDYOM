@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <optional>
-#include <boost/serialization/base_object.hpp>
 
 #include "CTrain.h"
 #include "INameable.h"

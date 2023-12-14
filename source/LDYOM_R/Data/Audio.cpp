@@ -8,12 +8,10 @@
 #include <extensions/ScriptCommands.h>
 #include <extensions/scripting/ScriptCommandNames.h>
 
-#include "components.h"
 #include "LuaEngine.h"
 #include "ModelsService.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
-#include "strUtils.h"
 #include "utils.h"
 #include "../Data/CSoundSystem.h"
 #include "easylogging/easylogging++.h"
@@ -25,7 +23,7 @@ std::vector<std::string> Audio::audioFilesList_{};
 std::vector<std::string> audioFileExtensions = {".mp3", ".mp2", ".mp1", ".ogg", ".wav", ".aiff"};
 
 std::optional<int> Audio::loadAudio() {
-	const auto iterator = ranges::find(audioFilesList_, this->audioName);
+	const auto iterator = std::ranges::find(audioFilesList_, this->audioName);
 	if (iterator != audioFilesList_.end()) {
 		const auto &audioPath = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->directory /
 			L"Audio" / utils::stringToPathString(iterator->c_str());

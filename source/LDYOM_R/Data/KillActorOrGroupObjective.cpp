@@ -4,7 +4,6 @@
 #include <extensions/ScriptCommands.h>
 
 #include "Scene.h"
-#include "strUtils.h"
 #include "utils.h"
 
 using namespace plugin;

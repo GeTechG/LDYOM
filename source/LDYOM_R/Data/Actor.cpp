@@ -6,15 +6,13 @@
 #include "CTheScripts.h"
 #include "CWorld.h"
 #include "ModelsService.h"
-#include "utils.h"
 #include "../shared/extensions/ScriptCommands.h"
-
-#include <boost/uuid/uuid_generators.hpp>
 
 #include "CounterService.h"
 #include "LuaEngine.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
+#include "Settings.h"
 #include "strUtils.h"
 #include "easylogging/easylogging++.h"
 

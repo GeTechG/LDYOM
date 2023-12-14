@@ -7,14 +7,12 @@
 #include <boost/uuid/random_generator.hpp>
 #include <extensions/ScriptCommands.h>
 #include <extensions/scripting/ScriptCommandNames.h>
-
-#include "components.h"
 #include "LuaEngine.h"
 #include "ModelsService.h"
 #include "ProjectPlayerService.h"
 #include "Scene.h"
+#include "Settings.h"
 #include "strUtils.h"
-#include "utils.h"
 #include "easylogging/easylogging++.h"
 
 using namespace plugin;

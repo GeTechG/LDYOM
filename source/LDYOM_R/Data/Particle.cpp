@@ -12,7 +12,6 @@
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
 #include "Scene.h"
-#include "strUtils.h"
 #include "utils.h"
 #include "easylogging/easylogging++.h"
 

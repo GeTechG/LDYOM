@@ -4,7 +4,6 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
-#include "strUtils.h"
 
 LevelWantedPlayerObjective::LevelWantedPlayerObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.level_wanted_player"));

@@ -6,7 +6,6 @@
 #include "jsonUtils.h"
 #include "Scene.h"
 #include "Texture.h"
-#include "boost/archive/binary_oarchive.hpp"
 #include "boost/signals2/signal.hpp"
 
 

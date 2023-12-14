@@ -5,7 +5,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "Object.h"
-#include "strUtils.h"
 #include "../Windows/PopupWeaponSelector.h"
 
 DamageObjectObjective::DamageObjectObjective(void *_new): BaseObjective(_new) {

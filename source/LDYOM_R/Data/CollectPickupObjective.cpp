@@ -3,7 +3,6 @@
 #include <CPickups.h>
 
 #include "Pickup.h"
-#include "strUtils.h"
 
 CollectPickupObjective::CollectPickupObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.collect_pickup"));

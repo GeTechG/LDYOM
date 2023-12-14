@@ -1,7 +1,6 @@
 ﻿#include "RemoveWeaponsObjective.h"
 
 #include "common.h"
-#include "strUtils.h"
 
 RemoveWeaponsObjective::RemoveWeaponsObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.remove_weapons_player"));

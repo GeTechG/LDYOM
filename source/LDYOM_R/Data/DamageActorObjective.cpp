@@ -1,7 +1,6 @@
 ﻿#include "DamageActorObjective.h"
 
 #include "Actor.h"
-#include "strUtils.h"
 
 DamageActorObjective::DamageActorObjective(void *const _new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.damage_actor"));
