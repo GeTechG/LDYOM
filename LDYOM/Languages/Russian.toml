@@ -422,6 +422,8 @@ custom_vehicle_models = "Пользов. модели ТС"
 custom_weapon_models = "Пользов. модели оружия"
 custom_ped_animations = "Пользов. анимации персонажей"
 scaleUi = "Масштаб"
+auto_bind_delete_after_last_objective = "Авто привязка \"Удалить после\" к последней цели"
+auto_bind_require_fields = "Авто привязка в обязательных полях"
 
 [console_window]
 title = "Консоль"

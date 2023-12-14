@@ -422,6 +422,8 @@ custom_vehicle_models = "Modelos de veículos personalizados"
 custom_weapon_models = "Modelos de armas personalizados"
 custom_ped_animations = "Animações de personagens personalizadas"
 scaleUi = "Escalamento"
+auto_bind_delete_after_last_objective = "Auto vincular 'Excluir depois' para o último objetivo"
+auto_bind_require_fields = "Auto vincular campos obrigatórios"
 
 [console_window]
 title = "Console"

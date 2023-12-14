@@ -422,6 +422,8 @@ custom_vehicle_models = "Custom vehicle models"
 custom_weapon_models = "Custom weapon models"
 custom_ped_animations = "Custom ped animations"
 scaleUi = "Scale UI"
+auto_bind_delete_after_last_objective = "Auto bind \"Delete after\" to the last objective"
+auto_bind_require_fields = "Auto bind in required fields"
 
 [console_window]
 title = "Console"

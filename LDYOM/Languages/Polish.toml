@@ -422,6 +422,8 @@ custom_vehicle_models = "Własne modele pojazdów"
 custom_weapon_models = "Własne modele broni"
 custom_ped_animations = "Własne animacje pedów"
 scaleUi = "Skaluj UI"
+auto_bind_delete_after_last_objective = "Automatyczne przypisanie \"Usuń po\" do ostatniego celu"
+auto_bind_require_fields = "Automatyczne przypisanie wymaganych pól"
 
 [console_window]
 title = "Konsola"
