@@ -1,4 +1,4 @@
-#include "TrainsWindow.h"
+﻿#include "TrainsWindow.h"
 
 #include <CCamera.h>
 #include <extensions/ScriptCommands.h>
@@ -53,9 +53,13 @@ void characteristicsSection(Localization &local, Train *train) {
 		ImGui::PushItemWidth(scaleFont * 150.0f);
 		ImGui::InputInt(local.get("general.health").c_str(), &train->getHealth(), 0, 0);
 
-		if (utils::ToggleButton(local.get("general.rotate").c_str(), &train->isRotate()) ||
-			ImGui::SliderInt(local.get("general.type").c_str(), &train->getTrainType(), 0, 15))
+		auto onEdit = false;
+		onEdit |= ImGui::SliderInt(local.get("general.type").c_str(), &train->getTrainType(), 0, 15);
+		onEdit |= utils::ToggleButton(local.get("general.rotate").c_str(), &train->isRotate());
+
+		if (onEdit) {
 			train->spawnEditorTrain();
+		}
 
 		ImGui::InputFloat(local.get("train.speed").c_str(), &train->getSpeed());
 		ImGui::InputFloat(local.get("train.cruise_speed").c_str(), &train->getCruiseSpeed());
