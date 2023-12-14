@@ -124,6 +124,7 @@ public:
 			Tasker::getInstance().getKtcoroTaskList().add_task([]() -> ktwait {
 				co_await 5s;
 				Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
+				Command<Commands::SET_CHAR_DROWNS_IN_WATER>(static_cast<CPed*>(FindPlayerPed()), false);
 
 				//Command<Commands::MAKE_PLAYER_FIRE_PROOF>(0, true);
 			});
@@ -145,6 +146,7 @@ public:
 				CHud::SetHelpMessage(welcome.c_str(), false, false, false);
 				CHud::DrawHelpText();
 			});
+
 
 			Events::gameProcessEvent.AddAtId(777, gameProcces);
 			Events::processScriptsEvent.AddAtId(778, scriptProcess);
