@@ -36,6 +36,10 @@ namespace Windows {
 		                                                            value_or(100.0f);
 		this->settings_.scaleUi = Settings::getInstance().get<float>("main.scaleUi").value_or(1.0f);
 
+
+		this->settings_.autoBindDeleteAfterLastObjective = Settings::getInstance().get<bool>(
+			"main.autoBindDeleteAfterLastObjective").value_or(true);
+
 		if (const auto userPedsModels = Settings::getInstance().get<std::vector<int>>("data.pedModels"); userPedsModels.
 			has_value())
 			this->settings_.userPedsModels = userPedsModels.value();
@@ -106,7 +110,7 @@ namespace Windows {
 
 	void renderModel(Localization &local, const char *name, std::vector<std::pair<std::string, std::string>> &models) {
 		renderModel(local, name, models.size(), [&] {
-			            models.emplace_back(std::make_pair("", ""));
+			            models.emplace_back("", "");
 		            }, [&](int i) {
 			            models.erase(models.begin() + i);
 		            }, [&](int i) {
@@ -165,6 +169,12 @@ namespace Windows {
 				ImGuiHook::scaleUi = this->settings_.scaleUi;
 				Settings::getInstance().set("main.scaleUi", this->settings_.scaleUi);
 				Settings::getInstance().Save();
+			}
+
+			if (utils::ToggleButton(local.get("settings.auto_bind_delete_after_last_objective").c_str(),
+			                        &this->settings_.autoBindDeleteAfterLastObjective)) {
+				Settings::getInstance().set("main.autoBindDeleteAfterLastObjective",
+				                            this->settings_.autoBindDeleteAfterLastObjective);
 			}
 
 			ImGui::Separator();

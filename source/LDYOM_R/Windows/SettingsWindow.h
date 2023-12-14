@@ -10,6 +10,7 @@ namespace Windows {
 		bool showEntitiesName = false;
 		float distanceShowNames = 100.0f;
 		float scaleUi = 1.0f;
+		bool autoBindDeleteAfterLastObjective = true;
 		std::vector<int> userPedsModels{};
 		std::vector<std::string> userSpecialPedsModels{};
 		std::vector<int> userVehiclesModels{};
