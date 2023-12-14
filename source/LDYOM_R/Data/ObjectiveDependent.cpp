@@ -7,15 +7,17 @@
 ObjectiveDependent::ObjectiveDependent(void *new_) {
 	const int currentObjective = Windows::WindowsRenderService::getInstance().getWindow<Windows::ObjectivesWindow>()->
 	                                                                          getElement();
+	const auto &objectives = ProjectsService::getInstance()
+	                         .getCurrentProject().getCurrentScene()->getObjectives();
 	if (currentObjective != -1)
-		this->spawnObjectiveUuid = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
-		                                                          getObjectives().at(currentObjective)->getUuid();
+		this->spawnObjectiveUuid = objectives.at(currentObjective)->getUuid();
 
 	if (Settings::getInstance().get<bool>(
 		"main.autoBindDeleteAfterLastObjective").value_or(true)) {
-		this->deleteObjectiveUuid = ProjectsService::getInstance()
-		                            .getCurrentProject().getCurrentScene()->getObjectives()
-		                            .back()->getUuid();
+		if (!objectives.empty()) {
+			this->deleteObjectiveUuid = objectives
+			                            .back()->getUuid();
+		}
 	}
 }
 
