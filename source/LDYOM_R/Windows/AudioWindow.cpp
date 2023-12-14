@@ -111,7 +111,8 @@ void Windows::AudioWindow::drawOptions() {
 		}
 	}
 
-	ImGui::SetNextItemWidth(20.f);
+	const auto scaleFont = ImGui::GetFontSize() / 16.f;
+	ImGui::SetNextItemWidth(scaleFont * 20.f);
 	if (ImGuiKnobs::Knob(local.get("audio.volume").c_str(), &audio->getVolume(), 0.0f, 2.0f, 0.01f, "%.2f",
 	                     ImGuiKnobVariant_Wiper)) {
 		if (audio->getEditorAudio().has_value()) {

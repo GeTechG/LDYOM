@@ -103,7 +103,8 @@ void characteristicsSection(Localization &local, Vehicle *vehicle) {
 
 		ImGui::Separator();
 
-		ImGui::PushItemWidth(150.0f);
+		const auto scaleFont = ImGui::GetFontSize() / 16.f;
+		ImGui::PushItemWidth(scaleFont * 150.0f);
 		ImGui::InputInt(local.get("general.health").c_str(), &vehicle->getHealth(), 0, 0);
 
 		if (ImGui::SliderInt(fmt::format("{} A", local.get("vehicle.component")).c_str(), &vehicle->getComponentTypeA(),

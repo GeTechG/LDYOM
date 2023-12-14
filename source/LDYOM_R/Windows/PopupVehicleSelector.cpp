@@ -11,7 +11,7 @@
 std::optional<ModelRenderer> PopupVehicleSelector::renderer_{};
 
 void PopupVehicleSelector::clearUnknownVehicles() {
-	for (const auto& pair : this->unknownVehicles_) {
+	for (const auto &pair : this->unknownVehicles_) {
 		RwTextureDestroy(pair.second);
 	}
 	this->unknownVehicles_.clear();
@@ -35,9 +35,8 @@ std::pair<IDirect3DTexture9*, ImVec2> PopupVehicleSelector::getModelIcon(int mod
 			return {
 				*reinterpret_cast<IDirect3DTexture9**>(this->unknownVehicles_.at(modelId)->raster + 1),
 				ImVec2(200, 200)
-		};
-	}
-	else {
+			};
+	} else {
 		const auto pair = this->unknownVehicles_.emplace(modelId, nullptr);
 		renderer_.value().render(modelId, &pair.first->second);
 	}
@@ -53,7 +52,8 @@ PopupVehicleSelector::PopupVehicleSelector() {
 		int imageWidth = 0;
 		int imageHeight = 0;
 		PDIRECT3DTEXTURE9 texture = nullptr;
-		if (utils::LoadTextureFromFile(fmt::format("LDYOM/Resources/vehiclesIcons/Vehicle_{}.jpg", model).c_str(), &texture, &imageWidth, &imageHeight)) {
+		if (utils::LoadTextureFromFile(fmt::format("LDYOM/Resources/vehiclesIcons/Vehicle_{}.jpg", model).c_str(),
+		                               &texture, &imageWidth, &imageHeight)) {
 			this->vehicleIcons_.emplace(model, std::make_unique<Texture>(texture, imageWidth, imageHeight));
 		}
 	}
@@ -71,25 +71,24 @@ void PopupVehicleSelector::show() {
 
 void PopupVehicleSelector::draw(const std::function<void(int model)> onSelect) {
 	auto &local = Localization::getInstance();
-	ImGui::SetNextWindowSize(ImVec2(850,580), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(850, 580), ImGuiCond_FirstUseEver);
 	if (ImGui::BeginPopupModal("##carSelector", &this->bShow)) {
-
-		ImGui::SetNextItemWidth(120);
+		const auto scaleFont = ImGui::GetFontSize() / 16.f;
+		ImGui::SetNextItemWidth(scaleFont * 120.f);
 		utils::Combo("##searchType", &typeSearch, local.getArray("vehicle_selector.searchTypeEnum"));
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(120);
+		ImGui::SetNextItemWidth(scaleFont * 120.f);
 		ImGui::InputText(local.get("vehicle_selector.searchType").c_str(), search, IM_ARRAYSIZE(search));
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(120);
+		ImGui::SetNextItemWidth(scaleFont * 120.f);
 		if (ImGui::Button(local.get("vehicle_selector.filters").c_str())) {
 			ImGui::OpenPopup("filters");
 		}
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(120);
+		ImGui::SetNextItemWidth(scaleFont * 120.f);
 		ImGui::DragFloat(local.get("vehicle_selector.icons_scale").c_str(), &scale, 0.01f, 0.0001f, 100.0f);
 
 		if (ImGui::BeginPopup("filters")) {
-
 			const auto filtersEnum = local.getArray("vehicle_selector.filtersEnum");
 			if (ImGui::MenuItem(filtersEnum[0].c_str(), "", filter_car))
 				filter_car = !filter_car;
@@ -113,85 +112,86 @@ void PopupVehicleSelector::draw(const std::function<void(int model)> onSelect) {
 			ImGui::EndPopup();
 		}
 
-		ImGui::BeginChild("vehs", ImVec2(ImGui::GetWindowWidth() - 5.0f, ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - 5), true);
+		ImGui::BeginChild("vehs", ImVec2(ImGui::GetWindowWidth() - 5.0f,
+		                                 ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - 5), true);
 
 		float width = 0.0f;
 		for (int i = 400; i <= 611; i++) {
-			const auto & name = &reinterpret_cast<CVehicleModelInfo*>(CModelInfo::GetModelInfo(i))->m_szGameName[0];
+			const auto &name = &reinterpret_cast<CVehicleModelInfo*>(CModelInfo::GetModelInfo(i))->m_szGameName[0];
 
 			if (search[0] != '\0') {
 				if (typeSearch == 0) {
 					if (std::string(name).find(search) == std::string::npos)
 						continue;
-				}
-				else {
+				} else {
 					if (std::to_string(i).find(search) == std::string::npos)
 						continue;
 				}
 			}
 			switch (reinterpret_cast<CVehicleModelInfo*>(CModelInfo::GetModelInfo(i))->m_nVehicleType) {
-			case VEHICLE_MTRUCK:
-				if (!filter_mtrack) {
+				case VEHICLE_MTRUCK:
+					if (!filter_mtrack) {
+						continue;
+					}
+					break;
+				case VEHICLE_QUAD:
+					if (!filter_quad) {
+						continue;
+					}
+					break;
+				case VEHICLE_HELI:
+					if (!filter_heli) {
+						continue;
+					}
+					break;
+				case VEHICLE_PLANE:
+					if (!filter_plane) {
+						continue;
+					}
+					break;
+				case VEHICLE_BIKE:
+					if (!filter_bike) {
+						continue;
+					}
+					break;
+				case VEHICLE_BMX:
+					if (!filter_bmx) {
+						continue;
+					}
+					break;
+				case VEHICLE_TRAILER:
+					if (!filter_trailer) {
+						continue;
+					}
+					break;
+				case VEHICLE_BOAT:
+					if (!filter_boat) {
+						continue;
+					}
+					break;
+				case VEHICLE_TRAIN:
 					continue;
-				}
-				break;
-			case VEHICLE_QUAD:
-				if (!filter_quad) {
-					continue;
-				}
-				break;
-			case VEHICLE_HELI:
-				if (!filter_heli) {
-					continue;
-				}
-				break;
-			case VEHICLE_PLANE:
-				if (!filter_plane) {
-					continue;
-				}
-				break;
-			case VEHICLE_BIKE:
-				if (!filter_bike) {
-					continue;
-				}
-				break;
-			case VEHICLE_BMX:
-				if (!filter_bmx) {
-					continue;
-				}
-				break;
-			case VEHICLE_TRAILER:
-				if (!filter_trailer) {
-					continue;
-				}
-				break;
-			case VEHICLE_BOAT:
-				if (!filter_boat) {
-					continue;
-				}
-				break;
-			case VEHICLE_TRAIN:
-				continue;
-			default:
-				if (!filter_car) {
-					continue;
-				}
-				break;
+				default:
+					if (!filter_car) {
+						continue;
+					}
+					break;
 			}
 
 			const auto icon = this->getModelIcon(i);
 
 			const float widthNextIcon = icon.second.x * scale;
 
-			if (width + widthNextIcon + ImGui::GetStyle().ItemSpacing.x * 2.0f < ImGui::GetWindowSize().x && width > 0.f) {
+			if (width + widthNextIcon + ImGui::GetStyle().ItemSpacing.x * 2.0f < ImGui::GetWindowSize().x && width >
+				0.f) {
 				ImGui::SameLine();
 			} else {
 				width = 0.0f;
 			}
 
 			if (ImGui::ImageButton(icon.first, ImVec2(
-				widthNextIcon, 
-				icon.second.y * scale))) {
+				                       widthNextIcon,
+				                       icon.second.y * scale))) {
 				onSelect(i);
 				ImGui::CloseCurrentPopup();
 			}

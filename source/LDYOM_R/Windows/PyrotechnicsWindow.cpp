@@ -71,7 +71,8 @@ void Windows::PyrotechnicsWindow::drawOptions() {
 		if (ImGui::SliderInt(local.get("pyrotechnics.size_fire").c_str(), &pyrotechnics->getSizeFire(), 0, 5)) {
 			pyrotechnics->spawnEditorPyrotechnics();
 		}
-		ImGui::SetNextItemWidth(120);
+		const auto scaleFont = ImGui::GetFontSize() / 16.f;
+		ImGui::SetNextItemWidth(scaleFont * 120.f);
 		ImGui::DragInt(local.get("pyrotechnics.propagation_fire").c_str(), &pyrotechnics->getPropagationFire(), 0.1f, 0,
 		               36);
 	} else {

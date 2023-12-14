@@ -55,7 +55,8 @@ void StartMissionObjective::draw(Localization &local, std::vector<std::string> &
 
 	ImGui::Text(fmt::format("{} {}", ICON_FA_USERS, local.get("scene_settings.group_relations")).c_str());
 	ImGui::BeginChild("##relations", ImVec2(0.f, (ImGui::GetFontSize() + 4.f) * 8.f), true);
-	ImGui::PushItemWidth(125);
+	const auto scaleFont = ImGui::GetFontSize() / 16.f;
+	ImGui::PushItemWidth(scaleFont * 125.0f);
 	for (int i = 0; i < 8; i++) {
 		if (ImGui::TreeNode(fmt::format("{} {}", local.get("actor.group"), i + 1).c_str())) {
 			for (int j = 0; j < 9; j++) {

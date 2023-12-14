@@ -1,4 +1,4 @@
-﻿#include "TrainsWindow.h"
+#include "TrainsWindow.h"
 
 #include <CCamera.h>
 #include <extensions/ScriptCommands.h>
@@ -49,7 +49,8 @@ void Windows::TrainsWindow::deleteElement(int i) {
 
 void characteristicsSection(Localization &local, Train *train) {
 	if (ImGui::TreeNode(local.get("general.characteristics").c_str())) {
-		ImGui::PushItemWidth(150.0f);
+		const auto scaleFont = ImGui::GetFontSize() / 16.f;
+		ImGui::PushItemWidth(scaleFont * 150.0f);
 		ImGui::InputInt(local.get("general.health").c_str(), &train->getHealth(), 0, 0);
 
 		if (utils::ToggleButton(local.get("general.rotate").c_str(), &train->isRotate()) ||

@@ -15,7 +15,7 @@ PhoneCallPlayerObjective::PhoneCallPlayerObjective(void *_new): BaseObjective(_n
 	this->name += suffix;
 }
 
-std::vector<Dialog> & PhoneCallPlayerObjective::getDialogs() { return dialogs_; }
+std::vector<Dialog>& PhoneCallPlayerObjective::getDialogs() { return dialogs_; }
 
 void PhoneCallPlayerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	if (ImGui::Button(local.get("general.add").c_str()))
@@ -27,7 +27,8 @@ void PhoneCallPlayerObjective::draw(Localization &local, std::vector<std::string
 	for (int i = 0; i < this->dialogs_.size(); i++) {
 		indexes.push_back(std::to_string(i));
 	}
-	ImGui::SetNextItemWidth(120);
+	const auto fontSize = ImGui::GetFontSize();
+	ImGui::SetNextItemWidth(fontSize * 7.5f);
 	static int currentDialog = 0;
 	utils::Combo("##indexes", &currentDialog, indexes);
 

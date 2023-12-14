@@ -408,7 +408,8 @@ void ObjectSelectorPopup::draw() {
 			if (ImGui::BeginChild("##objectModels", ImVec2(ImGui::GetWindowContentRegionWidth(), 0.f))) {
 				const float windowStartX = ImGui::GetCursorScreenPos().x;
 
-				ImGui::SetNextItemWidth(100.0f);
+				const auto scaleFont = ImGui::GetFontSize() / 16.f;
+				ImGui::SetNextItemWidth(scaleFont * 100.0f);
 				if (ImGui::InputInt(local.get("object_selector.count_on_page").c_str(), &this->countOnPage_, 10, 100)) {
 					updateModels(models);
 				}

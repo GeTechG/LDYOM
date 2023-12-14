@@ -134,7 +134,7 @@ namespace Windows {
 		if (ImGui::Begin(fmt::format("{} {}", ICON_FA_COGS, local.get("settings.title")).c_str(), nullptr,
 		                 ImGuiWindowFlags_AlwaysAutoResize)) {
 			const auto &scale = ImGui::GetFontSize() / 23;
-			ImGui::SetNextItemWidth(150.0f);
+			ImGui::SetNextItemWidth(scale * 150.0f);
 			if (utils::Combo(local.get("settings.languages").c_str(), &this->settings_.currentLanguage,
 			                 Settings::getInstance().listLocalizations())) {
 				Settings::getInstance().set("main.language",

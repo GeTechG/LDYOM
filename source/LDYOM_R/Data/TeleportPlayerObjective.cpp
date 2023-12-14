@@ -100,7 +100,8 @@ CPed* TeleportPlayerObjective::spawnPed() {
 
 void TeleportPlayerObjective::characteristicsSection(Localization &local) {
 	if (ImGui::TreeNode(local.get("general.characteristics").c_str())) {
-		ImGui::SetNextItemWidth(150.0f);
+		const auto scaleFont = ImGui::GetFontSize() / 16.f;
+		ImGui::SetNextItemWidth(scaleFont * 150.f);
 		ImGui::InputInt(local.get("general.health").c_str(), &this->health_, 0, 0);
 
 		ImGui::TreePop();
