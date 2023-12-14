@@ -36,11 +36,21 @@ ktwait ProjectPlayerService::changeScene(Scene *scene, ktcoro_tasklist &tasklist
 	std::unordered_map<boost::uuids::uuid, std::vector<ObjectiveDependent*>, boost::hash<boost::uuids::uuid>> spawnMap;
 	std::unordered_map<boost::uuids::uuid, std::vector<ObjectiveDependent*>, boost::hash<boost::uuids::uuid>> deleteMap;
 
-	auto addObjectiveDependedEntity = [&spawnMap, &deleteMap]<typename T>(std::vector<std::unique_ptr<T>> &entities) {
+	boost::uuids::uuid firstObjectiveUuid;
+	if (!scene->getObjectives().empty()) {
+		firstObjectiveUuid = scene->getObjectives().front()->getUuid();
+	}
+
+	auto addObjectiveDependedEntity = [&spawnMap, &deleteMap, &firstObjectiveUuid]
+		<typename T>(std::vector<std::unique_ptr<T>> &entities) {
 		for (const auto &entityT : entities) {
 			auto entity = static_cast<ObjectiveDependent*>(entityT.get());
 			if (entity->isUseObjective()) {
-				spawnMap[entity->getSpawnObjectiveUuid()].emplace_back(entity);
+				if (entity->getSpawnObjectiveUuid().is_nil())
+					spawnMap[firstObjectiveUuid].emplace_back(entity);
+				else
+					spawnMap[entity->getSpawnObjectiveUuid()].emplace_back(entity);
+
 				deleteMap[entity->getDeleteObjectiveUuid()].emplace_back(entity);
 			}
 		}
