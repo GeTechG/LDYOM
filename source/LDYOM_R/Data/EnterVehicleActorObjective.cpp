@@ -5,6 +5,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "ProjectsService.h"
+#include "Settings.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
 
@@ -31,6 +32,14 @@ void EnterVehicleActorObjective::draw(Localization &local, std::vector<std::stri
 		             });
 	});
 
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (indexActor == -1) {
+			if (!actors.empty()) {
+				this->actorUuid = actors.back()->getUuid();
+			}
+		}
+	}
+
 	const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
 	const int indexVehicle = utils::indexByUuid(vehicles, this->vehicleUuid_);
 
@@ -42,6 +51,14 @@ void EnterVehicleActorObjective::draw(Localization &local, std::vector<std::stri
 			             return vehicles.at(i)->getUuid();
 		             });
 	});
+
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (indexVehicle == -1) {
+			if (!vehicles.empty()) {
+				this->vehicleUuid_ = vehicles.back()->getUuid();
+			}
+		}
+	}
 
 	ImGui::SliderInt(local.get("general.place").c_str(), &this->place_, 0, 3,
 	                 local.getArray("general.places_in_car").at(this->place_).c_str());

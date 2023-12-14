@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "ProjectsService.h"
+#include "Settings.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
@@ -33,6 +34,14 @@ void PickupObjective::draw(Localization &local, std::vector<std::string> &listOv
 			             return pickups.at(i)->getUuid();
 		             });
 	});
+
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (indexPickup == -1) {
+			if (!pickups.empty()) {
+				this->pickupUuid = pickups.back()->getUuid();
+			}
+		}
+	}
 
 	ImGui::Separator();
 

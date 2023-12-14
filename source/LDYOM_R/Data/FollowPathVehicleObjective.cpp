@@ -7,6 +7,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "ProjectsService.h"
+#include "Settings.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
 
@@ -27,6 +28,14 @@ void FollowPathVehicleObjective::draw(Localization &local, std::vector<std::stri
 			             return vehicles.at(i)->getUuid();
 		             });
 	});
+
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (indexVehicle == -1) {
+			if (!vehicles.empty()) {
+				this->vehicleUuid_ = vehicles.back()->getUuid();
+			}
+		}
+	}
 
 	ImGui::SliderInt(local.get("follow_path_vehicle_objective.drive_type").c_str(), &this->driveType_, 0, 2,
 	                 local.getArray("follow_path_vehicle_objective.drive_types").at(this->driveType_).c_str());

@@ -17,6 +17,7 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "ProjectsService.h"
+#include "Settings.h"
 #include "strUtils.h"
 #include "tweeny.h"
 #include "utils.h"
@@ -149,6 +150,14 @@ void CutsceneObjective::draw(Localization &local, std::vector<std::string> &list
 				                      return entities.at(i)->getUuid();
 			                      });
 		});
+
+		if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+			if (index == -1) {
+				if (!entities.empty()) {
+					*uuid = entities.back()->getUuid();
+				}
+			}
+		}
 
 		return result;
 	};

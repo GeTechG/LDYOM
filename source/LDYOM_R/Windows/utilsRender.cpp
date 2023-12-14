@@ -17,6 +17,7 @@
 #include "HotKeyService.h"
 #include "ModelsService.h"
 #include "PopupSkinSelector.h"
+#include "Settings.h"
 
 using namespace plugin;
 
@@ -100,8 +101,8 @@ void ObjectiveDependentInput(ObjectiveDependent *objectiveDependent) {
 
 	ImGui::BeginDisabled(!objectiveDependent->isUseObjective());
 	const auto &objectives = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives();
-
 	const int spawnObjectiveIdx = utils::indexByUuid(objectives, objectiveDependent->getSpawnObjectiveUuid());
+
 	IncorrectHighlight(spawnObjectiveIdx == -1 && objectiveDependent->isUseObjective(), [&] {
 		utils::Combo(Localization::getInstance().get("general.spawn_before").c_str(),
 		             &objectiveDependent->getSpawnObjectiveUuid(), spawnObjectiveIdx, objectives.size(),
@@ -111,6 +112,14 @@ void ObjectiveDependentInput(ObjectiveDependent *objectiveDependent) {
 			             return objectives.at(i)->getUuid();
 		             });
 	});
+
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (spawnObjectiveIdx == -1) {
+			if (!objectives.empty()) {
+				objectiveDependent->getSpawnObjectiveUuid() = objectives.back()->getUuid();
+			}
+		}
+	}
 
 	const int deleteObjectiveIdx = utils::indexByUuid(objectives, objectiveDependent->getDeleteObjectiveUuid());
 	utils::Combo(Localization::getInstance().get("general.delete_after").c_str(),

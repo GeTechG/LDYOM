@@ -7,6 +7,7 @@
 #include "imgui_stdlib.h"
 #include "ProjectsService.h"
 #include "Result.h"
+#include "Settings.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "../shared/extensions/ScriptCommands.h"
@@ -214,6 +215,14 @@ void CheckpointObjective::draw(Localization &local, std::vector<std::string> &li
 		             });
 	});
 
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (indexCheckpoint == -1) {
+			if (!checkpoints.empty()) {
+				this->checkpointUuid_ = checkpoints.back()->getUuid();
+			}
+		}
+	}
+
 	ImGui::InputText(local.get("general.text").c_str(), &this->text_);
 	ImGui::DragFloat(local.get("general.time").c_str(), &this->textTime_, 0.001f);
 	ImGui::Separator();
@@ -223,8 +232,8 @@ void CheckpointObjective::draw(Localization &local, std::vector<std::string> &li
 	if (this->onWhatArrive_ == 3) {
 		ImGui::PushID("##oArriveOnVeh");
 		const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
-
 		const int indexVehicle = utils::indexByUuid(vehicles, this->comeBackVehicle_);
+
 		IncorrectHighlight(indexVehicle == -1, [&] {
 			utils::Combo(local.get("entities.vehicle").c_str(), &this->comeBackVehicle_, indexVehicle, vehicles.size(),
 			             [&vehicles](const int i) {
@@ -233,6 +242,15 @@ void CheckpointObjective::draw(Localization &local, std::vector<std::string> &li
 				             return vehicles.at(i)->getUuid();
 			             });
 		});
+
+		if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+			if (indexVehicle == -1) {
+				if (!vehicles.empty()) {
+					this->comeBackVehicle_ = vehicles.back()->getUuid();
+				}
+			}
+		}
+
 		ImGui::InputText(local.get("checkpoint_objective.comeBackText").c_str(), &this->textComeBackVehicle_);
 		utils::Combo(local.get("general.color_marker").c_str(), &this->colorBlipComeBackVehicle_,
 		             local.getArray("general.color_marker_enum"), 6);

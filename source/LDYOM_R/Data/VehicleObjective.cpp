@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "ProjectsService.h"
+#include "Settings.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
@@ -33,6 +34,14 @@ void VehicleObjective::draw(Localization &local, std::vector<std::string> &listO
 			             return vehicles.at(i)->getUuid();
 		             });
 	});
+
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (indexVehicle == -1) {
+			if (!vehicles.empty()) {
+				this->vehicleUuid_ = vehicles.back()->getUuid();
+			}
+		}
+	}
 
 	ImGui::Separator();
 

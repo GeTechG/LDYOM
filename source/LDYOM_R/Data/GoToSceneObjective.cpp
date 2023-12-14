@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
+#include "Settings.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
@@ -42,6 +43,14 @@ void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &lis
 				             });
 			});
 
+			if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+				if (indexCheckpoint == -1) {
+					if (!checkpoints.empty()) {
+						this->triggerUuid_ = checkpoints.back()->getUuid();
+					}
+				}
+			}
+
 			if (indexCheckpoint != -1)
 				position = checkpoints.at(indexCheckpoint)->getPosition();
 
@@ -59,6 +68,14 @@ void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &lis
 					             return pickups.at(i)->getUuid();
 				             });
 			});
+
+			if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+				if (indexPickup == -1) {
+					if (!pickups.empty()) {
+						this->triggerUuid_ = pickups.back()->getUuid();
+					}
+				}
+			}
 
 			if (ImGui::SliderInt(local.get("general.type_marker").c_str(), &this->blipType_, 0, 1,
 			                     local.getArray("general.type_marker_enum").at(this->blipType_).c_str()))
@@ -110,6 +127,14 @@ void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &lis
 			ImGui::EndCombo();
 		}
 	});
+
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (this->sceneId_ == 0) {
+			if (!scenes.empty()) {
+				this->sceneId_ = scenes.end()->first;
+			}
+		}
+	}
 
 	if (scenes.contains(this->sceneId_)) {
 		const auto &objectives = ProjectsService::getInstance().getCurrentProject().getScenes().at(this->sceneId_)->

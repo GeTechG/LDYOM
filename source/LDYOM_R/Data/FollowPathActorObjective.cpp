@@ -9,6 +9,7 @@
 #include "imgui.h"
 #include "PedExtended.h"
 #include "ProjectsService.h"
+#include "Settings.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "WindowsRenderService.h"
@@ -31,6 +32,14 @@ void FollowPathActorObjective::draw(Localization &local, std::vector<std::string
 			             return actors.at(i)->getUuid();
 		             });
 	});
+
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (indexActor == -1) {
+			if (!actors.empty()) {
+				this->actorUuid = actors.back()->getUuid();
+			}
+		}
+	}
 
 	ImGui::SliderInt(local.get("follow_path_actor_objective.move_type").c_str(), &this->moveType_, 0, 2,
 	                 local.getArray("follow_path_actor_objective.move_states").at(this->moveType_).c_str());

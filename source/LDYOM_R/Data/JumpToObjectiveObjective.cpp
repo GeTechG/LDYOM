@@ -5,6 +5,7 @@
 #include "LuaEngine.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
+#include "Settings.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
 
@@ -22,8 +23,8 @@ bool& JumpToObjectiveObjective::isConditionValueBoolean() { return conditionValu
 
 void JumpToObjectiveObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &objectives = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives();
-
 	const int jumpObjectiveIdx = utils::indexByUuid(objectives, this->goToObjectiveUuid_);
+
 	IncorrectHighlight(jumpObjectiveIdx == -1 && this->condition_, [&] {
 		utils::Combo(Localization::getInstance().get("objective.title").c_str(), &this->goToObjectiveUuid_,
 		             jumpObjectiveIdx, objectives.size(), [&objectives](const int i) {
@@ -32,6 +33,14 @@ void JumpToObjectiveObjective::draw(Localization &local, std::vector<std::string
 			             return objectives.at(i)->getUuid();
 		             });
 	});
+
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (jumpObjectiveIdx == -1) {
+			if (!objectives.empty()) {
+				this->goToObjectiveUuid_ = objectives.back()->getUuid();
+			}
+		}
+	}
 
 	utils::ToggleButton(local.get("general.condition").c_str(), &this->condition_);
 

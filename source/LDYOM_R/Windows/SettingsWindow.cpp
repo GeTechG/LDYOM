@@ -40,6 +40,9 @@ namespace Windows {
 		this->settings_.autoBindDeleteAfterLastObjective = Settings::getInstance().get<bool>(
 			"main.autoBindDeleteAfterLastObjective").value_or(true);
 
+		this->settings_.autoBindRequireFields = Settings::getInstance().get<bool>("main.autoBindRequireFields").
+		                                                                value_or(true);
+
 		if (const auto userPedsModels = Settings::getInstance().get<std::vector<int>>("data.pedModels"); userPedsModels.
 			has_value())
 			this->settings_.userPedsModels = userPedsModels.value();
@@ -175,6 +178,11 @@ namespace Windows {
 			                        &this->settings_.autoBindDeleteAfterLastObjective)) {
 				Settings::getInstance().set("main.autoBindDeleteAfterLastObjective",
 				                            this->settings_.autoBindDeleteAfterLastObjective);
+			}
+
+			if (utils::ToggleButton(local.get("settings.auto_bind_require_fields").c_str(),
+			                        &this->settings_.autoBindRequireFields)) {
+				Settings::getInstance().set("main.autoBindRequireFields", this->settings_.autoBindRequireFields);
 			}
 
 			ImGui::Separator();

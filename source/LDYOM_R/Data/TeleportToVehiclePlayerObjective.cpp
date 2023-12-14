@@ -5,6 +5,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "ProjectsService.h"
+#include "Settings.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
 
@@ -29,6 +30,15 @@ void TeleportToVehiclePlayerObjective::draw(Localization &local, std::vector<std
 			             return vehicles.at(i)->getUuid();
 		             });
 	});
+
+	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+		if (indexVehicle == -1) {
+			if (!vehicles.empty()) {
+				this->vehicleUuid_ = vehicles.back()->getUuid();
+			}
+		}
+	}
+
 	ImGui::SliderInt(local.get("general.place").c_str(), &this->place_, 0, 3,
 	                 local.getArray("general.places_in_car")[this->place_].c_str());
 }
