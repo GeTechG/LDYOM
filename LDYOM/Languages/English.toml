@@ -286,7 +286,7 @@ propagation_fire = "Fire spread"
 type_explosion = "Explosion type"
 
 [visual_effect]
-types = [ "Crowns", "Projections",]
+types = [ "Coronas", "Projections"]
 effect_type = "Effect type"
 flare = "Flashing"
 
