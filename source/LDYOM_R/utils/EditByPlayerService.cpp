@@ -192,6 +192,8 @@ ktwait positionalObjectTask(CEntity *entity, std::function<void(CMatrix &)> setM
                             bool fastCreate) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
+	static float multiplier = 1.f;
+
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
 		auto &local = Localization::getInstance();
 		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
@@ -201,6 +203,7 @@ ktwait positionalObjectTask(CEntity *entity, std::function<void(CMatrix &)> setM
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
 			ImGui::Text(local.get("info_overlay.view_camera_mouse").c_str());
 			ImGui::Text(local.get("info_overlay.move_camera").c_str());
+			ImGui::Text(local.get("info_overlay.speed_move").c_str(), multiplier);
 			char toggleSurfaceRotate[32];
 			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoRotate")->functionKeys,
 			                       toggleSurfaceRotate, sizeof toggleSurfaceRotate);
@@ -213,6 +216,13 @@ ktwait positionalObjectTask(CEntity *entity, std::function<void(CMatrix &)> setM
 			                       sizeof cancelHotKey);
 			ImGui::Text(local.get("info_overlay.accept_cancel").c_str(), acceptHotKey, cancelHotKey);
 			ImGui::PopTextWrapPos();
+
+			if (ImGui::GetIO().MouseWheel < 0.f) {
+				multiplier -= 0.01f;
+				multiplier = std::max(multiplier, 0.f);
+			} else if (ImGui::GetIO().MouseWheel > 0.f) {
+				multiplier += 0.01f;
+			}
 		}
 		ImGui::End();
 	});
@@ -300,33 +310,33 @@ ktwait positionalObjectTask(CEntity *entity, std::function<void(CMatrix &)> setM
 		                  TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp);
 
 		if (KeyPressed(VK_UP) || KeyPressed('W')) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * multiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 		}
 		if (KeyPressed(VK_DOWN) || KeyPressed('S')) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * -1;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * -1 * multiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 
 		if (KeyPressed(VK_LEFT) || KeyPressed('A')) {
-			posCam += rightCamVec * -1;
+			posCam += rightCamVec * -1 * multiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 		if (KeyPressed(VK_RIGHT) || KeyPressed('D')) {
-			posCam += rightCamVec;
+			posCam += rightCamVec * multiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 
 		if (KeyPressed(VK_Q)) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * multiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 		if (KeyPressed(VK_E)) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * -1;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * -1 * multiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
