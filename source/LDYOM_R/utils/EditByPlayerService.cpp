@@ -987,3 +987,61 @@ ktwait editByPlayerVehiclePathLuaTask(sol::table path, int model) {
 void EditByPlayerService::editByPlayerVehicleLuaPath(sol::table path, int model) {
 	Tasker::getInstance().addTask("editByPlayerVehicleLuaPathTask", editByPlayerVehiclePathLuaTask, path, model);
 }
+
+ktwait editByPlayerTrainTask(Train &train) {
+	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
+
+	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
+
+	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
+		auto &local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
+			ImGui::Text(local.get("vehicle.edit_by_player_overlay").c_str());
+			ImGui::PopTextWrapPos();
+		}
+		ImGui::End();
+	});
+
+	TheCamera.Restore();
+
+	Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(
+		CPools::GetVehicleRef(train.getEditorTrain().value()), 0);
+	train.getEditorTrain().value()->m_bUsesCollision = 1;
+	train.getEditorTrain().value()->m_nVehicleFlags.bEngineOn = 1;
+	Command<Commands::WARP_CHAR_INTO_CAR>(CPools::GetPedRef(FindPlayerPed()),
+	                                      CPools::GetVehicleRef(train.getEditorTrain().value()));
+
+	while (true) {
+		if (!Command<Commands::IS_CHAR_IN_CAR>(CPools::GetPedRef(FindPlayerPed()),
+		                                       CPools::GetVehicleRef(train.getEditorTrain().value()))) {
+			Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(
+				CPools::GetVehicleRef(train.getEditorTrain().value()), 1);
+
+			const auto position = train.getEditorTrain().value()->GetPosition();
+			train.getPosition()[0] = position.x;
+			train.getPosition()[1] = position.y;
+			train.getPosition()[2] = position.z;
+			train.spawnEditorTrain();
+
+			break;
+		}
+
+		co_await 1;
+	}
+
+	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
+
+	Windows::WindowsRenderService::getInstance().removeRender("editByPlayerOverlay");
+
+	Command<Commands::SET_PLAYER_CONTROL>(0, 0);
+
+	Tasker::getInstance().removeTask("editByPlayerVehicle");
+}
+
+void EditByPlayerService::editByPlayerTrain(Train &train) {
+	Tasker::getInstance().addTask("editByPlayerTrain", editByPlayerTrainTask, train);
+}

@@ -3,6 +3,7 @@
 #include <CCamera.h>
 #include <extensions/ScriptCommands.h>
 
+#include "EditByPlayerService.h"
 #include "fa.h"
 #include "imgui.h"
 #include "utils.h"
@@ -75,13 +76,17 @@ void Windows::TrainsWindow::drawOptions() {
 		this->currentElement).get();
 
 	//position
-	InputPosition(train->getPosition(), [train] { train->updateLocation(); });
+	DragPosition(train->getPosition(), [train] { train->updateLocation(); });
 
 	//modelSelection(vehicle, local);
 
 	characteristicsSection(local, train);
 
 	ObjectiveDependentInput(train);
+
+	if (ImGui::Button(local.get("general.edit_manually").c_str())) {
+		EditByPlayerService::getInstance().editByPlayerTrain(*train);
+	}
 
 	this->listOverlays.emplace_back(local.get("info_overlay.camera_view"));
 

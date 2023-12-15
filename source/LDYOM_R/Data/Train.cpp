@@ -52,6 +52,8 @@ CTrain* Train::spawnTrain() {
 	const auto train = static_cast<CTrain*>(CPools::GetVehicle(handleTrain));
 
 	train->m_bStreamingDontDelete = 1;
+	train->m_nVehicleFlags.bEngineOn = 0;
+	train->RemoveDriver(true);
 	Command<Commands::DONT_REMOVE_CAR>(handleTrain);
 
 	CStreaming::RemoveAllUnusedModels();
