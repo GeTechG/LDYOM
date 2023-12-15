@@ -250,7 +250,9 @@ void Particle::deleteEditorParticle() {
 	const auto fxSystemC = this->getEditorParticle();
 	if (fxSystemC.has_value() && !restart) {
 		g_fxMan.DestroyFxSystem(fxSystemC.value());
-		CTheScripts::RemoveScriptEffectSystem(this->editorParticle_.value());
+		try {
+			CTheScripts::RemoveScriptEffectSystem(this->editorParticle_.value());
+		} catch (std::exception &e) { }
 	}
 	this->editorParticle_ = std::nullopt;
 }
