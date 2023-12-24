@@ -19,6 +19,7 @@
 #include "MathUtils.h"
 #include "ModelsService.h"
 #include "plugin.h"
+#include "Settings.h"
 #include "Tasker.h"
 #include "utils.h"
 #include "WindowsRenderService.h"
@@ -35,6 +36,8 @@ using namespace std::chrono_literals;
 using namespace plugin;
 
 extern bool openWindowsMenu;
+
+float speedCameraMultiplier = 1.f;
 
 ktwait editByPlayerActorTask(Actor &actor) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
@@ -192,7 +195,7 @@ ktwait positionalObjectTask(CEntity *entity, std::function<void(CMatrix &)> setM
                             bool fastCreate) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
-	static float multiplier = 1.f;
+	speedCameraMultiplier = Settings::getInstance().get<float>("camera.editByPlayerSpeed").value_or(1.f);
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
 		auto &local = Localization::getInstance();
@@ -203,7 +206,7 @@ ktwait positionalObjectTask(CEntity *entity, std::function<void(CMatrix &)> setM
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
 			ImGui::Text(local.get("info_overlay.view_camera_mouse").c_str());
 			ImGui::Text(local.get("info_overlay.move_camera").c_str());
-			ImGui::Text(local.get("info_overlay.speed_move").c_str(), multiplier);
+			ImGui::Text(local.get("info_overlay.speed_move").c_str(), speedCameraMultiplier);
 			char toggleSurfaceRotate[32];
 			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("guizmoRotate")->functionKeys,
 			                       toggleSurfaceRotate, sizeof toggleSurfaceRotate);
@@ -218,10 +221,14 @@ ktwait positionalObjectTask(CEntity *entity, std::function<void(CMatrix &)> setM
 			ImGui::PopTextWrapPos();
 
 			if (ImGui::GetIO().MouseWheel < 0.f) {
-				multiplier -= 0.01f;
-				multiplier = std::max(multiplier, 0.f);
+				speedCameraMultiplier -= 0.01f;
+				speedCameraMultiplier = std::max(speedCameraMultiplier, 0.f);
+				Settings::getInstance().set("camera.editByPlayerSpeed", speedCameraMultiplier);
+				Settings::getInstance().Save();
 			} else if (ImGui::GetIO().MouseWheel > 0.f) {
-				multiplier += 0.01f;
+				speedCameraMultiplier += 0.01f;
+				Settings::getInstance().set("camera.editByPlayerSpeed", speedCameraMultiplier);
+				Settings::getInstance().Save();
 			}
 		}
 		ImGui::End();
@@ -310,33 +317,33 @@ ktwait positionalObjectTask(CEntity *entity, std::function<void(CMatrix &)> setM
 		                  TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp);
 
 		if (KeyPressed(VK_UP) || KeyPressed('W')) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * multiplier;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 		}
 		if (KeyPressed(VK_DOWN) || KeyPressed('S')) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * -1 * multiplier;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * -1 * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 
 		if (KeyPressed(VK_LEFT) || KeyPressed('A')) {
-			posCam += rightCamVec * -1 * multiplier;
+			posCam += rightCamVec * -1 * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 		if (KeyPressed(VK_RIGHT) || KeyPressed('D')) {
-			posCam += rightCamVec * multiplier;
+			posCam += rightCamVec * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 
 		if (KeyPressed(VK_Q)) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * multiplier;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 		if (KeyPressed(VK_E)) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * -1 * multiplier;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * -1 * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
@@ -394,7 +401,7 @@ glm::mat4 CMatrixToGlmMat4(const CMatrix &cMatrix) {
 ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen, std::function<void()> callback) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
-	static float multiplier = 1.f;
+	speedCameraMultiplier = Settings::getInstance().get<float>("camera.editByPlayerSpeed").value_or(1.f);
 
 	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
 
@@ -407,7 +414,7 @@ ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
 			ImGui::Text(local.get("info_overlay.view_camera_mouse").c_str());
 			ImGui::Text(local.get("info_overlay.move_camera").c_str());
-			ImGui::Text(local.get("info_overlay.speed_move").c_str(), multiplier);
+			ImGui::Text(local.get("info_overlay.speed_move").c_str(), speedCameraMultiplier);
 			char acceptHotKey[32];
 			ImHotKey::GetHotKeyLib(HotKeyService::getInstance().getHotKeyByName("accept")->functionKeys, acceptHotKey,
 			                       sizeof acceptHotKey);
@@ -418,10 +425,14 @@ ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen
 			ImGui::PopTextWrapPos();
 
 			if (ImGui::GetIO().MouseWheel < 0.f) {
-				multiplier -= 0.01f;
-				multiplier = std::max(multiplier, 0.f);
+				speedCameraMultiplier -= 0.01f;
+				speedCameraMultiplier = std::max(speedCameraMultiplier, 0.f);
+				Settings::getInstance().set("camera.editByPlayerSpeed", speedCameraMultiplier);
+				Settings::getInstance().Save();
 			} else if (ImGui::GetIO().MouseWheel > 0.f) {
-				multiplier += 0.01f;
+				speedCameraMultiplier += 0.01f;
+				Settings::getInstance().set("camera.editByPlayerSpeed", speedCameraMultiplier);
+				Settings::getInstance().Save();
 			}
 		}
 		ImGui::End();
@@ -468,33 +479,33 @@ ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen
 		                  TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp);
 
 		if (KeyPressed(VK_UP) || KeyPressed('W')) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * multiplier;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 		}
 		if (KeyPressed(VK_DOWN) || KeyPressed('S')) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * -1 * multiplier;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecFront * -1 * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 
 		if (KeyPressed(VK_LEFT) || KeyPressed('A')) {
-			posCam += rightCamVec * -1 * multiplier;
+			posCam += rightCamVec * -1 * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 		if (KeyPressed(VK_RIGHT) || KeyPressed('D')) {
-			posCam += rightCamVec * multiplier;
+			posCam += rightCamVec * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 
 		if (KeyPressed(VK_Q)) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * multiplier;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
 		if (KeyPressed(VK_E)) {
-			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * -1 * multiplier;
+			posCam += TheCamera.m_aCams[TheCamera.m_nActiveCam].m_vecUp * -1 * speedCameraMultiplier;
 			TheCamera.VectorMoveLinear(&posCam, &posCam, 10, true);
 			FindPlayerPed()->SetPosn(posCam);
 		}
