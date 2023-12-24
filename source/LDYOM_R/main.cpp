@@ -125,6 +125,7 @@ public:
 				co_await 5s;
 				Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 				Command<Commands::SET_CHAR_DROWNS_IN_WATER>(static_cast<CPed*>(FindPlayerPed()), false);
+				FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_bDoesNotGetTired = true;
 
 				//Command<Commands::MAKE_PLAYER_FIRE_PROOF>(0, true);
 			});

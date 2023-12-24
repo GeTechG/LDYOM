@@ -272,6 +272,7 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	Windows::WindowsRenderService::getInstance().closeAllWindows();
 	Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 0, 0, 0, 0, 0);
 	Command<Commands::SET_CHAR_DROWNS_IN_WATER>(static_cast<CPed*>(FindPlayerPed()), true);
+	FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_bDoesNotGetTired = false;
 	this->projectRunning = true;
 
 	const auto projectName = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name;
@@ -369,6 +370,7 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 
 	Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 	Command<Commands::SET_CHAR_DROWNS_IN_WATER>(static_cast<CPed*>(FindPlayerPed()), false);
+	FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_bDoesNotGetTired = true;
 	Command<Commands::SET_LA_RIOTS>(0);
 	Command<Commands::SET_PED_DENSITY_MULTIPLIER>(0.f);
 	Command<Commands::SET_CAR_DENSITY_MULTIPLIER>(0.f);
