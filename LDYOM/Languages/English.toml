@@ -284,6 +284,7 @@ types = [ "Fire", "Explosion",]
 size_fire = "Fire size"
 propagation_fire = "Fire spread"
 type_explosion = "Explosion type"
+type_explosion_names = [ "Grenade", "Molotov", "Rocket", "Weak rocket", "Car", "Fast car", "Boat", "Plane", "Mine", "Object", "Tank fire", "Small", "RC transport",]
 
 [visual_effect]
 types = [ "Coronas", "Projections",]

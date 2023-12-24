@@ -1,4 +1,5 @@
-﻿#include <CHud.h>
+﻿#include <CFireManager.h>
+#include <CHud.h>
 #include <CMenuManager.h>
 #include <CTheScripts.h>
 #include <CWorld.h>
@@ -56,6 +57,21 @@ public:
 				ImGui::GetIO().ClearInputKeys();
 			}
 			lastFrameMenuActive = FrontEndMenuManager.m_bMenuActive;
+
+			if (!ProjectPlayerService::getInstance().isProjectRunning()) {
+				std::set<CFire*> editorFires;
+				for (const auto &pyrotechnic : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
+				                                                              getPyrotechnics()) {
+					if (pyrotechnic->getEditorFire().has_value()) {
+						editorFires.emplace(pyrotechnic->getEditorFire().value());
+					}
+				}
+				for (auto &fire : gFireManager.m_aFires) {
+					if (fire.m_nFlags.bActive != 0 && !editorFires.contains(&fire)) {
+						fire.Extinguish();
+					}
+				}
+			}
 		};
 
 		auto scriptProcess = [] {

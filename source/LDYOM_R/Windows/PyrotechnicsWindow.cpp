@@ -9,6 +9,8 @@
 #include "utilsRender.h"
 #include "fmt/core.h"
 
+using namespace plugin;
+
 std::string Windows::PyrotechnicsWindow::getNameList() {
 	return fmt::format("{} {}##list", ICON_FA_FIRE_ALT, Localization::getInstance().get("entities.pyrotechnics"));
 }
@@ -76,8 +78,13 @@ void Windows::PyrotechnicsWindow::drawOptions() {
 		ImGui::DragInt(local.get("pyrotechnics.propagation_fire").c_str(), &pyrotechnics->getPropagationFire(), 0.1f, 0,
 		               36);
 	} else {
-		ImGui::DragInt(local.get("pyrotechnics.type_explosion").c_str(), &pyrotechnics->getTypeExplosion(), 0.1f, 0,
-		               13);
+		const auto &currentName = local.getArray("pyrotechnics.type_explosion_names")[pyrotechnics->getTypeExplosion()];
+		ImGui::SliderInt(local.get("pyrotechnics.type_explosion").c_str(), &pyrotechnics->getTypeExplosion(), 0, 12,
+		                 currentName.c_str());
+		if (ImGui::Button(local.get("animation.preview").c_str())) {
+			Command<Commands::ADD_EXPLOSION>(pyrotechnics->getPosition()[0], pyrotechnics->getPosition()[1],
+			                                 pyrotechnics->getPosition()[2], pyrotechnics->getTypeExplosion());
+		}
 	}
 
 	ObjectiveDependentInput(pyrotechnics);
@@ -94,13 +101,13 @@ void Windows::PyrotechnicsWindow::drawOptions() {
 void Windows::PyrotechnicsWindow::close() {
 	ListWindow::close();
 	TheCamera.Restore();
-	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
-	plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
+	plugin::Command<Commands::SET_PLAYER_CONTROL>(0, true);
+	plugin::Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 }
 
 void Windows::PyrotechnicsWindow::open() {
 	ListWindow::open();
-	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
+	plugin::Command<Commands::SET_PLAYER_CONTROL>(0, false);
 	for (const auto &pyrotechnics : ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
 	                                                               getPyrotechnics()) {
 		pyrotechnics->spawnEditorPyrotechnics();

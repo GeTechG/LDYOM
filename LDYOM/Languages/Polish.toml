@@ -284,6 +284,7 @@ types = [ "Pożar", "Eksplozja",]
 size_fire = "Rozmiar ognia"
 propagation_fire = "Rozprzestrzenianie ognia"
 type_explosion = "Rodzaj eksplozji"
+type_explosion_names = [ "Granat", "Molotow", "Rakieta", "Słaba rakieta", "Samochód", "Szybki samochód", "Łódź", "Samolot", "Mina", "Obiekt", "Ogień z czołgu", "Mały", "RC transport",]
 
 [visual_effect]
 types = [ "Korony", "Projekcje",]

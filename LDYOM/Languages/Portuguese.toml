@@ -284,6 +284,7 @@ types = [ "Incêndio", "Explosão",]
 size_fire = "Tamanho do incêndio"
 propagation_fire = "Propagação do incêndio"
 type_explosion = "Tipo de explosão"
+type_explosion_names = [ "Granada", "Cocktail molotov", "Míssil", "Míssil fraco", "Carro", "Carro rápido", "Barco", "Avião", "Mina", "Objeto", "Fogo do tanque", "Pequeno", "Veículo de controle remoto",]
 
 [checkpoint]
 types = [ "Esfera", "Corrida",]
