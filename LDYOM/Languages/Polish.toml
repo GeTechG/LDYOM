@@ -424,6 +424,7 @@ custom_ped_animations = "Własne animacje pedów"
 scaleUi = "Skaluj UI"
 auto_bind_delete_after_last_objective = "Automatyczne przypisanie \"Usuń po\" do ostatniego celu"
 auto_bind_require_fields = "Automatyczne przypisanie wymaganych pól"
+collision_objects_in_editor = "Kolizja obiektów w edytorze"
 
 [console_window]
 title = "Konsola"

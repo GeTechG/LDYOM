@@ -2,9 +2,8 @@
 
 #include <fast_dynamic_cast.h>
 
-#include "CheckpointObjective.h"
 #include "GoToSceneObjective.h"
-#include "strUtils.h"
+#include "Settings.h"
 #include "TeleportPlayerObjective.h"
 #include "fmt/core.h"
 #include "Localization/Localization.h"
@@ -257,6 +256,12 @@ void Scene::createNewVisualEffectFrom(VisualEffect &visualEffect) {
 
 void Scene::createNewCheckpointFrom(Checkpoint &checkpoint) {
 	this->checkpoints_.emplace_back(std::make_unique<Checkpoint>(checkpoint.copy()));
+}
+
+void Scene::updateEditorObjectsCollision() const {
+	for (auto &object : this->objects_) {
+		object->spawnEditorObject();
+	}
 }
 
 void Scene::unloadEditorScene() const {

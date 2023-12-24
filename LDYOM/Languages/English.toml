@@ -286,7 +286,7 @@ propagation_fire = "Fire spread"
 type_explosion = "Explosion type"
 
 [visual_effect]
-types = [ "Coronas", "Projections"]
+types = [ "Coronas", "Projections",]
 effect_type = "Effect type"
 flare = "Flashing"
 
@@ -424,6 +424,7 @@ custom_ped_animations = "Custom ped animations"
 scaleUi = "Scale UI"
 auto_bind_delete_after_last_objective = "Auto bind \"Delete after\" to the last objective"
 auto_bind_require_fields = "Auto bind in required fields"
+collision_objects_in_editor = "Collision of objects in editor"
 
 [console_window]
 title = "Console"

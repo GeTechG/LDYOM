@@ -424,6 +424,7 @@ custom_ped_animations = "Animações de personagens personalizadas"
 scaleUi = "Escalamento"
 auto_bind_delete_after_last_objective = "Auto vincular 'Excluir depois' para o último objetivo"
 auto_bind_require_fields = "Auto vincular campos obrigatórios"
+collision_objects_in_editor = "Colisão de objetos no editor"
 
 [console_window]
 title = "Console"

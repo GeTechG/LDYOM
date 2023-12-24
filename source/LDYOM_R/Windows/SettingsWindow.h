@@ -12,6 +12,7 @@ namespace Windows {
 		float scaleUi = 1.0f;
 		bool autoBindDeleteAfterLastObjective = true;
 		bool autoBindRequireFields = true;
+		bool collisionObjectsInEditor = true;
 		std::vector<int> userPedsModels{};
 		std::vector<std::string> userSpecialPedsModels{};
 		std::vector<int> userVehiclesModels{};

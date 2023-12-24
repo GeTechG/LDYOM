@@ -424,6 +424,7 @@ custom_ped_animations = "Пользов. анимации персонажей"
 scaleUi = "Масштаб"
 auto_bind_delete_after_last_objective = "Авто привязка \"Удалить после\" к последней цели"
 auto_bind_require_fields = "Авто привязка в обязательных полях"
+collision_objects_in_editor = "Коллизия объектов в редакторе"
 
 [console_window]
 title = "Консоль"

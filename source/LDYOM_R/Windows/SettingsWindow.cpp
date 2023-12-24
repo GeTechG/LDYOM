@@ -9,6 +9,7 @@
 #include "imgui_stdlib.h"
 #include "imHotKey.h"
 #include "ModelsService.h"
+#include "ProjectsService.h"
 #include "Settings.h"
 #include "utils.h"
 #include "WindowsRenderService.h"
@@ -42,6 +43,8 @@ namespace Windows {
 
 		this->settings_.autoBindRequireFields = Settings::getInstance().get<bool>("main.autoBindRequireFields").
 		                                                                value_or(true);
+		this->settings_.collisionObjectsInEditor = Settings::getInstance().get<bool>("main.collisionObjectsInEditor").
+		                                                                   value_or(true);
 
 		if (const auto userPedsModels = Settings::getInstance().get<std::vector<int>>("data.pedModels"); userPedsModels.
 			has_value())
@@ -183,6 +186,11 @@ namespace Windows {
 			if (utils::ToggleButton(local.get("settings.auto_bind_require_fields").c_str(),
 			                        &this->settings_.autoBindRequireFields)) {
 				Settings::getInstance().set("main.autoBindRequireFields", this->settings_.autoBindRequireFields);
+			}
+			if (utils::ToggleButton(local.get("settings.collision_objects_in_editor").c_str(),
+			                        &this->settings_.collisionObjectsInEditor)) {
+				Settings::getInstance().set("main.collisionObjectsInEditor", this->settings_.collisionObjectsInEditor);
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->updateEditorObjectsCollision();
 			}
 
 			ImGui::Separator();

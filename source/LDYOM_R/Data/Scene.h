@@ -118,6 +118,8 @@ public:
 	void createNewVisualEffectFrom(VisualEffect &visualEffect);
 	void createNewCheckpointFrom(Checkpoint &checkpoint);
 
+	void updateEditorObjectsCollision() const;
+
 	void unloadEditorScene() const;
 	void unloadProjectScene() const;
 	void loadEditorScene() const;

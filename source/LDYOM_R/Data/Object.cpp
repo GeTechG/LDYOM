@@ -126,6 +126,8 @@ void Object::spawnEditorObject() {
 	Command<Commands::FREEZE_OBJECT_POSITION>(editorObjectId, 1);
 	Command<Commands::SET_OBJECT_DYNAMIC>(editorObjectId, 0);
 	Command<Commands::SET_OBJECT_PROOFS>(editorObjectId, 1, 1, 1, 1, 1);
+	const bool editorCollision = Settings::getInstance().get<bool>("main.collisionObjectsInEditor").value_or(true);
+	editorObject_.value()->m_bUsesCollision = editorCollision;
 
 	updateLocation();
 }
