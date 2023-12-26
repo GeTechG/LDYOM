@@ -46,49 +46,6 @@ void JumpToObjectiveObjective::draw(Localization &local, std::vector<std::string
 
 	ImGui::BeginDisabled(!this->condition_);
 
-	//std::optional<sol::table> currentVariable;
-	//for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["variables"].get_or_create<sol::table>()) {
-	//	if (pair.first.as<int>() == this->varId_) {
-	//		currentVariable = pair.second;
-	//	}
-	//}
-
-	//auto preview = "";
-	//if (currentVariable.has_value())
-	//	preview = static_cast<const char*>(const_cast<void*>(currentVariable.value()["name"].get<sol::object>().
-	//		pointer()));
-	/*IncorrectHighlight(strlen(preview) == 0, [&] {
-		if (ImGui::BeginCombo(local.get("general.global_variables").c_str(), preview)) {
-			for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["variables"].get_or_create<
-				     sol::table>()) {
-				auto variable = pair.second.as<sol::table>();
-				auto type = static_cast<ValueType>(variable["type"].get<int>());
-				if (type == Number || type == Boolean) {
-					if (ImGui::Selectable(
-						static_cast<char*>(const_cast<void*>(variable["name"].get<sol::object>().pointer())),
-						this->varId_ == pair.first.as<int>())) {
-						this->varId_ = pair.first.as<int>();
-					}
-				}
-			}
-
-			ImGui::EndCombo();
-		}
-	});*/
-
-	/*if (currentVariable.has_value()) {
-		if (utils::Combo(local.get("general.condition").c_str(), &this->conditionType_,
-		                 local.getArray("general.comparings"))) {
-			this->conditionValueNumber_ = 0;
-		}
-		const auto type = static_cast<ValueType>(currentVariable.value()["type"].get<int>());
-		if (type == Number) {
-			ImGui::InputFloat("##valueCompare", &this->conditionValueNumber_);
-		} else if (type == Boolean) {
-			ImGui::Checkbox("##valueCompare", &this->conditionValueBoolean_);
-		}
-	}*/
-
 	ImGui::EndDisabled();
 }
 
@@ -102,99 +59,9 @@ ktwait JumpToObjectiveObjective::execute(Scene *scene, Result &result, ktcoro_ta
 		co_return;
 	}
 
-	/*if (this->condition_) {
-		std::optional<sol::table> currentVariable;
-		for (auto pair : LuaEngine::getInstance().getLuaState()["global_data"]["variables"].get_or_create<
-			     sol::table>()) {
-			if (pair.first.as<int>() == this->varId_) {
-				currentVariable = pair.second;
-			}
-		}
-
-		if (!currentVariable.value()) {
-			setObjectiveError(result, *this, NotSelected, "The global variable is not selected.");
-			co_return;
-		}
-
-		const auto type = static_cast<ValueType>(currentVariable.value()["type"].get<int>());
-		if (type == Number) {
-			const auto varValue = static_cast<float*>(const_cast<void*>(LuaEngine::getInstance().getLuaState()[
-				"global_data"]["variablesR"][this->varId_].get<sol::object>().pointer()));
-			switch (this->conditionType_) {
-			case 0:
-				if (abs(*varValue - this->conditionValueNumber_) < FLT_EPSILON) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			case 1:
-				if (abs(*varValue - this->conditionValueNumber_) > FLT_EPSILON) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			case 2:
-				if (*varValue > this->conditionValueNumber_) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			case 3:
-				if (*varValue >= this->conditionValueNumber_) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			case 4:
-				if (*varValue < this->conditionValueNumber_) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			case 5:
-				if (*varValue <= this->conditionValueNumber_) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			default:
-				break;
-			}
-		} else if (type == Boolean) {
-			const auto varValue = static_cast<bool*>(const_cast<void*>(LuaEngine::getInstance().getLuaState()[
-				"global_data"]["variablesR"][this->varId_].get<sol::object>().pointer()));
-			switch (this->conditionType_) {
-			case 0:
-				if (*varValue == this->conditionValueBoolean_) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			case 1:
-				if (*varValue != this->conditionValueBoolean_) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			case 2:
-				if (*varValue > this->conditionValueBoolean_) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			case 3:
-				if (*varValue >= this->conditionValueBoolean_) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			case 4:
-				if (*varValue < this->conditionValueBoolean_) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			case 5:
-				if (*varValue <= this->conditionValueBoolean_) {
-					ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-				}
-				break;
-			default:
-				break;
-			}
-		}
-	} else {
+	if (this->condition_) { } else {
 		ProjectPlayerService::getInstance().setNextObjective(jumpObjectiveIdx);
-	}*/
+	}
 
 	co_return;
 }

@@ -131,7 +131,7 @@ void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &lis
 	if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
 		if (this->sceneId_ == 0) {
 			if (!scenes.empty()) {
-				this->sceneId_ = scenes.end()->first;
+				this->sceneId_ = (--scenes.end())->first;
 			}
 		}
 	}
