@@ -128,49 +128,6 @@ ktwait ProjectPlayerService::changeScene(Scene *scene, ktcoro_tasklist &tasklist
 		}, this);
 	}
 
-	/*const auto onStartSignals = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onStartScene"].get<sol::table>();
-	for (auto [_, func] : onStartSignals) {
-		if (const auto result = func.as<sol::function>()(scene, tasklist); !result.valid()) {
-			const sol::error err = result;
-			CLOG(ERROR, "lua") << err.what();
-		}
-	}*/
-
-	tasklist.add_task([](Scene *scene, ktcoro_tasklist &tasklist) -> ktwait {
-		while (true) {
-			/*const auto onMainLoop = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onMainLoop"].get_or_create<sol::table>();
-			for (auto [_, func] : onMainLoop) {
-				if (const auto result = func.as<sol::function>()(scene, tasklist); !result.valid()) {
-					const sol::error err = result;
-					CLOG(ERROR, "lua") << err.what();
-				}
-			}*/
-			co_await 1;
-		}
-	}, scene, tasklist);
-
-	if (this->save_.has_value()) {
-		using namespace plugin;
-
-		Command<Commands::SET_PLAYER_MODEL>(0, this->save_.value()->playerModel);
-		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-		std::memcpy(playerClothes->m_anTextureKeys, this->save_.value()->clotherMAnTextureKeys_.data(),
-		            sizeof playerClothes->m_anTextureKeys);
-		std::memcpy(playerClothes->m_anModelKeys, this->save_.value()->clotherMAnModelKeys_.data(),
-		            sizeof playerClothes->m_anModelKeys);
-		playerClothes->m_fFatStat = this->save_.value()->fatStat;
-		playerClothes->m_fMuscleStat = this->save_.value()->musculeStat;
-		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
-		FindPlayerPed()->Teleport(CVector(this->save_.value()->playerPosition[0],
-		                                  this->save_.value()->playerPosition[1],
-		                                  this->save_.value()->playerPosition[2]), false);
-
-		/*if (this->save_.value()->nodePinId != -1) {
-			auto nodeEditorContext = LuaEngine::getInstance().getLuaState()["global_data"]["ed_contexts"][scene->getId()];
-			nodeEditorContext["callNodes"](nodeEditorContext, scene, tasklist, this->save_.value()->nodePinId);
-		}*/
-	}
-
 	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
 		if (this->nextObjective.has_value()) {
 			o = this->nextObjective.value();
@@ -189,15 +146,6 @@ ktwait ProjectPlayerService::changeScene(Scene *scene, ktcoro_tasklist &tasklist
 				ImGui::InsertNotification({ImGuiToastType_Error, 1000, "Error, see log"});
 			}
 		}
-
-
-		/*const auto onObjectiveStart = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectiveStart"].get_or_create<sol::table>();
-		for (auto [_, func] : onObjectiveStart) {
-			if (const auto result = func.as<sol::function>()(scene, tasklist, objective->getUuid()); !result.valid()) {
-				const sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}*/
 
 		Result result;
 		co_await objective->execute(scene, result, tasklist);
@@ -232,23 +180,7 @@ ktwait ProjectPlayerService::changeScene(Scene *scene, ktcoro_tasklist &tasklist
 
 		for (const auto &dependent : deleteMap[objective->getUuid()])
 			dependent->deleteProjectEntity();
-
-		/*const auto onObjectiveEnd = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectiveEnd"].get_or_create<sol::table>();
-		for (auto [_, func] : onObjectiveEnd) {
-			if (const auto result = func.as<sol::function>()(scene, tasklist, objective->getUuid()); !result.valid()) {
-				const sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}*/
 	}
-
-	/*const auto onEndSignals = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onEndScene"].get<sol::table>();
-	for (auto [_, func] : onStartSignals) {
-		if (const auto result = func.as<sol::function>()(scene, tasklist); !result.valid()) {
-			const sol::error err = result;
-			CLOG(ERROR, "lua") << err.what();
-		}
-	}*/
 }
 
 void ProjectPlayerService::setNextScene(Scene *nextScene) {
@@ -257,10 +189,6 @@ void ProjectPlayerService::setNextScene(Scene *nextScene) {
 
 void ProjectPlayerService::setNextObjective(int objective) {
 	this->nextObjective = objective;
-}
-
-void ProjectPlayerService::setSave(const std::optional<SaveData*> &save) {
-	save_ = save;
 }
 
 ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
@@ -281,39 +209,6 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	const auto startScene = ProjectsService::getInstance().getCurrentProject().getScenes().at(sceneIdx).get();
 	setNextScene(startScene);
 	setNextObjective(startObjective);
-
-	if (this->save_.has_value()) {
-		auto nextScene = ProjectsService::getInstance().getCurrentProject().getScenes().at(this->save_.value()->sceneId)
-		                                               .get();
-		setNextScene(nextScene);
-
-		auto objectiveIndex = utils::indexByUuid(nextScene->getObjectives(),
-		                                         boost::lexical_cast<boost::uuids::uuid>(
-			                                         this->save_.value()->objectiveUuid));
-		if (objectiveIndex != -1) {
-			objectiveIndex = min(objectiveIndex + 1, nextScene->getObjectives().size() - 1);
-			setNextObjective(objectiveIndex);
-		}
-
-		/*auto& luaState = LuaEngine::getInstance().getLuaState();
-
-		const sol::table luaData = luaState["bitser"]["loads"](luaState["base64"]["decode"](this->save_.value()->luaData));
-
-		for (auto pairLua : luaState["global_data"]["signals"]["loadGame"].get_or_create<sol::table>()) {
-			if (auto resultLua = pairLua.second.as<sol::function>()(nextScene->getId(), luaData); !resultLua.valid()) {
-				sol::error err = resultLua;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}*/
-	}
-
-	/*const auto onStartSignals = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onStartProject"].get<sol::table>();
-	for (auto [_, func] : onStartSignals) {
-		if (auto result = func.as<sol::function>()(); !result.valid()) {
-			sol::error err = result;
-			CLOG(ERROR, "lua") << err.what();
-		}
-	}*/
 
 	while (this->nextScene.has_value()) {
 		const auto scene = this->nextScene.value();
@@ -403,7 +298,6 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 			}
 		}
 	}
-	this->save_ = std::nullopt;
 
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->loadEditorScene();
 	defaultWindow = savedWindow;

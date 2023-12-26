@@ -176,20 +176,6 @@ void Pyrotechnics::spawnProjectEntity() {
 	}
 
 	updateLocation();
-
-	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
-
-	if (scene.has_value() && tasklist != nullptr) {
-		/*const auto onPyrotechnicsSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
-			"onPyrotechnicsSpawn"].get_or_create<sol::table>();
-		for (auto func : onPyrotechnicsSpawn | views::values) {
-			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
-				const sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}*/
-	}
 }
 
 void Pyrotechnics::deleteProjectEntity() {
@@ -199,20 +185,5 @@ void Pyrotechnics::deleteProjectEntity() {
 			gFireManager.RemoveScriptFire(static_cast<short>(actualScriptThingIndex));
 		}
 		this->projectFire_ = std::nullopt;
-
-		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
-
-		if (scene.has_value() && tasklist != nullptr) {
-			/*const auto onPyrotechnicsDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
-				"onPyrotechnicsDelete"].get_or_create<sol::table>();
-			for (auto func : onPyrotechnicsDelete | views::values) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
-					valid()) {
-					const sol::error err = result;
-					CLOG(ERROR, "lua") << err.what();
-				}
-			}*/
-		}
 	}
 }

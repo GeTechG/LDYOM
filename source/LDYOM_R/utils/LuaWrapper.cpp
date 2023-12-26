@@ -2,20 +2,15 @@
 
 #include <chrono>
 #include <CTimer.h>
+#include <utility>
 
 #include "constants.h"
 #include "DataLuaWrapper.h"
-#include "EditByPlayerService.h"
 #include "FilesystemLuaWrapper.h"
-#include "ImGuiLuaWrapper.h"
 #include "ktcoro_wait.hpp"
-#include "ModelsService.h"
-#include "OpcodesLuaWrapper.h"
-#include "ProjectPlayerService.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "UtilsLuaWrapper.h"
-#include "WindowsRenderService.h"
 #include "../Windows/utilsRender.h"
 #include "boost/uuid/uuid.hpp"
 #include "easylogging/easylogging++.h"
@@ -29,23 +24,19 @@
 #include "../Data/Particle.h"
 #include "../Data/Pickup.h"
 #include "../Data/Pyrotechnics.h"
-#include "../Data/SaveObjective.h"
 #include "../Data/Train.h"
 #include "../Data/Vehicle.h"
 #include "../Data/VisualEffect.h"
-#include "../Data/WaitSignalObjective.h"
 
 void LuaWrapper::wrap(sol::state &state) {
-	OpcodesLuaWrapper::wrap(state);
 	FilesystemLuaWrapper::wrap(state);
-	ImGuiLuaWrapper::wrap(state);
 	DataLuaWrapper::wrap(state);
 	UtilsLuaWrapper::wrap(state);
 
-	state.set_function("addLocalizationDirectory", [](const std::string path) {
+	state.set_function("addLocalizationDirectory", [](const std::string &path) {
 		Localization::getInstance().addScriptsLocalization(path);
 	});
-	state.set_function("gxtEncode", [](const char *text) {
+	state.set_function("gxtEncode", [](const std::string &text) {
 		auto cp1251Text = utf8ToCp1251(text);
 		gxtEncode(cp1251Text);
 		return cp1251Text;
@@ -53,36 +44,43 @@ void LuaWrapper::wrap(sol::state &state) {
 	state.set("LDYOM_VERSION", LDYOM_VERSION);
 
 	state.set("IncorrectHighlight", IncorrectHighlight);
-	auto indexByUuuidGeneric = []<typename T>(const std::vector<std::unique_ptr<T>> &vector, sol::object uuid) {
+	auto indexByUuuidGeneric = []<typename T>(const std::vector<std::unique_ptr<T>> &vector, const sol::object &uuid) {
 		boost::uuids::uuid uuid_{};
 		memcpy(uuid_.data, uuid.pointer(), sizeof uuid_.data);
 		return utils::indexByUuid(vector, uuid_);
 	};
 	state.set("indexByUuid", sol::overload(
-		          [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Actor>> &vector, sol::object uuid) {
+		          [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Actor>> &vector, const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
-		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Audio>> &vector, sol::object uuid) {
+		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Audio>> &vector,
+		                                    const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
-		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Checkpoint>> &vector, sol::object uuid) {
+		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Checkpoint>> &vector,
+		                                    const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
-		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Object>> &vector, sol::object uuid) {
+		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Object>> &vector,
+		                                    const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
 		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<BaseObjective>> &vector,
-		                                    sol::object uuid) {
+		                                    const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
-		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Particle>> &vector, sol::object uuid) {
+		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Particle>> &vector,
+		                                    const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
-		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Pickup>> &vector, sol::object uuid) {
+		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Pickup>> &vector,
+		                                    const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
 		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Pyrotechnics>> &vector,
-		                                    sol::object uuid) {
+		                                    const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
-		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Train>> &vector, sol::object uuid) {
+		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Train>> &vector,
+		                                    const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
-		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Vehicle>> &vector, sol::object uuid) {
+		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Vehicle>> &vector,
+		                                    const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
 		          }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<VisualEffect>> &vector,
-		                                    sol::object uuid) {
+		                                    const sol::object &uuid) {
 			          return indexByUuuidGeneric(vector, uuid);
 		          }));
 	state.set("CPedToHandle", [](CPed *ped) {
@@ -94,36 +92,11 @@ void LuaWrapper::wrap(sol::state &state) {
 	state.set("CObjectToHandle", [](CObject *object) {
 		return CPools::GetObjectRef(object);
 	});
-	state.set("UuidEquals", [](const sol::object &uuidObject, const boost::uuids::uuid &uuidCompare) {
-		boost::uuids::uuid uuid{};
-		memcpy(uuid.data, uuidObject.pointer(), sizeof uuid.data);
-		return uuid == uuidCompare;
-	});
-	state.set("setNextObjective", [](int next_objective) {
-		ProjectPlayerService::getInstance().setNextObjective(next_objective);
-	});
-	state.set("saveGame", SaveObjective::saveGame);
-	state.set("editByPlayerActorLuaPath", [](sol::table path) {
-		EditByPlayerService::getInstance().editByPlayerActorLuaPath(path);
-	});
 	state.set("CTimer_snTimeInMilliseconds", []() {
 		return CTimer::m_snTimeInMilliseconds;
 	});
 	state.set("DistanceBetweenPoints", [](float x1, float y1, float z1, float x2, float y2, float z2) {
 		return DistanceBetweenPoints(CVector(x1, y1, z1), CVector(x2, y2, z2));
-	});
-	state.set("emitSignal", WaitSignalObjective::emitSignal);
-	state.set("editByPlayerVehicleLuaPath", [](sol::table path, int model) {
-		EditByPlayerService::getInstance().editByPlayerVehicleLuaPath(path, model);
-	});
-	state.set("ModelsService_getPacksNames", []() {
-		return &ModelsService::getInstance().getPacksNames();
-	});
-	state.set("ModelsService_getAnimations", []() {
-		return &ModelsService::getInstance().getAnimations();
-	});
-	state.set("getCurrentObjective", []() {
-		return ProjectPlayerService::getInstance().getCurrentObjective();
 	});
 
 	auto loc = state.create_table("loc");
@@ -135,7 +108,7 @@ void LuaWrapper::wrap(sol::state &state) {
 	});
 
 	auto tasker = state.create_table("Tasker");
-	tasker.set_function("addTask", [](ktcoro_tasklist &tasklist, sol::coroutine func) {
+	tasker.set_function("addTask", [](ktcoro_tasklist &tasklist, const sol::coroutine &func) {
 		tasklist.add_task([](sol::coroutine func) -> ktwait {
 			while (func) {
 				auto result = func();

@@ -356,12 +356,6 @@
     <Filter Include="Data\Objectives\Scene\JumpToObjective">
       <UniqueIdentifier>{eeecbabd-978c-4f56-a4df-316e1814db5e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utils\SaveService">
-      <UniqueIdentifier>{04771bb1-1860-4994-bee6-82fa0140175a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Data\Objectives\Scene\Save">
-      <UniqueIdentifier>{a9389d46-0cdd-4323-9b39-a6463f4a5535}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Windows\SaveConfirmPopup">
       <UniqueIdentifier>{4b39a16c-f75d-40f3-ba6f-5e1479c1348a}</UniqueIdentifier>
     </Filter>
@@ -415,6 +409,9 @@
     </Filter>
     <Filter Include="Utils\CounterService">
       <UniqueIdentifier>{72521648-1b71-4a7c-a307-b9791fb61734}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Scene\Save">
+      <UniqueIdentifier>{0cab9553-0d17-4681-8e6f-be9c59e622d8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -792,18 +789,6 @@
     <ClCompile Include="include\easylogging\easylogging++.cc">
       <Filter>Utils\easylogging</Filter>
     </ClCompile>
-    <ClCompile Include="utils\LuaWrapper.cpp">
-      <Filter>Lua\Wrappers</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\OpcodesLuaWrapper.cpp">
-      <Filter>Lua\Wrappers</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\FilesystemLuaWrapper.cpp">
-      <Filter>Lua\Wrappers</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\ImGuiLuaWrapper.cpp">
-      <Filter>Lua\Wrappers</Filter>
-    </ClCompile>
     <ClCompile Include="utils\UtilsLuaWrapper.cpp">
       <Filter>Lua\Wrappers\utils</Filter>
     </ClCompile>
@@ -854,12 +839,6 @@
     </ClCompile>
     <ClCompile Include="utils\BaseObjectiveLuaWrapper.cpp">
       <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\SaveService.cpp">
-      <Filter>Utils\SaveService</Filter>
-    </ClCompile>
-    <ClCompile Include="Data\SaveObjective.cpp">
-      <Filter>Data\Objectives\Scene\Save</Filter>
     </ClCompile>
     <ClCompile Include="Windows\SaveConfirmPopup.cpp">
       <Filter>Windows\SaveConfirmPopup</Filter>
@@ -998,6 +977,15 @@
     </ClCompile>
     <ClCompile Include="utils\CounterService.cpp">
       <Filter>Utils\CounterService</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\LuaWrapper.cpp">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\FilesystemLuaWrapper.cpp">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\SaveObjective.cpp">
+      <Filter>Data\Objectives\Scene\Save</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1407,18 +1395,6 @@
     <ClInclude Include="include\easylogging\easylogging++.h">
       <Filter>Utils\easylogging</Filter>
     </ClInclude>
-    <ClInclude Include="utils\LuaWrapper.h">
-      <Filter>Lua\Wrappers</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\OpcodesLuaWrapper.h">
-      <Filter>Lua\Wrappers</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\FilesystemLuaWrapper.h">
-      <Filter>Lua\Wrappers</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\ImGuiLuaWrapper.h">
-      <Filter>Lua\Wrappers</Filter>
-    </ClInclude>
     <ClInclude Include="utils\UtilsLuaWrapper.h">
       <Filter>Lua\Wrappers\utils</Filter>
     </ClInclude>
@@ -1427,12 +1403,6 @@
     </ClInclude>
     <ClInclude Include="Data\JumpToObjectiveObjective.h">
       <Filter>Data\Objectives\Scene\JumpToObjective</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\SaveService.h">
-      <Filter>Utils\SaveService</Filter>
-    </ClInclude>
-    <ClInclude Include="Data\SaveObjective.h">
-      <Filter>Data\Objectives\Scene\Save</Filter>
     </ClInclude>
     <ClInclude Include="Windows\SaveConfirmPopup.h">
       <Filter>Windows\SaveConfirmPopup</Filter>
@@ -2480,6 +2450,15 @@
     </ClInclude>
     <ClInclude Include="utils\CounterService.h">
       <Filter>Utils\CounterService</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\LuaWrapper.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\FilesystemLuaWrapper.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\SaveObjective.h">
+      <Filter>Data\Objectives\Scene\Save</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

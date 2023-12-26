@@ -291,7 +291,6 @@
     <ClCompile Include="utils\HotKeyService.cpp" />
     <ClCompile Include="utils\HttpRequester.cpp" />
     <ClCompile Include="utils\imgui-knobs.cpp" />
-    <ClCompile Include="utils\ImGuiLuaWrapper.cpp" />
     <ClCompile Include="utils\ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="utils\Localization\Localization.cpp" />
     <ClCompile Include="utils\Logger.cpp" />
@@ -302,7 +301,6 @@
     <ClCompile Include="utils\memsafe.cpp" />
     <ClCompile Include="utils\ModelsService.cpp" />
     <ClCompile Include="utils\ObjectLuaWrapper.cpp" />
-    <ClCompile Include="utils\OpcodesLuaWrapper.cpp" />
     <ClCompile Include="utils\ParticleLuaWrapper.cpp" />
     <ClCompile Include="utils\pch.cpp" />
     <ClCompile Include="utils\PickupLuaWrapper.cpp" />
@@ -311,7 +309,6 @@
     <ClCompile Include="utils\ProjectServiceLuaWrapper.cpp" />
     <ClCompile Include="utils\ProjectsService.cpp" />
     <ClCompile Include="utils\PyrotechnicsLuaWrapper.cpp" />
-    <ClCompile Include="utils\SaveService.cpp" />
     <ClCompile Include="utils\SceneLuaWrapper.cpp" />
     <ClCompile Include="utils\Settings.cpp" />
     <ClCompile Include="utils\Tasker.cpp" />
@@ -792,7 +789,6 @@
     <ClInclude Include="utils\HotkeysExecutor.h" />
     <ClInclude Include="utils\HttpRequester.h" />
     <ClInclude Include="utils\imgui-knobs.h" />
-    <ClInclude Include="utils\ImGuiLuaWrapper.h" />
     <ClInclude Include="utils\imguistyleloader.h" />
     <ClInclude Include="utils\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="utils\jsonUtils.h" />
@@ -805,10 +801,8 @@
     <ClInclude Include="utils\MathUtils.h" />
     <ClInclude Include="utils\memsafe.h" />
     <ClInclude Include="utils\ModelsService.h" />
-    <ClInclude Include="utils\OpcodesLuaWrapper.h" />
     <ClInclude Include="utils\ProjectPlayerService.h" />
     <ClInclude Include="utils\ProjectsService.h" />
-    <ClInclude Include="utils\SaveService.h" />
     <ClInclude Include="utils\Settings.h" />
     <ClInclude Include="utils\strUtils.h" />
     <ClInclude Include="utils\Tasker.h" />

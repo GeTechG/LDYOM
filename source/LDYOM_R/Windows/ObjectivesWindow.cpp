@@ -545,11 +545,11 @@ void Windows::ObjectivesWindow::drawListWindow() {
 				this->selectElement(this->getListSize() - 1);
 			}
 
-			if (ImGui::MenuItem(Localization::getInstance().get("objective.save").c_str())) {
+			/*if (ImGui::MenuItem(Localization::getInstance().get("objective.save").c_str())) {
 				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
 					SaveObjective>(nullptr);
 				this->selectElement(this->getListSize() - 1);
-			}
+			}*/
 
 			ImGui::EndMenu();
 		}

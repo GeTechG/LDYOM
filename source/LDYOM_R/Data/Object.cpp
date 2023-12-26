@@ -151,20 +151,6 @@ void Object::spawnProjectEntity() {
 
 	projectObject_ = spawnObject();
 	updateLocation();
-
-	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
-
-	if (scene.has_value() && tasklist != nullptr) {
-		/*const auto onObjectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onObjectSpawn"].
-			get_or_create<sol::table>();
-		for (auto func : onObjectSpawn | views::values) {
-			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid); !result.valid()) {
-				const sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}*/
-	}
 }
 
 void Object::deleteProjectEntity() {
@@ -173,21 +159,6 @@ void Object::deleteProjectEntity() {
 			const int objectRef = CPools::GetObjectRef(object);
 			Command<Commands::DELETE_OBJECT>(objectRef);
 			projectObject_ = std::nullopt;
-
-			auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-			auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
-
-			if (scene.has_value() && tasklist != nullptr) {
-				/*const auto onObjectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
-						"onObjectDelete"].
-					get_or_create<sol::table>();
-				for (const auto &func : onObjectDelete | views::values) {
-					if (const auto result = func.as<sol::function>()(scene.value(), tasklist, uuid); !result.valid()) {
-						const sol::error err = result;
-						CLOG(ERROR, "lua") << err.what();
-					}
-				}*/
-			}
 		}
 	}
 }

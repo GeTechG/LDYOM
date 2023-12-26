@@ -129,40 +129,11 @@ void VisualEffect::spawnProjectEntity() {
 	});
 
 	this->projectVisualEffect_ = slot;
-
-	auto &scene = ProjectPlayerService::getInstance().getCurrentScene();
-	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
-
-	if (scene.has_value() && tasklist != nullptr) {
-		/*const auto onVisualEffectSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
-			"onVisualEffectSpawn"].get_or_create<sol::table>();
-		for (auto func : onVisualEffectSpawn | std::views::values) {
-			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
-				const sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}*/
-	}
 }
 
 void VisualEffect::deleteProjectEntity() {
 	if (this->projectVisualEffect_.has_value()) {
 		Events::processScriptsEvent.RemoveById(this->projectVisualEffect_.value());
 		this->projectVisualEffect_ = std::nullopt;
-
-		auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-		auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
-
-		if (scene.has_value() && tasklist != nullptr) {
-			/*const auto onVisualEffectDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
-				"onVisualEffectDelete"].get_or_create<sol::table>();
-			for (auto func : onVisualEffectDelete | std::views::values) {
-				if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.
-					valid()) {
-					const sol::error err = result;
-					CLOG(ERROR, "lua") << err.what();
-				}
-			}*/
-		}
 	}
 }

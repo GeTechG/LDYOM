@@ -16,6 +16,7 @@
 #include "ImGuiHook.h"
 #include "ktcoro_wait.hpp"
 #include "Logger.h"
+#include "LuaEngine.h"
 #include "MainMenu.h"
 #include "ModelsService.h"
 #include "plugin.h"
@@ -24,7 +25,6 @@
 #include "PopupWeaponSelector.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
-#include "SaveService.h"
 #include "Settings.h"
 #include "Tasker.h"
 #include "vehicle_renderer.h"
@@ -101,14 +101,13 @@ public:
 			Logger::getInstance().Init();
 			Settings::getInstance().Init();
 			Localization::getInstance().Init();
-			//LuaEngine::getInstance().Init();
+			LuaEngine::getInstance().Init();
 			HotKeyService::getInstance().Init();
 			ProjectsService::getInstance().Init();
 			ModelsService::getInstance().Init();
 			PopupSkinSelector::getInstance().Init();
 			PopupWeaponSelector::getInstance().Init();
 			PopupSpriteBlipSelector::Init();
-			SaveService::getInstance().Init();
 			DiscordService::getInstance().Init();
 
 			const auto projectName = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name;
@@ -127,23 +126,12 @@ public:
 			////init is complete
 			initServices = true;
 
-			/*const auto initFuncs = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["init"].
-				get_or_create<sol::table>();
-			for (auto pair : initFuncs) {
-				if (auto result = pair.second.as<sol::function>()(); !result.valid()) {
-					sol::error err = result;
-					CLOG(ERROR, "lua") << err.what();
-					LuaLogger::getInstance().print(err.what());
-				}
-			}*/
-
 			Tasker::getInstance().getKtcoroTaskList().add_task([]() -> ktwait {
 				co_await 5s;
 				Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 1, 1, 1, 1, 1);
 				Command<Commands::SET_CHAR_DROWNS_IN_WATER>(static_cast<CPed*>(FindPlayerPed()), false);
 				FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_bDoesNotGetTired = true;
-
-				//Command<Commands::MAKE_PLAYER_FIRE_PROOF>(0, true);
+				Command<Commands::MAKE_PLAYER_FIRE_PROOF>(0, true);
 			});
 
 			Tasker::getInstance().getKtcoroTaskList().add_task([]() -> ktwait {

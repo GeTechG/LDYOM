@@ -247,20 +247,6 @@ void Checkpoint::spawnProjectEntity() {
 
 	this->spawnProjectBlip();
 	updateLocation();
-
-	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
-
-	if (scene.has_value() && tasklist != nullptr) {
-		/*const auto onCheckpointSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
-			"onCheckpointSpawn"].get_or_create<sol::table>();
-		for (auto func : onCheckpointSpawn | std::views::values) {
-			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid); !result.valid()) {
-				const sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}*/
-	}
 }
 
 void Checkpoint::deleteProjectEntity() {
@@ -273,18 +259,4 @@ void Checkpoint::deleteProjectEntity() {
 		this->projectSphere = std::nullopt;
 	}
 	this->deleteProjectBlip();
-
-	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
-
-	//if (scene.has_value() && tasklist != nullptr) {
-	//	const auto onCheckpointDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
-	//		"onCheckpointDelete"].get_or_create<sol::table>();
-	//	for (auto [_, func] : onCheckpointDelete) {
-	//		if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid); !result.valid()) {
-	//			const sol::error err = result;
-	//			CLOG(ERROR, "lua") << err.what();
-	//		}
-	//	}
-	//}
 }

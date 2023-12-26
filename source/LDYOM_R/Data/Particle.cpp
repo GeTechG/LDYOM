@@ -264,20 +264,6 @@ void Particle::spawnProjectEntity() {
 	this->projectParticle_ = spawnParticle();
 
 	updateLocation();
-
-	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
-
-	if (scene.has_value() && tasklist != nullptr) {
-		/*const auto onParticleSpawn = LuaEngine::getInstance().getLuaState()["global_data"]["signals"]["onParticleSpawn"]
-			.get_or_create<sol::table>();
-		for (auto [_, func] : onParticleSpawn) {
-			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
-				const sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}*/
-	}
 }
 
 void Particle::deleteProjectEntity() {
@@ -287,18 +273,4 @@ void Particle::deleteProjectEntity() {
 		CTheScripts::RemoveScriptEffectSystem(this->projectParticle_.value());
 	}
 	this->projectParticle_ = std::nullopt;
-
-	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
-
-	if (scene.has_value() && tasklist != nullptr) {
-		/*const auto onParticleDelete = LuaEngine::getInstance().getLuaState()["global_data"]["signals"][
-			"onParticleDelete"].get_or_create<sol::table>();
-		for (auto [_, func] : onParticleDelete) {
-			if (const auto result = func.as<sol::function>()(scene.value(), tasklist, this->uuid_); !result.valid()) {
-				const sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-			}
-		}*/
-	}
 }

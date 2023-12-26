@@ -22,62 +22,19 @@ void LuaEngine::resetState() {
 	                         sol::lib::math, sol::lib::table, sol::lib::jit, sol::lib::ffi, sol::lib::coroutine);
 
 	const std::string basePath = SCRIPT_PATH + "\\libs\\";
-	//luaState_.require_file("class", basePath + "middleclass.lua");
-	luaState_.require_file("bitser", basePath + "bitser.lua");
-	luaState_.require_file("base64", basePath + "base64.lua");
-	//luaState_.require_file("tl", basePath + "tl.lua");
-	luaState_.set_function("print", [](sol::this_state L, const sol::object &obj, const sol::variadic_args args) {
-		LuaLogger::getInstance().print(sol::state_view(L), obj, args);
+	luaState_.require_file("tl", basePath + "tl.lua");
+	luaState_.safe_script("tl.loader()", errorHandler, "LuaEngine");
+	luaState_.set_function("print", [](const sol::this_state l, const sol::object &obj, const sol::variadic_args args) {
+		LuaLogger::getInstance().print(sol::state_view(l), obj, args);
 	});
 
-	std::string luaPath = luaState_["package"]["path"];
+	std::string luaPaths = luaState_["package"]["path"];
+	auto dirScriptsPath = std::filesystem::absolute(SCRIPT_PATH).string();
 	luaState_["package"]["path"] =
-		fmt::format("{}\\?.lua;{}", std::filesystem::absolute(SCRIPT_PATH).string(), luaPath);
+		fmt::format("{}\\?.lua;{}\\?.tl;{}", dirScriptsPath, dirScriptsPath, luaPaths);
 
 	//bind wrapper
 	LuaWrapper::wrap(this->luaState_);
-
-	luaState_.create_table("global_data");
-	auto signals = luaState_["global_data"].get<sol::table>()
-	                                       .create_named("signals");
-	signals.create_named("onNewScene");
-	signals.create_named("onDeleteScene");
-	signals.create_named("init");
-	signals.create_named("onStartScene");
-	signals.create_named("onChangeScene");
-	signals.create_named("onStartProject");
-	signals.create_named("saveScene");
-	signals.create_named("loadScene");
-	signals.create_named("saveProject");
-	signals.create_named("loadProject");
-	signals.create_named("onEndScene");
-	signals.create_named("onActorSpawn");
-	signals.create_named("onActorDelete");
-	signals.create_named("onAudioSpawn");
-	signals.create_named("onAudioDelete");
-	signals.create_named("onCheckpointSpawn");
-	signals.create_named("onCheckpointDelete");
-	signals.create_named("onObjectSpawn");
-	signals.create_named("onObjectDelete");
-	signals.create_named("onObjectiveStart");
-	signals.create_named("onObjectiveEnd");
-	signals.create_named("onParticleSpawn");
-	signals.create_named("onParticleDelete");
-	signals.create_named("onPickupSpawn");
-	signals.create_named("onPickupDelete");
-	signals.create_named("onPickupSpawn");
-	signals.create_named("onPickupDelete");
-	signals.create_named("onTrainSpawn");
-	signals.create_named("onTrainDelete");
-	signals.create_named("onPyrotechnicsSpawn");
-	signals.create_named("onPyrotechnicsDelete");
-	signals.create_named("onVehicleSpawn");
-	signals.create_named("onVehicleDelete");
-	signals.create_named("onVisualEffectSpawn");
-	signals.create_named("onVisualEffectDelete");
-	signals.create_named("onMainLoop");
-	signals.create_named("saveGame");
-	signals.create_named("loadGame");
 
 	const std::string scriptsPath = SCRIPT_PATH + "\\scripts";
 	for (const auto &entry : std::filesystem::directory_iterator(scriptsPath)) {
@@ -85,20 +42,15 @@ void LuaEngine::resetState() {
 			std::filesystem::path initFile;
 			if (exists(entry.path() / "init.lua")) {
 				initFile = entry.path() / "init.lua";
-			} else if (exists(entry.path() / "init.tl")) {
-				initFile = entry.path() / "init.tl";
 			}
-			if (!initFile.empty())
+			if (!initFile.empty()) {
+				{
+					luaPaths = luaState_["package"]["path"];
+					auto scriptPath = absolute(entry.path()).string();
+					luaState_["package"]["path"] = fmt::format("{}/?.lua;{}/?.tl;{}", scriptPath, scriptPath,
+					                                           luaPaths);
+				}
 				luaState_.safe_script_file(initFile.string(), errorHandler);
-		}
-	}
-	if (initServices) {
-		const auto initFuncs = luaState_["global_data"]["signals"]["init"].get_or_create<sol::table>();
-		for (auto pair : initFuncs) {
-			if (auto result = pair.second.as<sol::function>()(); !result.valid()) {
-				sol::error err = result;
-				CLOG(ERROR, "lua") << err.what();
-				LuaLogger::getInstance().print(err.what());
 			}
 		}
 	}

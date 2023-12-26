@@ -1,8 +1,5 @@
 #pragma once
 
-//#include "pch.h"
-//#include "lua_component.h"
-//#include "lua_texture.h"
 #include <vector>
 #include "CVehicle.h"
 #include "CVisibilityPlugins.h"

@@ -173,60 +173,9 @@ void Windows::ProjectsWindowPopup::draw() {
 				}
 				ImGui::EndDisabled();
 
-				bool openLoadSavePopup = false;
-
-				popupWarningLoadProject_.draw([&] {
-					if (SaveService::getInstance().getSave(
-						                               ProjectsService::getInstance().getProductionProjectsInfos().at(
-							                               selected_project)->name).
-					                               has_value()) {
-						openLoadSavePopup = true;
-					} else {
-						ProjectsService::getInstance().loadProductionProject(selected_project);
-						Tasker::getInstance().addTask("playProductionProjectTask", []() -> ktwait {
-							co_await ProjectPlayerService::getInstance().startProject(
-								ProjectsService::getInstance().getCurrentProject().getCurrentSceneIndex(), 0);
-							ProjectsService::getInstance().createNewProject();
-						});
-					}
-				});
-
-				if (openLoadSavePopup)
-					ImGui::OpenPopup(local.get("save_objective.load_save").c_str());
-
 				popupWarningDeleteProject_.draw([&] {
 					ProjectsService::getInstance().deleteProductionProject(selected_project);
 				});
-
-				if (ImGui::BeginPopupModal(local.get("save_objective.load_save").c_str(), nullptr,
-				                           ImGuiWindowFlags_AlwaysAutoResize)) {
-					ImGui::Text(local.get("save_objective.load_save_question").c_str());
-					const float width = ImGui::GetContentRegionAvail().x / 2.0f - 3.0f;
-					if (ImGui::Button(local.get("warning_popup.yes").c_str(), ImVec2(width, 0.0f))) {
-						ProjectsService::getInstance().loadProductionProject(selected_project);
-						Tasker::getInstance().addTask("playProductionProjectTask", []() -> ktwait {
-							ProjectPlayerService::getInstance().setSave(
-								SaveService::getInstance().getSave(
-									ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name));
-							co_await ProjectPlayerService::getInstance().startProject(
-								ProjectsService::getInstance().getCurrentProject().getCurrentSceneIndex(), 0);
-							ProjectsService::getInstance().createNewProject();
-						});
-						ImGui::CloseCurrentPopup();
-					}
-					ImGui::SameLine();
-					if (ImGui::Button(local.get("warning_popup.no").c_str(), ImVec2(width, 0.0f))) {
-						ProjectsService::getInstance().loadProductionProject(selected_project);
-						Tasker::getInstance().addTask("playProductionProjectTask", []() -> ktwait {
-							co_await ProjectPlayerService::getInstance().startProject(
-								ProjectsService::getInstance().getCurrentProject().getCurrentSceneIndex(), 0);
-							ProjectsService::getInstance().createNewProject();
-						});
-						ImGui::CloseCurrentPopup();
-					}
-
-					ImGui::EndPopup();
-				}
 
 				ImGui::EndTabItem();
 			}
