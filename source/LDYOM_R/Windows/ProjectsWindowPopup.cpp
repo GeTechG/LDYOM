@@ -2,7 +2,6 @@
 #include "ProjectsWindowPopup.h"
 #include "fa.h"
 #include "imgui.h"
-#include "imgui_stdlib.h"
 #include "PopupWarning.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
@@ -11,26 +10,9 @@
 #include "fmt/core.h"
 #include "Localization/Localization.h"
 
-void newProjectInfoPopup() {
-	auto &local = Localization::getInstance();
-	if (ImGui::BeginPopupModal(local.get("project_info.title").c_str(), nullptr)) {
-		const auto &projectInfo = ProjectsService::getInstance().getCurrentProject().getProjectInfo();
-
-		ImGui::InputText(local.get("project_info.name").c_str(), &projectInfo->name);
-		ImGui::InputText(local.get("project_info.author").c_str(), &projectInfo->authorName);
-
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !(ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered())) {
-			ImGui::CloseCurrentPopup();
-		}
-
-		ImGui::EndPopup();
-	}
-}
-
 static int selected_project = -1;
 
-Windows::ProjectsWindowPopup::ProjectsWindowPopup(): popupWarningNewProject_("projects.new_project_warning"),
-                                                     popupWarningLoadProject_("projects.load_project_warning"),
+Windows::ProjectsWindowPopup::ProjectsWindowPopup(): popupWarningLoadProject_("projects.load_project_warning"),
                                                      popupWarningDeleteProject_("projects.delete_project_warning") {
 	this->missionIcon_ = utils::LoadTextureRequiredFromFile(L"LDYOM\\Resources\\mission_icon.png").value();
 	ProjectsService::getInstance().onUpdate().connect([] {
@@ -106,10 +88,6 @@ void Windows::ProjectsWindowPopup::draw() {
 
 				// / (1/3 window) / (3 buttons) - 3.0
 				const auto widthButton = window_size.x / 3.0f / 4.0f - 3.0f;
-				if (ImGui::Button(local.get("projects.new_project").c_str(), ImVec2(widthButton, .0f))) {
-					ImGui::OpenPopup(popupWarningNewProject_.getName().c_str());
-				}
-				ImGui::SameLine();
 				if (ImGui::Button(local.get("projects.save_project").c_str(), ImVec2(widthButton, .0f))) {
 					ProjectsService::getInstance().saveCurrentProject();
 				}
@@ -128,24 +106,12 @@ void Windows::ProjectsWindowPopup::draw() {
 				}
 				ImGui::EndDisabled();
 
-				static bool openNewProjectInfo = false;
-				popupWarningNewProject_.draw([&] {
-					ProjectsService::getInstance().createNewProject();
-					openNewProjectInfo = true;
-				});
 				popupWarningLoadProject_.draw([&] {
 					ProjectsService::getInstance().loadProject(selected_project);
 				});
 				popupWarningDeleteProject_.draw([&] {
 					ProjectsService::getInstance().deleteProject(selected_project);
 				});
-
-				if (openNewProjectInfo) {
-					ImGui::OpenPopup(local.get("project_info.title").c_str());
-					openNewProjectInfo = false;
-				}
-
-				newProjectInfoPopup();
 
 				ImGui::EndTabItem();
 			}

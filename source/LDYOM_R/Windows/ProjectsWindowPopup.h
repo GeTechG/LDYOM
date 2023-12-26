@@ -6,18 +6,18 @@
 #include "Localization/Localization.h"
 
 struct ProjectInfo;
-typedef std::vector<std::unique_ptr<ProjectInfo>> ProjectsInfos;
+using ProjectsInfos = std::vector<std::unique_ptr<ProjectInfo>>;
 
 namespace Windows {
 	class ProjectsWindowPopup {
 	private:
 		bool show_ = false;
 		std::unique_ptr<Texture> missionIcon_;
-		PopupWarning popupWarningNewProject_;
 		PopupWarning popupWarningLoadProject_;
 		PopupWarning popupWarningDeleteProject_;
 
-		void projectInfo(Localization& local, const ProjectsInfos& projectInfos) const;
+		void projectInfo(Localization &local, const ProjectsInfos &projectInfos) const;
+
 	public:
 		ProjectsWindowPopup();
 		void draw();
