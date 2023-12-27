@@ -350,9 +350,6 @@
     <Filter Include="Lua\Wrappers\utils">
       <UniqueIdentifier>{eca6e9d2-d27e-4d69-8730-e020f0b4d15f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Lua\Wrappers\data">
-      <UniqueIdentifier>{6401ee34-9a0d-4bea-b48f-6c179ac7a040}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data\Objectives\Scene\JumpToObjective">
       <UniqueIdentifier>{eeecbabd-978c-4f56-a4df-316e1814db5e}</UniqueIdentifier>
     </Filter>
@@ -792,53 +789,8 @@
     <ClCompile Include="utils\UtilsLuaWrapper.cpp">
       <Filter>Lua\Wrappers\utils</Filter>
     </ClCompile>
-    <ClCompile Include="utils\ProjectServiceLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\SceneLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\ProjectDataLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\DataLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
     <ClCompile Include="Data\JumpToObjectiveObjective.cpp">
       <Filter>Data\Objectives\Scene\JumpToObjective</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\ActorLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\AudioLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\CheckpointLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\ObjectLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\ParticleLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\PickupLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\PyrotechnicsLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\TrainLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\VehicleLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\VisualEffectLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\BaseObjectiveLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\data</Filter>
     </ClCompile>
     <ClCompile Include="Windows\SaveConfirmPopup.cpp">
       <Filter>Windows\SaveConfirmPopup</Filter>
@@ -1397,9 +1349,6 @@
     </ClInclude>
     <ClInclude Include="utils\UtilsLuaWrapper.h">
       <Filter>Lua\Wrappers\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\DataLuaWrapper.h">
-      <Filter>Lua\Wrappers\data</Filter>
     </ClInclude>
     <ClInclude Include="Data\JumpToObjectiveObjective.h">
       <Filter>Data\Objectives\Scene\JumpToObjective</Filter>
