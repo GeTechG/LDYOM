@@ -14,6 +14,13 @@ const std::string SCRIPT_PATH = "LDYOM\\Scripts";
 
 extern bool initServices;
 
+void LuaEngine::addScriptDirToLuaPaths(std::string &luaPaths, const std::filesystem::directory_entry &entry) {
+	luaPaths = luaState_["package"]["path"];
+	auto scriptPath = absolute(entry.path()).string();
+	luaState_["package"]["path"] = fmt::format("{}/?.lua;{}/?.tl;{}", scriptPath, scriptPath,
+	                                           luaPaths);
+}
+
 void LuaEngine::resetState() {
 	Localization::getInstance().clearScriptsLocalization();
 	luaState_ = sol::state();
@@ -39,18 +46,13 @@ void LuaEngine::resetState() {
 	const std::string scriptsPath = SCRIPT_PATH + "\\scripts";
 	for (const auto &entry : std::filesystem::directory_iterator(scriptsPath)) {
 		if (entry.is_directory()) {
-			std::filesystem::path initFile;
 			if (exists(entry.path() / "init.lua")) {
-				initFile = entry.path() / "init.lua";
-			}
-			if (!initFile.empty()) {
-				{
-					luaPaths = luaState_["package"]["path"];
-					auto scriptPath = absolute(entry.path()).string();
-					luaState_["package"]["path"] = fmt::format("{}/?.lua;{}/?.tl;{}", scriptPath, scriptPath,
-					                                           luaPaths);
-				}
+				auto initFile = entry.path() / "init.lua";
+				addScriptDirToLuaPaths(luaPaths, entry);
 				luaState_.safe_script_file(initFile.string(), errorHandler);
+			} else if (exists(entry.path() / "init.tl")) {
+				addScriptDirToLuaPaths(luaPaths, entry);
+				luaState_.safe_script("require(\"init\")", errorHandler);
 			}
 		}
 	}

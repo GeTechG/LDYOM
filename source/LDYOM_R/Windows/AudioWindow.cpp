@@ -75,6 +75,8 @@ bool AudioCombo(Localization &local, Audio *audio) {
 void Windows::AudioWindow::drawOptions() {
 	auto &local = Localization::getInstance();
 
+	const auto scaleFont = ImGui::GetFontSize() / 16.f;
+
 	Audio *audio = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getAudio().at(
 		this->currentElement).get();
 
@@ -100,18 +102,18 @@ void Windows::AudioWindow::drawOptions() {
 			const auto audioStream = reinterpret_cast<CLEO::CAudioStream*>(audio->getEditorAudio().value());
 			switch (audioStream->GetState()) {
 				case 1:
-					if (ImGui::Button(ICON_FA_STOP, ImVec2(20.f, 20.f)))
+					if (ImGui::Button(ICON_FA_STOP, ImVec2(scaleFont * 20.f, scaleFont * 20.f)))
 						audioStream->Stop();
 					break;
 				default:
-					if (ImGui::Button(ICON_FA_PLAY, ImVec2(20.f, 20.f)))
+					if (ImGui::Button(ICON_FA_PLAY, ImVec2(scaleFont * 20.f, scaleFont * 20.f)))
 						audioStream->Play();
 					break;
 			}
 		}
 	}
 
-	const auto scaleFont = ImGui::GetFontSize() / 16.f;
+
 	ImGui::SetNextItemWidth(scaleFont * 20.f);
 	if (ImGuiKnobs::Knob(local.get("audio.volume").c_str(), &audio->getVolume(), 0.0f, 2.0f, 0.01f, "%.2f",
 	                     ImGuiKnobVariant_Wiper)) {

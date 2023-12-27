@@ -1,7 +1,7 @@
 ﻿#include <sol.hpp>
 #include "../Data/Audio.h"
 
-void AudioLuaWrap(sol::state& state) {
+void AudioLuaWrap(sol::state &state) {
 	auto clazz = state.new_usertype<Audio>("Audio");
 	clazz["getUuid"] = &Audio::getUuid;
 	clazz["getEditorAudio"] = &Audio::getEditorAudio;
@@ -19,7 +19,6 @@ void AudioLuaWrap(sol::state& state) {
 	clazz["deleteEditorAudio"] = &Audio::deleteEditorAudio;
 	clazz["spawnProjectEntity"] = &Audio::spawnProjectEntity;
 	clazz["deleteProjectEntity"] = &Audio::deleteProjectEntity;
-	clazz["preloadProjectAudio"] = &Audio::preloadProjectAudio;
 	clazz["getAudioFilesList"] = &Audio::getAudioFilesList;
 	clazz["loadAudioFilesList"] = &Audio::loadAudioFilesList;
 }

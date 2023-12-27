@@ -71,8 +71,6 @@ public:
 	void spawnProjectEntity() override;
 	void deleteProjectEntity() override;
 
-	void preloadProjectAudio();
-
 	static std::vector<std::string>& getAudioFilesList();
 
 	static void loadAudioFilesList();

@@ -625,10 +625,13 @@ bool zipWalk(zip_t *zip, const std::filesystem::path &path) {
 }
 
 void ProjectsService::saveCurrentProject() {
+	getInstance().getCurrentProject().getCurrentScene()->unloadEditorScene();
+
 	auto projectDirectoryName = std::filesystem::path(
 		utils::stringToPathString(this->getCurrentProject().getProjectInfo()->name));
 	const auto projectDirectory = PROJECTS_PATH / projectDirectoryName;
 	auto scenesDirectory = projectDirectory / "scenes";
+	auto audioDirectory = projectDirectory / "audio";
 
 	if (this->currentDirectory_.has_value() && exists(this->currentDirectory_.value())) {
 		auto checkError = [](const std::error_code &ec) {
@@ -674,6 +677,13 @@ void ProjectsService::saveCurrentProject() {
 			ImGui::InsertNotification({ImGuiToastType_Error, 1000, "Error, see log"});
 			return;
 		}
+
+		if (!create_directory(audioDirectory, error)) {
+			if (error.value() != 0)
+				CLOG(ERROR, "LDYOM") << "Failed to create audio directory, error: {} " << error.message();
+			ImGui::InsertNotification({ImGuiToastType_Error, 1000, "Error, see log"});
+			return;
+		}
 	}
 
 	this->getCurrentProject().getProjectInfo()->directory = projectDirectory;
@@ -700,6 +710,8 @@ void ProjectsService::saveCurrentProject() {
 
 	this->currentDirectory_ = projectDirectory;
 
+	getInstance().getCurrentProject().getCurrentScene()->loadEditorScene();
+
 	ImGui::InsertNotification({ImGuiToastType_Success, 3000, "Saved!"});
 }
 
@@ -716,6 +728,7 @@ void ProjectsService::loadProjectData(const std::filesystem::path &projectDirect
 		}
 		file.close();
 		this->getCurrentProject().getProjectInfo().swap(projectInfo);
+		this->getCurrentProject().getProjectInfo()->directory = projectDirectory;
 	}
 
 	//load scenes
@@ -764,6 +777,8 @@ void ProjectsService::loadProject(int projectIdx) {
 	this->loadProjectData(projectDirectory);
 
 	this->getCurrentProject().getCurrentSceneIndex() = projectsInfos_.at(projectIdx)->startScene;
+
+	Audio::loadAudioFilesList();
 
 	this->getCurrentProject().getCurrentScene()->loadEditorScene();
 

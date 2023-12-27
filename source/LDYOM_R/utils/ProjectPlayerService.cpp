@@ -72,11 +72,6 @@ ktwait ProjectPlayerService::changeScene(Scene *scene, ktcoro_tasklist &tasklist
 	addObjectiveDependedEntity(scene->getVisualEffects());
 	addObjectiveDependedEntity(scene->getCheckpoints());
 
-	for (const auto &audio : scene->getAudio()) {
-		if (audio->isUseObjective())
-			audio->preloadProjectAudio();
-	}
-
 	//apply scene settings
 	if (scene->isToggleSceneSettings()) {
 		using namespace plugin;
