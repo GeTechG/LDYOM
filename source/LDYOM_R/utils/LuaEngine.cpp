@@ -30,7 +30,7 @@ void LuaEngine::resetState() {
 
 	const std::string basePath = SCRIPT_PATH + "\\libs\\";
 	luaState_.require_file("tl", basePath + "tl.lua");
-	luaState_.safe_script("tl.loader()", errorHandler, "LuaEngine");
+	luaState_.safe_script("tl.loader()", errorHandlerCallback, "LuaEngine");
 	luaState_.set_function("print", [](const sol::this_state l, const sol::object &obj, const sol::variadic_args args) {
 		LuaLogger::getInstance().print(sol::state_view(l), obj, args);
 	});
@@ -49,10 +49,10 @@ void LuaEngine::resetState() {
 			if (exists(entry.path() / "init.lua")) {
 				auto initFile = entry.path() / "init.lua";
 				addScriptDirToLuaPaths(luaPaths, entry);
-				luaState_.safe_script_file(initFile.string(), errorHandler);
+				luaState_.safe_script_file(initFile.string(), errorHandlerCallback);
 			} else if (exists(entry.path() / "init.tl")) {
 				addScriptDirToLuaPaths(luaPaths, entry);
-				luaState_.safe_script("require(\"init\")", errorHandler);
+				luaState_.safe_script("require(\"init\")", errorHandlerCallback);
 			}
 		}
 	}
@@ -75,9 +75,15 @@ sol::state& LuaEngine::getLuaState() {
 	return luaState_;
 }
 
-sol::protected_function_result LuaEngine::errorHandler(sol::this_state, sol::protected_function_result pfr) {
+sol::protected_function_result LuaEngine::errorHandlerCallback(sol::this_state, sol::protected_function_result pfr) {
 	const sol::error error = pfr;
 	CLOG(ERROR, "lua") << error.what();
 	LuaLogger::getInstance().print(error.what());
 	return pfr;
+}
+
+void LuaEngine::errorHandler(const sol::protected_function_result &pfr) {
+	const sol::error error = pfr;
+	CLOG(ERROR, "lua") << error.what();
+	LuaLogger::getInstance().print(error.what());
 }

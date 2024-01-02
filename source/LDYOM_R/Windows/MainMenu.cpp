@@ -12,6 +12,7 @@
 #include "EntitiesWindow.h"
 #include "FAQWindow.h"
 #include "InfoWindow.h"
+#include "LuaEngine.h"
 #include "ObjectivesWindow.h"
 #include "ProjectInfoWindow.h"
 #include "ProjectPlayerService.h"
@@ -153,6 +154,13 @@ namespace Windows {
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SCROLL, local.get("console_window.title")).c_str(),
 			                  ImVec2(scaleFont * 200.0f, .0f))) {
 				WindowsRenderService::getInstance().replaceWindow<MainMenu, ConsoleWindow>();
+			}
+
+			if (const auto renderFunction = LuaEngine::getInstance().getLuaState().get<sol::function>("render");
+				renderFunction.valid()) {
+				if (const auto result = renderFunction(); !result.valid()) {
+					LuaEngine::errorHandler(result);
+				}
 			}
 
 			static bool openNewProjectInfo = false;

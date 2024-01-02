@@ -939,6 +939,9 @@
     <ClCompile Include="Data\SaveObjective.cpp">
       <Filter>Data\Objectives\Scene\Save</Filter>
     </ClCompile>
+    <ClCompile Include="utils\indexUuidWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils\imguistyleloader.h">

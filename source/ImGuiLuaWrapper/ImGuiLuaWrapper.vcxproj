@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{3820bc56-da86-47d7-b8e6-80e0c1a5a85c}</ProjectGuid>
+    <RootNamespace>ImGuiLuaWrapper</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;CIMGUI_DEFINE_ENUMS_AND_STRUCTS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(ProjectDir)cimgui;$(SolutionDir)LDYOM_R\thirdparty\imgui;$(SolutionDir)LDYOM_R\include;$(SolutionDir)LDYOM_R\LuaJIT-2.0.5\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)cimgui\build\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cimgui.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;CIMGUI_DEFINE_ENUMS_AND_STRUCTS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(ProjectDir)cimgui;$(SolutionDir)LDYOM_R\thirdparty\imgui;$(SolutionDir)LDYOM_R\include;$(SolutionDir)LDYOM_R\LuaJIT-2.0.5\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)cimgui\build\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cimgui.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="generator\output\cpp\enums.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImDrawFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImDrawListFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImFontAtlasFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiActivateFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiAxis.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiBackendFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiButtonFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiButtonFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiCol.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiColorEditFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiComboFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiComboFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiCond.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiConfigFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiContextHookType.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiDataType.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiDataTypePrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiDebugLogFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiDir.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiDragDropFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiFocusedFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiFocusRequestFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiHoveredFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiHoveredFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiInputEventType.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiInputFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiInputSource.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiInputTextFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiInputTextFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiItemFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiItemStatusFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiKey.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiLayoutType.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiLocKey.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiLogType.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiMouseButton.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiMouseCursor.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiMouseSource.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNavHighlightFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNavInput.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNavLayer.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNavMoveFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNextItemDataFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNextWindowDataFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiOldColumnFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiPlotType.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiPopupFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiPopupPositionPolicy.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiScrollFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSelectableFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSelectableFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSeparatorFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSliderFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSliderFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSortDirection.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiStyleVar.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTabBarFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTabBarFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTabItemFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTabItemFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTableBgTarget.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTableColumnFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTableFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTableRowFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTextFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTooltipFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTreeNodeFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTreeNodeFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiViewportFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiWindowFlags.cpp" />
+    <ClCompile Include="generator\output\cpp\structs.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImBitVector.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImColor.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImDrawChannel.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImDrawCmd.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImDrawCmdHeader.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImDrawData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImDrawDataBuilder.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImDrawList.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImDrawListSharedData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImDrawListSplitter.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImDrawVert.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImFont.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImFontAtlas.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImFontAtlasCustomRect.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImFontBuilderIO.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImFontConfig.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImFontGlyph.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImFontGlyphRangesBuilder.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGui.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiColorMod.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiComboPreviewData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiContext.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiContextHook.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiDataTypeInfo.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiDataTypeTempStorage.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiDataVarInfo.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiGroupData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEvent.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventAppFocused.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventKey.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventMouseButton.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventMousePos.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventMouseWheel.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventText.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputTextCallbackData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputTextDeactivatedState.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputTextState.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiIO.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiKeyData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiKeyOwnerData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiKeyRoutingData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiKeyRoutingTable.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiLastItemData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiListClipper.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiListClipperData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiListClipperRange.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiLocEntry.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiMenuColumns.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiMetricsConfig.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiNavItemData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiNavTreeNodeData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiNextItemData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiNextWindowData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiOldColumnData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiOldColumns.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiOnceUponAFrame.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiPayload.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiPlatformImeData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiPopupData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiPtrOrIndex.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiSettingsHandler.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiShrinkWidthItem.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiSizeCallbackData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStackLevelInfo.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStackSizes.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStackTool.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStorage.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStoragePair.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStyle.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStyleMod.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTabBar.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTabItem.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTable.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableCellData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableColumn.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableColumnSettings.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableColumnSortSpecs.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableInstanceData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableSettings.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableSortSpecs.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableTempData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTextBuffer.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTextFilter.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTextIndex.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTextRange.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiViewport.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiViewportP.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiWindow.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiWindowSettings.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiWindowStackData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiWindowTempData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImRect.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImVec1.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImVec2.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImVec2ih.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImVec4.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImVectors.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\StbTexteditRow.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\StbUndoRecord.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\StbUndoState.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\STB_TexteditState.cpp" />
+    <ClCompile Include="ImGuiLuaWrapper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ImGuiLuaWrapper.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

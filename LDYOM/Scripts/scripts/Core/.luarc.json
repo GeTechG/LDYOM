@@ -1,11 +1,14 @@
 {
     "workspace": {
         "library": [
-            "C:/Games/GTA San Andreas Modding/LDYOM/Scripts/"
+            "C:/Users/User/Documents/LDYOM/source/ImGuiLuaWrapper/generator/output/lua"
     ]
     },
     "runtime.path": [
         "?.lua",
         "?/init.lua"
-      ]
+      ],
+    "diagnostics.disable": [
+        "lowercase-global"
+    ]
 }

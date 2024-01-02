@@ -1,0 +1,541 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\generated">
+      <UniqueIdentifier>{8077127a-213c-4852-858b-503e638d1329}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ImGuiLuaWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImDrawFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImDrawListFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImFontAtlasFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiActivateFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiAxis.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiBackendFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiButtonFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiButtonFlagsPrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiCol.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiColorEditFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiComboFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiComboFlagsPrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiCond.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiConfigFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiContextHookType.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiDataType.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiDataTypePrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiDebugLogFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiDir.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiDragDropFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiFocusedFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiFocusRequestFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiHoveredFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiHoveredFlagsPrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiInputEventType.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiInputFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiInputSource.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiInputTextFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiInputTextFlagsPrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiItemFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiItemStatusFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiKey.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiLayoutType.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiLocKey.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiLogType.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiMouseButton.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiMouseCursor.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiMouseSource.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNavHighlightFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNavInput.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNavLayer.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNavMoveFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNextItemDataFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiNextWindowDataFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiOldColumnFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiPlotType.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiPopupFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiPopupPositionPolicy.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiScrollFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSelectableFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSelectableFlagsPrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSeparatorFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSliderFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSliderFlagsPrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiSortDirection.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiStyleVar.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTabBarFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTabBarFlagsPrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTabItemFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTabItemFlagsPrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTableBgTarget.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTableColumnFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTableFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTableRowFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTextFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTooltipFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTreeNodeFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTreeNodeFlagsPrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiViewportFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiWindowFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImBitVector.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImColor.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImDrawChannel.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImDrawCmd.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImDrawCmdHeader.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImDrawData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImDrawDataBuilder.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImDrawList.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImDrawListSharedData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImDrawListSplitter.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImDrawVert.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImFont.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImFontAtlas.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImFontAtlasCustomRect.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImFontBuilderIO.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImFontConfig.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImFontGlyph.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImFontGlyphRangesBuilder.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGui.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiColorMod.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiComboPreviewData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiContext.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiContextHook.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiDataTypeInfo.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiDataTypeTempStorage.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiDataVarInfo.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiGroupData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEvent.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventAppFocused.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventKey.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventMouseButton.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventMousePos.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventMouseWheel.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventText.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputTextCallbackData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputTextDeactivatedState.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiInputTextState.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiIO.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiKeyData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiKeyOwnerData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiKeyRoutingData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiKeyRoutingTable.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiLastItemData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiListClipper.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiListClipperData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiListClipperRange.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiLocEntry.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiMenuColumns.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiMetricsConfig.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiNavItemData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiNavTreeNodeData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiNextItemData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiNextWindowData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiOldColumnData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiOldColumns.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiOnceUponAFrame.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiPayload.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiPlatformImeData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiPopupData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiPtrOrIndex.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiSettingsHandler.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiShrinkWidthItem.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiSizeCallbackData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStackLevelInfo.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStackSizes.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStackTool.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStorage.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStoragePair.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStyle.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiStyleMod.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTabBar.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTabItem.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTable.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableCellData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableColumn.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableColumnSettings.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableColumnSortSpecs.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableInstanceData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableSettings.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableSortSpecs.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTableTempData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTextBuffer.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTextFilter.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTextIndex.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTextRange.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiViewport.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiViewportP.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiWindow.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiWindowSettings.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiWindowStackData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiWindowTempData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImRect.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImVec1.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImVec2.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImVec2ih.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImVec4.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImVectors.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\StbTexteditRow.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\StbUndoRecord.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\StbUndoState.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\STB_TexteditState.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ImGuiLuaWrapper.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
