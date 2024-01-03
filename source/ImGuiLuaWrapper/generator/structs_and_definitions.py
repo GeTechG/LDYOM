@@ -179,7 +179,7 @@ def convert_type_teal(in_type: str):
     in_type = in_type.replace("const", "").strip()
     if in_type in struct_data.keys():
         return in_type
-    if (in_type + "_") in enums_data.keys():
+    if (in_type + "_") in enums_data.keys() or in_type in enums_data.keys():
         return "integer"
     if in_type.startswith("ImVector"):
         return in_type.replace("*", "")
@@ -225,7 +225,7 @@ def convert_type_lua(in_type: str):
     in_type = in_type.replace("const", "").strip()
     if in_type in struct_data.keys():
         return in_type
-    if (in_type + "_") in enums_data.keys():
+    if (in_type + "_") in enums_data.keys() or in_type in enums_data.keys():
         return in_type
     if in_type.startswith("ImVector"):
         return in_type.replace("*", "")
