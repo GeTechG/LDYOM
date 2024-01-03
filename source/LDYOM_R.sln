@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LDYOM_R", "LDYOM_R\LDYOM_R.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGuiLuaWrapper", "ImGuiLuaWrapper\ImGuiLuaWrapper.vcxproj", "{3820BC56-DA86-47D7-B8E6-80E0C1A5A85C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpcodesLuaWrapper", "OpcodesLuaWrapper\OpcodesLuaWrapper.vcxproj", "{FF727FFB-A884-4883-823E-4AA71138BAEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{3820BC56-DA86-47D7-B8E6-80E0C1A5A85C}.Release|x64.Build.0 = Release|x64
 		{3820BC56-DA86-47D7-B8E6-80E0C1A5A85C}.Release|x86.ActiveCfg = Release|Win32
 		{3820BC56-DA86-47D7-B8E6-80E0C1A5A85C}.Release|x86.Build.0 = Release|Win32
+		{FF727FFB-A884-4883-823E-4AA71138BAEF}.Debug|x64.ActiveCfg = Debug|x64
+		{FF727FFB-A884-4883-823E-4AA71138BAEF}.Debug|x64.Build.0 = Debug|x64
+		{FF727FFB-A884-4883-823E-4AA71138BAEF}.Debug|x86.ActiveCfg = Debug|Win32
+		{FF727FFB-A884-4883-823E-4AA71138BAEF}.Debug|x86.Build.0 = Debug|Win32
+		{FF727FFB-A884-4883-823E-4AA71138BAEF}.Release|x64.ActiveCfg = Release|x64
+		{FF727FFB-A884-4883-823E-4AA71138BAEF}.Release|x64.Build.0 = Release|x64
+		{FF727FFB-A884-4883-823E-4AA71138BAEF}.Release|x86.ActiveCfg = Release|Win32
+		{FF727FFB-A884-4883-823E-4AA71138BAEF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

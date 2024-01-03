@@ -18,12 +18,15 @@
 
 #include <ImGuiLuaWrapper.h>
 
+#include "OpcodesLuaWrapper.h"
+
 extern void indexUuidWrapper(sol::state &state);
 
 void LuaWrapper::wrap(sol::state &state) {
 	FilesystemLuaWrapper::wrap(state);
 	UtilsLuaWrapper::wrap(state);
 	imguiLuaWrapper(state);
+	opcodesLuaWrapper(state);
 	indexUuidWrapper(state);
 
 
