@@ -344,12 +344,6 @@
     <Filter Include="Lua\Wrappers">
       <UniqueIdentifier>{cd1f63db-6ebe-412c-b8ff-317fdf3a108d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Lua\Wrappers\Opcodes">
-      <UniqueIdentifier>{4a30efab-1267-4296-927c-0fa19fdea7a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Lua\Wrappers\utils">
-      <UniqueIdentifier>{eca6e9d2-d27e-4d69-8730-e020f0b4d15f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data\Objectives\Scene\JumpToObjective">
       <UniqueIdentifier>{eeecbabd-978c-4f56-a4df-316e1814db5e}</UniqueIdentifier>
     </Filter>
@@ -786,9 +780,6 @@
     <ClCompile Include="include\easylogging\easylogging++.cc">
       <Filter>Utils\easylogging</Filter>
     </ClCompile>
-    <ClCompile Include="utils\UtilsLuaWrapper.cpp">
-      <Filter>Lua\Wrappers\utils</Filter>
-    </ClCompile>
     <ClCompile Include="Data\JumpToObjectiveObjective.cpp">
       <Filter>Data\Objectives\Scene\JumpToObjective</Filter>
     </ClCompile>
@@ -933,13 +924,31 @@
     <ClCompile Include="utils\LuaWrapper.cpp">
       <Filter>Lua</Filter>
     </ClCompile>
-    <ClCompile Include="utils\FilesystemLuaWrapper.cpp">
-      <Filter>Lua</Filter>
-    </ClCompile>
     <ClCompile Include="Data\SaveObjective.cpp">
       <Filter>Data\Objectives\Scene\Save</Filter>
     </ClCompile>
     <ClCompile Include="utils\indexUuidWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\FilesystemLuaWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ImGuiCustomWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\LocalizationWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ConvertWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\pluginSdkWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\AsyncWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\OtherWrapper.cpp">
       <Filter>Lua\Wrappers</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1349,9 +1358,6 @@
     </ClInclude>
     <ClInclude Include="include\easylogging\easylogging++.h">
       <Filter>Utils\easylogging</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\UtilsLuaWrapper.h">
-      <Filter>Lua\Wrappers\utils</Filter>
     </ClInclude>
     <ClInclude Include="Data\JumpToObjectiveObjective.h">
       <Filter>Data\Objectives\Scene\JumpToObjective</Filter>
@@ -2404,9 +2410,6 @@
       <Filter>Utils\CounterService</Filter>
     </ClInclude>
     <ClInclude Include="utils\LuaWrapper.h">
-      <Filter>Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\FilesystemLuaWrapper.h">
       <Filter>Lua</Filter>
     </ClInclude>
     <ClInclude Include="Data\SaveObjective.h">

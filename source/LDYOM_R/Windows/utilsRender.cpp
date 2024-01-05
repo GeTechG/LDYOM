@@ -441,6 +441,17 @@ bool TransformEditor(float *translate, CQuaternion &rotates, float *scale) {
 	return false;
 }
 
+/**
+ * \brief Applies a highlighting effect to the rendering of a specified function if a given condition is true.
+ *
+ * This function is designed to modify the rendering of a specified function by applying a highlighting effect
+ * when the specified condition is true. The highlighting effect involves changing the background color of the
+ * rendering to a blend of the original color and a specified blend color with reduced alpha transparency.
+ *
+ * \param cond A boolean condition that determines whether the highlighting effect should be applied.
+ * \param render A function object (std::function<void()>) representing the rendering function to be highlighted.
+ *               This function will be called within the context of the highlighting effect.
+ */
 void IncorrectHighlight(const bool cond, const std::function<void()> render) {
 	if (cond) {
 		const ImU32 originalColor = ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
