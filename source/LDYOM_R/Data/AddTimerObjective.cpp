@@ -59,27 +59,27 @@ ktwait AddTimerObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 		while (TimerService::getInstance().isTimerOn()) {
 			switch (this_->getCompareType()) {
 				case Equal:
-					if (TimerService::getInstance().getTimerTime() == this_->getCompareValue() * 1000)
+					if (TimerService::getInstance().getTimerTime() / 1000 * 1000 == this_->getCompareValue() * 1000)
 						action();
 					break;
 				case NotEqual:
-					if (TimerService::getInstance().getTimerTime() != this_->getCompareValue() * 1000)
+					if (TimerService::getInstance().getTimerTime() / 1000 * 1000 != this_->getCompareValue() * 1000)
 						action();
 					break;
 				case More:
-					if (TimerService::getInstance().getTimerTime() > this_->getCompareValue() * 1000)
+					if (TimerService::getInstance().getTimerTime() / 1000 * 1000 > this_->getCompareValue() * 1000)
 						action();
 					break;
 				case MoreOrEqual:
-					if (TimerService::getInstance().getTimerTime() >= this_->getCompareValue() * 1000)
+					if (TimerService::getInstance().getTimerTime() / 1000 * 1000 >= this_->getCompareValue() * 1000)
 						action();
 					break;
 				case Less:
-					if (TimerService::getInstance().getTimerTime() < this_->getCompareValue() * 1000)
+					if (TimerService::getInstance().getTimerTime() / 1000 * 1000 < this_->getCompareValue() * 1000)
 						action();
 					break;
 				case LessOrEqual:
-					if (TimerService::getInstance().getTimerTime() <= this_->getCompareValue() * 1000)
+					if (TimerService::getInstance().getTimerTime() / 1000 * 1000 <= this_->getCompareValue() * 1000)
 						action();
 					break;
 			}

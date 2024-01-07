@@ -9,10 +9,8 @@
 #include "../shared/extensions/ScriptCommands.h"
 
 #include "CounterService.h"
-#include "LuaEngine.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
-#include "Settings.h"
 #include "strUtils.h"
 #include "easylogging/easylogging++.h"
 
