@@ -1,14 +1,15 @@
 ﻿#pragma once
+#include "GlobalVariablesService.h"
 #include "SceneObjective.h"
 
 class JumpToObjectiveObjective final : public virtual SceneObjective {
 private:
-	boost::uuids::uuid goToObjectiveUuid_{};
-	bool condition_ = true;
-	int conditionType_ = 0;
-	int varId_ = 1;
-	float conditionValueNumber_ = 0.f;
-	bool conditionValueBoolean_ = false;
+	boost::uuids::uuid goToObjectiveUuid{};
+	boost::uuids::uuid goToObjectiveUuidElse{};
+	bool condition = true;
+	int conditionType = 0;
+	std::string varUuid{};
+	GlobalVariableView::Value varValue{GlobalVariableType::Float};
 
 public:
 	JumpToObjectiveObjective() = default;
@@ -20,11 +21,11 @@ public:
 	}
 
 	boost::uuids::uuid& getGoToObjectiveUuid();
+	boost::uuids::uuid& getGoToObjectiveUuidElse();
 	bool& isCondition();
 	int& getConditionType();
-	int& getVarId();
-	float& getConditionValueNumber();
-	bool& isConditionValueBoolean();
+	std::string& getVarUuid();
+	GlobalVariableView::Value& getVarValue();
 
 	void draw(Localization &local, std::vector<std::string> &listOverlay) override;
 	ktwait execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) override;
@@ -39,11 +40,11 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 
 			auto &a = const_cast<JumpToObjectiveObjective&>(obj);
 			j["goToObjectiveUuid"] = a.getGoToObjectiveUuid();
+			j["goToObjectiveUuidElse"] = a.getGoToObjectiveUuidElse();
 			j["condition"] = a.isCondition();
 			j["conditionType"] = a.getConditionType();
-			j["varId"] = a.getVarId();
-			j["conditionValueNumber"] = a.getConditionValueNumber();
-			j["conditionValueBoolean"] = a.isConditionValueBoolean();
+			j["varUuid"] = a.getVarUuid();
+			j["varValue"] = a.getVarValue();
 		}
 
 		static void from_json(const json &j, JumpToObjectiveObjective &obj) {
@@ -51,11 +52,11 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j.get_to(sceneObjective);
 
 			j.at("goToObjectiveUuid").get_to(obj.getGoToObjectiveUuid());
+			j.at("goToObjectiveUuidElse").get_to(obj.getGoToObjectiveUuidElse());
 			j.at("condition").get_to(obj.isCondition());
 			j.at("conditionType").get_to(obj.getConditionType());
-			j.at("varId").get_to(obj.getVarId());
-			j.at("conditionValueNumber").get_to(obj.getConditionValueNumber());
-			j.at("conditionValueBoolean").get_to(obj.isConditionValueBoolean());
+			j.at("varUuid").get_to(obj.getVarUuid());
+			j.at("varValue").get_to(obj.getVarValue());
 		}
 	};
 

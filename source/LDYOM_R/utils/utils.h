@@ -13,10 +13,12 @@
 #include <filesystem>
 
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include "GlobalVariablesService.h"
 #include "imgui.h"
 #include "../Data/Texture.h"
 
 #include "../Data/IUuidable.h"
+#include "../Data/MathCondition.h"
 
 #define PI 3.14159265358979323846f
 #define	DEG(rad) ((rad)*180.0f/PI)
@@ -86,6 +88,8 @@ public:
 	static std::string floatArrayColorToHex(const std::array<float, 4> &color);
 	static std::array<float, 4> hexToFloatArrayColor(const std::string &hexColor);
 	static bool getScreenPositionFromGamePosition(const CVector &position, ImVec2 &out);
+	template <typename T>
+	static bool compare(const GlobalVariableView::Value &a, const GlobalVariableView::Value &b, MathCondition type);
 };
 
 template <class T>
@@ -127,4 +131,30 @@ std::string utils::stringFormat(const std::string &format, Args... args) {
 	const std::unique_ptr<char[]> buf(new char[size]);
 	std::snprintf(buf.get(), size, format.c_str(), args...);
 	return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
+}
+
+template <typename T>
+bool utils::compare(const GlobalVariableView::Value &a, const GlobalVariableView::Value &b, MathCondition type) {
+	if (a.getType() != b.getType())
+		return false;
+
+	auto vA = static_cast<T*>(a.value);
+	auto vB = static_cast<T*>(b.value);
+
+	switch (type) {
+		case Equal:
+			return *vA == *vB;
+		case NotEqual:
+			return *vA != *vB;
+		case More:
+			return *vA > *vB;
+		case MoreOrEqual:
+			return *vA >= *vB;
+		case Less:
+			return *vA < *vB;
+		case LessOrEqual:
+			return *vA <= *vB;
+		default:
+			return false;
+	}
 }

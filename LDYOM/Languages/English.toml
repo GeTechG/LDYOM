@@ -64,7 +64,6 @@ weathers_types = [ "Very Sunny (LS)", "Sunny (LS)", "Very Sunny, Smoggy (LS)", "
 place = "Place"
 places_in_car = [ "Driver's Seat", "Passenger's Seat", "Back Left Seat", "Back Right Seat",]
 move_mouth = "Move Mouth"
-comparings = [ "Equal", "Not Equal", "Greater", "Greater or Equal", "Less", "Less or Equal",]
 condition = "Condition"
 text_style = "Text Style"
 text_styles = [ "Medium", "Bottom Right", "Medium Less", "Medium Less More", "White Medium Less", "Blue Upper",]
@@ -85,6 +84,7 @@ false = "False"
 yes = "Yes"
 no = "No"
 wait_end = "Wait till the end"
+compare_types = [ "Equal", "Not equal", "Greater than", "Greater than or equal", "Less than", "Less than or equal",]
 
 [objective]
 title = "Objective"
@@ -961,3 +961,6 @@ global_variable = "Global Variable"
 new_variable = "Variable #"
 types = [ "Float", "Integer", "String", "Boolean",]
 bool_values = [ "False", "True",]
+
+[jump_to_objective]
+else_objective = "Otherwise Objective"

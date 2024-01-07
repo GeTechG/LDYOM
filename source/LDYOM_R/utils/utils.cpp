@@ -12,7 +12,6 @@
 #include "HttpRequester.h"
 #include "imgui_internal.h"
 #include "KeyCodes.h"
-#include "Logger.h"
 #include "memsafe.h"
 #include "plugin.h"
 #include "strUtils.h"
@@ -26,7 +25,7 @@ bool utils::Combo(const char *label, int *currentItem, const std::vector<std::st
 	if (ImGui::BeginCombo(label, previewText.c_str())) {
 		for (int i = 0; i < size; ++i) {
 			bool isSelected = i == *currentItem;
-			if (ImGui::Selectable(items.at(i).c_str(), &isSelected)) {
+			if (ImGui::Selectable(items[i].c_str(), &isSelected)) {
 				*currentItem = i;
 				action = true;
 			}
@@ -38,7 +37,7 @@ bool utils::Combo(const char *label, int *currentItem, const std::vector<std::st
 	return action;
 }
 
-bool utils::Combo(const char *label, boost::uuids::uuid *currentItem, int currentElement, int size,
+bool utils::Combo(const char *label, boost::uuids::uuid *currentItem, const int currentElement, const int size,
                   const std::function<std::string&(int)> &getName,
                   const std::function<boost::uuids::uuid(int)> &getUuid) {
 	bool action = false;

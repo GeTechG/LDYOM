@@ -85,6 +85,7 @@ false = "Fałsz"
 yes = "Tak"
 no = "Nie"
 wait_end = "Czekaj na koniec"
+compare_types = [ "Równe", "Nierówne", "Większe", "Większe lub równe", "Mniejsze", "Mniejsze lub równe",]
 
 [objective]
 title = "Cel"
@@ -961,3 +962,6 @@ global_variable = "Zmienna globalna"
 new_variable = "Zmienna #"
 types = [ "Zmiennoprzecinkowa", "Całkowita", "Tekstowa", "Logiczna",]
 bool_values = [ "Fałsz", "Prawda",]
+
+[jump_to_objective]
+else_objective = "Inaczej cel"

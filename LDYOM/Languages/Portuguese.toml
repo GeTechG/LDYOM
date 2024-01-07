@@ -85,6 +85,7 @@ false = "Falso"
 yes = "Sim"
 no = "Não"
 wait_end = "Aguardar o fim"
+compare_types = [ "Igual", "Não igual", "Maior", "Maior ou igual", "Menor", "Menor ou igual",]
 
 [objective]
 title = "Objetivo"
@@ -961,3 +962,6 @@ global_variable = "Variável global"
 new_variable = "Variável #"
 types = [ "Decimal", "Inteiro", "String", "Booleano",]
 bool_values = [ "Falso", "Verdadeiro",]
+
+[jump_to_objective]
+else_objective = "Caso contrário, objetivo"
