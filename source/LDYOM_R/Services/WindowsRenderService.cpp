@@ -11,6 +11,7 @@
 #include "EntitiesWindow.h"
 #include "FAQWindow.h"
 #include "FastObjectSelector.h"
+#include "GlobalVariablesWindow.h"
 #include "ImGuiHook.h"
 #include "imguistyleloader.h"
 #include "imgui_notify.h"
@@ -91,6 +92,8 @@ void addWindows() {
 		std::make_unique<Windows::InfoWindow>());
 	windows.emplace_back(
 		std::make_unique<Windows::ToolsWindow>());
+	windows.emplace_back(
+		std::make_unique<Windows::GlobalVariablesWindow>());
 	Windows::WindowsRenderService::getInstance().addRender("showEntitiesName", [] {
 		if (!ProjectPlayerService::getInstance().isProjectRunning()) {
 			if (Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false))

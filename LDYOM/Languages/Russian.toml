@@ -472,6 +472,12 @@ mpack_author = "Автор MPACK: %s"
 localization_author = "Автор локализации: SKIC (AI)"
 special_thanks = "Особая благодарность: %s"
 
+[global_variables]
+title = "Глобальные переменные"
+global_variable = "Глобальная переменная"
+new_variable = "Переменная #"
+types = ["Дробное", "Целое", "Строковое", "Булевое"]
+bool_values = ["Ложь", "Истина"]
 [hotkey_editor]
 title = "Редактор горячих клавиш"
 clear = "Очистить"

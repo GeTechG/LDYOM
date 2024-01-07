@@ -954,3 +954,10 @@ o_286_woozie_s_apartment = "Apartament Wooziego"
 
 [discord]
 activity_type = [ "W edytorze", "Gra",]
+
+[global_variables]
+title = "Zmienne globalne"
+global_variable = "Zmienna globalna"
+new_variable = "Zmienna #"
+types = [ "Zmiennoprzecinkowa", "Całkowita", "Tekstowa", "Logiczna",]
+bool_values = [ "Fałsz", "Prawda",]

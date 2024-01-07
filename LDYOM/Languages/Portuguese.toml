@@ -954,3 +954,10 @@ o_286_woozie_s_apartment = "Apartamento do Woozie"
 
 [discord]
 activity_type = [ "No Editor", "Playing",]
+
+[global_variables]
+title = "Variáveis globais"
+global_variable = "Variável global"
+new_variable = "Variável #"
+types = [ "Decimal", "Inteiro", "String", "Booleano",]
+bool_values = [ "Falso", "Verdadeiro",]

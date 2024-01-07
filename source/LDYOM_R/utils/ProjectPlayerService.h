@@ -2,6 +2,8 @@
 #include <ktcoro_wait.hpp>
 #include <optional>
 
+#include "GlobalVariablesManager.h"
+
 class BaseObjective;
 class Scene;
 
@@ -12,6 +14,7 @@ private:
 	std::optional<BaseObjective*> currentObjective_;
 	std::optional<Scene*> nextScene;
 	std::optional<int> nextObjective;
+	GlobalVariablesManager globalVariablesManager;
 
 	ktcoro_tasklist *sceneTasklist = nullptr;
 	std::optional<ktwait> currentSceneTask;
@@ -40,4 +43,5 @@ public:
 	std::optional<Scene*>& getCurrentScene();
 	ktcoro_tasklist*& getSceneTasklist();
 	std::optional<BaseObjective*>& getCurrentObjective();
+	GlobalVariablesManager& getGlobalVariablesManager();
 };

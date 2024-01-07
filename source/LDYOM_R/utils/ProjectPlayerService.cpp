@@ -196,6 +196,7 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	Command<Commands::SET_CHAR_PROOFS>(static_cast<CPed*>(FindPlayerPed()), 0, 0, 0, 0, 0);
 	Command<Commands::SET_CHAR_DROWNS_IN_WATER>(static_cast<CPed*>(FindPlayerPed()), true);
 	FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_bDoesNotGetTired = false;
+	this->globalVariablesManager.initVariables();
 	this->projectRunning = true;
 
 	const auto projectName = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name;
@@ -297,6 +298,7 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->loadEditorScene();
 	defaultWindow = savedWindow;
 	openWindowsMenu = false;
+	this->globalVariablesManager.resetVariables();
 
 	this->projectRunning = false;
 
@@ -326,3 +328,5 @@ ktcoro_tasklist*& ProjectPlayerService::getSceneTasklist() {
 std::optional<BaseObjective*>& ProjectPlayerService::getCurrentObjective() {
 	return currentObjective_;
 }
+
+GlobalVariablesManager& ProjectPlayerService::getGlobalVariablesManager() { return globalVariablesManager; }

@@ -29,6 +29,7 @@ void LuaEngine::resetState() {
 	                         sol::lib::math, sol::lib::table, sol::lib::jit, sol::lib::ffi, sol::lib::coroutine);
 
 	const std::string basePath = SCRIPT_PATH + "\\libs\\";
+	luaState_.require_file("uuid", basePath + "uuid.lua");
 	luaState_.require_file("tl", basePath + "tl.lua");
 	luaState_.safe_script("tl.loader()", errorHandlerCallback, "LuaEngine");
 	luaState_.set_function("print", [](const sol::this_state l, const sol::object &obj, const sol::variadic_args args) {

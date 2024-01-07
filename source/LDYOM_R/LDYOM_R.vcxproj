@@ -285,6 +285,8 @@
     <ClCompile Include="utils\FilesystemLuaWrapper.cpp" />
     <ClCompile Include="utils\FileWatcher.cpp" />
     <ClCompile Include="utils\format.cc" />
+    <ClCompile Include="utils\GlobalVariablesManager.cpp" />
+    <ClCompile Include="utils\GlobalVariablesService.cpp" />
     <ClCompile Include="utils\HotKeyService.cpp" />
     <ClCompile Include="utils\HttpRequester.cpp" />
     <ClCompile Include="utils\imgui-knobs.cpp" />
@@ -317,6 +319,7 @@
     <ClCompile Include="Windows\ConsoleWindow.cpp" />
     <ClCompile Include="Windows\FAQWindow.cpp" />
     <ClCompile Include="Windows\FastObjectSelector.cpp" />
+    <ClCompile Include="Windows\GlobalVariablesWindow.cpp" />
     <ClCompile Include="Windows\InfoWindow.cpp" />
     <ClCompile Include="Windows\ModelRenderer.cpp" />
     <ClCompile Include="Windows\ObjectivesWindow.cpp" />
@@ -774,6 +777,8 @@
     <ClInclude Include="utils\CounterService.h" />
     <ClInclude Include="utils\EditByPlayerService.h" />
     <ClInclude Include="utils\FileWatcher.h" />
+    <ClInclude Include="utils\GlobalVariablesManager.h" />
+    <ClInclude Include="utils\GlobalVariablesService.h" />
     <ClInclude Include="utils\HotKeyService.h" />
     <ClInclude Include="utils\HotkeysExecutor.h" />
     <ClInclude Include="utils\HttpRequester.h" />
@@ -805,6 +810,7 @@
     <ClInclude Include="Windows\ConsoleWindow.h" />
     <ClInclude Include="Windows\FAQWindow.h" />
     <ClInclude Include="Windows\FastObjectSelector.h" />
+    <ClInclude Include="Windows\GlobalVariablesWindow.h" />
     <ClInclude Include="Windows\InfoWindow.h" />
     <ClInclude Include="Windows\ModelRenderer.h" />
     <ClInclude Include="Windows\ObjectivesWindow.h" />

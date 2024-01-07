@@ -11,6 +11,7 @@
 #include "ConsoleWindow.h"
 #include "EntitiesWindow.h"
 #include "FAQWindow.h"
+#include "GlobalVariablesWindow.h"
 #include "InfoWindow.h"
 #include "LuaEngine.h"
 #include "ObjectivesWindow.h"
@@ -77,6 +78,11 @@ namespace Windows {
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_ADDRESS_CARD, local.get("project_info.title")).c_str(),
 			                  ImVec2(scaleFont * 200.0f, .0f))) {
 				WindowsRenderService::getInstance().replaceWindow<MainMenu, ProjectInfoWindow>();
+			}
+
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_BOX, local.get("global_variables.title")).c_str(),
+			                  ImVec2(scaleFont * 200.0f, .0f))) {
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, GlobalVariablesWindow>();
 			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SAVE, local.get("general.save")).c_str(),
