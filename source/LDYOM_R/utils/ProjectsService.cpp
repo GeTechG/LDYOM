@@ -606,6 +606,8 @@ void ProjectsService::createNewProject() {
 	projectData.onChangedScene().swap(this->getCurrentProject().onChangedScene());
 	this->currentProject_ = std::move(projectData);
 	this->currentDirectory_ = std::nullopt;
+
+	GlobalVariablesService::getInstance().fromJson("[]");
 }
 
 bool zipWalk(zip_t *zip, const std::filesystem::path &path) {
