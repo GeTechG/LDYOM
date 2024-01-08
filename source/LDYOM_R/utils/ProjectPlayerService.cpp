@@ -102,7 +102,6 @@ ktwait ProjectPlayerService::changeScene(Scene *scene, ktcoro_tasklist &tasklist
 		}
 	}
 
-
 	{
 		using namespace plugin;
 
@@ -123,10 +122,19 @@ ktwait ProjectPlayerService::changeScene(Scene *scene, ktcoro_tasklist &tasklist
 		}, this);
 	}
 
+	std::vector<unsigned int> lastTimeJumpToObjective(scene->getObjectives().size());
+
 	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
 		if (this->nextObjective.has_value()) {
 			o = this->nextObjective.value();
 			this->nextObjective = std::nullopt;
+			if (const unsigned timeFromLastJump = CTimer::m_snTimeInMilliseconds - lastTimeJumpToObjective.at(o);
+				timeFromLastJump < 500) {
+				co_await [](unsigned time) -> ktwait {
+					co_await time;
+				}(500 - timeFromLastJump);
+			}
+			lastTimeJumpToObjective[o] = CTimer::m_snTimeInMilliseconds;
 		}
 
 		const auto &objective = scene->getObjectives().at(o);
