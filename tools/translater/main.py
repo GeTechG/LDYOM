@@ -2,7 +2,7 @@ import json
 from itertools import batched
 from dotenv import load_dotenv
 from openai import OpenAI
-import toml
+import rtoml
 import time
 from os import walk
 
@@ -10,10 +10,10 @@ load_dotenv()
 
 client = OpenAI()
 instruction = """"You are an advanced artificial intelligence translator. In your request, you will receive a JSON 
-object with the value being the text in {} for translation. This text is intended for the interface of a mod for 
-the GTA SA game, focused on creating custom missions. Please consider this context when translating. Your response 
-should include a JSON object with the same structure, but with the translated text as the value. The language of 
-translation is {}."""
+object with the value being the text in {} for translation. This text is intended for the interface of a mod for the 
+GTA SA game (Lua Design Your Own Mission), focused on creating custom missions. Please consider this context when 
+translating. Your response should include a JSON object with the same structure, but with the translated text as the 
+value. The language of translation is {}."""
 
 default_lang_name = 'Russian'
 
@@ -40,7 +40,7 @@ for root, dirs, files in walk(folder_path):
     for file in files:
         if file.endswith('.toml'):
             with open(f'{folder_path}/{file}', 'r', encoding='utf-8') as f:
-                lang = toml.load(f)
+                lang = rtoml.load(f)
                 langs[file[:-5]] = lang
 
 needs_langs = ['Portuguese', 'Polish', "English"]
@@ -83,4 +83,4 @@ except Exception as e:
 for lang in langs:
     if lang != default_lang_name:
         with open(f'langs/{lang}.toml', 'w', encoding='utf-8') as f:
-            toml.dump(langs[lang], f)
+            rtoml.dump(langs[lang], f)
