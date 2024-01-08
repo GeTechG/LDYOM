@@ -2,8 +2,6 @@
 
 #include <fast_dynamic_cast.h>
 #include <filesystem>
-#include <boost/uuid/string_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
 
 #include "DiscordService.h"
 #include "Logger.h"
@@ -55,13 +53,8 @@
 #include "fmt/core.h"
 
 #include "zip.h"
-#include "../lz4/lz4hc.h"
-#include "boost/archive/xml_iarchive.hpp"
 #include "boost/archive/xml_oarchive.hpp"
-#include "boost/serialization/split_free.hpp"
-#include "boost/serialization/unique_ptr.hpp"
 #include "boost/serialization/utility.hpp"
-#include "boost/serialization/vector.hpp"
 #include "easylogging/easylogging++.h"
 
 
@@ -707,6 +700,13 @@ void ProjectsService::saveCurrentProject() {
 		file.close();
 	}
 
+	{
+		// save global variables
+		auto j = GlobalVariablesService::getInstance().toJson();
+		std::ofstream file(projectDirectory / "globalVariables.json");
+		file << j;
+	}
+
 	//save scenes
 	for (const auto &pair : this->getCurrentProject().getScenes()) {
 		std::ofstream file(scenesDirectory / fmt::format("{}.json", pair.first));
@@ -738,6 +738,17 @@ void ProjectsService::loadProjectData(const std::filesystem::path &projectDirect
 		file.close();
 		this->getCurrentProject().getProjectInfo().swap(projectInfo);
 		this->getCurrentProject().getProjectInfo()->directory = projectDirectory;
+	}
+
+	{
+		// load global variables
+		std::ifstream file(projectDirectory / "globalVariables.json");
+		{
+			std::stringstream ss;
+			ss << file.rdbuf();
+			GlobalVariablesService::getInstance().fromJson(ss.str());
+		}
+		file.close();
 	}
 
 	//load scenes

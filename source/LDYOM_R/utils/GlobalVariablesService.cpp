@@ -282,3 +282,24 @@ void GlobalVariablesService::set(const int index, GlobalVariableView &value) {
 			break;
 	}
 }
+
+std::string GlobalVariablesService::toJson() {
+	auto gvTable = getGlobalVariablesTable();
+	const auto result = LuaEngine::getInstance().getLuaState()["json"]["encode"](gvTable);
+	if (!result.valid()) {
+		LuaEngine::errorHandler(result);
+		return "";
+	}
+	return result.get<std::string>();
+}
+
+void GlobalVariablesService::fromJson(const std::string &json) {
+	auto ld = LuaEngine::getInstance().getLuaState()["ld"].get_or_create<sol::table>();
+	auto data = ld["data"].get_or_create<sol::table>();
+	const auto result = LuaEngine::getInstance().getLuaState()["json"]["decode"](json);
+	if (!result.valid()) {
+		LuaEngine::errorHandler(result);
+		return;
+	}
+	data["globalVariables"] = result.get<sol::table>();
+}

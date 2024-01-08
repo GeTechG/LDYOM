@@ -102,6 +102,9 @@ public:
 	std::pair<int, GlobalVariableView> get(const std::string &uuid);
 	void set(int index, GlobalVariableView &value);
 
+	std::string toJson();
+	void fromJson(const std::string &json);
+
 private:
 	explicit GlobalVariablesService() = default;
 };
