@@ -203,6 +203,8 @@ help = "Y - Następna animacja\nN - Poprzednia animacja"
 [timer]
 help_timer_types = "Czekaj - czekaj i kontynuuj do następnego celu po upływie timera.\nLimit - natychmiast przejdź do następnego celu, a jeśli timer wygaśnie, misja zostanie nieudana."
 backwards = "Wstecz"
+start_time = "Czas rozpoczęcia"
+condition_end = "Warunek zakończenia"
 types = ["Czekaj", "Limit"]
 
 [actor]

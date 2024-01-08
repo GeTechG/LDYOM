@@ -202,6 +202,8 @@ help = "Y - Next animation\nN - Previous animation"
 [timer]
 help_timer_types = "Wait - wait and proceed to the next target after the timer expires.\nLimit - immediately proceed to the next target, and if the timer expires, the mission is failed."
 backwards = "Back"
+start_time = "Start Time"
+condition_end = "Completion Condition"
 types = ["Wait", "Limit"]
 
 [actor]

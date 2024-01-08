@@ -16,16 +16,12 @@ AddTimerObjective::AddTimerObjective(void *_new): BaseObjective(_new) {
 
 void AddTimerObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	utils::Combo(local.get("general.type").c_str(), &this->typeTimer_, local.getArray("timer.types"));
-	ImGui::SameLine();
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip(local.get("timer.help_timer_types").c_str());
 
-	ImGui::Text(local.get("general.start").c_str());
-	ImGui::PushID("startTime");
-	ImGui::InputInt(local.get("general.time").c_str(), &this->startTime_);
-	ImGui::PopID();
-	utils::Combo(local.get("general.condition").c_str(), reinterpret_cast<int*>(&this->compareType_),
-	             local.getArray("general.comparings"));
+	ImGui::InputInt(local.get("timer.start_time").c_str(), &this->startTime_);
+	utils::Combo(local.get("timer.condition_end").c_str(), reinterpret_cast<int*>(&this->compareType_),
+	             local.getArray("general.compare_types"));
 	ImGui::InputInt("##conditionValue", &this->compareValue_);
 	utils::ToggleButton(local.get("timer.backwards").c_str(), &this->backward_);
 	ImGui::InputText(local.get("general.text").c_str(), &this->text);

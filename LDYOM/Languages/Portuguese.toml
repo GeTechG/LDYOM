@@ -203,6 +203,8 @@ help = "Y - Próxima animação\nN - Animação anterior"
 [timer]
 help_timer_types = "Espera - esperar e passar para o próximo objetivo após o término do temporizador.\nLimite - passar imediatamente para o próximo objetivo e se o temporizador expirar, a missão falhará."
 backwards = "Voltar"
+start_time = "Tempo de início"
+condition_end = "Condição de término"
 types = ["Espera", "Limite"]
 
 [actor]
