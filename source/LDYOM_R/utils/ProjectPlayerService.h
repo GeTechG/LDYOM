@@ -10,6 +10,7 @@ class Scene;
 class ProjectPlayerService {
 private:
 	bool projectRunning = false;
+	bool projectStopped = false;
 	std::optional<Scene*> currentScene;
 	std::optional<BaseObjective*> currentObjective_;
 	std::optional<Scene*> nextScene;

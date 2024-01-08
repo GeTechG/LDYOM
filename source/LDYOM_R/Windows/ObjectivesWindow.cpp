@@ -35,6 +35,7 @@
 #include "../Data/RemoveTimerObjective.h"
 #include "../Data/RemoveWeaponsObjective.h"
 #include "../Data/SaveObjective.h"
+#include "../Data/SetIncrementGlobalVariable.h"
 #include "../Data/StartMissionObjective.h"
 #include "../Data/TeleportPlayerObjective.h"
 #include "../Data/TeleportToVehiclePlayerObjective.h"
@@ -103,6 +104,10 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 				case 8:
 					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
 						fast_dynamic_cast<RemoveTimerObjective&>(*objective));
+					break;
+				case 9:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<SetIncrementGlobalVariable&>(*objective));
 					break;
 
 				default:
@@ -362,6 +367,12 @@ void Windows::ObjectivesWindow::drawListWindow() {
 			if (ImGui::MenuItem(Localization::getInstance().get("objective.remove_timer").c_str())) {
 				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
 					RemoveTimerObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.set_increment_global_variable").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
+					SetIncrementGlobalVariable>(nullptr);
 				this->selectElement(this->getListSize() - 1);
 			}
 
