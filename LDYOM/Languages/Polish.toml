@@ -30,11 +30,9 @@ must_survive = "Musisz przetrwać"
 edit_manually = "Edytuj ręcznie"
 radius = "Promień"
 color_marker = "Kolor markera"
-color_marker_enum = [ "Brak markera", "Czerwony", "Zielony", "Jasny niebieski", "Biały", "Żółty", "Niebieski",]
 text = "Tekst"
 time = "Czas (s)"
 type_marker = "Typ markera"
-type_marker_enum = [ "Kolorowy marker", "Marker ikony",]
 icon = "Ikona"
 play = "Odtwórz"
 spawn_before = "Urodzenie przed"
@@ -60,14 +58,10 @@ weather = "Pogoda"
 riot_mode = "Tryb zamieszek"
 wanted = "Poszukiwany"
 game_time = "Czas gry"
-weathers_types = [ "Bardzo słoneczna (LS)", "Słoneczna (LS)", "Bardzo słoneczna, zadymiona (LS)", "Słoneczna, zadymiona (LS)", "Pochmurna (LS)", "Słoneczna (SF)", "Bardzo słoneczna (SF)", "Pochmurna (SF)", "Deszczowa (SF)", "Mglista (SF)", "Słoneczna (LV)", "Bardzo słoneczna (LV)", "Pochmurna (LV)", "Bardzo słoneczna (CS)", "Słoneczna (CS)", "Pochmurna (CS)", "Deszczowa (CS)", "Bardzo słoneczna (Pustynia)", "Słoneczna (Pustynia)", "Burza piaskowa (Pustynia)", "Podwodna", "Dodatkowa 1", "Dodatkowa 2",]
 place = "Miejsce"
-places_in_car = [ "Miejsce kierowcy", "Miejsce pasażera", "Miejsce tylne lewe", "Miejsce tylne prawe",]
 move_mouth = "Poruszanie ustami"
-comparings = [ "Równa się", "Nie równa się", "Większa", "Większa lub równa", "Mniejsza", "Mniejsza lub równa",]
 condition = "Warunek"
 text_style = "Styl tekstu"
-text_styles = [ "Średnia", "Dół prawy", "Mniejsza średnia", "Mniejsza więcej", "Biała mniejsza średnia", "Niebieska górna",]
 fade = "Zanikanie"
 fade_in_time = "Czas pojawiania się"
 fade_out_time = "Czas zanikania"
@@ -85,7 +79,13 @@ false = "Fałsz"
 yes = "Tak"
 no = "Nie"
 wait_end = "Czekaj na koniec"
-compare_types = [ "Równe", "Nierówne", "Większe", "Większe lub równe", "Mniejsze", "Mniejsze lub równe",]
+color_marker_enum = ["Brak markera", "Czerwony", "Zielony", "Jasny niebieski", "Biały", "Żółty", "Niebieski"]
+type_marker_enum = ["Kolorowy marker", "Marker ikony"]
+weathers_types = ["Bardzo słoneczna (LS)", "Słoneczna (LS)", "Bardzo słoneczna, zadymiona (LS)", "Słoneczna, zadymiona (LS)", "Pochmurna (LS)", "Słoneczna (SF)", "Bardzo słoneczna (SF)", "Pochmurna (SF)", "Deszczowa (SF)", "Mglista (SF)", "Słoneczna (LV)", "Bardzo słoneczna (LV)", "Pochmurna (LV)", "Bardzo słoneczna (CS)", "Słoneczna (CS)", "Pochmurna (CS)", "Deszczowa (CS)", "Bardzo słoneczna (Pustynia)", "Słoneczna (Pustynia)", "Burza piaskowa (Pustynia)", "Podwodna", "Dodatkowa 1", "Dodatkowa 2"]
+places_in_car = ["Miejsce kierowcy", "Miejsce pasażera", "Miejsce tylne lewe", "Miejsce tylne prawe"]
+comparings = ["Równa się", "Nie równa się", "Większa", "Większa lub równa", "Mniejsza", "Mniejsza lub równa"]
+text_styles = ["Średnia", "Dół prawy", "Mniejsza średnia", "Mniejsza więcej", "Biała mniejsza średnia", "Niebieska górna"]
+compare_types = ["Równe", "Nierówne", "Większe", "Większe lub równe", "Mniejsze", "Mniejsze lub równe"]
 
 [objective]
 title = "Cel"
@@ -127,21 +127,20 @@ jump_to_objective = "Skocz do celu"
 set_global_variable = "Ustaw zmienną globalną"
 save = "Zapisz"
 nothing_params = "Ten cel nie ma parametrów"
+set_increment_global_variable = "Ustaw/zwiększ zmienną globalną"
 
 [objective_categories]
 world = "Świat"
 
 [checkpoint_objective]
 how_to_arrive = "Jak dotrzeć"
-how_to_arrive_enum = [ "W dowolny sposób", "Pieszo", "W dowolnym pojeździe", "Przez...",]
 type_sphere = "Rodzaj sfery"
 color_sphere = "Kolor sfery"
 comeBackText = "Wróć do pojazdu"
+how_to_arrive_enum = ["W dowolny sposób", "Pieszo", "W dowolnym pojeździe", "Przez..."]
 
 [cutscene_objective]
-attach_types = [ "Brak", "Do aktora", "Do pojazdu", "Do obiektu",]
 attach = "Dołącz"
-follow_types = [ "Brak", "Aktor", "Pojazd", "Obiekt",]
 follow = "Podążaj"
 asynchronous = "Asynchroniczne"
 widescreen = "Pełnoekranowe"
@@ -151,11 +150,13 @@ end_fade_in = "Pojaśnienie na końcu"
 fade_in_time = "Czas pojaśnienia"
 final_scene = "Scena końcowa"
 lock_player_control = "Blokuj kontrolę gracza"
-move_types = [ "Brak", "Liniowy", "Gładki",]
 move_type = "Typ ruchu"
+attach_types = ["Brak", "Do aktora", "Do pojazdu", "Do obiektu"]
+follow_types = ["Brak", "Aktor", "Pojazd", "Obiekt"]
+move_types = ["Brak", "Liniowy", "Gładki"]
 
 [damage_object_objective]
-types = [ "Dowolny", "Broń ...",]
+types = ["Dowolny", "Broń ..."]
 
 [teleport_player_objective]
 copy_clothes = "Skopiuj ubranie"
@@ -163,18 +164,18 @@ help_copy_clothes = "Kopiuje aktualne ubranie gracza. Aby zmienić ubranie, moż
 dress_up = "Przebierz się"
 
 [go_to_scene_objective]
-types = [ "Bezpośrednio", "Przez punkt kontrolny", "Nad złotówką",]
+types = ["Bezpośrednio", "Przez punkt kontrolny", "Nad złotówką"]
 
 [follow_path_actor_objective]
 move_type = "Typ ruchu"
-move_states = [ "Chodzić", "Biec", "Szybki bieg",]
 path_type = "Typ ścieżki"
-path_types = [ "Raz", "Pętla", "Ping-pong",]
 execute_time = "Czas wykonania"
+move_states = ["Chodzić", "Biec", "Szybki bieg"]
+path_types = ["Raz", "Pętla", "Ping-pong"]
 
 [follow_path_vehicle_objective]
 drive_type = "Typ jazdy"
-drive_types = [ "Dowolny", "Precyzyjny", "Wyścig",]
+drive_types = ["Dowolny", "Precyzyjny", "Wyścig"]
 
 [save_objective]
 show_confirm = "Pokaż wyskakujące okno potwierdzające"
@@ -200,9 +201,9 @@ preview = "Podgląd"
 help = "Y - Następna animacja\nN - Poprzednia animacja"
 
 [timer]
-types = [ "Czekaj", "Limit",]
 help_timer_types = "Czekaj - czekaj i kontynuuj do następnego celu po upływie timera.\nLimit - natychmiast przejdź do następnego celu, a jeśli timer wygaśnie, misja zostanie nieudana."
 backwards = "Wstecz"
+types = ["Czekaj", "Limit"]
 
 [actor]
 accuracy_shooting = "Celność strzałów"
@@ -224,32 +225,32 @@ primary_color = "Główny kolor"
 secondary_color = "Dodatkowy kolor"
 component = "Komponent"
 numberplate = "Tablica rejestracyjna"
-vehicle_unbreakable = [ "Odporne na pociski", "Ognioodporne", "Odporność na eksplozje", "Odporność na kolizje", "Odporność na ciosy", "Wrażliwość opon",]
 locked = "Zablokowane"
 edit_by_player_overlay = "Wyjdź z trybu gracza, aby zastosować zmiany."
+vehicle_unbreakable = ["Odporne na pociski", "Ognioodporne", "Odporność na eksplozje", "Odporność na kolizje", "Odporność na ciosy", "Wrażliwość opon"]
 
 [train]
 speed = "Prędkość"
 cruise_speed = "Prędkość podróżna"
 
 [particle]
-attach_type = [ "Brak", "Aktor", "Pojazd", "Obiekt",]
 attach_to = "Przymocuj do"
+attach_type = ["Brak", "Aktor", "Pojazd", "Obiekt"]
 
 [audio]
 warning = "Proszę zapisać projekt, bez tego funkcja audio nie będzie działać."
 audio3D = "Audio 3D"
-attach_type_3d = [ "Pozycja", "Aktor", "Pojazd", "Obiekt",]
 looped = "Pętla"
 desclaimer_3d_audio = "Plik audio musi być mono"
 volume = "Głośność"
+attach_type_3d = ["Pozycja", "Aktor", "Pojazd", "Obiekt"]
 
 [vehicle_selector]
 searchType = "Typ wyszukiwania"
-searchTypeEnum = [ "Nazwa", "ID",]
 filters = "Filtry"
-filtersEnum = [ "Samochód", "Rower", "Motorower", "Quad", "Śmigłowiec", "Samolot", "BMX", "Przyczepa", "Łódź",]
 icons_scale = "Skala ikon"
+searchTypeEnum = ["Nazwa", "ID"]
+filtersEnum = ["Samochód", "Rower", "Motorower", "Quad", "Śmigłowiec", "Samolot", "BMX", "Przyczepa", "Łódź"]
 
 [object]
 edit_by_camera = "Edytuj za pomocą kamery"
@@ -277,28 +278,28 @@ model_id = "ID modelu"
 
 [pickup]
 spawn_type = "Rodzaj pojawienia się"
-pickup_types = [ "Broń", "Zdrowie", "Pancerz", "Usuń poszukiwany", "Narkotyki", "Inne",]
-spawn_types_pickup = [ "Raz", "Co 30 sekund", "Co 6 minut",]
+pickup_types = ["Broń", "Zdrowie", "Pancerz", "Usuń poszukiwany", "Narkotyki", "Inne"]
+spawn_types_pickup = ["Raz", "Co 30 sekund", "Co 6 minut"]
 
 [pyrotechnics]
-types = [ "Pożar", "Eksplozja",]
 size_fire = "Rozmiar ognia"
 propagation_fire = "Rozprzestrzenianie ognia"
 type_explosion = "Rodzaj eksplozji"
-type_explosion_names = [ "Granat", "Molotow", "Rakieta", "Słaba rakieta", "Samochód", "Szybki samochód", "Łódź", "Samolot", "Mina", "Obiekt", "Ogień z czołgu", "Mały", "RC transport",]
+types = ["Pożar", "Eksplozja"]
+type_explosion_names = ["Granat", "Molotow", "Rakieta", "Słaba rakieta", "Samochód", "Szybki samochód", "Łódź", "Samolot", "Mina", "Obiekt", "Ogień z czołgu", "Mały", "RC transport"]
 
 [visual_effect]
-types = [ "Korony", "Projekcje",]
 effect_type = "Rodzaj efektu"
 flare = "Błyskawiczne"
+types = ["Korony", "Projekcje"]
 
 [checkpoint]
-types = [ "Sfera", "Wyścig",]
 type_sphere = "Typ sfery"
 color = "Kolor"
 pulse_period = "Okres pulsacji"
 pulse_fraction = "Ułamek pulsacji"
 rotate_rate = "Prędkość obrotu"
+types = ["Sfera", "Wyścig"]
 
 [info_overlay]
 list_window = "Kliknij prawym przyciskiem myszy - Zmień nazwę elementu"
@@ -395,7 +396,7 @@ title = "Ustawienia sceny"
 ped_car_traffic = "Ruch pieszych/samochodów"
 apply = "Zastosuj ustawienia sceny"
 group_relations = "Relacje grupy"
-relationship_types = [ "Szanunek", "Lubić", "Ignorować", "Nie lubić", "Nienawidzić",]
+relationship_types = ["Szanunek", "Lubić", "Ignorować", "Nie lubić", "Nienawidzić"]
 
 [node_editor]
 title = "Edytor węzłów"
@@ -954,14 +955,19 @@ o_284_wooden_foot_bridge = "Drewniany mostek dla pieszych"
 o_286_woozie_s_apartment = "Apartament Wooziego"
 
 [discord]
-activity_type = [ "W edytorze", "Gra",]
+activity_type = ["W edytorze", "Gra"]
 
 [global_variables]
 title = "Zmienne globalne"
 global_variable = "Zmienna globalna"
 new_variable = "Zmienna #"
-types = [ "Zmiennoprzecinkowa", "Całkowita", "Tekstowa", "Logiczna",]
-bool_values = [ "Fałsz", "Prawda",]
+types = ["Zmiennoprzecinkowa", "Całkowita", "Tekstowa", "Logiczna"]
+bool_values = ["Fałsz", "Prawda"]
 
 [jump_to_objective]
 else_objective = "Inaczej cel"
+
+[set_increment_global_variable]
+condition = "Warunek"
+is_increment = "Zwiększyć"
+conditions = ["Bez warunku", "Aktor martwy", "Gracz w pojeździe"]

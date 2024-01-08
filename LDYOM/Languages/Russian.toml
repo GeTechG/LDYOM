@@ -126,6 +126,7 @@ jump_to_objective = "Перейти к цели"
 set_global_variable = "Установить гл. переменную"
 save = "Сохранить"
 nothing_params = "У этой цели нет параметров"
+set_increment_global_variable = "Установить/увеличить гл. переменную"
 
 [objective_categories]
 world = "Мир"
@@ -481,6 +482,15 @@ bool_values = ["Ложь", "Истина"]
 
 [jump_to_objective]
 else_objective = "Иначе цель"
+
+[set_increment_global_variable]
+condition = "Условие"
+is_increment = "Прибавить"
+conditions = [
+  "Без условия",
+  "Актер мертв",
+  "Игрок в ТС"
+]
 
 [hotkey_editor]
 title = "Редактор горячих клавиш"
