@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "GlobalVariablesService.h"
 #include "SceneObjective.h"
 #include "../Windows/PopupSpriteBlipSelector.h"
 
@@ -14,6 +15,10 @@ private:
 	int blipSprite_ = 0;
 	int sceneId_ = NULL;
 	int startObjective_ = 0;
+	bool condition = false;
+	int conditionType = 0;
+	std::string varUuid{};
+	GlobalVariableView::Value varValue{GlobalVariableType::Float};
 
 	std::optional<int> editorBlip;
 	std::optional<int> projectBlip;
@@ -47,6 +52,10 @@ public:
 	int& getBlipColor();
 	int& getBlipType();
 	int& getBlipSprite();
+	bool& isCondition();
+	int& getConditionType();
+	std::string& getVarUuid();
+	GlobalVariableView::Value& getVarValue();
 };
 
 NLOHMANN_JSON_NAMESPACE_BEGIN
@@ -67,6 +76,10 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j["blipSprite"] = a.getBlipSprite();
 			j["sceneId"] = a.getSceneId();
 			j["startObjective"] = a.getStartObjective();
+			j["condition"] = a.isCondition();
+			j["conditionType"] = a.getConditionType();
+			j["varUuid"] = a.getVarUuid();
+			j["varValue"] = a.getVarValue();
 		}
 
 		static void from_json(const json &j, GoToSceneObjective &obj) {
@@ -83,6 +96,10 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j.at("blipSprite").get_to(obj.getBlipSprite());
 			j.at("sceneId").get_to(obj.getSceneId());
 			j.at("startObjective").get_to(obj.getStartObjective());
+			j.at("condition").get_to(obj.isCondition());
+			j.at("conditionType").get_to(obj.getConditionType());
+			j.at("varUuid").get_to(obj.getVarUuid());
+			j.at("varValue").get_to(obj.getVarValue());
 		}
 	};
 

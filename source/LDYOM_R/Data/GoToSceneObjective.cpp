@@ -6,6 +6,7 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
 #include "Settings.h"
@@ -29,6 +30,93 @@ void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &lis
 	float *position = nullptr;
 
 	switch (this->type_) {
+		case 0: {
+			utils::ToggleButton(local.get("general.condition").c_str(), &this->condition);
+
+			ImGui::BeginDisabled(!this->condition);
+			std::string previewVarName;
+			if (!this->varUuid.empty()) {
+				if (auto [result, var] = GlobalVariablesService::getInstance().get(this->varUuid); result == 0) {
+					previewVarName = var.name;
+				} else {
+					this->varUuid.clear();
+				}
+			}
+
+			IncorrectHighlight(this->varUuid.empty(), [&] {
+				if (ImGui::BeginCombo(local.get("global_variables.global_variable").c_str(), previewVarName.c_str())) {
+					auto &globalVariablesService = GlobalVariablesService::getInstance();
+					for (int i = 0; i < globalVariablesService.getSize(); ++i) {
+						auto [result, var] = globalVariablesService.get(i);
+						const bool isSelected = var.uuid == this->varUuid;
+						if (ImGui::Selectable(var.name.c_str(), isSelected)) {
+							this->varUuid = var.uuid;
+						}
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+
+					ImGui::EndCombo();
+				}
+			});
+
+			if (Settings::getInstance().get<bool>("main.autoBindRequireFields").value_or(true)) {
+				if (this->varUuid.empty()) {
+					if (auto [result, var] = GlobalVariablesService::getInstance().get(
+						GlobalVariablesService::getInstance().getSize() - 1); result == 0) {
+						this->varUuid = var.uuid;
+					}
+				}
+			}
+
+
+			if (this->varValue.getType() == GlobalVariableType::String ||
+				this->varValue.getType() == GlobalVariableType::Bool) {
+				ImGui::Dummy(ImVec2(
+					ImGui::CalcItemWidth() / 2 - ImGui::CalcTextSize("==").x / 2 + ImGui::GetStyle().ItemSpacing.x / 2,
+					0));
+				ImGui::SameLine();
+				ImGui::Text("==");
+			} else {
+				utils::Combo(local.get("##condition").c_str(), &this->conditionType,
+				             local.getArray("general.compare_types"));
+			}
+
+			if (!this->varUuid.empty()) {
+				if (auto [result, currentVar] = GlobalVariablesService::getInstance().get(this->varUuid); result == 0) {
+					if (this->varValue.getType() != currentVar.value.getType()) {
+						this->varValue.setType(currentVar.value.getType());
+					}
+					switch (this->varValue.getType()) {
+						case GlobalVariableType::Float: {
+							ImGui::InputFloat("##value", static_cast<float*>(this->varValue.value));
+							break;
+						}
+						case GlobalVariableType::Int: {
+							ImGui::InputInt("##value", static_cast<int*>(this->varValue.value), 0, 0);
+							break;
+						}
+						case GlobalVariableType::String: {
+							ImGui::InputText("##value", static_cast<std::string*>(this->varValue.value));
+							break;
+						}
+						case GlobalVariableType::Bool: {
+							const auto v = static_cast<bool*>(this->varValue.value);
+							const auto booleanStrings = local.getArray("global_variables.bool_values");
+							const std::string &label = *v ? booleanStrings[1] : booleanStrings[0];
+							ImGui::Checkbox(label.c_str(), v);
+							break;
+						}
+						default:
+							break;
+					}
+				}
+			}
+
+			ImGui::EndDisabled();
+			break;
+		}
 		case 1: {
 			const auto &checkpoints = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
 			                                                         getCheckpoints();
@@ -169,6 +257,46 @@ ktwait GoToSceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist
 
 	this->deleteProjectBlip();
 	switch (this->type_) {
+		case 0: {
+			if (this->condition) {
+				if (this->varUuid.empty()) {
+					setObjectiveError(result, *this, NotSelected, "The global variable is not selected.");
+					co_return;
+				}
+
+				auto isTrue = false;
+				if (auto [r, var] = GlobalVariablesService::getInstance().get(this->varUuid); r == 0) {
+					const auto variable = ProjectPlayerService::getInstance().getGlobalVariablesManager().
+					                                                          getGlobalVariable(varUuid);
+					switch (this->varValue.getType()) {
+						case GlobalVariableType::Float: {
+							isTrue = utils::compare<float>(variable, this->varValue,
+							                               static_cast<MathCondition>(this->conditionType));
+							break;
+						}
+						case GlobalVariableType::Int: {
+							isTrue = utils::compare<int>(variable, this->varValue,
+							                             static_cast<MathCondition>(this->conditionType));
+							break;
+						}
+						case GlobalVariableType::String: {
+							isTrue = utils::compare<std::string>(variable, this->varValue, Equal);
+							break;
+						}
+						case GlobalVariableType::Bool: {
+							isTrue = utils::compare<bool>(variable, this->varValue, Equal);
+							break;
+						}
+					}
+				}
+
+				if (!isTrue) {
+					co_return;
+				}
+			}
+
+			break;
+		}
 		case 1: {
 			const auto &checkpoints = scene->getCheckpoints();
 			const int indexCheckpoint = utils::indexByUuid(checkpoints, this->triggerUuid_);
@@ -324,3 +452,7 @@ boost::uuids::uuid& GoToSceneObjective::getTriggerUuid() { return triggerUuid_; 
 int& GoToSceneObjective::getBlipColor() { return blipColor_; }
 int& GoToSceneObjective::getBlipType() { return blipType_; }
 int& GoToSceneObjective::getBlipSprite() { return blipSprite_; }
+bool& GoToSceneObjective::isCondition() { return condition; }
+int& GoToSceneObjective::getConditionType() { return conditionType; }
+std::string& GoToSceneObjective::getVarUuid() { return varUuid; }
+GlobalVariableView::Value& GoToSceneObjective::getVarValue() { return varValue; }
