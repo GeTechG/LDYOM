@@ -973,3 +973,8 @@ else_objective = "Caso contrário, objetivo"
 condition = "Condição"
 is_increment = "Incrementar"
 conditions = ["Sem condição", "Ator morto", "Jogador no veículo"]
+
+[developer_dock]
+title = "Documento do Desenvolvedor"
+teleport_to_player = "Teleportar para o jogador"
+kill = "Eliminar"

@@ -413,6 +413,9 @@
     <Filter Include="Data\Objectives\World\SetIncrementGlobalVariable">
       <UniqueIdentifier>{7bdbc8b1-15fd-40e1-a207-2fc8ec49ccca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Windows\DeveloperWindow">
+      <UniqueIdentifier>{5e1d6fa2-9cb0-40c1-8975-90c1866332b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -971,6 +974,9 @@
     </ClCompile>
     <ClCompile Include="Data\SetIncrementGlobalVariable.cpp">
       <Filter>Data\Objectives\World\SetIncrementGlobalVariable</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\DeveloperWindow.cpp">
+      <Filter>Windows\DeveloperWindow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2447,6 +2453,9 @@
     </ClInclude>
     <ClInclude Include="Data\SetIncrementGlobalVariable.h">
       <Filter>Data\Objectives\World\SetIncrementGlobalVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\DeveloperWindow.h">
+      <Filter>Windows\DeveloperWindow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

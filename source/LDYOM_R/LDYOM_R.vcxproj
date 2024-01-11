@@ -318,6 +318,7 @@
     <ClCompile Include="Windows\AudioWindow.cpp" />
     <ClCompile Include="Windows\CheckpointsWindow.cpp" />
     <ClCompile Include="Windows\ConsoleWindow.cpp" />
+    <ClCompile Include="Windows\DeveloperWindow.cpp" />
     <ClCompile Include="Windows\FAQWindow.cpp" />
     <ClCompile Include="Windows\FastObjectSelector.cpp" />
     <ClCompile Include="Windows\GlobalVariablesWindow.cpp" />
@@ -810,6 +811,7 @@
     <ClInclude Include="Windows\AudioWindow.h" />
     <ClInclude Include="Windows\CheckpointsWindow.h" />
     <ClInclude Include="Windows\ConsoleWindow.h" />
+    <ClInclude Include="Windows\DeveloperWindow.h" />
     <ClInclude Include="Windows\FAQWindow.h" />
     <ClInclude Include="Windows\FastObjectSelector.h" />
     <ClInclude Include="Windows\GlobalVariablesWindow.h" />

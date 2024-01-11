@@ -512,6 +512,11 @@ hk_guizmoRotate = "Гизмо - Повернуть"
 hk_guizmoScale = "Гизмо - Масштабировать"
 hk_backWindow = "В прошлое меню"
 
+[developer_dock]
+title = "Док разработчика"
+teleport_to_player = "Телепорт к игроку"
+kill = "Убить"
+
 [discord]
 activity_type = [ "В редакторе", "Играет",]
 

@@ -11,6 +11,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include "CFireManager.h"
+#include "DeveloperWindow.h"
 #include "DiscordService.h"
 #include "imgui_notify.h"
 #include "LuaEngine.h"
@@ -207,6 +208,15 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	this->globalVariablesManager.initVariables();
 	this->projectRunning = true;
 
+	Tasker::getInstance().addTask("developerWindow", []() -> ktwait {
+		while (true) {
+			if (Command<0x0ADC>("LDDD")) {
+				Windows::WindowsRenderService::getInstance().toggleWindow<Windows::DeveloperWindow>(true);
+			}
+			co_await 1;
+		}
+	});
+
 	const auto projectName = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name;
 	DiscordService::getInstance().updateActivity(projectName, DiscordActivityType::PLAYING);
 
@@ -255,6 +265,8 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 			}
 		}
 
+		Windows::WindowsRenderService::getInstance().toggleWindow<Windows::DeveloperWindow>(false);
+		Tasker::getInstance().getInstance().removeTask("developerWindow");
 		Tasker::getInstance().getInstance().removeTask("sceneProcces");
 
 		scene->unloadProjectScene();

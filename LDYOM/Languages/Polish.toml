@@ -973,3 +973,8 @@ else_objective = "Inaczej cel"
 condition = "Warunek"
 is_increment = "Zwiększyć"
 conditions = ["Bez warunku", "Aktor martwy", "Gracz w pojeździe"]
+
+[developer_dock]
+title = "Dokumentacja dewelopera"
+teleport_to_player = "Teleportuj do gracza"
+kill = "Zabić"

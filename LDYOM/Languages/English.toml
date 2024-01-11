@@ -972,3 +972,8 @@ else_objective = "Otherwise Objective"
 condition = "Condition"
 is_increment = "Increment"
 conditions = ["No condition", "Actor is dead", "Player in vehicle"]
+
+[developer_dock]
+title = "Developer's Dock"
+teleport_to_player = "Teleport to Player"
+kill = "Terminate"
