@@ -7,7 +7,6 @@
 #include <extensions/ScriptCommands.h>
 
 #include "CCoronas.h"
-#include "LuaEngine.h"
 #include "ProjectPlayerService.h"
 #include "Scene.h"
 #include "utils.h"

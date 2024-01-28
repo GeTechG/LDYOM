@@ -5,7 +5,6 @@
 #include <boost/uuid/random_generator.hpp>
 #include <extensions/ScriptCommands.h>
 
-#include "LuaEngine.h"
 #include "ProjectPlayerService.h"
 #include "Scene.h"
 #include "strUtils.h"

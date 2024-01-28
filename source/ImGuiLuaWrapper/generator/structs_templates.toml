@@ -27,7 +27,8 @@ function_declaration_with_pointers = """[]({input_args}) {{
 call_function_result = "auto result = {full_function_name}({input_args_with_pointers});"
 call_function = "{full_function_name}({input_args_with_pointers});"
 function_input_arg = "{type} {input_name}"
-function_pointers_declaration = "auto {pointer_name} = std::make_unique<{type}>({input_value});"
+function_pointers_pointer_declaration = "auto {pointer_name} = std::make_unique<{type}>({input_value});"
+function_pointers_declaration = "auto {pointer_name} = {var_name}.is<{type}>() ? std::make_unique<{type}>() : std::make_unique<{type}>({var_name}.as<{type}>());"
 constructor_declaration = """[]{input_args} {{
             auto result = {full_function_name}{call_args};
             return std::shared_ptr<{struct_name}>(result, {deleter});
@@ -45,7 +46,7 @@ imgui_file_declaration = """
 #include <cimgui.h>
 #include <sol.hpp>
 void bindImGui(sol::state &state) {{
-    auto classImGui = state.create_table("ImGui");
+    auto classImGui = state["ImGui"].get_or_create<sol::table>();
     {function_declarations}
 }}
 """
@@ -85,21 +86,18 @@ struct_bind = "bind{struct_name}(state);"
 [lua]
 struct_record = """
 ---@class {struct_name}
+{fields}
 {struct_name} = {{
-    {fields},
     {functions}
 }}
 """
-struct_record_item = """---@type {type}
-    {name} = nil"""
+struct_field_item = "---@field {name} {type}"
 function_declaration_void = """
----{info}
-    {params}
+---{info}{params}
     {name} = function ({inputs}) end"""
 function_parameter = "---@param {name} {type}"
 function_declaration_return = """
----{info}
-    {params}
+---{info}{params}
     ---@return {returns}
     {name} = function ({inputs}) end"""
 im_vector_record = """
@@ -117,6 +115,27 @@ imgui_record = """
 ImGui = {{
     {functions}
 }}
+"""
+custom_declaration = """
+---@param text string
+---@param endText userdata | nil
+ImGui.TextUnformatted = function(text, endText) end
+
+---@param label string
+---@param str string
+---@param flags integer
+---@param callback function
+---@param userData userdata
+---@return boolean, string
+ImGui.InputText = function(label, str, flags, callback, userData) end
+
+---CalcTextSize(ImVec2 *pOut, const char* text,const char* text_end=((void*)0),bool hide_text_after_double_hash=false,float wrap_width=-1.0f)
+---@param pOut ImVec2
+---@param text string
+---@param endText string | nil
+---@param hideTextAfterDoubleHash boolean
+---@param wrapWidth number
+ImGui.CalcTextSize = function(pOut, text, endText, hideTextAfterDoubleHash, wrapWidth) end
 """
 
 [teal]

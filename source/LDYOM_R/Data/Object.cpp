@@ -7,7 +7,6 @@
 #include <boost/uuid/random_generator.hpp>
 #include <extensions/ScriptCommands.h>
 #include <extensions/scripting/ScriptCommandNames.h>
-#include "LuaEngine.h"
 #include "ModelsService.h"
 #include "ProjectPlayerService.h"
 #include "Scene.h"

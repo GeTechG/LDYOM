@@ -8,6 +8,9 @@
     <Filter Include="Source Files\generated">
       <UniqueIdentifier>{8077127a-213c-4852-858b-503e638d1329}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\custom">
+      <UniqueIdentifier>{e5f83f13-bbea-41bb-bc4f-3676fbd0efb2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImGuiLuaWrapper.cpp">
@@ -35,6 +38,9 @@
       <Filter>Source Files\generated</Filter>
     </ClCompile>
     <ClCompile Include="generator\output\cpp\enums\ImGuiButtonFlagsPrivate.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiChildFlags.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
     <ClCompile Include="generator\output\cpp\enums\ImGuiCol.cpp">
@@ -109,6 +115,9 @@
     <ClCompile Include="generator\output\cpp\enums\ImGuiKey.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiLayoutItemType.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
     <ClCompile Include="generator\output\cpp\enums\ImGuiLayoutType.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
@@ -128,9 +137,6 @@
       <Filter>Source Files\generated</Filter>
     </ClCompile>
     <ClCompile Include="generator\output\cpp\enums\ImGuiNavHighlightFlags.cpp">
-      <Filter>Source Files\generated</Filter>
-    </ClCompile>
-    <ClCompile Include="generator\output\cpp\enums\ImGuiNavInput.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
     <ClCompile Include="generator\output\cpp\enums\ImGuiNavLayer.cpp">
@@ -217,6 +223,9 @@
     <ClCompile Include="generator\output\cpp\enums\ImGuiTreeNodeFlagsPrivate.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTypingSelectFlags.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
     <ClCompile Include="generator\output\cpp\enums\ImGuiViewportFlags.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
@@ -227,9 +236,6 @@
       <Filter>Source Files\generated</Filter>
     </ClCompile>
     <ClCompile Include="generator\output\cpp\structs\ImBitVector.cpp">
-      <Filter>Source Files\generated</Filter>
-    </ClCompile>
-    <ClCompile Include="generator\output\cpp\structs\ImColor.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
     <ClCompile Include="generator\output\cpp\structs\ImDrawChannel.cpp">
@@ -304,7 +310,16 @@
     <ClCompile Include="generator\output\cpp\structs\ImGuiDataVarInfo.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiDebugAllocEntry.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiDebugAllocInfo.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
     <ClCompile Include="generator\output\cpp\structs\ImGuiGroupData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiIDStackTool.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
     <ClCompile Include="generator\output\cpp\structs\ImGuiInputEvent.cpp">
@@ -353,6 +368,12 @@
       <Filter>Source Files\generated</Filter>
     </ClCompile>
     <ClCompile Include="generator\output\cpp\structs\ImGuiLastItemData.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiLayout.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiLayoutItem.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
     <ClCompile Include="generator\output\cpp\structs\ImGuiListClipper.cpp">
@@ -421,9 +442,6 @@
     <ClCompile Include="generator\output\cpp\structs\ImGuiStackSizes.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
-    <ClCompile Include="generator\output\cpp\structs\ImGuiStackTool.cpp">
-      <Filter>Source Files\generated</Filter>
-    </ClCompile>
     <ClCompile Include="generator\output\cpp\structs\ImGuiStorage.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
@@ -481,6 +499,12 @@
     <ClCompile Include="generator\output\cpp\structs\ImGuiTextRange.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTypingSelectRequest.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTypingSelectState.cpp">
+      <Filter>Source Files\generated</Filter>
+    </ClCompile>
     <ClCompile Include="generator\output\cpp\structs\ImGuiViewport.cpp">
       <Filter>Source Files\generated</Filter>
     </ClCompile>
@@ -531,6 +555,15 @@
     </ClCompile>
     <ClCompile Include="generator\output\cpp\structs.cpp">
       <Filter>Source Files\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="customImGuiWrapper.cpp">
+      <Filter>Source Files\custom</Filter>
+    </ClCompile>
+    <ClCompile Include="customImColor.cpp">
+      <Filter>Source Files\custom</Filter>
+    </ClCompile>
+    <ClCompile Include="customCimguiWrapper.cpp">
+      <Filter>Source Files\custom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

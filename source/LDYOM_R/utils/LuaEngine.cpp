@@ -5,7 +5,9 @@
 #include "FileWatcher.h"
 #include "LuaLogger.h"
 #include "LuaWrapper.h"
+#include "LuaWrapperWindow.h"
 #include "Settings.h"
+#include "WindowsRenderService.h"
 #include "easylogging/easylogging++.h"
 #include "fmt/core.h"
 #include "Localization/Localization.h"
@@ -21,9 +23,26 @@ void LuaEngine::addScriptDirToLuaPaths(std::string &luaPaths, const std::filesys
 	                                           luaPaths);
 }
 
+void LuaEngine::loadScripts(std::string luaPaths) {
+	const std::string scriptsPath = SCRIPT_PATH + "\\scripts";
+	for (const auto &entry : std::filesystem::directory_iterator(scriptsPath)) {
+		if (entry.is_directory()) {
+			if (exists(entry.path() / "init.lua")) {
+				auto initFile = entry.path() / "init.lua";
+				addScriptDirToLuaPaths(luaPaths, entry);
+				luaState_.safe_script_file(initFile.string(), errorHandlerCallback);
+			} else if (exists(entry.path() / "init.tl")) {
+				addScriptDirToLuaPaths(luaPaths, entry);
+				luaState_.safe_script("require(\"init\")", errorHandlerCallback);
+			}
+		}
+	}
+}
+
 void LuaEngine::resetState() {
 	Localization::getInstance().clearScriptsLocalization();
-	luaState_ = sol::state();
+	this->onReset();
+	this->luaState_ = sol::state();
 
 	luaState_.open_libraries(sol::lib::base, sol::lib::string, sol::lib::os, sol::lib::io, sol::lib::package,
 	                         sol::lib::math, sol::lib::table, sol::lib::jit, sol::lib::ffi, sol::lib::coroutine);
@@ -45,19 +64,7 @@ void LuaEngine::resetState() {
 	//bind wrapper
 	LuaWrapper::wrap(this->luaState_);
 
-	const std::string scriptsPath = SCRIPT_PATH + "\\scripts";
-	for (const auto &entry : std::filesystem::directory_iterator(scriptsPath)) {
-		if (entry.is_directory()) {
-			if (exists(entry.path() / "init.lua")) {
-				auto initFile = entry.path() / "init.lua";
-				addScriptDirToLuaPaths(luaPaths, entry);
-				luaState_.safe_script_file(initFile.string(), errorHandlerCallback);
-			} else if (exists(entry.path() / "init.tl")) {
-				addScriptDirToLuaPaths(luaPaths, entry);
-				luaState_.safe_script("require(\"init\")", errorHandlerCallback);
-			}
-		}
-	}
+	loadScripts(luaPaths);
 }
 
 void LuaEngine::Init() {
@@ -75,6 +82,13 @@ void LuaEngine::Init() {
 
 sol::state& LuaEngine::getLuaState() {
 	return luaState_;
+}
+
+boost::signals2::signal<void()>& LuaEngine::getOnReset() { return onReset; }
+
+void LuaEngine::shutdown() {
+	this->onReset();
+	this->luaState_ = sol::state();
 }
 
 sol::protected_function_result LuaEngine::errorHandlerCallback(sol::this_state, sol::protected_function_result pfr) {

@@ -15,7 +15,6 @@
 #include "CCamera.h"
 #include "HotKeyService.h"
 #include "KeyCodes.h"
-#include "LuaEngine.h"
 #include "MathUtils.h"
 #include "ModelsService.h"
 #include "plugin.h"

@@ -1,0 +1,4 @@
+---@class LDNodeEditorLink
+---@field id number
+---@field inputId number
+---@field outputId number

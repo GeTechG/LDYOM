@@ -8,7 +8,6 @@
 
 #include "FileWatcher.h"
 #include "imgui_notify.h"
-#include "LuaEngine.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "WindowsRenderService.h"

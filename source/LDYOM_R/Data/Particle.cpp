@@ -7,7 +7,6 @@
 #include "components.h"
 #include "CTheScripts.h"
 #include "FxManager_c.h"
-#include "LuaEngine.h"
 #include "ModelsService.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"

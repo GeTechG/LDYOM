@@ -101,7 +101,6 @@ public:
 			Logger::getInstance().Init();
 			Settings::getInstance().Init();
 			Localization::getInstance().Init();
-			LuaEngine::getInstance().Init();
 			HotKeyService::getInstance().Init();
 			ProjectsService::getInstance().Init();
 			ModelsService::getInstance().Init();
@@ -117,9 +116,9 @@ public:
 			ImGuiHook::Hook();
 			Windows::WindowsRenderService::getInstance().Init();
 
-			Logger::getInstance().log("LDYOMR initialized.");
+			LuaEngine::getInstance().Init();
 
-			defaultWindow = Windows::WindowsRenderService::getInstance().getWindow<Windows::MainMenu>();
+			Logger::getInstance().log("LDYOMR initialized.");
 
 			ProjectsService::getInstance().onUpdate().connect(Audio::loadAudioFilesList);
 
@@ -207,6 +206,7 @@ public:
 		Events::shutdownPoolsEvent.before += [] {
 			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->unloadProjectScene();
 			ProjectsService::getInstance().getCurrentProject().getCurrentScene()->unloadEditorScene();
+			LuaEngine::getInstance().shutdown();
 		};
 	}
 } ldyomr;

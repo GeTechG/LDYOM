@@ -1,5 +1,6 @@
 #include <fmt/core.h>
 #include "fa.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "imgui_stdlib.h"
 
@@ -14,6 +15,7 @@
 #include "GlobalVariablesWindow.h"
 #include "InfoWindow.h"
 #include "LuaEngine.h"
+#include "LuaWrapperWindow.h"
 #include "ObjectivesWindow.h"
 #include "ProjectInfoWindow.h"
 #include "ProjectPlayerService.h"
@@ -83,6 +85,12 @@ namespace Windows {
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_BOX, local.get("global_variables.title")).c_str(),
 			                  ImVec2(scaleFont * 200.0f, .0f))) {
 				WindowsRenderService::getInstance().replaceWindow<MainMenu, GlobalVariablesWindow>();
+			}
+
+			for (const auto &funcRender : LuaWrapperWindow::mainMenuRender | std::views::values) {
+				if (auto result = funcRender(); !result.valid()) {
+					LuaEngine::errorHandler(result);
+				}
 			}
 
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SAVE, local.get("general.save")).c_str(),
@@ -160,13 +168,6 @@ namespace Windows {
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SCROLL, local.get("console_window.title")).c_str(),
 			                  ImVec2(scaleFont * 200.0f, .0f))) {
 				WindowsRenderService::getInstance().replaceWindow<MainMenu, ConsoleWindow>();
-			}
-
-			if (const auto renderFunction = LuaEngine::getInstance().getLuaState().get<sol::function>("render");
-				renderFunction.valid()) {
-				if (const auto result = renderFunction(); !result.valid()) {
-					LuaEngine::errorHandler(result);
-				}
 			}
 
 			static bool openNewProjectInfo = false;

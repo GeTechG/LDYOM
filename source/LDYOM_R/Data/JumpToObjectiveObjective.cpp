@@ -3,7 +3,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "imgui_stdlib.h"
-#include "LuaEngine.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
 #include "Settings.h"

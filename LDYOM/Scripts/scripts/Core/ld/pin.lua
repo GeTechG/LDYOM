@@ -1,0 +1,5 @@
+---@class LDNodeEditorPin
+---@field id number
+---@field node integer
+---@field type string
+---@field kind NodeEditorPinKind

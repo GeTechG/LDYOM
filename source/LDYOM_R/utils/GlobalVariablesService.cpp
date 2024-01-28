@@ -1,8 +1,4 @@
 ﻿#include "GlobalVariablesService.h"
-
-#include <ranges>
-
-#include "EditByPlayerService.h"
 #include "LuaEngine.h"
 
 void GlobalVariableView::Value::setType(const GlobalVariableType type) {
@@ -120,7 +116,7 @@ GlobalVariableView::Value::~Value() {
 }
 
 sol::table getGlobalVariablesTable() {
-	auto ld = LuaEngine::getInstance().getLuaState()["ld"].get_or_create<sol::table>();
+	auto ld = LuaEngine::getInstance().getLuaState()["ld"].get<sol::table>();
 	auto data = ld["data"].get_or_create<sol::table>();
 	return data["globalVariables"].get_or_create<sol::table>();
 }

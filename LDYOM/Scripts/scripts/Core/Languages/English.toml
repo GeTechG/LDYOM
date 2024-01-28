@@ -1,0 +1,8 @@
+[nodes.core.test_node]
+title = "Test node"
+inputs = [
+    "First",
+]
+outputs = [
+    "Second",
+]

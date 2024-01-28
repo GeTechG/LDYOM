@@ -6,7 +6,6 @@
 #include "imgui.h"
 #include "ProjectsService.h"
 
-#include "LuaEngine.h"
 #include "ProjectPlayerService.h"
 
 SaveObjective::SaveObjective(void *_new): BaseObjective(_new) {

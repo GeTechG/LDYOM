@@ -14,7 +14,6 @@
 #include "utils.h"
 
 #include "Events.h"
-#include "LuaEngine.h"
 #include "ProjectPlayerService.h"
 #include "Scene.h"
 #include "easylogging/easylogging++.h"

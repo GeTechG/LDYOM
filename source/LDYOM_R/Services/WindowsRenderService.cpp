@@ -1,4 +1,4 @@
-﻿#include "WindowsRenderService.h"
+#include "WindowsRenderService.h"
 
 #include <CMenuManager.h>
 #include <fmt/core.h>
@@ -18,6 +18,8 @@
 #include "imgui_notify.h"
 #include "InfoWindow.h"
 #include "Logger.h"
+#include "LuaEngine.h"
+#include "LuaWrapperWindow.h"
 #include "MainMenu.h"
 #include "NameEntitiesRender.h"
 #include "ObjectivesWindow.h"
@@ -40,6 +42,8 @@
 #include "VisualEffectsWindow.h"
 
 bool reloadTheme = false;
+
+extern std::optional<Windows::AbstractWindow*> defaultWindow;
 
 void loadTheme() {
 	if (!ImGui::StyleLoader::LoadFile(fmt::format("LDYOM/Themes/{}.toml",
@@ -97,6 +101,8 @@ void addWindows() {
 		std::make_unique<Windows::GlobalVariablesWindow>());
 	windows.emplace_back(
 		std::make_unique<Windows::DeveloperWindow>());
+	windows.emplace_back(
+		std::make_unique<Windows::LuaWrapperWindow>());
 	Windows::WindowsRenderService::getInstance().addRender("showEntitiesName", [] {
 		if (!ProjectPlayerService::getInstance().isProjectRunning()) {
 			if (Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false))
@@ -127,6 +133,12 @@ void Windows::WindowsRenderService::Init() {
 	};
 
 	addWindows();
+
+	defaultWindow = getWindow<MainMenu>();
+
+	LuaEngine::getInstance().getOnReset().connect([this] {
+		this->Reset();
+	});
 }
 
 void Windows::WindowsRenderService::render() {
@@ -167,9 +179,12 @@ void Windows::WindowsRenderService::Reset() {
 	this->renderList.clear();
 	this->renderWindows_ = true;
 	this->windows.clear();
+	this->commands = std::stack<std::unique_ptr<WindowsRenderCommand>>();
 	setMouseShown(false);
 
 	addWindows();
+
+	defaultWindow = getWindow<MainMenu>();
 }
 
 std::list<std::unique_ptr<Windows::AbstractWindow>>& Windows::WindowsRenderService::getWindows() {

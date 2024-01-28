@@ -280,6 +280,7 @@
     <ClCompile Include="thirdparty\kiero\minhook\src\trampoline.c" />
     <ClCompile Include="utils\additional_events.cpp" />
     <ClCompile Include="utils\AsyncWrapper.cpp" />
+    <ClCompile Include="utils\BlueprintNodeBuilder.cpp" />
     <ClCompile Include="utils\ConvertWrapper.cpp" />
     <ClCompile Include="utils\CounterService.cpp" />
     <ClCompile Include="utils\EditByPlayerService.cpp" />
@@ -291,7 +292,7 @@
     <ClCompile Include="utils\HotKeyService.cpp" />
     <ClCompile Include="utils\HttpRequester.cpp" />
     <ClCompile Include="utils\imgui-knobs.cpp" />
-    <ClCompile Include="utils\ImGuiCustomWrapper.cpp" />
+    <ClCompile Include="utils\ImGuiLdyomCustomWrapper.cpp" />
     <ClCompile Include="utils\ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="utils\indexUuidWrapper.cpp" />
     <ClCompile Include="utils\LocalizationWrapper.cpp" />
@@ -299,10 +300,18 @@
     <ClCompile Include="utils\Logger.cpp" />
     <ClCompile Include="utils\LuaEngine.cpp" />
     <ClCompile Include="utils\LuaLogger.cpp" />
+    <ClCompile Include="utils\LuaWindowWrapper.cpp" />
     <ClCompile Include="utils\LuaWrapper.cpp" />
     <ClCompile Include="utils\MathUtils.cpp" />
     <ClCompile Include="utils\memsafe.cpp" />
     <ClCompile Include="utils\ModelsService.cpp" />
+    <ClCompile Include="utils\NodeEditorWrapper.cpp" />
+    <ClCompile Include="utils\node_editor\blueprint\utilities\builders.cpp" />
+    <ClCompile Include="utils\node_editor\blueprint\utilities\drawing.cpp" />
+    <ClCompile Include="utils\node_editor\blueprint\utilities\widgets.cpp" />
+    <ClCompile Include="utils\node_editor\imgui_canvas.cpp" />
+    <ClCompile Include="utils\node_editor\imgui_node_editor.cpp" />
+    <ClCompile Include="utils\node_editor\imgui_node_editor_api.cpp" />
     <ClCompile Include="utils\OtherWrapper.cpp" />
     <ClCompile Include="utils\pch.cpp" />
     <ClCompile Include="utils\pluginSdkWrapper.cpp" />
@@ -323,6 +332,7 @@
     <ClCompile Include="Windows\FastObjectSelector.cpp" />
     <ClCompile Include="Windows\GlobalVariablesWindow.cpp" />
     <ClCompile Include="Windows\InfoWindow.cpp" />
+    <ClCompile Include="Windows\LuaWrapperWindow.cpp" />
     <ClCompile Include="Windows\ModelRenderer.cpp" />
     <ClCompile Include="Windows\ObjectivesWindow.cpp" />
     <ClCompile Include="Windows\ObjectSelectorPopup.cpp" />
@@ -798,6 +808,14 @@
     <ClInclude Include="utils\MathUtils.h" />
     <ClInclude Include="utils\memsafe.h" />
     <ClInclude Include="utils\ModelsService.h" />
+    <ClInclude Include="utils\node_editor\blueprint\utilities\builders.h" />
+    <ClInclude Include="utils\node_editor\blueprint\utilities\drawing.h" />
+    <ClInclude Include="utils\node_editor\blueprint\utilities\widgets.h" />
+    <ClInclude Include="utils\node_editor\imgui_bezier_math.h" />
+    <ClInclude Include="utils\node_editor\imgui_canvas.h" />
+    <ClInclude Include="utils\node_editor\imgui_extra_math.h" />
+    <ClInclude Include="utils\node_editor\imgui_node_editor.h" />
+    <ClInclude Include="utils\node_editor\imgui_node_editor_internal.h" />
     <ClInclude Include="utils\ProjectPlayerService.h" />
     <ClInclude Include="utils\ProjectsService.h" />
     <ClInclude Include="utils\Settings.h" />
@@ -816,6 +834,7 @@
     <ClInclude Include="Windows\FastObjectSelector.h" />
     <ClInclude Include="Windows\GlobalVariablesWindow.h" />
     <ClInclude Include="Windows\InfoWindow.h" />
+    <ClInclude Include="Windows\LuaWrapperWindow.h" />
     <ClInclude Include="Windows\ModelRenderer.h" />
     <ClInclude Include="Windows\ObjectivesWindow.h" />
     <ClInclude Include="Windows\ObjectSelectorPopup.h" />
@@ -989,6 +1008,9 @@
     <None Include="thirdparty\glm\glm\gtx\vector_angle.inl" />
     <None Include="thirdparty\glm\glm\gtx\vector_query.inl" />
     <None Include="thirdparty\glm\glm\gtx\wrap.inl" />
+    <None Include="utils\node_editor\imgui_bezier_math.inl" />
+    <None Include="utils\node_editor\imgui_extra_math.inl" />
+    <None Include="utils\node_editor\imgui_node_editor_internal.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,6 @@
 ---@meta
 
-Dir = {
+Dirs = {
     --- Returns a table of entries in the specified directory.
     ---@param luaPath string
     ---@return string[]

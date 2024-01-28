@@ -3,7 +3,8 @@
         "library": [
             "C:/Users/User/Documents/LDYOM/source/ImGuiLuaWrapper/generator/output/lua",
             "C:/Users/User/Documents/LDYOM/source/OpcodesLuaWrapper/generator/output/lua",
-            "C:/Games/GTA San Andreas/LDYOM/Scripts/annotations"
+            "C:/Games/GTA San Andreas/LDYOM/Scripts/annotations",
+            "C:/Games/GTA San Andreas/LDYOM/Scripts/libs"
     ]
     },
     "runtime.path": [

@@ -8,7 +8,6 @@
 #include <extensions/ScriptCommands.h>
 #include <extensions/scripting/ScriptCommandNames.h>
 
-#include "LuaEngine.h"
 #include "ModelsService.h"
 #include "ProjectsService.h"
 #include "utils.h"

@@ -6,6 +6,11 @@ import rtoml
 
 import prettier
 
+
+def skip_function(func):
+    return func in ["igTextUnformatted", "igInputText", "igCalcTextSize"]
+
+
 with open('structs_templates.toml', 'r') as f:
     structs_templates = rtoml.load(f)
 
@@ -104,19 +109,26 @@ def function_generator(func, struct_name, deleter=""):
                 if arg_ == "bool(*)(void* data,int idx,const char** out_text)":
                     arg_ = "bool(*items_getter)(void* data,int idx,const char** out_text)"
                     inp_name = ""
+                if arg_ == "const char*(*)(void* user_data,int idx)":
+                    arg_ = "const char*(*getter)(void* user_data,int idx)"
+                    inp_name = ""
+                if arg[0]:
+                    arg_ = "const sol::object&"
                 input_args.append(
                     structs_templates["cpp"]["function_input_arg"].format(type=arg_, input_name=inp_name))
             else:
                 pointers_declaration.append(
-                    structs_templates["cpp"]["function_pointers_declaration"].format(pointer_name=arg_name,
-                                                                                     type=arg[1][:-1],
-                                                                                     input_value="nullptr"))
+                    structs_templates["cpp"]["function_pointers_pointer_declaration"].format(pointer_name=arg_name,
+                                                                                             type=arg[1][:-1],
+                                                                                             input_value="nullptr"))
                 output_vars.append("std::move(" + arg_name + ")")
             if arg[0]:
                 name_ptr_ = arg_name + "Ptr"
-                input_args_with_pointers.append(name_ptr_ + ".get()")
+                input_args_with_pointers.append(
+                    arg_name + ".get_type() == sol::type::nil ? nullptr: " + name_ptr_ + ".get()");
                 pointers_declaration.append(
                     structs_templates["cpp"]["function_pointers_declaration"].format(pointer_name=name_ptr_,
+                                                                                     var_name=arg_name,
                                                                                      type=arg[1],
                                                                                      input_value=arg_name))
                 output_vars.append("*" + name_ptr_)
@@ -250,20 +262,20 @@ def function_generator_lua(func):
                 name="__gc",
                 info="destructor" + func["args"],
                 inputs=", ".join(inputs),
-                params="\n\t".join(params))
+                params="\n\t" + "\n\t".join(params) if len(params) > 0 else "")
         elif "ret" in func and func["ret"] == "void":
             declaration_function = structs_templates["lua"]["function_declaration_void"].format(
                 name=func["funcname"],
                 info=func["funcname"] + func["argsoriginal"],
                 inputs=", ".join(inputs),
-                params="\n\t".join(params))
+                params="\n\t" + "\n\t".join(params) if len(params) > 0 else "")
         else:
             if "constructor" in func:
                 declaration_function = structs_templates["lua"]["function_declaration_return"].format(
                     name="new",
                     info=func["funcname"] + func["argsoriginal"],
                     inputs=", ".join(inputs),
-                    params="\n\t".join(params),
+                    params="\n\t" + "\n\t".join(params) if len(params) > 0 else "",
                     returns=convert_type_lua(func["stname"]))
             else:
                 funcname_ = func["funcname"]
@@ -273,7 +285,7 @@ def function_generator_lua(func):
                     name=funcname_,
                     info=func["funcname"] + func["argsoriginal"],
                     inputs=", ".join(inputs),
-                    params="\n\t".join(params),
+                    params="\n\t" + "\n\t".join(params) if len(params) > 0 else "",
                     returns=convert_type_lua(func["ret"]))
         return declaration_function
     else:
@@ -293,9 +305,13 @@ def function_generator_lua(func):
 
                 if arg_ == "bool(*)(void* data,int idx,const char** out_text)":
                     arg_ = "userdata"
+                elif arg_ == "const char*(*)(void* user_data,int idx)":
+                    arg_ = "userdata"
                 else:
                     arg_ = convert_type_lua(arg_)
                 inputs.append(inp_name)
+                if arg[0]:
+                    arg_ += "|nil"
                 params.append(structs_templates["lua"]["function_parameter"].format(name=inp_name, type=arg_))
             else:
                 output_vars.append(convert_type_lua(arg[1]))
@@ -308,7 +324,7 @@ def function_generator_lua(func):
         declaration_function = (structs_templates["lua"]["function_declaration_return"]
                                 .format(name=func_funcname_, info=func["funcname"] + func["argsoriginal"],
                                         inputs=", ".join(inputs),
-                                        params=",\n\t".join(params),
+                                        params="\n\t" + ",\n\t".join(params) if len(params) > 0 else "",
                                         returns=", ".join(output_vars)))
         return declaration_function
 
@@ -365,6 +381,8 @@ def function_generator_teal(func):
                     arg_ = "{" + convert_type_teal(arg_[:-2]) + "}"
                 elif arg_ == "bool(*)(void* data,int idx,const char** out_text)":
                     arg_ = "any"
+                elif arg_ == "const char*(*)(void* user_data,int idx)":
+                    arg_ = "any"
                 else:
                     arg_ = convert_type_teal(arg_)
                 input_args.append(structs_templates["teal"]["struct_record_item"].format(inp_name, arg_))
@@ -382,6 +400,9 @@ def function_generator_teal(func):
         return declaration_function
 
 
+def cpp_skip_struct(struct_name):
+    return struct_name in ["ImColor"]
+
 def generate():
     Path(f"./output/cpp/structs").mkdir(parents=True, exist_ok=True)
 
@@ -393,6 +414,10 @@ def generate():
     im_vectors_types = set()
 
     for struct_name in struct_data:
+
+        if cpp_skip_struct(struct_name):
+            continue
+
         fields_list = []
         for field in struct_data[struct_name]:
             if field["name"] == "":
@@ -450,6 +475,9 @@ def generate():
                 if ("templated" in func) and func["templated"]:
                     return None
 
+                if "destructor" in func:
+                    continue
+
                 funcname_ = func["funcname"] if "destructor" not in func else "__gc"
                 function = function_generator(func, struct_name, name_deleter)
                 if "constructor" in func:
@@ -488,6 +516,10 @@ def generate():
 
     functions_declaration = []
     for k in definitions:
+
+        if skip_function(k):
+            continue
+
         if "namespace" in definitions[k][0]:
             if len(definitions[k]) == 1:
                 func = definitions[k][0]
@@ -533,6 +565,8 @@ def generate():
     list_extern = []
     list_bind = []
     for struct_name in struct_data:
+        if cpp_skip_struct(struct_name):
+            continue
         list_extern.append(structs_templates["cpp"]["extern_bind"].format(struct_name=struct_name))
         list_bind.append(structs_templates["cpp"]["struct_bind"].format(struct_name=struct_name))
 
@@ -558,9 +592,9 @@ def generate_lua():
                     field_name = union_field["name"] if union_field["size"] is None \
                         else union_field["name"].split("[")[0]
                     fields_list.append(
-                        structs_templates["lua"]["struct_record_item"].format(name=field_name,
-                                                                              type=convert_type_lua(
-                                                                                  union_field["type"])))
+                        structs_templates["lua"]["struct_field_item"].format(name=field_name,
+                                                                             type=convert_type_lua(
+                                                                                 union_field["type"])))
                     if union_field["type"].startswith("ImVector"):
                         im_vectors_types.add(union_field["type"].replace("*", ""))
                 continue
@@ -568,8 +602,8 @@ def generate_lua():
             # if field_name == "end":
             #     field_name = "[\"end\"]"
             fields_list.append(
-                structs_templates["lua"]["struct_record_item"].format(name=field_name,
-                                                                      type=convert_type_lua(field["type"])))
+                structs_templates["lua"]["struct_field_item"].format(name=field_name,
+                                                                     type=convert_type_lua(field["type"])))
             if field["type"].startswith("ImVector"):
                 im_vectors_types.add(field["type"].replace("*", ""))
 
@@ -583,6 +617,9 @@ def generate_lua():
                 if ("templated" in func) and func["templated"]:
                     return None
 
+                if "destructor" in func:
+                    continue
+
                 function = function_generator_lua(func)
                 functions_declaration.append(function)
             else:
@@ -592,7 +629,7 @@ def generate_lua():
                     functions_declaration.append(function_generator_lua(func))
 
         struct_file__format = structs_templates["lua"]["struct_record"].format(struct_name=struct_name,
-                                                                               fields=',\n\t'.join(fields_list),
+                                                                               fields='\n'.join(fields_list),
                                                                                functions=',\n\t'.join(
                                                                                    functions_declaration))
 
@@ -610,12 +647,19 @@ def generate_lua():
 
     functions_declaration = []
     for k in definitions:
+
+        if skip_function(k):
+            continue
+
         if "namespace" in definitions[k][0]:
             if len(definitions[k]) == 1:
                 func = definitions[k][0]
 
                 if ("templated" in func) and func["templated"]:
                     return None
+
+                if "destructor" in func:
+                    continue
 
                 function = function_generator_lua(func)
                 functions_declaration.append(function)
@@ -628,6 +672,8 @@ def generate_lua():
     file_declaration__format = structs_templates["lua"]["imgui_record"].format(
         functions=',\n\t'.join(functions_declaration))
     lua_declarations.append(file_declaration__format)
+
+    lua_declarations.append(structs_templates["lua"]["custom_declaration"])
 
     return lua_declarations
 
@@ -696,6 +742,10 @@ def generate_teal():
 
     functions_declaration = []
     for k in definitions:
+
+        if skip_function(k):
+            continue
+
         if "namespace" in definitions[k][0]:
             if len(definitions[k]) == 1:
                 func = definitions[k][0]

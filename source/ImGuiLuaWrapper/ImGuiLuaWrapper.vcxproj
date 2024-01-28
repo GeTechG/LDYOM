@@ -150,6 +150,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="customCimguiWrapper.cpp" />
+    <ClCompile Include="customImColor.cpp" />
+    <ClCompile Include="customImGuiWrapper.cpp" />
     <ClCompile Include="generator\output\cpp\enums.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImDrawFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImDrawListFlags.cpp" />
@@ -159,6 +162,7 @@
     <ClCompile Include="generator\output\cpp\enums\ImGuiBackendFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiButtonFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiButtonFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiChildFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiCol.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiColorEditFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiComboFlags.cpp" />
@@ -183,6 +187,7 @@
     <ClCompile Include="generator\output\cpp\enums\ImGuiItemFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiItemStatusFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiKey.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiLayoutItemType.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiLayoutType.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiLocKey.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiLogType.cpp" />
@@ -190,7 +195,6 @@
     <ClCompile Include="generator\output\cpp\enums\ImGuiMouseCursor.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiMouseSource.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiNavHighlightFlags.cpp" />
-    <ClCompile Include="generator\output\cpp\enums\ImGuiNavInput.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiNavLayer.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiNavMoveFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiNextItemDataFlags.cpp" />
@@ -219,11 +223,11 @@
     <ClCompile Include="generator\output\cpp\enums\ImGuiTooltipFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiTreeNodeFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiTreeNodeFlagsPrivate.cpp" />
+    <ClCompile Include="generator\output\cpp\enums\ImGuiTypingSelectFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiViewportFlags.cpp" />
     <ClCompile Include="generator\output\cpp\enums\ImGuiWindowFlags.cpp" />
     <ClCompile Include="generator\output\cpp\structs.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImBitVector.cpp" />
-    <ClCompile Include="generator\output\cpp\structs\ImColor.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImDrawChannel.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImDrawCmd.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImDrawCmdHeader.cpp" />
@@ -248,7 +252,10 @@
     <ClCompile Include="generator\output\cpp\structs\ImGuiDataTypeInfo.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiDataTypeTempStorage.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiDataVarInfo.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiDebugAllocEntry.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiDebugAllocInfo.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiGroupData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiIDStackTool.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiInputEvent.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventAppFocused.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiInputEventKey.cpp" />
@@ -265,6 +272,8 @@
     <ClCompile Include="generator\output\cpp\structs\ImGuiKeyRoutingData.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiKeyRoutingTable.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiLastItemData.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiLayout.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiLayoutItem.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiListClipper.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiListClipperData.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiListClipperRange.cpp" />
@@ -287,7 +296,6 @@
     <ClCompile Include="generator\output\cpp\structs\ImGuiSizeCallbackData.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiStackLevelInfo.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiStackSizes.cpp" />
-    <ClCompile Include="generator\output\cpp\structs\ImGuiStackTool.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiStorage.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiStoragePair.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiStyle.cpp" />
@@ -307,6 +315,8 @@
     <ClCompile Include="generator\output\cpp\structs\ImGuiTextFilter.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiTextIndex.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiTextRange.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTypingSelectRequest.cpp" />
+    <ClCompile Include="generator\output\cpp\structs\ImGuiTypingSelectState.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiViewport.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiViewportP.cpp" />
     <ClCompile Include="generator\output\cpp\structs\ImGuiWindow.cpp" />

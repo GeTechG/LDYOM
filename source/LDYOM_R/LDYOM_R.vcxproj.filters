@@ -416,6 +416,18 @@
     <Filter Include="Windows\DeveloperWindow">
       <UniqueIdentifier>{5e1d6fa2-9cb0-40c1-8975-90c1866332b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\node_editor">
+      <UniqueIdentifier>{c9946a1f-460d-4c1b-a0c5-59d7a16f315f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\node_editor\blueprint">
+      <UniqueIdentifier>{1a3d2bea-7ad9-4556-9fa0-60046059e6c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\Wrappers\NodeEditorWrapper">
+      <UniqueIdentifier>{c1407638-d471-4fec-899a-5aa49c97a3b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\LuaWrapperWindow">
+      <UniqueIdentifier>{72b753ac-5738-4d44-8d6d-d19429f00434}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -945,7 +957,7 @@
     <ClCompile Include="utils\FilesystemLuaWrapper.cpp">
       <Filter>Lua\Wrappers</Filter>
     </ClCompile>
-    <ClCompile Include="utils\ImGuiCustomWrapper.cpp">
+    <ClCompile Include="utils\ImGuiLdyomCustomWrapper.cpp">
       <Filter>Lua\Wrappers</Filter>
     </ClCompile>
     <ClCompile Include="utils\LocalizationWrapper.cpp">
@@ -977,6 +989,36 @@
     </ClCompile>
     <ClCompile Include="Windows\DeveloperWindow.cpp">
       <Filter>Windows\DeveloperWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\node_editor\imgui_canvas.cpp">
+      <Filter>Utils\node_editor</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\node_editor\imgui_node_editor.cpp">
+      <Filter>Utils\node_editor</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\node_editor\imgui_node_editor_api.cpp">
+      <Filter>Utils\node_editor</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\node_editor\blueprint\utilities\builders.cpp">
+      <Filter>Utils\node_editor\blueprint</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\node_editor\blueprint\utilities\drawing.cpp">
+      <Filter>Utils\node_editor\blueprint</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\node_editor\blueprint\utilities\widgets.cpp">
+      <Filter>Utils\node_editor\blueprint</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\NodeEditorWrapper.cpp">
+      <Filter>Lua\Wrappers\NodeEditorWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\LuaWrapperWindow.cpp">
+      <Filter>Windows\LuaWrapperWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\LuaWindowWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\BlueprintNodeBuilder.cpp">
+      <Filter>Lua\Wrappers\NodeEditorWrapper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2457,6 +2499,33 @@
     <ClInclude Include="Windows\DeveloperWindow.h">
       <Filter>Windows\DeveloperWindow</Filter>
     </ClInclude>
+    <ClInclude Include="utils\node_editor\imgui_bezier_math.h">
+      <Filter>Utils\node_editor</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\node_editor\imgui_canvas.h">
+      <Filter>Utils\node_editor</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\node_editor\imgui_extra_math.h">
+      <Filter>Utils\node_editor</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\node_editor\imgui_node_editor.h">
+      <Filter>Utils\node_editor</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\node_editor\imgui_node_editor_internal.h">
+      <Filter>Utils\node_editor</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\node_editor\blueprint\utilities\builders.h">
+      <Filter>Utils\node_editor\blueprint</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\node_editor\blueprint\utilities\drawing.h">
+      <Filter>Utils\node_editor\blueprint</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\node_editor\blueprint\utilities\widgets.h">
+      <Filter>Utils\node_editor\blueprint</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\LuaWrapperWindow.h">
+      <Filter>Windows\LuaWrapperWindow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="thirdparty\glm\glm\detail\func_common.inl">
@@ -2875,6 +2944,15 @@
     </None>
     <None Include="thirdparty\glm\glm\gtx\wrap.inl">
       <Filter>thirdparty\glm</Filter>
+    </None>
+    <None Include="utils\node_editor\imgui_bezier_math.inl">
+      <Filter>Utils\node_editor</Filter>
+    </None>
+    <None Include="utils\node_editor\imgui_extra_math.inl">
+      <Filter>Utils\node_editor</Filter>
+    </None>
+    <None Include="utils\node_editor\imgui_node_editor_internal.inl">
+      <Filter>Utils\node_editor</Filter>
     </None>
   </ItemGroup>
 </Project>

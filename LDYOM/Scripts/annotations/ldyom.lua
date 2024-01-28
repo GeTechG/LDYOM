@@ -1,5 +1,10 @@
 ---@meta
 
+---@module "libs.uuid"
+uuid = {}
+---@module "libs.json"
+json = {}
+
 -- encode a string to gxt format
 ---@param text string
 ---@return string
@@ -46,6 +51,41 @@ end
 ---@return string[]
 ld.loc.getArray = function(key)
 end
+
+ld.window = {}
+
+---@param drawFunction function
+ld.window.openLuaWindow = function(drawFunction)
+end
+
+ld.window.closeLuaWindow = function()
+end
+
+ld.window.closeMainMenu = function()
+end
+
+ld.window.openMainMenu = function()
+end
+
+---@param executeFunc function
+---@param undoFunc function
+ld.window.replaceWindow = function(executeFunc, undoFunc)
+end
+
+---@param name string
+---@param drawFunction function
+ld.window.setMainMenuRender = function(name, drawFunction)
+end
+
+---@param name string
+ld.window.removeMainMenuRender = function(name)
+end
+
+---@return boolean
+ld.window.getLuaWindowState = function () end
+
+---@param state boolean
+ld.window.setLuaWindowState = function (state) end
 
 time = {}
 
