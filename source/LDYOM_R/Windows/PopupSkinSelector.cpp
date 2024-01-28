@@ -193,7 +193,8 @@ void PopupSkinSelector::renderPopup(const std::function<void(int)> &onSelectCall
 				auto size = icon.second;
 				size.x *= scale;
 				size.y *= scale;
-				if (static_cast<float>(filled) + size.x < ImGui::GetWindowContentRegionWidth()) {
+				if (static_cast<float>(filled) + size.x < ImGui::GetWindowContentRegionMax().x -
+					ImGui::GetWindowContentRegionMin().x) {
 					if (i > 0)
 						ImGui::SameLine();
 				} else {

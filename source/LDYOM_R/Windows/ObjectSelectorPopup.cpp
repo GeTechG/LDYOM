@@ -381,7 +381,8 @@ void ObjectSelectorPopup::draw() {
 		ImGui::SameLine();
 		ImGui::BeginDisabled(this->selectorState == 2);
 		ImGui::SetNextItemWidth(
-			ImGui::GetWindowContentRegionWidth() - backWidth * 1.1f - searchWidth * 1.1f -
+			ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x - backWidth * 1.1f - searchWidth
+			* 1.1f -
 			ImGui::GetStyle().ItemSpacing.x * 3.f);
 		ImGui::InputTextWithHint("##searchInput", local.get("object_selector.search_hint").c_str(), this->searchText_,
 		                         sizeof this->searchText_);
@@ -394,7 +395,7 @@ void ObjectSelectorPopup::draw() {
 		ImGui::EndDisabled();
 
 		if (this->selectorState == 0) {
-			const float blockWidth = ImGui::GetWindowContentRegionWidth() / 3.0f;
+			const float blockWidth = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x / 3.0f;
 			drawTags(blockWidth, models);
 
 			ImGui::SameLine();
@@ -405,7 +406,9 @@ void ObjectSelectorPopup::draw() {
 
 			drawCategories(blockWidth);
 		} else {
-			if (ImGui::BeginChild("##objectModels", ImVec2(ImGui::GetWindowContentRegionWidth(), 0.f))) {
+			if (ImGui::BeginChild("##objectModels",
+			                      ImVec2(ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x,
+			                             0.f))) {
 				const float windowStartX = ImGui::GetCursorScreenPos().x;
 
 				const auto scaleFont = ImGui::GetFontSize() / 16.f;
@@ -452,7 +455,8 @@ void ObjectSelectorPopup::draw() {
 						const float nextButtonX2 = lastButtonX2 + ImGui::GetStyle().ItemSpacing.x + ImGui::GetFontSize()
 							* 8.f + ImGui::GetStyle().FramePadding.x * 2.0f;
 						// Expected position if next button was on same line
-						if (i > 0 && nextButtonX2 < windowStartX + ImGui::GetWindowContentRegionWidth())
+						if (i > 0 && nextButtonX2 < windowStartX + ImGui::GetWindowContentRegionMax().x -
+							ImGui::GetWindowContentRegionMin().x)
 							ImGui::SameLine();
 
 						const float size = ImGui::GetFontSize() * 8.f;

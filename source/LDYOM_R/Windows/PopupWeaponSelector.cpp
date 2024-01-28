@@ -57,7 +57,8 @@ void PopupWeaponSelector::renderPopup(const std::function<void(int)> &onSelectCa
 
 				const float width = static_cast<float>(icon->getWidth()) * scale;
 				const float height = static_cast<float>(icon->getHeight()) * scale;
-				if (filled + width + ImGui::GetStyle().ItemSpacing.x < ImGui::GetWindowContentRegionWidth()) {
+				if (filled + width + ImGui::GetStyle().ItemSpacing.x < ImGui::GetWindowContentRegionMax().x -
+					ImGui::GetWindowContentRegionMin().x) {
 					if (i > 0)
 						ImGui::SameLine();
 				} else {
