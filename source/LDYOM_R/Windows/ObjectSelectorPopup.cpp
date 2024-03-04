@@ -42,57 +42,61 @@ void ObjectSelectorPopup::drawTags(const float blockWidth, std::map<int, ObjectI
 	auto &local = Localization::getInstance();
 
 	ImGui::BeginGroup();
-	ImGui::Text(local.get("object_selector.tags").c_str());
-	if (ImGui::BeginChild("##ObjectsTags",
-	                      ImVec2(blockWidth, -(ImGui::GetFontSize() + 4.f + ImGui::GetStyle().ItemSpacing.y * 2.0f)))) {
-		const float maxBlockX = ImGui::GetCursorScreenPos().x + blockWidth - ImGui::GetStyle().ItemSpacing.x * 4.0f;
+	{
+		ImGui::Text(local.get("object_selector.tags").c_str());
+		if (ImGui::BeginChild("##ObjectsTags",
+		                      ImVec2(blockWidth,
+		                             -(ImGui::GetFontSize() + 4.f + ImGui::GetStyle().ItemSpacing.y * 2.0f)))) {
+			const float maxBlockX = ImGui::GetCursorScreenPos().x + blockWidth - ImGui::GetStyle().ItemSpacing.x * 4.0f;
 
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, ImGui::GetFontSize() / 4.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, ImGui::GetFontSize() / 4.0f);
 
-		const auto &objectModelTags = ModelsService::getInstance().getObjectModelTags();
-		for (int i = 0; i < static_cast<int>(objectModelTags.size()); ++i) {
-			const auto &objectModelTag = objectModelTags[i];
+			const auto &objectModelTags = ModelsService::getInstance().getObjectModelTags();
+			for (int i = 0; i < static_cast<int>(objectModelTags.size()); ++i) {
+				const auto &objectModelTag = objectModelTags[i];
 
-			auto str = fmt::format(" {} {}", ICON_FA_TAG, local.get(objectModelTag.name));
+				auto str = fmt::format(" {} {}", ICON_FA_TAG, local.get(objectModelTag.name));
 
-			const float lastButtonX2 = ImGui::GetItemRectMax().x;
-			const float nextButtonX2 = lastButtonX2 + ImGui::GetStyle().ItemSpacing.x + ImGui::CalcTextSize(str.c_str())
-				.x + ImGui::GetStyle().FramePadding.x * 2.0f; // Expected position if next button was on same line
-			if (i > 0 && nextButtonX2 < maxBlockX)
-				ImGui::SameLine();
+				const float lastButtonX2 = ImGui::GetItemRectMax().x;
+				const float nextButtonX2 = lastButtonX2 + ImGui::GetStyle().ItemSpacing.x + ImGui::CalcTextSize(
+						str.c_str())
+					.x + ImGui::GetStyle().FramePadding.x * 2.0f; // Expected position if next button was on same line
+				if (i > 0 && nextButtonX2 < maxBlockX)
+					ImGui::SameLine();
 
-			ImGui::PushID(objectModelTag.id);
-			if (ImGui::Button(str.c_str())) {
-				this->selectedTag = objectModelTag.id;
-				this->selectorState = 2;
-				this->page_ = 1;
-				updateModels(models);
+				ImGui::PushID(objectModelTag.id);
+				if (ImGui::Button(str.c_str())) {
+					this->selectedTag = objectModelTag.id;
+					this->selectorState = 2;
+					this->page_ = 1;
+					updateModels(models);
+				}
+				if (ImGui::BeginPopupContextItem()) {
+					if (ImGui::MenuItem(local.get("general.delete").c_str()))
+						ModelsService::getInstance().deleteTag(objectModelTag.id);
+					ImGui::EndPopup();
+				}
+				ImGui::PopID();
 			}
-			if (ImGui::BeginPopupContextItem()) {
-				if (ImGui::MenuItem(local.get("general.delete").c_str()))
-					ModelsService::getInstance().deleteTag(objectModelTag.id);
-				ImGui::EndPopup();
+			ImGui::PopStyleVar();
+
+			ImGui::EndChild();
+		}
+
+		ImGui::SetNextItemWidth(blockWidth - 25.0f - ImGui::GetStyle().ItemSpacing.x);
+		ImGui::InputTextWithHint("##newTagInput", local.get("object_selector.name_new_tag_hint").c_str(),
+		                         this->newTagName_,
+		                         sizeof this->newTagName_);
+		ImGui::SameLine();
+		ImGui::BeginDisabled(strlen(this->newTagName_) == 0);
+		const auto fontSize = ImGui::GetFontSize();
+		if (ImGui::Button(ICON_FA_PLUS, ImVec2(fontSize * 1.5, .0f))) {
+			if (const auto newTagID = ModelsService::getInstance().addNewTag(this->newTagName_); newTagID.has_value()) {
+				strcpy(this->newTagName_, "");
 			}
-			ImGui::PopID();
 		}
-		ImGui::PopStyleVar();
-
-		ImGui::EndChild();
+		ImGui::EndDisabled();
 	}
-
-	ImGui::SetNextItemWidth(blockWidth - 25.0f - ImGui::GetStyle().ItemSpacing.x);
-	ImGui::InputTextWithHint("##newTagInput", local.get("object_selector.name_new_tag_hint").c_str(), this->newTagName_,
-	                         sizeof this->newTagName_);
-	ImGui::SameLine();
-	ImGui::BeginDisabled(strlen(this->newTagName_) == 0);
-	const auto fontSize = ImGui::GetFontSize();
-	if (ImGui::Button(ICON_FA_PLUS, ImVec2(fontSize * 1.5, .0f))) {
-		if (const auto newTagID = ModelsService::getInstance().addNewTag(this->newTagName_); newTagID.has_value()) {
-			strcpy(this->newTagName_, "");
-		}
-	}
-	ImGui::EndDisabled();
-
 	ImGui::EndGroup();
 }
 
@@ -145,9 +149,8 @@ void ObjectSelectorPopup::drawCategories(const float blockWidth) {
 		const auto &objectModelCategories = ModelsService::getInstance().getObjectModelCategories();
 
 		drawNode(objectModelCategories, -1, false);
-
-		ImGui::EndChild();
 	}
+	ImGui::EndChild();
 	ImGui::EndGroup();
 }
 
@@ -156,7 +159,7 @@ void ObjectSelectorPopup::drawBehaviors(const float blockWidth) {
 
 	ImGui::BeginGroup();
 	ImGui::Text(local.get("object_selector.behaviors").c_str());
-	if (ImGui::BeginChild("##ObjectsBehaviour", ImVec2(blockWidth, 0.f))) {
+	if (ImGui::BeginChild("##ObjectsBehaviourChild", ImVec2(blockWidth, 0.f))) {
 		auto drawBehaviourRadio = [&local](const char *icon, const char *description, int *v) {
 			const float dummy = (25.0f - ImGui::CalcTextSize(icon).x) / 2.0f;
 			ImGui::PushID(icon);
@@ -182,9 +185,8 @@ void ObjectSelectorPopup::drawBehaviors(const float blockWidth) {
 		                   &this->objectBehaviourDestroyByHit);
 		drawBehaviourRadio(ICON_FA_CLOCK, local.get("object_selector.see_by_time").c_str(),
 		                   &this->objectBehaviourSeeByTime);
-
-		ImGui::EndChild();
 	}
+	ImGui::EndChild();
 	ImGui::EndGroup();
 }
 
@@ -374,28 +376,37 @@ void ObjectSelectorPopup::draw() {
 		const auto searchWidth = ImGui::CalcTextSize(local.get("object_selector.search").c_str()).x + 5;
 
 		ImGui::BeginDisabled(this->selectorState == 0);
-		if (ImGui::Button(local.get("general.back").c_str(), ImVec2(backWidth, 0))) {
-			this->selectorState = 0;
+		{
+			if (ImGui::Button(local.get("general.back").c_str(), ImVec2(backWidth, 0))) {
+				this->selectorState = 0;
+			}
 		}
 		ImGui::EndDisabled();
+
 		ImGui::SameLine();
+
 		ImGui::BeginDisabled(this->selectorState == 2);
-		ImGui::SetNextItemWidth(
-			ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x - backWidth * 1.1f - searchWidth
-			* 1.1f -
-			ImGui::GetStyle().ItemSpacing.x * 3.f);
-		ImGui::InputTextWithHint("##searchInput", local.get("object_selector.search_hint").c_str(), this->searchText_,
-		                         sizeof this->searchText_);
-		ImGui::SameLine();
-		if (ImGui::Button(local.get("object_selector.search").c_str(), ImVec2(searchWidth, .0f))) {
-			this->selectorState = 1;
-			this->page_ = 1;
-			updateModels(models);
+		{
+			ImGui::SetNextItemWidth(
+				ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x - backWidth * 1.1f -
+				searchWidth
+				* 1.1f -
+				ImGui::GetStyle().ItemSpacing.x * 3.f);
+			ImGui::InputTextWithHint("##searchInput", local.get("object_selector.search_hint").c_str(),
+			                         this->searchText_,
+			                         sizeof this->searchText_);
+			ImGui::SameLine();
+			if (ImGui::Button(local.get("object_selector.search").c_str(), ImVec2(searchWidth, .0f))) {
+				this->selectorState = 1;
+				this->page_ = 1;
+				updateModels(models);
+			}
 		}
 		ImGui::EndDisabled();
 
 		if (this->selectorState == 0) {
-			const float blockWidth = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x / 3.0f;
+			const float blockWidth = (ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x) /
+				3.0f;
 			drawTags(blockWidth, models);
 
 			ImGui::SameLine();

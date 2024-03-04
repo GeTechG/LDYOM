@@ -8,14 +8,15 @@
 void DiscordService::Init() {
 	try {
 		auto result = discord::Core::Create(1172608604138901515, DiscordCreateFlags_Default, &core);
+		CLOG(INFO, "LDYOM") << "Discord core created: " << static_cast<int>(result);
 	} catch (std::exception) {
-		CLOG(ERROR, "discord") << "Failed to instantiate discord core!";
+		CLOG(ERROR, "LDYOM") << "Failed to instantiate discord core!";
 		return;
 	}
 
 	core->SetLogHook(
 		discord::LogLevel::Debug, [](discord::LogLevel level, const char *message) {
-			CLOG(DEBUG, "discord") << message;
+			CLOG(DEBUG, "LDYOM") << message;
 		});
 }
 
@@ -31,11 +32,11 @@ void DiscordService::updateActivity(const std::string &projectName, DiscordActiv
 	activity.SetDetails(projectName.c_str());
 	activity.GetTimestamps().SetStart(time(nullptr));
 	activity.SetState(activities[static_cast<size_t>(type)].c_str());
-	activity.GetAssets().SetSmallImage("the");
+	activity.GetAssets().SetSmallImage("smallicon");
 	activity.GetAssets().SetLargeImage("ldyom");
 	activity.GetParty().SetPrivacy(discord::ActivityPartyPrivacy::Public);
 	activity.SetType(discord::ActivityType::Playing);
 	core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
-		CLOG(INFO, "discord") << "UpdateActivity: " << static_cast<int>(result);
+		CLOG(INFO, "LDYOM") << "UpdateActivity: " << static_cast<int>(result);
 	});
 }

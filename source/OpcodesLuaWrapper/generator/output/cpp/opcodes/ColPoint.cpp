@@ -9,9 +9,9 @@ void bindColPoint(sol::state &state) {
   // CLEO+
   table.set_function("getCollisionBetweenPoints",
                      [](const float &_fromX, const float &_fromY, const float &_fromZ, const float &_toX,
-                        const float &_toY, const float &_toZ, const int &_buildings, const int &_vehicles,
-                        const int &_peds, const int &_objects, const int &_dummies, const int &_seeThroughCheck,
-                        const int &_cameraIgnoreCheck, const int &_shotThroughCheck, const int &_entityToIgnore) {
+                        const float &_toY, const float &_toZ, const bool &_buildings, const bool &_vehicles,
+                        const bool &_peds, const bool &_objects, const bool &_dummies, const bool &_seeThroughCheck,
+                        const bool &_cameraIgnoreCheck, const bool &_shotThroughCheck, const int &_entityToIgnore) {
                        int address_;
                        float outX_;
                        float outY_;
@@ -40,7 +40,7 @@ void bindColPoint(sol::state &state) {
     Command<0x0D3E>(_self, &depth_);
     return std::make_tuple(depth_);
   });
-  table.set_function("getLighting", [](const int &_self, const int &_fromNight) {
+  table.set_function("getLighting", [](const int &_self, const bool &_fromNight) {
     int lighting_;
     Command<0x0E6B>(_self, _fromNight, &lighting_);
     return std::make_tuple(lighting_);

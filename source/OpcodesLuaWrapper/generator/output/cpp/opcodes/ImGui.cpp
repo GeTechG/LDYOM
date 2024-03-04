@@ -8,9 +8,9 @@ void bindImGui(sol::state &state) {
   auto table = state.create_table("ImGuiOp");
   // imgui
   table.set_function("end", []() { Command<0x2203>(); });
-  table.set_function("checkbox", [](const char *_label, const int &_isChecked) {
-    int state_;
-    Command<0x2215>(_label, _isChecked, &state_);
+  table.set_function("checkbox", [](const char *_label, const bool &_isChecked) {
+    bool state_;
+    Command<0x2215>(_label, _isChecked, (int *)&state_);
     return std::make_tuple(state_);
   });
   table.set_function("button", [](const char *_buttonName, const float &_width, const float &_height) {
@@ -63,7 +63,7 @@ void bindImGui(sol::state &state) {
     Command<0x2246>(&version_);
     return std::make_tuple(version_);
   });
-  table.set_function("setCursorVisible", [](const int &_show) { Command<0x2247>(_show); });
+  table.set_function("setCursorVisible", [](const bool &_show) { Command<0x2247>(_show); });
   table.set_function("getDisplaySize", []() {
     float width_;
     float height_;
@@ -100,11 +100,11 @@ void bindImGui(sol::state &state) {
   });
   table.set_function("beginMainMenuBar", [](const char *_uniqueId) { Command<0x2204>(_uniqueId); });
   table.set_function("endMainMenuBar", []() { Command<0x2205>(); });
-  table.set_function("menuItem", [](const char *_text, const int &_selected, const int &_enabled) {
+  table.set_function("menuItem", [](const char *_text, const bool &_selected, const bool &_enabled) {
     auto result = Command<0x2224>(_text, _selected, _enabled);
     return std::make_tuple(result);
   });
-  table.set_function("selectable", [](const char *_text, const int &_selected) {
+  table.set_function("selectable", [](const char *_text, const bool &_selected) {
     auto result = Command<0x2225>(_text, _selected);
     return std::make_tuple(result);
   });
@@ -174,7 +174,7 @@ void bindImGui(sol::state &state) {
     auto result = Command<0x2232>(_uniqueId);
     return std::make_tuple(result);
   });
-  table.set_function("getScalingSize", [](const char *_uniqueId, const int &_count, const int &_spacing) {
+  table.set_function("getScalingSize", [](const char *_uniqueId, const int &_count, const bool &_spacing) {
     float x_;
     float y_;
     Command<0x224D>(_uniqueId, _count, _spacing, &x_, &y_);
@@ -251,10 +251,10 @@ void bindImGui(sol::state &state) {
   table.set_function("setItemValueInt", [](const char *_id, const int &_val) { Command<0x2233>(_id, _val); });
   table.set_function("setItemValueFloat", [](const char *_id, const float &_val) { Command<0x2234>(_id, _val); });
   table.set_function("setItemValueText", [](const char *_id, const char *_val) { Command<0x2235>(_id, _val); });
-  table.set_function("begin", [](const char *_windowName, const int &_state, const int &_noTitleBar,
-                                 const int &_noResize, const int &_noMove, const int &_autoResize) {
-    int state_;
-    Command<0x2202>(_windowName, _state, _noTitleBar, _noResize, _noMove, _autoResize, &state_);
+  table.set_function("begin", [](const char *_windowName, const bool &_state, const bool &_noTitleBar,
+                                 const bool &_noResize, const bool &_noMove, const bool &_autoResize) {
+    bool state_;
+    Command<0x2202>(_windowName, _state, _noTitleBar, _noResize, _noMove, _autoResize, (int *)&state_);
     return std::make_tuple(state_);
   });
 }

@@ -38,5 +38,5 @@ void bindGroup(sol::state &state) {
     Command<0x092B>(_self, _slotId, &handle_);
     return std::make_tuple(handle_);
   });
-  table.set_function("setFollowStatus", [](const int &_self, const int &_state) { Command<0x0940>(_self, _state); });
+  table.set_function("setFollowStatus", [](const int &_self, const bool &_state) { Command<0x0940>(_self, _state); });
 }

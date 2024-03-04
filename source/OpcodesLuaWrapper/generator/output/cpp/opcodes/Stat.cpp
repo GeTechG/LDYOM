@@ -10,7 +10,7 @@ void bindStat(sol::state &state) {
   table.set_function("playerMadeProgress", [](const int &_progress) { Command<0x030C>(_progress); });
   table.set_function("setProgressTotal", [](const int &_maxProgress) { Command<0x030D>(_maxProgress); });
   table.set_function("registerMissionGiven", []() { Command<0x0317>(); });
-  table.set_function("registerMissionPassed", [](const int &_key) { Command<0x0318>(_key); });
+  table.set_function("registerMissionPassed", [](const char *_key) { Command<0x0318>(_key); });
   table.set_function("setTotalNumberOfMissions", [](const int &_numMissions) { Command<0x042C>(_numMissions); });
   table.set_function("registerFastestTime",
                      [](const int &_statId, const int &_value) { Command<0x042E>(_statId, _value); });
@@ -53,7 +53,7 @@ void bindStat(sol::state &state) {
     Command<0x08E2>(&percentage_);
     return std::make_tuple(percentage_);
   });
-  table.set_function("showUpdateStats", [](const int &_state) { Command<0x08F8>(_state); });
+  table.set_function("showUpdateStats", [](const bool &_state) { Command<0x08F8>(_state); });
   table.set_function("setMissionRespectTotal", [](const int &_totalRespect) { Command<0x0997>(_totalRespect); });
   table.set_function("awardPlayerMissionRespect", [](const int &_value) { Command<0x0998>(_value); });
   table.set_function("incrementIntNoMessage",

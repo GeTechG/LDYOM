@@ -121,6 +121,47 @@ ktwait ProjectPlayerService::changeScene(Scene *scene, ktcoro_tasklist &tasklist
 		}, this);
 	}
 
+	auto onStartScenesEventsTable = LuaEngine::getInstance()
+		.getLuaState()["ld"]["events"]["onStartScene"].get<sol::as_table_t<std::vector<sol::coroutine>>>();
+	for (auto &onStartScenesEvent : onStartScenesEventsTable) {
+		while (onStartScenesEvent) {
+			const auto result = onStartScenesEvent(scene, tasklist);
+			if (!result.valid()) {
+				const sol::error err = result;
+				CLOG(ERROR, "LDYOM") << "Error onStartScene event: " << err.what();
+				ImGui::InsertNotification({ImGuiToastType_Error, 5000, err.what()});
+				co_return;
+			}
+			if (result.get_type() == sol::type::number) {
+				co_await result.get<int>();
+			}
+		}
+	}
+
+	tasklist.add_task([](ktcoro_tasklist &tasklist) -> ktwait {
+		auto mainLoopsEventsTable = LuaEngine::getInstance()
+			.getLuaState()["ld"]["events"]["mainLoop"].get<sol::as_table_t<std::vector<sol::function>>>();
+		while (true) {
+			for (auto &mainLoopsEvent : mainLoopsEventsTable) {
+				sol::coroutine mainLoopsEventCoroutine = mainLoopsEvent;
+				while (mainLoopsEventCoroutine) {
+					const auto result = mainLoopsEventCoroutine(tasklist);
+					if (!result.valid()) {
+						const sol::error err = result;
+						CLOG(ERROR, "LDYOM") << "Error mainLoop: " << err.what();
+						ImGui::InsertNotification({ImGuiToastType_Error, 5000, err.what()});
+						co_return;
+					}
+					if (result.get_type() == sol::type::number) {
+						co_await result.get<int>();
+					}
+				}
+			}
+
+			co_await 1;
+		}
+	}, tasklist);
+
 	std::vector<unsigned int> lastTimeJumpToObjective(scene->getObjectives().size());
 
 	for (int o = startObjective; o < static_cast<int>(scene->getObjectives().size()); ++o) {
@@ -146,6 +187,23 @@ ktwait ProjectPlayerService::changeScene(Scene *scene, ktcoro_tasklist &tasklist
 				CLOG(ERROR, "LDYOM") << "Failed spawn entity on objective \"" << objective->getName() << "\", error: "
 					<< e.what();
 				ImGui::InsertNotification({ImGuiToastType_Error, 1000, "Error, see log"});
+			}
+		}
+
+		auto onStartObjectiveEventsTable = LuaEngine::getInstance()
+			.getLuaState()["ld"]["events"]["onStartObjective"].get<sol::as_table_t<std::vector<sol::coroutine>>>();
+		for (auto &onStartObjectivesEvent : onStartObjectiveEventsTable) {
+			while (onStartObjectivesEvent) {
+				const auto result = onStartObjectivesEvent(objective.get(), tasklist);
+				if (!result.valid()) {
+					const sol::error err = result;
+					CLOG(ERROR, "LDYOM") << "Error onStartObjective event: " << err.what();
+					ImGui::InsertNotification({ImGuiToastType_Error, 5000, err.what()});
+					co_return;
+				}
+				if (result.get_type() == sol::type::number) {
+					co_await result.get<int>();
+				}
 			}
 		}
 
@@ -206,6 +264,35 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	this->globalVariablesManager.initVariables();
 	this->projectRunning = true;
 
+	ktcoro_tasklist ts;
+	this->sceneTasklist = &ts;
+	Tasker::getInstance().getInstance().addTask("projectProcces", [](ktcoro_tasklist &ts) -> ktwait {
+		while (true) {
+			ts.process();
+			co_await 1;
+		}
+	}, ts);
+
+	auto isError = false;
+
+	auto onStartProjectsEventsTable = LuaEngine::getInstance()
+		.getLuaState()["ld"]["events"]["onStartProject"].get<sol::as_table_t<std::vector<sol::coroutine>>>();
+	for (auto &onStartProjectsEvent : onStartProjectsEventsTable) {
+		while (onStartProjectsEvent) {
+			const auto result = onStartProjectsEvent();
+			if (!result.valid()) {
+				const sol::error err = result;
+				CLOG(ERROR, "LDYOM") << "Error onStartProject event: " << err.what();
+				ImGui::InsertNotification({ImGuiToastType_Error, 5000, err.what()});
+				isError = true;
+			} else {
+				if (result.get_type() == sol::type::number) {
+					co_await result.get<int>();
+				}
+			}
+		}
+	}
+
 	Tasker::getInstance().addTask("developerWindow", []() -> ktwait {
 		while (true) {
 			if (Command<0x0ADC>("LDDD")) {
@@ -222,19 +309,12 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	setNextScene(startScene);
 	setNextObjective(startObjective);
 
-	while (this->nextScene.has_value()) {
+	while (this->nextScene.has_value() && !isError) {
 		const auto scene = this->nextScene.value();
 		this->nextScene = std::nullopt;
 		this->currentScene = scene;
 
-		ktcoro_tasklist ts;
-		this->sceneTasklist = &ts;
-		Tasker::getInstance().getInstance().addTask("sceneProcces", [](ktcoro_tasklist &ts) -> ktwait {
-			while (true) {
-				ts.process();
-				co_await 1;
-			}
-		}, ts);
+
 		const auto startObjectiveScene = this->nextObjective.value_or(0);
 		this->nextObjective = std::nullopt;
 		auto taskScene = changeScene(scene, ts, startObjectiveScene);
@@ -264,11 +344,12 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 		}
 
 		Windows::WindowsRenderService::getInstance().toggleWindow<Windows::DeveloperWindow>(false);
-		Tasker::getInstance().getInstance().removeTask("developerWindow");
-		Tasker::getInstance().getInstance().removeTask("sceneProcces");
 
 		scene->unloadProjectScene();
 	}
+
+	Tasker::getInstance().getInstance().removeTask("projectProcces");
+	Tasker::getInstance().getInstance().removeTask("developerWindow");
 
 	for (auto &fire : gFireManager.m_aFires) {
 		fire.Extinguish();

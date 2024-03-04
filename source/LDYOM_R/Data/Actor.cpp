@@ -44,7 +44,7 @@ void Actor::spawnProjectEntity() {
 
 	updateLocation();
 
-	auto scene = ProjectPlayerService::getInstance().getCurrentScene();
+
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (this->isShowHealthBarCounter()) {
@@ -54,17 +54,20 @@ void Actor::spawnProjectEntity() {
 			this->getHealthBarCounterText(), initialHealth);
 	}
 
-	tasklist->add_task([](Actor *actor) -> ktwait {
-		while (actor->getProjectPed().has_value()) {
-			if (actor->getProjectHealthBarCounter().has_value()) {
-				const auto counterHealth = static_cast<int>(actor->getProjectPed().value()->m_fHealth / max(
-					actor->getProjectPed().value()->m_fMaxHealth, 100) * 100.f);
-				CounterService::getInstance().updateCounter(actor->getProjectHealthBarCounter().value(), counterHealth);
-			}
+	if (tasklist) {
+		tasklist->add_task([](Actor *actor) -> ktwait {
+			while (actor->getProjectPed().has_value()) {
+				if (actor->getProjectHealthBarCounter().has_value()) {
+					const auto counterHealth = static_cast<int>(actor->getProjectPed().value()->m_fHealth / max(
+						actor->getProjectPed().value()->m_fMaxHealth, 100) * 100.f);
+					CounterService::getInstance().updateCounter(actor->getProjectHealthBarCounter().value(),
+					                                            counterHealth);
+				}
 
-			co_await 1;
-		}
-	}, this);
+				co_await 1;
+			}
+		}, this);
+	}
 }
 
 void Actor::deleteProjectEntity() {
@@ -73,9 +76,6 @@ void Actor::deleteProjectEntity() {
 			int pedRef = CPools::GetPedRef(this->projectPed_.value());
 			Command<Commands::DELETE_CHAR>(pedRef);
 			this->projectPed_ = std::nullopt;
-
-			auto scene = ProjectPlayerService::getInstance().getCurrentScene();
-			auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 			if (this->isShowHealthBarCounter()) {
 				CounterService::getInstance().clearCounter(this->projectHealthBarCounter.value());

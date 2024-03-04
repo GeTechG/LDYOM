@@ -1,5 +1,5 @@
 
---- Returns a shallow copy of the table.
+--- Removes all elements from the container that satisfy the predicate pred.
 ---@generic T
 ---@param t T[]
 ---@param pred fun(v: T): boolean
@@ -12,4 +12,20 @@ table.erase_if = function(t, pred)
             i = i + 1;
         end
     end
+end
+
+
+
+
+--- Checks if the table contains the value.
+---@generic T
+---@param t T[]
+---@param value T
+table.contains = function(t, value)
+    for _, v in ipairs(t) do
+        if v == value then
+            return true
+        end
+    end
+    return false
 end

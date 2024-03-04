@@ -34,21 +34,21 @@ void bindPad(sol::state &state) {
     return std::make_tuple(leftStickX_, leftStickY_, rightStickX_, rightStickY_);
   });
   table.set_function("setPlayerEnterCarButton",
-                     [](const int &_playerId, const int &_state) { Command<0x07CC>(_playerId, _state); });
+                     [](const int &_playerId, const bool &_state) { Command<0x07CC>(_playerId, _state); });
   table.set_function("setPlayerDuckButton",
-                     [](const int &_playerId, const int &_state) { Command<0x082A>(_playerId, _state); });
+                     [](const int &_playerId, const bool &_state) { Command<0x082A>(_playerId, _state); });
   table.set_function("setPlayerFireButton",
-                     [](const int &_playerId, const int &_state) { Command<0x0881>(_playerId, _state); });
+                     [](const int &_playerId, const bool &_state) { Command<0x0881>(_playerId, _state); });
   table.set_function("isSkipCutsceneButtonPressed", []() {
     auto result = Command<0x08D0>();
     return std::make_tuple(result);
   });
   table.set_function("setPlayerJumpButton",
-                     [](const int &_playerId, const int &_state) { Command<0x0901>(_playerId, _state); });
+                     [](const int &_playerId, const bool &_state) { Command<0x0901>(_playerId, _state); });
   table.set_function("setPlayerDisplayVitalStatsButton",
-                     [](const int &_playerId, const int &_state) { Command<0x0960>(_playerId, _state); });
+                     [](const int &_playerId, const bool &_state) { Command<0x0960>(_playerId, _state); });
   table.set_function("setPlayerCycleWeaponButton",
-                     [](const int &_playerId, const int &_state) { Command<0x0992>(_playerId, _state); });
+                     [](const int &_playerId, const bool &_state) { Command<0x0992>(_playerId, _state); });
 
   // CLEO
   table.set_function("isKeyPressed", [](const int &_keyCode) {
@@ -73,8 +73,8 @@ void bindPad(sol::state &state) {
     auto result = Command<0x0E67>(_pad);
     return std::make_tuple(result);
   });
-  table.set_function("setControl", [](const int &_pad, const int &_enabled) { Command<0x0E68>(_pad, _enabled); });
-  table.set_function("setMovement", [](const int &_pad, const int &_movement) { Command<0x0E69>(_pad, _movement); });
+  table.set_function("setControl", [](const int &_pad, const bool &_enabled) { Command<0x0E68>(_pad, _enabled); });
+  table.set_function("setMovement", [](const int &_pad, const bool &_movement) { Command<0x0E69>(_pad, _movement); });
   table.set_function("isAnyFireButtonPressed", [](const int &_pad) {
     auto result = Command<0x0E8D>(_pad);
     return std::make_tuple(result);

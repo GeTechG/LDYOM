@@ -15,7 +15,7 @@ void bindRenderObject(sol::state &state) {
                        return std::make_tuple(handle_);
                      });
   table.set_function("delete", [](const int &_self) { Command<0x0E2F>(_self); });
-  table.set_function("setVisible", [](const int &_self, const int &_visible) { Command<0x0E31>(_self, _visible); });
+  table.set_function("setVisible", [](const int &_self, const bool &_visible) { Command<0x0E31>(_self, _visible); });
   table.set_function("setPosition", [](const int &_self, const float &_x, const float &_y, const float &_z) {
     Command<0x0E35>(_self, _x, _y, _z);
   });

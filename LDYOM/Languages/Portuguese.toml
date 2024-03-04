@@ -79,6 +79,7 @@ false = "Falso"
 yes = "Sim"
 no = "Não"
 wait_end = "Aguardar o fim"
+ok = "OK"
 color_marker_enum = ["Sem Marcador", "Vermelho", "Verde", "Azul Claro", "Branco", "Amarelo", "Azul"]
 type_marker_enum = ["Marcador Colorido", "Ícone do Marcador"]
 weathers_types = ["Muito ensolarado (LS)", "Ensolarado (LS)", "Muito ensolarado, névoa (LS)", "Ensolarado, névoa (LS)", "Nublado (LS)", "Ensolarado (SF)", "Muito ensolarado (SF)", "Nublado (SF)", "Chuva (SF)", "Neblina (SF)", "Ensolarado (LV)", "Muito ensolarado (LV)", "Nublado (LV)", "Muito ensolarado (CS)", "Ensolarado (CS)", "Nublado (CS)", "Chuva (CS)", "Muito ensolarado (Des)", "Ensolarado (Des)", "Tempestade de areia (Des)", "Debaixo d'água", "Extra 1", "Extra 2"]
@@ -978,3 +979,7 @@ conditions = ["Sem condição", "Ator morto", "Jogador no veículo"]
 title = "Documento do Desenvolvedor"
 teleport_to_player = "Teleportar para o jogador"
 kill = "Eliminar"
+
+[scripts]
+title = "Scripts"
+save_info = "Para aplicar as alterações, reinicie o jogo"

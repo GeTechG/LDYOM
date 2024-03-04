@@ -15,8 +15,8 @@ void bindRc(sol::state &state) {
     Command<0x0484>(_player, &car_);
     return std::make_tuple(car_);
   });
-  table.set_function("setEnableDetonate", [](const int &_state) { Command<0x048A>(_state); });
-  table.set_function("setEnableDetonateOnContact", [](const int &_state) { Command<0x04D6>(_state); });
+  table.set_function("setEnableDetonate", [](const bool &_state) { Command<0x048A>(_state); });
+  table.set_function("setEnableDetonateOnContact", [](const bool &_state) { Command<0x04D6>(_state); });
   table.set_function("removeBuggy", []() { Command<0x04DB>(); });
   table.set_function("takeCar", [](const int &_player, const int &_vehicle) { Command<0x0715>(_player, _vehicle); });
 }

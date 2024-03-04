@@ -13,6 +13,12 @@ extern void otherWrapper(sol::state &state);
 extern void nodeEditorWrapper(sol::state &state);
 extern void luaWindowWrapper(sol::state &state);
 extern void blueprintNodeBuilder(sol::state &state);
+extern void ldyomWrapper(sol::state &state);
+extern void boostWrapper(sol::state &state);
+extern void ktcoroWrapper(sol::state &state);
+extern void mathConditionWrapper(sol::state &state);
+extern void globalVariableWrapper(sol::state &state);
+extern void projectPlayerServiceWrapper(sol::state &state);
 
 void LuaWrapper::wrap(sol::state &state) {
 	imguiLuaWrapper(state);
@@ -28,4 +34,10 @@ void LuaWrapper::wrap(sol::state &state) {
 	nodeEditorWrapper(state);
 	luaWindowWrapper(state);
 	blueprintNodeBuilder(state);
+	ldyomWrapper(state);
+	boostWrapper(state);
+	ktcoroWrapper(state);
+	mathConditionWrapper(state);
+	globalVariableWrapper(state);
+	projectPlayerServiceWrapper(state);
 }

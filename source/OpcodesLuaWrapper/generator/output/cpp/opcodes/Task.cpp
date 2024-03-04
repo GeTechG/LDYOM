@@ -7,13 +7,13 @@ using namespace plugin;
 void bindTask(sol::state &state) {
   auto table = state.create_table("TaskOp");
   // default
-  table.set_function("toggleDuck", [](const int &_handle, const int &_state) { Command<0x04EB>(_handle, _state); });
+  table.set_function("toggleDuck", [](const int &_handle, const bool &_state) { Command<0x04EB>(_handle, _state); });
   table.set_function("pause", [](const int &_handle, const int &_time) { Command<0x05B9>(_handle, _time); });
   table.set_function("standStill", [](const int &_handle, const int &_time) { Command<0x05BA>(_handle, _time); });
-  table.set_function("fallAndGetUp", [](const int &_handle, const int &_fallDown, const int &_timeOnGround) {
+  table.set_function("fallAndGetUp", [](const int &_handle, const bool &_fallDown, const int &_timeOnGround) {
     Command<0x05BB>(_handle, _fallDown, _timeOnGround);
   });
-  table.set_function("jump", [](const int &_handle, const int &_state) { Command<0x05BC>(_handle, _state); });
+  table.set_function("jump", [](const int &_handle, const bool &_state) { Command<0x05BC>(_handle, _state); });
   table.set_function("tired", [](const int &_handle, const int &_time) { Command<0x05BD>(_handle, _time); });
   table.set_function("die", [](const int &_handle) { Command<0x05BE>(_handle); });
   table.set_function("lookAtChar", [](const int &_observer, const int &_target, const int &_time) {
@@ -81,8 +81,8 @@ void bindTask(sol::state &state) {
                      [](const int &_char, const float &_x, const float &_y, const float &_z, const int &_walkSpeed,
                         const int &_vehicle) { Command<0x0603>(_char, _x, _y, _z, _walkSpeed, _vehicle); });
   table.set_function("playAnim", [](const int &_handle, const char *_animationName, const char *_animationFile,
-                                    const float &_frameDelta, const int &_loop, const int &_lockX, const int &_lockY,
-                                    const int &_lockF, const int &_time) {
+                                    const float &_frameDelta, const bool &_loop, const bool &_lockX, const bool &_lockY,
+                                    const bool &_lockF, const int &_time) {
     Command<0x0605>(_handle, _animationName, _animationFile, _frameDelta, _loop, _lockX, _lockY, _lockF, _time);
   });
   table.set_function("leaveCarImmediately",
@@ -101,7 +101,7 @@ void bindTask(sol::state &state) {
                        Command<0x0637>(_char, _x, _y, _z, _mode, _turnRadius, _stopRadius, _target);
                      });
   table.set_function("stayInSamePlace",
-                     [](const int &_handle, const int &_state) { Command<0x0638>(_handle, _state); });
+                     [](const int &_handle, const bool &_state) { Command<0x0638>(_handle, _state); });
   table.set_function("turnCharToFaceChar",
                      [](const int &_char, const int &_target) { Command<0x0639>(_char, _target); });
   table.set_function("lookAtObject", [](const int &_char, const int &_object, const int &_time) {
@@ -118,11 +118,10 @@ void bindTask(sol::state &state) {
   });
   table.set_function("shuffleToNextCarSeat",
                      [](const int &_char, const int &_vehicle) { Command<0x0676>(_char, _vehicle); });
-  table.set_function("chatWithChar", [](const int &_char, const int &_other, const int &_leadSpeaker, const int &__p4) {
-    Command<0x0677>(_char, _other, _leadSpeaker, __p4);
-  });
-  table.set_function("togglePedThreatScanner", [](const int &_handle, const int &__p2, const int &__p3,
-                                                  const int &__p4) { Command<0x0688>(_handle, __p2, __p3, __p4); });
+  table.set_function("chatWithChar", [](const int &_char, const int &_other, const bool &_leadSpeaker,
+                                        const int &__p4) { Command<0x0677>(_char, _other, _leadSpeaker, __p4); });
+  table.set_function("togglePedThreatScanner", [](const int &_handle, const bool &__p2, const bool &__p3,
+                                                  const bool &__p4) { Command<0x0688>(_handle, __p2, __p3, __p4); });
   table.set_function("diveFromAttachmentAndGetUp",
                      [](const int &_handle, const int &_time) { Command<0x06A5>(_handle, _time); });
   table.set_function("gotoCharOffset",
@@ -153,7 +152,7 @@ void bindTask(sol::state &state) {
     Command<0x06E2>(_char, _object, _time, _radius);
   });
   table.set_function("weaponRoll",
-                     [](const int &_handle, const int &_direction) { Command<0x06E3>(_handle, _direction); });
+                     [](const int &_handle, const bool &_direction) { Command<0x06E3>(_handle, _direction); });
   table.set_function("charArrestChar", [](const int &_char, const int &_target) { Command<0x06E4>(_char, _target); });
   table.set_function("pickUpObject", [](const int &_char, const int &_object, const float &_xOffset,
                                         const float &_yOffset, const float &_zOffset, const int &_boneId,
@@ -163,10 +162,11 @@ void bindTask(sol::state &state) {
   });
   table.set_function("driveBy", [](const int &_handle, const int &_targetChar, const int &_targetVehicle,
                                    const float &_x, const float &_y, const float &_z, const float &_radius,
-                                   const int &_style, const int &_rightHandCarSeat, const int &_fireRate) {
+                                   const int &_style, const bool &_rightHandCarSeat, const int &_fireRate) {
     Command<0x0713>(_handle, _targetChar, _targetVehicle, _x, _y, _z, _radius, _style, _rightHandCarSeat, _fireRate);
   });
-  table.set_function("useMobilePhone", [](const int &_handle, const int &_start) { Command<0x0729>(_handle, _start); });
+  table.set_function("useMobilePhone",
+                     [](const int &_handle, const bool &_start) { Command<0x0729>(_handle, _start); });
   table.set_function("warpCharIntoCarAsDriver",
                      [](const int &_char, const int &_vehicle) { Command<0x072A>(_char, _vehicle); });
   table.set_function("warpCharIntoCarAsPassenger", [](const int &_char, const int &_vehicle, const int &_seatId) {
@@ -179,14 +179,14 @@ void bindTask(sol::state &state) {
   });
   table.set_function("fleeCharAnyMeans",
                      [](const int &_handle, const int &_threat, const float &_runDistance, const int &_time,
-                        const int &_changeCourse, const int &__p6, const int &__p7, const float &_radius) {
+                        const bool &_changeCourse, const int &__p6, const int &__p7, const float &_radius) {
                        Command<0x0751>(_handle, _threat, _runDistance, _time, _changeCourse, __p6, __p7, _radius);
                      });
   table.set_function("dead", [](const int &_handle) { Command<0x0762>(_handle); });
   table.set_function("gotoCar", [](const int &_char, const int &_vehicle, const int &_time, const float &_radius) {
     Command<0x0772>(_char, _vehicle, _time, _radius);
   });
-  table.set_function("climb", [](const int &_handle, const int &_flag) { Command<0x078F>(_handle, _flag); });
+  table.set_function("climb", [](const int &_handle, const bool &_flag) { Command<0x078F>(_handle, _flag); });
   table.set_function("gotoCharAiming",
                      [](const int &_handle, const int &_target, const float &_radiusFrom, const float &_radiusTo) {
                        Command<0x07A3>(_handle, _target, _radiusFrom, _radiusTo);
@@ -212,15 +212,15 @@ void bindTask(sol::state &state) {
   table.set_function("charSlideToCoordAndPlayAnim",
                      [](const int &_handle, const float &_x, const float &_y, const float &_z, const float &_angle,
                         const float &_radius, const char *_animationName, const char *_animationFile,
-                        const float &_frameDelta, const int &_loop, const int &_lockX, const int &_lockY,
-                        const int &_lockF, const int &_time) {
+                        const float &_frameDelta, const bool &_loop, const bool &_lockX, const bool &_lockY,
+                        const bool &_lockF, const int &_time) {
                        Command<0x0804>(_handle, _x, _y, _z, _angle, _radius, _animationName, _animationFile,
                                        _frameDelta, _loop, _lockX, _lockY, _lockF, _time);
                      });
   table.set_function("playAnimNonInterruptable", [](const int &_handle, const char *_animationName,
                                                     const char *_animationFile, const float &_frameDelta,
-                                                    const int &_loop, const int &_lockX, const int &_lockY,
-                                                    const int &_lockF, const int &_time) {
+                                                    const bool &_loop, const bool &_lockX, const bool &_lockY,
+                                                    const bool &_lockF, const int &_time) {
     Command<0x0812>(_handle, _animationName, _animationFile, _frameDelta, _loop, _lockX, _lockY, _lockF, _time);
   });
   table.set_function("followPatrolRoute", [](const int &_handle, const int &_walkSpeed, const int &_routeMode) {
@@ -238,11 +238,11 @@ void bindTask(sol::state &state) {
   table.set_function("walkAlongsideChar",
                      [](const int &_handle, const int &_target) { Command<0x0859>(_handle, _target); });
   table.set_function("kindaStayInSamePlace",
-                     [](const int &_handle, const int &_state) { Command<0x085B>(_handle, _state); });
+                     [](const int &_handle, const bool &_state) { Command<0x085B>(_handle, _state); });
   table.set_function("playAnimWithFlags",
                      [](const int &_handle, const char *_animationName, const char *_animationFile,
-                        const float &_frameDelta, const int &_loop, const int &_lockX, const int &_lockY,
-                        const int &_lockF, const int &_time, const int &_disableForce, const int &_disableLockZ) {
+                        const float &_frameDelta, const bool &_loop, const bool &_lockX, const bool &_lockY,
+                        const bool &_lockF, const int &_time, const bool &_disableForce, const bool &_disableLockZ) {
                        Command<0x088A>(_handle, _animationName, _animationFile, _frameDelta, _loop, _lockX, _lockY,
                                        _lockF, _time, _disableForce, _disableLockZ);
                      });
@@ -252,7 +252,7 @@ void bindTask(sol::state &state) {
                        Command<0x08A0>(_handle, _radius, _modelId, _fromX, _fromY, _fromZ, _name);
                      });
   table.set_function("setIgnoreWeaponRangeFlag",
-                     [](const int &_handle, const int &_state) { Command<0x099F>(_handle, _state); });
+                     [](const int &_handle, const bool &_state) { Command<0x099F>(_handle, _state); });
   table.set_function("pickUpSecondObject", [](const int &_char, const int &_object, const float &_xOffset,
                                               const float &_yOffset, const float &_zOffset, const int &_boneId,
                                               const int &__p7, const char *_animationName, const char *_animationFile,
@@ -260,8 +260,8 @@ void bindTask(sol::state &state) {
     Command<0x09A0>(_char, _object, _xOffset, _yOffset, _zOffset, _boneId, __p7, _animationName, _animationFile, _time);
   });
   table.set_function("playAnimSecondary", [](const int &_handle, const char *_animationFile, const char *_animationName,
-                                             const float &_frameDelta, const int &_loop, const int &_lockX,
-                                             const int &_lockY, const int &_lockF, const int &_time) {
+                                             const float &_frameDelta, const bool &_loop, const bool &_lockX,
+                                             const bool &_lockY, const bool &_lockF, const int &_time) {
     Command<0x0A1A>(_handle, _animationFile, _animationName, _frameDelta, _loop, _lockX, _lockY, _lockF, _time);
   });
   table.set_function("handGesture", [](const int &_handle, const int &_target) { Command<0x0A1D>(_handle, _target); });

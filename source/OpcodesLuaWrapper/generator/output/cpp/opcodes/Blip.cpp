@@ -80,8 +80,8 @@ void bindBlip(sol::state &state) {
     return std::make_tuple(result);
   });
   table.set_function("setAlwaysDisplayOnZoomedRadar",
-                     [](const int &_self, const int &_state) { Command<0x07BF>(_self, _state); });
-  table.set_function("setAsFriendly", [](const int &_self, const int &_state) { Command<0x07E0>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x07BF>(_self, _state); });
+  table.set_function("setAsFriendly", [](const int &_self, const bool &_state) { Command<0x07E0>(_self, _state); });
   table.set_function("addForDeadChar", [](const int &_char) {
     int handle_;
     Command<0x0888>(_char, &handle_);

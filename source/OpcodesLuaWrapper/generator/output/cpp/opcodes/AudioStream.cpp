@@ -30,7 +30,7 @@ void bindAudioStream(sol::state &state) {
     return std::make_tuple(volume_);
   });
   table.set_function("setVolume", [](const int &_self, const float &_volume) { Command<0x0ABC>(_self, _volume); });
-  table.set_function("setLooped", [](const int &_self, const int &_state) { Command<0x0AC0>(_self, _state); });
+  table.set_function("setLooped", [](const int &_self, const bool &_state) { Command<0x0AC0>(_self, _state); });
 
   // CLEO+
   table.set_function("getInternal", [](const int &_self) {

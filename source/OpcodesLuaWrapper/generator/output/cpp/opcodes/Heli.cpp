@@ -12,7 +12,7 @@ void bindHeli(sol::state &state) {
                         const float &_maxAltitude) { Command<0x04A2>(_self, _x, _y, _z, _minAltitude, _maxAltitude); });
   table.set_function("setOrientation", [](const int &_self, const float &_angle) { Command<0x04D0>(_self, _angle); });
   table.set_function("clearOrientation", [](const int &_self) { Command<0x04D1>(_self); });
-  table.set_function("setStabiliser", [](const int &_self, const int &_state) { Command<0x04DF>(_self, _state); });
+  table.set_function("setStabiliser", [](const int &_self, const bool &_state) { Command<0x04DF>(_self, _state); });
   table.set_function("fireHunterGun", [](const int &_self) { Command<0x0541>(_self); });
   table.set_function("makeComeCrashingDown", [](const int &_self) { Command<0x0564>(_self); });
   table.set_function("attackPlayer", [](const int &_self, const int &_handle, const float &_radius) {
@@ -31,7 +31,7 @@ void bindHeli(sol::state &state) {
                                             const float &_minAltitude, const int &_maxAltitude) {
     Command<0x0780>(_self, _char, _vehicle, _minAltitude, _maxAltitude);
   });
-  table.set_function("attachWinch", [](const int &_self, const int &_state) { Command<0x0788>(_self, _state); });
+  table.set_function("attachWinch", [](const int &_self, const bool &_state) { Command<0x0788>(_self, _state); });
   table.set_function("releaseEntityFromWinch", [](const int &_self) { Command<0x0789>(_self); });
   table.set_function("grabEntityOnWinch", [](const int &_self) {
     int char_;
@@ -44,5 +44,5 @@ void bindHeli(sol::state &state) {
   table.set_function("setBladesFullSpeed", [](const int &_self) { Command<0x0825>(_self); });
   table.set_function("setReachedTargetDistance",
                      [](const int &_self, const int &_distance) { Command<0x0853>(_self, _distance); });
-  table.set_function("disableAudio", [](const int &_self, const int &_state) { Command<0x0A1C>(_self, _state); });
+  table.set_function("disableAudio", [](const int &_self, const bool &_state) { Command<0x0A1C>(_self, _state); });
 }

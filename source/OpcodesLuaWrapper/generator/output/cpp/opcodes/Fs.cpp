@@ -25,7 +25,7 @@ void bindFs(sol::state &state) {
     Command<0x2000>(_path, (int *)&resolved_);
     return std::make_tuple(resolved_);
   });
-  table.set_function("getScriptFilename", [](const int &_scriptStruct, const int &_fullPath) {
+  table.set_function("getScriptFilename", [](const int &_scriptStruct, const bool &_fullPath) {
     const char *string_;
     auto result = Command<0x2001>(_scriptStruct, _fullPath, (int *)&string_);
     return std::make_tuple(result, string_);
@@ -36,7 +36,7 @@ void bindFs(sol::state &state) {
     auto result = Command<0x0B00>(_fileName);
     return std::make_tuple(result);
   });
-  table.set_function("deleteDirectory", [](const char *_dirPath, const int &_recursive) {
+  table.set_function("deleteDirectory", [](const char *_dirPath, const bool &_recursive) {
     auto result = Command<0x0B01>(_dirPath, _recursive);
     return std::make_tuple(result);
   });

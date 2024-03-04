@@ -9,16 +9,16 @@ void bindKeywords(sol::state &state) {
   // default
   table.set_function("nop", []() { Command<0x0000>(); });
   table.set_function("wait", [](const int &_time) { Command<0x0001>(_time); });
-  table.set_function("goto", [](const int &_label) { Command<0x0002>(_label); });
-  table.set_function("gotoIfFalse", [](const int &_label) { Command<0x004D>(_label); });
+  table.set_function("goto", [](const char *_label) { Command<0x0002>(_label); });
+  table.set_function("gotoIfFalse", [](const char *_label) { Command<0x004D>(_label); });
   table.set_function("terminateThisScript", []() { Command<0x004E>(); });
   table.set_function("startNewScript",
-                     [](const int &_label, const int &_arguments) { Command<0x004F>(_label, _arguments); });
-  table.set_function("gosub", [](const int &_label) { Command<0x0050>(_label); });
+                     [](const char *_label, const int &_arguments) { Command<0x004F>(_label, _arguments); });
+  table.set_function("gosub", [](const char *_label) { Command<0x0050>(_label); });
   table.set_function("return", []() { Command<0x0051>(); });
   table.set_function("if", [](const int &_int) { Command<0x00D6>(_int); });
-  table.set_function("launchMission", [](const int &_label) { Command<0x00D7>(_label); });
-  table.set_function("setDeatharrestState", [](const int &_state) { Command<0x0111>(_state); });
+  table.set_function("launchMission", [](const char *_label) { Command<0x00D7>(_label); });
+  table.set_function("setDeatharrestState", [](const bool &_state) { Command<0x0111>(_state); });
   table.set_function("hasDeatharrestBeenExecuted", []() {
     auto result = Command<0x0112>();
     return std::make_tuple(result);
@@ -27,7 +27,7 @@ void bindKeywords(sol::state &state) {
   table.set_function("scriptName", [](const char *_name) { Command<0x03A4>(_name); });
   table.set_function("terminateAllScriptsWithThisName", [](const char *_name) { Command<0x0459>(_name); });
   table.set_function("skipCutsceneEnd", []() { Command<0x0701>(); });
-  table.set_function("skipCutsceneStartInternal", [](const int &_label) { Command<0x0707>(_label); });
+  table.set_function("skipCutsceneStartInternal", [](const char *_label) { Command<0x0707>(_label); });
 
   // CLEO
   table.set_function("streamCustomScript", [](const char *_scriptFileName, const int &_arguments) {
@@ -38,9 +38,9 @@ void bindKeywords(sol::state &state) {
     Command<0x0A94>(_scriptFileName, _arguments);
   });
   table.set_function("saveThisCustomScript", []() { Command<0x0A95>(); });
-  table.set_function("gosubIfFalse", [](const int &_label) { Command<0x0AA0>(_label); });
+  table.set_function("gosubIfFalse", [](const char *_label) { Command<0x0AA0>(_label); });
   table.set_function("returnIfFalse", []() { Command<0x0AA1>(); });
-  table.set_function("cleoCall", [](const int &_label, const int &_numParams, const int &_params) {
+  table.set_function("cleoCall", [](const char *_label, const int &_numParams, const int &_params) {
     Command<0x0AB1>(_label, _numParams, _params);
   });
   table.set_function("cleoReturn",
@@ -52,7 +52,7 @@ void bindKeywords(sol::state &state) {
     return std::make_tuple(result_);
   });
   table.set_function("terminateAllCustomScriptsWithThisName", [](const char *_name) { Command<0x0ABA>(_name); });
-  table.set_function("cleoReturnWith", [](const int &_conditionResult, const int &_retArgs) {
+  table.set_function("cleoReturnWith", [](const bool &_conditionResult, const int &_retArgs) {
     auto result = Command<0x2002>(_conditionResult, _retArgs);
     return std::make_tuple(result);
   });
@@ -128,7 +128,7 @@ void bindKeywords(sol::state &state) {
     Command<0x0D2F>(_scriptPointer, _varIndex, &result_);
     return std::make_tuple(result_);
   });
-  table.set_function("streamCustomScriptFromLabel", [](const int &_label) { Command<0x0E6F>(_label); });
+  table.set_function("streamCustomScriptFromLabel", [](const char *_label) { Command<0x0E6F>(_label); });
   table.set_function("loadSpecialCharacterForId",
                      [](const int &_id, const char *_name) { Command<0x0E9A>(_id, _name); });
   table.set_function("unloadSpecialCharacterFromId", [](const int &_id) { Command<0x0E9B>(_id); });
@@ -142,50 +142,51 @@ void bindKeywords(sol::state &state) {
     Command<0x0EB3>(_quat, _x, _y, _z);
   });
   table.set_function("returnScriptEvent", []() { Command<0x0ED0>(); });
-  table.set_function("setScriptEventSaveConfirmation", [](const int &_add, const int &_label, const int &_varSaveSlot) {
-    Command<0x0ED1>(_add, _label, _varSaveSlot);
-  });
-  table.set_function("setScriptEventCharDelete", [](const int &_add, const int &_label, const int &_varChar) {
+  table.set_function("setScriptEventSaveConfirmation",
+                     [](const bool &_add, const char *_label, const int &_varSaveSlot) {
+                       Command<0x0ED1>(_add, _label, _varSaveSlot);
+                     });
+  table.set_function("setScriptEventCharDelete", [](const bool &_add, const char *_label, const int &_varChar) {
     Command<0x0ED2>(_add, _label, _varChar);
   });
-  table.set_function("setScriptEventCharCreate", [](const int &_add, const int &_label, const int &_varChar) {
+  table.set_function("setScriptEventCharCreate", [](const bool &_add, const char *_label, const int &_varChar) {
     Command<0x0ED3>(_add, _label, _varChar);
   });
-  table.set_function("setScriptEventCarDelete", [](const int &_add, const int &_label, const int &_varCar) {
+  table.set_function("setScriptEventCarDelete", [](const bool &_add, const char *_label, const int &_varCar) {
     Command<0x0ED4>(_add, _label, _varCar);
   });
-  table.set_function("setScriptEventCarCreate", [](const int &_add, const int &_label, const int &_varCar) {
+  table.set_function("setScriptEventCarCreate", [](const bool &_add, const char *_label, const int &_varCar) {
     Command<0x0ED5>(_add, _label, _varCar);
   });
-  table.set_function("setScriptEventObjectDelete", [](const int &_add, const int &_label, const int &_varObject) {
+  table.set_function("setScriptEventObjectDelete", [](const bool &_add, const char *_label, const int &_varObject) {
     Command<0x0ED6>(_add, _label, _varObject);
   });
-  table.set_function("setScriptEventObjectCreate", [](const int &_add, const int &_label, const int &_varObject) {
+  table.set_function("setScriptEventObjectCreate", [](const bool &_add, const char *_label, const int &_varObject) {
     Command<0x0ED7>(_add, _label, _varObject);
   });
-  table.set_function("setScriptEventOnMenu", [](const int &_add, const int &_label, const int &_varJustPaused) {
+  table.set_function("setScriptEventOnMenu", [](const bool &_add, const char *_label, const bool &_varJustPaused) {
     Command<0x0ED8>(_add, _label, _varJustPaused);
   });
-  table.set_function("setScriptEventCharProcess", [](const int &_add, const int &_label, const int &_varChar) {
+  table.set_function("setScriptEventCharProcess", [](const bool &_add, const char *_label, const int &_varChar) {
     Command<0x0EDA>(_add, _label, _varChar);
   });
-  table.set_function("setScriptEventCarProcess", [](const int &_add, const int &_label, const int &_varCar) {
+  table.set_function("setScriptEventCarProcess", [](const bool &_add, const char *_label, const int &_varCar) {
     Command<0x0EDB>(_add, _label, _varCar);
   });
-  table.set_function("setScriptEventObjectProcess", [](const int &_add, const int &_label, const int &_varObject) {
+  table.set_function("setScriptEventObjectProcess", [](const bool &_add, const char *_label, const int &_varObject) {
     Command<0x0EDC>(_add, _label, _varObject);
   });
-  table.set_function("setScriptEventBuildingProcess", [](const int &_add, const int &_label, const int &_entity) {
+  table.set_function("setScriptEventBuildingProcess", [](const bool &_add, const char *_label, const int &_entity) {
     Command<0x0EDD>(_add, _label, _entity);
   });
-  table.set_function("setScriptEventCharDamage", [](const int &_add, const int &_label, const int &_varChar) {
+  table.set_function("setScriptEventCharDamage", [](const bool &_add, const char *_label, const int &_varChar) {
     Command<0x0EDE>(_add, _label, _varChar);
   });
-  table.set_function("setScriptEventCarWeaponDamage", [](const int &_add, const int &_label, const int &_varCar) {
+  table.set_function("setScriptEventCarWeaponDamage", [](const bool &_add, const char *_label, const int &_varCar) {
     Command<0x0EDF>(_add, _label, _varCar);
   });
   table.set_function("setScriptEventBulletImpact",
-                     [](const int &_add, const int &_label, const int &_varCharOwner, const int &_varEntityVictim,
+                     [](const bool &_add, const char *_label, const int &_varCharOwner, const int &_varEntityVictim,
                         const int &_varWeaponType, const int &_varColPoint) {
                        Command<0x0EE0>(_add, _label, _varCharOwner, _varEntityVictim, _varWeaponType, _varColPoint);
                      });
@@ -196,9 +197,9 @@ void bindKeywords(sol::state &state) {
   });
   table.set_function("returnTimes", [](const int &_numReturns) { Command<0x0F0A>(_numReturns); });
   table.set_function("setScriptEventBeforeGameProcess",
-                     [](const int &_add, const int &_label) { Command<0x0F0B>(_add, _label); });
+                     [](const int &_add, const char *_label) { Command<0x0F0B>(_add, _label); });
   table.set_function("setScriptEventAfterGameProcess",
-                     [](const int &_add, const int &_label) { Command<0x0F0C>(_add, _label); });
+                     [](const int &_add, const char *_label) { Command<0x0F0C>(_add, _label); });
   table.set_function("setMatrixLookDirection",
                      [](const int &_matrix, const float &_originX, const float &_originY, const float &_originZ,
                         const float &_dirX, const float &_dirY, const float &_dirZ) {

@@ -23,5 +23,5 @@ void bindGarage(sol::state &state) {
     return std::make_tuple(result);
   });
   table.set_function("setResprayFree",
-                     [](const char *_garageId, const int &_state) { Command<0x093A>(_garageId, _state); });
+                     [](const char *_garageId, const bool &_state) { Command<0x093A>(_garageId, _state); });
 }

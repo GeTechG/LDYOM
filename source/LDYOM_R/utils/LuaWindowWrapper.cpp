@@ -38,4 +38,13 @@ void luaWindowWrapper(sol::state &state) {
 	};
 	windowTable["luaWindowState"] = Windows::WindowsRenderService::getInstance().getWindow<
 		Windows::LuaWrapperWindow>()->isShow();
+	windowTable["setRenderWindows"] = [](const bool windowState) {
+		Windows::WindowsRenderService::getInstance().setRenderWindows(windowState);
+	};
+	windowTable["addRender"] = [](const std::string &name, const sol::function &drawFunction) {
+		Windows::WindowsRenderService::getInstance().addRender(name, drawFunction);
+	};
+	windowTable["removeRender"] = [](const std::string &name) {
+		Windows::WindowsRenderService::getInstance().removeRender(name);
+	};
 }

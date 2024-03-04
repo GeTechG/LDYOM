@@ -428,6 +428,15 @@
     <Filter Include="Windows\LuaWrapperWindow">
       <UniqueIdentifier>{72b753ac-5738-4d44-8d6d-d19429f00434}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lua\Wrappers\LdyomWrappers">
+      <UniqueIdentifier>{46c13b0c-54fd-4e35-ae76-08739c8ff35b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\Wrappers\LdyomWrappers\Data">
+      <UniqueIdentifier>{0c00d75d-a901-4cfd-9e1d-fe19551c1839}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\ScriptsWindow">
+      <UniqueIdentifier>{fd564711-224c-49bb-85d7-94281c223a9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1019,6 +1028,93 @@
     </ClCompile>
     <ClCompile Include="utils\BlueprintNodeBuilder.cpp">
       <Filter>Lua\Wrappers\NodeEditorWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ProjectsServiceWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\LDyomWrappers.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\boostWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ProjectInfoWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ProjectDataWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\SceneWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ObjectiveWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ActorWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\VehicleWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ObjectWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ParticleWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\TrainWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\PickupWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\PyrotechnicsWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\AudioWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\VisualEffectWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\CheckpointWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\SceneSettingsWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\WeaponWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\EventsWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\SettingsWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\KTCoroWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\MathConditionWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\GlobalVariableWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ProjectPlayerServiceWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\TaskerWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\HotKeyServiceWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ModelsServiceWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ScriptsWindow.cpp">
+      <Filter>Windows\ScriptsWindow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2525,6 +2621,9 @@
     </ClInclude>
     <ClInclude Include="Windows\LuaWrapperWindow.h">
       <Filter>Windows\LuaWrapperWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\ScriptsWindow.h">
+      <Filter>Windows\ScriptsWindow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

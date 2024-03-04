@@ -79,6 +79,7 @@ false = "False"
 yes = "Yes"
 no = "No"
 wait_end = "Wait till the end"
+ok = "OK"
 color_marker_enum = ["No Marker", "Red", "Green", "Light Blue", "White", "Yellow", "Blue"]
 type_marker_enum = ["Colored Marker", "Icon Marker"]
 weathers_types = ["Very Sunny (LS)", "Sunny (LS)", "Very Sunny, Smoggy (LS)", "Sunny, Smoggy (LS)", "Cloudy (LS)", "Sunny (SF)", "Very Sunny (SF)", "Cloudy (SF)", "Rainy (SF)", "Foggy (SF)", "Sunny (LV)", "Very Sunny (LV)", "Cloudy (LV)", "Very Sunny (CS)", "Sunny (CS)", "Cloudy (CS)", "Rainy (CS)", "Very Sunny (Des)", "Sunny (Des)", "Sandstorm (Des)", "Underwater", "Extra 1", "Extra 2"]
@@ -977,3 +978,7 @@ conditions = ["No condition", "Actor is dead", "Player in vehicle"]
 title = "Developer's Dock"
 teleport_to_player = "Teleport to Player"
 kill = "Terminate"
+
+[scripts]
+title = "Scripts"
+save_info = "To apply the changes, restart the game"

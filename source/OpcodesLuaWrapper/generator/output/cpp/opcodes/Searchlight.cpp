@@ -52,6 +52,7 @@ void bindSearchlight(sol::state &state) {
                         const float &_xOffset, const float &_yOffset, const float &_zOffset) {
                        Command<0x06CA>(_self, _spotTower, _spotHousing, _spotBulb, _xOffset, _yOffset, _zOffset);
                      });
-  table.set_function("setClipIfColliding", [](const int &_self, const int &_state) { Command<0x0941>(_self, _state); });
-  table.set_function("switchOnGround", [](const int &_self, const int &_state) { Command<0x0A02>(_self, _state); });
+  table.set_function("setClipIfColliding",
+                     [](const int &_self, const bool &_state) { Command<0x0941>(_self, _state); });
+  table.set_function("switchOnGround", [](const int &_self, const bool &_state) { Command<0x0A02>(_self, _state); });
 }

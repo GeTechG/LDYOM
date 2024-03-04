@@ -1,10 +1,12 @@
 ---@class LDNodeEditorContext
 ---@field context userdata
 ---@field name string
----@field nodes LDNodeEditorNode[]
+---@field nodes table<number, LDNodeEditorNode>
 ---@field __links LDNodeEditorLink[]
 ---@field newLinkPin LDNodeEditorPin | nil
 ---@field __nextUniqueId integer
+---@field __pinsValues table<number, any>
+---@field __loaded boolean
 
 local LDNodeEditorContext = {}
 
@@ -15,7 +17,9 @@ LDNodeEditorContext.new = function(context, name)
         name = name,
         nodes = {},
         __links = {},
-        __nextUniqueId = 0
+        __nextUniqueId = 0,
+        __pinsValues = {},
+        __loaded = false
     }
     return newContext
 end
@@ -23,7 +27,7 @@ end
 ---@param context LDNodeEditorContext
 ---@return integer
 LDNodeEditorContext.getNextUniqueId = function(context)
-    context.__nextUniqueId = context.__nextUniqueId + 1;
+    context.__nextUniqueId = context.__nextUniqueId + 100;
     return context.__nextUniqueId
 end
 
@@ -40,17 +44,32 @@ LDNodeEditorContext.addLink = function(context, inputId, outputId)
 end
 
 ---@param context LDNodeEditorContext
+---@param node LDNodeEditorNode
+LDNodeEditorContext.addNode = function(context, node)
+    context.nodes[node.id] = node
+end
+
+---@param context LDNodeEditorContext
 ---@param id integer
 ---@return boolean
 LDNodeEditorContext.isPinLinked = function(context, id)
-    local of = false;
     for _, link in ipairs(context.__links) do
         if link.inputId == id or link.outputId == id then
-            of = true;
-            break;
+            return true
         end
     end
-    return of;
+    return false;
+end
+
+---@param context LDNodeEditorContext
+---@param id integer
+LDNodeEditorContext.getLinkByPin = function(context, id)
+    for _, link in ipairs(context.__links) do
+        if link.inputId == id or link.outputId == id then
+            return link
+        end
+    end
+    return nil
 end
 
 ---@param context LDNodeEditorContext
@@ -59,16 +78,19 @@ LDNodeEditorContext.findPin = function(context, id)
     if not id then
         return nil
     end
-    for _, node in ipairs(context.nodes) do
-        for _, pin in ipairs(node.inputs) do
-            if pin.id == id then
-                return pin
-            end
+    local nodeId = math.floor(id / 100) * 100;
+    local node = LDNodeEditorContext.findNode(context, nodeId)
+    if not node then
+        return nil
+    end
+    for _, pin in ipairs(node.inputs) do
+        if pin.id == id then
+            return pin
         end
-        for _, pin in ipairs(node.outputs) do
-            if pin.id == id then
-                return pin
-            end
+    end
+    for _, pin in ipairs(node.outputs) do
+        if pin.id == id then
+            return pin
         end
     end
     return nil
@@ -81,12 +103,7 @@ LDNodeEditorContext.findNode = function(context, id)
     if not id then
         return nil
     end
-    for _, node in ipairs(context.nodes) do
-        if node.id == id then
-            return node
-        end
-    end
-    return nil
+    return context.nodes[id]
 end
 
 ---@param context LDNodeEditorContext

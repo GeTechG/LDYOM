@@ -15,8 +15,9 @@ void bindStuckCarCheck(sol::state &state) {
     auto result = Command<0x03CE>(_vehicle);
     return std::make_tuple(result);
   });
-  table.set_function("addWithWarp", [](const int &_vehicle, const float &_distance, const int &_time, const int &_stuck,
-                                       const int &_flipped, const int &_warp, const int &_pathId) {
-    Command<0x072F>(_vehicle, _distance, _time, _stuck, _flipped, _warp, _pathId);
-  });
+  table.set_function("addWithWarp",
+                     [](const int &_vehicle, const float &_distance, const int &_time, const bool &_stuck,
+                        const bool &_flipped, const bool &_warp, const int &_pathId) {
+                       Command<0x072F>(_vehicle, _distance, _time, _stuck, _flipped, _warp, _pathId);
+                     });
 }

@@ -24,16 +24,36 @@ void LuaEngine::addScriptDirToLuaPaths(std::string &luaPaths, const std::filesys
 }
 
 void LuaEngine::loadScripts(std::string luaPaths) {
+	this->scriptsIds.clear();
 	const std::string scriptsPath = SCRIPT_PATH + "\\scripts";
 	for (const auto &entry : std::filesystem::directory_iterator(scriptsPath)) {
 		if (entry.is_directory()) {
 			if (exists(entry.path() / "init.lua")) {
 				auto initFile = entry.path() / "init.lua";
 				addScriptDirToLuaPaths(luaPaths, entry);
-				luaState_.safe_script_file(initFile.string(), errorHandlerCallback);
+				if (auto result = luaState_.safe_script_file(
+					initFile.string(), errorHandlerCallback); !result.valid()) {
+					errorHandler(result);
+				} else {
+					auto resultTable = result.get<sol::table>();
+					auto idScript = resultTable["id"].get<std::string>();
+					luaState_[sol::create_if_nil]["scripts"][idScript] = result;
+					scriptsIds.emplace(idScript);
+				}
 			} else if (exists(entry.path() / "init.tl")) {
 				addScriptDirToLuaPaths(luaPaths, entry);
-				luaState_.safe_script("require(\"init\")", errorHandlerCallback);
+				luaState_[sol::create_if_nil]["scripts"][entry.path().filename().string()] = luaState_.safe_script(
+					"require(\"init\")", errorHandlerCallback);
+			}
+		}
+	}
+	const auto loadedScripts = Settings::getInstance().get<std::vector<std::string>>("data.loadedScripts");
+	if (loadedScripts.has_value()) {
+		for (const auto &script : loadedScripts.value()) {
+			if (scriptsIds.contains(script)) {
+				if (auto result = luaState_["scripts"][script]["init"](luaState_["scripts"][script]); !result.valid()) {
+					errorHandler(result);
+				}
 			}
 		}
 	}
@@ -45,11 +65,13 @@ void LuaEngine::resetState() {
 	this->luaState_ = sol::state();
 
 	luaState_.open_libraries(sol::lib::base, sol::lib::string, sol::lib::os, sol::lib::io, sol::lib::package,
-	                         sol::lib::math, sol::lib::table, sol::lib::jit, sol::lib::ffi, sol::lib::coroutine);
+	                         sol::lib::bit32, sol::lib::math, sol::lib::table, sol::lib::jit, sol::lib::ffi,
+	                         sol::lib::coroutine);
 
 	const std::string basePath = SCRIPT_PATH + "\\libs\\";
 	luaState_.require_file("uuid", basePath + "uuid.lua");
-	luaState_.require_file("json", basePath + "json.lua");
+	luaState_.require_file("json", basePath + "dkjson_.lua");
+	luaState_.do_file(basePath + "deepcopy.lua");
 	luaState_.require_file("tl", basePath + "tl.lua");
 	luaState_.safe_script("tl.loader()", errorHandlerCallback, "LuaEngine");
 	luaState_.set_function("print", [](const sol::this_state l, const sol::object &obj, const sol::variadic_args args) {
@@ -90,6 +112,8 @@ void LuaEngine::shutdown() {
 	this->onReset();
 	this->luaState_ = sol::state();
 }
+
+std::set<std::string>& LuaEngine::getScriptsIds() { return scriptsIds; }
 
 sol::protected_function_result LuaEngine::errorHandlerCallback(sol::this_state, sol::protected_function_result pfr) {
 	const sol::error error = pfr;

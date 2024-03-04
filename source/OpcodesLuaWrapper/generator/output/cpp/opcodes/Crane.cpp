@@ -12,7 +12,7 @@ void bindCrane(sol::state &state) {
   table.set_function("playerLeftCrane", []() { Command<0x079F>(); });
   table.set_function("playerEnteredQuarryCrane", []() { Command<0x07F9>(); });
   table.set_function("playerEnteredLasVegasCrane", []() { Command<0x07FA>(); });
-  table.set_function("enableControls", [](const int &_up, const int &_down, const int &_release) {
+  table.set_function("enableControls", [](const bool &_up, const bool &_down, const bool &_release) {
     Command<0x0898>(_up, _down, _release);
   });
 }

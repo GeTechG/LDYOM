@@ -1,4 +1,0 @@
----@class LDNodeEditorPinType
----@field name string
----@field colorGetter fun(): ImVec4
----@field iconType NodeEditorIconType

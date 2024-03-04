@@ -93,7 +93,7 @@
       <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;$(ProjectDir)utils;$(ProjectDir)ImGui;C:\local\boost_1_83_0;$(ProjectDir)include;$(ProjectDir)LuaJIT-2.0.5\src;$(DIRECTX9_SDK_DIR)\Include;$(ProjectDir)sqlite3;$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4\source;$(ProjectDir)zip;$(ProjectDir)\thirdparty\ktsignal\include;$(ProjectDir)thirdparty\kthook\include;$(ProjectDir)thirdparty\xbyak;$(ProjectDir)thirdparty\kthook;$(ProjectDir)thirdparty\imgui;$(ProjectDir)thirdparty\kiero;$(ProjectDir)thirdparty\kiero\minhook\include;$(ProjectDir)thirdparty;$(ProjectDir)fonts;$(ProjectDir)Services;$(ProjectDir)Windows;$(ProjectDir)thirdparty\glm;$(ProjectDir)thirdparty\boost_json_archive\include;$(ProjectDir)thirdparty\discordSDK;$(SolutionDir)ImGuiLuaWrapper;$(SolutionDir)OpcodesLuaWrapper</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_USE_MATH_DEFINES;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DX9_SDK_INSTALLED;PLUGIN_SGV_96EN;GBH;_NDEBUG;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;PLUGIN_SGV_10US;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DX9_SDK_INSTALLED;PLUGIN_SGV_96EN;GBH;_NDEBUG;_USING_V110_SDK71_;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;GTASA;GTAGAME_NAME="San Andreas";GTAGAME_ABBR="SA";GTAGAME_ABBRLOW="sa";GTAGAME_PROTAGONISTNAME="CJ";GTAGAME_CITYNAME="San Andreas";_LA_SUPPORT;PLUGIN_SGV_10US;ELPP_NO_DEFAULT_LOG_FILE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- /utf-8 /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -115,7 +115,7 @@
       <SDLCheck>false</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(PLUGIN_SDK_DIR)\plugin_sa\;$(PLUGIN_SDK_DIR)\plugin_sa\game_sa\;$(PLUGIN_SDK_DIR)\shared\;$(PLUGIN_SDK_DIR)\shared\game\;$(ProjectDir)utils;$(ProjectDir)ImGui;C:\local\boost_1_83_0;$(ProjectDir)include;$(ProjectDir)LuaJIT-2.0.5\src;$(DIRECTX9_SDK_DIR)\Include;$(ProjectDir)sqlite3;$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4\source;$(ProjectDir)zip;$(ProjectDir)\thirdparty\ktsignal\include;$(ProjectDir)thirdparty\kthook\include;$(ProjectDir)thirdparty\xbyak;$(ProjectDir)thirdparty\kthook;$(ProjectDir)thirdparty\imgui;$(ProjectDir)thirdparty\kiero;$(ProjectDir)thirdparty\kiero\minhook\include;$(ProjectDir)thirdparty;$(ProjectDir)fonts;$(ProjectDir)Services;$(ProjectDir)Windows;$(ProjectDir)thirdparty\glm;$(ProjectDir)thirdparty\boost_json_archive\include;$(ProjectDir)thirdparty\discordSDK;$(SolutionDir)ImGuiLuaWrapper;$(SolutionDir)OpcodesLuaWrapper</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_USE_MATH_DEFINES;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DX9_SDK_INSTALLED;GTASA;PLUGIN_SGV_10US;RW;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_USE_MATH_DEFINES;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DX9_SDK_INSTALLED;GTASA;PLUGIN_SGV_10US;RW;ELPP_NO_DEFAULT_LOG_FILE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:threadSafeInit- /utf-8 /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -278,23 +278,32 @@
     <ClCompile Include="thirdparty\kiero\minhook\src\buffer.c" />
     <ClCompile Include="thirdparty\kiero\minhook\src\hook.c" />
     <ClCompile Include="thirdparty\kiero\minhook\src\trampoline.c" />
+    <ClCompile Include="utils\ActorWrapper.cpp" />
     <ClCompile Include="utils\additional_events.cpp" />
     <ClCompile Include="utils\AsyncWrapper.cpp" />
+    <ClCompile Include="utils\AudioWrapper.cpp" />
     <ClCompile Include="utils\BlueprintNodeBuilder.cpp" />
+    <ClCompile Include="utils\boostWrapper.cpp" />
+    <ClCompile Include="utils\CheckpointWrapper.cpp" />
     <ClCompile Include="utils\ConvertWrapper.cpp" />
     <ClCompile Include="utils\CounterService.cpp" />
     <ClCompile Include="utils\EditByPlayerService.cpp" />
+    <ClCompile Include="utils\EventsWrapper.cpp" />
     <ClCompile Include="utils\FilesystemLuaWrapper.cpp" />
     <ClCompile Include="utils\FileWatcher.cpp" />
     <ClCompile Include="utils\format.cc" />
     <ClCompile Include="utils\GlobalVariablesManager.cpp" />
     <ClCompile Include="utils\GlobalVariablesService.cpp" />
+    <ClCompile Include="utils\GlobalVariableWrapper.cpp" />
     <ClCompile Include="utils\HotKeyService.cpp" />
+    <ClCompile Include="utils\HotKeyServiceWrapper.cpp" />
     <ClCompile Include="utils\HttpRequester.cpp" />
     <ClCompile Include="utils\imgui-knobs.cpp" />
     <ClCompile Include="utils\ImGuiLdyomCustomWrapper.cpp" />
     <ClCompile Include="utils\ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="utils\indexUuidWrapper.cpp" />
+    <ClCompile Include="utils\KTCoroWrapper.cpp" />
+    <ClCompile Include="utils\LDyomWrappers.cpp" />
     <ClCompile Include="utils\LocalizationWrapper.cpp" />
     <ClCompile Include="utils\Localization\Localization.cpp" />
     <ClCompile Include="utils\Logger.cpp" />
@@ -302,9 +311,11 @@
     <ClCompile Include="utils\LuaLogger.cpp" />
     <ClCompile Include="utils\LuaWindowWrapper.cpp" />
     <ClCompile Include="utils\LuaWrapper.cpp" />
+    <ClCompile Include="utils\MathConditionWrapper.cpp" />
     <ClCompile Include="utils\MathUtils.cpp" />
     <ClCompile Include="utils\memsafe.cpp" />
     <ClCompile Include="utils\ModelsService.cpp" />
+    <ClCompile Include="utils\ModelsServiceWrapper.cpp" />
     <ClCompile Include="utils\NodeEditorWrapper.cpp" />
     <ClCompile Include="utils\node_editor\blueprint\utilities\builders.cpp" />
     <ClCompile Include="utils\node_editor\blueprint\utilities\drawing.cpp" />
@@ -312,17 +323,34 @@
     <ClCompile Include="utils\node_editor\imgui_canvas.cpp" />
     <ClCompile Include="utils\node_editor\imgui_node_editor.cpp" />
     <ClCompile Include="utils\node_editor\imgui_node_editor_api.cpp" />
+    <ClCompile Include="utils\ObjectiveWrapper.cpp" />
+    <ClCompile Include="utils\ObjectWrapper.cpp" />
     <ClCompile Include="utils\OtherWrapper.cpp" />
+    <ClCompile Include="utils\ParticleWrapper.cpp" />
     <ClCompile Include="utils\pch.cpp" />
+    <ClCompile Include="utils\PickupWrapper.cpp" />
     <ClCompile Include="utils\pluginSdkWrapper.cpp" />
+    <ClCompile Include="utils\ProjectDataWrapper.cpp" />
+    <ClCompile Include="utils\ProjectInfoWrapper.cpp" />
     <ClCompile Include="utils\ProjectPlayerService.cpp" />
+    <ClCompile Include="utils\ProjectPlayerServiceWrapper.cpp" />
     <ClCompile Include="utils\ProjectsService.cpp" />
+    <ClCompile Include="utils\ProjectsServiceWrapper.cpp" />
+    <ClCompile Include="utils\PyrotechnicsWrapper.cpp" />
+    <ClCompile Include="utils\SceneSettingsWrapper.cpp" />
+    <ClCompile Include="utils\SceneWrapper.cpp" />
     <ClCompile Include="utils\Settings.cpp" />
+    <ClCompile Include="utils\SettingsWrapper.cpp" />
     <ClCompile Include="utils\Tasker.cpp" />
+    <ClCompile Include="utils\TaskerWrapper.cpp" />
     <ClCompile Include="utils\TimerService.cpp" />
+    <ClCompile Include="utils\TrainWrapper.cpp" />
     <ClCompile Include="utils\utils.cpp" />
+    <ClCompile Include="utils\VehicleWrapper.cpp" />
     <ClCompile Include="utils\vehicle_renderer.cpp" />
     <ClCompile Include="utils\VirtualScene.cpp" />
+    <ClCompile Include="utils\VisualEffectWrapper.cpp" />
+    <ClCompile Include="utils\WeaponWrapper.cpp" />
     <ClCompile Include="Windows\ActorsWindow.cpp" />
     <ClCompile Include="Windows\AudioWindow.cpp" />
     <ClCompile Include="Windows\CheckpointsWindow.cpp" />
@@ -356,6 +384,7 @@
     <ClCompile Include="Windows\ProjectsWindowPopup.cpp" />
     <ClCompile Include="Windows\SaveConfirmPopup.cpp" />
     <ClCompile Include="Windows\SceneSettingsPopup.cpp" />
+    <ClCompile Include="Windows\ScriptsWindow.cpp" />
     <ClCompile Include="Windows\SettingsWindow.cpp" />
     <ClCompile Include="Windows\ToolsWindow.cpp" />
     <ClCompile Include="Windows\TrainsWindow.cpp" />
@@ -855,6 +884,7 @@
     <ClInclude Include="Windows\PopupWeaponSelector.h" />
     <ClInclude Include="Windows\SaveConfirmPopup.h" />
     <ClInclude Include="Windows\SceneSettingsPopup.h" />
+    <ClInclude Include="Windows\ScriptsWindow.h" />
     <ClInclude Include="Windows\ToolsWindow.h" />
     <ClInclude Include="Windows\TrainsWindow.h" />
     <ClInclude Include="Windows\utilsRender.h" />

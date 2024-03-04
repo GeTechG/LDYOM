@@ -245,8 +245,8 @@ NodeEditor = {
 
     ---ImVec2 GetNodePosition(NodeId nodeId);
     ---@param nodeId NodeEditorNodeId
-    ---@return ImVec2
-    GetNodePosition = function(nodeId) end,
+    ---@param out ImVec2
+    GetNodePosition = function(nodeId, out) end,
 
     ---ImVec2 GetNodeSize(NodeId nodeId);
     ---@param nodeId NodeEditorNodeId
@@ -725,6 +725,19 @@ NodeEditorStyle = {
     new = function() end,
 }
 
+
+---@enum BlueprintStage
+BlueprintStage = {
+    Invalid = 0,
+    Begin = 1,
+    Header = 2,
+    Content = 3,
+    Input = 4,
+    Output = 5,
+    Middle = 6,
+    End = 7,
+}
+
 ---@class NodeEditorContext
 ---@field Begin fun(self: NodeEditorContext)
 ---@field End fun(self: NodeEditorContext)
@@ -743,6 +756,8 @@ NodeEditorStyle = {
 ---@field Middle fun(self: BlueprintNodeBuilder)
 ---@field Output fun(self: BlueprintNodeBuilder, id: NodeEditorPinId)
 ---@field EndOutput fun(self: BlueprintNodeBuilder)
+---@field SetStage fun(self: BlueprintNodeBuilder, stage: BlueprintStage): boolean
+
 
 BlueprintNodeBuilder = {
     ---@return BlueprintNodeBuilder

@@ -25,11 +25,13 @@
 #include "PopupWeaponSelector.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
+#include "ScriptsWindow.h"
 #include "Settings.h"
 #include "Tasker.h"
 #include "vehicle_renderer.h"
 #include "WindowsRenderService.h"
 #include "Data/Audio.h"
+#include "easylogging/easylogging++.h"
 #include "Localization/Localization.h"
 
 using namespace plugin;
@@ -97,28 +99,33 @@ public:
 		};
 
 		auto initFunc = [this, &gameProcces, &scriptProcess] {
-			//init services
-			Logger::getInstance().Init();
-			Settings::getInstance().Init();
-			Localization::getInstance().Init();
-			HotKeyService::getInstance().Init();
-			ProjectsService::getInstance().Init();
-			ModelsService::getInstance().Init();
-			PopupSkinSelector::getInstance().Init();
-			PopupWeaponSelector::getInstance().Init();
-			PopupSpriteBlipSelector::Init();
-			DiscordService::getInstance().Init();
+			try {
+				//init services
+				Logger::getInstance().Init();
+				Settings::getInstance().Init();
+				Localization::getInstance().Init();
+				HotKeyService::getInstance().Init();
+				ProjectsService::getInstance().Init();
+				ModelsService::getInstance().Init();
+				PopupSkinSelector::getInstance().Init();
+				PopupWeaponSelector::getInstance().Init();
+				PopupSpriteBlipSelector::Init();
+				DiscordService::getInstance().Init();
 
-			const auto projectName = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name;
-			DiscordService::getInstance().updateActivity(projectName, DiscordActivityType::CREATING);
+				const auto projectName = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name;
+				DiscordService::getInstance().updateActivity(projectName, DiscordActivityType::CREATING);
 
-			ImGuiHook::scaleUi = Settings::getInstance().get<float>("main.scaleUi").value_or(1.0f);
-			ImGuiHook::Hook();
-			Windows::WindowsRenderService::getInstance().Init();
+				ImGuiHook::scaleUi = Settings::getInstance().get<float>("main.scaleUi").value_or(1.0f);
+				ImGuiHook::Hook();
+				Windows::WindowsRenderService::getInstance().Init();
 
-			LuaEngine::getInstance().Init();
+				LuaEngine::getInstance().Init();
+				Windows::WindowsRenderService::getInstance().getWindow<Windows::ScriptsWindow>()->Init();
 
-			Logger::getInstance().log("LDYOMR initialized.");
+				Logger::getInstance().log("LDYOMR initialized.");
+			} catch (std::exception &e) {
+				CLOG(ERROR, "LDYOMR") << "Error on init: " << e.what();
+			}
 
 			ProjectsService::getInstance().onUpdate().connect(Audio::loadAudioFilesList);
 

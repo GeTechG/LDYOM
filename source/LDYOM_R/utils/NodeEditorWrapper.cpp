@@ -1,5 +1,6 @@
-﻿#include "node_editor/imgui_node_editor.h"
-#include "node_editor/blueprint/utilities/builders.h"
+﻿#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui_internal.h"
+#include "node_editor/imgui_node_editor.h"
 #include "node_editor/blueprint/utilities/drawing.h"
 #include "node_editor/blueprint/utilities/widgets.h"
 
@@ -89,7 +90,9 @@ void nodeEditorWrapper(sol::state &state) {
 	table["EndDelete"] = &ed::EndDelete;
 	table["SetNodePosition"] = &ed::SetNodePosition;
 	table["SetGroupSize"] = &ed::SetGroupSize;
-	table["GetNodePosition"] = &ed::GetNodePosition;
+	table["GetNodePosition"] = [](const ed::NodeId id, ImVec2 &pos) {
+		pos = GetNodePosition(id);
+	};
 	table["GetNodeSize"] = &ed::GetNodeSize;
 	table["CenterNodeOnScreen"] = &ed::CenterNodeOnScreen;
 	table["SetNodeZPosition"] = &ed::SetNodeZPosition;

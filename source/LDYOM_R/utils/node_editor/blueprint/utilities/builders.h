@@ -36,7 +36,6 @@ namespace ax {
 				void Output(PinId id);
 				void EndOutput();
 
-			private:
 				enum class Stage {
 					Invalid,
 					Begin,
@@ -50,6 +49,7 @@ namespace ax {
 
 				bool SetStage(Stage stage);
 
+			private:
 				void Pin(PinId id, PinKind kind);
 				void EndPin();
 

@@ -1,5 +1,7 @@
+local enums = {};
+
 ---@enum PedType
-PedType = {
+enums.PedType = {
     Player1 = 0,
     Player2 = 1,
     PlayerNetwork = 2,
@@ -35,7 +37,7 @@ PedType = {
 };
 
 ---@enum WeaponType
-WeaponType = {
+enums.WeaponType = {
     Unarmed = 0,
     BrassKnuckles = 1,
     GolfClub = 2,
@@ -83,21 +85,21 @@ WeaponType = {
 };
 
 ---@enum Town
-Town = {
+enums.Town = {
     LS = 0,
     SF = 1,
     LV = 2
 };
 
 ---@enum Fade
-Fade = {
+enums.Fade = {
     Out = 0,
     In = 1,
     None = 2
 };
 
 ---@enum BodyPart
-BodyPart = {
+enums.BodyPart = {
     Torso = 0,
     Head = 1,
     Legs = 2,
@@ -119,7 +121,7 @@ BodyPart = {
 };
 
 ---@enum AudioStreamState
-AudioStreamState = {
+enums.AudioStreamState = {
     Stop = 0,
     Play = 1,
     Pause = 2,
@@ -127,7 +129,7 @@ AudioStreamState = {
 };
 
 ---@enum FileMode
-FileMode = {
+enums.FileMode = {
     ReadText = "rt",
     WriteText = "wt",
     AppendText = "at",
@@ -137,14 +139,14 @@ FileMode = {
 };
 
 ---@enum SeekOrigin
-SeekOrigin = {
+enums.SeekOrigin = {
     Begin = 0,
     Current = 1,
     End = 2
 };
 
 ---@enum Button
-Button = {
+enums.Button = {
     LeftStickX = 0,
     LeftStickY = 1,
     RightStickX = 2,
@@ -168,7 +170,7 @@ Button = {
 };
 
 ---@enum AnimGroup
-AnimGroup = {
+enums.AnimGroup = {
     Man = "man",
     Shuffle = "shuffle",
     OldMan = "oldman",
@@ -193,13 +195,13 @@ AnimGroup = {
 };
 
 ---@enum TimerDirection
-TimerDirection = {
+enums.TimerDirection = {
     Up = 0,
     Down = 1
 };
 
 ---@enum Font
-Font = {
+enums.Font = {
     Gothic = 0,
     Subtitles = 1,
     Menu = 2,
@@ -207,7 +209,7 @@ Font = {
 };
 
 ---@enum TextStyle
-TextStyle = {
+enums.TextStyle = {
     Middle = 1,
     BottomRight = 2,
     WhiteMiddle = 3,
@@ -218,13 +220,13 @@ TextStyle = {
 };
 
 ---@enum CounterDisplay
-CounterDisplay = {
+enums.CounterDisplay = {
     Number = 0,
     Bar = 1
 };
 
 ---@enum CarDrivingStyle
-CarDrivingStyle = {
+enums.CarDrivingStyle = {
     StopForCars = 0,
     SlowDownForCars = 1,
     AvoidCars = 2,
@@ -233,7 +235,7 @@ CarDrivingStyle = {
 };
 
 ---@enum CarMission
-CarMission = {
+enums.CarMission = {
     None = 0,
     Cruise = 1,
     RamPlayerFaraway = 2,
@@ -318,14 +320,14 @@ CarMission = {
 };
 
 ---@enum FlareType
-FlareType = {
+enums.FlareType = {
     None = 0,
     Sun = 1,
     Headlights = 2
 };
 
 ---@enum CameraMode
-CameraMode = {
+enums.CameraMode = {
     None = 0,
     TopDown = 1,
     GTAClassic = 2,
@@ -395,7 +397,7 @@ CameraMode = {
 };
 
 ---@enum HudObject
-HudObject = {
+enums.HudObject = {
     Armor = 3,
     Health = 4,
     Radar = 8,
@@ -403,7 +405,7 @@ HudObject = {
 };
 
 ---@enum ExplosionType
-ExplosionType = {
+enums.ExplosionType = {
     Grenade = 0,
     Molotov = 1,
     Rocket = 2,
@@ -420,7 +422,7 @@ ExplosionType = {
 };
 
 ---@enum RelationshipType
-RelationshipType = {
+enums.RelationshipType = {
     Respect = 0,
     Like = 1,
     Neutral = 2,
@@ -429,14 +431,14 @@ RelationshipType = {
 };
 
 ---@enum SwitchType
-SwitchType = {
+enums.SwitchType = {
     None = 0,
     Interpolation = 1,
     JumpCut = 2
 };
 
 ---@enum BlipDisplay
-BlipDisplay = {
+enums.BlipDisplay = {
     Neither = 0,
     MarkerOnly = 1,
     BlipOnly = 2,
@@ -444,7 +446,7 @@ BlipDisplay = {
 };
 
 ---@enum ShadowTextureType
-ShadowTextureType = {
+enums.ShadowTextureType = {
     None = 0,
     Car = 1,
     Ped = 2,
@@ -455,7 +457,7 @@ ShadowTextureType = {
 };
 
 ---@enum BlipColor
-BlipColor = {
+enums.BlipColor = {
     Red = 0,
     Green = 1,
     Blue = 2,
@@ -468,13 +470,13 @@ BlipColor = {
 };
 
 ---@enum ScriptBrainAttachType
-ScriptBrainAttachType = {
+enums.ScriptBrainAttachType = {
     Ped = 0,
     Object = 1
 };
 
 ---@enum TempAction
-TempAction = {
+enums.TempAction = {
     None = 0,
     Wait = 1,
     Reverse = 2,
@@ -489,7 +491,7 @@ TempAction = {
 };
 
 ---@enum CarDoor
-CarDoor = {
+enums.CarDoor = {
     Hood = 0,
     Trunk = 1,
     LeftFrontDoor = 2,
@@ -499,7 +501,7 @@ CarDoor = {
 };
 
 ---@enum MissionAudioSlot
-MissionAudioSlot = {
+enums.MissionAudioSlot = {
     Slot1 = 1,
     Slot2 = 2,
     Slot3 = 3,
@@ -507,7 +509,7 @@ MissionAudioSlot = {
 };
 
 ---@enum WeatherType
-WeatherType = {
+enums.WeatherType = {
     ExtraSunnyLa = 0,
     SunnyLa = 1,
     ExtraSunnySmogLa = 2,
@@ -534,7 +536,7 @@ WeatherType = {
 };
 
 ---@enum ScriptSound
-ScriptSound = {
+enums.ScriptSound = {
     SoundDisableHeliAudio = 1000,
     SoundEnableHeliAudio = 1001,
     SoundCeilingVentLand = 1002,
@@ -729,7 +731,7 @@ ScriptSound = {
 };
 
 ---@enum FightStyle
-FightStyle = {
+enums.FightStyle = {
     Default = 4,
     Boxeo = 5,
     KungFu = 6,
@@ -746,14 +748,14 @@ FightStyle = {
 };
 
 ---@enum MoveState
-MoveState = {
+enums.MoveState = {
     Walk = 4,
     Run = 6,
     Sprint = 7
 };
 
 ---@enum ModSlot
-ModSlot = {
+enums.ModSlot = {
     Hood = 0,
     Vents = 1,
     Spoilers = 2,
@@ -774,7 +776,7 @@ ModSlot = {
 };
 
 ---@enum CarLock
-CarLock = {
+enums.CarLock = {
     NotUsed = 0,
     Unlocked = 1,
     Locked = 2,
@@ -786,7 +788,7 @@ CarLock = {
 };
 
 ---@enum PickupType
-PickupType = {
+enums.PickupType = {
     None = 0,
     InShop = 1,
     OnStreet = 2,
@@ -813,7 +815,7 @@ PickupType = {
 };
 
 ---@enum EntityStatus
-EntityStatus = {
+enums.EntityStatus = {
     Player = 0,
     PlayerPlaybackFromBuffer = 1,
     Simple = 2,
@@ -829,7 +831,7 @@ EntityStatus = {
 };
 
 ---@enum RadarSprite
-RadarSprite = {
+enums.RadarSprite = {
     None = 0,
     White = 1,
     Centre = 2,
@@ -897,7 +899,7 @@ RadarSprite = {
 };
 
 ---@enum GarageName
-GarageName = {
+enums.GarageName = {
     Amumis = "amumis",
     Beacsv = "beacsv",
     Blob1 = "blob1",
@@ -950,7 +952,7 @@ GarageName = {
 };
 
 ---@enum GangType
-GangType = {
+enums.GangType = {
     Ballas = 0,
     Grove = 1,
     Vagos = 2,
@@ -964,7 +966,7 @@ GangType = {
 };
 
 ---@enum WeaponSlot
-WeaponSlot = {
+enums.WeaponSlot = {
     Slot1 = 1,
     Melee = 2,
     Pistols = 3,
@@ -981,7 +983,7 @@ WeaponSlot = {
 };
 
 ---@enum GarageType
-GarageType = {
+enums.GarageType = {
     None = 0,
     Mission = 1,
     BombShop1 = 2,
@@ -1016,7 +1018,7 @@ GarageType = {
 };
 
 ---@enum BombType
-BombType = {
+enums.BombType = {
     None = 0,
     Timed = 1,
     OnIgnition = 2,
@@ -1026,7 +1028,7 @@ BombType = {
 };
 
 ---@enum RadioChannel
-RadioChannel = {
+enums.RadioChannel = {
     PlaybackFM = 0,
     KRose = 1,
     KDST = 2,
@@ -1043,7 +1045,7 @@ RadioChannel = {
 };
 
 ---@enum CoronaType
-CoronaType = {
+enums.CoronaType = {
     Star = 0,
     Normal = 1,
     Moon = 2,
@@ -1056,7 +1058,7 @@ CoronaType = {
 };
 
 ---@enum PlayerMood
-PlayerMood = {
+enums.PlayerMood = {
     Calm = 0,
     PissedOff = 1,
     Angry = 2,
@@ -1064,14 +1066,14 @@ PlayerMood = {
 };
 
 ---@enum EntryexitsFlag
-EntryexitsFlag = {
+enums.EntryexitsFlag = {
     WarpGroup = 256,
     NoWarp = 512,
     Enabled = 16384
 };
 
 ---@enum DefaultTaskAllocator
-DefaultTaskAllocator = {
+enums.DefaultTaskAllocator = {
     FollowAnyMeans = 0,
     FollowLimited = 1,
     StandStill = 2,
@@ -1081,7 +1083,7 @@ DefaultTaskAllocator = {
 };
 
 ---@enum KeyCode
-KeyCode = {
+enums.KeyCode = {
     LeftButton = 1,
     RightButton = 2,
     Cancel = 3,
@@ -1278,14 +1280,14 @@ KeyCode = {
 };
 
 ---@enum CarAlarm
-CarAlarm = {
+enums.CarAlarm = {
     Off = 0,
     On = 1,
     Active = 2
 };
 
 ---@enum VehicleSubclass
-VehicleSubclass = {
+enums.VehicleSubclass = {
     Automobile = 0,
     Mtruck = 1,
     Quad = 2,
@@ -1301,7 +1303,7 @@ VehicleSubclass = {
 };
 
 ---@enum EntityType
-EntityType = {
+enums.EntityType = {
     Other = 0,
     Building = 1,
     Object = 2,
@@ -1310,7 +1312,7 @@ EntityType = {
 };
 
 ---@enum ImGuiCond
-ImGuiCond = {
+enums.ImGuiCond = {
     None = 0,
     Always = 1,
     Once = 2,
@@ -1319,7 +1321,7 @@ ImGuiCond = {
 };
 
 ---@enum WeaponFire
-WeaponFire = {
+enums.WeaponFire = {
     Melee = 0,
     InstantHit = 1,
     Projectile = 2,
@@ -1329,7 +1331,7 @@ WeaponFire = {
 };
 
 ---@enum DrawEvent
-DrawEvent = {
+enums.DrawEvent = {
     BeforeDrawing = 0,
     AfterDrawing = 1,
     BeforeHud = 2,
@@ -1344,7 +1346,7 @@ DrawEvent = {
 };
 
 ---@enum EaseMode
-EaseMode = {
+enums.EaseMode = {
     Quadratic = 0,
     Cubic = 1,
     Quartic = 2,
@@ -1358,21 +1360,21 @@ EaseMode = {
 };
 
 ---@enum EaseWay
-EaseWay = {
+enums.EaseWay = {
     In = 0,
     Out = 1,
     InOut = 2
 };
 
 ---@enum ChangeMoney
-ChangeMoney = {
+enums.ChangeMoney = {
     Set = 0,
     Add = 1,
     Remove = 2
 };
 
 ---@enum ImGuiDir
-ImGuiDir = {
+enums.ImGuiDir = {
     Left = 0,
     Right = 1,
     Up = 2,
@@ -1380,93 +1382,9 @@ ImGuiDir = {
 };
 
 ---@enum PadId
-PadId = {
+enums.PadId = {
     Pad1 = 0,
     Pad2 = 1
 };
 
----@enum ImGuiCol
-ImGuiCol = {
-    Text = 0,
-    TextDisabled = 1,
-    WindowBg = 2,
-    ChildBg = 3,
-    PopupBg = 4,
-    Border = 5,
-    BorderShadow = 6,
-    FrameBg = 7,
-    FrameBgHovered = 8,
-    FrameBgActive = 9,
-    TitleBg = 10,
-    TitleBgActive = 11,
-    TitleBgCollapsed = 12,
-    MenuBarBg = 13,
-    ScrollbarBg = 14,
-    ScrollbarGrab = 15,
-    ScrollbarGrabHovered = 16,
-    ScrollbarGrabActive = 17,
-    CheckMark = 18,
-    SliderGrab = 19,
-    SliderGrabActive = 20,
-    Button = 21,
-    ButtonHovered = 22,
-    ButtonActive = 23,
-    Header = 24,
-    HeaderHovered = 25,
-    HeaderActive = 26,
-    Separator = 27,
-    SeparatorHovered = 28,
-    SeparatorActive = 29,
-    ResizeGrip = 30,
-    ResizeGripHovered = 31,
-    ResizeGripActive = 32,
-    Tab = 33,
-    TabHovered = 34,
-    TabActive = 35,
-    TabUnfocused = 36,
-    TabUnfocusedActive = 37,
-    PlotLines = 38,
-    PlotLinesHovered = 39,
-    PlotHistogram = 40,
-    PlotHistogramHovered = 41,
-    TableHeaderBg = 42,
-    TableBorderStrong = 43,
-    TableBorderLight = 44,
-    TableRowBg = 45,
-    TableRowBgAlt = 46,
-    TextSelectedBg = 47,
-    DragDropTarget = 48,
-    NavHighlight = 49,
-    NavWindowingHighlight = 50,
-    NavWindowingDimBg = 51,
-    ModalWindowDimBg = 52
-};
-
----@enum ImGuiStyleVar
-ImGuiStyleVar = {
-    Alpha = 0,
-    DisabledAlpha = 1,
-    WindowPadding = 2,
-    WindowRounding = 3,
-    WindowBorderSize = 4,
-    WindowMinSize = 5,
-    WindowTitleAlign = 6,
-    ChildRounding = 7,
-    ChildBorderSize = 8,
-    PopupRounding = 9,
-    PopupBorderSize = 10,
-    FramePadding = 11,
-    FrameRounding = 12,
-    FrameBorderSize = 13,
-    ItemSpacing = 14,
-    ItemInnerSpacing = 15,
-    IndentSpacing = 16,
-    CellPadding = 17,
-    ScrollbarSize = 18,
-    ScrollbarRounding = 19,
-    GrabMinSize = 20,
-    GrabRounding = 21,
-    TabRounding = 22,
-    ButtonTextAlign = 23,
-    SelectableTextAlign = 24
-};
+return enums;

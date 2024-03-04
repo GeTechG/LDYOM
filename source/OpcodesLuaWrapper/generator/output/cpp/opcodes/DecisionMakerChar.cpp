@@ -16,7 +16,7 @@ void bindDecisionMakerChar(sol::state &state) {
                      [](const int &_self, const int &_eventId) { Command<0x0708>(_self, _eventId); });
   table.set_function("addEventResponse", [](const int &_self, const int &_eventId, const int &_taskId,
                                             const float &_respect, const float &_hate, const float &_like,
-                                            const float &_dislike, const int &_inCar, const int &_onFoot) {
+                                            const float &_dislike, const bool &_inCar, const bool &_onFoot) {
     Command<0x0709>(_self, _eventId, _taskId, _respect, _hate, _like, _dislike, _inCar, _onFoot);
   });
   table.set_function("copy", [](const int &_maskOrOtherHandle) {

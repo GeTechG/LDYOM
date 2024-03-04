@@ -1,0 +1,20 @@
+{
+    "workspace": {
+        "library": [
+            "C:/Users/User/Documents/LDYOM/source/ImGuiLuaWrapper/generator/output/lua",
+            "C:/Users/User/Documents/LDYOM/source/OpcodesLuaWrapper/generator/output/lua",
+            "C:/Games/GTA San Andreas/LDYOM/Scripts/annotations",
+            "C:/Games/GTA San Andreas/LDYOM/Scripts/libs",
+            "C:/Games/GTA San Andreas/LDYOM/Scripts/scripts/Core",
+            "C:/Users/User/AppData/Roaming/Code/User/globalStorage/sumneko.lua/addonManager/addons/dkjson/module/library"
+        ]
+    },
+    "runtime.path": [
+        "?.lua",
+        "?/init.lua"
+      ],
+    "diagnostics.disable": [
+        "lowercase-global"
+    ],
+    "workspace.checkThirdParty": false
+}

@@ -19,7 +19,7 @@ void bindPickup(sol::state &state) {
   });
   table.set_function("remove", [](const int &_self) { Command<0x0215>(_self); });
   table.set_function("createMoney", [](const float &_x, const float &_y, const float &_z, const int &_cashAmount,
-                                       const int &_permanent) {
+                                       const bool &_permanent) {
     int handle_;
     Command<0x02E1>(_x, _y, _z, _cashAmount, _permanent, &handle_);
     return std::make_tuple(handle_);
@@ -37,13 +37,13 @@ void bindPickup(sol::state &state) {
     return std::make_tuple(handle_);
   });
   table.set_function("createLockedProperty",
-                     [](const float &_x, const float &_y, const float &_z, const int &_message) {
+                     [](const float &_x, const float &_y, const float &_z, const char *_message) {
                        int handle_;
                        Command<0x0517>(_x, _y, _z, _message, &handle_);
                        return std::make_tuple(handle_);
                      });
   table.set_function("createForSaleProperty",
-                     [](const float &_x, const float &_y, const float &_z, const int &_price, const int &_message) {
+                     [](const float &_x, const float &_y, const float &_z, const int &_price, const char *_message) {
                        int handle_;
                        Command<0x0518>(_x, _y, _z, _price, _message, &handle_);
                        return std::make_tuple(handle_);

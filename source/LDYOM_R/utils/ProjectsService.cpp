@@ -8,6 +8,7 @@
 
 #include "FileWatcher.h"
 #include "imgui_notify.h"
+#include "LuaEngine.h"
 #include "strUtils.h"
 #include "utils.h"
 #include "WindowsRenderService.h"
@@ -243,16 +244,16 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 						switch (objective->getTypeCategory()) {
 							//Other
 							case 0:
-								jsonObjectives.push_back(fast_dynamic_cast<SaveObjective&>(*objective));
+								jsonObjectives.push_back(fast_dynamic_cast<GoToSceneObjective&>(*objective));
 								break;
 							case 1:
-								jsonObjectives.push_back(fast_dynamic_cast<GoToSceneObjective&>(*objective));
+								jsonObjectives.push_back(fast_dynamic_cast<WaitSignalObjective&>(*objective));
 								break;
 							case 2:
 								jsonObjectives.push_back(fast_dynamic_cast<JumpToObjectiveObjective&>(*objective));
 								break;
 							case 3:
-								jsonObjectives.push_back(fast_dynamic_cast<WaitSignalObjective&>(*objective));
+								jsonObjectives.push_back(fast_dynamic_cast<SaveObjective&>(*objective));
 								break;
 							default:
 								break;
@@ -482,11 +483,11 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 							// Other
 							case 0:
 								objectives.emplace_back(
-									std::make_unique<SaveObjective>(jsonObjective.get<SaveObjective>()));
+									std::make_unique<GoToSceneObjective>(jsonObjective.get<GoToSceneObjective>()));
 								break;
 							case 1:
 								objectives.emplace_back(
-									std::make_unique<GoToSceneObjective>(jsonObjective.get<GoToSceneObjective>()));
+									std::make_unique<WaitSignalObjective>(jsonObjective.get<WaitSignalObjective>()));
 								break;
 							case 2:
 								objectives.emplace_back(
@@ -495,7 +496,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 								break;
 							case 3:
 								objectives.emplace_back(
-									std::make_unique<WaitSignalObjective>(jsonObjective.get<WaitSignalObjective>()));
+									std::make_unique<SaveObjective>(jsonObjective.get<SaveObjective>()));
 								break;
 							default:
 								break;
@@ -718,6 +719,16 @@ void ProjectsService::saveCurrentProject() {
 		file.close();
 	}
 
+	auto onSaveProjectEventsTable = LuaEngine::getInstance()
+		.getLuaState()["ld"]["events"]["onSaveProject"].get<sol::as_table_t<std::vector<sol::function>>>();
+	for (const auto &saveProjectEvent : onSaveProjectEventsTable) {
+		if (auto result = saveProjectEvent(projectDirectory.string()); !result.valid()) {
+			sol::error err = result;
+			CLOG(ERROR, "LDYOM") << "Error onSaveProject event: " << err.what();
+			ImGui::InsertNotification({ImGuiToastType_Error, 1000, "Error, see log"});
+		}
+	}
+
 	this->currentDirectory_ = projectDirectory;
 
 	getInstance().getCurrentProject().getCurrentScene()->loadEditorScene();
@@ -781,6 +792,16 @@ void ProjectsService::loadProjectData(const std::filesystem::path &projectDirect
 			int sceneId = std::stoi(path.path().stem().wstring());
 
 			getCurrentProject().getScenes().emplace(sceneId, std::move(scene));
+		}
+	}
+
+	auto onLoadProjectEventsTable = LuaEngine::getInstance()
+		.getLuaState()["ld"]["events"]["onLoadProject"].get<sol::as_table_t<std::vector<sol::function>>>();
+	for (const auto &saveProjectEvent : onLoadProjectEventsTable) {
+		if (auto result = saveProjectEvent(projectDirectory.string()); !result.valid()) {
+			sol::error err = result;
+			CLOG(ERROR, "LDYOM") << "Error onLoadProject event: " << err.what();
+			ImGui::InsertNotification({ImGuiToastType_Error, 1000, "Error, see log"});
 		}
 	}
 

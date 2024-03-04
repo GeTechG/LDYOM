@@ -68,7 +68,7 @@ ktwait FollowPathActorObjective::execute(Scene *scene, Actor *actor, Result &res
 
 		auto startFindTime = CTimer::m_snTimeInMilliseconds;
 
-		while (execute) {
+		while (execute && actor->getProjectPed().has_value()) {
 			float x = _this->getPath().at(index)[0];
 			float y = _this->getPath().at(index)[1];
 			float z = _this->getPath().at(index)[2];

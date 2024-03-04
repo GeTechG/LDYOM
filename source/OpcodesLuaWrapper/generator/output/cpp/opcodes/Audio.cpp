@@ -23,7 +23,7 @@ void bindAudio(sol::state &state) {
                                                    const float &_z) { Command<0x03D7>(_slotId, _x, _y, _z); });
   table.set_function("clearMissionAudio", [](const int &_slotId) { Command<0x040D>(_slotId); });
   table.set_function("setRadioChannel", [](const int &_channel) { Command<0x041E>(_channel); });
-  table.set_function("setMusicDoesFade", [](const int &_state) { Command<0x043C>(_state); });
+  table.set_function("setMusicDoesFade", [](const bool &_state) { Command<0x043C>(_state); });
   table.set_function("getRadioChannel", []() {
     int channel_;
     Command<0x051E>(&channel_);
@@ -54,7 +54,7 @@ void bindAudio(sol::state &state) {
                      [](const int &_handle, const int &_soundId) { Command<0x097B>(_handle, _soundId); });
   table.set_function("attachMissionAudioToObject",
                      [](const int &_slotId, const int &_handle) { Command<0x097C>(_slotId, _handle); });
-  table.set_function("pauseCurrentBeatTrack", [](const int &_state) { Command<0x0991>(_state); });
+  table.set_function("pauseCurrentBeatTrack", [](const bool &_state) { Command<0x0991>(_state); });
   table.set_function("reportMissionAudioEventAtChar",
                      [](const int &_handle, const int &_soundId) { Command<0x09F1>(_handle, _soundId); });
   table.set_function("reportMissionAudioEventAtCar",

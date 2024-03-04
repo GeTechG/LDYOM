@@ -1,8 +1,222 @@
-[nodes.core.test_node]
-title = "Тестовая нода"
-inputs = [
-    "Первый"
+[nodes.node_editor]
+title = "Редактор нод"
+incorrect_pin_kind = "x Одинаковый вход/выход контактов"
+incorrect_pin_type = "x Несовместимые типы контактов"
+create_link = "+ Создать связь"
+create_node = "+ Создать ноду"
+node_context_menu = "Контекстное меню ноды"
+pin_context_menu = "Контекстное меню контакта"
+link_context_menu = "Контекстное меню связи"
+delete = "Удалить"
+type = "Тип: %s"
+contexts = "Контексты"
+variables = "Переменные"
+variable = "Переменная"
+rename = "Переименовать"
+edit = "Редактировать"
+player_position = "Позиция игрока"
+clear_anim = "Очистить анимацию"
+
+[nodes.node_editor.details]
+title = "Детали"
+name = "Название"
+type = "Тип"
+default_value = "Значение по умолчанию"
+value = "Значение"
+
+[nodes.node_editor.categories]
+main = "Основные"
+debug = "Отладка"
+project = "Проект"
+scene = "Сцена"
+actor = "Актёр"
+audio = "Аудио"
+checkpoint = "Чекпоинт"
+object = "Объект"
+particle = "Частица"
+pickup = "Пикап"
+pyrotechnics = "Пиротехника"
+train = "Поезд"
+vehicle = "Транспорт"
+visual_effect = "Визуальный эффект"
+player = "Игрок"
+variable = "Переменная"
+global_variable = "Гл. переменная"
+objective = "Цель"
+char = "Персонаж"
+
+[nodes.types.core]
+flow = "Поток"
+number = "Число"
+bool = "Логическое"
+string = "Строка"
+Char = "Пед"
+Object = "Объект"
+Checkpoint = "Чекпоинт"
+DecisionMakerChar = "DecisionMakerChar"
+Searchlight = "Прожектор"
+AudioStream3D = "Аудиопоток 3D"
+AudioStream = "Аудиопоток"
+Vehicle = "Транспорт"
+ScriptFire = "Огонь"
+Particle = "Частицы"
+Train = "Поезд"
+
+[nodes.core.on_start_project]
+title = "При старте проекта"
+
+[nodes.core.debug_print]
+title = "Отладочный вывод"
+
+[nodes.core.on_start_scene]
+title = "При старте сцены"
+
+[nodes.core.main_loop]
+title = "Основной цикл"
+
+[nodes.core.branch]
+title = "Ветвление"
+
+[nodes.core.comprasion]
+title = "Сравнение"
+
+[nodes.core.invert]
+title = "Инвертирование"
+
+[nodes.core.wait]
+title = "Ожидание"
+
+[nodes.core.spawn_actor]
+title = "Создать актёра"
+
+[nodes.core.destroy_actor]
+title = "Уничтожить актёра"
+
+[nodes.core.get_char]
+title = "Получить персоонажа"
+
+[nodes.core.play_audio]
+title = "Воспроизвести аудио"
+
+[nodes.core.stop_audio]
+title = "Остановить аудио"
+
+[nodes.core.spawn_checkpoint]
+title = "Создать чекпоинт"
+
+[nodes.core.destroy_checkpoint]
+title = "Уничтожить чекпоинт"
+
+[nodes.core.spawn_object]
+title = "Создать объект"
+
+[nodes.core.destroy_object]
+title = "Уничтожить объект"
+
+[nodes.core.get_object]
+title = "Получить объект"
+
+[nodes.core.spawn_particle]
+title = "Создать частицу"
+
+[nodes.core.destroy_particle]
+title = "Уничтожить частицу"
+
+
+[nodes.core.spawn_pickup]
+title = "Создать пикап"
+
+[nodes.core.destroy_pickup]
+title = "Уничтожить пикап"
+
+[nodes.core.spawn_pyrotechnics]
+title = "Создать пиротехнику"
+
+[nodes.core.destroy_pyrotechnics]
+title = "Уничтожить пиротехнику"
+
+[nodes.core.spawn_train]
+title = "Создать поезд"
+
+[nodes.core.destroy_train]
+title = "Уничтожить поезд"
+
+[nodes.core.get_train]
+title = "Получить поезд"
+
+[nodes.core.spawn_vehicle]
+title = "Создать транспорт"
+
+[nodes.core.destroy_vehicle]
+title = "Уничтожить транспорт"
+
+[nodes.core.get_vehicle]
+title = "Получить транспорт"
+
+[nodes.core.spawn_visual_effect]
+title = "Создать визуальный эффект"
+
+[nodes.core.destroy_visual_effect]
+title = "Уничтожить визуальный эффект"
+
+[nodes.core.set_variable]
+title = "Установить переменную"
+
+[nodes.core.get_variable]
+title = "Получить переменную"
+
+[nodes.core.number_to_string]
+title = "Число в строку"
+
+[nodes.core.calc_number]
+title = "Калькулятор"
+
+[nodes.core.concat_string]
+title = "Соеденить строки"
+
+[nodes.core.set_global_variable]
+title = "Установить гл. переменную"
+
+[nodes.core.get_global_variable]
+title = "Получить гл. переменную"
+
+
+[nodes.core.emit_signal]
+title = "Вызвать сигнал"
+
+[nodes.core.is_current_objective]
+title = "Проверка текущей цели"
+
+[nodes.core.on_start_objective]
+title = "При старте цели"
+
+[nodes.core.while_for]
+title = "Выполнять до"
+to = "Пока не"
+on_true = "При истине"
+
+[nodes.core.char_follow_path]
+title = "Следовать по пути"
+on_complete = "При завершении"
+start_from_nearest = "Начать с ближайшей"
+
+
+[nodes.core.char_animation]
+title = "Анимация"
+on_complete = "При завершении"
+play_type = "Тип воспроизведения"
+play_types = [
+    "Обычный",
+    "Непрерываемый",
+    "Втростепенный",
+    "Особый"
 ]
-outputs = [
-    "Второй"
-]
+play_types_info = """Обычный - воспроизводит анимацию
+Непрерываемый - воспроизводит анимацию которая не может быть прервана
+Втростепенный - воспроизводит анимацию верхних частей тела
+Особый - воспроизводит анимацию с доп. параметрами"""
+unlock_x = "Разблок. X"
+unlock_y = "Разблок. Y"
+lock_f = "Забл. последний кадр"
+disable_force = "Отключить прерывание"
+disable_lock_z = "Разблок. Z"

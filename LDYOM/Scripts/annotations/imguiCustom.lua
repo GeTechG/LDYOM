@@ -8,6 +8,9 @@
 ---
 --- @param cond bool boolean condition that determines whether the highlighting effect should be applied.
 --- @param render fun() function that renders the highlighted content.
-ImGui.IncorrectHighlight = function (cond, callback)
+ImGui.IncorrectHighlight = function (cond, render)
     
 end
+
+---@type ImGuiContext
+GImgui = nil

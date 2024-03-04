@@ -165,6 +165,9 @@ void Train::spawnProjectEntity() {
 		this->deleteProjectEntity();
 
 	this->projectTrain_ = spawnTrain();
+	this->projectTrain_.value()->m_nVehicleFlags.bEngineOn = 1;
+	Command<Commands::SET_TRAIN_SPEED>(CPools::GetVehicleRef(this->projectTrain_.value()), this->speed_);
+	Command<Commands::SET_TRAIN_CRUISE_SPEED>(CPools::GetVehicleRef(this->projectTrain_.value()), this->cruiseSpeed_);
 }
 
 void Train::deleteProjectEntity() {

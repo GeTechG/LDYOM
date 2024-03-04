@@ -21,7 +21,7 @@ void bindStreaming(sol::state &state) {
   table.set_function("markModelAsNoLongerNeeded", [](const int &_modelId) { Command<0x0249>(_modelId); });
   table.set_function("unloadSpecialCharacter", [](const int &_slotId) { Command<0x0296>(_slotId); });
   table.set_function("loadAllModelsNow", []() { Command<0x038B>(); });
-  table.set_function("switch", [](const int &_state) { Command<0x03AF>(_state); });
+  table.set_function("switch", [](const bool &_state) { Command<0x03AF>(_state); });
   table.set_function("loadScene",
                      [](const float &_x, const float &_y, const float &_z) { Command<0x03CB>(_x, _y, _z); });
   table.set_function("isModelAvailable", [](const int &_modelId) {
@@ -95,7 +95,7 @@ void bindStreaming(sol::state &state) {
   table.set_function("attachAnimsToModel", [](const int &_pedModelId, const char *_animationFile) {
     Command<0x08E8>(_pedModelId, _animationFile);
   });
-  table.set_function("getRandomCarModelInMemory", [](const int &__p1) {
+  table.set_function("getRandomCarModelInMemory", [](const bool &__p1) {
     int modelId_;
     int class_;
     Command<0x09B2>(__p1, &modelId_, &class_);

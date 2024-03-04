@@ -10,7 +10,7 @@ void bindWeather(sol::state &state) {
   table.set_function("force", [](const int &_type) { Command<0x01B5>(_type); });
   table.set_function("forceNow", [](const int &_type) { Command<0x01B6>(_type); });
   table.set_function("release", []() { Command<0x01B7>(); });
-  table.set_function("setHeathazeEffect", [](const int &_state) { Command<0x08FD>(_state); });
+  table.set_function("setHeathazeEffect", [](const bool &_state) { Command<0x08FD>(_state); });
   table.set_function("setToAppropriateTypeNow", []() { Command<0x0915>(); });
 
   // CLEO+

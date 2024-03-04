@@ -29,8 +29,8 @@ void bindWorld(sol::state &state) {
                      });
   table.set_function("isAreaOccupied",
                      [](const float &_leftBottomX, const float &_leftBottomY, const float &_leftBottomZ,
-                        const float &_rightTopX, const float &_rightTopY, const float &_rightTopZ, const int &_solid,
-                        const int &_car, const int &_char, const int &_object, const int &_particle) {
+                        const float &_rightTopX, const float &_rightTopY, const float &_rightTopZ, const bool &_solid,
+                        const bool &_car, const bool &_char, const bool &_object, const bool &_particle) {
                        auto result = Command<0x0339>(_leftBottomX, _leftBottomY, _leftBottomZ, _rightTopX, _rightTopY,
                                                      _rightTopZ, _solid, _car, _char, _object, _particle);
                        return std::make_tuple(result);
@@ -45,7 +45,7 @@ void bindWorld(sol::state &state) {
   });
   table.set_function("setVisibilityOfClosestObjectOfType",
                      [](const float &_x, const float &_y, const float &_z, const float &_radius, const int &_modelId,
-                        const int &_state) { Command<0x0363>(_x, _y, _z, _radius, _modelId, _state); });
+                        const bool &_state) { Command<0x0363>(_x, _y, _z, _radius, _modelId, _state); });
   table.set_function("isPointObscuredByAMissionEntity",
                      [](const float &_x, const float &_y, const float &_z, const float &_radiusX, const float &_radiusY,
                         const float &_radiusZ) {
@@ -54,12 +54,12 @@ void bindWorld(sol::state &state) {
                      });
   table.set_function("clearArea",
                      [](const float &_x, const float &_y, const float &_z, const float &_radius,
-                        const int &_clearParticles) { Command<0x0395>(_x, _y, _z, _radius, _clearParticles); });
+                        const bool &_clearParticles) { Command<0x0395>(_x, _y, _z, _radius, _clearParticles); });
   table.set_function("swapNearestBuildingModel",
                      [](const float &_x, const float &_y, const float &_z, const float &_radius,
                         const int &_fromModelId,
                         const int &_toModelId) { Command<0x03B6>(_x, _y, _z, _radius, _fromModelId, _toModelId); });
-  table.set_function("switchProcessing", [](const int &_state) { Command<0x03B7>(_state); });
+  table.set_function("switchProcessing", [](const bool &_state) { Command<0x03B7>(_state); });
   table.set_function("clearAreaOfCars",
                      [](const float &_leftBottomX, const float &_leftBottomY, const float &_leftBottomZ,
                         const float &_rightTopX, const float &_rightTopY, const float &_rightTopZ) {
@@ -98,8 +98,8 @@ void bindWorld(sol::state &state) {
     Command<0x04F8>(_type, _fromX, _fromY, _toX, _toY, _spawnPoliceAAtX, _spawnPoliceAAtY, _headedTowardsAAtX,
                     _headedTowardsAAtY, _spawnPoliceBAtX, _spawnPoliceBAtY, _headedTowardsBAtX, _headedTowardsBAtY);
   });
-  table.set_function("setExtraColors", [](const int &_color, const int &_fade) { Command<0x04F9>(_color, _fade); });
-  table.set_function("clearExtraColors", [](const int &_withFade) { Command<0x04FA>(_withFade); });
+  table.set_function("setExtraColors", [](const int &_color, const bool &_fade) { Command<0x04F9>(_color, _fade); });
+  table.set_function("clearExtraColors", [](const bool &_withFade) { Command<0x04FA>(_withFade); });
   table.set_function("getRandomCarOfTypeInAreaNoSave",
                      [](const float &_leftBottomX, const float &_leftBottomY, const float &_rightTopX,
                         const float &_rightTopY, const int &_modelId) {
@@ -113,8 +113,8 @@ void bindWorld(sol::state &state) {
                         const int &_energy) { Command<0x06BC>(_fromX, _fromY, _fromZ, _toX, _toY, _toZ, _energy); });
   table.set_function("isLineOfSightClear", [](const float &_fromX, const float &_fromY, const float &_fromZ,
                                               const float &_toX, const float &_toY, const float &_toZ,
-                                              const int &_buildings, const int &_cars, const int &_chars,
-                                              const int &_objects, const int &_particles) {
+                                              const bool &_buildings, const bool &_cars, const bool &_chars,
+                                              const bool &_objects, const bool &_particles) {
     auto result =
         Command<0x06BD>(_fromX, _fromY, _fromZ, _toX, _toY, _toZ, _buildings, _cars, _chars, _objects, _particles);
     return std::make_tuple(result);
@@ -139,20 +139,20 @@ void bindWorld(sol::state &state) {
   });
   table.set_function("isClosestObjectOfTypeSmashedOrDamaged",
                      [](const float &_x, const float &_y, const float &_z, const float &_radius, const int &_modelId,
-                        const int &_smashed, const int &_damaged) {
+                        const bool &_smashed, const bool &_damaged) {
                        auto result = Command<0x0716>(_x, _y, _z, _radius, _modelId, _smashed, _damaged);
                        return std::make_tuple(result);
                      });
   table.set_function("isFlameInAngledArea2D", [](const float &_leftBottomX, const float &_leftBottomY,
                                                  const float &_rightTopX, const float &_rightTopY, const float &_angle,
-                                                 const int &_drawSphere) {
+                                                 const bool &_drawSphere) {
     auto result = Command<0x072D>(_leftBottomX, _leftBottomY, _rightTopX, _rightTopY, _angle, _drawSphere);
     return std::make_tuple(result);
   });
   table.set_function("isFlameInAngledArea3D",
                      [](const float &_leftBottomX, const float &_leftBottomY, const float &_leftBottomZ,
                         const float &_rightTopX, const float &_rightTopY, const float &_rightTopZ, const float &_angle,
-                        const int &_drawSphere) {
+                        const bool &_drawSphere) {
                        auto result = Command<0x072E>(_leftBottomX, _leftBottomY, _leftBottomZ, _rightTopX, _rightTopY,
                                                      _rightTopZ, _angle, _drawSphere);
                        return std::make_tuple(result);
@@ -164,8 +164,8 @@ void bindWorld(sol::state &state) {
                        return std::make_tuple(handle_);
                      });
   table.set_function("getRandomCharInSphere",
-                     [](const float &_x, const float &_y, const float &_z, const float &_radius, const int &_civilian,
-                        const int &_gang, const int &_criminal) {
+                     [](const float &_x, const float &_y, const float &_z, const float &_radius, const bool &_civilian,
+                        const bool &_gang, const bool &_criminal) {
                        int handle_;
                        Command<0x073F>(_x, _y, _z, _radius, _civilian, _gang, _criminal, &handle_);
                        return std::make_tuple(handle_);
@@ -199,7 +199,7 @@ void bindWorld(sol::state &state) {
                        return std::make_tuple(result);
                      });
   table.set_function("switchEntryExit",
-                     [](const char *_interiorName, const int &_state) { Command<0x07FB>(_interiorName, _state); });
+                     [](const char *_interiorName, const bool &_state) { Command<0x07FB>(_interiorName, _state); });
   table.set_function("getParkingNodeInArea", [](const float &_leftBottomX, const float &_leftBottomY,
                                                 const float &_leftBottomZ, const float &_rightTopX,
                                                 const float &_rightTopY, const float &_rightTopZ) {
@@ -243,7 +243,7 @@ void bindWorld(sol::state &state) {
   });
   table.set_function("setUsesCollisionOfClosestObjectOfType",
                      [](const float &_x, const float &_y, const float &_z, const float &_radius, const int &_modelId,
-                        const int &_state) { Command<0x088D>(_x, _y, _z, _radius, _modelId, _state); });
+                        const bool &_state) { Command<0x088D>(_x, _y, _z, _radius, _modelId, _state); });
   table.set_function("getRandomCharInSphereOnlyDrugsBuyers",
                      [](const float &_x, const float &_y, const float &_z, const float &_radius) {
                        int handle_;
@@ -256,7 +256,7 @@ void bindWorld(sol::state &state) {
                        Command<0x08E5>(_x, _y, _z, _radius, &handle_);
                        return std::make_tuple(handle_);
                      });
-  table.set_function("disableAllEntryExits", [](const int &_state) { Command<0x08E7>(_state); });
+  table.set_function("disableAllEntryExits", [](const bool &_state) { Command<0x08E7>(_state); });
   table.set_function("getUserOfClosestMapAttractor",
                      [](const float &_x, const float &_y, const float &_z, const float &_radius, const int &_modelId,
                         const char *_attractorName) {
@@ -264,7 +264,7 @@ void bindWorld(sol::state &state) {
                        Command<0x091C>(_x, _y, _z, _radius, _modelId, _attractorName, &handle_);
                        return std::make_tuple(handle_);
                      });
-  table.set_function("getWaterHeightAtCoords", [](const float &_x, const float &_y, const int &_ignoreWaves) {
+  table.set_function("getWaterHeightAtCoords", [](const float &_x, const float &_y, const bool &_ignoreWaves) {
     float height_;
     Command<0x092E>(_x, _y, _ignoreWaves, &height_);
     return std::make_tuple(height_);
@@ -274,12 +274,12 @@ void bindWorld(sol::state &state) {
                                                  const float &_radius) { Command<0x0980>(_x, _y, _z, _radius); });
   table.set_function("setCharUsesCollisionClosestObjectOfType",
                      [](const float &_x, const float &_y, const float &_z, const float &_radius, const int &_modelId,
-                        const int &_state,
+                        const bool &_state,
                         const int &_target) { Command<0x0985>(_x, _y, _z, _radius, _modelId, _state, _target); });
   table.set_function("clearAllScriptFireFlags", []() { Command<0x0986>(); });
   table.set_function("setClosestEntryExitFlag",
                      [](const float &_x, const float &_y, const float &_radius, const int &_entryexitsFlag,
-                        const int &_state) { Command<0x09B4>(_x, _y, _radius, _entryexitsFlag, _state); });
+                        const bool &_state) { Command<0x09B4>(_x, _y, _radius, _entryexitsFlag, _state); });
   table.set_function("getRandomCarOfTypeInAngledAreaNoSave",
                      [](const float &_leftBottomX, const float &_leftBottomY, const float &_rightTopX,
                         const float &_rightTopY, const float &_angle, const int &_modelId) {
@@ -316,29 +316,29 @@ void bindWorld(sol::state &state) {
   });
   table.set_function("spawnVehicleByCheating", [](const int &_modelId) { Command<0x0ADD>(_modelId); });
   table.set_function("getRandomCharInSphereNoSaveRecursive",
-                     [](const float &_x, const float &_y, const float &_z, const float &_radius, const int &_findNext,
-                        const int &_skipDead) {
+                     [](const float &_x, const float &_y, const float &_z, const float &_radius, const bool &_findNext,
+                        const bool &_skipDead) {
                        int handle_;
                        auto result = Command<0x0AE1>(_x, _y, _z, _radius, _findNext, _skipDead, &handle_);
                        return std::make_tuple(result, handle_);
                      });
   table.set_function("getRandomCarInSphereNoSaveRecursive",
-                     [](const float &_x, const float &_y, const float &_z, const float &_radius, const int &_findNext,
-                        const int &_skipWrecked) {
+                     [](const float &_x, const float &_y, const float &_z, const float &_radius, const bool &_findNext,
+                        const bool &_skipWrecked) {
                        int handle_;
                        auto result = Command<0x0AE2>(_x, _y, _z, _radius, _findNext, _skipWrecked, &handle_);
                        return std::make_tuple(result, handle_);
                      });
-  table.set_function("getRandomObjectInSphereNoSaveRecursive",
-                     [](const float &_x, const float &_y, const float &_z, const float &_radius, const int &_findNext) {
-                       int handle_;
-                       auto result = Command<0x0AE3>(_x, _y, _z, _radius, _findNext, &handle_);
-                       return std::make_tuple(result, handle_);
-                     });
+  table.set_function("getRandomObjectInSphereNoSaveRecursive", [](const float &_x, const float &_y, const float &_z,
+                                                                  const float &_radius, const bool &_findNext) {
+    int handle_;
+    auto result = Command<0x0AE3>(_x, _y, _z, _radius, _findNext, &handle_);
+    return std::make_tuple(result, handle_);
+  });
 
   // CLEO+
   table.set_function("getPickupThisCoord",
-                     [](const float &_x, const float &_y, const float &_z, const int &_onlyValid) {
+                     [](const float &_x, const float &_y, const float &_z, const bool &_onlyValid) {
                        int handle_;
                        Command<0x0E33>(_x, _y, _z, _onlyValid, &handle_);
                        return std::make_tuple(handle_);
@@ -353,7 +353,7 @@ void bindWorld(sol::state &state) {
                        return std::make_tuple(result, x_, y_, sizeX_, sizeY_);
                      });
   table.set_function("getClosestCopNearPos", [](const float &_x, const float &_y, const float &_z, const float &_radius,
-                                                const int &_alive, const int &_inCar, const int &_onFoot) {
+                                                const bool &_alive, const bool &_inCar, const bool &_onFoot) {
     int closestCop_;
     auto result = Command<0x0EA6>(_x, _y, _z, _radius, _alive, _inCar, _onFoot, &closestCop_);
     return std::make_tuple(result, closestCop_);

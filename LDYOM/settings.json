@@ -1,5 +1,12 @@
 {
+    "camera": {
+        "editByPlayerSpeed": 0.6900002956390381
+    },
     "data": {
+        "loadedScripts": [
+            "core",
+            "opcodes_nodes"
+        ],
         "pedAnimations": {},
         "pedModels": [],
         "specialPedModels": [],
@@ -11,16 +18,12 @@
         "openQuickCommandsMenu": "Alt"
     },
     "main": {
+        "autoBindDeleteAfterLastObjective": null,
+        "autoBindRequireFields": null,
+        "collisionObjectsInEditor": null,
         "distanceShowNames": 100.0,
-        "favoritesNodes": [
-            "MenuSetColumnNode",
-            "MenuSetColumnOrientationNode",
-            "MenuSetColumnWidthNode",
-            "MissionFailNode",
-            "MissionFinishNode",
-            "MissionLoadAndLaunchInternalNode"
-        ],
         "language": "English",
+        "scaleUi": 0.8100000023841858,
         "showEntitiesName": true,
         "theme": "default"
     }

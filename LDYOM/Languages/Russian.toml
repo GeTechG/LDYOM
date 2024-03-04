@@ -85,6 +85,7 @@ false = "Ложь"
 yes = "Да"
 no = "Нет"
 wait_end = "Ожидание завершения"
+ok = "ОК"
 
 [objective]
 title = "Цель"
@@ -413,9 +414,6 @@ apply = "Применить настройки сцены"
 group_relations = "Отношения групп"
 relationship_types = [ "Уважение", "Нравится", "Игнорировать", "Не нравится", "Ненависть",]
 
-[node_editor]
-title = "Редактор узлов"
-
 [warning_popup]
 title = "Предупреждение"
 text = "Вы уверены? Данные будут удалены навсегда."
@@ -484,6 +482,10 @@ bool_values = ["Ложь", "Истина"]
 
 [jump_to_objective]
 else_objective = "Иначе цель"
+
+[scripts]
+title = "Скрипты"
+save_info = "Для вступления в силу изменений, перезагрузите игру"
 
 [set_increment_global_variable]
 condition = "Условие"

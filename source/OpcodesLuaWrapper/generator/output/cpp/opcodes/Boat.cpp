@@ -13,5 +13,5 @@ void bindBoat(sol::state &state) {
   table.set_function("stop", [](const int &_self) { Command<0x02D4>(_self); });
   table.set_function("setCruiseSpeed",
                      [](const int &_self, const float &_maxSpeed) { Command<0x02DB>(_self, _maxSpeed); });
-  table.set_function("anchor", [](const int &_self, const int &_state) { Command<0x0323>(_self, _state); });
+  table.set_function("anchor", [](const int &_self, const bool &_state) { Command<0x0323>(_self, _state); });
 }

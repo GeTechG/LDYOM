@@ -8,7 +8,7 @@ import prettier
 
 
 def skip_function(func):
-    return func in ["igTextUnformatted", "igInputText", "igCalcTextSize"]
+    return func in ["igTextUnformatted", "igInputText", "igInputTextMultiline", "igInputTextWithHint", "igCalcTextSize"]
 
 
 with open('structs_templates.toml', 'r') as f:

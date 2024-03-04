@@ -35,13 +35,13 @@ void bindCar(sol::state &state) {
   table.set_function("setMission",
                      [](const int &_self, const int &_carMission) { Command<0x00AF>(_self, _carMission); });
   table.set_function("isInArea2D", [](const int &_self, const float &_leftBottomX, const float &_leftBottomY,
-                                      const float &_rightTopX, const float &_rightTopY, const int &_drawSphere) {
+                                      const float &_rightTopX, const float &_rightTopY, const bool &_drawSphere) {
     auto result = Command<0x00B0>(_self, _leftBottomX, _leftBottomY, _rightTopX, _rightTopY, _drawSphere);
     return std::make_tuple(result);
   });
   table.set_function("isInArea3D", [](const int &_self, const float &_leftBottomX, const float &_leftBottomY,
                                       const float &_leftBottomZ, const float &_rightTopX, const float &_rightTopY,
-                                      const float &_rightTopZ, const int &_drawSphere) {
+                                      const float &_rightTopZ, const bool &_drawSphere) {
     auto result = Command<0x00B1>(_self, _leftBottomX, _leftBottomY, _leftBottomZ, _rightTopX, _rightTopY, _rightTopZ,
                                   _drawSphere);
     return std::make_tuple(result);
@@ -71,36 +71,38 @@ void bindCar(sol::state &state) {
   table.set_function("addUpsidedownCheck", [](const int &_self) { Command<0x0190>(_self); });
   table.set_function("removeUpsidedownCheck", [](const int &_self) { Command<0x0191>(_self); });
   table.set_function("isStoppedInArea2D", [](const int &_self, const float &_leftBottomX, const float &_leftBottomY,
-                                             const float &_rightTopX, const float &_rightTopY, const int &_drawSphere) {
+                                             const float &_rightTopX, const float &_rightTopY,
+                                             const bool &_drawSphere) {
     auto result = Command<0x01AB>(_self, _leftBottomX, _leftBottomY, _rightTopX, _rightTopY, _drawSphere);
     return std::make_tuple(result);
   });
-  table.set_function("isStoppedInArea3D", [](const int &_self, const float &_leftBottomX, const float &_leftBottomY,
-                                             const float &_leftBottomZ, const float &_rightTopX,
-                                             const float &_rightTopY, const float &_rightTopZ, const int &_drawSphere) {
-    auto result = Command<0x01AC>(_self, _leftBottomX, _leftBottomY, _leftBottomZ, _rightTopX, _rightTopY, _rightTopZ,
-                                  _drawSphere);
-    return std::make_tuple(result);
-  });
+  table.set_function("isStoppedInArea3D",
+                     [](const int &_self, const float &_leftBottomX, const float &_leftBottomY,
+                        const float &_leftBottomZ, const float &_rightTopX, const float &_rightTopY,
+                        const float &_rightTopZ, const bool &_drawSphere) {
+                       auto result = Command<0x01AC>(_self, _leftBottomX, _leftBottomY, _leftBottomZ, _rightTopX,
+                                                     _rightTopY, _rightTopZ, _drawSphere);
+                       return std::make_tuple(result);
+                     });
   table.set_function("locate2D", [](const int &_self, const float &_x, const float &_y, const float &_xRadius,
-                                    const float &_yRadius, const int &_drawSphere) {
+                                    const float &_yRadius, const bool &_drawSphere) {
     auto result = Command<0x01AD>(_self, _x, _y, _xRadius, _yRadius, _drawSphere);
     return std::make_tuple(result);
   });
   table.set_function("locateStopped2D", [](const int &_self, const float &_x, const float &_y, const float &_xRadius,
-                                           const float &_yRadius, const int &_drawSphere) {
+                                           const float &_yRadius, const bool &_drawSphere) {
     auto result = Command<0x01AE>(_self, _x, _y, _xRadius, _yRadius, _drawSphere);
     return std::make_tuple(result);
   });
   table.set_function("locate3D",
                      [](const int &_self, const float &_x, const float &_y, const float &_z, const float &_xRadius,
-                        const float &_yRadius, const float &_zRadius, const int &_drawSphere) {
+                        const float &_yRadius, const float &_zRadius, const bool &_drawSphere) {
                        auto result = Command<0x01AF>(_self, _x, _y, _z, _xRadius, _yRadius, _zRadius, _drawSphere);
                        return std::make_tuple(result);
                      });
   table.set_function("locateStopped3D",
                      [](const int &_self, const float &_x, const float &_y, const float &_z, const float &_xRadius,
-                        const float &_yRadius, const float &_zRadius, const int &_drawSphere) {
+                        const float &_yRadius, const float &_zRadius, const bool &_drawSphere) {
                        auto result = Command<0x01B0>(_self, _x, _y, _z, _xRadius, _yRadius, _zRadius, _drawSphere);
                        return std::make_tuple(result);
                      });
@@ -119,7 +121,7 @@ void bindCar(sol::state &state) {
     Command<0x01EA>(_self, &count_);
     return std::make_tuple(count_);
   });
-  table.set_function("setHeavy", [](const int &_self, const int &_state) { Command<0x01EC>(_self, _state); });
+  table.set_function("setHeavy", [](const int &_self, const bool &_state) { Command<0x01EC>(_self, _state); });
   table.set_function("isInAirProper", [](const int &_self) {
     auto result = Command<0x01F3>(_self);
     return std::make_tuple(result);
@@ -135,7 +137,7 @@ void bindCar(sol::state &state) {
     auto result = Command<0x020D>(_self);
     return std::make_tuple(result);
   });
-  table.set_function("setTaxiLights", [](const int &_self, const int &_state) { Command<0x0216>(_self, _state); });
+  table.set_function("setTaxiLights", [](const int &_self, const bool &_state) { Command<0x0216>(_self, _state); });
   table.set_function("setHealth", [](const int &_self, const int &_health) { Command<0x0224>(_self, _health); });
   table.set_function("getHealth", [](const int &_self) {
     int health_;
@@ -146,13 +148,14 @@ void bindCar(sol::state &state) {
     Command<0x0229>(_self, _primaryColor, _secondaryColor);
   });
   table.set_function("armWithBomb", [](const int &_self, const int &_bombType) { Command<0x0242>(_self, _bombType); });
-  table.set_function("setCanRespray", [](const int &_self, const int &_state) { Command<0x0294>(_self, _state); });
+  table.set_function("setCanRespray", [](const int &_self, const bool &_state) { Command<0x0294>(_self, _state); });
   table.set_function("setOnlyDamagedByPlayer",
-                     [](const int &_self, const int &_state) { Command<0x02AA>(_self, _state); });
-  table.set_function("setProofs", [](const int &_self, const int &_bulletProof, const int &_fireProof,
-                                     const int &_explosionProof, const int &_collisionProof, const int &_meleeProof) {
-    Command<0x02AC>(_self, _bulletProof, _fireProof, _explosionProof, _collisionProof, _meleeProof);
-  });
+                     [](const int &_self, const bool &_state) { Command<0x02AA>(_self, _state); });
+  table.set_function("setProofs",
+                     [](const int &_self, const bool &_bulletProof, const bool &_fireProof, const bool &_explosionProof,
+                        const bool &_collisionProof, const bool &_meleeProof) {
+                       Command<0x02AC>(_self, _bulletProof, _fireProof, _explosionProof, _collisionProof, _meleeProof);
+                     });
   table.set_function("isInWater", [](const int &_self) {
     auto result = Command<0x02BF>(_self);
     return std::make_tuple(result);
@@ -182,26 +185,26 @@ void bindCar(sol::state &state) {
     auto result = Command<0x031E>(_self, _weaponType);
     return std::make_tuple(result);
   });
-  table.set_function("setVisible", [](const int &_self, const int &_state) { Command<0x0338>(_self, _state); });
-  table.set_function("switchSiren", [](const int &_self, const int &_state) { Command<0x0397>(_self, _state); });
-  table.set_function("setWatertight", [](const int &_self, const int &_state) { Command<0x039C>(_self, _state); });
+  table.set_function("setVisible", [](const int &_self, const bool &_state) { Command<0x0338>(_self, _state); });
+  table.set_function("switchSiren", [](const int &_self, const bool &_state) { Command<0x0397>(_self, _state); });
+  table.set_function("setWatertight", [](const int &_self, const bool &_state) { Command<0x039C>(_self, _state); });
   table.set_function("turnToFaceCoord",
                      [](const int &_self, const float &_x, const float &_y) { Command<0x039F>(_self, _x, _y); });
   table.set_function("setStatus", [](const int &_self, const int &_status) { Command<0x03A2>(_self, _status); });
-  table.set_function("setStrong", [](const int &_self, const int &_state) { Command<0x03AB>(_self, _state); });
+  table.set_function("setStrong", [](const int &_self, const bool &_state) { Command<0x03AB>(_self, _state); });
   table.set_function("isVisiblyDamaged", [](const int &_self) {
     auto result = Command<0x03C9>(_self);
     return std::make_tuple(result);
   });
   table.set_function("setUpsidedownNotDamaged",
-                     [](const int &_self, const int &_state) { Command<0x03ED>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x03ED>(_self, _state); });
   table.set_function("getColors", [](const int &_self) {
     int primaryColour_;
     int secondaryColour_;
     Command<0x03F3>(_self, &primaryColour_, &secondaryColour_);
     return std::make_tuple(primaryColour_, secondaryColour_);
   });
-  table.set_function("setCanBeDamaged", [](const int &_self, const int &_state) { Command<0x03F5>(_self, _state); });
+  table.set_function("setCanBeDamaged", [](const int &_self, const bool &_state) { Command<0x03F5>(_self, _state); });
   table.set_function("getOffsetInWorldCoords",
                      [](const int &_self, const float &_xOffset, const float &_yOffset, const float &_zOffset) {
                        float x_;
@@ -213,7 +216,7 @@ void bindCar(sol::state &state) {
   table.set_function("setTraction",
                      [](const int &_self, const float &_traction) { Command<0x0423>(_self, _traction); });
   table.set_function("setAvoidLevelTransitions",
-                     [](const int &_self, const int &_state) { Command<0x0428>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x0428>(_self, _state); });
   table.set_function("isPassengerSeatFree", [](const int &_self, const int &_seatIndex) {
     auto result = Command<0x0431>(_self, _seatIndex);
     return std::make_tuple(result);
@@ -228,7 +231,7 @@ void bindCar(sol::state &state) {
     Command<0x0441>(_self, &modelId_);
     return std::make_tuple(modelId_);
   });
-  table.set_function("setStayInFastLane", [](const int &_self, const int &_state) { Command<0x0466>(_self, _state); });
+  table.set_function("setStayInFastLane", [](const int &_self, const bool &_state) { Command<0x0466>(_self, _state); });
   table.set_function("clearLastWeaponDamage", [](const int &_self) { Command<0x0468>(_self); });
   table.set_function("getDriver", [](const int &_self) {
     int handle_;
@@ -250,7 +253,7 @@ void bindCar(sol::state &state) {
   });
   table.set_function("setForwardSpeed",
                      [](const int &_self, const float &_forwardSpeed) { Command<0x04BA>(_self, _forwardSpeed); });
-  table.set_function("markAsConvoyCar", [](const int &_self, const int &_state) { Command<0x04BD>(_self, _state); });
+  table.set_function("markAsConvoyCar", [](const int &_self, const bool &_state) { Command<0x04BD>(_self, _state); });
   table.set_function("setStraightLineDistance",
                      [](const int &_self, const int &_distance) { Command<0x04E0>(_self, _distance); });
   table.set_function("popBoot", [](const int &_self) { Command<0x04E1>(_self); });
@@ -263,7 +266,7 @@ void bindCar(sol::state &state) {
     Command<0x0506>(__unused, _component1, _component2);
   });
   table.set_function("closeAllDoors", [](const int &_self) { Command<0x0508>(_self); });
-  table.set_function("freezePosition", [](const int &_self, const int &_state) { Command<0x0519>(_self, _state); });
+  table.set_function("freezePosition", [](const int &_self, const bool &_state) { Command<0x0519>(_self, _state); });
   table.set_function("hasBeenDamagedByChar", [](const int &_self, const int &_handle) {
     auto result = Command<0x051C>(_self, _handle);
     return std::make_tuple(result);
@@ -272,16 +275,16 @@ void bindCar(sol::state &state) {
     auto result = Command<0x051D>(_self, _other);
     return std::make_tuple(result);
   });
-  table.set_function("setCanBurstTires", [](const int &_self, const int &_state) { Command<0x053F>(_self, _state); });
+  table.set_function("setCanBurstTires", [](const int &_self, const bool &_state) { Command<0x053F>(_self, _state); });
   table.set_function("clearLastDamageEntity", [](const int &_self) { Command<0x054F>(_self); });
   table.set_function("doesExist", [](const int &_handle) {
     auto result = Command<0x056E>(_handle);
     return std::make_tuple(result);
   });
   table.set_function("freezePositionAndDontLoadCollision",
-                     [](const int &_self, const int &_state) { Command<0x0574>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x0574>(_self, _state); });
   table.set_function("setLoadCollisionFlag",
-                     [](const int &_self, const int &_state) { Command<0x0587>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x0587>(_self, _state); });
   table.set_function("setToFadeIn", [](const int &_self, const int &_alpha) { Command<0x0594>(_self, _alpha); });
   table.set_function("startPlayback", [](const int &_self, const int &_path) { Command<0x05EB>(_self, _path); });
   table.set_function("stopPlayback", [](const int &_self) { Command<0x05EC>(_self); });
@@ -309,17 +312,17 @@ void bindCar(sol::state &state) {
   });
   table.set_function("detach",
                      [](const int &_self, const float &_x, const float &_y, const float &_z,
-                        const int &_collisionDetection) { Command<0x0684>(_self, _x, _y, _z, _collisionDetection); });
+                        const bool &_collisionDetection) { Command<0x0684>(_self, _x, _y, _z, _collisionDetection); });
   table.set_function("isAttached", [](const int &_self) {
     auto result = Command<0x0686>(_self);
     return std::make_tuple(result);
   });
-  table.set_function("popDoor", [](const int &_self, const int &_door, const int &_visibility) {
+  table.set_function("popDoor", [](const int &_self, const int &_door, const bool &_visibility) {
     Command<0x0689>(_self, _door, _visibility);
   });
   table.set_function("fixDoor", [](const int &_self, const int &_door) { Command<0x068A>(_self, _door); });
   table.set_function("taskEveryoneLeave", [](const int &_self) { Command<0x068B>(_self); });
-  table.set_function("popPanel", [](const int &_self, const int &_panelId, const int &_visibility) {
+  table.set_function("popPanel", [](const int &_self, const int &_panelId, const bool &_visibility) {
     Command<0x0697>(_self, _panelId, _visibility);
   });
   table.set_function("fixPanel", [](const int &_self, const int &_panelId) { Command<0x0698>(_self, _panelId); });
@@ -372,11 +375,11 @@ void bindCar(sol::state &state) {
                      [](const int &_self, const int &_pathId) { Command<0x0705>(_self, _pathId); });
   table.set_function("skipInPlayback", [](const int &_self, const float &_amount) { Command<0x0706>(_self, _amount); });
   table.set_function("explodeInCutscene", [](const int &_self) { Command<0x070C>(_self); });
-  table.set_function("setStayInSlowLane", [](const int &_self, const int &_state) { Command<0x0714>(_self, _state); });
+  table.set_function("setStayInSlowLane", [](const int &_self, const bool &_state) { Command<0x0714>(_self, _state); });
   table.set_function("damagePanel", [](const int &_self, const int &_panelId) { Command<0x0730>(_self, _panelId); });
   table.set_function("setRoll", [](const int &_self, const float &_yAngle) { Command<0x0731>(_self, _yAngle); });
   table.set_function("setCanGoAgainstTraffic",
-                     [](const int &_self, const int &_state) { Command<0x073B>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x073B>(_self, _state); });
   table.set_function("damageDoor", [](const int &_self, const int &_door) { Command<0x073C>(_self, _door); });
   table.set_function("setAsMissionCar", [](const int &_self) { Command<0x0763>(_self); });
   table.set_function("getPitch", [](const int &_self) {
@@ -406,18 +409,18 @@ void bindCar(sol::state &state) {
     Command<0x07DB>(_self, _x, _y, _z);
   });
   table.set_function("setAlwaysCreateSkids",
-                     [](const int &_self, const int &_state) { Command<0x07EE>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x07EE>(_self, _state); });
   table.set_function("controlHydraulics", [](const int &_self, const float &__p2, const float &__p3, const float &__p4,
                                              const float &__p5) { Command<0x07F5>(_self, __p2, __p3, __p4, __p5); });
   table.set_function("setFollowCar", [](const int &_self, const int &_handle, const float &_radius) {
     Command<0x07F8>(_self, _handle, _radius);
   });
-  table.set_function("setHydraulics", [](const int &_self, const int &_state) { Command<0x07FF>(_self, _state); });
+  table.set_function("setHydraulics", [](const int &_self, const bool &_state) { Command<0x07FF>(_self, _state); });
   table.set_function("doesHaveHydraulics", [](const int &_self) {
     auto result = Command<0x0803>(_self);
     return std::make_tuple(result);
   });
-  table.set_function("setEngineBroken", [](const int &_self, const int &_state) { Command<0x081D>(_self, _state); });
+  table.set_function("setEngineBroken", [](const int &_self, const bool &_state) { Command<0x081D>(_self, _state); });
   table.set_function("getUprightValue", [](const int &_self) {
     float value_;
     Command<0x083F>(_self, &value_);
@@ -426,9 +429,9 @@ void bindCar(sol::state &state) {
   table.set_function("setAreaVisible",
                      [](const int &_self, const int &_interiorId) { Command<0x0840>(_self, _interiorId); });
   table.set_function("selectWeapons", [](const int &_self, const int &__p2) { Command<0x0841>(_self, __p2); });
-  table.set_function("setCanBeTargeted", [](const int &_self, const int &_state) { Command<0x084E>(_self, _state); });
+  table.set_function("setCanBeTargeted", [](const int &_self, const bool &_state) { Command<0x084E>(_self, _state); });
   table.set_function("setCanBeVisiblyDamaged",
-                     [](const int &_self, const int &_state) { Command<0x0852>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x0852>(_self, _state); });
   table.set_function("startPlaybackLooped",
                      [](const int &_self, const int &_pathId) { Command<0x085E>(_self, _pathId); });
   table.set_function("setDirtLevel", [](const int &_self, const float &_level) { Command<0x0878>(_self, _level); });
@@ -443,7 +446,7 @@ void bindCar(sol::state &state) {
   });
   table.set_function("controlMovablePart",
                      [](const int &_self, const float &_range) { Command<0x08A4>(_self, _range); });
-  table.set_function("winchCanPickUp", [](const int &_self, const int &_state) { Command<0x08A5>(_self, _state); });
+  table.set_function("winchCanPickUp", [](const int &_self, const bool &_state) { Command<0x08A5>(_self, _state); });
   table.set_function("openDoorABit", [](const int &_self, const int &_door, const float &_value) {
     Command<0x08A6>(_self, _door, _value);
   });
@@ -452,7 +455,7 @@ void bindCar(sol::state &state) {
     return std::make_tuple(result);
   });
   table.set_function("explodeInCutsceneShakeAndBits",
-                     [](const int &_self, const int &_shake, const int &_effect, const int &_sound) {
+                     [](const int &_self, const bool &_shake, const bool &_effect, const bool &_sound) {
                        Command<0x08CB>(_self, _shake, _effect, _sound);
                      });
   table.set_function("getClass", [](const int &_self) {
@@ -461,16 +464,16 @@ void bindCar(sol::state &state) {
     return std::make_tuple(class_);
   });
   table.set_function("canBeTargetedByHsMissile",
-                     [](const int &_self, const int &_state) { Command<0x08F2>(_self, _state); });
-  table.set_function("setFreebies", [](const int &_self, const int &_state) { Command<0x08F3>(_self, _state); });
-  table.set_function("setEngineOn", [](const int &_self, const int &_state) { Command<0x0918>(_self, _state); });
-  table.set_function("setLightsOn", [](const int &_self, const int &_state) { Command<0x0919>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x08F2>(_self, _state); });
+  table.set_function("setFreebies", [](const int &_self, const bool &_state) { Command<0x08F3>(_self, _state); });
+  table.set_function("setEngineOn", [](const int &_self, const bool &_state) { Command<0x0918>(_self, _state); });
+  table.set_function("setLightsOn", [](const int &_self, const bool &_state) { Command<0x0919>(_self, _state); });
   table.set_function("attachToObject", [](const int &_self, const int &_handle, const float &_xOffset,
                                           const float &_yOffset, const float &_zOffset, const float &_xRotation,
                                           const float &_yRotation, const float &_zRotation) {
     Command<0x0939>(_self, _handle, _xOffset, _yOffset, _zOffset, _xRotation, _yRotation, _zRotation);
   });
-  table.set_function("doesProvideCover", [](const int &_self, const int &_state) { Command<0x0957>(_self, _state); });
+  table.set_function("doesProvideCover", [](const int &_self, const bool &_state) { Command<0x0957>(_self, _state); });
   table.set_function("controlDoor", [](const int &_self, const int &_door, const int &_latch, const float &_angle) {
     Command<0x095E>(_self, _door, _latch, _angle);
   });
@@ -522,12 +525,12 @@ void bindCar(sol::state &state) {
     Command<0x098D>(_self, &offset_);
     return std::make_tuple(offset_);
   });
-  table.set_function("setCollision", [](const int &_self, const int &_state) { Command<0x099A>(_self, _state); });
+  table.set_function("setCollision", [](const int &_self, const bool &_state) { Command<0x099A>(_self, _state); });
   table.set_function("changePlaybackToUseAi", [](const int &_self) { Command<0x099B>(_self); });
   table.set_function("randomPassengerSay",
                      [](const int &_self, const int &_speechId) { Command<0x09AB>(_self, _speechId); });
   table.set_function("setIsConsideredByPlayer",
-                     [](const int &_self, const int &_state) { Command<0x09B0>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x09B0>(_self, _state); });
   table.set_function("getDoorLockStatus", [](const int &_self) {
     int lockStatus_;
     Command<0x09B3>(_self, &lockStatus_);
@@ -538,7 +541,7 @@ void bindCar(sol::state &state) {
     return std::make_tuple(result);
   });
   table.set_function("setPetrolTankWeakpoint",
-                     [](const int &_self, const int &_state) { Command<0x09C4>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x09C4>(_self, _state); });
   table.set_function("isTouchingCar", [](const int &_self, const int &_handle) {
     auto result = Command<0x09CB>(_self, _handle);
     return std::make_tuple(result);
@@ -567,7 +570,7 @@ void bindCar(sol::state &state) {
     auto result = Command<0x0A15>(_self);
     return std::make_tuple(result);
   });
-  table.set_function("improveByCheating", [](const int &_self, const int &_state) { Command<0x0A21>(_self, _state); });
+  table.set_function("improveByCheating", [](const int &_self, const bool &_state) { Command<0x0A21>(_self, _state); });
   table.set_function("fix", [](const int &_self) { Command<0x0A30>(_self); });
 
   // CLEO
@@ -589,11 +592,11 @@ void bindCar(sol::state &state) {
     auto result = Command<0x0ABE>(_self);
     return std::make_tuple(result);
   });
-  table.set_function("cleoSetEngineOn", [](const int &_self, const int &_state) { Command<0x0ABF>(_self, _state); });
+  table.set_function("cleoSetEngineOn", [](const int &_self, const bool &_state) { Command<0x0ABF>(_self, _state); });
 
   // CLEO+
   table.set_function("setModelAlpha", [](const int &_self, const int &_alpha) { Command<0x0D0F>(_self, _alpha); });
-  table.set_function("setDoorWindowState", [](const int &_self, const int &_door, const int &_state) {
+  table.set_function("setDoorWindowState", [](const int &_self, const int &_door, const bool &_state) {
     Command<0x0D33>(_self, _door, _state);
   });
   table.set_function("getAlarm", [](const int &_self) {
@@ -635,7 +638,7 @@ void bindCar(sol::state &state) {
     return std::make_tuple(result, tractor_);
   });
   table.set_function("getDummyCoord",
-                     [](const int &_self, const int &_vehicleDummy, const int &_worldCoords, const int &_invertX) {
+                     [](const int &_self, const int &_vehicleDummy, const bool &_worldCoords, const bool &_invertX) {
                        float x_;
                        float y_;
                        float z_;
@@ -675,12 +678,12 @@ void bindCar(sol::state &state) {
     return std::make_tuple(result);
   });
   table.set_function("getProofs", [](const int &_self) {
-    int bullet_;
-    int fire_;
-    int explosion_;
-    int collision_;
-    int melee_;
-    Command<0x0EAD>(_self, &bullet_, &fire_, &explosion_, &collision_, &melee_);
+    bool bullet_;
+    bool fire_;
+    bool explosion_;
+    bool collision_;
+    bool melee_;
+    Command<0x0EAD>(_self, (int *)&bullet_, (int *)&fire_, (int *)&explosion_, (int *)&collision_, (int *)&melee_);
     return std::make_tuple(bullet_, fire_, explosion_, collision_, melee_);
   });
   table.set_function("setCoordinatesSimple", [](const int &_self, const float &_x, const float &_y, const float &_z) {
@@ -723,7 +726,7 @@ void bindCar(sol::state &state) {
     return std::make_tuple(result);
   });
   table.set_function("setOwnedByPlayer",
-                     [](const int &_self, const int &_ownedByPlayer) { Command<0x0EF6>(_self, _ownedByPlayer); });
+                     [](const int &_self, const bool &_ownedByPlayer) { Command<0x0EF6>(_self, _ownedByPlayer); });
   table.set_function("getAnimGroup", [](const int &_self) {
     int carAnimGroup_;
     Command<0x0EF9>(_self, &carAnimGroup_);

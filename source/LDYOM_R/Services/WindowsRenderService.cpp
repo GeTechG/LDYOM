@@ -34,6 +34,7 @@
 #include "PyrotechnicsWindow.h"
 #include "QuickCommandsWindow.h"
 #include "SaveConfirmPopup.h"
+#include "ScriptsWindow.h"
 #include "Settings.h"
 #include "SettingsWindow.h"
 #include "ToolsWindow.h"
@@ -111,6 +112,8 @@ void addWindows() {
 	});
 	windows.emplace_back(
 		std::make_unique<Windows::QuickCommandsWindow>());
+	windows.emplace_back(
+		std::make_unique<Windows::ScriptsWindow>());
 
 	Windows::WindowsRenderService::getInstance().addRender("renderNotifications", [] {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f); // Round borders

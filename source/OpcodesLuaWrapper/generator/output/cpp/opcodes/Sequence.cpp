@@ -14,5 +14,5 @@ void bindSequence(sol::state &state) {
   });
   table.set_function("close", [](const int &_self) { Command<0x0616>(_self); });
   table.set_function("clear", [](const int &_self) { Command<0x061B>(_self); });
-  table.set_function("setToRepeat", [](const int &_self, const int &_state) { Command<0x0643>(_self, _state); });
+  table.set_function("setToRepeat", [](const int &_self, const bool &_state) { Command<0x0643>(_self, _state); });
 }

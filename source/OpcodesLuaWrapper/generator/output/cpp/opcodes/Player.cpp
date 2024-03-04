@@ -39,7 +39,7 @@ void bindPlayer(sol::state &state) {
     auto result = Command<0x0122>(_self);
     return std::make_tuple(result);
   });
-  table.set_function("setControl", [](const int &_self, const int &_state) { Command<0x01B4>(_self, _state); });
+  table.set_function("setControl", [](const int &_self, const bool &_state) { Command<0x01B4>(_self, _state); });
   table.set_function("storeWantedLevel", [](const int &_self) {
     int wantedLevel_;
     Command<0x01C0>(_self, &wantedLevel_);
@@ -50,7 +50,7 @@ void bindPlayer(sol::state &state) {
     Command<0x01F5>(_self, &handle_);
     return std::make_tuple(handle_);
   });
-  table.set_function("applyBrakesToCar", [](const int &_self, const int &_state) { Command<0x0221>(_self, _state); });
+  table.set_function("applyBrakesToCar", [](const int &_self, const bool &_state) { Command<0x0221>(_self, _state); });
   table.set_function("isInRemoteMode", [](const int &_self) {
     auto result = Command<0x0241>(_self);
     return std::make_tuple(result);
@@ -65,14 +65,14 @@ void bindPlayer(sol::state &state) {
     Command<0x0298>(_self, _modelId, &amount_);
     return std::make_tuple(amount_);
   });
-  table.set_function("setNeverGetsTired", [](const int &_self, const int &_state) { Command<0x0330>(_self, _state); });
-  table.set_function("setFastReload", [](const int &_self, const int &_state) { Command<0x0331>(_self, _state); });
+  table.set_function("setNeverGetsTired", [](const int &_self, const bool &_state) { Command<0x0330>(_self, _state); });
+  table.set_function("setFastReload", [](const int &_self, const bool &_state) { Command<0x0331>(_self, _state); });
   table.set_function("canStartMission", [](const int &_self) {
     auto result = Command<0x03EE>(_self);
     return std::make_tuple(result);
   });
   table.set_function("makeSafeForCutscene", [](const int &_self) { Command<0x03EF>(_self); });
-  table.set_function("setFreeHealthCare", [](const int &_self, const int &_state) { Command<0x0414>(_self, _state); });
+  table.set_function("setFreeHealthCare", [](const int &_self, const bool &_state) { Command<0x0414>(_self, _state); });
   table.set_function("isTargetingChar", [](const int &_self, const int &_handle) {
     auto result = Command<0x0457>(_self, _handle);
     return std::make_tuple(result);
@@ -99,15 +99,15 @@ void bindPlayer(sol::state &state) {
     auto result = Command<0x0500>(_self, _modelName, _bodyPart);
     return std::make_tuple(result);
   });
-  table.set_function("setCanDoDriveBy", [](const int &_self, const int &_state) { Command<0x0501>(_self, _state); });
+  table.set_function("setCanDoDriveBy", [](const int &_self, const bool &_state) { Command<0x0501>(_self, _state); });
   table.set_function("setDrunkenness",
                      [](const int &_self, const int &_intensity) { Command<0x052C>(_self, _intensity); });
-  table.set_function("makeFireProof", [](const int &_self, const int &_state) { Command<0x055D>(_self, _state); });
+  table.set_function("makeFireProof", [](const int &_self, const bool &_state) { Command<0x055D>(_self, _state); });
   table.set_function("increaseMaxHealth", [](const int &_self, const int &_value) { Command<0x055E>(_self, _value); });
   table.set_function("increaseMaxArmor", [](const int &_self, const int &_value) { Command<0x055F>(_self, _value); });
   table.set_function("ensureHasDriveByWeapon",
                      [](const int &_self, const int &_ammo) { Command<0x0563>(_self, _ammo); });
-  table.set_function("isInInfoZone", [](const int &_self, const int &_infoZone) {
+  table.set_function("isInInfoZone", [](const int &_self, const char *_infoZone) {
     auto result = Command<0x0583>(_self, _infoZone);
     return std::make_tuple(result);
   });
@@ -115,7 +115,7 @@ void bindPlayer(sol::state &state) {
     auto result = Command<0x068C>(_self);
     return std::make_tuple(result);
   });
-  table.set_function("disableSprint", [](const int &_self, const int &_state) { Command<0x06AF>(_self, _state); });
+  table.set_function("disableSprint", [](const int &_self, const bool &_state) { Command<0x06AF>(_self, _state); });
   table.set_function("delete", [](const int &_self) { Command<0x06DF>(_self); });
   table.set_function("buildModel", [](const int &_self) { Command<0x070D>(_self); });
   table.set_function("giveClothes",
@@ -130,7 +130,7 @@ void bindPlayer(sol::state &state) {
     return std::make_tuple(handle_);
   });
   table.set_function("setGroupRecruitment",
-                     [](const int &_self, const int &_state) { Command<0x07B4>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x07B4>(_self, _state); });
   table.set_function("isPerformingWheelie", [](const int &_self) {
     auto result = Command<0x07F1>(_self);
     return std::make_tuple(result);
@@ -175,25 +175,26 @@ void bindPlayer(sol::state &state) {
   });
   table.set_function("setModel", [](const int &_self, const int &_modelId) { Command<0x09C7>(_self, _modelId); });
   table.set_function("forceInteriorLighting",
-                     [](const int &_self, const int &_state) { Command<0x09D7>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x09D7>(_self, _state); });
   table.set_function("useDetonator", []() { Command<0x09D9>(); });
   table.set_function("isControlOn", [](const int &_self) {
     auto result = Command<0x09E7>(_self);
     return std::make_tuple(result);
   });
-  table.set_function("takeOffGoggles", [](const int &_self, const int &_animate) { Command<0x09EB>(_self, _animate); });
+  table.set_function("takeOffGoggles",
+                     [](const int &_self, const bool &_animate) { Command<0x09EB>(_self, _animate); });
   table.set_function("isUsingJetpack", [](const int &_self) {
     auto result = Command<0x0A0C>(_self);
     return std::make_tuple(result);
   });
   table.set_function("setGroupToFollowAlways",
-                     [](const int &_self, const int &_state) { Command<0x0A20>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x0A20>(_self, _state); });
   table.set_function("isClimbing", [](const int &_self) {
     auto result = Command<0x0A29>(_self);
     return std::make_tuple(result);
   });
   table.set_function("setGroupToFollowNever",
-                     [](const int &_self, const int &_state) { Command<0x0A31>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x0A31>(_self, _state); });
   table.set_function("isLastBuildingModelShot", [](const int &_self, const int &_modelId) {
     auto result = Command<0x0A3A>(_self, _modelId);
     return std::make_tuple(result);

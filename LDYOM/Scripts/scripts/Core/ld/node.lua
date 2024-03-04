@@ -1,5 +1,7 @@
 ---@class LDNodeEditorNode
----@field id number
+---@field id integer
 ---@field nodeType string
 ---@field inputs LDNodeEditorPin[]
 ---@field outputs LDNodeEditorPin[]
+---@field position_x number
+---@field position_y number

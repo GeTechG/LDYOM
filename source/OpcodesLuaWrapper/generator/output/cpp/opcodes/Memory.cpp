@@ -7,10 +7,10 @@ using namespace plugin;
 void bindMemory(sol::state &state) {
   auto table = state.create_table("MemoryOp");
   // CLEO
-  table.set_function("write", [](const int &_address, const int &_size, const int &_value, const int &_vp) {
+  table.set_function("write", [](const int &_address, const int &_size, const int &_value, const bool &_vp) {
     Command<0x0A8C>(_address, _size, _value, _vp);
   });
-  table.set_function("read", [](const int &_address, const int &_size, const int &_vp) {
+  table.set_function("read", [](const int &_address, const int &_size, const bool &_vp) {
     int result_;
     Command<0x0A8D>(_address, _size, _vp, &result_);
     return std::make_tuple(result_);
@@ -59,7 +59,7 @@ void bindMemory(sol::state &state) {
     Command<0x0AAA>(_scriptName, &address_);
     return std::make_tuple(address_);
   });
-  table.set_function("getLabelPointer", [](const int &_label) {
+  table.set_function("getLabelPointer", [](const char *_label) {
     int address_;
     Command<0x0AC6>(_label, &address_);
     return std::make_tuple(address_);

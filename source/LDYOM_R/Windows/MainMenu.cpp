@@ -20,6 +20,7 @@
 #include "ProjectInfoWindow.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
+#include "ScriptsWindow.h"
 #include "Tasker.h"
 #include "ToolsWindow.h"
 #include "WindowsRenderService.h"
@@ -165,7 +166,12 @@ namespace Windows {
 				WindowsRenderService::getInstance().replaceWindow<MainMenu, SettingsWindow>();
 			}
 
-			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SCROLL, local.get("console_window.title")).c_str(),
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_SCROLL, local.get("scripts.title")).c_str(),
+			                  ImVec2(scaleFont * 200.0f, .0f))) {
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, ScriptsWindow>();
+			}
+
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_TERMINAL, local.get("console_window.title")).c_str(),
 			                  ImVec2(scaleFont * 200.0f, .0f))) {
 				WindowsRenderService::getInstance().replaceWindow<MainMenu, ConsoleWindow>();
 			}

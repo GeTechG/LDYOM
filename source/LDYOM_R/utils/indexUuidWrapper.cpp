@@ -13,46 +13,49 @@
 #include "../Data/VisualEffect.h"
 
 void indexUuidWrapper(sol::state &state) {
-	auto indexByUuuidGeneric = []<typename T>(const std::vector<std::unique_ptr<T>> &vector, const sol::object &uuid) {
-		boost::uuids::uuid uuid_{};
-		memcpy(uuid_.data, uuid.pointer(), sizeof uuid_.data);
+	auto indexByUuuidGeneric = []<typename T>(const std::vector<std::unique_ptr<T>> &vector, const std::string &uuid) {
+		boost::uuids::uuid uuid_ = uuid.empty() ? boost::uuids::uuid{} : boost::uuids::string_generator()(uuid);
 		return utils::indexByUuid(vector, uuid_);
 	};
 
 	auto ldyomTable = state["ld"].get_or_create<sol::table>();
 	ldyomTable.set("indexByUuid", sol::overload(
+		               [&indexByUuuidGeneric](const std::vector<std::unique_ptr<BaseObjective>> &vector,
+		                                      const std::string &uuid) {
+			               return indexByUuuidGeneric(vector, uuid);
+		               },
 		               [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Actor>> &vector,
-		                                      const sol::object &uuid) {
+		                                      const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Audio>> &vector,
-		                                         const sol::object &uuid) {
+		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Checkpoint>> &vector,
-		                                         const sol::object &uuid) {
+		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Object>> &vector,
-		                                         const sol::object &uuid) {
+		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<BaseObjective>> &vector,
-		                                         const sol::object &uuid) {
+		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Particle>> &vector,
-		                                         const sol::object &uuid) {
+		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Pickup>> &vector,
-		                                         const sol::object &uuid) {
+		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Pyrotechnics>> &vector,
-		                                         const sol::object &uuid) {
+		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Train>> &vector,
-		                                         const sol::object &uuid) {
+		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<Vehicle>> &vector,
-		                                         const sol::object &uuid) {
+		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<VisualEffect>> &vector,
-		                                         const sol::object &uuid) {
+		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }));
 }

@@ -8,7 +8,7 @@ void bindTrain(sol::state &state) {
   auto table = state.create_table("TrainOp");
   // default
   table.set_function("create",
-                     [](const int &_type, const float &_x, const float &_y, const float &_z, const int &_direction) {
+                     [](const int &_type, const float &_x, const float &_y, const float &_z, const bool &_direction) {
                        int handle_;
                        Command<0x06D8>(_type, _x, _y, _z, _direction, &handle_);
                        return std::make_tuple(handle_);
@@ -35,7 +35,7 @@ void bindTrain(sol::state &state) {
     return std::make_tuple(result);
   });
   table.set_function("setForcedToSlowDown",
-                     [](const int &_self, const int &_state) { Command<0x09CF>(_self, _state); });
+                     [](const int &_self, const bool &_state) { Command<0x09CF>(_self, _state); });
   table.set_function("findDirection", [](const int &_self) {
     auto result = Command<0x09E3>(_self);
     return std::make_tuple(result);

@@ -28,7 +28,7 @@ call_function_result = "auto result = {full_function_name}({input_args_with_poin
 call_function = "{full_function_name}({input_args_with_pointers});"
 function_input_arg = "{type} {input_name}"
 function_pointers_pointer_declaration = "auto {pointer_name} = std::make_unique<{type}>({input_value});"
-function_pointers_declaration = "auto {pointer_name} = {var_name}.is<{type}>() ? std::make_unique<{type}>() : std::make_unique<{type}>({var_name}.as<{type}>());"
+function_pointers_declaration = "auto {pointer_name} = {var_name}.get_type() == sol::type::nil ? std::make_unique<{type}>() : std::make_unique<{type}>({var_name}.as<{type}>());"
 constructor_declaration = """[]{input_args} {{
             auto result = {full_function_name}{call_args};
             return std::shared_ptr<{struct_name}>(result, {deleter});
@@ -124,10 +124,28 @@ ImGui.TextUnformatted = function(text, endText) end
 ---@param label string
 ---@param str string
 ---@param flags integer
----@param callback function
----@param userData userdata
+---@param callback function | nil
+---@param userData userdata | nil
 ---@return boolean, string
 ImGui.InputText = function(label, str, flags, callback, userData) end
+
+---@param label string
+---@param str string
+---@param size ImVec2
+---@param flags integer
+---@param callback function | nil
+---@param userData userdata | nil
+---@return boolean, string
+ImGui.InputTextMultiline = function(label, str, size, flags, callback, userData) end
+
+---@param label string
+---@param hint string
+---@param str string
+---@param flags integer
+---@param callback function | nil
+---@param userData userdata | nil
+---@return boolean, string
+ImGui.InputTextWithHint = function(label, hint, str, flags, callback, userData) end
 
 ---CalcTextSize(ImVec2 *pOut, const char* text,const char* text_end=((void*)0),bool hide_text_after_double_hash=false,float wrap_width=-1.0f)
 ---@param pOut ImVec2
@@ -136,6 +154,9 @@ ImGui.InputText = function(label, str, flags, callback, userData) end
 ---@param hideTextAfterDoubleHash boolean
 ---@param wrapWidth number
 ImGui.CalcTextSize = function(pOut, text, endText, hideTextAfterDoubleHash, wrapWidth) end
+
+---@return ImGuiWindow
+getCurrentWindowGImgui = function() end
 """
 
 [teal]

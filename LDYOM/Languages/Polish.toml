@@ -79,6 +79,7 @@ false = "Fałsz"
 yes = "Tak"
 no = "Nie"
 wait_end = "Czekaj na koniec"
+ok = "OK"
 color_marker_enum = ["Brak markera", "Czerwony", "Zielony", "Jasny niebieski", "Biały", "Żółty", "Niebieski"]
 type_marker_enum = ["Kolorowy marker", "Marker ikony"]
 weathers_types = ["Bardzo słoneczna (LS)", "Słoneczna (LS)", "Bardzo słoneczna, zadymiona (LS)", "Słoneczna, zadymiona (LS)", "Pochmurna (LS)", "Słoneczna (SF)", "Bardzo słoneczna (SF)", "Pochmurna (SF)", "Deszczowa (SF)", "Mglista (SF)", "Słoneczna (LV)", "Bardzo słoneczna (LV)", "Pochmurna (LV)", "Bardzo słoneczna (CS)", "Słoneczna (CS)", "Pochmurna (CS)", "Deszczowa (CS)", "Bardzo słoneczna (Pustynia)", "Słoneczna (Pustynia)", "Burza piaskowa (Pustynia)", "Podwodna", "Dodatkowa 1", "Dodatkowa 2"]
@@ -978,3 +979,7 @@ conditions = ["Bez warunku", "Aktor martwy", "Gracz w pojeździe"]
 title = "Dokumentacja dewelopera"
 teleport_to_player = "Teleportuj do gracza"
 kill = "Zabić"
+
+[scripts]
+title = "Skrypty"
+save_info = "Aby wprowadzić zmiany, zrestartuj grę"
