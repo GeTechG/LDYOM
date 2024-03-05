@@ -32,7 +32,7 @@ void Windows::ScriptsWindow::draw() {
 	const ImVec2 displaySize = ImGui::GetIO().DisplaySize;
 	ImGui::SetNextWindowPos(ImVec2(displaySize.x / 2.f, displaySize.y / 2.f), ImGuiCond_Appearing,
 	                        ImVec2(.5f, .5f));
-	if (ImGui::Begin(fmt::format("{} {}", ICON_FA_COGS, local.get("settings.title")).c_str(), nullptr,
+	if (ImGui::Begin(fmt::format("{} {}", ICON_FA_SCROLL, local.get("scripts.title")).c_str(), nullptr,
 	                 ImGuiWindowFlags_AlwaysAutoResize)) {
 		if (ImGui::BeginListBox("##unloadedScripts", ImVec2(200 * fontScale, 400 * fontScale))) {
 			for (auto unloadedScriptIterate = unloadedScripts.begin();
