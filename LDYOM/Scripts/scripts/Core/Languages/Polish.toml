@@ -1,0 +1,209 @@
+[nodes.node_editor]
+title = "Edytor węzłów"
+incorrect_pin_kind = "x Nieprawidłowy rodzaj pinu"
+incorrect_pin_type = "x Niespójne typy pinów"
+create_link = "+ Stwórz połączenie"
+create_node = "+ Stwórz węzeł"
+node_context_menu = "Menu kontekstowe węzła"
+pin_context_menu = "Menu kontekstowe pinu"
+link_context_menu = "Menu kontekstowe połączenia"
+delete = "Usuń"
+type = "Typ: %s"
+contexts = "Konteksty"
+variables = "Zmienne"
+variable = "Zmienna"
+rename = "Zmień nazwę"
+edit = "Edytuj"
+player_position = "Pozycja gracza"
+clear_anim = "Wyczyść animację"
+
+[nodes.node_editor.details]
+title = "Szczegóły"
+name = "Nazwa"
+type = "Typ"
+default_value = "Wartość domyślna"
+value = "Wartość"
+
+[nodes.node_editor.categories]
+main = "Główne"
+debug = "Debugowanie"
+project = "Projekt"
+scene = "Scena"
+actor = "Aktor"
+audio = "Audio"
+checkpoint = "Punkty kontrolne"
+object = "Obiekt"
+particle = "Cząsteczki"
+pickup = "Podnoszenie"
+pyrotechnics = "Pirotechnika"
+train = "Pociąg"
+vehicle = "Pojazd"
+visual_effect = "Efekt wizualny"
+player = "Gracz"
+variable = "Zmienna"
+global_variable = "Zmienna globalna"
+objective = "Cel"
+char = "Postać"
+[nodes.types.core]
+flow = "Przepływ"
+number = "Liczba"
+bool = "Logiczne"
+string = "Tekst"
+Char = "Postać"
+Object = "Obiekt"
+Checkpoint = "Punkt kontrolny"
+DecisionMakerChar = "DecisionMakerChar"
+Searchlight = "Reflektor"
+AudioStream3D = "Strumień audio 3D"
+AudioStream = "Strumień audio"
+Vehicle = "Pojazd"
+ScriptFire = "Ogień"
+Particle = "Cząsteczki"
+Train = "Pociąg"
+[nodes.core.on_start_project]
+title = "Po rozpoczęciu projektu"
+
+[nodes.core.debug_print]
+title = "Wyświetl debugowanie"
+
+[nodes.core.on_start_scene]
+title = "Przy uruchomieniu sceny"
+
+[nodes.core.main_loop]
+title = "Główna pętla"
+
+[nodes.core.branch]
+title = "Rozgałęzienie"
+
+[nodes.core.comparison]
+title = "Porównanie"
+
+[nodes.core.invert]
+title = "Odwróć"
+
+[nodes.core.wait]
+title = "Czekaj"
+
+[nodes.core.spawn_actor]
+title = "Stwórz aktora"
+
+[nodes.core.destroy_actor]
+title = "Zniszcz aktora"
+
+[nodes.core.get_char]
+title = "Pobierz postać"
+
+[nodes.core.play_audio]
+title = "Odtwórz audio"
+
+[nodes.core.stop_audio]
+title = "Zatrzymaj audio"
+
+[nodes.core.spawn_checkpoint]
+title = "Stwórz punkt kontrolny"
+
+[nodes.core.destroy_checkpoint]
+title = "Zniszcz punkt kontrolny"
+
+[nodes.core.spawn_object]
+title = "Stwórz obiekt"
+
+[nodes.core.destroy_object]
+title = "Zniszcz obiekt"
+
+[nodes.core.get_object]
+title = "Pobierz obiekt"
+
+[nodes.core.spawn_particle]
+title = "Stwórz cząsteczkę"
+
+[nodes.core.destroy_particle]
+title = "Zniszcz cząsteczkę"
+
+[nodes.core.spawn_pickup]
+title = "Stwórz podnoszenie"
+
+[nodes.core.destroy_pickup]
+title = "Zniszcz podnoszenie"
+
+[nodes.core.spawn_pyrotechnics]
+title = "Stwórz pirotechnikę"
+
+[nodes.core.destroy_pyrotechnics]
+title = "Zniszcz pirotechnikę"
+
+[nodes.core.spawn_train]
+title = "Stwórz pociąg"
+
+[nodes.core.destroy_train]
+title = "Zniszcz pociąg"
+
+[nodes.core.get_train]
+title = "Pobierz pociąg"
+
+[nodes.core.spawn_vehicle]
+title = "Stwórz pojazd"
+
+[nodes.core.destroy_vehicle]
+title = "Zniszcz pojazd"
+
+[nodes.core.get_vehicle]
+title = "Pobierz pojazd"
+
+[nodes.core.spawn_visual_effect]
+title = "Stwórz efekt wizualny"
+
+[nodes.core.destroy_visual_effect]
+title = "Zniszcz efekt wizualny"
+
+[nodes.core.set_variable]
+title = "Ustaw zmienną"
+
+[nodes.core.get_variable]
+title = "Pobierz zmienną"
+
+[nodes.core.number_to_string]
+title = "Liczba na tekst"
+
+[nodes.core.calc_number]
+title = "Kalkulator"
+
+[nodes.core.concat_string]
+title = "Połącz tekst"
+
+[nodes.core.set_global_variable]
+title = "Ustaw zmienną globalną"
+
+[nodes.core.get_global_variable]
+title = "Pobierz zmienną globalną"
+
+[nodes.core.emit_signal]
+title = "Wysłanie sygnału"
+
+[nodes.core.is_current_objective]
+title = "Sprawdź aktualny cel"
+
+[nodes.core.on_start_objective]
+title = "Przy rozpoczęciu celu"
+
+[nodes.core.while_for]
+title = "Wykonaj do"
+to = "Do momentu"
+on_true = "Jeśli prawda"
+
+[nodes.core.char_follow_path]
+title = "Postać podążająca ścieżką"
+on_complete = "Po zakończeniu"
+start_from_nearest = "Rozpocznij od najbliższego"
+
+[nodes.core.char_animation]
+title = "Animacja postaci"
+on_complete = "Po zakończeniu"
+play_type = "Rodzaj odtwarzania"
+play_types_info = "Standardowy - odtwarza animację\nNiezatrzymany - odtwarza animację, której nie można przerwać\nWtórny - odtwarza animację górnych części ciała\nSpecjalny - odtwarza animację z dodatkowymi parametrami"
+unlock_x = "Odblokuj X"
+unlock_y = "Odblokuj Y"
+lock_f = "Zablokuj ostatni kadr"
+disable_force = "Wyłącz przerwanie"
+disable_lock_z = "Odblokuj Z"
+play_types = ["Standardowy", "Niezatrzymany", "Wtórny", "Specjalny"]
