@@ -26,6 +26,8 @@ local lastFrameWindowSize = 0.0;
 
 local showRightMenu = false;
 local searchBuffer = "";
+---@type integer | nil
+local selectedContext = nil;
 
 local openPopupPosition = ImVec2.new();
 
@@ -89,7 +91,13 @@ function ShowLeftPane(paneWidth, ed)
     ImGui.GetContentRegionAvail(contentRegionAvail);
     paneWidth = contentRegionAvail.x;
 
-    ImGui.Button(fa.ICON_FA_PLUS_SQUARE .. "##context", ImVec2.new(21 * fontScale, 0));
+    local openRenamePopupContext = false;
+    if ImGui.Button(fa.ICON_FA_PLUS_SQUARE .. "##context", ImVec2.new(21 * fontScale, 0)) then
+        LDNodeEditor.addNewContext(ed);
+        selectedContext = #ed.contexts;
+        ed.currentIndexContext = selectedContext;
+        openRenameVariablePopup = true;
+    end
     ImGui.SameLine(0, -1);
     local isOpenListContexts = ImGui.CollapsingHeader(ld.loc.get("nodes.node_editor.contexts"), 0);
     if isOpenListContexts then
@@ -100,12 +108,12 @@ function ShowLeftPane(paneWidth, ed)
                 if ImGui.Selectable(context.name, isSelected, 0, ImVec2.new(0, 0)) then
                     ed.currentIndexContext = i;
                 end
-                local openRenamePopup = false;
                 if ImGui.BeginPopupContextItem("##edContextContextMenu" .. i, ImGuiPopupFlags.MouseButtonRight) then
                     ImGui.TextUnformatted(context.name);
                     ImGui.Separator();
                     if ImGui.MenuItem(ld.loc.get("nodes.node_editor.rename"), "", false, true) then
-                        openRenamePopup = true;
+                        selectedContext = i;
+                        openRenamePopupContext = true;
                     end
                     if ImGui.MenuItem(ld.loc.get("nodes.node_editor.delete"), "", false, #ed.contexts > 1) then
                         table.remove(ed.contexts, i);
@@ -115,24 +123,25 @@ function ShowLeftPane(paneWidth, ed)
                     end
                     ImGui.EndPopup();
                 end
-
-                if openRenamePopup then
-                    ImGui.OpenPopup("renameContextPopup", 0);
-                end
-
-                if ImGui.BeginPopup("renameContextPopup", 0) then
-                    local newName = context.name;
-                    _, newName = ImGui.InputText("##inputNameRename", newName, ImGuiInputTextFlags.EnterReturnsTrue, nil, nil);
-                    if ImGui.IsItemDeactivatedAfterEdit() then
-                        context.name = newName;
-                        ImGui.CloseCurrentPopup();
-                    end
-                    ImGui.EndPopup();
-                end
             end
 
             ImGui.EndListBox();
         end
+    end
+
+    if openRenamePopupContext then
+        ImGui.OpenPopup("renameContextPopup", 0);
+    end
+
+    if ImGui.BeginPopup("renameContextPopup", 0) then
+        local context = ed.contexts[selectedContext];
+        local newName = context.name;
+        _, newName = ImGui.InputText("##inputNameRename", newName, ImGuiInputTextFlags.EnterReturnsTrue, nil, nil);
+        if ImGui.IsItemDeactivatedAfterEdit() then
+            context.name = newName;
+            ImGui.CloseCurrentPopup();
+        end
+        ImGui.EndPopup();
     end
 
     local openRenameVariablePopup = false;

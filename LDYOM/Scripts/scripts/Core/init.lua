@@ -170,7 +170,7 @@ function init(scriptData)
 
     ld.window.setMainMenuRender("node_editor_button", function()
         local scaleFont = ImGui.GetFontSize() / 16;
-        if ImGui.Button(fa.ICON_FA_PROJECT_DIAGRAM .. " Node Editor (Lua)", ImVec2.new(scaleFont * 200, 0)) then
+        if ImGui.Button(fa.ICON_FA_PROJECT_DIAGRAM .. " " .. ld.loc.get("nodes.node_editor.title"), ImVec2.new(scaleFont * 200, 0)) then
             ld.window.replaceWindow(function()
                 ld.window.closeMainMenu();
                 ld.window.openLuaWindow(bind(drawNodeEditor, editor));
