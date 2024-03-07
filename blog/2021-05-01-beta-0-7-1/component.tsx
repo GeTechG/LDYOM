@@ -45,7 +45,7 @@ export default function () {
                     decided to switch to C++, rewriting LDYOM on it, thus I have almost full control over the code,
                     except for GTA itself. Yes, I haven't eliminated all the unknown game crashes. But at least
                     something.</p>
-                <p>In early April, I released a joke version <Link to="2077">LDYOM 2077</Link>, I planned to demonstrate
+                <p>In early April, I released a joke version LDYOM 2077, I planned to demonstrate
                     the upcoming version. In the end, I found out that some people have performance issues. This
                     prompted me to release the version earlier than planned, for more extensive testing. According to
                     the results of the vote, we decided that it would still be <b>0.7.1</b>, not <b>0.7.0.5</b>.</p>
