@@ -1,0 +1,78 @@
+.download_buttons {
+    display: flex;
+    flex-direction: column;
+    -ms-flex-align: center;
+    width: 65%;
+}
+
+.button {
+    font-family: var(--ifm-heading-font-family);
+    font-weight: 300;
+    font-size: 16pt;
+    color: white;
+    text-decoration: none;
+    padding: 0.8em 1em calc(0.8em + 3px);
+    border-radius: 3px;
+    background: var(--ifm-color-primary);
+    box-shadow: 0 -3px var(--ifm-color-primary-darker) inset;
+    transition: 0.2s;
+    margin: 20px auto auto;
+}
+
+.button:hover {
+    background: var(--ifm-color-primary-light);
+}
+
+.button:active {
+    background: var(--ifm-color-primary-lightest);
+    box-shadow: 0 3px var(--ifm-color-primary-lighter) inset;
+}
+
+div.version {
+    margin: 20px;
+    padding: 20px;
+    background-color: var(--ifm-color-primary-darkest);
+    box-shadow: 0px 1px 5px #999;
+    color: white;
+    display: flex;
+}
+div.version #version h2 {
+    margin: 0;
+}
+div.version #version time {
+    margin-bottom: 0;
+}
+div.version #changelog {
+}
+div.version #changelog p {
+    margin: 0;
+    font-size: 16pt;
+}
+
+div.version a {
+    margin: auto;
+    margin-right: 20px;
+}
+
+hr {
+    margin-left: 20px;
+    margin-right: 20px;
+    color: white;
+    size: 1px;
+}
+
+b {
+    font-weight: 500;
+}
+
+h1 {
+    font-weight: 300;
+}
+
+h2 {
+    font-weight: 300;
+}
+
+body {
+    font-weight: 300;
+}

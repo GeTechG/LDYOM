@@ -1,10 +1,41 @@
-# LDYOM
-A mission-making platform for Grand Theft Auto: San Andreas. Created as a spiritual successor of [DYOM](https://dyom.gtagames.nl/), it uses C++/Lua external plug-ins and technically is modular in contrast to DYOM's hardcoded features all done in its main script.
-Making use of visual scripting with some basic programming and node systems, it allows designers to make non-linear missions (here referred as 'Scenes'/'Projects' starting from 0.8) and is overall very flexible and rich with a wide library of nodes covering a plethora of things, from camera settings and audio control to memory read/write functions, to logical operations.
+# Website
 
-## Links
-* Webblog - [NO LINK YET!]
-* Site - https://getechg.github.io/LDYOM/
-* Documentation - https://getechg.github.io/LDYOM_DOC/
-* Telegram chat - https://t.me/ldyom
-* Discord server - https://discord.gg/SqmeF377XV
+This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+
+### Installation
+
+```
+$ yarn
+```
+
+### Local Development
+
+```
+$ yarn start
+```
+
+This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+
+### Build
+
+```
+$ yarn build
+```
+
+This command generates static content into the `build` directory and can be served using any static contents hosting service.
+
+### Deployment
+
+Using SSH:
+
+```
+$ USE_SSH=true yarn deploy
+```
+
+Not using SSH:
+
+```
+$ GIT_USER=<Your GitHub username> yarn deploy
+```
+
+If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
