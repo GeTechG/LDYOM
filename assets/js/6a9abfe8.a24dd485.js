@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkldyom_site=self.webpackChunkldyom_site||[]).push([[705],{2643:s=>{s.exports=JSON.parse('{"label":"0.7.2","permalink":"/blog/tags/0-7-2","allTagsPath":"/blog/tags","count":1,"unlisted":false}')}}]);
