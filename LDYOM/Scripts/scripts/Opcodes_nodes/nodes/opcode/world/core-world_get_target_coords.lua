@@ -17,7 +17,7 @@ local worldGetTargetCoordsNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -27,22 +27,10 @@ local worldGetTargetCoordsNode = {
             id = newNodeId,
             nodeType = WORLD_GET_TARGET_COORDS_NODE_TYPE,
             inputs = {
-                {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-
+                
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -81,16 +69,13 @@ local worldGetTargetCoordsNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
+        LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
+		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "x");
 
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[3], "x");
+		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[3], "y");
 
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[4], "y");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[5], "z");
+		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[4], "z");
 
 
         builder:End();
@@ -101,7 +86,7 @@ local worldGetTargetCoordsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local result, x, y, z = WorldOp.getTargetCoords()
-        return {1, result, x, y, z}
+        return {result, x, y, z}
     end
 }
 

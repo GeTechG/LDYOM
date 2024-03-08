@@ -18,7 +18,7 @@ local charIsTouchingObjectOnFootNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -29,12 +29,6 @@ local charIsTouchingObjectOnFootNode = {
             nodeType = CHAR_IS_TOUCHING_OBJECT_ON_FOOT_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -50,12 +44,6 @@ local charIsTouchingObjectOnFootNode = {
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -78,18 +66,15 @@ local charIsTouchingObjectOnFootNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "self", function ()
-            node.self_ = editor.dataTypes[node.inputs[2].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "self", function ()
+            node.self_ = editor.dataTypes[node.inputs[1].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "object", function ()
-            node.object = editor.dataTypes[node.inputs[3].type].drawEditValue(node.object, "##objectEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "object", function ()
+            node.object = editor.dataTypes[node.inputs[2].type].drawEditValue(node.object, "##objectEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -99,10 +84,10 @@ local charIsTouchingObjectOnFootNode = {
     ---@param node LDNodeEditorCharIsTouchingObjectOnFootNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local self_ = inputValues[2] or node.self_
-		local object = inputValues[3] or node.object
+        local self_ = inputValues[1] or node.self_
+		local object = inputValues[2] or node.object
 		local result = CharOp.isTouchingObjectOnFoot(self_, object)
-        return {1, result}
+        return {result}
     end
 }
 

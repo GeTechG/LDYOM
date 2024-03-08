@@ -17,7 +17,7 @@ local gameIs2PlayerGameGoingOnNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -27,22 +27,10 @@ local gameIs2PlayerGameGoingOnNode = {
             id = newNodeId,
             nodeType = GAME_IS2_PLAYER_GAME_GOING_ON_NODE_TYPE,
             inputs = {
-                {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-
+                
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -63,10 +51,7 @@ local gameIs2PlayerGameGoingOnNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
+        LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
 
         builder:End();
@@ -77,7 +62,7 @@ local gameIs2PlayerGameGoingOnNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local result = GameOp.is2PlayerGameGoingOn()
-        return {1, result}
+        return {result}
     end
 }
 

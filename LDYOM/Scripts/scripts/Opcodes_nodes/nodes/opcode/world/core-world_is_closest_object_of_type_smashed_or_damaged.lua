@@ -22,7 +22,7 @@ local worldIsClosestObjectOfTypeSmashedOrDamagedNode = {
     category = "opcode.world",
     icon = nodesIcons["function"],
     color = nodesColors["function"],
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -33,12 +33,6 @@ local worldIsClosestObjectOfTypeSmashedOrDamagedNode = {
             nodeType = WORLD_IS_CLOSEST_OBJECT_OF_TYPE_SMASHED_OR_DAMAGED_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -87,12 +81,6 @@ local worldIsClosestObjectOfTypeSmashedOrDamagedNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -117,38 +105,35 @@ local worldIsClosestObjectOfTypeSmashedOrDamagedNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "x", function ()
-            node.x = editor.dataTypes[node.inputs[2].type].drawEditValue(node.x, "##xEdit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "x", function ()
+            node.x = editor.dataTypes[node.inputs[1].type].drawEditValue(node.x, "##xEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "y", function ()
-            node.y = editor.dataTypes[node.inputs[3].type].drawEditValue(node.y, "##yEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "y", function ()
+            node.y = editor.dataTypes[node.inputs[2].type].drawEditValue(node.y, "##yEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "z", function ()
-            node.z = editor.dataTypes[node.inputs[4].type].drawEditValue(node.z, "##zEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "z", function ()
+            node.z = editor.dataTypes[node.inputs[3].type].drawEditValue(node.z, "##zEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "radius", function ()
-            node.radius = editor.dataTypes[node.inputs[5].type].drawEditValue(node.radius, "##radiusEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "radius", function ()
+            node.radius = editor.dataTypes[node.inputs[4].type].drawEditValue(node.radius, "##radiusEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "modelId", function ()
-            node.modelId = editor.dataTypes[node.inputs[6].type].drawEditValue(node.modelId, "##modelIdEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "modelId", function ()
+            node.modelId = editor.dataTypes[node.inputs[5].type].drawEditValue(node.modelId, "##modelIdEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "smashed", function ()
-            node.smashed = editor.dataTypes[node.inputs[7].type].drawEditValue(node.smashed, "##smashedEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "smashed", function ()
+            node.smashed = editor.dataTypes[node.inputs[6].type].drawEditValue(node.smashed, "##smashedEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[8], "damaged", function ()
-            node.damaged = editor.dataTypes[node.inputs[8].type].drawEditValue(node.damaged, "##damagedEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "damaged", function ()
+            node.damaged = editor.dataTypes[node.inputs[7].type].drawEditValue(node.damaged, "##damagedEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -158,15 +143,15 @@ local worldIsClosestObjectOfTypeSmashedOrDamagedNode = {
     ---@param node LDNodeEditorWorldIsClosestObjectOfTypeSmashedOrDamagedNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local x = inputValues[2] or node.x
-		local y = inputValues[3] or node.y
-		local z = inputValues[4] or node.z
-		local radius = inputValues[5] or node.radius
-		local modelId = inputValues[6] or node.modelId
-		local smashed = inputValues[7] or node.smashed
-		local damaged = inputValues[8] or node.damaged
+        local x = inputValues[1] or node.x
+		local y = inputValues[2] or node.y
+		local z = inputValues[3] or node.z
+		local radius = inputValues[4] or node.radius
+		local modelId = inputValues[5] or node.modelId
+		local smashed = inputValues[6] or node.smashed
+		local damaged = inputValues[7] or node.damaged
 		local result = WorldOp.isClosestObjectOfTypeSmashedOrDamaged(x, y, z, radius, modelId, smashed, damaged)
-        return {1, result}
+        return {result}
     end
 }
 

@@ -17,7 +17,7 @@ local gameIsNightVisionActiveNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -27,22 +27,10 @@ local gameIsNightVisionActiveNode = {
             id = newNodeId,
             nodeType = GAME_IS_NIGHT_VISION_ACTIVE_NODE_TYPE,
             inputs = {
-                {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-
+                
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -63,10 +51,7 @@ local gameIsNightVisionActiveNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
+        LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
 
         builder:End();
@@ -77,7 +62,7 @@ local gameIsNightVisionActiveNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local result = GameOp.isNightVisionActive()
-        return {1, result}
+        return {result}
     end
 }
 

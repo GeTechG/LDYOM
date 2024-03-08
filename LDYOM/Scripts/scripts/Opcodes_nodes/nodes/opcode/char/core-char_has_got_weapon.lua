@@ -18,7 +18,7 @@ local charHasGotWeaponNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -29,12 +29,6 @@ local charHasGotWeaponNode = {
             nodeType = CHAR_HAS_GOT_WEAPON_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -50,12 +44,6 @@ local charHasGotWeaponNode = {
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -78,12 +66,11 @@ local charHasGotWeaponNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "self", function ()
-            node.self_ = editor.dataTypes[node.inputs[2].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "self", function ()
+            node.self_ = editor.dataTypes[node.inputs[1].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "weaponType", function ()
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "weaponType", function ()
             local name = "<Not set>";
             for key, value in pairs(enums.WeaponType) do
                 if value == node.weaponType then
@@ -117,8 +104,6 @@ local charHasGotWeaponNode = {
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
-
 
         builder:End();
     end,
@@ -127,10 +112,10 @@ local charHasGotWeaponNode = {
     ---@param node LDNodeEditorCharHasGotWeaponNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local self_ = inputValues[2] or node.self_
-		local weaponType = inputValues[3] or node.weaponType
+        local self_ = inputValues[1] or node.self_
+		local weaponType = inputValues[2] or node.weaponType
 		local result = CharOp.hasGotWeapon(self_, weaponType)
-        return {1, result}
+        return {result}
     end
 }
 

@@ -18,7 +18,7 @@ local padIsButtonPressedNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -29,12 +29,6 @@ local padIsButtonPressedNode = {
             nodeType = PAD_IS_BUTTON_PRESSED_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -50,12 +44,6 @@ local padIsButtonPressedNode = {
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -78,8 +66,7 @@ local padIsButtonPressedNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "pad", function ()
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "pad", function ()
             local name = "<Not set>";
             for key, value in pairs(enums.PadId) do
                 if value == node.pad then
@@ -111,7 +98,7 @@ local padIsButtonPressedNode = {
             end
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "buttonId", function ()
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "buttonId", function ()
             local name = "<Not set>";
             for key, value in pairs(enums.Button) do
                 if value == node.buttonId then
@@ -145,8 +132,6 @@ local padIsButtonPressedNode = {
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
-
 
         builder:End();
     end,
@@ -155,10 +140,10 @@ local padIsButtonPressedNode = {
     ---@param node LDNodeEditorPadIsButtonPressedNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local pad = inputValues[2] or node.pad
-		local buttonId = inputValues[3] or node.buttonId
+        local pad = inputValues[1] or node.pad
+		local buttonId = inputValues[2] or node.buttonId
 		local result = PadOp.isButtonPressed(pad, buttonId)
-        return {1, result}
+        return {result}
     end
 }
 

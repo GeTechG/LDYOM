@@ -24,7 +24,7 @@ local objectSlideNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -35,12 +35,6 @@ local objectSlideNode = {
             nodeType = OBJECT_SLIDE_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -95,12 +89,6 @@ local objectSlideNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -126,42 +114,39 @@ local objectSlideNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "self", function ()
-            node.self_ = editor.dataTypes[node.inputs[2].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "self", function ()
+            node.self_ = editor.dataTypes[node.inputs[1].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "fromX", function ()
-            node.fromX = editor.dataTypes[node.inputs[3].type].drawEditValue(node.fromX, "##fromXEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "fromX", function ()
+            node.fromX = editor.dataTypes[node.inputs[2].type].drawEditValue(node.fromX, "##fromXEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "fromY", function ()
-            node.fromY = editor.dataTypes[node.inputs[4].type].drawEditValue(node.fromY, "##fromYEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "fromY", function ()
+            node.fromY = editor.dataTypes[node.inputs[3].type].drawEditValue(node.fromY, "##fromYEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "fromZ", function ()
-            node.fromZ = editor.dataTypes[node.inputs[5].type].drawEditValue(node.fromZ, "##fromZEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "fromZ", function ()
+            node.fromZ = editor.dataTypes[node.inputs[4].type].drawEditValue(node.fromZ, "##fromZEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "xSpeed", function ()
-            node.xSpeed = editor.dataTypes[node.inputs[6].type].drawEditValue(node.xSpeed, "##xSpeedEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "xSpeed", function ()
+            node.xSpeed = editor.dataTypes[node.inputs[5].type].drawEditValue(node.xSpeed, "##xSpeedEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "ySpeed", function ()
-            node.ySpeed = editor.dataTypes[node.inputs[7].type].drawEditValue(node.ySpeed, "##ySpeedEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "ySpeed", function ()
+            node.ySpeed = editor.dataTypes[node.inputs[6].type].drawEditValue(node.ySpeed, "##ySpeedEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[8], "zSpeed", function ()
-            node.zSpeed = editor.dataTypes[node.inputs[8].type].drawEditValue(node.zSpeed, "##zSpeedEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "zSpeed", function ()
+            node.zSpeed = editor.dataTypes[node.inputs[7].type].drawEditValue(node.zSpeed, "##zSpeedEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[9], "collisionCheck", function ()
-            node.collisionCheck = editor.dataTypes[node.inputs[9].type].drawEditValue(node.collisionCheck, "##collisionCheckEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[8], "collisionCheck", function ()
+            node.collisionCheck = editor.dataTypes[node.inputs[8].type].drawEditValue(node.collisionCheck, "##collisionCheckEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -171,16 +156,16 @@ local objectSlideNode = {
     ---@param node LDNodeEditorObjectSlideNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local self_ = inputValues[2] or node.self_
-		local fromX = inputValues[3] or node.fromX
-		local fromY = inputValues[4] or node.fromY
-		local fromZ = inputValues[5] or node.fromZ
-		local xSpeed = inputValues[6] or node.xSpeed
-		local ySpeed = inputValues[7] or node.ySpeed
-		local zSpeed = inputValues[8] or node.zSpeed
-		local collisionCheck = inputValues[9] or node.collisionCheck
+        local self_ = inputValues[1] or node.self_
+		local fromX = inputValues[2] or node.fromX
+		local fromY = inputValues[3] or node.fromY
+		local fromZ = inputValues[4] or node.fromZ
+		local xSpeed = inputValues[5] or node.xSpeed
+		local ySpeed = inputValues[6] or node.ySpeed
+		local zSpeed = inputValues[7] or node.zSpeed
+		local collisionCheck = inputValues[8] or node.collisionCheck
 		local result = ObjectOp.slide(self_, fromX, fromY, fromZ, xSpeed, ySpeed, zSpeed, collisionCheck)
-        return {1, result}
+        return {result}
     end
 }
 

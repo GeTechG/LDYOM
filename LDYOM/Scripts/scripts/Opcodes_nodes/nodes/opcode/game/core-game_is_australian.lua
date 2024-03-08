@@ -17,7 +17,7 @@ local gameIsAustralianNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -27,22 +27,10 @@ local gameIsAustralianNode = {
             id = newNodeId,
             nodeType = GAME_IS_AUSTRALIAN_NODE_TYPE,
             inputs = {
-                {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-
+                
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -63,10 +51,7 @@ local gameIsAustralianNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
+        LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
 
         builder:End();
@@ -77,7 +62,7 @@ local gameIsAustralianNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local result = GameOp.isAustralian()
-        return {1, result}
+        return {result}
     end
 }
 

@@ -17,7 +17,7 @@ local gameIsProceduralInteriorActiveNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -31,24 +31,12 @@ local gameIsProceduralInteriorActiveNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
                     type = "core.number",
                 }
 
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -70,14 +58,11 @@ local gameIsProceduralInteriorActiveNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "interiorId", function ()
-            node.interiorId = editor.dataTypes[node.inputs[2].type].drawEditValue(node.interiorId, "##interiorIdEdit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "interiorId", function ()
+            node.interiorId = editor.dataTypes[node.inputs[1].type].drawEditValue(node.interiorId, "##interiorIdEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -87,9 +72,9 @@ local gameIsProceduralInteriorActiveNode = {
     ---@param node LDNodeEditorGameIsProceduralInteriorActiveNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local interiorId = inputValues[2] or node.interiorId
+        local interiorId = inputValues[1] or node.interiorId
 		local result = GameOp.isProceduralInteriorActive(interiorId)
-        return {1, result}
+        return {result}
     end
 }
 

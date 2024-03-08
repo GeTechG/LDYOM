@@ -22,7 +22,7 @@ local worldIsCopVehicleInArea3DNoSaveNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -33,12 +33,6 @@ local worldIsCopVehicleInArea3DNoSaveNode = {
             nodeType = WORLD_IS_COP_VEHICLE_IN_AREA3_D_NO_SAVE_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -81,12 +75,6 @@ local worldIsCopVehicleInArea3DNoSaveNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -110,34 +98,31 @@ local worldIsCopVehicleInArea3DNoSaveNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "leftBottomX", function ()
-            node.leftBottomX = editor.dataTypes[node.inputs[2].type].drawEditValue(node.leftBottomX, "##leftBottomXEdit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "leftBottomX", function ()
+            node.leftBottomX = editor.dataTypes[node.inputs[1].type].drawEditValue(node.leftBottomX, "##leftBottomXEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "leftBottomY", function ()
-            node.leftBottomY = editor.dataTypes[node.inputs[3].type].drawEditValue(node.leftBottomY, "##leftBottomYEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "leftBottomY", function ()
+            node.leftBottomY = editor.dataTypes[node.inputs[2].type].drawEditValue(node.leftBottomY, "##leftBottomYEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "leftBottomZ", function ()
-            node.leftBottomZ = editor.dataTypes[node.inputs[4].type].drawEditValue(node.leftBottomZ, "##leftBottomZEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "leftBottomZ", function ()
+            node.leftBottomZ = editor.dataTypes[node.inputs[3].type].drawEditValue(node.leftBottomZ, "##leftBottomZEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "rightTopX", function ()
-            node.rightTopX = editor.dataTypes[node.inputs[5].type].drawEditValue(node.rightTopX, "##rightTopXEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "rightTopX", function ()
+            node.rightTopX = editor.dataTypes[node.inputs[4].type].drawEditValue(node.rightTopX, "##rightTopXEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "rightTopY", function ()
-            node.rightTopY = editor.dataTypes[node.inputs[6].type].drawEditValue(node.rightTopY, "##rightTopYEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "rightTopY", function ()
+            node.rightTopY = editor.dataTypes[node.inputs[5].type].drawEditValue(node.rightTopY, "##rightTopYEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "rightTopZ", function ()
-            node.rightTopZ = editor.dataTypes[node.inputs[7].type].drawEditValue(node.rightTopZ, "##rightTopZEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "rightTopZ", function ()
+            node.rightTopZ = editor.dataTypes[node.inputs[6].type].drawEditValue(node.rightTopZ, "##rightTopZEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -147,14 +132,14 @@ local worldIsCopVehicleInArea3DNoSaveNode = {
     ---@param node LDNodeEditorWorldIsCopVehicleInArea3DNoSaveNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local leftBottomX = inputValues[2] or node.leftBottomX
-		local leftBottomY = inputValues[3] or node.leftBottomY
-		local leftBottomZ = inputValues[4] or node.leftBottomZ
-		local rightTopX = inputValues[5] or node.rightTopX
-		local rightTopY = inputValues[6] or node.rightTopY
-		local rightTopZ = inputValues[7] or node.rightTopZ
+        local leftBottomX = inputValues[1] or node.leftBottomX
+		local leftBottomY = inputValues[2] or node.leftBottomY
+		local leftBottomZ = inputValues[3] or node.leftBottomZ
+		local rightTopX = inputValues[4] or node.rightTopX
+		local rightTopY = inputValues[5] or node.rightTopY
+		local rightTopZ = inputValues[6] or node.rightTopZ
 		local result = WorldOp.isCopVehicleInArea3DNoSave(leftBottomX, leftBottomY, leftBottomZ, rightTopX, rightTopY, rightTopZ)
-        return {1, result}
+        return {result}
     end
 }
 

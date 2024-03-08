@@ -18,7 +18,7 @@ local carIsTireBurstNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -29,12 +29,6 @@ local carIsTireBurstNode = {
             nodeType = CAR_IS_TIRE_BURST_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -50,12 +44,6 @@ local carIsTireBurstNode = {
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -78,18 +66,15 @@ local carIsTireBurstNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "self", function ()
-            node.self_ = editor.dataTypes[node.inputs[2].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "self", function ()
+            node.self_ = editor.dataTypes[node.inputs[1].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "tireId", function ()
-            node.tireId = editor.dataTypes[node.inputs[3].type].drawEditValue(node.tireId, "##tireIdEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "tireId", function ()
+            node.tireId = editor.dataTypes[node.inputs[2].type].drawEditValue(node.tireId, "##tireIdEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -99,10 +84,10 @@ local carIsTireBurstNode = {
     ---@param node LDNodeEditorCarIsTireBurstNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local self_ = inputValues[2] or node.self_
-		local tireId = inputValues[3] or node.tireId
+        local self_ = inputValues[1] or node.self_
+		local tireId = inputValues[2] or node.tireId
 		local result = CarOp.isTireBurst(self_, tireId)
-        return {1, result}
+        return {result}
     end
 }
 

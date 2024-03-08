@@ -17,7 +17,7 @@ local textIsEmptyNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -31,24 +31,12 @@ local textIsEmptyNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
                     type = "core.string",
                 }
 
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -70,14 +58,11 @@ local textIsEmptyNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "text", function ()
-            node.text = editor.dataTypes[node.inputs[2].type].drawEditValue(node.text, "##textEdit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "text", function ()
+            node.text = editor.dataTypes[node.inputs[1].type].drawEditValue(node.text, "##textEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -87,9 +72,9 @@ local textIsEmptyNode = {
     ---@param node LDNodeEditorTextIsEmptyNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local text = inputValues[2] or node.text
+        local text = inputValues[1] or node.text
 		local result = TextOp.isEmpty(text)
-        return {1, result}
+        return {result}
     end
 }
 

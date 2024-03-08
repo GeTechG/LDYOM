@@ -19,7 +19,7 @@ local playerIsWearingNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -30,12 +30,6 @@ local playerIsWearingNode = {
             nodeType = PLAYER_IS_WEARING_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -60,12 +54,6 @@ local playerIsWearingNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -86,16 +74,15 @@ local playerIsWearingNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "self", function ()
-            node.self_ = editor.dataTypes[node.inputs[2].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "self", function ()
+            node.self_ = editor.dataTypes[node.inputs[1].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "modelName", function ()
-            node.modelName = editor.dataTypes[node.inputs[3].type].drawEditValue(node.modelName, "##modelNameEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "modelName", function ()
+            node.modelName = editor.dataTypes[node.inputs[2].type].drawEditValue(node.modelName, "##modelNameEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "bodyPart", function ()
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "bodyPart", function ()
             local name = "<Not set>";
             for key, value in pairs(enums.BodyPart) do
                 if value == node.bodyPart then
@@ -129,8 +116,6 @@ local playerIsWearingNode = {
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
-
 
         builder:End();
     end,
@@ -139,11 +124,11 @@ local playerIsWearingNode = {
     ---@param node LDNodeEditorPlayerIsWearingNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local self_ = inputValues[2] or node.self_
-		local modelName = inputValues[3] or node.modelName
-		local bodyPart = inputValues[4] or node.bodyPart
+        local self_ = inputValues[1] or node.self_
+		local modelName = inputValues[2] or node.modelName
+		local bodyPart = inputValues[3] or node.bodyPart
 		local result = PlayerOp.isWearing(self_, modelName, bodyPart)
-        return {1, result}
+        return {result}
     end
 }
 

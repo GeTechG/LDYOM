@@ -24,7 +24,7 @@ local charLocateStoppedInCar3DNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -35,12 +35,6 @@ local charLocateStoppedInCar3DNode = {
             nodeType = CHAR_LOCATE_STOPPED_IN_CAR3_D_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -95,12 +89,6 @@ local charLocateStoppedInCar3DNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -126,42 +114,39 @@ local charLocateStoppedInCar3DNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "self", function ()
-            node.self_ = editor.dataTypes[node.inputs[2].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "self", function ()
+            node.self_ = editor.dataTypes[node.inputs[1].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "x", function ()
-            node.x = editor.dataTypes[node.inputs[3].type].drawEditValue(node.x, "##xEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "x", function ()
+            node.x = editor.dataTypes[node.inputs[2].type].drawEditValue(node.x, "##xEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "y", function ()
-            node.y = editor.dataTypes[node.inputs[4].type].drawEditValue(node.y, "##yEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "y", function ()
+            node.y = editor.dataTypes[node.inputs[3].type].drawEditValue(node.y, "##yEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "z", function ()
-            node.z = editor.dataTypes[node.inputs[5].type].drawEditValue(node.z, "##zEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "z", function ()
+            node.z = editor.dataTypes[node.inputs[4].type].drawEditValue(node.z, "##zEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "xRadius", function ()
-            node.xRadius = editor.dataTypes[node.inputs[6].type].drawEditValue(node.xRadius, "##xRadiusEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "xRadius", function ()
+            node.xRadius = editor.dataTypes[node.inputs[5].type].drawEditValue(node.xRadius, "##xRadiusEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "yRadius", function ()
-            node.yRadius = editor.dataTypes[node.inputs[7].type].drawEditValue(node.yRadius, "##yRadiusEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "yRadius", function ()
+            node.yRadius = editor.dataTypes[node.inputs[6].type].drawEditValue(node.yRadius, "##yRadiusEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[8], "zRadius", function ()
-            node.zRadius = editor.dataTypes[node.inputs[8].type].drawEditValue(node.zRadius, "##zRadiusEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "zRadius", function ()
+            node.zRadius = editor.dataTypes[node.inputs[7].type].drawEditValue(node.zRadius, "##zRadiusEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[9], "drawSphere", function ()
-            node.drawSphere = editor.dataTypes[node.inputs[9].type].drawEditValue(node.drawSphere, "##drawSphereEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[8], "drawSphere", function ()
+            node.drawSphere = editor.dataTypes[node.inputs[8].type].drawEditValue(node.drawSphere, "##drawSphereEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -171,16 +156,16 @@ local charLocateStoppedInCar3DNode = {
     ---@param node LDNodeEditorCharLocateStoppedInCar3DNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local self_ = inputValues[2] or node.self_
-		local x = inputValues[3] or node.x
-		local y = inputValues[4] or node.y
-		local z = inputValues[5] or node.z
-		local xRadius = inputValues[6] or node.xRadius
-		local yRadius = inputValues[7] or node.yRadius
-		local zRadius = inputValues[8] or node.zRadius
-		local drawSphere = inputValues[9] or node.drawSphere
+        local self_ = inputValues[1] or node.self_
+		local x = inputValues[2] or node.x
+		local y = inputValues[3] or node.y
+		local z = inputValues[4] or node.z
+		local xRadius = inputValues[5] or node.xRadius
+		local yRadius = inputValues[6] or node.yRadius
+		local zRadius = inputValues[7] or node.zRadius
+		local drawSphere = inputValues[8] or node.drawSphere
 		local result = CharOp.locateStoppedInCar3D(self_, x, y, z, xRadius, yRadius, zRadius, drawSphere)
-        return {1, result}
+        return {result}
     end
 }
 

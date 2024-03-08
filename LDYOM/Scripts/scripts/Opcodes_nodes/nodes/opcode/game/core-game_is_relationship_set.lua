@@ -19,7 +19,7 @@ local gameIsRelationshipSetNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -30,12 +30,6 @@ local gameIsRelationshipSetNode = {
             nodeType = GAME_IS_RELATIONSHIP_SET_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -60,12 +54,6 @@ local gameIsRelationshipSetNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -86,8 +74,7 @@ local gameIsRelationshipSetNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "relationshipType", function ()
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "relationshipType", function ()
             local name = "<Not set>";
             for key, value in pairs(enums.RelationshipType) do
                 if value == node.relationshipType then
@@ -119,7 +106,7 @@ local gameIsRelationshipSetNode = {
             end
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "ofPedType", function ()
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "ofPedType", function ()
             local name = "<Not set>";
             for key, value in pairs(enums.PedType) do
                 if value == node.ofPedType then
@@ -151,7 +138,7 @@ local gameIsRelationshipSetNode = {
             end
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "toPedType", function ()
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "toPedType", function ()
             local name = "<Not set>";
             for key, value in pairs(enums.PedType) do
                 if value == node.toPedType then
@@ -185,8 +172,6 @@ local gameIsRelationshipSetNode = {
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
-
 
         builder:End();
     end,
@@ -195,11 +180,11 @@ local gameIsRelationshipSetNode = {
     ---@param node LDNodeEditorGameIsRelationshipSetNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local relationshipType = inputValues[2] or node.relationshipType
-		local ofPedType = inputValues[3] or node.ofPedType
-		local toPedType = inputValues[4] or node.toPedType
+        local relationshipType = inputValues[1] or node.relationshipType
+		local ofPedType = inputValues[2] or node.ofPedType
+		local toPedType = inputValues[3] or node.toPedType
 		local result = GameOp.isRelationshipSet(relationshipType, ofPedType, toPedType)
-        return {1, result}
+        return {result}
     end
 }
 

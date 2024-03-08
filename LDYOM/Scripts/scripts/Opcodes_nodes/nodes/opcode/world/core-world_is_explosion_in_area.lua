@@ -23,7 +23,7 @@ local worldIsExplosionInAreaNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -34,12 +34,6 @@ local worldIsExplosionInAreaNode = {
             nodeType = WORLD_IS_EXPLOSION_IN_AREA_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -88,12 +82,6 @@ local worldIsExplosionInAreaNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -118,8 +106,7 @@ local worldIsExplosionInAreaNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "explosionType", function ()
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "explosionType", function ()
             local name = "<Not set>";
             for key, value in pairs(enums.ExplosionType) do
                 if value == node.explosionType then
@@ -151,33 +138,31 @@ local worldIsExplosionInAreaNode = {
             end
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "leftBottomX", function ()
-            node.leftBottomX = editor.dataTypes[node.inputs[3].type].drawEditValue(node.leftBottomX, "##leftBottomXEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "leftBottomX", function ()
+            node.leftBottomX = editor.dataTypes[node.inputs[2].type].drawEditValue(node.leftBottomX, "##leftBottomXEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "leftBottomY", function ()
-            node.leftBottomY = editor.dataTypes[node.inputs[4].type].drawEditValue(node.leftBottomY, "##leftBottomYEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "leftBottomY", function ()
+            node.leftBottomY = editor.dataTypes[node.inputs[3].type].drawEditValue(node.leftBottomY, "##leftBottomYEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "leftBottomZ", function ()
-            node.leftBottomZ = editor.dataTypes[node.inputs[5].type].drawEditValue(node.leftBottomZ, "##leftBottomZEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "leftBottomZ", function ()
+            node.leftBottomZ = editor.dataTypes[node.inputs[4].type].drawEditValue(node.leftBottomZ, "##leftBottomZEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "rightTopX", function ()
-            node.rightTopX = editor.dataTypes[node.inputs[6].type].drawEditValue(node.rightTopX, "##rightTopXEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "rightTopX", function ()
+            node.rightTopX = editor.dataTypes[node.inputs[5].type].drawEditValue(node.rightTopX, "##rightTopXEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "rightTopY", function ()
-            node.rightTopY = editor.dataTypes[node.inputs[7].type].drawEditValue(node.rightTopY, "##rightTopYEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "rightTopY", function ()
+            node.rightTopY = editor.dataTypes[node.inputs[6].type].drawEditValue(node.rightTopY, "##rightTopYEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[8], "rightTopZ", function ()
-            node.rightTopZ = editor.dataTypes[node.inputs[8].type].drawEditValue(node.rightTopZ, "##rightTopZEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "rightTopZ", function ()
+            node.rightTopZ = editor.dataTypes[node.inputs[7].type].drawEditValue(node.rightTopZ, "##rightTopZEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -187,15 +172,15 @@ local worldIsExplosionInAreaNode = {
     ---@param node LDNodeEditorWorldIsExplosionInAreaNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local explosionType = inputValues[2] or node.explosionType
-		local leftBottomX = inputValues[3] or node.leftBottomX
-		local leftBottomY = inputValues[4] or node.leftBottomY
-		local leftBottomZ = inputValues[5] or node.leftBottomZ
-		local rightTopX = inputValues[6] or node.rightTopX
-		local rightTopY = inputValues[7] or node.rightTopY
-		local rightTopZ = inputValues[8] or node.rightTopZ
+        local explosionType = inputValues[1] or node.explosionType
+		local leftBottomX = inputValues[2] or node.leftBottomX
+		local leftBottomY = inputValues[3] or node.leftBottomY
+		local leftBottomZ = inputValues[4] or node.leftBottomZ
+		local rightTopX = inputValues[5] or node.rightTopX
+		local rightTopY = inputValues[6] or node.rightTopY
+		local rightTopZ = inputValues[7] or node.rightTopZ
 		local result = WorldOp.isExplosionInArea(explosionType, leftBottomX, leftBottomY, leftBottomZ, rightTopX, rightTopY, rightTopZ)
-        return {1, result}
+        return {result}
     end
 }
 

@@ -17,7 +17,7 @@ local {node_name_var}Node = {{
     category = "{category}",
     icon = nodesIcons["function"],
     color = nodesColors["function"],{short_desc}
-    isCallable = true,
+    isCallable = {is_callable},
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer

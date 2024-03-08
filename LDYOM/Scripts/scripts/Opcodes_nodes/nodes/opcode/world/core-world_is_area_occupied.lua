@@ -27,7 +27,7 @@ local worldIsAreaOccupiedNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -38,12 +38,6 @@ local worldIsAreaOccupiedNode = {
             nodeType = WORLD_IS_AREA_OCCUPIED_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -116,12 +110,6 @@ local worldIsAreaOccupiedNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -150,54 +138,51 @@ local worldIsAreaOccupiedNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "leftBottomX", function ()
-            node.leftBottomX = editor.dataTypes[node.inputs[2].type].drawEditValue(node.leftBottomX, "##leftBottomXEdit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "leftBottomX", function ()
+            node.leftBottomX = editor.dataTypes[node.inputs[1].type].drawEditValue(node.leftBottomX, "##leftBottomXEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "leftBottomY", function ()
-            node.leftBottomY = editor.dataTypes[node.inputs[3].type].drawEditValue(node.leftBottomY, "##leftBottomYEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "leftBottomY", function ()
+            node.leftBottomY = editor.dataTypes[node.inputs[2].type].drawEditValue(node.leftBottomY, "##leftBottomYEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "leftBottomZ", function ()
-            node.leftBottomZ = editor.dataTypes[node.inputs[4].type].drawEditValue(node.leftBottomZ, "##leftBottomZEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "leftBottomZ", function ()
+            node.leftBottomZ = editor.dataTypes[node.inputs[3].type].drawEditValue(node.leftBottomZ, "##leftBottomZEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "rightTopX", function ()
-            node.rightTopX = editor.dataTypes[node.inputs[5].type].drawEditValue(node.rightTopX, "##rightTopXEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "rightTopX", function ()
+            node.rightTopX = editor.dataTypes[node.inputs[4].type].drawEditValue(node.rightTopX, "##rightTopXEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "rightTopY", function ()
-            node.rightTopY = editor.dataTypes[node.inputs[6].type].drawEditValue(node.rightTopY, "##rightTopYEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "rightTopY", function ()
+            node.rightTopY = editor.dataTypes[node.inputs[5].type].drawEditValue(node.rightTopY, "##rightTopYEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "rightTopZ", function ()
-            node.rightTopZ = editor.dataTypes[node.inputs[7].type].drawEditValue(node.rightTopZ, "##rightTopZEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "rightTopZ", function ()
+            node.rightTopZ = editor.dataTypes[node.inputs[6].type].drawEditValue(node.rightTopZ, "##rightTopZEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[8], "solid", function ()
-            node.solid = editor.dataTypes[node.inputs[8].type].drawEditValue(node.solid, "##solidEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "solid", function ()
+            node.solid = editor.dataTypes[node.inputs[7].type].drawEditValue(node.solid, "##solidEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[9], "car", function ()
-            node.car = editor.dataTypes[node.inputs[9].type].drawEditValue(node.car, "##carEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[8], "car", function ()
+            node.car = editor.dataTypes[node.inputs[8].type].drawEditValue(node.car, "##carEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[10], "char", function ()
-            node.char = editor.dataTypes[node.inputs[10].type].drawEditValue(node.char, "##charEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[9], "char", function ()
+            node.char = editor.dataTypes[node.inputs[9].type].drawEditValue(node.char, "##charEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[11], "object", function ()
-            node.object = editor.dataTypes[node.inputs[11].type].drawEditValue(node.object, "##objectEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[10], "object", function ()
+            node.object = editor.dataTypes[node.inputs[10].type].drawEditValue(node.object, "##objectEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[12], "particle", function ()
-            node.particle = editor.dataTypes[node.inputs[12].type].drawEditValue(node.particle, "##particleEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[11], "particle", function ()
+            node.particle = editor.dataTypes[node.inputs[11].type].drawEditValue(node.particle, "##particleEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -207,19 +192,19 @@ local worldIsAreaOccupiedNode = {
     ---@param node LDNodeEditorWorldIsAreaOccupiedNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local leftBottomX = inputValues[2] or node.leftBottomX
-		local leftBottomY = inputValues[3] or node.leftBottomY
-		local leftBottomZ = inputValues[4] or node.leftBottomZ
-		local rightTopX = inputValues[5] or node.rightTopX
-		local rightTopY = inputValues[6] or node.rightTopY
-		local rightTopZ = inputValues[7] or node.rightTopZ
-		local solid = inputValues[8] or node.solid
-		local car = inputValues[9] or node.car
-		local char = inputValues[10] or node.char
-		local object = inputValues[11] or node.object
-		local particle = inputValues[12] or node.particle
+        local leftBottomX = inputValues[1] or node.leftBottomX
+		local leftBottomY = inputValues[2] or node.leftBottomY
+		local leftBottomZ = inputValues[3] or node.leftBottomZ
+		local rightTopX = inputValues[4] or node.rightTopX
+		local rightTopY = inputValues[5] or node.rightTopY
+		local rightTopZ = inputValues[6] or node.rightTopZ
+		local solid = inputValues[7] or node.solid
+		local car = inputValues[8] or node.car
+		local char = inputValues[9] or node.char
+		local object = inputValues[10] or node.object
+		local particle = inputValues[11] or node.particle
 		local result = WorldOp.isAreaOccupied(leftBottomX, leftBottomY, leftBottomZ, rightTopX, rightTopY, rightTopZ, solid, car, char, object, particle)
-        return {1, result}
+        return {result}
     end
 }
 

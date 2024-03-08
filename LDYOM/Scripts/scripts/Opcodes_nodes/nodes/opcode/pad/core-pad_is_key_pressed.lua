@@ -17,7 +17,7 @@ local padIsKeyPressedNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -31,24 +31,12 @@ local padIsKeyPressedNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
                     type = "core.number",
                 }
 
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -70,8 +58,7 @@ local padIsKeyPressedNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "keyCode", function ()
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "keyCode", function ()
             local name = "<Not set>";
             for key, value in pairs(enums.KeyCode) do
                 if value == node.keyCode then
@@ -105,8 +92,6 @@ local padIsKeyPressedNode = {
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
-
 
         builder:End();
     end,
@@ -115,9 +100,9 @@ local padIsKeyPressedNode = {
     ---@param node LDNodeEditorPadIsKeyPressedNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local keyCode = inputValues[2] or node.keyCode
+        local keyCode = inputValues[1] or node.keyCode
 		local result = PadOp.isKeyPressed(keyCode)
-        return {1, result}
+        return {result}
     end
 }
 

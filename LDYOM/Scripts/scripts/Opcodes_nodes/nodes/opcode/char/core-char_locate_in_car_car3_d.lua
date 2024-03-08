@@ -22,7 +22,7 @@ local charLocateInCarCar3DNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -33,12 +33,6 @@ local charLocateInCarCar3DNode = {
             nodeType = CHAR_LOCATE_IN_CAR_CAR3_D_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -81,12 +75,6 @@ local charLocateInCarCar3DNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -110,34 +98,31 @@ local charLocateInCarCar3DNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "self", function ()
-            node.self_ = editor.dataTypes[node.inputs[2].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "self", function ()
+            node.self_ = editor.dataTypes[node.inputs[1].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "vehicle", function ()
-            node.vehicle = editor.dataTypes[node.inputs[3].type].drawEditValue(node.vehicle, "##vehicleEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "vehicle", function ()
+            node.vehicle = editor.dataTypes[node.inputs[2].type].drawEditValue(node.vehicle, "##vehicleEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "xRadius", function ()
-            node.xRadius = editor.dataTypes[node.inputs[4].type].drawEditValue(node.xRadius, "##xRadiusEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "xRadius", function ()
+            node.xRadius = editor.dataTypes[node.inputs[3].type].drawEditValue(node.xRadius, "##xRadiusEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "yRadius", function ()
-            node.yRadius = editor.dataTypes[node.inputs[5].type].drawEditValue(node.yRadius, "##yRadiusEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "yRadius", function ()
+            node.yRadius = editor.dataTypes[node.inputs[4].type].drawEditValue(node.yRadius, "##yRadiusEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "zRadius", function ()
-            node.zRadius = editor.dataTypes[node.inputs[6].type].drawEditValue(node.zRadius, "##zRadiusEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "zRadius", function ()
+            node.zRadius = editor.dataTypes[node.inputs[5].type].drawEditValue(node.zRadius, "##zRadiusEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "drawSphere", function ()
-            node.drawSphere = editor.dataTypes[node.inputs[7].type].drawEditValue(node.drawSphere, "##drawSphereEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "drawSphere", function ()
+            node.drawSphere = editor.dataTypes[node.inputs[6].type].drawEditValue(node.drawSphere, "##drawSphereEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -147,14 +132,14 @@ local charLocateInCarCar3DNode = {
     ---@param node LDNodeEditorCharLocateInCarCar3DNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local self_ = inputValues[2] or node.self_
-		local vehicle = inputValues[3] or node.vehicle
-		local xRadius = inputValues[4] or node.xRadius
-		local yRadius = inputValues[5] or node.yRadius
-		local zRadius = inputValues[6] or node.zRadius
-		local drawSphere = inputValues[7] or node.drawSphere
+        local self_ = inputValues[1] or node.self_
+		local vehicle = inputValues[2] or node.vehicle
+		local xRadius = inputValues[3] or node.xRadius
+		local yRadius = inputValues[4] or node.yRadius
+		local zRadius = inputValues[5] or node.zRadius
+		local drawSphere = inputValues[6] or node.drawSphere
 		local result = CharOp.locateInCarCar3D(self_, vehicle, xRadius, yRadius, zRadius, drawSphere)
-        return {1, result}
+        return {result}
     end
 }
 

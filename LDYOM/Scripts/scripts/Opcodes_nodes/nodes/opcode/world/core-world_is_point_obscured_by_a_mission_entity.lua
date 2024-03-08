@@ -22,7 +22,7 @@ local worldIsPointObscuredByAMissionEntityNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -33,12 +33,6 @@ local worldIsPointObscuredByAMissionEntityNode = {
             nodeType = WORLD_IS_POINT_OBSCURED_BY_A_MISSION_ENTITY_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -81,12 +75,6 @@ local worldIsPointObscuredByAMissionEntityNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -110,34 +98,31 @@ local worldIsPointObscuredByAMissionEntityNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "x", function ()
-            node.x = editor.dataTypes[node.inputs[2].type].drawEditValue(node.x, "##xEdit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "x", function ()
+            node.x = editor.dataTypes[node.inputs[1].type].drawEditValue(node.x, "##xEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "y", function ()
-            node.y = editor.dataTypes[node.inputs[3].type].drawEditValue(node.y, "##yEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "y", function ()
+            node.y = editor.dataTypes[node.inputs[2].type].drawEditValue(node.y, "##yEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "z", function ()
-            node.z = editor.dataTypes[node.inputs[4].type].drawEditValue(node.z, "##zEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "z", function ()
+            node.z = editor.dataTypes[node.inputs[3].type].drawEditValue(node.z, "##zEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "radiusX", function ()
-            node.radiusX = editor.dataTypes[node.inputs[5].type].drawEditValue(node.radiusX, "##radiusXEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "radiusX", function ()
+            node.radiusX = editor.dataTypes[node.inputs[4].type].drawEditValue(node.radiusX, "##radiusXEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "radiusY", function ()
-            node.radiusY = editor.dataTypes[node.inputs[6].type].drawEditValue(node.radiusY, "##radiusYEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "radiusY", function ()
+            node.radiusY = editor.dataTypes[node.inputs[5].type].drawEditValue(node.radiusY, "##radiusYEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "radiusZ", function ()
-            node.radiusZ = editor.dataTypes[node.inputs[7].type].drawEditValue(node.radiusZ, "##radiusZEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "radiusZ", function ()
+            node.radiusZ = editor.dataTypes[node.inputs[6].type].drawEditValue(node.radiusZ, "##radiusZEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -147,14 +132,14 @@ local worldIsPointObscuredByAMissionEntityNode = {
     ---@param node LDNodeEditorWorldIsPointObscuredByAMissionEntityNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local x = inputValues[2] or node.x
-		local y = inputValues[3] or node.y
-		local z = inputValues[4] or node.z
-		local radiusX = inputValues[5] or node.radiusX
-		local radiusY = inputValues[6] or node.radiusY
-		local radiusZ = inputValues[7] or node.radiusZ
+        local x = inputValues[1] or node.x
+		local y = inputValues[2] or node.y
+		local z = inputValues[3] or node.z
+		local radiusX = inputValues[4] or node.radiusX
+		local radiusY = inputValues[5] or node.radiusY
+		local radiusZ = inputValues[6] or node.radiusZ
 		local result = WorldOp.isPointObscuredByAMissionEntity(x, y, z, radiusX, radiusY, radiusZ)
-        return {1, result}
+        return {result}
     end
 }
 

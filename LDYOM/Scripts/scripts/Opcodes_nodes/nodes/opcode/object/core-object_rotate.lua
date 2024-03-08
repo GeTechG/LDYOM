@@ -20,7 +20,7 @@ local objectRotateNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -31,12 +31,6 @@ local objectRotateNode = {
             nodeType = OBJECT_ROTATE_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -67,12 +61,6 @@ local objectRotateNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -94,26 +82,23 @@ local objectRotateNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "self", function ()
-            node.self_ = editor.dataTypes[node.inputs[2].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "self", function ()
+            node.self_ = editor.dataTypes[node.inputs[1].type].drawEditValue(node.self_, "##self_Edit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "fromAngle", function ()
-            node.fromAngle = editor.dataTypes[node.inputs[3].type].drawEditValue(node.fromAngle, "##fromAngleEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "fromAngle", function ()
+            node.fromAngle = editor.dataTypes[node.inputs[2].type].drawEditValue(node.fromAngle, "##fromAngleEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "toAngle", function ()
-            node.toAngle = editor.dataTypes[node.inputs[4].type].drawEditValue(node.toAngle, "##toAngleEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "toAngle", function ()
+            node.toAngle = editor.dataTypes[node.inputs[3].type].drawEditValue(node.toAngle, "##toAngleEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "collisionCheck", function ()
-            node.collisionCheck = editor.dataTypes[node.inputs[5].type].drawEditValue(node.collisionCheck, "##collisionCheckEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "collisionCheck", function ()
+            node.collisionCheck = editor.dataTypes[node.inputs[4].type].drawEditValue(node.collisionCheck, "##collisionCheckEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -123,12 +108,12 @@ local objectRotateNode = {
     ---@param node LDNodeEditorObjectRotateNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local self_ = inputValues[2] or node.self_
-		local fromAngle = inputValues[3] or node.fromAngle
-		local toAngle = inputValues[4] or node.toAngle
-		local collisionCheck = inputValues[5] or node.collisionCheck
+        local self_ = inputValues[1] or node.self_
+		local fromAngle = inputValues[2] or node.fromAngle
+		local toAngle = inputValues[3] or node.toAngle
+		local collisionCheck = inputValues[4] or node.collisionCheck
 		local result = ObjectOp.rotate(self_, fromAngle, toAngle, collisionCheck)
-        return {1, result}
+        return {result}
     end
 }
 

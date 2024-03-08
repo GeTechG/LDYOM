@@ -22,7 +22,7 @@ local worldIsFlameInAngledArea2DNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -33,12 +33,6 @@ local worldIsFlameInAngledArea2DNode = {
             nodeType = WORLD_IS_FLAME_IN_ANGLED_AREA2_D_NODE_TYPE,
             inputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
@@ -81,12 +75,6 @@ local worldIsFlameInAngledArea2DNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
                     type = "core.bool",
                 }
 
@@ -110,34 +98,31 @@ local worldIsFlameInAngledArea2DNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "leftBottomX", function ()
-            node.leftBottomX = editor.dataTypes[node.inputs[2].type].drawEditValue(node.leftBottomX, "##leftBottomXEdit", fontScale * 100)
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "leftBottomX", function ()
+            node.leftBottomX = editor.dataTypes[node.inputs[1].type].drawEditValue(node.leftBottomX, "##leftBottomXEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "leftBottomY", function ()
-            node.leftBottomY = editor.dataTypes[node.inputs[3].type].drawEditValue(node.leftBottomY, "##leftBottomYEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "leftBottomY", function ()
+            node.leftBottomY = editor.dataTypes[node.inputs[2].type].drawEditValue(node.leftBottomY, "##leftBottomYEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "rightTopX", function ()
-            node.rightTopX = editor.dataTypes[node.inputs[4].type].drawEditValue(node.rightTopX, "##rightTopXEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[3], "rightTopX", function ()
+            node.rightTopX = editor.dataTypes[node.inputs[3].type].drawEditValue(node.rightTopX, "##rightTopXEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "rightTopY", function ()
-            node.rightTopY = editor.dataTypes[node.inputs[5].type].drawEditValue(node.rightTopY, "##rightTopYEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[4], "rightTopY", function ()
+            node.rightTopY = editor.dataTypes[node.inputs[4].type].drawEditValue(node.rightTopY, "##rightTopYEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "angle", function ()
-            node.angle = editor.dataTypes[node.inputs[6].type].drawEditValue(node.angle, "##angleEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[5], "angle", function ()
+            node.angle = editor.dataTypes[node.inputs[5].type].drawEditValue(node.angle, "##angleEdit", fontScale * 100)
         end);
 
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[7], "drawSphere", function ()
-            node.drawSphere = editor.dataTypes[node.inputs[7].type].drawEditValue(node.drawSphere, "##drawSphereEdit", fontScale * 100)
+		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[6], "drawSphere", function ()
+            node.drawSphere = editor.dataTypes[node.inputs[6].type].drawEditValue(node.drawSphere, "##drawSphereEdit", fontScale * 100)
         end);
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
-
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
 
 
         builder:End();
@@ -147,14 +132,14 @@ local worldIsFlameInAngledArea2DNode = {
     ---@param node LDNodeEditorWorldIsFlameInAngledArea2DNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local leftBottomX = inputValues[2] or node.leftBottomX
-		local leftBottomY = inputValues[3] or node.leftBottomY
-		local rightTopX = inputValues[4] or node.rightTopX
-		local rightTopY = inputValues[5] or node.rightTopY
-		local angle = inputValues[6] or node.angle
-		local drawSphere = inputValues[7] or node.drawSphere
+        local leftBottomX = inputValues[1] or node.leftBottomX
+		local leftBottomY = inputValues[2] or node.leftBottomY
+		local rightTopX = inputValues[3] or node.rightTopX
+		local rightTopY = inputValues[4] or node.rightTopY
+		local angle = inputValues[5] or node.angle
+		local drawSphere = inputValues[6] or node.drawSphere
 		local result = WorldOp.isFlameInAngledArea2D(leftBottomX, leftBottomY, rightTopX, rightTopY, angle, drawSphere)
-        return {1, result}
+        return {result}
     end
 }
 

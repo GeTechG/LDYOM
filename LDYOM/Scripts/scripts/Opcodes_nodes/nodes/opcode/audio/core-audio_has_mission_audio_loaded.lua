@@ -17,7 +17,7 @@ local audioHasMissionAudioLoadedNode = {
     icon = nodesIcons["function"],
     color = nodesColors["function"],
 	description = true,
-    isCallable = true,
+    isCallable = false,
     ---@param ctx LDNodeEditorContext
     ---@param newNodeId integer
     ---@param getPinId fun():integer
@@ -31,24 +31,12 @@ local audioHasMissionAudioLoadedNode = {
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Input,
-                    type = "core.flow",
-                }
-				,{
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Input,
                     type = "core.number",
                 }
 
             },
             outputs = {
                 {
-                    id = getPinId(),
-                    node = newNodeId,
-                    kind = NodeEditorPinKind.Output,
-                    type = "core.flow",
-                }
-				,{
                     id = getPinId(),
                     node = newNodeId,
                     kind = NodeEditorPinKind.Output,
@@ -70,8 +58,7 @@ local audioHasMissionAudioLoadedNode = {
         builder:Begin(NodeEditor.NodeId(node.id));
         LDNodeEditor.defaultHeader(editor, builder, node);
 
-        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-		LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "slotId", function ()
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "slotId", function ()
             local name = "<Not set>";
             for key, value in pairs(enums.MissionAudioSlot) do
                 if value == node.slotId then
@@ -105,8 +92,6 @@ local audioHasMissionAudioLoadedNode = {
 
 		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
-		LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[2], "");
-
 
         builder:End();
     end,
@@ -115,9 +100,9 @@ local audioHasMissionAudioLoadedNode = {
     ---@param node LDNodeEditorAudioHasMissionAudioLoadedNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        local slotId = inputValues[2] or node.slotId
+        local slotId = inputValues[1] or node.slotId
 		local result = AudioOp.hasMissionAudioLoaded(slotId)
-        return {1, result}
+        return {result}
     end
 }
 

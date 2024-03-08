@@ -171,8 +171,9 @@ def generate():
 
             inputs = []
 
-            inputs.append(templates["input"].format(type="core.flow"))
-            draws.append("LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], \"\");")
+            if not ("attrs" in command and "is_condition" in command["attrs"]):
+                inputs.append(templates["input"].format(type="core.flow"))
+                draws.append("LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], \"\");")
 
             inps = []
             if "input" in command:
@@ -196,8 +197,9 @@ def generate():
                     inps.append(name)
 
             outputs = []
-            outputs.append(templates["output"].format(type="core.flow"))
-            draws.append(templates["output_draw"].format(index=len(outputs), name=""))
+            if not ("attrs" in command and "is_condition" in command["attrs"]):
+                outputs.append(templates["output"].format(type="core.flow"))
+                draws.append(templates["output_draw"].format(index=len(outputs), name=""))
 
             outs = []
 
@@ -230,7 +232,9 @@ def generate():
                 o = o.replace(".break(", "[\"break\"](")
                 run.append(o)
 
-            run_ret.append("1")
+            if not ("attrs" in command and "is_condition" in command["attrs"]):
+                run_ret.append("1")
+
             run_ret += outs
 
             node_name = command["class"] + command["member"]
@@ -247,6 +251,7 @@ def generate():
                 draw="\n\t\t".join(draws),
                 run="\n\t\t".join(run),
                 run_ret=", ".join(run_ret),
+                is_callable="false" if ("attrs" in command and "is_condition" in command["attrs"]) else "true",
                 short_desc="\n\tdescription = true," if "short_desc" in command and command["short_desc"] != "" else "",
             )
             lang_toml["nodes"]["node_editor"]["categories"][stringcase.snakecase(command["class"])] = command["class"]
