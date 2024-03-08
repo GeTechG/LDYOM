@@ -117,9 +117,8 @@ function ShowLeftPane(paneWidth, ed)
                     end
                     if ImGui.MenuItem(ld.loc.get("nodes.node_editor.delete"), "", false, #ed.contexts > 1) then
                         table.remove(ed.contexts, i);
-                        if ed.currentIndexContext > i then
-                            ed.currentIndexContext = ed.currentIndexContext - 1;
-                        end
+                        ed.currentIndexContext = ed.currentIndexContext - 1;
+                        ed.currentIndexContext = math.max(1, ed.currentIndexContext);
                     end
                     ImGui.EndPopup();
                 end
