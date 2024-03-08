@@ -85,6 +85,13 @@ local getVariableNode = {
             end)
         end
 
+        if var ~= nil and globalVariableTypes[var.type] ~= node.outputs[1].type then
+            node.outputs[1].type = globalVariableTypes[var.type]
+            table.erase_if(ctx.__links, function(link)
+                return link.outputId == node.outputs[1].id
+            end)
+        end
+
         local varName = (var ~= nil and var.name) or "None"
         if ImGui.Button(varName, ImVec2.new()) then
             NodeEditor.Suspend();

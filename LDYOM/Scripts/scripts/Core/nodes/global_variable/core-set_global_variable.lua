@@ -36,11 +36,11 @@ local setVariableNode = {
         if ld.data.globalVariables == nil then
             ld.data.globalVariables = {}
         end
-        for _, var in ipairs(ld.data.globalVariables) do
-            varUuid = var.uuid
+        local var = nil
+        for _, currVar in ipairs(ld.data.globalVariables) do
+            var = currVar
             break
         end
-        local var = ld.data.globalVariables[varUuid]
         ---@type LDNodeEditorSetGlobalVariableNode
         local newNode = {
             id = newNodeId,
@@ -68,7 +68,12 @@ local setVariableNode = {
                 },
             },
             varUuid = varUuid,
-            varValue = (var ~= nil and var.value) or 0,
+            varValue = (function ()
+                if var ~= nil then
+                    return editor.dataTypes[globalVariableTypes[var.type]].makeNew()
+                end
+                return 0
+            end)(),
         }
         return newNode
     end,
@@ -84,7 +89,7 @@ local setVariableNode = {
 
         LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
 
-        
+        ---@type GlobalVariable | nil
         local var = nil
         for _, currVar in ipairs(ld.data.globalVariables) do
             if currVar.uuid == node.varUuid then
@@ -98,6 +103,14 @@ local setVariableNode = {
                 node.varUuid = currVar.uuid
                 break
             end
+            table.erase_if(ctx.__links, function(link)
+                return link.inputId == node.inputs[2].id
+            end)
+        end
+
+        if var ~= nil and globalVariableTypes[var.type] ~= node.inputs[2].type then
+            node.inputs[2].type = globalVariableTypes[var.type]
+            node.varValue = editor.dataTypes[globalVariableTypes[var.type]].makeNew()
             table.erase_if(ctx.__links, function(link)
                 return link.inputId == node.inputs[2].id
             end)
@@ -134,6 +147,7 @@ local setVariableNode = {
         if var then
             LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], ld.loc.get("general.value"), function ()
                 local type = editor.dataTypes[node.inputs[2].type];
+                print("type", node.varValue)
                 node.varValue = type.drawEditValue(node.varValue, "##varValue", fontScale * 100);
             end);
         end

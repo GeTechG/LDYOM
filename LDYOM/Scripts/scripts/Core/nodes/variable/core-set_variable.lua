@@ -55,7 +55,12 @@ local setVariableNode = {
                 },
             },
             varUuid = varUuid,
-            varValue = (var ~= nil and var.defaultValue) or 0,
+            varValue = (function ()
+                if var ~= nil then
+                    return editor.dataTypes[var.type].makeNew()
+                end
+                return 0
+            end)(),
         }
         return newNode
     end,
