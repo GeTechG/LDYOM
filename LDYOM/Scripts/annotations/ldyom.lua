@@ -346,8 +346,14 @@ LDCheckpoint = {
     updateLocation = function() end,
     ---@return string
     getName = function() end,
-    ---@return number[]
+    ---@return number x
+    ---@return number y
+    ---@return number z
     getPosition = function() end,
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    setPosition = function(x, y, z) end,
     ---@return integer
     getType = function() end,
     ---@return number
@@ -384,8 +390,14 @@ LDCheckpoint = {
 LDVisualEffect = {
     ---@return string
     getName = function() end,
-    ---@return number[]
+    ---@return number x
+    ---@return number y
+    ---@return number z
     getPosition = function() end,
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    setPosition = function(x, y, z) end,
     ---@return uuid
     getUuid = function() end,
     ---@return integer
@@ -415,8 +427,14 @@ LDVisualEffect = {
 LDAudio = {
     ---@return string
     getName = function() end,
-    ---@return number[]
+    ---@return number x
+    ---@return number y
+    ---@return number z
     getPosition = function() end,
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    setPosition = function(x, y, z) end,
     ---@return boolean
     isAudio3D = function() end,
     ---@return integer
@@ -463,8 +481,14 @@ LDPyrotechnics = {
     updateLocation = function() end,
     ---@return string
     getName = function() end,
-    ---@return number[]
+    ---@return number x
+    ---@return number y
+    ---@return number z
     getPosition = function() end,
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    setPosition = function(x, y, z) end,
     spawnEditorPyrotechnics = function() end,
     deleteEditorPyrotechnics = function() end,
     spawnProjectEntity = function() end,
@@ -476,8 +500,14 @@ LDPyrotechnics = {
 LDPickup = {
     ---@return string
     getName = function() end,
-    ---@return number[]
+    ---@return number x
+    ---@return number y
+    ---@return number z
     getPosition = function() end,
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    setPosition = function(x, y, z) end,
     ---@return integer
     getModelId = function() end,
     ---@return integer
@@ -528,8 +558,14 @@ LDTrain = {
     updateLocation = function() end,
     ---@return string
     getName = function() end,
-    ---@return number[]
+    ---@return number x
+    ---@return number y
+    ---@return number z
     getPosition = function() end,
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    setPosition = function(x, y, z) end,
     spawnEditorTrain = function() end,
     deleteEditorTrain = function() end,
     spawnProjectEntity = function() end,
@@ -540,8 +576,14 @@ LDTrain = {
 LDParticle = {
     ---@return string
     getName = function() end,
-    ---@return number[]
+    ---@return number x
+    ---@return number y
+    ---@return number z
     getPosition = function() end,
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    setPosition = function(x, y, z) end,
     ---@return CQuaternion
     getRotations = function() end,
     ---@return number[]
@@ -573,8 +615,14 @@ LDParticle = {
 LDObject = {
     ---@return string
     getName = function() end,
-    ---@return number[]
+    ---@return number x
+    ---@return number y
+    ---@return number z
     getPosition = function() end,
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    setPosition = function(x, y, z) end,
     ---@return CObject
     getEditorObject = function() end,
     ---@return CObject
@@ -665,8 +713,14 @@ LDVehicle = {
     updateLocation = function() end,
     ---@return string
     getName = function() end,
-    ---@return number[]
+    ---@return number x
+    ---@return number y
+    ---@return number z
     getPosition = function() end,
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    setPosition = function(x, y, z) end,
     ---@return number
     getHeadingAngle = function() end,
     setEditorPrimaryColor = function() end,
@@ -686,8 +740,14 @@ LDVehicle = {
 LDActor = {
     ---@return string
     getName = function() end,
-    ---@return number[]
+    ---@return number x
+    ---@return number y
+    ---@return number z
     getPosition = function() end,
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    setPosition = function(x, y, z) end,
     ---@return CPed
     getEditorPed = function() end,
     ---@return CPed

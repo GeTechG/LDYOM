@@ -22,7 +22,17 @@ void pyrotechnicsWrapper(sol::state &state) {
 	                                 },
 	                                 "updateLocation", &Pyrotechnics::updateLocation,
 	                                 "getName", &Pyrotechnics::getName,
-	                                 "getPosition", &Pyrotechnics::getPosition,
+	                                 "getPosition", [](Pyrotechnics &pyrotechnics) {
+		                                 return std::make_tuple(pyrotechnics.getPosition()[0],
+		                                                        pyrotechnics.getPosition()[1],
+		                                                        pyrotechnics.getPosition()[2]);
+	                                 },
+	                                 "setPosition",
+	                                 [](Pyrotechnics &pyrotechnics, const float x, const float y, const float z) {
+		                                 pyrotechnics.getPosition()[0] = x;
+		                                 pyrotechnics.getPosition()[1] = y;
+		                                 pyrotechnics.getPosition()[2] = z;
+	                                 },
 	                                 "spawnEditorPyrotechnics", &Pyrotechnics::spawnEditorPyrotechnics,
 	                                 "deleteEditorPyrotechnics", &Pyrotechnics::deleteEditorPyrotechnics,
 	                                 "spawnProjectEntity", &Pyrotechnics::spawnProjectEntity,

@@ -207,3 +207,12 @@ lock_f = "Zablokuj ostatni kadr"
 disable_force = "Wyłącz przerwanie"
 disable_lock_z = "Odblokuj Z"
 play_types = ["Standardowy", "Niezatrzymany", "Wtórny", "Specjalny"]
+
+[nodes.core.comprasion]
+title = "Porównanie"
+
+[nodes.core.boolean_operations]
+title = "Operacje logiczne"
+
+[nodes.core.get_checkpoint_data]
+title = "Pobierz dane punktu kontrolnego"

@@ -27,7 +27,15 @@ void vehicleWrapper(sol::state &state) {
 	                            "getNumberplate", &Vehicle::getNumberplate,
 	                            "updateLocation", &Vehicle::updateLocation,
 	                            "getName", &Vehicle::getName,
-	                            "getPosition", &Vehicle::getPosition,
+	                            "getPosition", [](Vehicle &vehicle) {
+		                            return std::make_tuple(vehicle.getPosition()[0], vehicle.getPosition()[1],
+		                                                   vehicle.getPosition()[2]);
+	                            },
+	                            "setPosition", [](Vehicle &vehicle, const float x, const float y, const float z) {
+		                            vehicle.getPosition()[0] = x;
+		                            vehicle.getPosition()[1] = y;
+		                            vehicle.getPosition()[2] = z;
+	                            },
 	                            "getHeadingAngle", &Vehicle::getHeadingAngle,
 	                            "setEditorPrimaryColor", &Vehicle::setEditorPrimaryColor,
 	                            "setEditorSecondaryColor", &Vehicle::setEditorSecondaryColor,

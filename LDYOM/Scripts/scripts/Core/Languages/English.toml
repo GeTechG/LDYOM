@@ -207,3 +207,9 @@ lock_f = "Lock last frame"
 disable_force = "Disable interrupting"
 disable_lock_z = "Unlock Z"
 play_types = ["Normal", "Uninterrupted", "Secondary", "Special"]
+
+[nodes.core.boolean_operations]
+title = "Logical Operations"
+
+[nodes.core.get_checkpoint_data]
+title = "Get Checkpoint Data"

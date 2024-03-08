@@ -11,7 +11,16 @@ void checkpointWrapper(sol::state &state) {
 	                               "getProjectSphere", &Checkpoint::getProjectSphere,
 	                               "updateLocation", &Checkpoint::updateLocation,
 	                               "getName", &Checkpoint::getName,
-	                               "getPosition", &Checkpoint::getPosition,
+	                               "getPosition", [](Checkpoint &checkpoint) {
+		                               return std::make_tuple(checkpoint.getPosition()[0], checkpoint.getPosition()[1],
+		                                                      checkpoint.getPosition()[2]);
+	                               },
+	                               "setPosition",
+	                               [](Checkpoint &checkpoint, const float x, const float y, const float z) {
+		                               checkpoint.getPosition()[0] = x;
+		                               checkpoint.getPosition()[1] = y;
+		                               checkpoint.getPosition()[2] = z;
+	                               },
 	                               "getType", &Checkpoint::getType,
 	                               "getRadius", &Checkpoint::getRadius,
 	                               "getBlipColor", &Checkpoint::getBlipColor,

@@ -12,7 +12,15 @@ void objectWrapper(sol::state &state) {
 	                           "getModelId", &Object::getModelId,
 	                           "updateLocation", &Object::updateLocation,
 	                           "getName", &Object::getName,
-	                           "getPosition", &Object::getPosition,
+	                           "getPosition", [](Object &object) {
+		                           return std::make_tuple(object.getPosition()[0], object.getPosition()[1],
+		                                                  object.getPosition()[2]);
+	                           },
+	                           "setPosition", [](Object &object, const float x, const float y, const float z) {
+		                           object.getPosition()[0] = x;
+		                           object.getPosition()[1] = y;
+		                           object.getPosition()[2] = z;
+	                           },
 	                           "spawnEditorObject", &Object::spawnEditorObject,
 	                           "deleteEditorObject", &Object::deleteEditorObject,
 	                           "spawnProjectEntity", &Object::spawnProjectEntity,

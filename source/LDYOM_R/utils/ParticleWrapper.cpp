@@ -17,7 +17,15 @@ void particleWrapper(sol::state &state) {
 	                             "getProjectParticleId", &Particle::getProjectParticleId,
 	                             "updateLocation", &Particle::updateLocation,
 	                             "getName", &Particle::getName,
-	                             "getPosition", &Particle::getPosition,
+	                             "getPosition", [](Particle &particle) {
+		                             return std::make_tuple(particle.getPosition()[0], particle.getPosition()[1],
+		                                                    particle.getPosition()[2]);
+	                             },
+	                             "setPosition", [](Particle &particle, const float x, const float y, const float z) {
+		                             particle.getPosition()[0] = x;
+		                             particle.getPosition()[1] = y;
+		                             particle.getPosition()[2] = z;
+	                             },
 	                             "spawnEditorParticle", &Particle::spawnEditorParticle,
 	                             "deleteEditorParticle", &Particle::deleteEditorParticle,
 	                             "spawnProjectEntity", &Particle::spawnProjectEntity,

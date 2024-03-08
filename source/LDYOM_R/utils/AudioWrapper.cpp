@@ -16,7 +16,15 @@ void audioWrapper(sol::state &state) {
 	                          "getVolume", &Audio::getVolume,
 	                          "updateLocation", &Audio::updateLocation,
 	                          "getName", &Audio::getName,
-	                          "getPosition", &Audio::getPosition,
+	                          "getPosition", [](Audio &audio) {
+		                          return std::make_tuple(audio.getPosition()[0], audio.getPosition()[1],
+		                                                 audio.getPosition()[2]);
+	                          },
+	                          "setPosition", [](Audio &audio, const float x, const float y, const float z) {
+		                          audio.getPosition()[0] = x;
+		                          audio.getPosition()[1] = y;
+		                          audio.getPosition()[2] = z;
+	                          },
 	                          "spawnEditorAudio", &Audio::spawnEditorAudio,
 	                          "deleteEditorAudio", &Audio::deleteEditorAudio,
 	                          "spawnProjectEntity", &Audio::spawnProjectEntity,

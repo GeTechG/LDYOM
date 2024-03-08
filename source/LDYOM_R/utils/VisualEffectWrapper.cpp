@@ -14,7 +14,17 @@ void visualEffectWrapper(sol::state &state) {
 	                                 "isDrawing", &VisualEffect::isDrawing,
 	                                 "getAngle", &VisualEffect::getAngle,
 	                                 "getName", &VisualEffect::getName,
-	                                 "getPosition", &VisualEffect::getPosition,
+	                                 "getPosition", [](VisualEffect &visualEffect) {
+		                                 return std::make_tuple(visualEffect.getPosition()[0],
+		                                                        visualEffect.getPosition()[1],
+		                                                        visualEffect.getPosition()[2]);
+	                                 },
+	                                 "setPosition",
+	                                 [](VisualEffect &visualEffect, const float x, const float y, const float z) {
+		                                 visualEffect.getPosition()[0] = x;
+		                                 visualEffect.getPosition()[1] = y;
+		                                 visualEffect.getPosition()[2] = z;
+	                                 },
 	                                 "spawnEditorVisualEffect", &VisualEffect::spawnEditorVisualEffect,
 	                                 "deleteEditorVisualEffect", &VisualEffect::deleteEditorVisualEffect,
 	                                 "spawnProjectEntity", &VisualEffect::spawnProjectEntity,

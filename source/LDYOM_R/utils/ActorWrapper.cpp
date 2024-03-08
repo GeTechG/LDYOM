@@ -5,7 +5,15 @@ void actorWrapper(sol::state &state) {
 	state.new_usertype<Actor>("LDActor",
 	                          sol::no_constructor,
 	                          "getName", &Actor::getName,
-	                          "getPosition", &Actor::getPosition,
+	                          "getPosition", [](Actor &actor) {
+		                          return std::make_tuple(actor.getPosition()[0], actor.getPosition()[1],
+		                                                 actor.getPosition()[2]);
+	                          },
+	                          "setPosition", [](Actor &actor, const float x, const float y, const float z) {
+		                          actor.getPosition()[0] = x;
+		                          actor.getPosition()[1] = y;
+		                          actor.getPosition()[2] = z;
+	                          },
 	                          "getEditorPed", &Actor::getEditorPed,
 	                          "getProjectPed", &Actor::getProjectPed,
 	                          "getHeadingAngle", &Actor::getHeadingAngle,

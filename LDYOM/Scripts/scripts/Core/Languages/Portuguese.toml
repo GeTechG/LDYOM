@@ -207,3 +207,9 @@ lock_f = "Bloquear último quadro"
 disable_force = "Desativar interrupção"
 disable_lock_z = "Desbloquear Z"
 play_types = ["Normal", "Ininterrupta", "Secundária", "Especial"]
+
+[nodes.core.boolean_operations]
+title = "Operações Lógicas"
+
+[nodes.core.get_checkpoint_data]
+title = "Obter dados do ponto de verificação"
