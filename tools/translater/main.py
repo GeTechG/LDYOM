@@ -45,8 +45,24 @@ for root, dirs, files in walk(folder_path):
 
 needs_langs = ['Portuguese', 'Polish', "English"]
 
+usedTranslate = 0
+
 
 def translate_langs():
+    def recusive(source: dict, target: dict, lang_: str):
+        global usedTranslate
+        for category in source:
+            if category not in target:
+                traslated = translate(source[category], lang_)
+                print(traslated)
+                target[category] = traslated
+                usedTranslate += 1
+                if usedTranslate == 3:
+                    time.sleep(62)
+                    usedTranslate = 0
+            elif isinstance(source[category], dict):
+                recusive(source[category], target[category], lang_)
+
     if default_lang_name not in langs:
         raise Exception('Default language not found')
 
@@ -58,20 +74,8 @@ def translate_langs():
 
         if iter_lang != default_lang_name:
             print(f'Generating {iter_lang}...')
-            i = 0
-            for category in default_lang:
-                if category not in langs[iter_lang]:
-                    langs[iter_lang][category] = {}
+            recusive(default_lang, langs[iter_lang], iter_lang)
 
-                values: dict = default_lang[category]
-                for bath_keys in batched(filter(lambda s: s not in langs[iter_lang][category], values.keys()), 50):
-                    translated = translate({key: values[key] for key in bath_keys}, iter_lang)
-                    print(translated)
-                    langs[iter_lang][category].update(translated)
-                    i += 1
-                    if i == 3:
-                        time.sleep(62)
-                        i = 0
         time.sleep(10)
 
 
