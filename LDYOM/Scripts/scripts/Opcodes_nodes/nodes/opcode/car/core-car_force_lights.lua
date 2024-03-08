@@ -115,9 +115,10 @@ local carForceLightsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarForceLightsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local lightMode = inputValues[3] or node.lightMode
 		CarOp.forceLights(self_, lightMode)

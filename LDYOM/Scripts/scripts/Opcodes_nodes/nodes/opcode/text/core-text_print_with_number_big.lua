@@ -139,9 +139,10 @@ local textPrintWithNumberBigNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextPrintWithNumberBigNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local key = inputValues[2] or node.key
 		local num = inputValues[3] or node.num
 		local duration = inputValues[4] or node.duration

@@ -167,9 +167,10 @@ local objectSlideNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectSlideNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local fromX = inputValues[3] or node.fromX
 		local fromY = inputValues[4] or node.fromY

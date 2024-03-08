@@ -87,9 +87,10 @@ local taskHandGestureNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskHandGestureNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local target = inputValues[3] or node.target
 		TaskOp.handGesture(handle, target)

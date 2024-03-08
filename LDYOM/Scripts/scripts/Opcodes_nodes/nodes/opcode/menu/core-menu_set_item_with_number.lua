@@ -123,9 +123,10 @@ local menuSetItemWithNumberNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMenuSetItemWithNumberNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local column = inputValues[3] or node.column
 		local row = inputValues[4] or node.row

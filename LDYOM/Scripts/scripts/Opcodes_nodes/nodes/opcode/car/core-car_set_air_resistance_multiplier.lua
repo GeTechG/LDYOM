@@ -87,9 +87,10 @@ local carSetAirResistanceMultiplierNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetAirResistanceMultiplierNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local multiplier = inputValues[3] or node.multiplier
 		CarOp.setAirResistanceMultiplier(self_, multiplier)

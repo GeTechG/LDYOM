@@ -167,9 +167,10 @@ local mathDo2DRectanglesCollideNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathDo2DRectanglesCollideNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local rectangle1PositionX = inputValues[2] or node.rectangle1PositionX
 		local rectangle1PositionY = inputValues[3] or node.rectangle1PositionY
 		local rectangle1SizeX = inputValues[4] or node.rectangle1SizeX

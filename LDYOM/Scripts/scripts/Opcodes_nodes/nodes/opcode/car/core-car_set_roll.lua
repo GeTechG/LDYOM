@@ -87,9 +87,10 @@ local carSetRollNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetRollNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local yAngle = inputValues[3] or node.yAngle
 		CarOp.setRoll(self_, yAngle)

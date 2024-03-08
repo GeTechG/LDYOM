@@ -71,9 +71,10 @@ local gameFindMaxNumberOfGroupMembersNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameFindMaxNumberOfGroupMembersNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local maxNum = GameOp.findMaxNumberOfGroupMembers()
         return {1, maxNum}
     end

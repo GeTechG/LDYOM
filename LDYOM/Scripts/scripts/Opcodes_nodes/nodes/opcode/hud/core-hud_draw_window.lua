@@ -135,9 +135,10 @@ local hudDrawWindowNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHudDrawWindowNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local leftTopX = inputValues[2] or node.leftTopX
 		local leftTopY = inputValues[3] or node.leftTopY
 		local rightBottomX = inputValues[4] or node.rightBottomX

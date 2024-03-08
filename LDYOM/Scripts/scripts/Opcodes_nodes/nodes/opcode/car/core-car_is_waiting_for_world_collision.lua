@@ -82,9 +82,10 @@ local carIsWaitingForWorldCollisionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarIsWaitingForWorldCollisionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local result = CarOp.isWaitingForWorldCollision(self_)
         return {1, result}

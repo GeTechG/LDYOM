@@ -83,9 +83,10 @@ local textGetStringWidthNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextGetStringWidthNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local entry = inputValues[2] or node.entry
 		local width = TextOp.getStringWidth(entry)
         return {1, width}

@@ -80,9 +80,10 @@ local clockGetTimeOfDayNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorClockGetTimeOfDayNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local hours, minutes = ClockOp.getTimeOfDay()
         return {1, hours, minutes}
     end

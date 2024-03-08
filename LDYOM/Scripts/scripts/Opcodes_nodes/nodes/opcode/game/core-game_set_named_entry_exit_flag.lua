@@ -127,9 +127,10 @@ local gameSetNamedEntryExitFlagNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetNamedEntryExitFlagNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local name = inputValues[2] or node.name
 		local entryexitsFlag = inputValues[3] or node.entryexitsFlag
 		local state = inputValues[4] or node.state

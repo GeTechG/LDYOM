@@ -110,9 +110,10 @@ local taskCarTempActionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskCarTempActionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
 		local vehicle = inputValues[3] or node.vehicle
 		local actionId = inputValues[4] or node.actionId

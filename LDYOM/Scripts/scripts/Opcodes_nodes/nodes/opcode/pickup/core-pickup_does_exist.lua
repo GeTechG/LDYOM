@@ -83,9 +83,10 @@ local pickupDoesExistNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPickupDoesExistNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local result = PickupOp.doesExist(handle)
         return {1, result}

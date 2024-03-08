@@ -255,9 +255,10 @@ local worldAddStuntJumpNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldAddStuntJumpNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local startX = inputValues[2] or node.startX
 		local startY = inputValues[3] or node.startY
 		local startZ = inputValues[4] or node.startZ

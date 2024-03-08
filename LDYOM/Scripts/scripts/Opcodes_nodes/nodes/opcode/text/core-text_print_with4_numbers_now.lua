@@ -175,9 +175,10 @@ local textPrintWith4NumbersNowNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextPrintWith4NumbersNowNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local key = inputValues[2] or node.key
 		local num1 = inputValues[3] or node.num1
 		local num2 = inputValues[4] or node.num2

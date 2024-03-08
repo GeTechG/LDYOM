@@ -111,9 +111,10 @@ local textSetColorNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextSetColorNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local red = inputValues[2] or node.red
 		local green = inputValues[3] or node.green
 		local blue = inputValues[4] or node.blue

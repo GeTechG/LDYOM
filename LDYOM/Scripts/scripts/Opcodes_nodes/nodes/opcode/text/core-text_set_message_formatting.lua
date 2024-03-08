@@ -99,9 +99,10 @@ local textSetMessageFormattingNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextSetMessageFormattingNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local _p1 = inputValues[2] or node._p1
 		local margin = inputValues[3] or node.margin
 		local width = inputValues[4] or node.width

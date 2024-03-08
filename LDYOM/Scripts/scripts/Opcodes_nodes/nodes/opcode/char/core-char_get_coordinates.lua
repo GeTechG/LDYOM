@@ -99,9 +99,10 @@ local charGetCoordinatesNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharGetCoordinatesNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local x, y, z = CharOp.getCoordinates(self_)
         return {1, x, y, z}

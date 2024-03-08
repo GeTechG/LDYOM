@@ -75,9 +75,10 @@ local gameSetScriptLimitToGangSizeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetScriptLimitToGangSizeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local maxSize = inputValues[2] or node.maxSize
 		GameOp.setScriptLimitToGangSize(maxSize)
         return {1}

@@ -99,9 +99,10 @@ local taskLookAtObjectNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskLookAtObjectNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
 		local object = inputValues[3] or node.object
 		local time = inputValues[4] or node.time

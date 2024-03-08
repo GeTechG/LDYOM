@@ -111,9 +111,10 @@ local objectSetVelocityNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectSetVelocityNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local xSpeed = inputValues[3] or node.xSpeed
 		local ySpeed = inputValues[4] or node.ySpeed

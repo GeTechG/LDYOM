@@ -72,9 +72,10 @@ local gameHasSaveGameFinishedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameHasSaveGameFinishedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = GameOp.hasSaveGameFinished()
         return {1, result}
     end

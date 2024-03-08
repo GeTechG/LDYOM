@@ -72,9 +72,10 @@ local gameIsPcUsingJoypadNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameIsPcUsingJoypadNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = GameOp.isPcUsingJoypad()
         return {1, result}
     end

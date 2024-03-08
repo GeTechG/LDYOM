@@ -167,9 +167,10 @@ local menuCreateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMenuCreateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local header = inputValues[2] or node.header
 		local topLeftX = inputValues[3] or node.topLeftX
 		local topLeftY = inputValues[4] or node.topLeftY

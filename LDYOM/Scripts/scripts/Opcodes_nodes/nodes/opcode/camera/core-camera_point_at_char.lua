@@ -155,9 +155,10 @@ local cameraPointAtCharNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraPointAtCharNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
 		local mode = inputValues[3] or node.mode
 		local switchStyle = inputValues[4] or node.switchStyle

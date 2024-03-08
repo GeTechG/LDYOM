@@ -88,9 +88,10 @@ local cameraGetActiveCoordinatesNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraGetActiveCoordinatesNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local x, y, z = CameraOp.getActiveCoordinates()
         return {1, x, y, z}
     end

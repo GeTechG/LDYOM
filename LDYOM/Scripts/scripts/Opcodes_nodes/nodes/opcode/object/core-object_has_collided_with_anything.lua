@@ -83,9 +83,10 @@ local objectHasCollidedWithAnythingNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectHasCollidedWithAnythingNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local result = ObjectOp.hasCollidedWithAnything(self_)
         return {1, result}

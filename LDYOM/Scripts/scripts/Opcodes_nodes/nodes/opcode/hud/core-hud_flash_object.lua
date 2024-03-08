@@ -103,9 +103,10 @@ local hudFlashObjectNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHudFlashObjectNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local object = inputValues[2] or node.object
 		HudOp.flashObject(object)
         return {1}

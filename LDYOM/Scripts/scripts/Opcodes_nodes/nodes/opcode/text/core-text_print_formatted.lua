@@ -99,9 +99,10 @@ local textPrintFormattedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextPrintFormattedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local fmt = inputValues[2] or node.fmt
 		local time = inputValues[3] or node.time
 		local arg = inputValues[4] or node.arg

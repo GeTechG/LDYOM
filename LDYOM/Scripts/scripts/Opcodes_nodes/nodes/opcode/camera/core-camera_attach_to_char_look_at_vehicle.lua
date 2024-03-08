@@ -174,9 +174,10 @@ local cameraAttachToCharLookAtVehicleNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraAttachToCharLookAtVehicleNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
 		local xOffset = inputValues[3] or node.xOffset
 		local yOffset = inputValues[4] or node.yOffset

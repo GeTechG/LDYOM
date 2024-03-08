@@ -75,9 +75,10 @@ local taskDeadNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskDeadNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		TaskOp.dead(handle)
         return {1}

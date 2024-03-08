@@ -111,9 +111,10 @@ local taskGreetPartnerNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskGreetPartnerNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local partner = inputValues[3] or node.partner
 		local _p3 = inputValues[4] or node._p3

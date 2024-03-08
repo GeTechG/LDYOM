@@ -87,9 +87,10 @@ local charStartFacialTalkNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharStartFacialTalkNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local duration = inputValues[3] or node.duration
 		CharOp.startFacialTalk(self_, duration)

@@ -64,9 +64,10 @@ local playerStoreClothesStateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerStoreClothesStateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         PlayerOp.storeClothesState()
         return {1}
     end

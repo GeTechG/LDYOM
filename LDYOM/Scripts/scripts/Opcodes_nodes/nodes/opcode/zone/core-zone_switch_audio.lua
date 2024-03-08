@@ -87,9 +87,10 @@ local zoneSwitchAudioNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorZoneSwitchAudioNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local zone = inputValues[2] or node.zone
 		local state = inputValues[3] or node.state
 		ZoneOp.switchAudio(zone, state)

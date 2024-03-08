@@ -154,9 +154,10 @@ local charClearRelationshipNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharClearRelationshipNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local relationshipType = inputValues[3] or node.relationshipType
 		local toPedType = inputValues[4] or node.toPedType

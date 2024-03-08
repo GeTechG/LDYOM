@@ -111,9 +111,10 @@ local taskSmartFleeCharNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskSmartFleeCharNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local threat = inputValues[3] or node.threat
 		local radius = inputValues[4] or node.radius

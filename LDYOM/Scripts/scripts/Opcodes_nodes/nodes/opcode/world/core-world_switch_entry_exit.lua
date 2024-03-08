@@ -87,9 +87,10 @@ local worldSwitchEntryExitNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldSwitchEntryExitNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local interiorName = inputValues[2] or node.interiorName
 		local state = inputValues[3] or node.state
 		WorldOp.switchEntryExit(interiorName, state)

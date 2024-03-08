@@ -99,9 +99,10 @@ local textDisplayNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextDisplayNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local offsetLeft = inputValues[2] or node.offsetLeft
 		local offsetTop = inputValues[3] or node.offsetTop
 		local key = inputValues[4] or node.key

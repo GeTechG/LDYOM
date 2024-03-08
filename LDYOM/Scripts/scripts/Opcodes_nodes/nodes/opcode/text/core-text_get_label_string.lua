@@ -83,9 +83,10 @@ local textGetLabelStringNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextGetLabelStringNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local key = inputValues[2] or node.key
 		local text = TextOp.getLabelString(key)
         return {1, text}

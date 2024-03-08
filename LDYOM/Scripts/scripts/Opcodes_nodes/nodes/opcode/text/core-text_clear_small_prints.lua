@@ -64,9 +64,10 @@ local textClearSmallPrintsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextClearSmallPrintsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         TextOp.clearSmallPrints()
         return {1}
     end

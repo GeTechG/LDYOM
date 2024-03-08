@@ -64,9 +64,10 @@ local cameraResetNewScriptablesNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraResetNewScriptablesNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         CameraOp.resetNewScriptables()
         return {1}
     end

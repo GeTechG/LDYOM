@@ -72,9 +72,10 @@ local clockGetCurrentDayOfWeekNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorClockGetCurrentDayOfWeekNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local day = ClockOp.getCurrentDayOfWeek()
         return {1, day}
     end

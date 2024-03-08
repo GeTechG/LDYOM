@@ -72,9 +72,10 @@ local gameIsVersionOriginalNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameIsVersionOriginalNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = GameOp.isVersionOriginal()
         return {1, result}
     end

@@ -86,9 +86,10 @@ local hudSetCounterFlashWhenFirstDisplayedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHudSetCounterFlashWhenFirstDisplayedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local counter = inputValues[2] or node.counter
 		local state = inputValues[3] or node.state
 		HudOp.setCounterFlashWhenFirstDisplayed(counter, state)

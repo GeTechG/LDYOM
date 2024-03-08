@@ -99,9 +99,10 @@ local carSetModelComponentsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetModelComponentsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local _unused = inputValues[2] or node._unused
 		local component1 = inputValues[3] or node.component1
 		local component2 = inputValues[4] or node.component2

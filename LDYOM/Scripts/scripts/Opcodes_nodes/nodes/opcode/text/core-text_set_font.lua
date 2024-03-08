@@ -103,9 +103,10 @@ local textSetFontNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextSetFontNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local font = inputValues[2] or node.font
 		TextOp.setFont(font)
         return {1}

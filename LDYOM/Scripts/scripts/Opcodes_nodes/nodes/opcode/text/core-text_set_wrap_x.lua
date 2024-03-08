@@ -75,9 +75,10 @@ local textSetWrapXNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextSetWrapXNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local width = inputValues[2] or node.width
 		TextOp.setWrapX(width)
         return {1}

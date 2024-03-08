@@ -95,9 +95,10 @@ local charIsTouchingObjectNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharIsTouchingObjectNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local object = inputValues[3] or node.object
 		local result = CharOp.isTouchingObject(self_, object)

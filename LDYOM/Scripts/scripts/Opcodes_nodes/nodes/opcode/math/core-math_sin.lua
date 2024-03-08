@@ -83,9 +83,10 @@ local mathSinNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathSinNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local angle = inputValues[2] or node.angle
 		local result = MathOp.sin(angle)
         return {1, result}

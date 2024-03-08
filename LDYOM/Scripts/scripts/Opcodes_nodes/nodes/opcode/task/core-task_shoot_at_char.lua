@@ -98,9 +98,10 @@ local taskShootAtCharNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskShootAtCharNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local target = inputValues[3] or node.target
 		local time = inputValues[4] or node.time

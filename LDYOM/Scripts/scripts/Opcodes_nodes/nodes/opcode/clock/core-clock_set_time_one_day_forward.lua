@@ -64,9 +64,10 @@ local clockSetTimeOneDayForwardNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorClockSetTimeOneDayForwardNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         ClockOp.setTimeOneDayForward()
         return {1}
     end

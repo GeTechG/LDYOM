@@ -111,9 +111,10 @@ local padIsKeyPressedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPadIsKeyPressedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local keyCode = inputValues[2] or node.keyCode
 		local result = PadOp.isKeyPressed(keyCode)
         return {1, result}

@@ -75,9 +75,10 @@ local gameSetAircraftCarrierSamSiteNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetAircraftCarrierSamSiteNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local state = inputValues[2] or node.state
 		GameOp.setAircraftCarrierSamSite(state)
         return {1}

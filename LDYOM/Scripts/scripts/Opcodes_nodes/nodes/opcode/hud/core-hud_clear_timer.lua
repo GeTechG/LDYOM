@@ -75,9 +75,10 @@ local hudClearTimerNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHudClearTimerNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local timer = inputValues[2] or node.timer
 		HudOp.clearTimer(timer)
         return {1}

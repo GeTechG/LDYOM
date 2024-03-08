@@ -75,9 +75,10 @@ local gameSetForceRandomCarModelNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetForceRandomCarModelNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local modelId = inputValues[2] or node.modelId
 		GameOp.setForceRandomCarModel(modelId)
         return {1}

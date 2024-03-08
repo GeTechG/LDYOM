@@ -123,9 +123,10 @@ local textSetDropshadowNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextSetDropshadowNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local intensity = inputValues[2] or node.intensity
 		local red = inputValues[3] or node.red
 		local green = inputValues[4] or node.green

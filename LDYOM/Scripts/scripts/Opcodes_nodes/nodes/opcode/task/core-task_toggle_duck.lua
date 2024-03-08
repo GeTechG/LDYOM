@@ -87,9 +87,10 @@ local taskToggleDuckNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskToggleDuckNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local state = inputValues[3] or node.state
 		TaskOp.toggleDuck(handle, state)

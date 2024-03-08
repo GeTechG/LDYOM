@@ -135,9 +135,10 @@ local padGetPositionOfAnalogueSticksNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPadGetPositionOfAnalogueSticksNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local pad = inputValues[2] or node.pad
 		local leftStickX, leftStickY, rightStickX, rightStickY = PadOp.getPositionOfAnalogueSticks(pad)
         return {1, leftStickX, leftStickY, rightStickX, rightStickY}

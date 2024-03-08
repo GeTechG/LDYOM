@@ -72,9 +72,10 @@ local padIsSkipCutsceneButtonPressedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPadIsSkipCutsceneButtonPressedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = PadOp.isSkipCutsceneButtonPressed()
         return {1, result}
     end

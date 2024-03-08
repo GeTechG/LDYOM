@@ -111,9 +111,10 @@ local textScanStringNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextScanStringNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local string = inputValues[2] or node.string
 		local format = inputValues[3] or node.format
 		local result, nValues, values = TextOp.scanString(string, format)

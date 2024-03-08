@@ -83,9 +83,10 @@ local mathSqrtNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathSqrtNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local num = inputValues[2] or node.num
 		local result = MathOp.sqrt(num)
         return {1, result}

@@ -131,9 +131,10 @@ local particleCreateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorParticleCreateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local name = inputValues[2] or node.name
 		local x = inputValues[3] or node.x
 		local y = inputValues[4] or node.y

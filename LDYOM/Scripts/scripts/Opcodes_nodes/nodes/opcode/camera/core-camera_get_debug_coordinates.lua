@@ -88,9 +88,10 @@ local cameraGetDebugCoordinatesNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraGetDebugCoordinatesNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local x, y, z = CameraOp.getDebugCoordinates()
         return {1, x, y, z}
     end

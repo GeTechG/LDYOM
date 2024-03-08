@@ -95,9 +95,10 @@ local textGetStringWidthWithNumberNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextGetStringWidthWithNumberNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local gxtEntry = inputValues[2] or node.gxtEntry
 		local number = inputValues[3] or node.number
 		local width = TextOp.getStringWidthWithNumber(gxtEntry, number)

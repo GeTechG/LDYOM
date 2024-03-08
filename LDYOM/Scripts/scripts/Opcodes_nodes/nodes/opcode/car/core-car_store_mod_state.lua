@@ -63,9 +63,10 @@ local carStoreModStateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarStoreModStateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         CarOp.storeModState()
         return {1}
     end

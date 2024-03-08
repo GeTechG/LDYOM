@@ -83,9 +83,10 @@ local mathLimitAngleNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathLimitAngleNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local value = inputValues[2] or node.value
 		local result = MathOp.limitAngle(value)
         return {1, result}

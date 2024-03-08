@@ -127,9 +127,10 @@ local charGiveMeleeAttackNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharGiveMeleeAttackNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local fightStyle = inputValues[3] or node.fightStyle
 		local moveId = inputValues[4] or node.moveId

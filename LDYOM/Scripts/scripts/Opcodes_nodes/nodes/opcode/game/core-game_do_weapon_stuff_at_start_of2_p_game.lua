@@ -64,9 +64,10 @@ local gameDoWeaponStuffAtStartOf2PGameNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameDoWeaponStuffAtStartOf2PGameNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         GameOp.doWeaponStuffAtStartOf2PGame()
         return {1}
     end

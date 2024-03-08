@@ -115,9 +115,10 @@ local carSetDrivingStyleNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetDrivingStyleNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local drivingStyle = inputValues[3] or node.drivingStyle
 		CarOp.setDrivingStyle(self_, drivingStyle)

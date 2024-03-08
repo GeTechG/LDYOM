@@ -99,9 +99,10 @@ local cameraSetShakeSimulationSimpleNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraSetShakeSimulationSimpleNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local type = inputValues[2] or node.type
 		local timeInMs = inputValues[3] or node.timeInMs
 		local intensity = inputValues[4] or node.intensity

@@ -95,9 +95,10 @@ local charCreateRandomAsPassengerNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharCreateRandomAsPassengerNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local vehicle = inputValues[2] or node.vehicle
 		local seatId = inputValues[3] or node.seatId
 		local handle = CharOp.createRandomAsPassenger(vehicle, seatId)

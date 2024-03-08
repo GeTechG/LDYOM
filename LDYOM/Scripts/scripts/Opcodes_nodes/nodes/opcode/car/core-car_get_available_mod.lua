@@ -123,9 +123,10 @@ local carGetAvailableModNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarGetAvailableModNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local slotId = inputValues[3] or node.slotId
 		local modelId = CarOp.getAvailableMod(self_, slotId)

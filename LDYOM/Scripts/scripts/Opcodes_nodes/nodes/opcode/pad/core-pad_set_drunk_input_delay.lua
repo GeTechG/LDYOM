@@ -115,9 +115,10 @@ local padSetDrunkInputDelayNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPadSetDrunkInputDelayNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local pad = inputValues[2] or node.pad
 		local delay = inputValues[3] or node.delay
 		PadOp.setDrunkInputDelay(pad, delay)

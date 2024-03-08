@@ -198,9 +198,10 @@ local taskCarDriveToCoordNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskCarDriveToCoordNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local driver = inputValues[2] or node.driver
 		local vehicle = inputValues[3] or node.vehicle
 		local x = inputValues[4] or node.x

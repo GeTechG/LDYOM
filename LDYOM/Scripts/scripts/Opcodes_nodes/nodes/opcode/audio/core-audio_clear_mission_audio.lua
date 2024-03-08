@@ -103,9 +103,10 @@ local audioClearMissionAudioNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorAudioClearMissionAudioNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local slotId = inputValues[2] or node.slotId
 		AudioOp.clearMissionAudio(slotId)
         return {1}

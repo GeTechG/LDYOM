@@ -155,9 +155,10 @@ local cameraPointAtCarNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraPointAtCarNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local vehicle = inputValues[2] or node.vehicle
 		local mode = inputValues[3] or node.mode
 		local switchStyle = inputValues[4] or node.switchStyle

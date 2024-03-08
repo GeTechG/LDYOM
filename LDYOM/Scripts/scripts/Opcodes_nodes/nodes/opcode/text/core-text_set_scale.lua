@@ -87,9 +87,10 @@ local textSetScaleNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextSetScaleNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local widthScale = inputValues[2] or node.widthScale
 		local heightScale = inputValues[3] or node.heightScale
 		TextOp.setScale(widthScale, heightScale)

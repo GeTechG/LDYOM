@@ -75,9 +75,10 @@ local gameSetCollectableTotalNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetCollectableTotalNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local amount = inputValues[2] or node.amount
 		GameOp.setCollectableTotal(amount)
         return {1}

@@ -74,9 +74,10 @@ local zoneSetTriggerGangWarNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorZoneSetTriggerGangWarNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local zone = inputValues[2] or node.zone
 		ZoneOp.setTriggerGangWar(zone)
         return {1}

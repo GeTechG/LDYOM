@@ -75,9 +75,10 @@ local worldSetPedDensityMultiplierNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldSetPedDensityMultiplierNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local multiplier = inputValues[2] or node.multiplier
 		WorldOp.setPedDensityMultiplier(multiplier)
         return {1}

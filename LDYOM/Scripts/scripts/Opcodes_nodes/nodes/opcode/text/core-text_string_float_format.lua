@@ -94,9 +94,10 @@ local textStringFloatFormatNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextStringFloatFormatNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local number = inputValues[2] or node.number
 		local format = inputValues[3] or node.format
 		local text = TextOp.stringFloatFormat(number, format)

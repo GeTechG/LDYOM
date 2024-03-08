@@ -86,9 +86,10 @@ local pickupUpdateMoneyPerDayNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPickupUpdateMoneyPerDayNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local value = inputValues[3] or node.value
 		PickupOp.updateMoneyPerDay(self_, value)

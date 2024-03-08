@@ -87,9 +87,10 @@ local taskSetCharDecisionMakerNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskSetCharDecisionMakerNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
 		local decisionMakerChar = inputValues[3] or node.decisionMakerChar
 		TaskOp.setCharDecisionMaker(char, decisionMakerChar)

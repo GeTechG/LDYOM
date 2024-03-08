@@ -75,9 +75,10 @@ local carClearLastDamageEntityNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarClearLastDamageEntityNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		CarOp.clearLastDamageEntity(self_)
         return {1}

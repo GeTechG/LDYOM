@@ -139,9 +139,10 @@ local textPrintStringInStringNowNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextPrintStringInStringNowNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local templateKey = inputValues[2] or node.templateKey
 		local replacementKey = inputValues[3] or node.replacementKey
 		local duration = inputValues[4] or node.duration

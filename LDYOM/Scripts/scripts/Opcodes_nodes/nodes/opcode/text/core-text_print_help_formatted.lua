@@ -87,9 +87,10 @@ local textPrintHelpFormattedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextPrintHelpFormattedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local text = inputValues[2] or node.text
 		local args = inputValues[3] or node.args
 		TextOp.printHelpFormatted(text, args)

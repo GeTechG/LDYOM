@@ -75,9 +75,10 @@ local worldSpawnVehicleByCheatingNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldSpawnVehicleByCheatingNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local modelId = inputValues[2] or node.modelId
 		WorldOp.spawnVehicleByCheating(modelId)
         return {1}

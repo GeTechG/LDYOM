@@ -83,9 +83,10 @@ local padTestCheatNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPadTestCheatNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local input = inputValues[2] or node.input
 		local result = PadOp.testCheat(input)
         return {1, result}

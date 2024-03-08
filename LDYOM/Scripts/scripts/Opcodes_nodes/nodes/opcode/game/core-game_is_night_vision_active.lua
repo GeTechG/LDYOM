@@ -72,9 +72,10 @@ local gameIsNightVisionActiveNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameIsNightVisionActiveNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = GameOp.isNightVisionActive()
         return {1, result}
     end

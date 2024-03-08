@@ -87,9 +87,10 @@ local textPrintStringNowNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextPrintStringNowNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local text = inputValues[2] or node.text
 		local time = inputValues[3] or node.time
 		TextOp.printStringNow(text, time)

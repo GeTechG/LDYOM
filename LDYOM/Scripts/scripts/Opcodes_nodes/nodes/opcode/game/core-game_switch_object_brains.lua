@@ -115,9 +115,10 @@ local gameSwitchObjectBrainsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSwitchObjectBrainsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local type = inputValues[2] or node.type
 		local state = inputValues[3] or node.state
 		GameOp.switchObjectBrains(type, state)

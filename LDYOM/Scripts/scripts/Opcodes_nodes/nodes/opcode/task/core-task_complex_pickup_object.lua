@@ -86,9 +86,10 @@ local taskComplexPickupObjectNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskComplexPickupObjectNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
 		local object = inputValues[3] or node.object
 		TaskOp.complexPickupObject(char, object)

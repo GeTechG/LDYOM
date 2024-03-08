@@ -83,9 +83,10 @@ local zoneGetDealerStrengthNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorZoneGetDealerStrengthNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local zone = inputValues[2] or node.zone
 		local density = ZoneOp.getDealerStrength(zone)
         return {1, density}

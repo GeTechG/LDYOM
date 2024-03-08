@@ -72,9 +72,10 @@ local cameraGetPlayerInCarModeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraGetPlayerInCarModeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local mode = CameraOp.getPlayerInCarMode()
         return {1, mode}
     end

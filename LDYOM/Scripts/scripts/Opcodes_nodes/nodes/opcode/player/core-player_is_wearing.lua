@@ -135,9 +135,10 @@ local playerIsWearingNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerIsWearingNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local modelName = inputValues[3] or node.modelName
 		local bodyPart = inputValues[4] or node.bodyPart

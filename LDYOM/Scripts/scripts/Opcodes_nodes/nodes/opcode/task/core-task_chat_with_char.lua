@@ -111,9 +111,10 @@ local taskChatWithCharNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskChatWithCharNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
 		local other = inputValues[3] or node.other
 		local leadSpeaker = inputValues[4] or node.leadSpeaker

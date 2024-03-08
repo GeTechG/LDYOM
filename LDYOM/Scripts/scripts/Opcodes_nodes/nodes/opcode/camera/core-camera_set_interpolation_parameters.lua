@@ -87,9 +87,10 @@ local cameraSetInterpolationParametersNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraSetInterpolationParametersNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local _p1 = inputValues[2] or node._p1
 		local time = inputValues[3] or node.time
 		CameraOp.setInterpolationParameters(_p1, time)

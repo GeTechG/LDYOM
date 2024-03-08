@@ -72,9 +72,10 @@ local cameraIsVectorTrackRunningNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraIsVectorTrackRunningNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = CameraOp.isVectorTrackRunning()
         return {1, result}
     end

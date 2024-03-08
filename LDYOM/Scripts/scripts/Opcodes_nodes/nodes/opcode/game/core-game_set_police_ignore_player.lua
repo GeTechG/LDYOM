@@ -87,9 +87,10 @@ local gameSetPoliceIgnorePlayerNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetPoliceIgnorePlayerNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local player = inputValues[2] or node.player
 		local state = inputValues[3] or node.state
 		GameOp.setPoliceIgnorePlayer(player, state)

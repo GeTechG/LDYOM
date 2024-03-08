@@ -87,9 +87,10 @@ local playerIncreaseMaxHealthNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerIncreaseMaxHealthNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local value = inputValues[3] or node.value
 		PlayerOp.increaseMaxHealth(self_, value)

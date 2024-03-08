@@ -99,9 +99,10 @@ local textStringFormatNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextStringFormatNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local buffer = inputValues[2] or node.buffer
 		local format = inputValues[3] or node.format
 		local args = inputValues[4] or node.args

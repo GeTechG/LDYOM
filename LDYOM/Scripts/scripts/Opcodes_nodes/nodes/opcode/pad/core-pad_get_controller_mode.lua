@@ -72,9 +72,10 @@ local padGetControllerModeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPadGetControllerModeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local mode = PadOp.getControllerMode()
         return {1, mode}
     end

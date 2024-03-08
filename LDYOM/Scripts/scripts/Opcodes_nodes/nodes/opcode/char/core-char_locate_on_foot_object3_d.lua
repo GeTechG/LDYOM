@@ -143,9 +143,10 @@ local charLocateOnFootObject3DNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharLocateOnFootObject3DNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local object = inputValues[3] or node.object
 		local xRadius = inputValues[4] or node.xRadius

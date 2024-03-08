@@ -95,9 +95,10 @@ local carHasBeenDamagedByCarNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarHasBeenDamagedByCarNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local other = inputValues[3] or node.other
 		local result = CarOp.hasBeenDamagedByCar(self_, other)

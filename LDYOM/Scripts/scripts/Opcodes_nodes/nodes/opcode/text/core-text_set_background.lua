@@ -75,9 +75,10 @@ local textSetBackgroundNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextSetBackgroundNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local state = inputValues[2] or node.state
 		TextOp.setBackground(state)
         return {1}

@@ -159,9 +159,10 @@ local worldCreateBirdsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldCreateBirdsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local xFrom = inputValues[2] or node.xFrom
 		local yFrom = inputValues[3] or node.yFrom
 		local zFrom = inputValues[4] or node.zFrom

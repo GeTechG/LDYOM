@@ -96,9 +96,10 @@ local worldGetTargetCoordsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldGetTargetCoordsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result, x, y, z = WorldOp.getTargetCoords()
         return {1, result, x, y, z}
     end

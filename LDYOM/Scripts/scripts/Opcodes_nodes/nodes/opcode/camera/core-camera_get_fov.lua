@@ -72,9 +72,10 @@ local cameraGetFovNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraGetFovNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local fov = CameraOp.getFov()
         return {1, fov}
     end

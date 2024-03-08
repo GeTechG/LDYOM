@@ -75,9 +75,10 @@ local gameSetScriptCoopGameNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetScriptCoopGameNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local state = inputValues[2] or node.state
 		GameOp.setScriptCoopGame(state)
         return {1}

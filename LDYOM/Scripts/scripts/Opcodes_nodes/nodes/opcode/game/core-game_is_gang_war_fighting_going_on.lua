@@ -72,9 +72,10 @@ local gameIsGangWarFightingGoingOnNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameIsGangWarFightingGoingOnNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = GameOp.isGangWarFightingGoingOn()
         return {1, result}
     end

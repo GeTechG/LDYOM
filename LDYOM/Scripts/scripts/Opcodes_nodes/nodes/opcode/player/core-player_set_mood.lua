@@ -127,9 +127,10 @@ local playerSetMoodNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerSetMoodNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local mood = inputValues[3] or node.mood
 		local time = inputValues[4] or node.time

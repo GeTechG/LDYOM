@@ -123,9 +123,10 @@ local zoneGetGangStrengthNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorZoneGetGangStrengthNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local zone = inputValues[2] or node.zone
 		local gangId = inputValues[3] or node.gangId
 		local density = ZoneOp.getGangStrength(zone, gangId)

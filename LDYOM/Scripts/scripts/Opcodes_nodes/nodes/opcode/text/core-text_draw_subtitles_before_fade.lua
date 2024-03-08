@@ -75,9 +75,10 @@ local textDrawSubtitlesBeforeFadeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextDrawSubtitlesBeforeFadeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local state = inputValues[2] or node.state
 		TextOp.drawSubtitlesBeforeFade(state)
         return {1}

@@ -135,9 +135,10 @@ local carSetProofsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetProofsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local bulletProof = inputValues[3] or node.bulletProof
 		local fireProof = inputValues[4] or node.fireProof

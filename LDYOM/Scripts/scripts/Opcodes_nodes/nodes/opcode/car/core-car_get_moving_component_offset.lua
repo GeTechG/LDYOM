@@ -83,9 +83,10 @@ local carGetMovingComponentOffsetNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarGetMovingComponentOffsetNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local offset = CarOp.getMovingComponentOffset(self_)
         return {1, offset}

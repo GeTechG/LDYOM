@@ -87,9 +87,10 @@ local carSetRandomRouteSeedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetRandomRouteSeedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local routeSeed = inputValues[3] or node.routeSeed
 		CarOp.setRandomRouteSeed(self_, routeSeed)

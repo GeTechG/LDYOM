@@ -75,9 +75,10 @@ local worldClearExtraColorsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldClearExtraColorsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local withFade = inputValues[2] or node.withFade
 		WorldOp.clearExtraColors(withFade)
         return {1}

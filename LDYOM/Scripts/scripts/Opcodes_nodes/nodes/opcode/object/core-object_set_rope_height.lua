@@ -86,9 +86,10 @@ local objectSetRopeHeightNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectSetRopeHeightNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local height = inputValues[3] or node.height
 		ObjectOp.setRopeHeight(self_, height)

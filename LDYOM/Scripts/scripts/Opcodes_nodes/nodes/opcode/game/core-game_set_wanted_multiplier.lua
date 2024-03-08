@@ -75,9 +75,10 @@ local gameSetWantedMultiplierNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetWantedMultiplierNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local multiplier = inputValues[2] or node.multiplier
 		GameOp.setWantedMultiplier(multiplier)
         return {1}

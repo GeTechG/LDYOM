@@ -87,9 +87,10 @@ local mathClearBitNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathClearBitNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local number = inputValues[2] or node.number
 		local n = inputValues[3] or node.n
 		MathOp.clearBit(number, n)

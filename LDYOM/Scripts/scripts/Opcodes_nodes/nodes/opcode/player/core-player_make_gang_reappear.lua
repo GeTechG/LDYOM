@@ -63,9 +63,10 @@ local playerMakeGangReappearNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerMakeGangReappearNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         PlayerOp.makeGangReappear()
         return {1}
     end

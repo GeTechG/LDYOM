@@ -75,9 +75,10 @@ local textSetHelpMessageBoxSizeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextSetHelpMessageBoxSizeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local size = inputValues[2] or node.size
 		TextOp.setHelpMessageBoxSize(size)
         return {1}

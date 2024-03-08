@@ -83,9 +83,10 @@ local mathCosNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathCosNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local angle = inputValues[2] or node.angle
 		local result = MathOp.cos(angle)
         return {1, result}

@@ -75,9 +75,10 @@ local textClearThisBigPrintNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextClearThisBigPrintNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local key = inputValues[2] or node.key
 		TextOp.clearThisBigPrint(key)
         return {1}

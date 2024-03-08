@@ -95,9 +95,10 @@ local charIsHealthGreaterNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharIsHealthGreaterNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local health = inputValues[3] or node.health
 		local result = CharOp.isHealthGreater(self_, health)

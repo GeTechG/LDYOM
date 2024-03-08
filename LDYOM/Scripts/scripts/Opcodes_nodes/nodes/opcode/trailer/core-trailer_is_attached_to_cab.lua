@@ -95,9 +95,10 @@ local trailerIsAttachedToCabNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTrailerIsAttachedToCabNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local cab = inputValues[3] or node.cab
 		local result = TrailerOp.isAttachedToCab(self_, cab)

@@ -98,9 +98,10 @@ local charSetInformRespectedFriendsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharSetInformRespectedFriendsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local radius = inputValues[3] or node.radius
 		local _p3 = inputValues[4] or node._p3

@@ -72,9 +72,10 @@ local gameHasLanguageChangedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameHasLanguageChangedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = GameOp.hasLanguageChanged()
         return {1, result}
     end

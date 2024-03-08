@@ -75,9 +75,10 @@ local textSetCenterSizeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextSetCenterSizeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local width = inputValues[2] or node.width
 		TextOp.setCenterSize(width)
         return {1}

@@ -75,9 +75,10 @@ local cameraTakePhotoNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraTakePhotoNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local _p1 = inputValues[2] or node._p1
 		CameraOp.takePhoto(_p1)
         return {1}

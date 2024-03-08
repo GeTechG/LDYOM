@@ -75,9 +75,10 @@ local carClearLastWeaponDamageNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarClearLastWeaponDamageNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		CarOp.clearLastWeaponDamage(self_)
         return {1}

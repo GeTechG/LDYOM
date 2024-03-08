@@ -87,9 +87,10 @@ local playerTakeOffGogglesNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerTakeOffGogglesNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local animate = inputValues[3] or node.animate
 		PlayerOp.takeOffGoggles(self_, animate)

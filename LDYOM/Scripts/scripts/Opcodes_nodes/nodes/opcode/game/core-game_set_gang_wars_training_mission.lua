@@ -75,9 +75,10 @@ local gameSetGangWarsTrainingMissionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetGangWarsTrainingMissionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local state = inputValues[2] or node.state
 		GameOp.setGangWarsTrainingMission(state)
         return {1}

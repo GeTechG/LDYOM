@@ -95,9 +95,10 @@ local mathPowNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathPowNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local number = inputValues[2] or node.number
 		local power = inputValues[3] or node.power
 		local result = MathOp.pow(number, power)

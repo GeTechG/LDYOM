@@ -99,9 +99,10 @@ local taskFallAndGetUpNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskFallAndGetUpNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local fallDown = inputValues[3] or node.fallDown
 		local timeOnGround = inputValues[4] or node.timeOnGround

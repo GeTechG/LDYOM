@@ -71,9 +71,10 @@ local audioGetBeatTrackStatusNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorAudioGetBeatTrackStatusNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local status = AudioOp.getBeatTrackStatus()
         return {1, status}
     end

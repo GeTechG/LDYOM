@@ -99,9 +99,10 @@ local taskFollowPointRouteNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskFollowPointRouteNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local walkSpeed = inputValues[3] or node.walkSpeed
 		local flag = inputValues[4] or node.flag

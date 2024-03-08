@@ -115,9 +115,10 @@ local carLockDoorsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarLockDoorsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local lockStatus = inputValues[3] or node.lockStatus
 		CarOp.lockDoors(self_, lockStatus)

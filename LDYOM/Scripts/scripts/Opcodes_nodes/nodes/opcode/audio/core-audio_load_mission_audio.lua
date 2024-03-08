@@ -115,9 +115,10 @@ local audioLoadMissionAudioNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorAudioLoadMissionAudioNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local slotId = inputValues[2] or node.slotId
 		local audioId = inputValues[3] or node.audioId
 		AudioOp.loadMissionAudio(slotId, audioId)

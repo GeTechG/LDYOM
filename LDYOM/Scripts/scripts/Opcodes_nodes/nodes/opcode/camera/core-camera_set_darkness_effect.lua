@@ -87,9 +87,10 @@ local cameraSetDarknessEffectNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraSetDarknessEffectNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local enable = inputValues[2] or node.enable
 		local pitchBlack = inputValues[3] or node.pitchBlack
 		CameraOp.setDarknessEffect(enable, pitchBlack)

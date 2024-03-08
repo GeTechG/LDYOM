@@ -75,9 +75,10 @@ local gameSetCreateRandomGangMembersNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetCreateRandomGangMembersNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local state = inputValues[2] or node.state
 		GameOp.setCreateRandomGangMembers(state)
         return {1}

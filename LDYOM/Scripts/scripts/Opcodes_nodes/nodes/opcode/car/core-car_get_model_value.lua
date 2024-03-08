@@ -83,9 +83,10 @@ local carGetModelValueNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarGetModelValueNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local model = inputValues[2] or node.model
 		local value = CarOp.getModelValue(model)
         return {1, value}

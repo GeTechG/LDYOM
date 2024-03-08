@@ -87,9 +87,10 @@ local taskKillCharOnFootNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskKillCharOnFootNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local killer = inputValues[2] or node.killer
 		local target = inputValues[3] or node.target
 		TaskOp.killCharOnFoot(killer, target)

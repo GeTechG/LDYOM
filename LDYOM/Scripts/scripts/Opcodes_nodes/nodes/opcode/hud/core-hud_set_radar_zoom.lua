@@ -74,9 +74,10 @@ local hudSetRadarZoomNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHudSetRadarZoomNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local zoom = inputValues[2] or node.zoom
 		HudOp.setRadarZoom(zoom)
         return {1}

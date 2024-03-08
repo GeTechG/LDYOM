@@ -75,9 +75,10 @@ local gameSetAllCarsCanBeDamagedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetAllCarsCanBeDamagedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local state = inputValues[2] or node.state
 		GameOp.setAllCarsCanBeDamaged(state)
         return {1}

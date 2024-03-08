@@ -159,9 +159,10 @@ local charCreateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharCreateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local pedType = inputValues[2] or node.pedType
 		local modelId = inputValues[3] or node.modelId
 		local x = inputValues[4] or node.x

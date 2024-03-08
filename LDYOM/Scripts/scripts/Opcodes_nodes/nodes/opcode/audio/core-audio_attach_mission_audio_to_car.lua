@@ -115,9 +115,10 @@ local audioAttachMissionAudioToCarNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorAudioAttachMissionAudioToCarNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local slotId = inputValues[2] or node.slotId
 		local handle = inputValues[3] or node.handle
 		AudioOp.attachMissionAudioToCar(slotId, handle)

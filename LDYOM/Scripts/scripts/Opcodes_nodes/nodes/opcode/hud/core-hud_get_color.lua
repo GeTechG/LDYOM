@@ -135,9 +135,10 @@ local hudGetColorNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHudGetColorNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local hudObject = inputValues[2] or node.hudObject
 		local red, green, blue, alpha = HudOp.getColor(hudObject)
         return {1, red, green, blue, alpha}

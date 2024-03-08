@@ -75,9 +75,10 @@ local clockSetTimeScaleNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorClockSetTimeScaleNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local scale = inputValues[2] or node.scale
 		ClockOp.setTimeScale(scale)
         return {1}

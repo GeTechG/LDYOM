@@ -75,9 +75,10 @@ local gameLimitTwoPlayerDistanceNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameLimitTwoPlayerDistanceNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local distance = inputValues[2] or node.distance
 		GameOp.limitTwoPlayerDistance(distance)
         return {1}

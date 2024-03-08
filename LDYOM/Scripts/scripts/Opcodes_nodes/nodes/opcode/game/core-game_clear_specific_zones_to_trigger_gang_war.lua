@@ -64,9 +64,10 @@ local gameClearSpecificZonesToTriggerGangWarNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameClearSpecificZonesToTriggerGangWarNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         GameOp.clearSpecificZonesToTriggerGangWar()
         return {1}
     end

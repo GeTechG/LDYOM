@@ -111,9 +111,10 @@ local cameraSetLerpFovNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraSetLerpFovNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local from = inputValues[2] or node.from
 		local to = inputValues[3] or node.to
 		local time = inputValues[4] or node.time

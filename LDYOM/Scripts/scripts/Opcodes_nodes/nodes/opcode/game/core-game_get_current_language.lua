@@ -72,9 +72,10 @@ local gameGetCurrentLanguageNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameGetCurrentLanguageNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local languageSlot = GameOp.getCurrentLanguage()
         return {1, languageSlot}
     end

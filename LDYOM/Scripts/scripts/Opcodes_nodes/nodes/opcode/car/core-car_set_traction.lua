@@ -87,9 +87,10 @@ local carSetTractionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetTractionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local traction = inputValues[3] or node.traction
 		CarOp.setTraction(self_, traction)

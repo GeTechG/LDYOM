@@ -72,9 +72,10 @@ local cameraIsVectorMoveRunningNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraIsVectorMoveRunningNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = CameraOp.isVectorMoveRunning()
         return {1, result}
     end

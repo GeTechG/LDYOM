@@ -127,9 +127,10 @@ local textPrintBigQNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextPrintBigQNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local key = inputValues[2] or node.key
 		local duration = inputValues[3] or node.duration
 		local style = inputValues[4] or node.style

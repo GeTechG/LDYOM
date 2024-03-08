@@ -143,9 +143,10 @@ local worldGetRandomCharInAreaOffsetNoSaveNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldGetRandomCharInAreaOffsetNoSaveNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local x = inputValues[2] or node.x
 		local y = inputValues[3] or node.y
 		local z = inputValues[4] or node.z

@@ -95,9 +95,10 @@ local playerIsInInfoZoneNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerIsInInfoZoneNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local infoZone = inputValues[3] or node.infoZone
 		local result = PlayerOp.isInInfoZone(self_, infoZone)

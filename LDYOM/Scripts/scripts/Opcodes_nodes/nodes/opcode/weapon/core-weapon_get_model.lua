@@ -111,9 +111,10 @@ local weaponGetModelNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWeaponGetModelNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local weaponType = inputValues[2] or node.weaponType
 		local modelId = WeaponOp.getModel(weaponType)
         return {1, modelId}

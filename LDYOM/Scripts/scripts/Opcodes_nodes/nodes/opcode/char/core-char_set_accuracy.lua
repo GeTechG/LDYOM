@@ -87,9 +87,10 @@ local charSetAccuracyNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharSetAccuracyNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local accuracy = inputValues[3] or node.accuracy
 		CharOp.setAccuracy(self_, accuracy)

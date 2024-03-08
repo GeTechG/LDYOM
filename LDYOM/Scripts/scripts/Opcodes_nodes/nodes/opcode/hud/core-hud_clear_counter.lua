@@ -75,9 +75,10 @@ local hudClearCounterNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHudClearCounterNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local counter = inputValues[2] or node.counter
 		HudOp.clearCounter(counter)
         return {1}

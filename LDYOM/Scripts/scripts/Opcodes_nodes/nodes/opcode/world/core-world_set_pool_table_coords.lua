@@ -135,9 +135,10 @@ local worldSetPoolTableCoordsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldSetPoolTableCoordsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local leftBottomX = inputValues[2] or node.leftBottomX
 		local leftBottomY = inputValues[3] or node.leftBottomY
 		local leftBottomZ = inputValues[4] or node.leftBottomZ

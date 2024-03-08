@@ -115,9 +115,10 @@ local hudDisplayTimerNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHudDisplayTimerNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local timer = inputValues[2] or node.timer
 		local direction = inputValues[3] or node.direction
 		HudOp.displayTimer(timer, direction)

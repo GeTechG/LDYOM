@@ -103,9 +103,10 @@ local charSetNextDesiredMoveStateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharSetNextDesiredMoveStateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local moveState = inputValues[2] or node.moveState
 		CharOp.setNextDesiredMoveState(moveState)
         return {1}

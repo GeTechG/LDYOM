@@ -87,9 +87,10 @@ local textPrintHelpForeverWithNumberNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextPrintHelpForeverWithNumberNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local gxt = inputValues[2] or node.gxt
 		local number = inputValues[3] or node.number
 		TextOp.printHelpForeverWithNumber(gxt, number)

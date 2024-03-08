@@ -87,9 +87,10 @@ local taskAchieveHeadingNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskAchieveHeadingNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local heading = inputValues[3] or node.heading
 		TaskOp.achieveHeading(handle, heading)

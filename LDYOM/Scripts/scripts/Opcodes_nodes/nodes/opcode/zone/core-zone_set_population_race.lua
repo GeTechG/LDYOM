@@ -86,9 +86,10 @@ local zoneSetPopulationRaceNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorZoneSetPopulationRaceNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local zone = inputValues[2] or node.zone
 		local _p2 = inputValues[3] or node._p2
 		ZoneOp.setPopulationRace(zone, _p2)

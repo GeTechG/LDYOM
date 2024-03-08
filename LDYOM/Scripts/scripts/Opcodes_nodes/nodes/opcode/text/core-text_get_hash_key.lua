@@ -83,9 +83,10 @@ local textGetHashKeyNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextGetHashKeyNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local text = inputValues[2] or node.text
 		local hash = TextOp.getHashKey(text)
         return {1, hash}

@@ -87,9 +87,10 @@ local worldSetExtraColorsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldSetExtraColorsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local color = inputValues[2] or node.color
 		local fade = inputValues[3] or node.fade
 		WorldOp.setExtraColors(color, fade)

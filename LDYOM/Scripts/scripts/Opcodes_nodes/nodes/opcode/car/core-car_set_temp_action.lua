@@ -127,9 +127,10 @@ local carSetTempActionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetTempActionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local actionId = inputValues[3] or node.actionId
 		local timeInMs = inputValues[4] or node.timeInMs

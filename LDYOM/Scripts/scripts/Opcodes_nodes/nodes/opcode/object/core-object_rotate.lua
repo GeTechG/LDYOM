@@ -119,9 +119,10 @@ local objectRotateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectRotateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local fromAngle = inputValues[3] or node.fromAngle
 		local toAngle = inputValues[4] or node.toAngle

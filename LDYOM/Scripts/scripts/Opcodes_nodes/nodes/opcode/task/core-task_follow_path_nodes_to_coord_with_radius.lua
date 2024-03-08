@@ -147,9 +147,10 @@ local taskFollowPathNodesToCoordWithRadiusNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskFollowPathNodesToCoordWithRadiusNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local x = inputValues[3] or node.x
 		local y = inputValues[4] or node.y

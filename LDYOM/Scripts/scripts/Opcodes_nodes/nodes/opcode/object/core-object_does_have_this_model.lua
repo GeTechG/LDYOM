@@ -95,9 +95,10 @@ local objectDoesHaveThisModelNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectDoesHaveThisModelNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local modelId = inputValues[3] or node.modelId
 		local result = ObjectOp.doesHaveThisModel(self_, modelId)

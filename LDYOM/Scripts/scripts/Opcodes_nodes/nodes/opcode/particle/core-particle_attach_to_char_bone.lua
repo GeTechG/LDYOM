@@ -99,9 +99,10 @@ local particleAttachToCharBoneNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorParticleAttachToCharBoneNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local handle = inputValues[3] or node.handle
 		local boneId = inputValues[4] or node.boneId

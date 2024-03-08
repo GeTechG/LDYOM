@@ -50,9 +50,10 @@ local {node_name_var}Node = {{
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditor{node_name}Node
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         {run}
         return {{{run_ret}}}
     end

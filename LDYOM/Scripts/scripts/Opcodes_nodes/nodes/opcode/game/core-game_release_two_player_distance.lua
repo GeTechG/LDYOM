@@ -64,9 +64,10 @@ local gameReleaseTwoPlayerDistanceNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameReleaseTwoPlayerDistanceNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         GameOp.releaseTwoPlayerDistance()
         return {1}
     end

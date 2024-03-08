@@ -87,9 +87,10 @@ local hudSetTimerBeepCountdownTimeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHudSetTimerBeepCountdownTimeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local timer = inputValues[2] or node.timer
 		local timeInSec = inputValues[3] or node.timeInSec
 		HudOp.setTimerBeepCountdownTime(timer, timeInSec)

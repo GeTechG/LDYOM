@@ -64,9 +64,10 @@ local playerUseDetonatorNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerUseDetonatorNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         PlayerOp.useDetonator()
         return {1}
     end

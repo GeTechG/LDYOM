@@ -179,9 +179,10 @@ local particleCreateOnCharWithDirectionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorParticleCreateOnCharWithDirectionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local name = inputValues[2] or node.name
 		local char = inputValues[3] or node.char
 		local xOffset = inputValues[4] or node.xOffset

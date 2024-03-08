@@ -147,9 +147,10 @@ local charCreateAsPassengerNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharCreateAsPassengerNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local vehicle = inputValues[2] or node.vehicle
 		local pedType = inputValues[3] or node.pedType
 		local modelId = inputValues[4] or node.modelId

@@ -103,9 +103,10 @@ local audioSetRadioChannelNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorAudioSetRadioChannelNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local channel = inputValues[2] or node.channel
 		AudioOp.setRadioChannel(channel)
         return {1}

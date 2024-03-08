@@ -83,9 +83,10 @@ local textIsEmptyNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextIsEmptyNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local text = inputValues[2] or node.text
 		local result = TextOp.isEmpty(text)
         return {1, result}

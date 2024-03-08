@@ -87,9 +87,10 @@ local carStartPlaybackNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarStartPlaybackNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local path = inputValues[3] or node.path
 		CarOp.startPlayback(self_, path)

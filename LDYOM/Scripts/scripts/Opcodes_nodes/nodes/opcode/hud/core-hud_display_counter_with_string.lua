@@ -127,9 +127,10 @@ local hudDisplayCounterWithStringNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHudDisplayCounterWithStringNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local counter = inputValues[2] or node.counter
 		local display = inputValues[3] or node.display
 		local text = inputValues[4] or node.text

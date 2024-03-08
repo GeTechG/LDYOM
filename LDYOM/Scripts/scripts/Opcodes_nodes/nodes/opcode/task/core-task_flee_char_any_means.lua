@@ -158,9 +158,10 @@ local taskFleeCharAnyMeansNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskFleeCharAnyMeansNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local threat = inputValues[3] or node.threat
 		local runDistance = inputValues[4] or node.runDistance

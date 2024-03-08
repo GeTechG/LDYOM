@@ -87,9 +87,10 @@ local charSetHealthNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharSetHealthNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local health = inputValues[3] or node.health
 		CharOp.setHealth(self_, health)

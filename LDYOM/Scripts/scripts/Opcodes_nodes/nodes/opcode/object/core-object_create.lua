@@ -119,9 +119,10 @@ local objectCreateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectCreateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local modelId = inputValues[2] or node.modelId
 		local x = inputValues[3] or node.x
 		local y = inputValues[4] or node.y

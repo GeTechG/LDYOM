@@ -87,9 +87,10 @@ local textAddLabelNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextAddLabelNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local dynamicKey = inputValues[2] or node.dynamicKey
 		local text = inputValues[3] or node.text
 		TextOp.addLabel(dynamicKey, text)

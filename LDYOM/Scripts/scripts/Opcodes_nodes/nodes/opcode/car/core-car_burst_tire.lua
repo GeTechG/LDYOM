@@ -87,9 +87,10 @@ local carBurstTireNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarBurstTireNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local tireId = inputValues[3] or node.tireId
 		CarOp.burstTire(self_, tireId)

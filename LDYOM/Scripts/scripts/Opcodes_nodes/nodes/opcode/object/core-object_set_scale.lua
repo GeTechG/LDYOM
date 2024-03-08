@@ -87,9 +87,10 @@ local objectSetScaleNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectSetScaleNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local scale = inputValues[3] or node.scale
 		ObjectOp.setScale(self_, scale)

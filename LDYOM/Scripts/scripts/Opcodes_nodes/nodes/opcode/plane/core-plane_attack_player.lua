@@ -99,9 +99,10 @@ local planeAttackPlayerNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlaneAttackPlayerNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local handle = inputValues[3] or node.handle
 		local radius = inputValues[4] or node.radius

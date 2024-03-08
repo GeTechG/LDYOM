@@ -151,9 +151,10 @@ local worldSetClosestEntryExitFlagNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldSetClosestEntryExitFlagNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local x = inputValues[2] or node.x
 		local y = inputValues[3] or node.y
 		local radius = inputValues[4] or node.radius

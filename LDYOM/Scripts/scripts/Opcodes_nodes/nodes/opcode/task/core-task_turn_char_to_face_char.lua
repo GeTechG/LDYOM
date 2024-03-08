@@ -87,9 +87,10 @@ local taskTurnCharToFaceCharNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskTurnCharToFaceCharNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
 		local target = inputValues[3] or node.target
 		TaskOp.turnCharToFaceChar(char, target)

@@ -87,9 +87,10 @@ local charSetHeadingNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharSetHeadingNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local heading = inputValues[3] or node.heading
 		CharOp.setHeading(self_, heading)

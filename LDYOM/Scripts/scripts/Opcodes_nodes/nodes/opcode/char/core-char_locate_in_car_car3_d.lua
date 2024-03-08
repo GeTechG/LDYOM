@@ -143,9 +143,10 @@ local charLocateInCarCar3DNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharLocateInCarCar3DNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local vehicle = inputValues[3] or node.vehicle
 		local xRadius = inputValues[4] or node.xRadius

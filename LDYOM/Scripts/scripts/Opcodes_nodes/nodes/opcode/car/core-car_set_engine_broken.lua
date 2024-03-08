@@ -87,9 +87,10 @@ local carSetEngineBrokenNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetEngineBrokenNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local state = inputValues[3] or node.state
 		CarOp.setEngineBroken(self_, state)

@@ -64,9 +64,10 @@ local cameraResetVehicleTweakNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraResetVehicleTweakNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         CameraOp.resetVehicleTweak()
         return {1}
     end

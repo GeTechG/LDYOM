@@ -83,9 +83,10 @@ local carGetNumberOfGearsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarGetNumberOfGearsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local numGear = CarOp.getNumberOfGears(self_)
         return {1, numGear}

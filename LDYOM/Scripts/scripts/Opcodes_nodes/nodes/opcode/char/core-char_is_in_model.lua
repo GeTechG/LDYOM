@@ -95,9 +95,10 @@ local charIsInModelNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharIsInModelNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local modelId = inputValues[3] or node.modelId
 		local result = CharOp.isInModel(self_, modelId)

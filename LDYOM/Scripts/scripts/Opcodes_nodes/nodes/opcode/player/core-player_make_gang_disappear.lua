@@ -63,9 +63,10 @@ local playerMakeGangDisappearNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerMakeGangDisappearNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         PlayerOp.makeGangDisappear()
         return {1}
     end

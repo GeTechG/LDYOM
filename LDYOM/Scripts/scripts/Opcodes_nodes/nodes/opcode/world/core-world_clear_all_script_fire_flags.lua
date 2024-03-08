@@ -64,9 +64,10 @@ local worldClearAllScriptFireFlagsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldClearAllScriptFireFlagsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         WorldOp.clearAllScriptFireFlags()
         return {1}
     end

@@ -99,9 +99,10 @@ local carSetExtraColorsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetExtraColorsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local color1 = inputValues[3] or node.color1
 		local color2 = inputValues[4] or node.color2

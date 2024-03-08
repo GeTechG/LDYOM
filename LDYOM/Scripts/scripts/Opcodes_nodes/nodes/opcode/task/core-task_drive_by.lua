@@ -182,9 +182,10 @@ local taskDriveByNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskDriveByNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local targetChar = inputValues[3] or node.targetChar
 		local targetVehicle = inputValues[4] or node.targetVehicle

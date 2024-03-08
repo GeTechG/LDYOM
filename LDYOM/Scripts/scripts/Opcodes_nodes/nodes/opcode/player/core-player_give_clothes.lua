@@ -138,9 +138,10 @@ local playerGiveClothesNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerGiveClothesNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local textureHash = inputValues[3] or node.textureHash
 		local modelHash = inputValues[4] or node.modelHash

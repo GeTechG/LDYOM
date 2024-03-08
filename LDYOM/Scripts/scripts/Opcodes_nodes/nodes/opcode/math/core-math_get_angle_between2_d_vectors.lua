@@ -119,9 +119,10 @@ local mathGetAngleBetween2DVectorsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathGetAngleBetween2DVectorsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local x1 = inputValues[2] or node.x1
 		local y1 = inputValues[3] or node.y1
 		local x2 = inputValues[4] or node.x2

@@ -64,9 +64,10 @@ local zoneInitPopulationSettingsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorZoneInitPopulationSettingsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         ZoneOp.initPopulationSettings()
         return {1}
     end

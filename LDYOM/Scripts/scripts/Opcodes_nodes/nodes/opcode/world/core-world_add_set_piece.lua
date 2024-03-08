@@ -219,9 +219,10 @@ local worldAddSetPieceNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldAddSetPieceNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local type = inputValues[2] or node.type
 		local fromX = inputValues[3] or node.fromX
 		local fromY = inputValues[4] or node.fromY

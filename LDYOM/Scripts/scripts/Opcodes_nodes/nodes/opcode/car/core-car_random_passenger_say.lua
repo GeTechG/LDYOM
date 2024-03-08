@@ -87,9 +87,10 @@ local carRandomPassengerSayNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarRandomPassengerSayNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local speechId = inputValues[3] or node.speechId
 		CarOp.randomPassengerSay(self_, speechId)

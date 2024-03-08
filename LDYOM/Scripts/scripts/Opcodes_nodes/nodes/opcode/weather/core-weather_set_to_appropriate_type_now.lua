@@ -64,9 +64,10 @@ local weatherSetToAppropriateTypeNowNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWeatherSetToAppropriateTypeNowNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         WeatherOp.setToAppropriateTypeNow()
         return {1}
     end

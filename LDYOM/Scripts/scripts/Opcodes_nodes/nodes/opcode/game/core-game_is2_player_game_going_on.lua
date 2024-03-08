@@ -72,9 +72,10 @@ local gameIs2PlayerGameGoingOnNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameIs2PlayerGameGoingOnNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = GameOp.is2PlayerGameGoingOn()
         return {1, result}
     end

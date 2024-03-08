@@ -72,9 +72,10 @@ local gameHasGameJustReturnedFromFrontendNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameHasGameJustReturnedFromFrontendNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local result = GameOp.hasGameJustReturnedFromFrontend()
         return {1, result}
     end

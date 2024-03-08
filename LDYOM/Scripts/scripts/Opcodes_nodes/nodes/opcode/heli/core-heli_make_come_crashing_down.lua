@@ -75,9 +75,10 @@ local heliMakeComeCrashingDownNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorHeliMakeComeCrashingDownNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		HeliOp.makeComeCrashingDown(self_)
         return {1}

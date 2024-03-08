@@ -75,9 +75,10 @@ local zoneSetForGangWarsTrainingNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorZoneSetForGangWarsTrainingNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local zone = inputValues[2] or node.zone
 		ZoneOp.setForGangWarsTraining(zone)
         return {1}

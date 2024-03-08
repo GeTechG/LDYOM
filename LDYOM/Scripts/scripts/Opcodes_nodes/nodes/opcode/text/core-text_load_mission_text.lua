@@ -75,9 +75,10 @@ local textLoadMissionTextNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextLoadMissionTextNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local tableName = inputValues[2] or node.tableName
 		TextOp.loadMissionText(tableName)
         return {1}

@@ -99,9 +99,10 @@ local cameraSetFadingColorNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraSetFadingColorNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local r = inputValues[2] or node.r
 		local g = inputValues[3] or node.g
 		local b = inputValues[4] or node.b

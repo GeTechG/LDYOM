@@ -87,9 +87,10 @@ local charSetShootRateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharSetShootRateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local rate = inputValues[3] or node.rate
 		CharOp.setShootRate(self_, rate)

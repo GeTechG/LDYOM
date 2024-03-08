@@ -87,9 +87,10 @@ local clockSetTimeOfDayNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorClockSetTimeOfDayNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local hours = inputValues[2] or node.hours
 		local minutes = inputValues[3] or node.minutes
 		ClockOp.setTimeOfDay(hours, minutes)

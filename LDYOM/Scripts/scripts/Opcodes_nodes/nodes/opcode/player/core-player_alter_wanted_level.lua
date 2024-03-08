@@ -87,9 +87,10 @@ local playerAlterWantedLevelNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerAlterWantedLevelNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local wantedLevel = inputValues[3] or node.wantedLevel
 		PlayerOp.alterWantedLevel(self_, wantedLevel)

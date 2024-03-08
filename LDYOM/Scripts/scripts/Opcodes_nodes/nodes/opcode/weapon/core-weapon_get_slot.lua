@@ -110,9 +110,10 @@ local weaponGetSlotNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWeaponGetSlotNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local weaponType = inputValues[2] or node.weaponType
 		local slot = WeaponOp.getSlot(weaponType)
         return {1, slot}

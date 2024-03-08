@@ -74,9 +74,10 @@ local gameSetGunshotSenseRangeForRiot2Node = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetGunshotSenseRangeForRiot2Node
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local range = inputValues[2] or node.range
 		GameOp.setGunshotSenseRangeForRiot2(range)
         return {1}

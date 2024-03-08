@@ -75,9 +75,10 @@ local cameraSetZoomNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraSetZoomNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local zoom = inputValues[2] or node.zoom
 		CameraOp.setZoom(zoom)
         return {1}

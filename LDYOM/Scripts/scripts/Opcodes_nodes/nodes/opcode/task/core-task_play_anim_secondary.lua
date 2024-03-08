@@ -171,9 +171,10 @@ local taskPlayAnimSecondaryNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskPlayAnimSecondaryNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local animationFile = inputValues[3] or node.animationFile
 		local animationName = inputValues[4] or node.animationName

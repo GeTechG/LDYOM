@@ -75,9 +75,10 @@ local gameSetMaxFireGenerationsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetMaxFireGenerationsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local limit = inputValues[2] or node.limit
 		GameOp.setMaxFireGenerations(limit)
         return {1}

@@ -88,9 +88,10 @@ local cameraGetActivePointAtNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraGetActivePointAtNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local x, y, z = CameraOp.getActivePointAt()
         return {1, x, y, z}
     end

@@ -103,9 +103,10 @@ local textClearThisPrintBigNowNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextClearThisPrintBigNowNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local textStyle = inputValues[2] or node.textStyle
 		TextOp.clearThisPrintBigNow(textStyle)
         return {1}

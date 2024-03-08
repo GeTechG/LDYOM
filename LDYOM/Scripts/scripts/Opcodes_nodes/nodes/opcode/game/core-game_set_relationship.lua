@@ -183,9 +183,10 @@ local gameSetRelationshipNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetRelationshipNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local relationshipType = inputValues[2] or node.relationshipType
 		local ofPedType = inputValues[3] or node.ofPedType
 		local toPedType = inputValues[4] or node.toPedType

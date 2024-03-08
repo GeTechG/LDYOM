@@ -64,9 +64,10 @@ local cameraSetBehindPlayerNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraSetBehindPlayerNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         CameraOp.setBehindPlayer()
         return {1}
     end

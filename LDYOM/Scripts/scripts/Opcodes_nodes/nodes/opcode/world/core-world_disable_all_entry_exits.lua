@@ -75,9 +75,10 @@ local worldDisableAllEntryExitsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldDisableAllEntryExitsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local state = inputValues[2] or node.state
 		WorldOp.disableAllEntryExits(state)
         return {1}

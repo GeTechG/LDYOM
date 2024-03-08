@@ -75,9 +75,10 @@ local gameSetMaxWantedLevelNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameSetMaxWantedLevelNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local wantedLevel = inputValues[2] or node.wantedLevel
 		GameOp.setMaxWantedLevel(wantedLevel)
         return {1}

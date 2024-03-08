@@ -87,9 +87,10 @@ local objectSetHeadingNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectSetHeadingNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local heading = inputValues[3] or node.heading
 		ObjectOp.setHeading(self_, heading)

@@ -95,9 +95,10 @@ local mathGetHeadingFromVector2DNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathGetHeadingFromVector2DNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local x = inputValues[2] or node.x
 		local y = inputValues[3] or node.y
 		local heading = MathOp.getHeadingFromVector2D(x, y)

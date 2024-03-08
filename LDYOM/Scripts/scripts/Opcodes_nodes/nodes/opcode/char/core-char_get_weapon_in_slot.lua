@@ -139,9 +139,10 @@ local charGetWeaponInSlotNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharGetWeaponInSlotNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local weaponSlotId = inputValues[3] or node.weaponSlotId
 		local weaponType, weaponAmmo, weaponModel = CharOp.getWeaponInSlot(self_, weaponSlotId)

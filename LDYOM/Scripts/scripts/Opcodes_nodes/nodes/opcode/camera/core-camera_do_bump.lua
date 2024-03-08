@@ -87,9 +87,10 @@ local cameraDoBumpNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraDoBumpNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local xOffset = inputValues[2] or node.xOffset
 		local yOffset = inputValues[3] or node.yOffset
 		CameraOp.doBump(xOffset, yOffset)

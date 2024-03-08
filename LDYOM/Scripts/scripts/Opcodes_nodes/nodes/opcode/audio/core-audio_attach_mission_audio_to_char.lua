@@ -115,9 +115,10 @@ local audioAttachMissionAudioToCharNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorAudioAttachMissionAudioToCharNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local slotId = inputValues[2] or node.slotId
 		local handle = inputValues[3] or node.handle
 		AudioOp.attachMissionAudioToChar(slotId, handle)

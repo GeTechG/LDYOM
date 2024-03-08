@@ -103,9 +103,10 @@ local weatherForceNowNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWeatherForceNowNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local type = inputValues[2] or node.type
 		WeatherOp.forceNow(type)
         return {1}

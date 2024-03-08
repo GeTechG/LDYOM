@@ -83,9 +83,10 @@ local playerIsPressingHornNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerIsPressingHornNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local result = PlayerOp.isPressingHorn(self_)
         return {1, result}

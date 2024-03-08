@@ -95,9 +95,10 @@ local mathRandomFloatInRangeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathRandomFloatInRangeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local min = inputValues[2] or node.min
 		local max = inputValues[3] or node.max
 		local result = MathOp.randomFloatInRange(min, max)

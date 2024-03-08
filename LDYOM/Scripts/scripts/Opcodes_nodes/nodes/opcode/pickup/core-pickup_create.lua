@@ -159,9 +159,10 @@ local pickupCreateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPickupCreateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local modelId = inputValues[2] or node.modelId
 		local pickupType = inputValues[3] or node.pickupType
 		local x = inputValues[4] or node.x

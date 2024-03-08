@@ -139,9 +139,10 @@ local textPrintBigFormattedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextPrintBigFormattedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local fmt = inputValues[2] or node.fmt
 		local time = inputValues[3] or node.time
 		local style = inputValues[4] or node.style

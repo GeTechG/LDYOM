@@ -95,9 +95,10 @@ local charGetScriptTaskStatusNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharGetScriptTaskStatusNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local taskId = inputValues[3] or node.taskId
 		local status = CharOp.getScriptTaskStatus(self_, taskId)

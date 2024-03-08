@@ -64,9 +64,10 @@ local cameraSetInFrontOfPlayerNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraSetInFrontOfPlayerNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         CameraOp.setInFrontOfPlayer()
         return {1}
     end

@@ -119,9 +119,10 @@ local worldGetPercentageTaggedInAreaNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldGetPercentageTaggedInAreaNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local leftBottomX = inputValues[2] or node.leftBottomX
 		local leftBottomY = inputValues[3] or node.leftBottomY
 		local rightTopX = inputValues[4] or node.rightTopX

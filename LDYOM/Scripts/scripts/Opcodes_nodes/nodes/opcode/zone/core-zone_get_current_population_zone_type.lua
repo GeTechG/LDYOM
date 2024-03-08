@@ -71,9 +71,10 @@ local zoneGetCurrentPopulationZoneTypeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorZoneGetCurrentPopulationZoneTypeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local type = ZoneOp.getCurrentPopulationZoneType()
         return {1, type}
     end

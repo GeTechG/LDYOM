@@ -183,9 +183,10 @@ local taskPickUpObjectNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskPickUpObjectNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
 		local object = inputValues[3] or node.object
 		local xOffset = inputValues[4] or node.xOffset

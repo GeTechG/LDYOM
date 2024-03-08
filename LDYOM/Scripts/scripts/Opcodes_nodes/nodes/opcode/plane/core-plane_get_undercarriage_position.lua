@@ -82,9 +82,10 @@ local planeGetUndercarriagePositionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlaneGetUndercarriagePositionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local position = PlaneOp.getUndercarriagePosition(self_)
         return {1, position}

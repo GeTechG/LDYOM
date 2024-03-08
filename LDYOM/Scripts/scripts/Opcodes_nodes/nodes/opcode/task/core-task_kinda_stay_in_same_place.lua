@@ -87,9 +87,10 @@ local taskKindaStayInSamePlaceNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskKindaStayInSamePlaceNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local state = inputValues[3] or node.state
 		TaskOp.kindaStayInSamePlace(handle, state)

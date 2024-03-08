@@ -151,9 +151,10 @@ local padGetStateNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPadGetStateNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local pad = inputValues[2] or node.pad
 		local buttonId = inputValues[3] or node.buttonId
 		local state = PadOp.getState(pad, buttonId)

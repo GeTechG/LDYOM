@@ -87,9 +87,10 @@ local trainSetSpeedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTrainSetSpeedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local speed = inputValues[3] or node.speed
 		TrainOp.setSpeed(self_, speed)

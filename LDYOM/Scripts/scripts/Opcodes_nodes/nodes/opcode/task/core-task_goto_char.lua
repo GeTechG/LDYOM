@@ -111,9 +111,10 @@ local taskGotoCharNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskGotoCharNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local walking = inputValues[2] or node.walking
 		local target = inputValues[3] or node.target
 		local time = inputValues[4] or node.time

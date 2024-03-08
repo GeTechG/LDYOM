@@ -99,9 +99,10 @@ local playerSetHeadingForAttachedNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerSetHeadingForAttachedNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local heading = inputValues[3] or node.heading
 		local rotationSpeed = inputValues[4] or node.rotationSpeed

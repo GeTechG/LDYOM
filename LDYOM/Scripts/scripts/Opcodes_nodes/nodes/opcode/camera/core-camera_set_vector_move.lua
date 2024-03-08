@@ -159,9 +159,10 @@ local cameraSetVectorMoveNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraSetVectorMoveNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local fromX = inputValues[2] or node.fromX
 		local fromY = inputValues[3] or node.fromY
 		local fromZ = inputValues[4] or node.fromZ

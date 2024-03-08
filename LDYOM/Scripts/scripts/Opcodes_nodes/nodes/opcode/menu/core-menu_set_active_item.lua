@@ -86,9 +86,10 @@ local menuSetActiveItemNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMenuSetActiveItemNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local row = inputValues[3] or node.row
 		MenuOp.setActiveItem(self_, row)

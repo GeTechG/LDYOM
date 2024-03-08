@@ -87,9 +87,10 @@ local objectBreakNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectBreakNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local intensity = inputValues[3] or node.intensity
 		ObjectOp["break"](self_, intensity)

@@ -115,9 +115,10 @@ local carSetMissionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarSetMissionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local carMission = inputValues[3] or node.carMission
 		CarOp.setMission(self_, carMission)

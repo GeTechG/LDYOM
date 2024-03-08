@@ -110,9 +110,10 @@ local planeFlyInDirectionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlaneFlyInDirectionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local heading = inputValues[3] or node.heading
 		local minAltitude = inputValues[4] or node.minAltitude

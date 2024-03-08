@@ -72,9 +72,10 @@ local audioGetRadioChannelNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorAudioGetRadioChannelNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local channel = AudioOp.getRadioChannel()
         return {1, channel}
     end

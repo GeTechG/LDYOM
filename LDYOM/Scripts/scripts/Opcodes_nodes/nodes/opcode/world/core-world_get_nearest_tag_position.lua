@@ -122,9 +122,10 @@ local worldGetNearestTagPositionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldGetNearestTagPositionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local xCoord = inputValues[2] or node.xCoord
 		local yCoord = inputValues[3] or node.yCoord
 		local zCoord = inputValues[4] or node.zCoord

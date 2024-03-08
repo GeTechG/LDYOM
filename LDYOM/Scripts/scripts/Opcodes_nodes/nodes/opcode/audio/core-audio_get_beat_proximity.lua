@@ -98,9 +98,10 @@ local audioGetBeatProximityNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorAudioGetBeatProximityNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local _p1 = inputValues[2] or node._p1
 		local _p2, _p3, _p4 = AudioOp.getBeatProximity(_p1)
         return {1, _p2, _p3, _p4}

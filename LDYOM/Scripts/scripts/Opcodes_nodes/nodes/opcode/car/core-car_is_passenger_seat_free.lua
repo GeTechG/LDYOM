@@ -123,9 +123,10 @@ local carIsPassengerSeatFreeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarIsPassengerSeatFreeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local seatIndex = inputValues[3] or node.seatIndex
 		local result = CarOp.isPassengerSeatFree(self_, seatIndex)

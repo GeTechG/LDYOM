@@ -75,9 +75,10 @@ local worldSetRailtrackResistanceMultNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldSetRailtrackResistanceMultNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local mult = inputValues[2] or node.mult
 		WorldOp.setRailtrackResistanceMult(mult)
         return {1}

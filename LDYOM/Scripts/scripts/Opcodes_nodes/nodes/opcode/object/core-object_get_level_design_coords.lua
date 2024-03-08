@@ -110,9 +110,10 @@ local objectGetLevelDesignCoordsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorObjectGetLevelDesignCoordsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local nth = inputValues[3] or node.nth
 		local x, y, z = ObjectOp.getLevelDesignCoords(self_, nth)

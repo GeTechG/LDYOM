@@ -99,9 +99,10 @@ local worldGetDeadCharPickupCoordsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorWorldGetDeadCharPickupCoordsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
 		local x, y, z = WorldOp.getDeadCharPickupCoords(char)
         return {1, x, y, z}

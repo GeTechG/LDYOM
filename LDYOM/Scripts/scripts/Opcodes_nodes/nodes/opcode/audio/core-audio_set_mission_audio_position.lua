@@ -139,9 +139,10 @@ local audioSetMissionAudioPositionNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorAudioSetMissionAudioPositionNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local slotId = inputValues[2] or node.slotId
 		local x = inputValues[3] or node.x
 		local y = inputValues[4] or node.y

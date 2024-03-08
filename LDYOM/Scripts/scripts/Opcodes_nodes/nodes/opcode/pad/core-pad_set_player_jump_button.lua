@@ -87,9 +87,10 @@ local padSetPlayerJumpButtonNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPadSetPlayerJumpButtonNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local playerId = inputValues[2] or node.playerId
 		local state = inputValues[3] or node.state
 		PadOp.setPlayerJumpButton(playerId, state)

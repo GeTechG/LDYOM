@@ -115,9 +115,10 @@ local cameraDoFadeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCameraDoFadeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local time = inputValues[2] or node.time
 		local direction = inputValues[3] or node.direction
 		CameraOp.doFade(time, direction)

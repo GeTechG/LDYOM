@@ -95,9 +95,10 @@ local charHasSpottedCharNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharHasSpottedCharNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local target = inputValues[3] or node.target
 		local result = CharOp.hasSpottedChar(self_, target)

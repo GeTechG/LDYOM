@@ -87,9 +87,10 @@ local playerEnsureHasDriveByWeaponNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerEnsureHasDriveByWeaponNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local ammo = inputValues[3] or node.ammo
 		PlayerOp.ensureHasDriveByWeapon(self_, ammo)

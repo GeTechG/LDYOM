@@ -130,9 +130,10 @@ local playerGetClothesItemNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorPlayerGetClothesItemNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local bodyPart = inputValues[3] or node.bodyPart
 		local textureHash, modelHash = PlayerOp.getClothesItem(self_, bodyPart)

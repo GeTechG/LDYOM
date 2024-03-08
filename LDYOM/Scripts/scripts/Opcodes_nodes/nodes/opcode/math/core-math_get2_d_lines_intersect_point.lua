@@ -183,9 +183,10 @@ local mathGet2DLinesIntersectPointNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathGet2DLinesIntersectPointNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local line1StartX = inputValues[2] or node.line1StartX
 		local line1StartY = inputValues[3] or node.line1StartY
 		local line1EndX = inputValues[4] or node.line1EndX

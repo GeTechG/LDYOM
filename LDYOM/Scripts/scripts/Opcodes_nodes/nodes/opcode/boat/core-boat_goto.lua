@@ -111,9 +111,10 @@ local boatGotoNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorBoatGotoNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local x = inputValues[3] or node.x
 		local y = inputValues[4] or node.y

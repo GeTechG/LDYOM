@@ -83,9 +83,10 @@ local charCreateRandomAsDriverNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharCreateRandomAsDriverNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local vehicle = inputValues[2] or node.vehicle
 		local handle = CharOp.createRandomAsDriver(vehicle)
         return {1, handle}

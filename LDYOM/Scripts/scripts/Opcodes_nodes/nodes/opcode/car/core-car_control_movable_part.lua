@@ -87,9 +87,10 @@ local carControlMovablePartNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarControlMovablePartNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local range = inputValues[3] or node.range
 		CarOp.controlMovablePart(self_, range)

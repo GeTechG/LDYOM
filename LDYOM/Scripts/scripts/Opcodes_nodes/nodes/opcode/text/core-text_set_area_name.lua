@@ -75,9 +75,10 @@ local textSetAreaNameNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTextSetAreaNameNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local name = inputValues[2] or node.name
 		TextOp.setAreaName(name)
         return {1}

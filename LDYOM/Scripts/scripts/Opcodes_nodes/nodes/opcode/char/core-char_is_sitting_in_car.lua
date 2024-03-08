@@ -95,9 +95,10 @@ local charIsSittingInCarNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharIsSittingInCarNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local vehicle = inputValues[3] or node.vehicle
 		local result = CharOp.isSittingInCar(self_, vehicle)

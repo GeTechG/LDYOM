@@ -91,9 +91,10 @@ local carGetExtraColorsNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarGetExtraColorsNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local color1, color2 = CarOp.getExtraColors(self_)
         return {1, color1, color2}

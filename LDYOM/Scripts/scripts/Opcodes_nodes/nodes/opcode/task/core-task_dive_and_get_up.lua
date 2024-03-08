@@ -111,9 +111,10 @@ local taskDiveAndGetUpNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTaskDiveAndGetUpNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
 		local directionX = inputValues[3] or node.directionX
 		local directionY = inputValues[4] or node.directionY

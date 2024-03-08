@@ -86,9 +86,10 @@ local zoneSetPopulationTypeNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorZoneSetPopulationTypeNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local zone = inputValues[2] or node.zone
 		local type = inputValues[3] or node.type
 		ZoneOp.setPopulationType(zone, type)

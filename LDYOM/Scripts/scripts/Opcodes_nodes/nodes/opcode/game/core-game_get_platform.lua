@@ -72,9 +72,10 @@ local gameGetPlatformNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorGameGetPlatformNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local platform = GameOp.getPlatform()
         return {1, platform}
     end

@@ -95,9 +95,10 @@ local charIsInZoneNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCharIsInZoneNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local zone = inputValues[3] or node.zone
 		local result = CharOp.isInZone(self_, zone)

@@ -95,9 +95,10 @@ local mathLogNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMathLogNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local number = inputValues[2] or node.number
 		local base = inputValues[3] or node.base
 		local result = MathOp.log(number, base)

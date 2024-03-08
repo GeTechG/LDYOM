@@ -99,9 +99,10 @@ local menuSetColumnWidthNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorMenuSetColumnWidthNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local column = inputValues[3] or node.column
 		local width = inputValues[4] or node.width

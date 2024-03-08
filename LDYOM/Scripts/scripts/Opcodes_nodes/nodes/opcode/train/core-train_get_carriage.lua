@@ -95,9 +95,10 @@ local trainGetCarriageNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorTrainGetCarriageNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local number = inputValues[3] or node.number
 		local carriage = TrainOp.getCarriage(self_, number)

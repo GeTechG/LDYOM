@@ -87,9 +87,10 @@ local carCustomPlateForNextCarNode = {
         builder:End();
     end,
     ---@param editor LDNodeEditor
+    ---@param context LDNodeEditorContext
     ---@param node LDNodeEditorCarCustomPlateForNextCarNode
     ---@param inputValues any[]
-    run = function(editor, node, inputValues)
+    run = function(editor, context, node, inputValues)
         local modelId = inputValues[2] or node.modelId
 		local plateText = inputValues[3] or node.plateText
 		CarOp.customPlateForNextCar(modelId, plateText)
