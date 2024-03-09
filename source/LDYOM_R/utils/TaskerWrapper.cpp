@@ -8,9 +8,9 @@
 #include "easylogging/easylogging++.h"
 
 ktwait taskWrapper(sol::function func) {
-	auto &state = LuaEngine::getInstance().getLuaState();
-	sol::thread thread = state["coroutine"]["create"](func);
+	sol::thread thread = LuaEngine::getInstance().getLuaState()["coroutine"]["create"](func);
 	while (thread) {
+		auto &state = LuaEngine::getInstance().getLuaState();
 		std::string status = state["coroutine"]["status"](
 			thread);
 		if (status == "dead") {
