@@ -164,6 +164,8 @@ void Windows::VehiclesWindow::drawOptions() {
 
 	popupVehicleSelector_.draw([&](const int model) {
 		vehicle->getModelId() = model;
+		vehicle->getPaintjob() = -1;
+		vehicle->getUpgrades().fill(-1);
 		vehicle->spawnEditorVehicle(true);
 	});
 

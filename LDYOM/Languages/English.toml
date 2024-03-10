@@ -229,6 +229,7 @@ component = "Component"
 numberplate = "Number Plate"
 locked = "Locked"
 edit_by_player_overlay = "Log out of the vehicle to apply."
+edit_by_player_overlay_vct = "H + 8 - Visual Car Tuner (if installed)"
 vehicle_unbreakable = ["Bulletproof", "Fireproof", "Explosionproof", "Collisionproof", "Meleeproof", "Tire Vulnerability"]
 
 [train]

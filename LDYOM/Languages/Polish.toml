@@ -230,6 +230,7 @@ component = "Komponent"
 numberplate = "Tablica rejestracyjna"
 locked = "Zablokowane"
 edit_by_player_overlay = "Wyjdź z trybu gracza, aby zastosować zmiany."
+edit_by_player_overlay_vct = "H + 8 - Tuner Samochodowy Wizualny (jeśli zainstalowany)"
 vehicle_unbreakable = ["Odporne na pociski", "Ognioodporne", "Odporność na eksplozje", "Odporność na kolizje", "Odporność na ciosy", "Wrażliwość opon"]
 
 [train]

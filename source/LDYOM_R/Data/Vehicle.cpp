@@ -11,6 +11,7 @@
 #include "ModelsService.h"
 #include "ProjectPlayerService.h"
 #include "Scene.h"
+#include "Tasker.h"
 #include "utils.h"
 #include "easylogging/easylogging++.h"
 
@@ -87,8 +88,14 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 
 	newVehicle->m_nVehicleFlags.bEngineOn = 0;
 	newVehicle->m_fHealth = static_cast<float>(this->health_);
+	if (recolor) {
+		this->paintjob_ = -1;
+	}
+	if (this->paintjob_ != -1) {
+		newVehicle->SetRemap(this->paintjob_);
+	}
 
-	recolorVehicle(recolor, newVehicle);
+	restoreUpgrades(recolor);
 
 	newVehicle->m_nPhysicalFlags.bBulletProof = static_cast<unsigned>(this->isBulletproof());
 	newVehicle->m_nPhysicalFlags.bCollisionProof = static_cast<unsigned>(this->isCollisionproof());
@@ -108,6 +115,7 @@ Vehicle::Vehicle(const char *name, const CVector &pos, float headingAngle): Obje
 	this->pos_[0] = pos.x;
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
+	this->upgrades_.fill(-1);
 }
 
 Vehicle Vehicle::copy() const {
@@ -206,6 +214,9 @@ float* Vehicle::getSecondaryColor() {
 std::string& Vehicle::getNumberplate() {
 	return this->numberplate_;
 }
+
+std::array<int, 16>& Vehicle::getUpgrades() { return upgrades_; }
+int& Vehicle::getPaintjob() { return paintjob_; }
 
 
 void Vehicle::updateLocation() const {
@@ -306,4 +317,40 @@ void Vehicle::deleteProjectEntity() {
 		}
 		this->projectVehicle_ = std::nullopt;
 	}
+}
+
+void Vehicle::takeUpgrades() {
+	std::array<int, 16> newUpgrades;
+	if (this->editorVehicle_.has_value()) {
+		for (int i = 0; i < 16; ++i) {
+			Command<Commands::GET_CURRENT_CAR_MOD>(this->editorVehicle_.value(), i, newUpgrades.data() + i);
+		}
+		this->paintjob_ = this->editorVehicle_.value()->GetRemapIndex();
+		if (newUpgrades != upgrades_) {
+			upgrades_ = newUpgrades;
+			recolorVehicle(true, this->editorVehicle_.value());
+		}
+	}
+}
+
+void Vehicle::restoreUpgrades(bool recolor) {
+	Tasker::getInstance().addTask("restoreUpgrade", [](Vehicle *this_, const bool recolor) -> ktwait {
+		if (this_->editorVehicle_.has_value()) {
+			for (int i = 0; i < 16; ++i) {
+				if (this_->upgrades_[i] != -1) {
+					if (!CStreaming::HasVehicleUpgradeLoaded(this_->upgrades_[i])) {
+						CStreaming::RequestVehicleUpgrade(this_->upgrades_[i], GAME_REQUIRED);
+						CStreaming::LoadAllRequestedModels(false);
+						while (!CStreaming::HasVehicleUpgradeLoaded(this_->upgrades_[i])) {
+							co_await 1;
+						}
+					}
+					int handle;
+					Command<Commands::ADD_VEHICLE_MOD>(this_->editorVehicle_.value(), this_->upgrades_[i], &handle);
+					Command<Commands::MARK_VEHICLE_MOD_AS_NO_LONGER_NEEDED>(this_->upgrades_[i]);
+				}
+			}
+			this_->recolorVehicle(recolor, this_->editorVehicle_.value());
+		}
+	}, this, recolor);
 }

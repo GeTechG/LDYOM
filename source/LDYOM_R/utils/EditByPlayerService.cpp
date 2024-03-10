@@ -126,6 +126,7 @@ ktwait editByPlayerVehicleTask(Vehicle &vehicle) {
 		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
 			ImGui::Text(local.get("vehicle.edit_by_player_overlay").c_str());
+			ImGui::Text(local.get("vehicle.edit_by_player_overlay_vct").c_str());
 			ImGui::PopTextWrapPos();
 		}
 		ImGui::End();
@@ -153,6 +154,7 @@ ktwait editByPlayerVehicleTask(Vehicle &vehicle) {
 			vehicle.getPosition()[1] = position.y;
 			vehicle.getPosition()[2] = position.z;
 			vehicle.getHeadingAngle() = DEG(vehicle.getEditorVehicle().value()->GetHeading());
+			vehicle.takeUpgrades();
 
 			break;
 		}

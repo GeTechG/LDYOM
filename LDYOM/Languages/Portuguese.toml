@@ -230,6 +230,7 @@ component = "Componente"
 numberplate = "Placa"
 locked = "Trancado"
 edit_by_player_overlay = "Saia do veículo para aplicar."
+edit_by_player_overlay_vct = "H + 8 - Tunador de Carros Visual (se instalado)"
 vehicle_unbreakable = ["À prova de balas", "À prova de fogo", "À prova de explosão", "À prova de colisões", "Proteção contra impactos", "Vulnerabilidade aos pneus"]
 
 [train]

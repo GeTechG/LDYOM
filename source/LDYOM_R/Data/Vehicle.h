@@ -39,8 +39,9 @@ private:
 	int componentTypeB_{};
 	int numberplateCity_{};
 	std::string numberplate_;
+	std::array<int, 16> upgrades_ = {-1};
+	int paintjob_ = -1;
 
-	void recolorVehicle(bool recolor, CVehicle *newVehicle);
 	CVehicle* spawnVehicle(bool recolor);
 
 public:
@@ -78,6 +79,8 @@ public:
 	float* getPrimaryColor();
 	float* getSecondaryColor();
 	std::string& getNumberplate();
+	std::array<int, 16>& getUpgrades();
+	int& getPaintjob();
 
 	void updateLocation() const;
 
@@ -94,6 +97,10 @@ public:
 
 	void spawnProjectEntity() override;
 	void deleteProjectEntity() override;
+
+	void recolorVehicle(bool recolor, CVehicle *newVehicle);
+	void takeUpgrades();
+	void restoreUpgrades(bool recolor);
 };
 
 
@@ -139,6 +146,8 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j["componentTypeB"] = a.getComponentTypeB();
 			j["numberplateCity"] = a.getNumberplateCity();
 			j["numberplate"] = a.getNumberplate();
+			j["upgrades"] = a.getUpgrades();
+			j["paintjob"] = a.getPaintjob();
 		}
 
 		static void from_json(const json &j, Vehicle &obj) {
@@ -175,6 +184,8 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j.at("componentTypeB").get_to(obj.getComponentTypeB());
 			j.at("numberplateCity").get_to(obj.getNumberplateCity());
 			j.at("numberplate").get_to(obj.getNumberplate());
+			j.at("upgrades").get_to(obj.getUpgrades());
+			j.at("paintjob").get_to(obj.getPaintjob());
 		}
 	};
 
