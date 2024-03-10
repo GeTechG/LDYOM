@@ -5,7 +5,12 @@ local nodesIcons = require("ld.node_icons")
 local fa = require("libs.fa")
 local enums = require("libs.enums")
 
+---@type number[][]
+local newPath = {};
+local currentIndexPoint = 0;
+
 ---@param path number[][]
+---@return number[][]
 function editByPlayerActorPath(path)
     ld.window.setRenderWindows(false);
 
@@ -15,10 +20,7 @@ function editByPlayerActorPath(path)
 
     newPath = table.deepcopy(path);
 
-    ---@type number[][]
-    local newPath = table.deepcopy(path);
-
-    local currentIndexPoint = 0;
+    currentIndexPoint = 0;
 
     ld.window.addRender("editByPlayerOverlay", function()
         local windowFlags = bit.bor(ImGuiWindowFlags.NoDecoration, ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoSavedSettings, ImGuiWindowFlags.NoFocusOnAppearing, ImGuiWindowFlags.NoNav)
@@ -55,60 +57,57 @@ function editByPlayerActorPath(path)
                     lastVisible = currentVisible
                 end
             end
-
-            local exit = false
-
-            local hotKey = ld.hotkeyService:getHotKey(true)
-            if hotKey ~= nil and hotKey.functionName == "cancel" then
-                exit = true
-            end
-
-            if hotKey ~= nil and hotKey.functionName == "accept" then
-                for i = 1, #newPath do
-                    path[i] = newPath[i]
-                end
-                for i = #newPath + 1, #path do
-                    path[i] = nil
-                end
-                exit = true
-            end
-
-            if exit then
-                ld.window.removeRender("editByPlayerOverlay")
-                ld.window.setRenderWindows(true);
-            end
-
-            KeyCheck.Update();
-
-            if KeyCheck.CheckJustDown(string.byte("L")) then
-                newPath = {}
-            end
-
-            if KeyCheck.CheckJustDown(string.byte("M")) then
-                local px, py, pz = CharOp.getCoordinates(PlayerOp.getChar(0))
-                if #newPath > 0 then
-                    newPath[currentIndexPoint] = {px, py, pz}
-                end
-            end
-
-            if KeyCheck.CheckJustDown(string.byte("I")) then
-                currentIndexPoint = currentIndexPoint + 1
-                currentIndexPoint = math.min(currentIndexPoint, #newPath)
-            end
-
-            if KeyCheck.CheckJustDown(string.byte("O")) then
-                currentIndexPoint = currentIndexPoint - 1
-                currentIndexPoint = math.max(currentIndexPoint, 1)
-            end
-
-            if KeyCheck.CheckJustDown(string.byte("P")) then
-                local px, py, pz = CharOp.getCoordinates(PlayerOp.getChar(0))
-                table.insert(newPath, {px, py, pz})
-                currentIndexPoint = #newPath
-            end
         end
         ImGui.End()
     end)
+
+    while true do
+        local hotKey = ld.hotkeyService:getHotKey(true)
+        if hotKey ~= nil and hotKey.functionName == "cancel" then
+            newPath = path
+            break;
+        end
+
+        if hotKey ~= nil and hotKey.functionName == "accept" then
+            break;
+        end
+
+        KeyCheck.Update();
+
+        if KeyCheck.CheckJustDown(string.byte("L")) then
+            newPath = {}
+        end
+
+        if KeyCheck.CheckJustDown(string.byte("M")) then
+            local px, py, pz = CharOp.getCoordinates(PlayerOp.getChar(0))
+            if #newPath > 0 then
+                newPath[currentIndexPoint] = {px, py, pz}
+            end
+        end
+
+        if KeyCheck.CheckJustDown(string.byte("I")) then
+            currentIndexPoint = currentIndexPoint + 1
+            currentIndexPoint = math.min(currentIndexPoint, #newPath)
+        end
+
+        if KeyCheck.CheckJustDown(string.byte("O")) then
+            currentIndexPoint = currentIndexPoint - 1
+            currentIndexPoint = math.max(currentIndexPoint, 1)
+        end
+
+        if KeyCheck.CheckJustDown(string.byte("P")) then
+            local px, py, pz = CharOp.getCoordinates(PlayerOp.getChar(0))
+            table.insert(newPath, {px, py, pz})
+            currentIndexPoint = #newPath
+        end
+
+        coroutine.yield(1)
+    end
+
+    ld.window.removeRender("editByPlayerOverlay")
+    ld.window.setRenderWindows(true);
+
+    return newPath
 end
 
 local moveState = {4, 6, 7};
@@ -217,7 +216,9 @@ local charFollowPathNode = {
         end
         
         if ImGui.Button(ld.loc.get("general.record_path"), ImVec2.new()) then
-            editByPlayerActorPath(node.path)
+            ld.tasker:addTask("editByPlayerActorPath", function ()
+                node.path = editByPlayerActorPath(node.path)
+            end)
         end
         ImGui.EndGroup();
 

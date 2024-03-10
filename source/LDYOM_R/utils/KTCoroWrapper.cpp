@@ -10,32 +10,20 @@ void ktcoroWrapper(sol::state &state) {
 	state.new_usertype<ktcoro_tasklist>("ktcoro_tasklist", sol::no_constructor,
 	                                    "add_task", [](ktcoro_tasklist &tasklist, sol::function func) {
 		                                    tasklist.add_task([](sol::function func) -> ktwait {
-			                                    sol::thread thread = LuaEngine::getInstance().getLuaState()["coroutine"]
-			                                    [
-				                                    "create"](func);
-			                                    while (thread) {
-				                                    auto &state = LuaEngine::getInstance().getLuaState();
-				                                    std::string status = state["coroutine"]["status"](
-					                                    thread);
-				                                    if (status == "dead") {
-					                                    break;
-				                                    }
-				                                    auto result = state["coroutine"]["resume"](thread);
-				                                    if (!result.get<bool>(0)) {
-					                                    CLOG(ERROR, "lua") << result.get<std::string>(1);
-					                                    ImGui::InsertNotification({
-						                                    ImGuiToastType_Error, 1000, "Error, see log"
-					                                    });
-					                                    break;
-				                                    }
+			                                    auto &state_ = LuaEngine::getInstance().getLuaState();
+			                                    sol::thread runner = sol::thread::create(state_);
+			                                    sol::state_view runnerstate = runner.state();
+			                                    auto coroutine = sol::coroutine(runnerstate, func);
+			                                    while (coroutine) {
+				                                    auto result = coroutine();
 				                                    if (!result.valid()) {
 					                                    LuaEngine::errorHandler(result);
 					                                    break;
 				                                    }
 				                                    int time = 1;
-				                                    if (result.return_count() > 1 && result.get_type(1) ==
+				                                    if (result.return_count() > 0 && result.get_type(0) ==
 					                                    sol::type::number) {
-					                                    time = result.get<int>(1);
+					                                    time = result.get<int>(0);
 				                                    }
 				                                    co_await std::chrono::milliseconds(time);
 			                                    }

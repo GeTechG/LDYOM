@@ -1,5 +1,6 @@
 ﻿#include <sol.hpp>
 
+#include "LuaEngine.h"
 #include "LuaWrapperWindow.h"
 #include "MainMenu.h"
 #include "WindowsRenderService.h"
@@ -42,7 +43,12 @@ void luaWindowWrapper(sol::state &state) {
 		Windows::WindowsRenderService::getInstance().setRenderWindows(windowState);
 	};
 	windowTable["addRender"] = [](const std::string &name, const sol::function &drawFunction) {
-		Windows::WindowsRenderService::getInstance().addRender(name, drawFunction);
+		const auto newFunc = sol::function(LuaEngine::getInstance().getLuaState(), drawFunction);
+		Windows::WindowsRenderService::getInstance().addRender(name, [=]() {
+			if (const auto result = newFunc(); !result.valid()) {
+				LuaEngine::errorHandler(result);
+			}
+		});
 	};
 	windowTable["removeRender"] = [](const std::string &name) {
 		Windows::WindowsRenderService::getInstance().removeRender(name);
