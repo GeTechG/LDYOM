@@ -53,9 +53,9 @@ def translate_langs():
         global usedTranslate
         for category in source:
             if category not in target:
-                traslated = translate(source[category], lang_)
+                traslated = translate(dict([(category, source[category])]), lang_)
                 print(traslated)
-                target[category] = traslated
+                target.update(traslated)
                 usedTranslate += 1
                 if usedTranslate == 3:
                     time.sleep(62)
