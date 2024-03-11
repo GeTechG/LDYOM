@@ -39,8 +39,12 @@ private:
 	int componentTypeB_{};
 	int numberplateCity_{};
 	std::string numberplate_;
-	std::array<int, 16> upgrades_ = {-1};
+	std::array<int, 15> upgrades_ = {-1};
 	int paintjob_ = -1;
+	std::array<float, 17> damagesComponents_{};
+	float extraPartsAngle_ = 0.f;
+	bool isLightsOn_ = false;
+	std::array<float, 6> openDoorsRation_ = {};
 
 	CVehicle* spawnVehicle(bool recolor);
 
@@ -79,8 +83,12 @@ public:
 	float* getPrimaryColor();
 	float* getSecondaryColor();
 	std::string& getNumberplate();
-	std::array<int, 16>& getUpgrades();
+	std::array<int, 15>& getUpgrades();
 	int& getPaintjob();
+	std::array<float, 17>& getDamagesComponents();
+	float& getExtraPartsAngle();
+	bool& isIsLightsOn();
+	std::array<float, 6>& getOpenDoorsRation();
 
 	void updateLocation() const;
 
@@ -100,7 +108,7 @@ public:
 
 	void recolorVehicle(bool recolor, CVehicle *newVehicle);
 	void takeUpgrades();
-	void restoreUpgrades(bool recolor);
+	void restoreUpgrades(CVehicle *newVehicle, bool recolor);
 };
 
 
@@ -148,6 +156,10 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j["numberplate"] = a.getNumberplate();
 			j["upgrades"] = a.getUpgrades();
 			j["paintjob"] = a.getPaintjob();
+			j["damagesComponents"] = a.getDamagesComponents();
+			j["extraPartsAngle"] = a.getExtraPartsAngle();
+			j["isLightsOn"] = a.isIsLightsOn();
+			j["openDoorsRation"] = a.getOpenDoorsRation();
 		}
 
 		static void from_json(const json &j, Vehicle &obj) {
@@ -184,8 +196,27 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j.at("componentTypeB").get_to(obj.getComponentTypeB());
 			j.at("numberplateCity").get_to(obj.getNumberplateCity());
 			j.at("numberplate").get_to(obj.getNumberplate());
-			j.at("upgrades").get_to(obj.getUpgrades());
-			j.at("paintjob").get_to(obj.getPaintjob());
+			{
+				if (j.contains("upgrades"))
+					j.at("upgrades").get_to(obj.getUpgrades());
+				else
+					obj.getUpgrades().fill(-1);
+			}
+			obj.getPaintjob() = j.contains("paintjob") ? j.at("paintjob").get<int>() : -1;
+			{
+				if (j.contains("damagesComponents"))
+					j.at("damagesComponents").get_to(obj.getDamagesComponents());
+				else
+					obj.getDamagesComponents().fill(0.f);
+			}
+			obj.getExtraPartsAngle() = j.contains("extraPartsAngle") ? j.at("extraPartsAngle").get<float>() : 0.f;
+			obj.isIsLightsOn() = j.contains("isLightsOn") ? j.at("isLightsOn").get<bool>() : false;
+			{
+				if (j.contains("openDoorsRation"))
+					j.at("openDoorsRation").get_to(obj.getOpenDoorsRation());
+				else
+					obj.getOpenDoorsRation().fill(0.f);
+			}
 		}
 	};
 

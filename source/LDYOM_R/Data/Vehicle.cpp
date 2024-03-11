@@ -94,8 +94,33 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 	if (this->paintjob_ != -1) {
 		newVehicle->SetRemap(this->paintjob_);
 	}
+	for (int i = 0; i < 17; ++i) {
+		if (this->damagesComponents_[i] < 199.f) {
+			static_cast<CAutomobile*>(newVehicle)->m_damageManager.ApplyDamage(
+				static_cast<CAutomobile*>(newVehicle), static_cast<tComponent>(i + 1), damagesComponents_[i], 1.f);
+		} else {
+			if (i + 1 <= 4) {
+				Command<Commands::BURST_CAR_TYRE>(newVehicle, i);
+			} else if (i + 1 <= 10) {
+				const auto door = i + 1 - 5;
+				Command<Commands::POP_CAR_DOOR>(newVehicle, door, false);
+			} else {
+				const auto panel = i + 1 - 11;
+				Command<Commands::POP_CAR_PANEL>(newVehicle, panel, false);
+			}
+		}
+	}
+	static_cast<CAutomobile*>(newVehicle)->UpdateMovingCollision(this->extraPartsAngle_);
+	Command<Commands::FORCE_CAR_LIGHTS>(newVehicle,
+	                                    this->isIsLightsOn() ? 2 : 0);
+	for (int i = 0; i < 6; ++i) {
+		const int carNodeIndexFromDoor = utils::GetCarNodeIndexFromDoor(i);
+		newVehicle->OpenDoor(nullptr, carNodeIndexFromDoor, static_cast<eDoors>(i),
+		                     this->getOpenDoorsRation()[i], false);
+	}
+	newVehicle->m_eDoorLock = this->isLocked() ? DOORLOCK_LOCKED : DOORLOCK_UNLOCKED;
 
-	restoreUpgrades(recolor);
+	restoreUpgrades(newVehicle, recolor);
 
 	newVehicle->m_nPhysicalFlags.bBulletProof = static_cast<unsigned>(this->isBulletproof());
 	newVehicle->m_nPhysicalFlags.bCollisionProof = static_cast<unsigned>(this->isCollisionproof());
@@ -116,6 +141,8 @@ Vehicle::Vehicle(const char *name, const CVector &pos, float headingAngle): Obje
 	this->pos_[1] = pos.y;
 	this->pos_[2] = pos.z;
 	this->upgrades_.fill(-1);
+	this->damagesComponents_.fill(0.f);
+	this->openDoorsRation_.fill(0.f);
 }
 
 Vehicle Vehicle::copy() const {
@@ -215,8 +242,12 @@ std::string& Vehicle::getNumberplate() {
 	return this->numberplate_;
 }
 
-std::array<int, 16>& Vehicle::getUpgrades() { return upgrades_; }
+std::array<int, 15>& Vehicle::getUpgrades() { return upgrades_; }
 int& Vehicle::getPaintjob() { return paintjob_; }
+std::array<float, 17>& Vehicle::getDamagesComponents() { return damagesComponents_; }
+float& Vehicle::getExtraPartsAngle() { return extraPartsAngle_; }
+bool& Vehicle::isIsLightsOn() { return isLightsOn_; }
+std::array<float, 6>& Vehicle::getOpenDoorsRation() { return openDoorsRation_; }
 
 
 void Vehicle::updateLocation() const {
@@ -320,11 +351,11 @@ void Vehicle::deleteProjectEntity() {
 }
 
 void Vehicle::takeUpgrades() {
-	std::array<int, 16> newUpgrades;
+	std::array<int, 15> newUpgrades;
+	newUpgrades.fill(-1);
 	if (this->editorVehicle_.has_value()) {
-		for (int i = 0; i < 16; ++i) {
-			Command<Commands::GET_CURRENT_CAR_MOD>(this->editorVehicle_.value(), i, newUpgrades.data() + i);
-		}
+		ranges::copy(this->editorVehicle_.value()->m_anUpgrades,
+		             std::begin(newUpgrades));
 		this->paintjob_ = this->editorVehicle_.value()->GetRemapIndex();
 		if (newUpgrades != upgrades_) {
 			upgrades_ = newUpgrades;
@@ -333,24 +364,22 @@ void Vehicle::takeUpgrades() {
 	}
 }
 
-void Vehicle::restoreUpgrades(bool recolor) {
-	Tasker::getInstance().addTask("restoreUpgrade", [](Vehicle *this_, const bool recolor) -> ktwait {
-		if (this_->editorVehicle_.has_value()) {
-			for (int i = 0; i < 16; ++i) {
-				if (this_->upgrades_[i] != -1) {
-					if (!CStreaming::HasVehicleUpgradeLoaded(this_->upgrades_[i])) {
-						CStreaming::RequestVehicleUpgrade(this_->upgrades_[i], GAME_REQUIRED);
-						CStreaming::LoadAllRequestedModels(false);
-						while (!CStreaming::HasVehicleUpgradeLoaded(this_->upgrades_[i])) {
-							co_await 1;
-						}
-					}
-					int handle;
-					Command<Commands::ADD_VEHICLE_MOD>(this_->editorVehicle_.value(), this_->upgrades_[i], &handle);
-					Command<Commands::MARK_VEHICLE_MOD_AS_NO_LONGER_NEEDED>(this_->upgrades_[i]);
-				}
-			}
-			this_->recolorVehicle(recolor, this_->editorVehicle_.value());
-		}
-	}, this, recolor);
+void Vehicle::restoreUpgrades(CVehicle *newVehicle, bool recolor) {
+	Tasker::getInstance().addTask("restoreUpgrade",
+	                              [](Vehicle *this_, CVehicle *newVehicle, const bool recolor) -> ktwait {
+		                              for (int i = 0; i < this_->upgrades_.size(); ++i) {
+			                              if (const auto upgrade = this_->upgrades_[i]; upgrade != -1) {
+				                              if (!CStreaming::HasVehicleUpgradeLoaded(upgrade)) {
+					                              CStreaming::RequestVehicleUpgrade(upgrade, GAME_REQUIRED);
+					                              CStreaming::LoadAllRequestedModels(false);
+					                              while (!CStreaming::HasVehicleUpgradeLoaded(upgrade)) {
+						                              co_await 1;
+					                              }
+				                              }
+				                              int handle;
+				                              Command<Commands::ADD_VEHICLE_MOD>(newVehicle, upgrade, &handle);
+			                              }
+		                              }
+		                              this_->recolorVehicle(recolor, newVehicle);
+	                              }, this, newVehicle, recolor);
 }

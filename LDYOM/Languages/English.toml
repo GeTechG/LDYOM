@@ -230,7 +230,13 @@ numberplate = "Number Plate"
 locked = "Locked"
 edit_by_player_overlay = "Log out of the vehicle to apply."
 edit_by_player_overlay_vct = "H + 8 - Visual Car Tuner (if installed)"
+damages = "Damages"
+extra_parts_angle = "Additional Parts Angle"
+extra_parts_angle_info = "Applies only to vehicles with extra parts"
+lights_on = "Turn on headlights"
+open_doors = "Open doors"
 vehicle_unbreakable = ["Bulletproof", "Fireproof", "Explosionproof", "Collisionproof", "Meleeproof", "Tire Vulnerability"]
+components = ["Left front wheel", "Right front wheel", "Left rear wheel", "Right rear wheel", "Hood", "Trunk", "Left front door", "Right front door", "Left rear door", "Right rear door", "Left front fender", "Right front fender", "Left rear fender", "Right rear fender", "Windshield", "Front bumper", "Rear bumper"]
 
 [train]
 speed = "Speed"

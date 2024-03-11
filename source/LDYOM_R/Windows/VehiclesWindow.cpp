@@ -54,7 +54,9 @@ void Windows::VehiclesWindow::deleteElement(int i) {
 }
 
 void characteristicsSection(Localization &local, Vehicle *vehicle) {
+	const auto scaleFont = ImGui::GetFontSize() / 16.f;
 	if (ImGui::TreeNode(local.get("general.characteristics").c_str())) {
+		ImGui::BeginChild("##characteristics", ImVec2(0, scaleFont * 200.f));
 		utils::ToggleButton(local.get("vehicle.extended_colors").c_str(), &vehicle->isExtendedColor());
 		if (vehicle->isExtendedColor()) {
 			if (ImGui::TreeNode(local.get("general.colors").c_str())) {
@@ -103,7 +105,6 @@ void characteristicsSection(Localization &local, Vehicle *vehicle) {
 
 		ImGui::Separator();
 
-		const auto scaleFont = ImGui::GetFontSize() / 16.f;
 		ImGui::PushItemWidth(scaleFont * 150.0f);
 		ImGui::InputInt(local.get("general.health").c_str(), &vehicle->getHealth(), 0, 0);
 
@@ -124,6 +125,18 @@ void characteristicsSection(Localization &local, Vehicle *vehicle) {
 		                     cities_names[vehicle->getNumberplateCity() + 1].c_str()))
 			vehicle->spawnEditorVehicle();
 
+		if (ImGui::SliderAngle(local.get("vehicle.extra_parts_angle").c_str(), &vehicle->getExtraPartsAngle(), 0.f,
+		                       360.f)) {
+			static_cast<CAutomobile*>(vehicle->getEditorVehicle().value())->UpdateMovingCollision(
+				vehicle->getExtraPartsAngle());
+		}
+		ImGui::SetItemTooltip(local.get("vehicle.extra_parts_angle_info").c_str());
+
+		if (ImGui::Checkbox(local.get("vehicle.lights_on").c_str(), &vehicle->isIsLightsOn())) {
+			Command<Commands::FORCE_CAR_LIGHTS>(vehicle->getEditorVehicle().value(),
+			                                    vehicle->isIsLightsOn());
+		}
+
 		ImGui::PopItemWidth();
 
 		ImGui::Separator();
@@ -136,11 +149,46 @@ void characteristicsSection(Localization &local, Vehicle *vehicle) {
 		utils::ToggleButton(vehicleUnbreakable[4].c_str(), &vehicle->isMeleeproof());
 		utils::ToggleButton(vehicleUnbreakable[5].c_str(), &vehicle->isTiresVulnerability());
 
+		ImGui::EndChild();
 		ImGui::TreePop();
 	}
+}
 
-	utils::ToggleButton(local.get("vehicle.locked").c_str(), &vehicle->isLocked());
-	utils::ToggleButton(local.get("general.must_survive").c_str(), &vehicle->isShouldNotDie());
+void damagesComponents(Localization &local, Vehicle *vehicle) {
+	if (ImGui::TreeNode(local.get("vehicle.damages").c_str())) {
+		const auto scaleFont = ImGui::GetFontSize() / 16.f;
+		ImGui::BeginChild("##damagesComponents", ImVec2(0, scaleFont * 200.f));
+		ImGui::PushItemWidth(scaleFont * 150.0f);
+		for (int i = 0; i < 17; i++) {
+			if (ImGui::DragFloat(local.getArray("vehicle.components")[i].c_str(), &vehicle->getDamagesComponents()[i],
+			                     1.f, 0, 200.f)) {
+				vehicle->spawnEditorVehicle();
+			}
+		}
+		ImGui::PopItemWidth();
+		ImGui::EndChild();
+		ImGui::TreePop();
+	}
+}
+
+void openDoors(Localization &local, Vehicle *vehicle) {
+	if (ImGui::TreeNode(local.get("vehicle.open_doors").c_str())) {
+		const auto scaleFont = ImGui::GetFontSize() / 16.f;
+		ImGui::BeginChild("##openDoors", ImVec2(0, scaleFont * 200.f));
+		ImGui::PushItemWidth(scaleFont * 150.0f);
+		for (int i = 0; i < 6; i++) {
+			if (ImGui::SliderFloat(local.getArray("vehicle.components")[i + 4].c_str(),
+			                       &vehicle->getOpenDoorsRation()[i],
+			                       0.f, 1.f)) {
+				const int carNodeIndexFromDoor = utils::GetCarNodeIndexFromDoor(i);
+				vehicle->getEditorVehicle().value()->OpenDoor(nullptr, carNodeIndexFromDoor, static_cast<eDoors>(i),
+				                                              vehicle->getOpenDoorsRation()[i], false);
+			}
+		}
+		ImGui::PopItemWidth();
+		ImGui::EndChild();
+		ImGui::TreePop();
+	}
 }
 
 void Windows::VehiclesWindow::drawOptions() {
@@ -154,13 +202,16 @@ void Windows::VehiclesWindow::drawOptions() {
 	//heading
 	DragAngleRotation(&vehicle->getHeadingAngle(), [vehicle] { vehicle->updateLocation(); });
 
-	//modelSelection(vehicle, local);
-
 	if (ImGui::Button(local.get("general.model").c_str())) {
 		popupVehicleSelector_.show();
 	}
 
 	characteristicsSection(local, vehicle);
+	damagesComponents(local, vehicle);
+	openDoors(local, vehicle);
+
+	utils::ToggleButton(local.get("vehicle.locked").c_str(), &vehicle->isLocked());
+	utils::ToggleButton(local.get("general.must_survive").c_str(), &vehicle->isShouldNotDie());
 
 	popupVehicleSelector_.draw([&](const int model) {
 		vehicle->getModelId() = model;

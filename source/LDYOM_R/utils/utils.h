@@ -90,6 +90,7 @@ public:
 	static bool getScreenPositionFromGamePosition(const CVector &position, ImVec2 &out);
 	template <typename T>
 	static bool compare(const GlobalVariableView::Value &a, const GlobalVariableView::Value &b, MathCondition type);
+	static int GetCarNodeIndexFromDoor(unsigned int doorId);
 };
 
 template <class T>
