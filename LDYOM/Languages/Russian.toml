@@ -255,6 +255,7 @@ extra_parts_angle = "Угол доп. частей"
 extra_parts_angle_info = "Действует только у ТС у которых есть доп. части"
 lights_on = "Включить фары"
 open_doors = "Открыть двери"
+dirty_level = "Грязность"
 
 
 [train]

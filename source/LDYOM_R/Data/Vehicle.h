@@ -45,6 +45,7 @@ private:
 	float extraPartsAngle_ = 0.f;
 	bool isLightsOn_ = false;
 	std::array<float, 6> openDoorsRation_ = {};
+	float dirtyLevel_ = 0.f;
 
 	CVehicle* spawnVehicle(bool recolor);
 
@@ -89,6 +90,7 @@ public:
 	float& getExtraPartsAngle();
 	bool& isIsLightsOn();
 	std::array<float, 6>& getOpenDoorsRation();
+	float& getDirtyLevel();
 
 	void updateLocation() const;
 
@@ -160,6 +162,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j["extraPartsAngle"] = a.getExtraPartsAngle();
 			j["isLightsOn"] = a.isIsLightsOn();
 			j["openDoorsRation"] = a.getOpenDoorsRation();
+			j["dirtyLevel"] = a.getDirtyLevel();
 		}
 
 		static void from_json(const json &j, Vehicle &obj) {
@@ -217,6 +220,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 				else
 					obj.getOpenDoorsRation().fill(0.f);
 			}
+			obj.getDirtyLevel() = j.contains("dirtyLevel") ? j.at("dirtyLevel").get<float>() : 0.f;
 		}
 	};
 

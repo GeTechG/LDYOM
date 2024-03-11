@@ -236,6 +236,7 @@ extra_parts_angle = "Kąt dodatkowych części"
 extra_parts_angle_info = "Dotyczy tylko pojazdów z dodatkowymi elementami"
 lights_on = "Włącz światła"
 open_doors = "Otwórz drzwi"
+dirty_level = "Poziom brudu"
 vehicle_unbreakable = ["Odporne na pociski", "Ognioodporne", "Odporność na eksplozje", "Odporność na kolizje", "Odporność na ciosy", "Wrażliwość opon"]
 components = ["Lewe przednie koło", "Prawe przednie koło", "Lewe tylne koło", "Prawe tylne koło", "Maska", "Bagażnik", "Lewe przednie drzwi", "Prawe przednie drzwi", "Lewe tylne drzwi", "Prawe tylne drzwi", "Lewe przednie skrzydło", "Prawe przednie skrzydło", "Lewe tylne skrzydło", "Prawe tylne skrzydło", "Szyba przednia", "Zderzak przedni", "Zderzak tylny"]
 

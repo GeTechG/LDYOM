@@ -119,6 +119,7 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 		                     this->getOpenDoorsRation()[i], false);
 	}
 	newVehicle->m_eDoorLock = this->isLocked() ? DOORLOCK_LOCKED : DOORLOCK_UNLOCKED;
+	newVehicle->m_fDirtLevel = this->dirtyLevel_;
 
 	restoreUpgrades(newVehicle, recolor);
 
@@ -248,6 +249,7 @@ std::array<float, 17>& Vehicle::getDamagesComponents() { return damagesComponent
 float& Vehicle::getExtraPartsAngle() { return extraPartsAngle_; }
 bool& Vehicle::isIsLightsOn() { return isLightsOn_; }
 std::array<float, 6>& Vehicle::getOpenDoorsRation() { return openDoorsRation_; }
+float& Vehicle::getDirtyLevel() { return dirtyLevel_; }
 
 
 void Vehicle::updateLocation() const {

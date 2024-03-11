@@ -137,6 +137,10 @@ void characteristicsSection(Localization &local, Vehicle *vehicle) {
 			                                    vehicle->isIsLightsOn());
 		}
 
+		if (ImGui::SliderFloat(local.get("vehicle.dirty_level").c_str(), &vehicle->getDirtyLevel(), 0.f, 15.f)) {
+			vehicle->getEditorVehicle().value()->m_fDirtLevel = vehicle->getDirtyLevel();
+		}
+
 		ImGui::PopItemWidth();
 
 		ImGui::Separator();
@@ -198,7 +202,7 @@ void Windows::VehiclesWindow::drawOptions() {
 		this->currentElement).get();
 
 	//position
-	InputPosition(vehicle->getPosition(), [vehicle] { vehicle->updateLocation(); });
+	DragPosition(vehicle->getPosition(), [vehicle] { vehicle->updateLocation(); });
 	//heading
 	DragAngleRotation(&vehicle->getHeadingAngle(), [vehicle] { vehicle->updateLocation(); });
 
