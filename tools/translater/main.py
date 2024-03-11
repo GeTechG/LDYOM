@@ -51,17 +51,21 @@ usedTranslate = 0
 def translate_langs():
     def recusive(source: dict, target: dict, lang_: str):
         global usedTranslate
+        for_translate = dict()
         for category in source:
             if category not in target:
-                traslated = translate(dict([(category, source[category])]), lang_)
-                print(traslated)
-                target.update(traslated)
-                usedTranslate += 1
-                if usedTranslate == 3:
-                    time.sleep(62)
-                    usedTranslate = 0
+                for_translate[category] = source[category]
             elif isinstance(source[category], dict):
                 recusive(source[category], target[category], lang_)
+        if (len(for_translate) > 0):
+            traslated = translate(for_translate, lang_)
+            print(traslated)
+            target.update(traslated)
+            usedTranslate += 1
+            if usedTranslate == 3:
+                time.sleep(62)
+                usedTranslate = 0
+        
 
     if default_lang_name not in langs:
         raise Exception('Default language not found')
