@@ -11,5 +11,7 @@ Dirs = {
     ---@return boolean
     exists = function (luaPath) end,
     --- Creates a directory at the specified path.
-    create = function (luaPath) end
+    create = function (luaPath) end,
+    --- Removes the directory at the specified path.
+    remove = function (luaPath) end,
 }

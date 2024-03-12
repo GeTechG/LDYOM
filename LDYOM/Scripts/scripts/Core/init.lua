@@ -111,6 +111,7 @@ function init(scriptData)
 
     ld.events.onSaveProject[#ld.events.onSaveProject+1] = function(projectDirectory)
         local nodesPath = projectDirectory .. "/nodes";
+        Dirs.remove(nodesPath);
         Dirs.create(nodesPath);
         for _, context in ipairs(editor.contexts) do
             local saveData = {}
