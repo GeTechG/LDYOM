@@ -105,7 +105,7 @@ function ShowLeftPane(paneWidth, ed)
 
             for i, context in ipairs(ed.contexts) do
                 local isSelected = ed.currentIndexContext == i;
-                if ImGui.Selectable(context.name, isSelected, 0, ImVec2.new(0, 0)) then
+                if ImGui.Selectable(context.name .. "##" .. i, isSelected, 0, ImVec2.new(0, 0)) then
                     ed.currentIndexContext = i;
                 end
                 if ImGui.BeginPopupContextItem("##edContextContextMenu" .. i, ImGuiPopupFlags.MouseButtonRight) then
@@ -157,7 +157,7 @@ function ShowLeftPane(paneWidth, ed)
                 NodeEditor.Icon(ImVec2.new(fontScale * 16, fontScale * 16), NodeEditorIconType.Circle, true, ed.dataTypes[variable.type].colorGetter(), ImVec4.new());
                 ImGui.SameLine(0, -1);
                 local isSelected = selectedDetail.type == DetailType.Variable and selectedDetail.id == uuid;
-                if ImGui.Selectable(variable.name, isSelected, 0, ImVec2.new(0, 0)) then
+                if ImGui.Selectable(variable.name .. "##" .. uuid, isSelected, 0, ImVec2.new(0, 0)) then
                     selectDetail(DetailType.Variable, uuid);
                 end
                 if ImGui.BeginPopupContextItem("##edVariableContextMenu" .. uuid, ImGuiPopupFlags.MouseButtonRight) then
