@@ -189,6 +189,8 @@ ld.events.onSaveProject = {}
 ld.events.onLoadProject = {}
 ---@type fun(objective: LDObjective, ktcoro_tasklist: ktcoro_tasklist)[]
 ld.events.onStartObjective = {}
+---@type fun()[]
+ld.events.onCreateNewProject = {}
 
 
 

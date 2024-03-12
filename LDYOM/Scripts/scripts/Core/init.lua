@@ -168,6 +168,15 @@ function init(scriptData)
         end
     end
 
+    ld.events.onCreateNewProject[#ld.events.onCreateNewProject+1] = function()
+        editor.contexts = {};
+        editor.variables = {};
+        editor.currentIndexContext = 1;
+        LDNodeEditor.addNewContext(editor)
+        local context = editor.contexts[#editor.contexts]
+        context.name = "Workspace 1"
+    end
+
     ld.window.setMainMenuRender("node_editor_button", function()
         local scaleFont = ImGui.GetFontSize() / 16;
         if ImGui.Button(fa.ICON_FA_PROJECT_DIAGRAM .. " " .. ld.loc.get("nodes.node_editor.title"), ImVec2.new(scaleFont * 200, 0)) then

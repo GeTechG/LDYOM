@@ -129,6 +129,8 @@ local getTrainNode = {
             end
         end
         
+        ImGui.EndGroup();
+        
         LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
         builder:End();

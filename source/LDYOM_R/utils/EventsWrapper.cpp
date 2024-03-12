@@ -9,4 +9,5 @@ void eventsWrapper(sol::state &state) {
 	eventsTable.create("onSaveProject");
 	eventsTable.create("onLoadProject");
 	eventsTable.create("onStartObjective");
+	eventsTable.create("onCreateNewProject");
 }

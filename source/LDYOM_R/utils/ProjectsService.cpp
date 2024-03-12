@@ -608,6 +608,16 @@ void ProjectsService::createNewProject() {
 	this->currentDirectory_ = std::nullopt;
 
 	GlobalVariablesService::getInstance().fromJson("[]");
+
+	auto onCreateNewProjectEventsTable = LuaEngine::getInstance()
+		.getLuaState()["ld"]["events"]["onCreateNewProject"].get<sol::as_table_t<std::vector<sol::function>>>();
+	for (const auto &createNewProjectEvent : onCreateNewProjectEventsTable) {
+		if (auto result = createNewProjectEvent(); !result.valid()) {
+			sol::error err = result;
+			CLOG(ERROR, "LDYOM") << "Error onCreateNewProject event: " << err.what();
+			ImGui::InsertNotification({ImGuiToastType_Error, 1000, "Error, see log"});
+		}
+	}
 }
 
 bool zipWalk(zip_t *zip, const std::filesystem::path &path) {
@@ -795,16 +805,6 @@ void ProjectsService::loadProjectData(const std::filesystem::path &projectDirect
 		}
 	}
 
-	auto onLoadProjectEventsTable = LuaEngine::getInstance()
-		.getLuaState()["ld"]["events"]["onLoadProject"].get<sol::as_table_t<std::vector<sol::function>>>();
-	for (const auto &saveProjectEvent : onLoadProjectEventsTable) {
-		if (auto result = saveProjectEvent(projectDirectory.string()); !result.valid()) {
-			sol::error err = result;
-			CLOG(ERROR, "LDYOM") << "Error onLoadProject event: " << err.what();
-			ImGui::InsertNotification({ImGuiToastType_Error, 1000, "Error, see log"});
-		}
-	}
-
 	this->currentDirectory_ = projectDirectory;
 }
 
@@ -828,6 +828,16 @@ void ProjectsService::loadProject(int projectIdx) {
 
 	Windows::WindowsRenderService::getInstance().getWindow<Windows::ObjectivesWindow>()->selectElementFirstCall(
 		this->getCurrentProject().getCurrentScene()->getObjectives().size() - 1);
+
+	auto onLoadProjectEventsTable = LuaEngine::getInstance()
+		.getLuaState()["ld"]["events"]["onLoadProject"].get<sol::as_table_t<std::vector<sol::function>>>();
+	for (const auto &saveProjectEvent : onLoadProjectEventsTable) {
+		if (auto result = saveProjectEvent(projectDirectory.string()); !result.valid()) {
+			sol::error err = result;
+			CLOG(ERROR, "LDYOM") << "Error onLoadProject event: " << err.what();
+			ImGui::InsertNotification({ImGuiToastType_Error, 1000, "Error, see log"});
+		}
+	}
 
 	this->onUpdate_();
 
