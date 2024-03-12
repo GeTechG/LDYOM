@@ -152,9 +152,8 @@ fade_in_time = "Czas pojaśnienia"
 final_scene = "Scena końcowa"
 lock_player_control = "Blokuj kontrolę gracza"
 move_type = "Typ ruchu"
-attach_types = ["Brak", "Do aktora", "Do pojazdu", "Do obiektu"]
-follow_types = ["Brak", "Aktor", "Pojazd", "Obiekt"]
 move_types = ["Brak", "Liniowy", "Gładki"]
+entities_types = ["Brak", "Aktor", "Transport", "Obiekt", "Gracz"]
 
 [damage_object_objective]
 types = ["Dowolny", "Broń ..."]
@@ -237,7 +236,7 @@ extra_parts_angle_info = "Dotyczy tylko pojazdów z dodatkowymi elementami"
 lights_on = "Włącz światła"
 open_doors = "Otwórz drzwi"
 dirty_level = "Poziom brudu"
-heavy = "Ciężki"
+heavy = "ciężki"
 vehicle_unbreakable = ["Odporne na pociski", "Ognioodporne", "Odporność na eksplozje", "Odporność na kolizje", "Odporność na ciosy", "Wrażliwość opon"]
 components = ["Lewe przednie koło", "Prawe przednie koło", "Lewe tylne koło", "Prawe tylne koło", "Maska", "Bagażnik", "Lewe przednie drzwi", "Prawe przednie drzwi", "Lewe tylne drzwi", "Prawe tylne drzwi", "Lewe przednie skrzydło", "Prawe przednie skrzydło", "Lewe tylne skrzydło", "Prawe tylne skrzydło", "Szyba przednia", "Zderzak przedni", "Zderzak tylny"]
 

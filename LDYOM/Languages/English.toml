@@ -151,9 +151,8 @@ fade_in_time = "Fade in time"
 final_scene = "Final scene"
 lock_player_control = "Lock player control"
 move_type = "Movement type"
-attach_types = ["None", "To actor", "To vehicle", "To object"]
-follow_types = ["None", "Actor", "Vehicle", "Object"]
 move_types = ["None", "Linear", "Smooth"]
+entities_types = ["None", "Actor", "Vehicle", "Object", "Player"]
 
 [damage_object_objective]
 types = ["Any", "Weapon ..."]

@@ -152,9 +152,8 @@ fade_in_time = "Tempo de aparecimento"
 final_scene = "Cena final"
 lock_player_control = "Bloquear controle do jogador"
 move_type = "Tipo de movimento"
-attach_types = ["Ausente", "Ao ator", "Ao veículo", "Ao objeto"]
-follow_types = ["Ausente", "Ator", "Veículo", "Objeto"]
 move_types = ["Ausente", "Linear", "Suave"]
+entities_types = ["Nenhum", "Ator", "Transporte", "Objeto", "Jogador"]
 
 [damage_object_objective]
 types = ["Qualquer", "Arma ..."]

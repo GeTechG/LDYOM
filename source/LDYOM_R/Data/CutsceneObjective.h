@@ -26,6 +26,7 @@ private:
 	float endFadeInTime = 1.f;
 	bool endCutscene_ = true;
 	bool lockPlayerControl_ = true;
+	std::optional<CObject*> attachFreeCamera;
 
 	std::string gameText;
 

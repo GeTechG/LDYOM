@@ -6,6 +6,7 @@
 #include <CGame.h>
 #include <CHud.h>
 #include <CMenuManager.h>
+#include <CStreaming.h>
 #include <CTheScripts.h>
 #include <extensions/ScriptCommands.h>
 
@@ -16,6 +17,7 @@
 #include "EditByPlayerService.h"
 #include "imgui.h"
 #include "imgui_stdlib.h"
+#include "ProjectPlayerService.h"
 #include "ProjectsService.h"
 #include "Settings.h"
 #include "strUtils.h"
@@ -165,8 +167,8 @@ void CutsceneObjective::draw(Localization &local, std::vector<std::string> &list
 	ImGui::BeginDisabled(this->move != 0);
 	{
 		ImGui::PushID("attachGroup");
-		if (ImGui::SliderInt(local.get("cutscene_objective.attach").c_str(), &this->attachType_, 0, 3,
-		                     local.getArray("cutscene_objective.attach_types")[this->attachType_].c_str()))
+		if (ImGui::SliderInt(local.get("cutscene_objective.attach").c_str(), &this->attachType_, 0, 4,
+		                     local.getArray("cutscene_objective.entities_types")[this->attachType_].c_str()))
 			this->attachUuid_ = boost::uuids::uuid{};
 
 		bool updateLocation = false;
@@ -193,8 +195,8 @@ void CutsceneObjective::draw(Localization &local, std::vector<std::string> &list
 		ImGui::PopID();
 
 		ImGui::PushID("followGroup");
-		if (ImGui::SliderInt(local.get("cutscene_objective.follow").c_str(), &this->followType_, 0, 3,
-		                     local.getArray("cutscene_objective.follow_types")[this->followType_].c_str())) {
+		if (ImGui::SliderInt(local.get("cutscene_objective.follow").c_str(), &this->followType_, 0, 4,
+		                     local.getArray("cutscene_objective.entities_types")[this->followType_].c_str())) {
 			this->followUuid_ = boost::uuids::uuid{};
 			this->updateLocation();
 		}
@@ -383,6 +385,36 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 					}
 				}
 				break;
+			case 4:
+				if (const auto ped = FindPlayerPed(); ped) {
+					indexAttach = 0;
+					targetAttach = ped;
+					auto playerCoors = FindPlayerCoors(0);
+					targetPositionOffset = {
+						this->position_[0] - playerCoors.x,
+						this->position_[1] - playerCoors.y,
+						this->position_[2] - playerCoors.z
+					};
+					glm::quat rotQuaternion = angleAxis(-FindPlayerHeading(0),
+					                                    glm::vec3(0.0f, 0.0f, 1.0f));
+					targetPositionOffset = glm::quat(
+						rotQuaternion.w, rotQuaternion.x, rotQuaternion.y,
+						rotQuaternion.z) * targetPositionOffset;
+					glm::quat quat(this->rotation_.real, this->rotation_.imag.x,
+					               this->rotation_.imag.y,
+					               this->rotation_.imag.z);
+					quat = normalize(quat);
+					auto anglePre = degrees(eulerAngles(quat));
+					glm::quat q = normalize(glm::quat(
+						rotQuaternion.w, rotQuaternion.x, rotQuaternion.y, rotQuaternion.z) * quat);
+					auto angle = degrees(eulerAngles(q));
+					targetOffsetRotation = {.imag = CVector(q.x, q.y, q.z), .real = q.w};
+					auto ang2 = degrees(eulerAngles(glm::quat(targetOffsetRotation.real,
+					                                          targetOffsetRotation.imag.x,
+					                                          targetOffsetRotation.imag.y,
+					                                          targetOffsetRotation.imag.z)));
+				}
+				break;
 			default:
 				break;
 		}
@@ -425,6 +457,10 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 					if (const auto object = scene->getObjects().at(indexFollow)->getProjectObject(); object.has_value())
 						targetFollow = object.value();
 				}
+				break;
+			case 4:
+				indexFollow = 0;
+				targetFollow = FindPlayerPed();
 				break;
 			default:
 				break;
@@ -491,6 +527,28 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 				CVector aimPos = {directionVector.x, directionVector.y, directionVector.z};
 				auto targetPosOffset = CVector(targetPositionOffset.x, targetPositionOffset.y, targetPositionOffset.z);
 				aimPos += targetPosOffset;
+				if (targetAttach == nullptr) {
+					CStreaming::RequestModel(3090, GAME_REQUIRED);
+					CStreaming::LoadAllRequestedModels(false);
+
+					int newObjectHandle;
+					Command<Commands::CREATE_OBJECT_NO_OFFSET>(3090, pos.x, pos.y, pos.z, &newObjectHandle);
+					CStreaming::SetMissionDoesntRequireModel(3090);
+					const auto newObject = CPools::GetObject(newObjectHandle);
+					newObject->m_bUsesCollision = false;
+					cutscene->attachFreeCamera = newObject;
+					ProjectPlayerService::getInstance().getOnProjectStopped().emplace_back([=] {
+						if (cutscene->attachFreeCamera.has_value()) {
+							if (const auto object = cutscene->attachFreeCamera.value(); CPools::ms_pObjectPool->
+								IsObjectValid(object)) {
+								const int objectRef = CPools::GetObjectRef(object);
+								Command<Commands::DELETE_OBJECT>(objectRef);
+							}
+						}
+						cutscene->attachFreeCamera = std::nullopt;
+					});
+					targetAttach = cutscene->attachFreeCamera.value();
+				}
 				TheCamera.TakeControlAttachToEntity(targetFollow, targetAttach, &targetPosOffset, &aimPos, endUp, 2,
 				                                    1);
 			}
@@ -529,6 +587,14 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 
 		if (cutscene->isWideScreen())
 			TheCamera.SetWideScreenOff();
+
+		if (cutscene->attachFreeCamera.has_value()) {
+			if (const auto object = cutscene->attachFreeCamera.value(); CPools::ms_pObjectPool->IsObjectValid(object)) {
+				const int objectRef = CPools::GetObjectRef(object);
+				Command<Commands::DELETE_OBJECT>(objectRef);
+			}
+			cutscene->attachFreeCamera = std::nullopt;
+		}
 	};
 
 	if (this->async_)

@@ -16,6 +16,7 @@ private:
 	std::optional<Scene*> nextScene;
 	std::optional<int> nextObjective;
 	GlobalVariablesManager globalVariablesManager;
+	std::list<std::function<void()>> onProjectStopped;
 
 	ktcoro_tasklist *sceneTasklist = nullptr;
 	std::optional<ktwait> currentSceneTask;
@@ -45,4 +46,5 @@ public:
 	ktcoro_tasklist*& getSceneTasklist();
 	std::optional<BaseObjective*>& getCurrentObjective();
 	GlobalVariablesManager& getGlobalVariablesManager();
+	std::list<std::function<void()>>& getOnProjectStopped();
 };

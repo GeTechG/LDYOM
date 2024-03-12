@@ -350,6 +350,10 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 
 	Tasker::getInstance().getInstance().removeTask("projectProcces");
 	Tasker::getInstance().getInstance().removeTask("developerWindow");
+	for (const auto &onProjectStopped : this->onProjectStopped) {
+		onProjectStopped();
+	}
+	this->onProjectStopped.clear();
 
 	for (auto &fire : gFireManager.m_aFires) {
 		fire.Extinguish();
@@ -429,3 +433,4 @@ std::optional<BaseObjective*>& ProjectPlayerService::getCurrentObjective() {
 }
 
 GlobalVariablesManager& ProjectPlayerService::getGlobalVariablesManager() { return globalVariablesManager; }
+std::list<std::function<void()>>& ProjectPlayerService::getOnProjectStopped() { return onProjectStopped; }
