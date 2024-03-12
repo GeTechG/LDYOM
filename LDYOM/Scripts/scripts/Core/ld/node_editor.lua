@@ -442,6 +442,9 @@ end
 ---@param type string
 LDNodeEditor.addNewVariable = function(editor, type)
     local newVarUUID = uuid.new()
+    while editor.variables[newVarUUID] ~= nil do
+        newVarUUID = uuid.new()
+    end
     editor.variables[newVarUUID] = {
         name = ld.loc.get("nodes.node_editor.variable") .. " " .. string.sub(newVarUUID, 1, 4),
         type = type,

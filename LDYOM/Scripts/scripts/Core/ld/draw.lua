@@ -253,58 +253,60 @@ function ShowRightPane(paneWidth, ed)
 
             if selectedDetail.type == DetailType.Variable then
                 local variable = ed.variables[selectedDetail.id];
-                if ImGui.CollapsingHeader(ld.loc.get("nodes.node_editor.variable"), 0) then
+                if variable then
+                    if ImGui.CollapsingHeader(ld.loc.get("nodes.node_editor.variable"), 0) then
 
-                    local availContent = ImVec2.new();
-                    ImGui.GetContentRegionAvail(availContent);
-
-                    local titleWidth = ImVec2.new(); 
-                    ImGui.CalcTextSize(titleWidth, ld.loc.get("nodes.node_editor.details.name"), nil, false, -1);
-                    ImGui.SetNextItemWidth(availContent.x - titleWidth.x - ImGui.GetStyle().ItemSpacing.x * 2);
-                    local isEdit, newName = ImGui.InputText(ld.loc.get("nodes.node_editor.details.name"), variable.name, 0, nil, nil);
-                    if isEdit then
-                        variable.name = newName;
-                    end
-
-                    ImGui.CalcTextSize(titleWidth, ld.loc.get("nodes.node_editor.details.type"), nil, false, -1);
-                    ImGui.SetNextItemWidth(availContent.x - titleWidth.x - ImGui.GetStyle().ItemSpacing.x * 2);
-                    if ImGui.BeginCombo(ld.loc.get("nodes.node_editor.details.type"), ld.loc.get("nodes.types." .. variable.type), 0) then
-                        for id, type in pairs(ed.dataTypes) do
-                            if not type.isMakeable then
-                                goto continue;
-                            end
-                            NodeEditor.Icon(ImVec2.new(fontScale * 16, fontScale * 16), NodeEditorIconType.Circle, true, ed.dataTypes[id].colorGetter(), ImVec4.new());
-                            ImGui.SameLine(0, -1);
-                            if ImGui.Selectable(ld.loc.get("nodes.types." .. id), variable.type == id, 0, ImVec2.new(0, 0)) then
-                                variable.type = id;
-                                variable.defaultValue = type.makeNew();
-                                for _, ctx in ipairs(ed.contexts) do
-                                    for _, node in pairs(ctx.nodes) do
-                                        ---@cast node LDNodeEditorSetVariableNode
-                                        if node.nodeType == "core.set_variable" and node.varUuid == selectedDetail.id then
-                                            node.varValue = ed.dataTypes[id].makeNew();
-                                            node.inputs[2].type = id;
-                                            table.erase_if(ctx.__links, function(link)
-                                                return link.inputId == node.inputs[2].id;
-                                            end);
-                                        end
-                                        if node.nodeType == "core.get_variable" and node.varUuid == selectedDetail.id then
-                                            node.outputs[1].type = id;
-                                            table.erase_if(ctx.__links, function(link)
-                                                return link.outputId == node.outputs[1].id;
-                                            end);
+                        local availContent = ImVec2.new();
+                        ImGui.GetContentRegionAvail(availContent);
+    
+                        local titleWidth = ImVec2.new(); 
+                        ImGui.CalcTextSize(titleWidth, ld.loc.get("nodes.node_editor.details.name"), nil, false, -1);
+                        ImGui.SetNextItemWidth(availContent.x - titleWidth.x - ImGui.GetStyle().ItemSpacing.x * 2);
+                        local isEdit, newName = ImGui.InputText(ld.loc.get("nodes.node_editor.details.name"), variable.name, 0, nil, nil);
+                        if isEdit then
+                            variable.name = newName;
+                        end
+    
+                        ImGui.CalcTextSize(titleWidth, ld.loc.get("nodes.node_editor.details.type"), nil, false, -1);
+                        ImGui.SetNextItemWidth(availContent.x - titleWidth.x - ImGui.GetStyle().ItemSpacing.x * 2);
+                        if ImGui.BeginCombo(ld.loc.get("nodes.node_editor.details.type"), ld.loc.get("nodes.types." .. variable.type), 0) then
+                            for id, type in pairs(ed.dataTypes) do
+                                if not type.isMakeable then
+                                    goto continue;
+                                end
+                                NodeEditor.Icon(ImVec2.new(fontScale * 16, fontScale * 16), NodeEditorIconType.Circle, true, ed.dataTypes[id].colorGetter(), ImVec4.new());
+                                ImGui.SameLine(0, -1);
+                                if ImGui.Selectable(ld.loc.get("nodes.types." .. id), variable.type == id, 0, ImVec2.new(0, 0)) then
+                                    variable.type = id;
+                                    variable.defaultValue = type.makeNew();
+                                    for _, ctx in ipairs(ed.contexts) do
+                                        for _, node in pairs(ctx.nodes) do
+                                            ---@cast node LDNodeEditorSetVariableNode
+                                            if node.nodeType == "core.set_variable" and node.varUuid == selectedDetail.id then
+                                                node.varValue = ed.dataTypes[id].makeNew();
+                                                node.inputs[2].type = id;
+                                                table.erase_if(ctx.__links, function(link)
+                                                    return link.inputId == node.inputs[2].id;
+                                                end);
+                                            end
+                                            if node.nodeType == "core.get_variable" and node.varUuid == selectedDetail.id then
+                                                node.outputs[1].type = id;
+                                                table.erase_if(ctx.__links, function(link)
+                                                    return link.outputId == node.outputs[1].id;
+                                                end);
+                                            end
                                         end
                                     end
                                 end
+                                ::continue::
                             end
-                            ::continue::
+                            ImGui.EndCombo();
                         end
-                        ImGui.EndCombo();
                     end
-                end
-                if ImGui.CollapsingHeader(ld.loc.get("nodes.node_editor.details.default_value"), 0) then
-                    local type = ed.dataTypes[variable.type];
-                    variable.defaultValue = type.drawEditValue(variable.defaultValue, ld.loc.get("nodes.node_editor.details.value"), contentRegionAvail.x);
+                    if ImGui.CollapsingHeader(ld.loc.get("nodes.node_editor.details.default_value"), 0) then
+                        local type = ed.dataTypes[variable.type];
+                        variable.defaultValue = type.drawEditValue(variable.defaultValue, ld.loc.get("nodes.node_editor.details.value"), contentRegionAvail.x);
+                    end
                 end
             end
 

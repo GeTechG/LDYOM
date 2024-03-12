@@ -130,10 +130,11 @@ local setVariableNode = {
                     for _, var in ipairs(ld.data.globalVariables) do
                         if ImGui.Selectable(var.name, node.varUuid == var.uuid, 0, ImVec2.new()) then
                             node.varUuid = var.uuid
-                            node.outputs[1].type = globalVariableTypes[var.type]
+                            node.inputs[2].type = globalVariableTypes[var.type]
+                            node.varValue = editor.dataTypes[globalVariableTypes[var.type]].makeNew()
                             table.erase_if(ctx.__links, function(link)
-                                return link.outputId == node.outputs[1].id
-                            end)
+                                return link.inputId == node.inputs[2].id
+                            end);
                             ImGui.CloseCurrentPopup();
                         end
                     end
