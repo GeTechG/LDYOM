@@ -158,7 +158,7 @@ def generate():
     classes = parse_json_opcodes.parseOpcodes(True)
 
     for clazz, commands in classes.items():
-        if clazz not in ["Audio", "Boat", "Camera", "Car", "Char", "Checkpoint", "Clock", "Fx", "Game", "Heli", "Hud", "Menu", "MenuGrid", "Object", "Pad", "Particle", "Pickup", "Plane", "Player", "Rc", "Task", "Text", "Trailer", "Train", "Weapon", "Weather", "World", "Zone", "Math"]:
+        if clazz not in ["Audio", "Boat", "Camera", "Car", "Char", "Checkpoint", "Clock", "Fx", "Game", "Heli", "Hud", "Menu", "MenuGrid", "Object", "Pad", "Particle", "Pickup", "Plane", "Player", "Rc", "Task", "Text", "Trailer", "Train", "Weapon", "Weather", "World", "Zone", "Math", "Streaming"]:
             continue
 
         commands_list: list[str] = []

@@ -21,10 +21,7 @@ weapon = "Weapon"
 trailer = "Trailer"
 menu = "Menu"
 menu_grid = "MenuGrid"
-
-[nodes.core.camera_shake]
-title = "Shake"
-short_desc = "Shakes the camera with the given intensity"
+streaming = "Streaming"
 
 [nodes.core.camera_is_point_on_screen]
 title = "IsPointOnScreen"
@@ -3839,6 +3836,151 @@ title = "CreateOyster"
 [nodes.core.pickup_does_exist]
 title = "DoesExist"
 short_desc = "Returns true if the handle is a valid pickup handle"
+
+[nodes.core.streaming_load_special_character]
+title = "LoadSpecialCharacter"
+short_desc = "Requests a special character's model to be loaded into the specified slot"
+
+[nodes.core.streaming_has_special_character_loaded]
+title = "HasSpecialCharacterLoaded"
+short_desc = "Returns true if the special character's model (023C) is available for creation"
+
+[nodes.core.streaming_request_model]
+title = "RequestModel"
+short_desc = "Requests a new model to load"
+
+[nodes.core.streaming_has_model_loaded]
+title = "HasModelLoaded"
+short_desc = "Returns true if the model is available for creation"
+
+[nodes.core.streaming_mark_model_as_no_longer_needed]
+title = "MarkModelAsNoLongerNeeded"
+short_desc = "Releases the specified model, freeing game memory"
+
+[nodes.core.streaming_unload_special_character]
+title = "UnloadSpecialCharacter"
+short_desc = "Releases the special character (023C), freeing game memory"
+
+[nodes.core.streaming_load_all_models_now]
+title = "LoadAllModelsNow"
+short_desc = "Loads any requested models (0247 or 0353) synchronously"
+
+[nodes.core.streaming_switch]
+title = "Switch"
+short_desc = "Sets the streaming of additional models like peds, cars, and maps"
+
+[nodes.core.streaming_load_scene]
+title = "LoadScene"
+short_desc = "Starts loading a specific location, just like if the player was there, removing LOD textures"
+
+[nodes.core.streaming_is_model_available]
+title = "IsModelAvailable"
+short_desc = "Returns true if the specified model exists in the loaded "
+
+[nodes.core.streaming_set_area_visible]
+title = "SetAreaVisible"
+short_desc = "Sets the visibility of an interior area"
+
+[nodes.core.streaming_request_collision]
+title = "RequestCollision"
+short_desc = "Reloads the area at the specified coordinates"
+
+[nodes.core.streaming_request_animation]
+title = "RequestAnimation"
+short_desc = "Loads the specified IFP File"
+
+[nodes.core.streaming_has_animation_loaded]
+title = "HasAnimationLoaded"
+short_desc = "Returns true if the specified IFP file is loaded"
+
+[nodes.core.streaming_remove_animation]
+title = "RemoveAnimation"
+short_desc = "Releases the specified IFP file, freeing game memory"
+
+[nodes.core.streaming_mark_mission_trains_as_no_longer_needed]
+title = "MarkMissionTrainsAsNoLongerNeeded"
+short_desc = "Marks the train as no longer needed by the script, allowing it to be deleted by the game"
+
+[nodes.core.streaming_get_vehicle_mod_type]
+title = "GetVehicleModType"
+short_desc = "Returns a slot the upgrade model is for"
+
+[nodes.core.streaming_request_vehicle_mod]
+title = "RequestVehicleMod"
+short_desc = "Loads the upgrade model and any associated models"
+
+[nodes.core.streaming_has_vehicle_mod_loaded]
+title = "HasVehicleModLoaded"
+short_desc = "Returns true if the vehicle upgrade model has loaded"
+
+[nodes.core.streaming_mark_vehicle_mod_as_no_longer_needed]
+title = "MarkVehicleModAsNoLongerNeeded"
+short_desc = "Marks the vehicle upgrade model as no longer needed, allowing it to be unloaded by the streamer"
+
+[nodes.core.streaming_custom_plate_design_for_next_car]
+title = "CustomPlateDesignForNextCar"
+short_desc = "Sets the town ID of the license plate which is created on the specified model, affecting which texture is chosen for the plate"
+
+[nodes.core.streaming_request_ipl]
+title = "RequestIpl"
+
+[nodes.core.streaming_remove_ipl]
+title = "RemoveIpl"
+
+[nodes.core.streaming_remove_ipl_discreetly]
+title = "RemoveIplDiscreetly"
+
+[nodes.core.streaming_get_area_visible]
+title = "GetAreaVisible"
+short_desc = "Gets the current interior ID"
+
+[nodes.core.streaming_request_car_recording]
+title = "RequestCarRecording"
+short_desc = "Loads the specified car recording"
+
+[nodes.core.streaming_has_car_recording_been_loaded]
+title = "HasCarRecordingBeenLoaded"
+short_desc = "Returns true if the car recording has finished loading"
+
+[nodes.core.streaming_is_model_in_cdimage]
+title = "IsModelInCdimage"
+short_desc = "Returns true if a file for the model exists"
+
+[nodes.core.streaming_get_model_dimensions]
+title = "GetModelDimensions"
+
+[nodes.core.streaming_is_this_model_a_boat]
+title = "IsThisModelABoat"
+short_desc = "Returns true if the model is the model of a boat"
+
+[nodes.core.streaming_is_this_model_a_plane]
+title = "IsThisModelAPlane"
+short_desc = "Returns true if the model is the model of a plane"
+
+[nodes.core.streaming_is_this_model_a_heli]
+title = "IsThisModelAHeli"
+short_desc = "Returns true if the model is the model of a helicopter"
+
+[nodes.core.streaming_remove_car_recording]
+title = "RemoveCarRecording"
+short_desc = "Unloads the car recording"
+
+[nodes.core.streaming_attach_anims_to_model]
+title = "AttachAnimsToModel"
+short_desc = "Sets an animation pack to be loaded along with the specified model"
+
+[nodes.core.streaming_get_random_car_model_in_memory]
+title = "GetRandomCarModelInMemory"
+
+[nodes.core.streaming_is_this_model_a_car]
+title = "IsThisModelACar"
+short_desc = "Returns true if a valid car model is passed"
+
+[nodes.core.streaming_load_scene_in_direction]
+title = "LoadSceneInDirection"
+
+[nodes.core.streaming_get_name_of_vehicle_model]
+title = "GetNameOfVehicleModel"
 
 [nodes.core.boat_goto]
 title = "Goto"
