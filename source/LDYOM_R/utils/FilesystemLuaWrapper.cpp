@@ -41,4 +41,11 @@ void filesystemWrapper(sol::state &state) {
 		}
 		return create_directories(path);
 	});
+	table.set_function("remove", [](const char *luaPath) -> uintmax_t {
+		const auto path = std::filesystem::path(luaPath);
+		if (!isSubPath(path, LDYOM_PATH)) {
+			return -1;
+		}
+		return remove_all(path);
+	});
 }
