@@ -226,3 +226,6 @@ title = "Логические операции"
 
 [nodes.core.get_checkpoint_data]
 title = "Получить данные чекпоинта"
+
+[nodes.core.merge_flow]
+title = "Объединить потоки"

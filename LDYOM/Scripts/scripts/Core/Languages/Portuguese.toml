@@ -213,3 +213,6 @@ title = "Operações Lógicas"
 
 [nodes.core.get_checkpoint_data]
 title = "Obter dados do ponto de verificação"
+
+[nodes.core.merge_flow]
+title = "Unir Fluxos"

@@ -4,14 +4,13 @@ local nodesColors = require("ld.node_colors")
 local nodesIcons = require("ld.node_icons")
 local fa = require("libs.fa")
 
----@class LDNodeEditorWaitNode : LDNodeEditorNode
----@field waitTime number
+---@class LDNodeEditorMergeFlowNode : LDNodeEditorNode
 
-local WAIT_NODE_TYPE = "core.wait"
+local MERGE_FLOW_NODE_TYPE = "core.merge_flow"
 
 ---@type LDNodeEditorNodeType
-local waitNode = {
-    typeName = WAIT_NODE_TYPE,
+local mergeFlowNode = {
+    typeName = MERGE_FLOW_NODE_TYPE,
     category = "main",
     icon = nodesIcons["function"],
     color = nodesColors["function"],
@@ -20,10 +19,10 @@ local waitNode = {
     ---@param newNodeId integer
     ---@param getPinId fun():integer
     new = function(ctx, newNodeId, getPinId)
-        ---@type LDNodeEditorWaitNode
+        ---@type LDNodeEditorMergeFlowNode
         local newNode = {
             id = newNodeId,
-            nodeType = WAIT_NODE_TYPE,
+            nodeType = MERGE_FLOW_NODE_TYPE,
             inputs = {
                 {
                     id = getPinId(),
@@ -31,6 +30,12 @@ local waitNode = {
                     kind = NodeEditorPinKind.Input,
                     type = "core.flow",
                 },
+                {
+                    id = getPinId(),
+                    node = newNodeId,
+                    kind = NodeEditorPinKind.Input,
+                    type = "core.flow",
+                }
             },
             outputs = {
                 {
@@ -40,28 +45,20 @@ local waitNode = {
                     type = "core.flow",
                 },
             },
-            waitTime = 0
         }
         return newNode
     end,
     ---@param editor LDNodeEditor
     ---@param ctx LDNodeEditorContext
-    ---@param node LDNodeEditorWaitNode
+    ---@param node LDNodeEditorMergeFlowNode
     ---@param builder BlueprintNodeBuilder
     draw = function(editor, ctx, node, builder)
         local fontScale = ImGui.GetFontSize() / 16;
 
         builder:Begin(NodeEditor.NodeId(node.id));
-        LDNodeEditor.defaultHeader(editor, builder, node);
 
         LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[1], "");
-
-        ImGui.SameLine(0,-1);
-        ImGui.SetNextItemWidth(100 * fontScale);
-        local isEdit, newWaitTime = ImGui.InputFloat(ld.loc.get("general.time"), node.waitTime, 0, 0, "%.3f", 0);
-        if isEdit then
-            node.waitTime = newWaitTime
-        end
+        LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], "");
 
         LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[1], "");
 
@@ -69,12 +66,11 @@ local waitNode = {
     end,
     ---@param editor LDNodeEditor
     ---@param context LDNodeEditorContext
-    ---@param node LDNodeEditorWaitNode
+    ---@param node LDNodeEditorMergeFlowNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        _ = coroutine.yield(node.waitTime * 1000)
         return {1}
     end
 }
 
-return waitNode
+return mergeFlowNode

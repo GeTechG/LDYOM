@@ -216,3 +216,6 @@ title = "Operacje logiczne"
 
 [nodes.core.get_checkpoint_data]
 title = "Pobierz dane punktu kontrolnego"
+
+[nodes.core.merge_flow]
+title = "Połącz przepływy"

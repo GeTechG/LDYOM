@@ -213,3 +213,6 @@ title = "Logical Operations"
 
 [nodes.core.get_checkpoint_data]
 title = "Get Checkpoint Data"
+
+[nodes.core.merge_flow]
+title = "Merge Flows"
