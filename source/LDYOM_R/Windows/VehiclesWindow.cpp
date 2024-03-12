@@ -152,6 +152,9 @@ void characteristicsSection(Localization &local, Vehicle *vehicle) {
 		utils::ToggleButton(vehicleUnbreakable[3].c_str(), &vehicle->isCollisionproof());
 		utils::ToggleButton(vehicleUnbreakable[4].c_str(), &vehicle->isMeleeproof());
 		utils::ToggleButton(vehicleUnbreakable[5].c_str(), &vehicle->isTiresVulnerability());
+		if (utils::ToggleButton(local.get("vehicle.heavy").c_str(), &vehicle->isHeavy())) {
+			Command<Commands::SET_CAR_HEAVY>(vehicle->getEditorVehicle().value(), vehicle->isHeavy());
+		}
 
 		ImGui::EndChild();
 		ImGui::TreePop();

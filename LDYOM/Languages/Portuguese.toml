@@ -237,6 +237,7 @@ extra_parts_angle_info = "Só funciona em veículos com peças extras"
 lights_on = "Ligar as luzes"
 open_doors = "Abrir as portas"
 dirty_level = "Nível de sujeira"
+heavy = "Pesado"
 vehicle_unbreakable = ["À prova de balas", "À prova de fogo", "À prova de explosão", "À prova de colisões", "Proteção contra impactos", "Vulnerabilidade aos pneus"]
 components = ["Roda dianteira esquerda", "Roda dianteira direita", "Roda traseira esquerda", "Roda traseira direita", "Capô", "Porta-malas", "Porta dianteira esquerda", "Porta dianteira direita", "Porta traseira esquerda", "Porta traseira direita", "Paralama dianteiro esquerdo", "Paralama dianteiro direito", "Paralama traseiro esquerdo", "Paralama traseiro direito", "Para-brisa", "Para-choque dianteiro", "Para-choque traseiro"]
 
