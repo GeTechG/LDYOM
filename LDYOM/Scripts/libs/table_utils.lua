@@ -29,3 +29,16 @@ table.contains = function(t, value)
     end
     return false
 end
+
+--- Returns the index of the first occurrence of the value in the table.
+---@generic T
+---@param t T[]
+---@param pred fun(v: T): boolean
+table.find_if = function(t, pred)
+    for _, v in ipairs(t) do
+        if pred(v) then
+            return v
+        end
+    end
+    return nil
+end
