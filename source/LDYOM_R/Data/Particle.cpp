@@ -101,7 +101,7 @@ std::optional<int>& Particle::getProjectParticleId() {
 }
 
 
-void Particle::updateLocation() {
+void Particle::updateLocation(Scene *scene) {
 	CQuaternion rw;
 	rw.real = this->rotate.real;
 	rw.imag.x = this->rotate.imag.z;
@@ -121,12 +121,10 @@ void Particle::updateLocation() {
 		RwMatrix *parent;
 		switch (this->attachType_) {
 			case 1: {
-				const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+				const auto &actors = scene->getActors();
 				const int index = utils::indexByUuid(actors, this->attachUuid_);
 				if (index != -1) {
-					const auto &actor = ProjectsService::getInstance().
-					                    getCurrentProject().getCurrentScene()->getActors().
-					                    at(index);
+					const auto &actor = scene->getActors().at(index);
 
 					auto animHier = GetAnimHierarchyFromSkinClump(actor->getProjectPed().value()->m_pRwClump);
 					auto boneIndex = RpHAnimIDGetIndex(animHier, this->pedBodeId_);
@@ -159,12 +157,10 @@ void Particle::updateLocation() {
 				break;
 			}
 			case 2: {
-				const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
-				                                                      getVehicles();
+				const auto &vehicles = scene->getVehicles();
 				const int index = utils::indexByUuid(vehicles, this->attachUuid_);
 				if (index != -1) {
-					const auto &vehicle = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
-					                                                     getVehicles().at(index);
+					const auto &vehicle = scene->getVehicles().at(index);
 					parent = reinterpret_cast<RwMatrix*>(vehicle->getProjectVehicle().value()->GetMatrix());
 
 					matrix.SetRotate(rw);
@@ -178,13 +174,10 @@ void Particle::updateLocation() {
 				break;
 			}
 			case 3: {
-				const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
-				                                                     getObjects();
+				const auto &objects = scene->getObjects();
 				const int index = utils::indexByUuid(objects, this->attachUuid_);
 				if (index != -1) {
-					const auto &object = ProjectsService::getInstance().
-					                     getCurrentProject().getCurrentScene()->getObjects().
-					                     at(index);
+					const auto &object = scene->getObjects().at(index);
 					parent = reinterpret_cast<RwMatrix*>(object->getProjectObject().value()->GetMatrix());
 					RwMatrix parentMatRot;
 					CQuaternion parentQuat;
@@ -240,7 +233,7 @@ void Particle::spawnEditorParticle() {
 
 	this->editorParticle_ = spawnParticle();
 
-	updateLocation();
+	updateLocation(ProjectsService::getInstance().getCurrentProject().getCurrentScene());
 }
 
 extern bool restart;
@@ -262,7 +255,7 @@ void Particle::spawnProjectEntity() {
 
 	this->projectParticle_ = spawnParticle();
 
-	updateLocation();
+	updateLocation(ProjectPlayerService::getInstance().getCurrentScene().value());
 }
 
 void Particle::deleteProjectEntity() {

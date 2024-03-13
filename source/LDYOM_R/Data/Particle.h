@@ -11,6 +11,8 @@
 #include "ObjectiveDependent.h"
 
 
+class Scene;
+
 class Particle final : public ObjectiveDependent, public INameable, public IPositionable, public IUuidable {
 private:
 	boost::uuids::uuid uuid_{};
@@ -54,7 +56,7 @@ public:
 	int& getPedBodeId();
 	std::optional<int>& getProjectParticleId();
 
-	void updateLocation();
+	void updateLocation(Scene *scene);
 
 	std::string& getName() override;
 	float* getPosition() override;

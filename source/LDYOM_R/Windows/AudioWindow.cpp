@@ -137,7 +137,7 @@ void Windows::AudioWindow::drawOptions() {
 	if (audio->isAudio3D()) {
 		//position
 		DragPosition(audio->getPosition(), [audio] {
-			audio->updateLocation();
+			audio->updateLocation(ProjectsService::getInstance().getCurrentProject().getCurrentScene());
 		});
 		if (ImGui::SliderInt(local.get("general.type").c_str(), &audio->getAttachType3d(), 0, 3,
 		                     local.getArray("audio.attach_type_3d").at(audio->getAttachType3d()).c_str())) {
@@ -212,7 +212,7 @@ void Windows::AudioWindow::drawOptions() {
 
 		if (audio->getAttachType3d() == 0) {
 			if (utils::controlCameraWithMove(audio->getPosition())) {
-				audio->updateLocation();
+				audio->updateLocation(ProjectsService::getInstance().getCurrentProject().getCurrentScene());
 			}
 		} else if (attachPos != nullptr) {
 			utils::controlCamera({attachPos[0], attachPos[1], attachPos[2]});

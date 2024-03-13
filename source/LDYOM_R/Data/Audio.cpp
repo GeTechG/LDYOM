@@ -9,6 +9,7 @@
 #include <extensions/scripting/ScriptCommandNames.h>
 
 #include "ModelsService.h"
+#include "ProjectPlayerService.h"
 #include "ProjectsService.h"
 #include "utils.h"
 #include "../Data/CSoundSystem.h"
@@ -103,7 +104,7 @@ float& Audio::getVolume() {
 	return volume;
 }
 
-void Audio::updateLocation() {
+void Audio::updateLocation(Scene *scene) {
 	if (this->editorAudioObject_.has_value()) {
 		CWorld::Remove(this->editorAudioObject_.value());
 		this->editorAudioObject_.value()->SetPosn(this->pos[0], this->pos[1], this->pos[2]);
@@ -113,7 +114,7 @@ void Audio::updateLocation() {
 	if (this->editorAudio_.has_value() && this->audio3D) {
 		switch (this->attachType3d) {
 			case 1: {
-				const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+				const auto &actors = scene->getActors();
 				const int index = utils::indexByUuid(actors, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_CHAR
@@ -122,8 +123,7 @@ void Audio::updateLocation() {
 				break;
 			}
 			case 2: {
-				const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
-				                                                      getVehicles();
+				const auto &vehicles = scene->getVehicles();
 				const int index = utils::indexByUuid(vehicles, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_CAR
@@ -132,8 +132,7 @@ void Audio::updateLocation() {
 				break;
 			}
 			case 3: {
-				const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
-				                                                     getObjects();
+				const auto &objects = scene->getObjects();
 				const int index = utils::indexByUuid(objects, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_OBJECT
@@ -151,7 +150,7 @@ void Audio::updateLocation() {
 	if (this->projectAudio_.has_value() && this->audio3D) {
 		switch (this->attachType3d) {
 			case 1: {
-				const auto &actors = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getActors();
+				const auto &actors = scene->getActors();
 				const int index = utils::indexByUuid(actors, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_CHAR
@@ -160,8 +159,7 @@ void Audio::updateLocation() {
 				break;
 			}
 			case 2: {
-				const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
-				                                                      getVehicles();
+				const auto &vehicles = scene->getVehicles();
 				const int index = utils::indexByUuid(vehicles, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_CAR
@@ -170,8 +168,7 @@ void Audio::updateLocation() {
 				break;
 			}
 			case 3: {
-				const auto &objects = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->
-				                                                     getObjects();
+				const auto &objects = scene->getObjects();
 				const int index = utils::indexByUuid(objects, this->attachUuid);
 				if (index != -1) {
 					//SET_PLAY_3D_AUDIO_STREAM_AT_OBJECT
@@ -213,7 +210,7 @@ void Audio::spawnEditorAudio() {
 		CWorld::Add(this->editorAudioObject_.value());
 	}
 
-	updateLocation();
+	updateLocation(ProjectsService::getInstance().getCurrentProject().getCurrentScene());
 }
 
 extern bool restart;
@@ -238,7 +235,7 @@ void Audio::spawnProjectEntity() {
 		this->deleteProjectEntity();
 
 	this->projectAudio_ = loadAudio();
-	updateLocation();
+	updateLocation(ProjectPlayerService::getInstance().getCurrentScene().value());
 	const auto &audioStream = reinterpret_cast<CLEO::CAudioStream*>(this->projectAudio_.value());
 	audioStream->Play();
 }

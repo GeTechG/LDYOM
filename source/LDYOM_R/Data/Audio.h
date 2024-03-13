@@ -11,6 +11,8 @@
 #include "jsonUtils.h"
 #include "ObjectiveDependent.h"
 
+class Scene;
+
 class Audio final : public ObjectiveDependent, public INameable, public IPositionable, public IUuidable {
 private:
 	boost::uuids::uuid uuid{};
@@ -60,7 +62,7 @@ public:
 	bool& isIsLooped();
 	float& getVolume();
 
-	void updateLocation();
+	void updateLocation(Scene *scene);
 
 	std::string& getName() override;
 	float* getPosition() override;

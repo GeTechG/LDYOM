@@ -167,7 +167,7 @@ void Scene::createNewParticle() {
 	                                     this->particles_.size());
 	this->particles_.emplace_back(std::make_unique<Particle>(defaultName.c_str(), player->GetPosition()));
 	this->particles_.back()->spawnEditorParticle();
-	this->particles_.back()->updateLocation();
+	this->particles_.back()->updateLocation(this);
 }
 
 void Scene::createNewTrain() {

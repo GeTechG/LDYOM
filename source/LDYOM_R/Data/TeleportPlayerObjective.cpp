@@ -258,22 +258,6 @@ ktwait TeleportPlayerObjective::execute(Scene *scene, Result &result, ktcoro_tas
 	using namespace std::chrono;
 
 	CPed *playerPed = FindPlayerPed();
-	auto playerInVehicle = Command<Commands::IS_CHAR_IN_ANY_CAR>(playerPed) ||
-		Command<Commands::IS_CHAR_IN_ANY_BOAT>(playerPed) ||
-		Command<Commands::IS_CHAR_IN_ANY_HELI>(playerPed) ||
-		Command<Commands::IS_CHAR_IN_ANY_PLANE>(playerPed) ||
-		Command<Commands::IS_CHAR_IN_ANY_TRAIN>(playerPed);
-	if (playerInVehicle) {
-		Command<Commands::TASK_LEAVE_ANY_CAR>(playerPed);
-		while (playerInVehicle) {
-			co_await 1;
-			playerInVehicle = Command<Commands::IS_CHAR_IN_ANY_CAR>(playerPed) ||
-				Command<Commands::IS_CHAR_IN_ANY_BOAT>(playerPed) ||
-				Command<Commands::IS_CHAR_IN_ANY_HELI>(playerPed) ||
-				Command<Commands::IS_CHAR_IN_ANY_PLANE>(playerPed) ||
-				Command<Commands::IS_CHAR_IN_ANY_TRAIN>(playerPed);
-		}
-	}
 
 	Command<Commands::SET_CHAR_AREA_VISIBLE>(playerPed, this->interiorID_);
 	Command<Commands::SET_AREA_VISIBLE>(this->interiorID_);
@@ -290,7 +274,7 @@ ktwait TeleportPlayerObjective::execute(Scene *scene, Result &result, ktcoro_tas
 
 	CStreaming::LoadAllRequestedModels(false);
 
-	playerPed->SetPosn(this->pos_[0], this->pos_[1], this->pos_[2]);
+	playerPed->Teleport(CVector(this->pos_[0], this->pos_[1], this->pos_[2]), false);
 	Command<Commands::SET_PLAYER_MODEL>(0, model);
 	Command<Commands::SET_CHAR_HEADING>(playerPed, this->headingAngle_);
 	Command<Commands::REQUEST_COLLISION>(this->pos_[0], this->pos_[1]);

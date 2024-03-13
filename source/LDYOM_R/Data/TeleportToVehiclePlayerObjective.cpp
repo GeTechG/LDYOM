@@ -46,7 +46,7 @@ void TeleportToVehiclePlayerObjective::draw(Localization &local, std::vector<std
 ktwait TeleportToVehiclePlayerObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
 	using namespace plugin;
 
-	const auto &vehicles = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getVehicles();
+	const auto &vehicles = scene->getVehicles();
 	const int indexVehicle = utils::indexByUuid(vehicles, this->vehicleUuid_);
 
 	if (indexVehicle == -1) {

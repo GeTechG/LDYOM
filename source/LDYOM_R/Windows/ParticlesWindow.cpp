@@ -68,22 +68,22 @@ void Windows::ParticlesWindow::drawOptions() {
 	ImGui::Text("%.3f, %.3f, %.3f, %.3f", matrix->pos.x, matrix->pos.y, matrix->pos.z, 1.f);*/
 
 	if (TransformEditor(particle->getPosition(), particle->getRotations(), particle->getScale().data())) {
-		particle->updateLocation();
+		particle->updateLocation(ProjectsService::getInstance().getCurrentProject().getCurrentScene());
 	}
 
 	//position
 	DragPosition(particle->getPosition(), [particle] {
-		particle->updateLocation();
+		particle->updateLocation(ProjectsService::getInstance().getCurrentProject().getCurrentScene());
 	});
 	//rotations
 	static std::array<float, 3> eularRot = {0, 0, 0};
 	InputRotations(eularRot.data(), [&] {
 		particle->getRotations().Set(RAD(eularRot[0]), RAD(eularRot[1]), RAD(eularRot[2]));
-		particle->updateLocation();
+		particle->updateLocation(ProjectsService::getInstance().getCurrentProject().getCurrentScene());
 	});
 	///scale
 	if (ImGui::DragFloat3(local.get("general.scale").c_str(), particle->getScale().data(), 0.001f, 0.001f, 0, "%.3f")) {
-		particle->updateLocation();
+		particle->updateLocation(ProjectsService::getInstance().getCurrentProject().getCurrentScene());
 	}
 
 	ImGui::Separator();
@@ -115,7 +115,7 @@ void Windows::ParticlesWindow::drawOptions() {
 					bool isSelected = pair.first == particle->getPedBodeId();
 					if (ImGui::Selectable(pair.second.c_str(), &isSelected)) {
 						particle->getPedBodeId() = pair.first;
-						particle->updateLocation();
+						particle->updateLocation(ProjectsService::getInstance().getCurrentProject().getCurrentScene());
 					}
 					if (isSelected)
 						ImGui::SetItemDefaultFocus();
@@ -191,7 +191,7 @@ void Windows::ParticlesWindow::drawOptions() {
 		fmt::format("{} - {}", local.get("hotkey_editor.hk_guizmoScale"), guizmoScale));
 
 	if (utils::controlCameraWithMove(particle->getPosition())) {
-		particle->updateLocation();
+		particle->updateLocation(ProjectsService::getInstance().getCurrentProject().getCurrentScene());
 	}
 }
 
