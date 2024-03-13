@@ -31,7 +31,12 @@ local selectedContext = nil;
 
 local openPopupPosition = ImVec2.new();
 
----@alias CategoryNodeTable table<string, CategoryNodeTable | NodeTypeInfo>
+---@class CategoryNode
+---@field isCategory boolean
+---@field name string
+---@field nodes (CategoryNode | NodeTypeInfo)[]
+
+---@alias CategoryNodeTable CategoryNode[]
 
 ---@type CategoryNodeTable
 local categoriesNodes = {}
@@ -343,16 +348,40 @@ function draw(ed)
 
             for _, nodeTypeInfo in pairs(ed.nodeTypesInfo) do
                 local caterogyParts = string.split(nodeTypeInfo.category, ".");
-                ---@type CategoryNodeTable
+                ---@type CategoryNodeTable | CategoryNode
                 local currentPart = categoriesNodes;
                 for _, part in ipairs(caterogyParts) do
-                    if not currentPart[part] then
-                        currentPart[part] = {};
+                    local findResult = table.find_if(currentPart, function(v) return v["name"] == part end);
+                    if not findResult then
+                        currentPart[#currentPart + 1] = {
+                            isCategory = true,
+                            name = part,
+                            nodes = {}
+                        }
+                        currentPart = currentPart[#currentPart].nodes;
+                    else
+                        currentPart = findResult.nodes;
                     end
-                    currentPart = currentPart[part];
                 end
-                currentPart[nodeTypeInfo.name] = nodeTypeInfo;
+                currentPart[#currentPart + 1] = nodeTypeInfo;
             end
+            function sortNodes(nodes)
+                table.sort(nodes, function(a, b)
+                    if a.isCategory and not b.isCategory then
+                        return true;
+                    elseif not a.isCategory and b.isCategory then
+                        return false;
+                    else
+                        return a.name < b.name;
+                    end
+                end);
+                for _, node in ipairs(nodes) do
+                    if node.isCategory then
+                        sortNodes(node.nodes);
+                    end
+                end
+            end
+            sortNodes(categoriesNodes);
         end
 
         _, leftPaneWidth, leftPanelMax = Splitter("##SplitterLeft", true, 4.0, leftPaneWidth, leftPanelMax, 50.0, 50.0, -1);
@@ -596,8 +625,8 @@ function draw(ed)
             ---@param categories CategoryNodeTable
             function categoryRender(categories, depth)
                 ImGui.BeginChild("##category" .. depth, ImVec2.new(fontScale * 200, fontScale * 300), 0, 0);
-                for categoryName, category in pairs(categories) do
-                    if category["name"] ~= nil and category["category"] ~= nil then
+                for _, category in ipairs(categories) do
+                    if category["isCategory"] == nil then
                         local nodeTypeT = ed.__nodesFactories[category["name"]];
                         if nodeTypeT and nodeTypeT.icon then
                             ImGui.TextColored(nodeTypeT.color, nodeTypeT.icon)
@@ -619,8 +648,8 @@ function draw(ed)
                             end
                         end
                     else
-                        if ImGui.BeginMenu(ld.loc.get("nodes.node_editor.categories." .. categoryName), true) then
-                            categoryRender(category, depth + 1);
+                        if ImGui.BeginMenu(ld.loc.get("nodes.node_editor.categories." .. category["name"]), true) then
+                            categoryRender(category.nodes, depth + 1);
                             ImGui.EndMenu();
                         end
                     end
