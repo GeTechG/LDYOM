@@ -216,3 +216,11 @@ title = "Get Checkpoint Data"
 
 [nodes.core.merge_flow]
 title = "Merge Flows"
+
+[nodes.core.cutscene]
+title = "Cutscene"
+point_to_x = "Camera Point X"
+point_to_y = "Camera Point Y"
+point_to_z = "Camera Point Z"
+on_complete = "On Complete"
+entities_types = ["None", "Actor", "Vehicle", "Player"]

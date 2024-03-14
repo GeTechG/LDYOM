@@ -216,3 +216,11 @@ title = "Obter dados do ponto de verificação"
 
 [nodes.core.merge_flow]
 title = "Unir Fluxos"
+
+[nodes.core.cutscene]
+title = "Cena cortada"
+point_to_x = "Ponto da câmera X"
+point_to_y = "Ponto da câmera Y"
+point_to_z = "Ponto da câmera Z"
+on_complete = "Ao completar"
+entities_types = ["Ausente", "Ator", "Veículo", "Jogador"]

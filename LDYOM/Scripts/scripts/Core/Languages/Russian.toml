@@ -229,3 +229,11 @@ title = "Получить данные чекпоинта"
 
 [nodes.core.merge_flow]
 title = "Объединить потоки"
+
+[nodes.core.cutscene]
+title = "Катсцена"
+point_to_x = "Точка камеры X"
+point_to_y = "Точка камеры Y"
+point_to_z = "Точка камеры Z"
+on_complete = "При завершении"
+entities_types = ["Отсутствует", "Актер", "Транспорт", "Игрок"]
