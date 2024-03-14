@@ -211,6 +211,7 @@
     <ClCompile Include="Data\Scene.cpp" />
     <ClCompile Include="Data\SceneObjective.cpp" />
     <ClCompile Include="Data\SceneSettings.cpp" />
+    <ClCompile Include="Data\SetCharacteristicsVehicleObjective.cpp" />
     <ClCompile Include="Data\SetIncrementGlobalVariable.cpp" />
     <ClCompile Include="Data\StartMissionObjective.cpp" />
     <ClCompile Include="Data\TeleportPlayerObjective.cpp" />
@@ -445,6 +446,7 @@
     <ClInclude Include="Data\Scene.h" />
     <ClInclude Include="Data\SceneObjective.h" />
     <ClInclude Include="Data\SceneSettings.h" />
+    <ClInclude Include="Data\SetCharacteristicsVehicleObjective.h" />
     <ClInclude Include="Data\SetIncrementGlobalVariable.h" />
     <ClInclude Include="Data\StartMissionObjective.h" />
     <ClInclude Include="Data\TeleportPlayerObjective.h" />

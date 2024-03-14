@@ -437,6 +437,9 @@
     <Filter Include="Windows\ScriptsWindow">
       <UniqueIdentifier>{fd564711-224c-49bb-85d7-94281c223a9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Objectives\Vehicle\SetCharacteristics">
+      <UniqueIdentifier>{8bf10554-6c48-45f9-94ca-0ca34e8fe897}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1118,6 +1121,9 @@
     </ClCompile>
     <ClCompile Include="utils\glmWrapper.cpp">
       <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\SetCharacteristicsVehicleObjective.cpp">
+      <Filter>Data\Objectives\Vehicle\SetCharacteristics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2627,6 +2633,9 @@
     </ClInclude>
     <ClInclude Include="Windows\ScriptsWindow.h">
       <Filter>Windows\ScriptsWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\SetCharacteristicsVehicleObjective.h">
+      <Filter>Data\Objectives\Vehicle\SetCharacteristics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

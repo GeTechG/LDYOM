@@ -128,6 +128,7 @@ set_global_variable = "Set global variable"
 save = "Save"
 nothing_params = "This objective has no parameters"
 set_increment_global_variable = "Set/Increment Global Variable"
+set_characteristics_vehicle = "Set vehicle characteristics"
 
 [objective_categories]
 world = "World"

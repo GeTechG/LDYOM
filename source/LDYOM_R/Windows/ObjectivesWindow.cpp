@@ -35,6 +35,7 @@
 #include "../Data/RemoveTimerObjective.h"
 #include "../Data/RemoveWeaponsObjective.h"
 #include "../Data/SaveObjective.h"
+#include "../Data/SetCharacteristicsVehicleObjective.h"
 #include "../Data/SetIncrementGlobalVariable.h"
 #include "../Data/StartMissionObjective.h"
 #include "../Data/TeleportPlayerObjective.h"
@@ -46,6 +47,7 @@
 #include "../Data/WeatherObjective.h"
 #include "fmt/core.h"
 #include "Localization/Localization.h"
+
 
 std::string Windows::ObjectivesWindow::getNameList() {
 	return fmt::format("{} {}", ICON_FA_TASKS, Localization::getInstance().get("objective.objectives"));
@@ -160,7 +162,10 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
 						fast_dynamic_cast<FollowPathVehicleObjective&>(*objective));
 					break;
-
+				case 3:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<SetCharacteristicsVehicleObjective&>(*objective));
+					break;
 				default:
 					break;
 			}
@@ -429,6 +434,12 @@ void Windows::ObjectivesWindow::drawListWindow() {
 			if (ImGui::MenuItem(Localization::getInstance().get("objective.follow_path_vehicle").c_str())) {
 				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
 					FollowPathVehicleObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.set_characteristics_vehicle").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
+					SetCharacteristicsVehicleObjective>(nullptr);
 				this->selectElement(this->getListSize() - 1);
 			}
 

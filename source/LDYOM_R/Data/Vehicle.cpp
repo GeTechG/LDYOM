@@ -129,6 +129,7 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 	newVehicle->m_nPhysicalFlags.bExplosionProof = static_cast<unsigned>(this->isExplosionproof());
 	newVehicle->m_nPhysicalFlags.bFireProof = static_cast<unsigned>(this->isFireproof());
 	newVehicle->m_nPhysicalFlags.bMeleeProof = static_cast<unsigned>(this->isMeleeproof());
+	Command<Commands::SET_CAN_BURST_CAR_TYRES>(newVehicle, !this->isTiresVulnerability());
 
 	return newVehicle;
 }

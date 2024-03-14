@@ -129,6 +129,7 @@ set_global_variable = "Ustaw zmienną globalną"
 save = "Zapisz"
 nothing_params = "Ten cel nie ma parametrów"
 set_increment_global_variable = "Ustaw/zwiększ zmienną globalną"
+set_characteristics_vehicle = "Ustawienia cech pojazdu"
 
 [objective_categories]
 world = "Świat"

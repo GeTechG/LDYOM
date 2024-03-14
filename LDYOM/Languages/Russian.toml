@@ -128,6 +128,7 @@ set_global_variable = "Установить гл. переменную"
 save = "Сохранить"
 nothing_params = "У этой цели нет параметров"
 set_increment_global_variable = "Установить/увеличить гл. переменную"
+set_characteristics_vehicle = "Установить характеристики ТС"
 
 [objective_categories]
 world = "Мир"

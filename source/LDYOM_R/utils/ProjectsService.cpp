@@ -40,6 +40,7 @@
 #include "../Data/RemoveWeaponsObjective.h"
 #include "../Data/SaveObjective.h"
 #include "../Data/SceneSettings.h"
+#include "../Data/SetCharacteristicsVehicleObjective.h"
 #include "../Data/SetIncrementGlobalVariable.h"
 #include "../Data/StartMissionObjective.h"
 #include "../Data/TeleportPlayerObjective.h"
@@ -161,7 +162,10 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 							case 2:
 								jsonObjectives.push_back(fast_dynamic_cast<FollowPathVehicleObjective&>(*objective));
 								break;
-
+							case 3:
+								jsonObjectives.push_back(
+									fast_dynamic_cast<SetCharacteristicsVehicleObjective&>(*objective));
+								break;
 							default:
 								break;
 						}
@@ -372,6 +376,11 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 								objectives.emplace_back(
 									std::make_unique<FollowPathVehicleObjective>(
 										jsonObjective.get<FollowPathVehicleObjective>()));
+								break;
+							case 3:
+								objectives.emplace_back(
+									std::make_unique<SetCharacteristicsVehicleObjective>(
+										jsonObjective.get<SetCharacteristicsVehicleObjective>()));
 								break;
 							default:
 								break;
