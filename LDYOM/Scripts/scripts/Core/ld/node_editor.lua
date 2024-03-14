@@ -372,7 +372,9 @@ LDNodeEditor.defaultHeader = function (editor, builder, node)
     end
     builder:Header(nodeType.color);
     ImGui.Spring(0, -1);
-    ImGui.TextUnformatted(icon .. ld.loc.get("nodes." .. node.nodeType .. ".title"));
+    if NodeEditor.GetCurrentZoom() < 3 then
+        ImGui.TextUnformatted(icon .. ld.loc.get("nodes." .. node.nodeType .. ".title")); 
+    end
     ImGui.Spring(1, -1);
     ImGui.Dummy(ImVec2.new(0, 28));
     ImGui.Spring(0, -1);
@@ -392,14 +394,24 @@ LDNodeEditor.defaultInput = function (editor, context, builder, pin, name, bodyC
     end
     builder:Input(NodeEditor.PinId(pin.id));
     ImGui.PushStyleVar(ImGuiStyleVar.Alpha, alpha);
-    LDNodeEditor.DrawPinIcon(editor, pin, LDNodeEditorContext.isPinLinked(context, pin.id), math.floor(alpha * 255));
-    ImGui.Spring(0, -1);
-    if name then
-        ImGui.TextUnformatted(name);
-        ImGui.Spring(0, -1);
+    if NodeEditor.GetCurrentZoom() < 3 then
+        LDNodeEditor.DrawPinIcon(editor, pin, LDNodeEditorContext.isPinLinked(context, pin.id), math.floor(alpha * 255));
     end
-    if bodyCallback and not LDNodeEditorContext.isPinLinked(context, pin.id) then
-        bodyCallback();
+    ImGui.Spring(0, -1);
+    if NodeEditor.GetCurrentZoom() < 3 then
+        if name then
+            ImGui.TextUnformatted(name);
+            ImGui.Spring(0, -1);
+        end
+    else
+        ImGui.Dummy(ImVec2.new(0, 28));
+    end
+    if NodeEditor.GetCurrentZoom() < 5 then
+        if bodyCallback and not LDNodeEditorContext.isPinLinked(context, pin.id) then
+            bodyCallback();
+        end
+    else
+        ImGui.Dummy(ImVec2.new(ImGui.GetFontSize() * 7, 28));
     end
     ImGui.PopStyleVar(1);
     builder:EndInput();
@@ -416,12 +428,20 @@ LDNodeEditor.defaultOutput = function (editor, context, builder, pin, name, body
         bodyCallback();
         ImGui.Spring(0, -1);
     end
-    if name then
-        ImGui.Spring(0, -1);
-        ImGui.TextUnformatted(name);
+    if NodeEditor.GetCurrentZoom() < 3 then
+        if name then
+            ImGui.Spring(0, -1);
+            ImGui.TextUnformatted(name);
+        end
+    else
+        ImGui.Dummy(ImVec2.new(ImGui.GetFontSize() * 3, 28));
     end
     ImGui.Spring(0, -1);
-    LDNodeEditor.DrawPinIcon(editor, pin, LDNodeEditorContext.isPinLinked(context, pin.id), math.floor(alpha * 255));
+    if NodeEditor.GetCurrentZoom() < 3 then
+        LDNodeEditor.DrawPinIcon(editor, pin, LDNodeEditorContext.isPinLinked(context, pin.id), math.floor(alpha * 255));
+    else
+        ImGui.Dummy(ImVec2.new(ImGui.GetFontSize() * 3, 28));
+    end
     ImGui.PopStyleVar(1);
     builder:EndOutput();
 end

@@ -235,6 +235,9 @@ function ShowLeftPane(paneWidth, ed)
         CharOp.clearTasks(PlayerOp.getChar(0));
     end
 
+    -- ImGui.Text("FPS: " .. math.floor(ImGui.GetIO().Framerate));
+    -- ImGui.Text("Vertices: " .. ImGui.GetIO().MetricsRenderVertices);
+
     ImGui.EndChild();
 
 end
@@ -429,18 +432,20 @@ function draw(ed)
         end
         ImGui.PopStyleColor(1);
 
-        for _, link in ipairs(context.__links) do
-            local inputPin = nil;
-            for _, node in pairs(context.nodes) do
-                for _, pin in ipairs(node.inputs) do
-                    if pin.id == link.inputId then
-                        inputPin = pin;
+        if NodeEditor.GetCurrentZoom() < 5 then
+            for _, link in ipairs(context.__links) do
+                local inputPin = nil;
+                for _, node in pairs(context.nodes) do
+                    for _, pin in ipairs(node.inputs) do
+                        if pin.id == link.inputId then
+                            inputPin = pin;
+                        end
                     end
                 end
-            end
-            if inputPin then
-                local color = ed.dataTypes[inputPin.type].colorGetter()
-                NodeEditor.Link(NodeEditor.LinkId(link.id), NodeEditor.PinId(link.inputId), NodeEditor.PinId(link.outputId), color, 2);
+                if inputPin then
+                    local color = ed.dataTypes[inputPin.type].colorGetter()
+                    NodeEditor.Link(NodeEditor.LinkId(link.id), NodeEditor.PinId(link.inputId), NodeEditor.PinId(link.outputId), color, 2);
+                end
             end
         end
 
