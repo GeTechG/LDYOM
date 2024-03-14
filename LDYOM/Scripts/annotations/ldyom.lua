@@ -44,6 +44,13 @@ end
 function GetObjectRef(ptr)
 end
 
+---@param ptr userdata
+---@return userdata
+function GetEntity(ptr) end
+
+
+---@return userdata
+function findPlayerPed() end
 
 function emitSignal()
 end
@@ -58,6 +65,19 @@ end
 function CalcScreenCoors(posn, out, checkMaxVisible, checkMinVisible)
 end
 
+-- state["removePlayerFromWorld"] = []() {
+-- 	CWorld::Remove(FindPlayerPed());
+-- };
+-- state["addPlayerToWorld"] = []() {
+-- 	CWorld::Add(FindPlayerPed());
+-- };
+
+
+function removePlayerFromWorld()
+end
+
+function addPlayerToWorld()
+end
 
 ---@enum MathCondition
 MathCondition = {
@@ -285,6 +305,9 @@ KeyCheck = {
     ---@param key integer
     ---@return boolean
     CheckJustDown = function (key) end,
+    ---@param key integer
+    ---@return boolean
+    KeyPressed = function (key) end,
 }
 
 
@@ -629,7 +652,7 @@ LDObject = {
     getEditorObject = function() end,
     ---@return CObject
     getProjectObject = function() end,
-    ---@return CQuaternion
+    ---@return number[]
     getRotations = function() end,
     ---@return number[]
     getScale = function() end,
@@ -963,3 +986,101 @@ time = {}
 ---current time in milliseconds
 ---@type number
 time.snTimeInMilliseconds = nil
+
+glm = {}
+
+---@class vec3
+---@field x number
+---@field y number
+---@field z number
+
+glm.vec3 = {
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    ---@return vec3
+    new = function (x, y, z) end
+}
+
+---@class quat
+---@field x number
+---@field y number
+---@field z number
+---@field w number
+
+glm.quat = {
+    ---@param x number
+    ---@param y number
+    ---@param z number
+    ---@param w number
+    ---@return quat
+    new = function (x, y, z, w) end
+}
+
+---@param quat quat
+---@return vec3
+glm.eulerAngles = function (quat) end
+
+---@param radians number
+---@return number
+glm.degrees = function (radians) end
+
+---@param radians vec3
+---@return vec3
+glm.degreesVec3 = function (radians) end
+
+---@param degrees number
+---@return number
+glm.radians = function (degrees) end
+
+---@param direction vec3
+---@param up vec3
+---@return quat
+glm.quatLookAtLH = function (direction, up) end
+
+---@param angle number
+---@param axis vec3
+---@return quat
+glm.angleAxis = function (angle, axis) end
+
+---@param a quat
+---@param b vec3
+---@return vec3
+glm.multiplyVec3 = function (a, b) end
+
+---@param a quat
+---@param b quat
+---@return quat
+glm.multiply = function (a, b) end
+
+---@param a quat
+---@return quat
+glm.normalize = function (a) end
+
+---@return number x
+---@return number y
+---@return number z
+CameraOp.getRightCamVector = function () end
+
+---@return number x
+---@return number y
+---@return number z
+CameraOp.getUpCamVector = function () end
+
+---@return number x
+---@return number y
+---@return number z
+CameraOp.getFrontCamVector = function () end
+
+---@param quat number[]
+CameraOp.setQuaternion = function (quat) end
+
+---@return number x
+---@return number y
+---@return number z
+CameraOp.getCoordinates = function () end
+
+---@return number x
+---@return number y
+---@return number z
+CameraOp.getViewDirection = function () end

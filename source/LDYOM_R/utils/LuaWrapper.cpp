@@ -19,6 +19,7 @@ extern void ktcoroWrapper(sol::state &state);
 extern void mathConditionWrapper(sol::state &state);
 extern void globalVariableWrapper(sol::state &state);
 extern void projectPlayerServiceWrapper(sol::state &state);
+extern void glmWrapper(sol::state &state);
 
 void LuaWrapper::wrap(sol::state &state) {
 	imguiLuaWrapper(state);
@@ -40,4 +41,5 @@ void LuaWrapper::wrap(sol::state &state) {
 	mathConditionWrapper(state);
 	globalVariableWrapper(state);
 	projectPlayerServiceWrapper(state);
+	glmWrapper(state);
 }

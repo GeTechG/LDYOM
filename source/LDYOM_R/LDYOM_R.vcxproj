@@ -292,6 +292,7 @@
     <ClCompile Include="utils\FilesystemLuaWrapper.cpp" />
     <ClCompile Include="utils\FileWatcher.cpp" />
     <ClCompile Include="utils\format.cc" />
+    <ClCompile Include="utils\glmWrapper.cpp" />
     <ClCompile Include="utils\GlobalVariablesManager.cpp" />
     <ClCompile Include="utils\GlobalVariablesService.cpp" />
     <ClCompile Include="utils\GlobalVariableWrapper.cpp" />

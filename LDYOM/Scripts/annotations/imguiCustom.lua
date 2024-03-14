@@ -12,5 +12,9 @@ ImGui.IncorrectHighlight = function (cond, render)
     
 end
 
+---@return number
+ImGui.GetMouseWheel = function ()
+end
+
 ---@type ImGuiContext
 GImgui = nil

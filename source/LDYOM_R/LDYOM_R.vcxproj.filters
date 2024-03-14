@@ -1116,6 +1116,9 @@
     <ClCompile Include="Windows\ScriptsWindow.cpp">
       <Filter>Windows\ScriptsWindow</Filter>
     </ClCompile>
+    <ClCompile Include="utils\glmWrapper.cpp">
+      <Filter>Lua\Wrappers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils\imguistyleloader.h">
