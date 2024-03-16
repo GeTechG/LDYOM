@@ -18,6 +18,7 @@
 #include "Tasker.h"
 #include "TimerService.h"
 #include "WindowsRenderService.h"
+#include "../Data/CutsceneMutex.h"
 #include "../Data/Result.h"
 #include "boost/functional/hash.hpp"
 #include "easylogging/easylogging++.h"
@@ -354,6 +355,7 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 		onProjectStopped();
 	}
 	this->onProjectStopped.clear();
+	CutsceneMutex::free();
 
 	for (auto &fire : gFireManager.m_aFires) {
 		fire.Extinguish();
