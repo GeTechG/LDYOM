@@ -234,8 +234,8 @@ damages = "Damages"
 extra_parts_angle = "Additional Parts Angle"
 extra_parts_angle_info = "Applies only to vehicles with extra parts"
 lights_on = "Turn on headlights"
-open_doors = "Open doors"
-dirty_level = "Dirtiness"
+open_doors = "Open components"
+dirty_level = "Grunge/Dirtiness level"
 heavy = "Heavy"
 vehicle_unbreakable = ["Bulletproof", "Fireproof", "Explosionproof", "Collisionproof", "Meleeproof", "Tire Vulnerability"]
 components = ["Left front wheel", "Right front wheel", "Left rear wheel", "Right rear wheel", "Hood", "Trunk", "Left front door", "Right front door", "Left rear door", "Right rear door", "Left front fender", "Right front fender", "Left rear fender", "Right rear fender", "Windshield", "Front bumper", "Rear bumper"]
@@ -358,7 +358,7 @@ checkpoints = "Checkpoints"
 checkpoint = "Checkpoint"
 
 [skin_selector]
-title = "Skin selection"
+title = "Skin Selector"
 search = "Search"
 filter = "Filter"
 
