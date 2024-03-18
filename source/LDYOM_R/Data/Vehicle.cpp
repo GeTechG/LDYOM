@@ -82,6 +82,7 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 
 	int newVehicleHandle;
 	Command<Commands::CREATE_CAR>(model, this->pos_[0], this->pos_[1], this->pos_[2], &newVehicleHandle);
+	Command<Commands::SET_VEHICLE_AREA_VISIBLE>(newVehicleHandle, this->interiorId);
 	const auto newVehicle = CPools::GetVehicle(newVehicleHandle);
 
 	CStreaming::SetMissionDoesntRequireModel(model);
@@ -146,12 +147,14 @@ Vehicle::Vehicle(const char *name, const CVector &pos, float headingAngle): Obje
 	this->upgrades_.fill(-1);
 	this->damagesComponents_.fill(0.f);
 	this->openDoorsRation_.fill(0.f);
+	Command<Commands::GET_AREA_VISIBLE>(&this->interiorId);
 }
 
 Vehicle Vehicle::copy() const {
 	Vehicle vehicle(*this);
 	vehicle.uuid_ = boost::uuids::random_generator()();
 	vehicle.name += " (copy)";
+	Command<Commands::GET_AREA_VISIBLE>(&vehicle.interiorId);
 
 	return vehicle;
 }
@@ -253,6 +256,7 @@ bool& Vehicle::isIsLightsOn() { return isLightsOn_; }
 std::array<float, 6>& Vehicle::getOpenDoorsRation() { return openDoorsRation_; }
 float& Vehicle::getDirtyLevel() { return dirtyLevel_; }
 bool& Vehicle::isHeavy() { return heavy_; }
+int& Vehicle::getInteriorId() { return interiorId; }
 
 
 void Vehicle::updateLocation() const {

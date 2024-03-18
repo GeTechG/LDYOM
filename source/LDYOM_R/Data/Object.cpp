@@ -27,6 +27,7 @@ std::optional<CObject*> Object::spawnObject() {
 	Command<Commands::CREATE_OBJECT_NO_OFFSET>(this->modelId, this->pos[0], this->pos[1], this->pos[2],
 	                                           &newObjectHandle);
 	const auto newObject = CPools::GetObject(newObjectHandle);
+	Command<Commands::SET_OBJECT_AREA_VISIBLE>(newObjectHandle, this->interiorId);
 
 	CStreaming::SetMissionDoesntRequireModel(this->modelId);
 
@@ -41,12 +42,14 @@ Object::Object(const char *name, const CVector &pos): ObjectiveDependent(nullptr
 	this->pos[0] = pos.x;
 	this->pos[1] = pos.y;
 	this->pos[2] = pos.z;
+	Command<Commands::GET_AREA_VISIBLE>(&this->interiorId);
 }
 
 Object Object::copy() const {
 	Object copy(*this);
 	copy.name += " (copy)";
 	copy.uuid = boost::uuids::random_generator()();
+	Command<Commands::GET_AREA_VISIBLE>(&copy.getInteriorId());
 
 	return copy;
 }
@@ -80,6 +83,8 @@ int& Object::getModelId() {
 	return modelId;
 }
 
+int& Object::getInteriorId() { return interiorId; }
+
 void Object::updateLocation() {
 	CQuaternion rw;
 	rw.real = this->rotate.real;
@@ -92,6 +97,7 @@ void Object::updateLocation() {
 	newMatrix.right *= this->scale[2];
 	newMatrix.up *= this->scale[0];
 	newMatrix.at *= this->scale[1];
+	Command<Commands::GET_AREA_VISIBLE>(&this->interiorId);
 
 	if (this->editorObject_.has_value()) {
 		CWorld::Remove(this->editorObject_.value());

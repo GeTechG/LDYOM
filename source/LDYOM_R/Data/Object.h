@@ -23,6 +23,7 @@ private:
 	CQuaternion rotate;
 	std::array<float, 3> scale = {1.f, 1.f, 1.f};
 	int modelId{};
+	int interiorId = 0;
 
 	std::optional<CObject*> spawnObject();
 
@@ -44,6 +45,7 @@ public:
 	CQuaternion& getRotations();
 	std::array<float, 3>& getScale();
 	int& getModelId();
+	int& getInteriorId();
 
 	void updateLocation();
 
@@ -70,6 +72,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j["rotate"] = a.getRotations();
 			j["scale"] = a.getScale();
 			j["modelId"] = a.getModelId();
+			j["interiorId"] = a.getInteriorId();
 		}
 
 		static void from_json(const json &j, Object &obj) {
@@ -81,6 +84,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j.at("rotate").get_to(obj.getRotations());
 			j.at("scale").get_to(obj.getScale());
 			j.at("modelId").get_to(obj.getModelId());
+			obj.getInteriorId() = j.contains("interiorId") ? j.at("interiorId").get<int>() : 0;
 		}
 	};
 

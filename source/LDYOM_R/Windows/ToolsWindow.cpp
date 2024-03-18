@@ -51,7 +51,7 @@ void Windows::ToolsWindow::draw() {
 		ImGui::PushID("teleport_to_actor");
 		if (ImGui::Button(local.get("general.teleport").c_str())) {
 			if (indexActor != -1) {
-				//Command<Commands::SET_AREA_VISIBLE>(actors.at(indexActor));
+				Command<Commands::SET_AREA_VISIBLE>(actors.at(indexActor)->getInteriorId());
 				playerPed->SetPosn(actors.at(indexActor)->getPosition()[0], actors.at(indexActor)->getPosition()[1],
 				                   actors.at(indexActor)->getPosition()[2]);
 			}
@@ -69,7 +69,7 @@ void Windows::ToolsWindow::draw() {
 		ImGui::PushID("teleport_to_vehicle");
 		if (ImGui::Button(local.get("general.teleport").c_str())) {
 			if (indexVehicle != -1) {
-				//Command<Commands::SET_AREA_VISIBLE>(vehicles.at(indexVehicle));
+				Command<Commands::SET_AREA_VISIBLE>(vehicles.at(indexVehicle)->getInteriorId());
 				playerPed->SetPosn(vehicles.at(indexVehicle)->getPosition()[0],
 				                   vehicles.at(indexVehicle)->getPosition()[1],
 				                   vehicles.at(indexVehicle)->getPosition()[2]);
@@ -88,7 +88,7 @@ void Windows::ToolsWindow::draw() {
 		ImGui::PushID("teleport_to_object");
 		if (ImGui::Button(local.get("general.teleport").c_str())) {
 			if (indexObject != -1) {
-				//Command<Commands::SET_AREA_VISIBLE>(objects.at(indexObject));
+				Command<Commands::SET_AREA_VISIBLE>(objects.at(indexObject)->getInteriorId());
 				playerPed->SetPosn(objects.at(indexObject)->getPosition()[0],
 				                   objects.at(indexObject)->getPosition()[1],
 				                   objects.at(indexObject)->getPosition()[2]);

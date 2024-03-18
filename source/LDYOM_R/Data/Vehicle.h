@@ -47,6 +47,7 @@ private:
 	std::array<float, 6> openDoorsRation_ = {};
 	float dirtyLevel_ = 0.f;
 	bool heavy_ = false;
+	int interiorId = 0;
 
 	CVehicle* spawnVehicle(bool recolor);
 
@@ -93,6 +94,7 @@ public:
 	std::array<float, 6>& getOpenDoorsRation();
 	float& getDirtyLevel();
 	bool& isHeavy();
+	int& getInteriorId();
 
 	void updateLocation() const;
 
@@ -166,6 +168,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j["openDoorsRation"] = a.getOpenDoorsRation();
 			j["dirtyLevel"] = a.getDirtyLevel();
 			j["heavy"] = a.isHeavy();
+			j["interiorId"] = a.getInteriorId();
 		}
 
 		static void from_json(const json &j, Vehicle &obj) {
@@ -225,6 +228,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			}
 			obj.getDirtyLevel() = j.contains("dirtyLevel") ? j.at("dirtyLevel").get<float>() : 0.f;
 			obj.isHeavy() = j.contains("heavy") ? j.at("heavy").get<bool>() : false;
+			obj.getInteriorId() = j.contains("interiorId") ? j.at("interiorId").get<int>() : 0;
 		}
 	};
 
