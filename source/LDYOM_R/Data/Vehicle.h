@@ -49,8 +49,6 @@ private:
 	bool heavy_ = false;
 	int interiorId = 0;
 
-	CVehicle* spawnVehicle(bool recolor);
-
 public:
 	Vehicle() = default;
 	Vehicle(const char *name, const CVector &pos, float headingAngle);
@@ -109,6 +107,7 @@ public:
 	void spawnEditorVehicle(bool recolor = false);
 	void deleteEditorVehicle();
 
+	CVehicle* spawnVehicle(bool recolor);
 	void spawnProjectEntity() override;
 	void deleteProjectEntity() override;
 
