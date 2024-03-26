@@ -1,4 +1,4 @@
-#include "Vehicle.h"
+﻿#include "Vehicle.h"
 
 #include <array>
 #include <CPools.h>
@@ -350,7 +350,7 @@ void Vehicle::spawnProjectEntity() {
 void Vehicle::deleteProjectEntity() {
 	if (this->projectVehicle_.has_value() && !restart) {
 		if (const auto vehicle = this->projectVehicle_.value(); CPools::ms_pVehiclePool->IsObjectValid(vehicle)) {
-			if (FindPlayerPed()->m_pVehicle == vehicle) {
+			if (Command<Commands::IS_CHAR_IN_ANY_CAR>(static_cast<CPed*>(FindPlayerPed()))) {
 				const auto destination = FindPlayerPed()->m_pVehicle->GetPosition() + CVector(0, 0, 1);
 				FindPlayerPed()->Teleport(destination, false);
 			}

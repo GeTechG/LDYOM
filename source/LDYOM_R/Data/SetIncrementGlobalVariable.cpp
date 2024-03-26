@@ -242,7 +242,9 @@ ktwait SetIncrementGlobalVariable::execute(Scene *scene, Result &result, ktcoro_
 				co_return;
 			}
 
-			if (FindPlayerPed()->m_pVehicle == vehicle->getProjectVehicle().value()) {
+
+			if (Command<Commands::IS_CHAR_IN_CAR>(static_cast<CPed*>(FindPlayerPed()),
+			                                      vehicle->getProjectVehicle().value())) {
 				activateCallback();
 			}
 
