@@ -1,4 +1,4 @@
-﻿#include "Vehicle.h"
+#include "Vehicle.h"
 
 #include <array>
 #include <CPools.h>
@@ -51,6 +51,8 @@ void Vehicle::recolorVehicle(const bool recolor, CVehicle *const newVehicle) {
 				};
 				colors_.emplace_back(type, color_rgba);
 			});
+		this->setEditorPrimaryColor();
+		this->setEditorSecondaryColor();
 	} else {
 		components::extractComObjMatVehicle(
 			newVehicle, [&](const int i, components::VehicleComponent comp, components::VehicleAtomic obj,
