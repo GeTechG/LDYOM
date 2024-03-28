@@ -75,6 +75,12 @@ Checkpoint Checkpoint::copy() const {
 	Checkpoint copy(*this);
 	copy.uuid = boost::uuids::random_generator()();
 	copy.name += " (copy)";
+	copy.editorBlip = std::nullopt;
+	copy.editorCheckpoint_ = std::nullopt;
+	copy.editorSphere = std::nullopt;
+	copy.projectBlip = std::nullopt;
+	copy.projectCheckpoint_ = std::nullopt;
+	copy.projectSphere = std::nullopt;
 
 	return copy;
 }

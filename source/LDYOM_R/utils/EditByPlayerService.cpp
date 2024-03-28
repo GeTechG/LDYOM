@@ -1,6 +1,7 @@
 ﻿// ReSharper disable CppMemberFunctionMayBeStatic
 #include "EditByPlayerService.h"
 
+#include <CGame.h>
 #include <CHud.h>
 #include <CRadar.h>
 #include <CSprite.h>
@@ -12,6 +13,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "CarrecPathsService.h"
 #include "CCamera.h"
 #include "HotKeyService.h"
 #include "KeyCodes.h"
@@ -809,4 +812,228 @@ ktwait editByPlayerTrainTask(Train &train) {
 
 void EditByPlayerService::editByPlayerTrain(Train &train) {
 	Tasker::getInstance().addTask("editByPlayerTrain", editByPlayerTrainTask, train);
+}
+
+ktwait editByPlayerCarrecPathTask(const int type, CarrecPath &playerPath,
+                                  std::vector<CarrecPath*> previewPaths, std::vector<bool> useAIRerecord,
+                                  CallbackCarrecPath callback) {
+	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
+
+	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
+
+	int state = 0;
+
+	switch (type) {
+		case 0:
+			state = 0;
+			break;
+		case 1:
+			state = 2;
+			break;
+		default:
+			break;
+	}
+
+	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
+		auto &local = Localization::getInstance();
+		constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+		ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+		if (ImGui::Begin("##playerEditOverlay", nullptr, windowFlags)) {
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
+			if (state >= 0 && state < 3) {
+				ImGui::Text(local.getArray("carrec_path.overlay_states")[state].c_str());
+			}
+			ImGui::PopTextWrapPos();
+		}
+		ImGui::End();
+	});
+
+	TheCamera.Restore();
+
+	const auto vehicle = playerPath.getVehicle().spawnVehicle(false);
+	Command<Commands::SET_VEHICLE_AREA_VISIBLE>(vehicle, CGame::currArea);
+	Command<Commands::TASK_WARP_CHAR_INTO_CAR_AS_DRIVER>(static_cast<CPed*>(FindPlayerPed()), vehicle);
+
+	std::vector<CVehicle*> previewVehicles;
+	for (const auto &previewPath : previewPaths) {
+		const auto previewVehicle = previewPath->getVehicle().spawnVehicle(false);
+		auto &firstPoint = previewPath->getPath().at(0);
+		previewVehicle->SetPosn(firstPoint.m_vecPosn);
+		previewVehicle->GetMatrix()->right = firstPoint.m_bRight;
+		previewVehicle->GetMatrix()->up = firstPoint.m_bTop;
+		CVector at;
+		at.Cross(firstPoint.m_bRight, firstPoint.m_bTop);
+		previewVehicle->GetMatrix()->at = at;
+		previewVehicle->UpdateRwMatrix();
+		previewVehicle->m_bUsesCollision = 0;
+		Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(previewVehicle, 1);
+		int handle;
+		Command<Commands::CREATE_RANDOM_CHAR_AS_DRIVER>(previewVehicle, &handle);
+		Command<Commands::SET_VEHICLE_AREA_VISIBLE>(previewVehicle, CGame::currArea);
+		previewVehicles.push_back(previewVehicle);
+	}
+
+	co_await 100;
+
+	while (state == 0) {
+		KeyCheck::Update();
+
+		if (KeyCheck::CheckJustUp('I')) {
+			state = 1;
+		}
+
+		if (!Command<Commands::IS_CHAR_IN_CAR>(static_cast<CPed*>(FindPlayerPed()), vehicle)) {
+			state = -1;
+		}
+
+		co_await 1;
+	}
+
+	std::vector<CVehicleStateEachFrame> carrecPath;
+	std::map<int, std::vector<CVehicleStateEachFrame>> previewCarrecPath;
+	if (type == 1) {
+		carrecPath = playerPath.getPath();
+	} else if (type == 0) {
+		for (int i = 0; i < previewPaths.size(); ++i) {
+			if (useAIRerecord.at(i)) {
+				previewCarrecPath[i] = {};
+			}
+		}
+	}
+
+	if (state == 1) {
+		unsigned totalTime = 0;
+		auto lastTime = CTimer::m_snTimeInMilliseconds;
+
+		for (int i = 0; i < previewVehicles.size(); ++i) {
+			previewVehicles.at(i)->m_bUsesCollision = 1;
+			Command<Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(previewVehicles.at(i), 0);
+			CarrecPathsService::startPlaybackRecordedCar(previewVehicles.at(i), previewPaths[i]->getPath(),
+			                                             useAIRerecord[i], false);
+		}
+
+		while (state == 1) {
+			KeyCheck::Update();
+
+			if (KeyCheck::CheckJustUp('O')) {
+				state = 2;
+			}
+
+			if (!Command<Commands::IS_CHAR_IN_CAR>(static_cast<CPed*>(FindPlayerPed()), vehicle)) {
+				state = -1;
+			}
+
+			if (CTimer::m_snTimeInMilliseconds - lastTime >= 100) {
+				carrecPath.emplace_back(totalTime,
+				                        vehicle->m_vecMoveSpeed, vehicle->GetRight(),
+				                        vehicle->GetForward(),
+				                        vehicle->m_fSteerAngle,
+				                        vehicle->m_fGasPedal,
+				                        vehicle->m_fBreakPedal,
+				                        static_cast<bool>(vehicle->m_nVehicleFlags.bIsHandbrakeOn),
+				                        vehicle->GetPosition());
+
+				for (int i = 0; i < previewVehicles.size(); ++i) {
+					if (useAIRerecord.at(i)) {
+						CVehicle *previewVehicle = previewVehicles.at(i);
+						previewCarrecPath[i].emplace_back(totalTime,
+						                                  previewVehicle->m_vecMoveSpeed,
+						                                  previewVehicle->GetRight(),
+						                                  previewVehicle->GetForward(),
+						                                  previewVehicle->m_fSteerAngle,
+						                                  previewVehicle->m_fGasPedal,
+						                                  previewVehicle->m_fBreakPedal,
+						                                  static_cast<bool>(previewVehicle->m_nVehicleFlags.
+							                                  bIsHandbrakeOn),
+						                                  previewVehicle->GetPosition());
+					}
+				}
+
+				totalTime += CTimer::m_snTimeInMilliseconds - lastTime;
+				lastTime = CTimer::m_snTimeInMilliseconds;
+			}
+
+
+			co_await 1;
+		}
+	}
+
+	if (state == 2 && !carrecPath.empty()) {
+		CarrecPathsService::startPlaybackRecordedCar(vehicle, carrecPath, false, false);
+		for (int i = 0; i < previewVehicles.size(); ++i) {
+			if (useAIRerecord.at(i)) {
+				CarrecPathsService::stopPlaybackRecordedCar(previewVehicles.at(i));
+				CarrecPathsService::startPlaybackRecordedCar(previewVehicles.at(i), previewCarrecPath[i], false, false);
+			} else {
+				CarrecPathsService::startPlaybackRecordedCar(previewVehicles.at(i), previewPaths[i]->getPath(), false,
+				                                             false);
+			}
+		}
+
+		while (state == 2) {
+			KeyCheck::Update();
+
+			if (KeyCheck::CheckJustUp('P')) {
+				state = 3;
+			}
+
+			if (KeyCheck::CheckJustUp('O')) {
+				CarrecPathsService::stopPlaybackRecordedCar(vehicle);
+				for (const auto &previewVehicle : previewVehicles) {
+					CarrecPathsService::stopPlaybackRecordedCar(previewVehicle);
+				}
+
+				CarrecPathsService::startPlaybackRecordedCar(vehicle, carrecPath, false, false);
+				for (int i = 0; i < previewVehicles.size(); ++i) {
+					if (useAIRerecord.at(i)) {
+						CarrecPathsService::stopPlaybackRecordedCar(previewVehicles.at(i));
+						CarrecPathsService::startPlaybackRecordedCar(previewVehicles.at(i), previewCarrecPath[i], false,
+						                                             false);
+					} else {
+						CarrecPathsService::startPlaybackRecordedCar(previewVehicles.at(i), previewPaths[i]->getPath(),
+						                                             false,
+						                                             false);
+					}
+				}
+			}
+
+			if (!Command<Commands::IS_CHAR_IN_CAR>(static_cast<CPed*>(FindPlayerPed()), vehicle)) {
+				state = -1;
+			}
+
+			co_await 1;
+		}
+		CarrecPathsService::stopPlaybackRecordedCar(vehicle);
+		for (const auto &previewVehicle : previewVehicles) {
+			CarrecPathsService::stopPlaybackRecordedCar(previewVehicle);
+		}
+	}
+
+
+	if (Command<Commands::IS_CHAR_IN_CAR>(static_cast<CPed*>(FindPlayerPed()), vehicle)) {
+		Command<Commands::TASK_LEAVE_CAR>(static_cast<CPed*>(FindPlayerPed()), vehicle);
+	}
+	while (Command<Commands::IS_CHAR_IN_CAR>(static_cast<CPed*>(FindPlayerPed()), vehicle)) {
+		co_await 1;
+	}
+
+	Command<Commands::DELETE_CAR>(vehicle);
+	for (const auto &previewVehicle : previewVehicles) {
+		Command<Commands::DELETE_CAR>(previewVehicle);
+	}
+
+	callback(state != -1, carrecPath, previewCarrecPath);
+
+	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
+	Windows::WindowsRenderService::getInstance().removeRender("editByPlayerOverlay");
+	Tasker::getInstance().removeTask("editByPlayerCarrecPathTask");
+}
+
+void EditByPlayerService::editByPlayerCarrecPath(int type, CarrecPath &playerPath,
+                                                 const std::vector<CarrecPath*> &previewPaths,
+                                                 const std::vector<bool> &useAIRerecord,
+                                                 CallbackCarrecPath callback) {
+	Tasker::getInstance().addTask("editByPlayerCarrecPathTask", editByPlayerCarrecPathTask, type, playerPath,
+	                              previewPaths, useAIRerecord, callback);
 }

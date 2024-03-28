@@ -224,3 +224,10 @@ point_to_y = "Camera Point Y"
 point_to_z = "Camera Point Z"
 on_complete = "On Complete"
 entities_types = ["None", "Actor", "Vehicle", "Player"]
+
+[nodes.core.follow_carrec_path_vehicle]
+title = "Start Carrec Path for Vehicle"
+on_complete = "On Completion"
+
+[nodes.core.stop_carrec_path_vehicle]
+title = "Stop Carrec Path for Vehicle"

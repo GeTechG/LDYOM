@@ -129,6 +129,7 @@ save = "Сохранить"
 nothing_params = "У этой цели нет параметров"
 set_increment_global_variable = "Установить/увеличить гл. переменную"
 set_characteristics_vehicle = "Установить характеристики ТС"
+follow_carrec_path_vehicle = "Следование по Carrec пути"
 
 [objective_categories]
 world = "Мир"
@@ -176,6 +177,10 @@ execute_time = "Время выполнения"
 [follow_path_vehicle_objective]
 drive_type = "Тип езды"
 drive_types = [ "Любой", "Точный", "Гонки",]
+
+[follow_carrec_path_vehicle_objective]
+use_ai = "Использовать ИИ"
+
 
 [save_objective]
 show_confirm = "Показать попап подтверждения"
@@ -510,6 +515,22 @@ bool_values = ["Ложь", "Истина"]
 
 [jump_to_objective]
 else_objective = "Иначе цель"
+
+[carrec_path]
+title = "Carrec пути"
+path = "Путь"
+name = "Название"
+preview = "Предпросмотр"
+ai_rerecord = "ИИ перезапись"
+rec = "Запись"
+play = "Воспроизведение"
+rerec = "Перезапись"
+create_copy_vehicle = "Создать копию ТС"
+overlay_states = [
+  "Когда будете готовы к записи, нажмите I",
+  "Запись началась, нажмите O, чтобы остановить",
+  "Повторно нажмите O для повтора воспроизведения, нажмите P для сохранения",
+]
 
 [scripts]
 title = "Скрипты"

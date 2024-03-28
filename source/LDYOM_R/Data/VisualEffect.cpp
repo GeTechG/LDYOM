@@ -46,6 +46,8 @@ VisualEffect VisualEffect::copy() const {
 	VisualEffect copy(*this);
 	copy.uuid_ = boost::uuids::random_generator()();
 	copy.name_ += " (copy)";
+	copy.editorVisualEffect_ = std::nullopt;
+	copy.projectVisualEffect_ = std::nullopt;
 
 	return copy;
 }

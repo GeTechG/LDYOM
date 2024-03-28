@@ -129,6 +129,7 @@ save = "Save"
 nothing_params = "This objective has no parameters"
 set_increment_global_variable = "Set/Increment Global Variable"
 set_characteristics_vehicle = "Set vehicle characteristics"
+follow_carrec_path_vehicle = "Following Carrec Path with Vehicle"
 
 [objective_categories]
 world = "World"
@@ -991,3 +992,18 @@ kill = "Terminate"
 [scripts]
 title = "Scripts"
 save_info = "To apply the changes, restart the game"
+
+[follow_carrec_path_vehicle_objective]
+use_ai = "Use AI"
+
+[carrec_path]
+title = "Carrec Path"
+path = "Path"
+name = "Name"
+preview = "Preview"
+ai_rerecord = "AI Rerecord"
+rec = "Record"
+play = "Play"
+rerec = "Rerecord"
+create_copy_vehicle = "Create Vehicle Copy"
+overlay_states = ["When ready to record, press I", "Recording started, press O to stop", "Press O again to replay, press P to save"]

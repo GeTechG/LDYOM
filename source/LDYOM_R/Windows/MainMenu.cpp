@@ -9,6 +9,7 @@
 
 #include "MainMenu.h"
 
+#include "CarrecPathsWindow.h"
 #include "ConsoleWindow.h"
 #include "EntitiesWindow.h"
 #include "FAQWindow.h"
@@ -86,6 +87,11 @@ namespace Windows {
 			if (ImGui::Button(fmt::format("{} {}", ICON_FA_BOX, local.get("global_variables.title")).c_str(),
 			                  ImVec2(scaleFont * 200.0f, .0f))) {
 				WindowsRenderService::getInstance().replaceWindow<MainMenu, GlobalVariablesWindow>();
+			}
+
+			if (ImGui::Button(fmt::format("{} {}", ICON_FA_TRAFFIC_CONE, local.get("carrec_path.title")).c_str(),
+			                  ImVec2(scaleFont * 200.0f, .0f))) {
+				WindowsRenderService::getInstance().replaceWindow<MainMenu, CarrecPathsWindow>();
 			}
 
 			for (const auto &funcRender : LuaWrapperWindow::mainMenuRender | std::views::values) {

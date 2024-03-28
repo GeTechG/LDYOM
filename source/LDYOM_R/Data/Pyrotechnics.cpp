@@ -39,6 +39,9 @@ Pyrotechnics Pyrotechnics::copy() const {
 	Pyrotechnics copy(*this);
 	copy.uuid_ = boost::uuids::random_generator()();
 	copy.name_ += " (copy)";
+	copy.editorFire_ = std::nullopt;
+	copy.projectFire_ = std::nullopt;
+	copy.editorExplosionObject_ = std::nullopt;
 
 	return copy;
 }

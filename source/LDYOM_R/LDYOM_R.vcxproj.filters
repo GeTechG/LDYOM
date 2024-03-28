@@ -440,6 +440,24 @@
     <Filter Include="Data\Objectives\Vehicle\SetCharacteristics">
       <UniqueIdentifier>{8bf10554-6c48-45f9-94ca-0ca34e8fe897}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\CVehicleRecording">
+      <UniqueIdentifier>{40c0143d-68ef-4951-beeb-45f20c34e386}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\FixedFloat">
+      <UniqueIdentifier>{9c7dec11-7900-44ce-849e-e318275cd6eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\FixedVector">
+      <UniqueIdentifier>{47bf12ce-1ad0-48ea-994b-02985574218c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\CarrecPathsService">
+      <UniqueIdentifier>{ddcdf25b-29af-4c78-917c-5bffd44c2da8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\CarrecPathsWindow">
+      <UniqueIdentifier>{c4c7f0cc-3d01-487f-aad1-ae12674613e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\Vehicle\FollowCarrecPath">
+      <UniqueIdentifier>{9cd7b96b-2e65-400d-97fa-a19a29d23cab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1124,6 +1142,21 @@
     </ClCompile>
     <ClCompile Include="Data\SetCharacteristicsVehicleObjective.cpp">
       <Filter>Data\Objectives\Vehicle\SetCharacteristics</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\CVehicleRecording.cpp">
+      <Filter>Data\CVehicleRecording</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\CarrecPathsService.cpp">
+      <Filter>Utils\CarrecPathsService</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\CarrecPathsWindow.cpp">
+      <Filter>Windows\CarrecPathsWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\FollowCarrecPathVehicleObjective.cpp">
+      <Filter>Data\Objectives\Vehicle\FollowCarrecPath</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\CarrecPathServiceWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2636,6 +2669,27 @@
     </ClInclude>
     <ClInclude Include="Data\SetCharacteristicsVehicleObjective.h">
       <Filter>Data\Objectives\Vehicle\SetCharacteristics</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CVehicleRecording.h">
+      <Filter>Data\CVehicleRecording</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\FixedFloat.h">
+      <Filter>Data\FixedFloat</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\FixedVector .h">
+      <Filter>Data\FixedVector</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\CarrecPathsService.h">
+      <Filter>Utils\CarrecPathsService</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CVectorSerialization.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\CarrecPathsWindow.h">
+      <Filter>Windows\CarrecPathsWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\FollowCarrecPathVehicleObjective.h">
+      <Filter>Data\Objectives\Vehicle\FollowCarrecPath</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

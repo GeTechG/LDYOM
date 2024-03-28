@@ -237,3 +237,10 @@ point_to_y = "Точка камеры Y"
 point_to_z = "Точка камеры Z"
 on_complete = "При завершении"
 entities_types = ["Отсутствует", "Актер", "Транспорт", "Игрок"]
+
+[nodes.core.follow_carrec_path_vehicle]
+title = "Запуск Carrec пути для ТС"
+on_complete = "При завершении"
+
+[nodes.core.stop_carrec_path_vehicle]
+title = "Остановить Carrec пути для ТС"

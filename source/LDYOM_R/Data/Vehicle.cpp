@@ -156,6 +156,8 @@ Vehicle Vehicle::copy() const {
 	Vehicle vehicle(*this);
 	vehicle.uuid_ = boost::uuids::random_generator()();
 	vehicle.name += " (copy)";
+	vehicle.editorVehicle_ = std::nullopt;
+	vehicle.projectVehicle_ = std::nullopt;
 	Command<Commands::GET_AREA_VISIBLE>(&vehicle.interiorId);
 
 	return vehicle;

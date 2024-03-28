@@ -73,6 +73,8 @@ Pickup Pickup::copy() const {
 	Pickup pickup(*this);
 	pickup.uuid_ = boost::uuids::random_generator()();
 	pickup.name_ = this->name_;
+	pickup.editorPickup_ = std::nullopt;
+	pickup.projectPickup_ = std::nullopt;
 
 	return pickup;
 }

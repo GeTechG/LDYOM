@@ -77,6 +77,8 @@ Train Train::copy() const {
 	Train train(*this);
 	train.uuid_ = boost::uuids::random_generator()();
 	train.name_ += " (copy)";
+	train.editorTrain_ = std::nullopt;
+	train.projectTrain_ = std::nullopt;
 
 	return train;
 }

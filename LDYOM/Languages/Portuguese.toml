@@ -130,6 +130,7 @@ save = "Salvar"
 nothing_params = "Sem parâmetros"
 set_increment_global_variable = "Definir/aumentar variável global"
 set_characteristics_vehicle = "Definir características do veículo"
+follow_carrec_path_vehicle = "Seguir caminho Carrec do veículo"
 
 [objective_categories]
 world = "Mundo"
@@ -992,3 +993,18 @@ kill = "Eliminar"
 [scripts]
 title = "Scripts"
 save_info = "Para aplicar as alterações, reinicie o jogo"
+
+[follow_carrec_path_vehicle_objective]
+use_ai = "Usar IA"
+
+[carrec_path]
+title = "Cam. de Carregamento"
+path = "Caminho"
+name = "Nome"
+preview = "Visualizar"
+ai_rerecord = "IA Refazer"
+rec = "Gravar"
+play = "Reproduzir"
+rerec = "Refazer"
+create_copy_vehicle = "Criar cópia do veículo"
+overlay_states = ["Quando estiver pronto para gravar, pressione I", "Gravação iniciada, pressione O para parar", "Pressione O novamente para regravar, pressione P para salvar"]

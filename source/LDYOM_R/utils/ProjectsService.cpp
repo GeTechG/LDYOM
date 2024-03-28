@@ -3,6 +3,7 @@
 #include <fast_dynamic_cast.h>
 #include <filesystem>
 
+#include "CarrecPathsService.h"
 #include "DiscordService.h"
 #include "Logger.h"
 
@@ -54,6 +55,7 @@
 #include "fmt/core.h"
 
 #include "zip.h"
+#include "../Data/FollowCarrecPathVehicleObjective.h"
 #include "boost/archive/xml_oarchive.hpp"
 #include "boost/serialization/utility.hpp"
 #include "easylogging/easylogging++.h"
@@ -61,8 +63,6 @@
 
 const std::filesystem::path PROJECTS_PATH = L"LDYOM\\Projects\\";
 const std::filesystem::path BACKUPS_PATH = L"LDYOM\\Backups\\";
-
-constexpr int FLAGS = boost::archive::archive_flags::no_header + boost::archive::archive_flags::no_tracking;
 
 NLOHMANN_JSON_NAMESPACE_BEGIN
 	template <>
@@ -165,6 +165,10 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 							case 3:
 								jsonObjectives.push_back(
 									fast_dynamic_cast<SetCharacteristicsVehicleObjective&>(*objective));
+								break;
+							case 4:
+								jsonObjectives.push_back(
+									fast_dynamic_cast<FollowCarrecPathVehicleObjective&>(*objective));
 								break;
 							default:
 								break;
@@ -381,6 +385,11 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 								objectives.emplace_back(
 									std::make_unique<SetCharacteristicsVehicleObjective>(
 										jsonObjective.get<SetCharacteristicsVehicleObjective>()));
+								break;
+							case 4:
+								objectives.emplace_back(
+									std::make_unique<FollowCarrecPathVehicleObjective>(
+										jsonObjective.get<FollowCarrecPathVehicleObjective>()));
 								break;
 							default:
 								break;
@@ -617,6 +626,7 @@ void ProjectsService::createNewProject() {
 	this->currentDirectory_ = std::nullopt;
 
 	GlobalVariablesService::getInstance().fromJson("[]");
+	CarrecPathsService::getInstance().getPaths().clear();
 
 	auto onCreateNewProjectEventsTable = LuaEngine::getInstance()
 		.getLuaState()["ld"]["events"]["onCreateNewProject"].get<sol::as_table_t<std::vector<sol::function>>>();
@@ -717,7 +727,7 @@ void ProjectsService::saveCurrentProject() {
 
 		std::ofstream file(projectDirectory / "index.json");
 		nlohmann::json j = projectInfo;
-		file << j.dump(4, ' ', false, json::error_handler_t::ignore);
+		file << j.dump(-1, ' ', false, json::error_handler_t::ignore);
 		file.close();
 	}
 
@@ -733,10 +743,13 @@ void ProjectsService::saveCurrentProject() {
 		std::ofstream file(scenesDirectory / fmt::format("{}.json", pair.first));
 		{
 			json j = *pair.second;
-			file << j.dump(4, ' ', false, json::error_handler_t::ignore);
+			file << j.dump(-1, ' ', false, json::error_handler_t::ignore);
 		}
 		file.close();
 	}
+
+	//save carrec paths
+	CarrecPathsService::getInstance().savePaths(projectDirectory);
 
 	auto onSaveProjectEventsTable = LuaEngine::getInstance()
 		.getLuaState()["ld"]["events"]["onSaveProject"].get<sol::as_table_t<std::vector<sol::function>>>();
@@ -830,6 +843,7 @@ void ProjectsService::loadProject(int projectIdx) {
 	this->getCurrentProject().getCurrentSceneIndex() = projectsInfos_.at(projectIdx)->startScene;
 
 	Audio::loadAudioFilesList();
+	CarrecPathsService::getInstance().loadPaths(projectDirectory);
 
 	this->getCurrentProject().getCurrentScene()->loadEditorScene();
 

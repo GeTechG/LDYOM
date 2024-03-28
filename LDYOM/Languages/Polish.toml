@@ -130,6 +130,7 @@ save = "Zapisz"
 nothing_params = "Ten cel nie ma parametrów"
 set_increment_global_variable = "Ustaw/zwiększ zmienną globalną"
 set_characteristics_vehicle = "Ustawienia cech pojazdu"
+follow_carrec_path_vehicle = "Podążanie ścieżką Carrec dla pojazdu"
 
 [objective_categories]
 world = "Świat"
@@ -992,3 +993,18 @@ kill = "Zabić"
 [scripts]
 title = "Skrypty"
 save_info = "Aby wprowadzić zmiany, zrestartuj grę"
+
+[follow_carrec_path_vehicle_objective]
+use_ai = "Użyj sztucznej inteligencji"
+
+[carrec_path]
+title = "Carrec ścieżki"
+path = "Ścieżka"
+name = "Nazwa"
+preview = "Podgląd"
+ai_rerecord = "Nagrywanie AI"
+rec = "Nagranie"
+play = "Odtwórz"
+rerec = "Nagranie ponowne"
+create_copy_vehicle = "Utwórz kopię pojazdu"
+overlay_states = ["Gdy będziesz gotowy do nagrywania, naciśnij I", "Nagrywanie rozpoczęte, naciśnij O, aby zatrzymać", "Naciśnij ponownie O, aby ponownie odtworzyć, naciśnij P, aby zapisać"]

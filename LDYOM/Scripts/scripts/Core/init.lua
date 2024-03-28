@@ -55,6 +55,9 @@ function init(scriptData)
         for _, var in pairs(editor.variables) do
             var.value = var.defaultValue
         end
+        for _, context in pairs(editor.contexts) do
+            context.__pinsValues = {}
+        end
     end
 
     ld.events.onStartProject[#ld.events.onStartProject+1] = function()

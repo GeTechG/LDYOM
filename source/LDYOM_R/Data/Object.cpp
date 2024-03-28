@@ -49,6 +49,8 @@ Object Object::copy() const {
 	Object copy(*this);
 	copy.name += " (copy)";
 	copy.uuid = boost::uuids::random_generator()();
+	copy.editorObject_ = std::nullopt;
+	copy.projectObject_ = std::nullopt;
 	Command<Commands::GET_AREA_VISIBLE>(&copy.getInteriorId());
 
 	return copy;

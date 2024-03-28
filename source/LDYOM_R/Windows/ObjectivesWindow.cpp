@@ -23,6 +23,7 @@
 #include "../Data/DestroyVehicleObjective.h"
 #include "../Data/EndMissionObjective.h"
 #include "../Data/EnterVehicleActorObjective.h"
+#include "../Data/FollowCarrecPathVehicleObjective.h"
 #include "../Data/FollowPathActorObjective.h"
 #include "../Data/FollowPathVehicleObjective.h"
 #include "../Data/GetInVehicleObjective.h"
@@ -165,6 +166,10 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 				case 3:
 					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
 						fast_dynamic_cast<SetCharacteristicsVehicleObjective&>(*objective));
+					break;
+				case 4:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<FollowCarrecPathVehicleObjective&>(*objective));
 					break;
 				default:
 					break;
@@ -440,6 +445,12 @@ void Windows::ObjectivesWindow::drawListWindow() {
 			if (ImGui::MenuItem(Localization::getInstance().get("objective.set_characteristics_vehicle").c_str())) {
 				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
 					SetCharacteristicsVehicleObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.follow_carrec_path_vehicle").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
+					FollowCarrecPathVehicleObjective>(nullptr);
 				this->selectElement(this->getListSize() - 1);
 			}
 

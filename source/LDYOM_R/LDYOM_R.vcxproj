@@ -180,11 +180,13 @@
     <ClCompile Include="Data\CountdownObjective.cpp" />
     <ClCompile Include="Data\CutsceneMutex.cpp" />
     <ClCompile Include="Data\CutsceneObjective.cpp" />
+    <ClCompile Include="Data\CVehicleRecording.cpp" />
     <ClCompile Include="Data\DamageActorObjective.cpp" />
     <ClCompile Include="Data\DamageObjectObjective.cpp" />
     <ClCompile Include="Data\DestroyVehicleObjective.cpp" />
     <ClCompile Include="Data\EndMissionObjective.cpp" />
     <ClCompile Include="Data\EnterVehicleActorObjective.cpp" />
+    <ClCompile Include="Data\FollowCarrecPathVehicleObjective.cpp" />
     <ClCompile Include="Data\FollowPathActorObjective.cpp" />
     <ClCompile Include="Data\FollowPathVehicleObjective.cpp" />
     <ClCompile Include="Data\GetInVehicleObjective.cpp" />
@@ -285,6 +287,8 @@
     <ClCompile Include="utils\AudioWrapper.cpp" />
     <ClCompile Include="utils\BlueprintNodeBuilder.cpp" />
     <ClCompile Include="utils\boostWrapper.cpp" />
+    <ClCompile Include="utils\CarrecPathServiceWrapper.cpp" />
+    <ClCompile Include="utils\CarrecPathsService.cpp" />
     <ClCompile Include="utils\CheckpointWrapper.cpp" />
     <ClCompile Include="utils\ConvertWrapper.cpp" />
     <ClCompile Include="utils\CounterService.cpp" />
@@ -355,6 +359,7 @@
     <ClCompile Include="utils\WeaponWrapper.cpp" />
     <ClCompile Include="Windows\ActorsWindow.cpp" />
     <ClCompile Include="Windows\AudioWindow.cpp" />
+    <ClCompile Include="Windows\CarrecPathsWindow.cpp" />
     <ClCompile Include="Windows\CheckpointsWindow.cpp" />
     <ClCompile Include="Windows\ConsoleWindow.cpp" />
     <ClCompile Include="Windows\DeveloperWindow.cpp" />
@@ -412,11 +417,16 @@
     <ClInclude Include="Data\CSoundSystem.h" />
     <ClInclude Include="Data\CutsceneMutex.h" />
     <ClInclude Include="Data\CutsceneObjective.h" />
+    <ClInclude Include="Data\CVectorSerialization.h" />
+    <ClInclude Include="Data\CVehicleRecording.h" />
     <ClInclude Include="Data\DamageActorObjective.h" />
     <ClInclude Include="Data\DamageObjectObjective.h" />
     <ClInclude Include="Data\DestroyVehicleObjective.h" />
     <ClInclude Include="Data\EndMissionObjective.h" />
     <ClInclude Include="Data\EnterVehicleActorObjective.h" />
+    <ClInclude Include="Data\FixedFloat.h" />
+    <ClInclude Include="Data\FixedVector .h" />
+    <ClInclude Include="Data\FollowCarrecPathVehicleObjective.h" />
     <ClInclude Include="Data\FollowPathActorObjective.h" />
     <ClInclude Include="Data\FollowPathVehicleObjective.h" />
     <ClInclude Include="Data\GetInVehicleObjective.h" />
@@ -818,6 +828,7 @@
     <ClInclude Include="thirdparty\kiero\minhook\src\buffer.h" />
     <ClInclude Include="thirdparty\kiero\minhook\src\trampoline.h" />
     <ClInclude Include="utils\additional_events.h" />
+    <ClInclude Include="utils\CarrecPathsService.h" />
     <ClInclude Include="utils\components.h" />
     <ClInclude Include="utils\CounterService.h" />
     <ClInclude Include="utils\EditByPlayerService.h" />
@@ -859,6 +870,7 @@
     <ClInclude Include="utils\VirtualScene.h" />
     <ClInclude Include="Windows\ActorsWindow.h" />
     <ClInclude Include="Windows\AudioWindow.h" />
+    <ClInclude Include="Windows\CarrecPathsWindow.h" />
     <ClInclude Include="Windows\CheckpointsWindow.h" />
     <ClInclude Include="Windows\ConsoleWindow.h" />
     <ClInclude Include="Windows\DeveloperWindow.h" />

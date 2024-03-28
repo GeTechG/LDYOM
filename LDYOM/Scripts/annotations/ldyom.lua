@@ -347,6 +347,23 @@ ld.models = {
     getTextStyles = function() end,
 }
 
+---@alias CVehicleStateEachFrame userdata
+
+---@class CarrecPath
+---@field getPath fun(self): CVehicleStateEachFrame[]
+---@field getVehicle fun(self): CVehicle
+---@field getName fun(self): string
+---@field getUuid fun(self): uuid
+
+---@class CarrecPathsService
+---@field createNewPath fun(self): CarrecPath
+---@field getPaths fun(self): CarrecPath[]
+---@field startPlaybackRecordedCar fun(vehicle: CVehicle, frames: CVehicleStateEachFrame[], useCarAI: boolean, looped: boolean)
+---@field stopPlaybackRecordedCar fun(vehicle: CVehicle)
+
+
+---@type CarrecPathsService
+ld.carrecPathService = nil
 
 
 

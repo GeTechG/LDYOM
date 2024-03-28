@@ -227,3 +227,10 @@ point_to_y = "Punkt kamery Y"
 point_to_z = "Punkt kamery Z"
 on_complete = "Po zakończeniu"
 entities_types = ["Brak", "Aktor", "Pojazd", "Gracz"]
+
+[nodes.core.follow_carrec_path_vehicle]
+title = "Uruchom ścieżkę Carrec dla pojazdu"
+on_complete = "Po zakończeniu"
+
+[nodes.core.stop_carrec_path_vehicle]
+title = "Zatrzymaj ścieżkę Carrec dla pojazdu"

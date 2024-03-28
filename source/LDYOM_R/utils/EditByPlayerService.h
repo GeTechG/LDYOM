@@ -2,11 +2,16 @@
 #include <CObject.h>
 #include <sol.hpp>
 
+#include "CarrecPathsService.h"
+
 
 class Train;
 class CutsceneObjective;
 class Vehicle;
 class Actor;
+
+using CallbackCarrecPath = std::function<void(bool, std::vector<CVehicleStateEachFrame>,
+                                              const std::map<int, std::vector<CVehicleStateEachFrame>> &)>;
 
 class EditByPlayerService {
 private:
@@ -28,4 +33,8 @@ public:
 	void editByPlayerActorPath(std::vector<std::array<float, 3>> &path);
 	void editByPlayerVehiclePath(std::vector<std::array<float, 3>> &path, int model);
 	void editByPlayerTrain(Train &train);
+	void editByPlayerCarrecPath(
+		int type, CarrecPath &playerPath,
+		const std::vector<CarrecPath*> &previewPaths, const std::vector<bool> &useAIRerecord,
+		CallbackCarrecPath callback);
 };

@@ -39,6 +39,8 @@ Particle Particle::copy() const {
 	Particle particle(*this);
 	particle.uuid_ = boost::uuids::random_generator()();
 	particle.name_ += " (copy)";
+	particle.editorParticle_ = std::nullopt;
+	particle.projectParticle_ = std::nullopt;
 
 	return particle;
 }

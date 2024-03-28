@@ -23,6 +23,7 @@ extern void settingsWrapper(sol::state &state);
 extern void taskerWrapper(sol::state &state);
 extern void hotKeyServiceWrapper(sol::state &state);
 extern void modelsServiceWrapper(sol::state &state);
+extern void carrecPathServiceWrapper(sol::state &state);
 
 void ldyomWrapper(sol::state &state) {
 	projectsServiceWrapper(state);
@@ -47,4 +48,5 @@ void ldyomWrapper(sol::state &state) {
 	taskerWrapper(state);
 	hotKeyServiceWrapper(state);
 	modelsServiceWrapper(state);
+	carrecPathServiceWrapper(state);
 }
