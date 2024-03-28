@@ -10,6 +10,7 @@ clock = "Clock"
 pad = "Pad"
 object = "Object"
 hud = "Hud"
+blip = "Blip"
 fx = "Fx"
 weather = "Weather"
 world = "World"
@@ -3133,6 +3134,93 @@ short_desc = "Sets whether the area text for the current area should show"
 [nodes.core.hud_force_big_message_and_counter]
 title = "ForceBigMessageAndCounter"
 short_desc = "Prevents timers and big texts from being hidden if there is another conflicting type of text on screen"
+
+[nodes.core.blip_add_for_car_old]
+title = "AddForCarOld"
+short_desc = "Adds a blip with properties to the vehicle"
+
+[nodes.core.blip_remove]
+title = "Remove"
+short_desc = "Removes the blip"
+
+[nodes.core.blip_change_color]
+title = "ChangeColor"
+short_desc = "Sets the blip's color"
+
+[nodes.core.blip_add_for_coord_old]
+title = "AddForCoordOld"
+short_desc = "Adds a blip with properties at the location"
+
+[nodes.core.blip_change_scale]
+title = "ChangeScale"
+short_desc = "Sets the blip's size"
+
+[nodes.core.blip_add_for_car]
+title = "AddForCar"
+short_desc = "Adds a blip and a marker to the vehicle"
+
+[nodes.core.blip_add_for_char]
+title = "AddForChar"
+short_desc = "Adds a blip and a marker to the character"
+
+[nodes.core.blip_add_for_object]
+title = "AddForObject"
+short_desc = "Adds a blip and a marker to the object"
+
+[nodes.core.blip_add_for_coord]
+title = "AddForCoord"
+short_desc = "Adds a blip to the location"
+
+[nodes.core.blip_change_display]
+title = "ChangeDisplay"
+short_desc = "Changes the display of the specified blip"
+
+[nodes.core.blip_add_sprite_for_contact_point]
+title = "AddSpriteForContactPoint"
+short_desc = "Adds a sprite blip to the contact point"
+
+[nodes.core.blip_add_sprite_for_coord]
+title = "AddSpriteForCoord"
+short_desc = "Adds a sprite blip to the location"
+
+[nodes.core.blip_add_for_pickup]
+title = "AddForPickup"
+short_desc = "Adds a blip and a marker to the pickup"
+
+[nodes.core.blip_add_short_range_sprite_for_coord]
+title = "AddShortRangeSpriteForCoord"
+short_desc = "Adds a sprite blip for the specified coordinates"
+
+[nodes.core.blip_add_short_range_sprite_for_contact_point]
+title = "AddShortRangeSpriteForContactPoint"
+short_desc = "Adds a contact sprite blip for the specified coordinates"
+
+[nodes.core.blip_add_for_searchlight]
+title = "AddForSearchlight"
+short_desc = "Creates a blip indicating the searchlights position on the radar"
+
+[nodes.core.blip_does_exist]
+title = "DoesExist"
+short_desc = "Returns true if the handle is a valid blip handle"
+
+[nodes.core.blip_set_always_display_on_zoomed_radar]
+title = "SetAlwaysDisplayOnZoomedRadar"
+short_desc = "Sets whether the tracking blip will remain regardless of the entities existance"
+
+[nodes.core.blip_set_as_friendly]
+title = "SetAsFriendly"
+
+[nodes.core.blip_add_for_dead_char]
+title = "AddForDeadChar"
+short_desc = "Adds a blip and a marker to the character (identical to 0187)"
+
+[nodes.core.blip_set_entry_exit]
+title = "SetEntryExit"
+short_desc = "Assigns the blip to the specified entrance/exit marker"
+
+[nodes.core.blip_set_coord_appearance]
+title = "SetCoordAppearance"
+short_desc = "Works similar to 0165, except this command does not work on tracking blips, has different colors and does not support direct RGBA setting"
 
 [nodes.core.fx_draw_shadow]
 title = "DrawShadow"
