@@ -80,6 +80,8 @@ public:
 	static unsigned int getCarColorRgba(unsigned char id);
 	template <class T>
 	static int indexByUuid(const std::vector<std::unique_ptr<T>> &vector, boost::uuids::uuid uuid);
+	template <class T>
+	static int indexByUuidValue(std::vector<T> &vector, boost::uuids::uuid uuid);
 	static int createBlip(float *pos, int blipType, int blipColor, int blipSprite = 0);
 	static std::vector<std::string> getFilenameList(const std::filesystem::path &path,
 	                                                const std::vector<std::string> &extensions);
@@ -100,6 +102,21 @@ int utils::indexByUuid(const std::vector<std::unique_ptr<T>> &vector, boost::uui
 
 	const auto it = std::ranges::find_if(vector, [&uuid](const std::unique_ptr<T> &ptr) {
 		IUuidable *uuidable = ptr.get();
+		return uuid == uuidable->getUuid();
+	});
+
+	if (it != vector.end())
+		return it - vector.begin();
+	return -1;
+}
+
+template <class T>
+int utils::indexByUuidValue(std::vector<T> &vector, boost::uuids::uuid uuid) {
+	if (uuid.is_nil())
+		return -1;
+
+	const auto it = std::ranges::find_if(vector, [&uuid](T &ptr) {
+		IUuidable *uuidable = &ptr;
 		return uuid == uuidable->getUuid();
 	});
 
