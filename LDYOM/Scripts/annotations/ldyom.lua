@@ -44,6 +44,21 @@ end
 function GetObjectRef(ptr)
 end
 
+---@param ref integer
+---@return CPed
+function GetPed(ref)
+end
+
+---@param ref integer
+---@return CVehicle
+function GetVehicle(ref)
+end
+
+---@param ref integer
+---@return CObject
+function GetObject(ref)
+end
+
 ---@param ptr userdata
 ---@return userdata
 function GetEntity(ptr) end

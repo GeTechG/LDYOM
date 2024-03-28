@@ -18,6 +18,9 @@ void pluginSdkWrapper(sol::state &state) {
 		return CPools::GetVehicleRef(vehicle);
 	});
 	state.set("GetObjectRef", CPools::GetObjectRef);
+	state.set("GetPed", CPools::GetPed);
+	state.set("GetVehicle", CPools::GetVehicle);
+	state.set("GetObject", CPools::GetObject);
 	state.set("GetEntity", [](sol::userdata ptr) {
 		const auto entity = *static_cast<CEntity**>(const_cast<void*>(ptr.pointer()));
 		return entity;
