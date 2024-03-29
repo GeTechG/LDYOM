@@ -7,7 +7,7 @@
 
 void boostWrapper(sol::state &state) {
 	auto signalVoid = state.new_usertype<boost::signals2::signal<void()>>("SignalVoid", sol::no_constructor);
-	signalVoid["connect"] = [](boost::signals2::signal<void()> &signal, const sol::function &func) {
+	signalVoid["connect"] = [](boost::signals2::signal<void()> &signal, const sol::protected_function &func) {
 		return signal.connect([func]() {
 			if (const auto result = func(); !result.valid()) {
 				LuaEngine::errorHandler(result);

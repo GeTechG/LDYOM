@@ -2,7 +2,7 @@
 
 #include "LuaEngine.h"
 
-std::map<std::string, sol::function> Windows::LuaWrapperWindow::mainMenuRender;
+std::map<std::string, sol::protected_function> Windows::LuaWrapperWindow::mainMenuRender;
 
 bool connectToLua = false;
 
@@ -23,9 +23,9 @@ void Windows::LuaWrapperWindow::draw() {
 	}
 }
 
-std::optional<sol::function>& Windows::LuaWrapperWindow::getDrawFunction() { return drawFunction; }
+std::optional<sol::protected_function>& Windows::LuaWrapperWindow::getDrawFunction() { return drawFunction; }
 
-void Windows::LuaWrapperWindow::setDrawFunction(const sol::function &drawFunction) {
+void Windows::LuaWrapperWindow::setDrawFunction(const sol::protected_function &drawFunction) {
 	this->drawFunction = drawFunction;
 }
 

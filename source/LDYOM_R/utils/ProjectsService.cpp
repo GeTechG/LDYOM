@@ -629,7 +629,8 @@ void ProjectsService::createNewProject() {
 	CarrecPathsService::getInstance().getPaths().clear();
 
 	auto onCreateNewProjectEventsTable = LuaEngine::getInstance()
-		.getLuaState()["ld"]["events"]["onCreateNewProject"].get<sol::as_table_t<std::vector<sol::function>>>();
+		.getLuaState()["ld"]["events"]["onCreateNewProject"].get<sol::as_table_t<std::vector<
+			sol::protected_function>>>();
 	for (const auto &createNewProjectEvent : onCreateNewProjectEventsTable) {
 		if (auto result = createNewProjectEvent(); !result.valid()) {
 			sol::error err = result;
@@ -752,7 +753,7 @@ void ProjectsService::saveCurrentProject() {
 	CarrecPathsService::getInstance().savePaths(projectDirectory);
 
 	auto onSaveProjectEventsTable = LuaEngine::getInstance()
-		.getLuaState()["ld"]["events"]["onSaveProject"].get<sol::as_table_t<std::vector<sol::function>>>();
+		.getLuaState()["ld"]["events"]["onSaveProject"].get<sol::as_table_t<std::vector<sol::protected_function>>>();
 	for (const auto &saveProjectEvent : onSaveProjectEventsTable) {
 		if (auto result = saveProjectEvent(projectDirectory.string()); !result.valid()) {
 			sol::error err = result;
@@ -853,7 +854,7 @@ void ProjectsService::loadProject(int projectIdx) {
 		this->getCurrentProject().getCurrentScene()->getObjectives().size() - 1);
 
 	auto onLoadProjectEventsTable = LuaEngine::getInstance()
-		.getLuaState()["ld"]["events"]["onLoadProject"].get<sol::as_table_t<std::vector<sol::function>>>();
+		.getLuaState()["ld"]["events"]["onLoadProject"].get<sol::as_table_t<std::vector<sol::protected_function>>>();
 	for (const auto &saveProjectEvent : onLoadProjectEventsTable) {
 		if (auto result = saveProjectEvent(projectDirectory.string()); !result.valid()) {
 			sol::error err = result;

@@ -51,7 +51,8 @@ void LuaEngine::loadScripts(std::string luaPaths) {
 	if (loadedScripts.has_value()) {
 		for (const auto &script : loadedScripts.value()) {
 			if (scriptsIds.contains(script)) {
-				if (auto result = luaState_["scripts"][script]["init"](luaState_["scripts"][script]); !result.valid()) {
+				auto initFunc = luaState_["scripts"][script]["init"].get<sol::protected_function>();
+				if (auto result = initFunc(luaState_["scripts"][script]); !result.valid()) {
 					errorHandler(result);
 				}
 			}

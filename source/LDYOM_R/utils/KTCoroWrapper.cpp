@@ -8,8 +8,8 @@
 
 void ktcoroWrapper(sol::state &state) {
 	state.new_usertype<ktcoro_tasklist>("ktcoro_tasklist", sol::no_constructor,
-	                                    "add_task", [](ktcoro_tasklist &tasklist, sol::function func) {
-		                                    tasklist.add_task([](sol::function func) -> ktwait {
+	                                    "add_task", [](ktcoro_tasklist &tasklist, sol::protected_function func) {
+		                                    tasklist.add_task([](sol::protected_function func) -> ktwait {
 			                                    auto &state_ = LuaEngine::getInstance().getLuaState();
 			                                    sol::thread runner = sol::thread::create(state_);
 			                                    sol::state_view runnerstate = runner.state();

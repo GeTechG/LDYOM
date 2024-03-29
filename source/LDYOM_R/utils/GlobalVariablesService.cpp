@@ -163,7 +163,8 @@ void GlobalVariablesService::remove(const std::string &uuid) {
 		}
 	}
 	if (f != -1) {
-		if (const auto functionResult = state["table"]["remove"](gvTable, f); !functionResult.valid()) {
+		const sol::protected_function removeFunc = state["table"]["remove"];
+		if (const auto functionResult = removeFunc(gvTable, f); !functionResult.valid()) {
 			LuaEngine::errorHandler(functionResult);
 		}
 	}
@@ -175,7 +176,8 @@ void GlobalVariablesService::remove(int index) {
 	if (gvTable[index + 1].get_type() == sol::type::none) {
 		return;
 	}
-	if (const auto functionResult = state["table"]["remove"](gvTable, index + 1); !functionResult.valid()) {
+	const auto removeFunc = state["table"]["remove"].get<sol::protected_function>();
+	if (const auto functionResult = removeFunc(gvTable, index + 1); !functionResult.valid()) {
 		LuaEngine::errorHandler(functionResult);
 	}
 }
@@ -281,7 +283,8 @@ void GlobalVariablesService::set(const int index, GlobalVariableView &value) {
 
 std::string GlobalVariablesService::toJson() {
 	auto gvTable = getGlobalVariablesTable();
-	const auto result = LuaEngine::getInstance().getLuaState()["json"]["encode"](gvTable);
+	const sol::protected_function encode = LuaEngine::getInstance().getLuaState()["json"]["encode"];
+	const auto result = encode(gvTable);
 	if (!result.valid()) {
 		LuaEngine::errorHandler(result);
 		return "";
@@ -292,7 +295,8 @@ std::string GlobalVariablesService::toJson() {
 void GlobalVariablesService::fromJson(const std::string &json) {
 	auto ld = LuaEngine::getInstance().getLuaState()["ld"].get_or_create<sol::table>();
 	auto data = ld["data"].get_or_create<sol::table>();
-	const auto result = LuaEngine::getInstance().getLuaState()["json"]["decode"](json);
+	const sol::protected_function decode = LuaEngine::getInstance().getLuaState()["json"]["decode"];
+	const auto result = decode(json);
 	if (!result.valid()) {
 		LuaEngine::errorHandler(result);
 		return;

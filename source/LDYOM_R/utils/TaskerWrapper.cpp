@@ -6,7 +6,7 @@
 #include "LuaEngine.h"
 #include "Tasker.h"
 
-ktwait taskWrapper(sol::function func) {
+ktwait taskWrapper(sol::protected_function func) {
 	auto &state_ = LuaEngine::getInstance().getLuaState();
 	sol::thread runner = sol::thread::create(state_);
 	sol::state_view runnerstate = runner.state();
@@ -33,7 +33,7 @@ void taskerWrapper(sol::state &state) {
 	auto ldyomTable = state["ld"].get_or_create<sol::table>();
 	ldyomTable["tasker"] = &Tasker::getInstance();
 	state.new_usertype<Tasker>("LDTasker",
-	                           "addTask", [](Tasker &tasker, std::string name, sol::function func) {
+	                           "addTask", [](Tasker &tasker, std::string name, sol::protected_function func) {
 		                           tasker.addTask(name, taskWrapper, func);
 	                           },
 	                           "removeTask", &Tasker::removeTask

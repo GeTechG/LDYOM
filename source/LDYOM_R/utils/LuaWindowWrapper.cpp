@@ -8,7 +8,7 @@
 void luaWindowWrapper(sol::state &state) {
 	auto ldyomTable = state["ld"].get_or_create<sol::table>();
 	auto windowTable = ldyomTable["window"].get_or_create<sol::table>();
-	windowTable["openLuaWindow"] = [](const sol::function &drawFunction) {
+	windowTable["openLuaWindow"] = [](const sol::protected_function &drawFunction) {
 		const auto luaWrapperWindow = Windows::WindowsRenderService::getInstance().getWindow<
 			Windows::LuaWrapperWindow>();
 		luaWrapperWindow->open();
@@ -27,7 +27,7 @@ void luaWindowWrapper(sol::state &state) {
 		Windows::WindowsRenderService::getInstance().addCommand(
 			std::make_unique<CustomWindowsRenderCommand>(executeFunc, undoFunc));
 	};
-	windowTable["setMainMenuRender"] = [](const std::string &name, const sol::function &drawFunction) {
+	windowTable["setMainMenuRender"] = [](const std::string &name, const sol::protected_function &drawFunction) {
 		if (Windows::LuaWrapperWindow::mainMenuRender.contains(name)) {
 			Windows::LuaWrapperWindow::mainMenuRender[name] = drawFunction;
 		} else {
@@ -42,8 +42,8 @@ void luaWindowWrapper(sol::state &state) {
 	windowTable["setRenderWindows"] = [](const bool windowState) {
 		Windows::WindowsRenderService::getInstance().setRenderWindows(windowState);
 	};
-	windowTable["addRender"] = [](const std::string &name, const sol::function &drawFunction) {
-		const auto newFunc = sol::function(LuaEngine::getInstance().getLuaState(), drawFunction);
+	windowTable["addRender"] = [](const std::string &name, const sol::protected_function &drawFunction) {
+		const auto newFunc = sol::protected_function(LuaEngine::getInstance().getLuaState(), drawFunction);
 		Windows::WindowsRenderService::getInstance().addRender(name, [=]() {
 			if (const auto result = newFunc(); !result.valid()) {
 				LuaEngine::errorHandler(result);

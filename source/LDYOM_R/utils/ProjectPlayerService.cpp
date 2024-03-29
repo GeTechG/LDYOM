@@ -141,7 +141,7 @@ ktwait ProjectPlayerService::changeScene(Scene *scene, ktcoro_tasklist &tasklist
 
 	tasklist.add_task([](ktcoro_tasklist &tasklist) -> ktwait {
 		auto mainLoopsEventsTable = LuaEngine::getInstance()
-			.getLuaState()["ld"]["events"]["mainLoop"].get<sol::as_table_t<std::vector<sol::function>>>();
+			.getLuaState()["ld"]["events"]["mainLoop"].get<sol::as_table_t<std::vector<sol::protected_function>>>();
 		while (true) {
 			for (auto &mainLoopsEvent : mainLoopsEventsTable) {
 				sol::coroutine mainLoopsEventCoroutine = mainLoopsEvent;
