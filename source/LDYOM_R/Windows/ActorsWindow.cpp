@@ -178,9 +178,9 @@ void Windows::ActorsWindow::drawOptions() {
 		actor->spawnEditorPed();
 	});
 
-	utils::ToggleButton(local.get("teleport_player_objective.dress_up").c_str(), &actor->isDressUp());
+	//utils::ToggleButton(local.get("teleport_player_objective.dress_up").c_str(), &actor->isDressUp());
 
-	if (actor->getModelType() == 0 && actor->getModelId() == 0) {
+	/*if (actor->getModelType() == 0 && actor->getModelId() == 0) {
 		if (ImGui::Button(local.get("teleport_player_objective.copy_clothes").c_str())) {
 			const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
 			std::memcpy(actor->getClotherMAnTextureKeys().data(), playerClothes->m_anTextureKeys,
@@ -193,7 +193,7 @@ void Windows::ActorsWindow::drawOptions() {
 		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip(local.get("teleport_player_objective.help_copy_clothes").c_str());
-	}
+	}*/
 
 	characteristicsSection(local, actor);
 

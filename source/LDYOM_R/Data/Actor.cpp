@@ -98,7 +98,7 @@ Actor Actor::copy() const {
 CPed* Actor::spawnPed() {
 	int model;
 
-	std::array<unsigned, 18> textures{};
+	/*std::array<unsigned, 18> textures{};
 	std::array<unsigned, 10> models{};
 	float muscular;
 	float fats;
@@ -121,7 +121,7 @@ CPed* Actor::spawnPed() {
 		playerClothes->m_fFatStat = this->fatStat;
 		playerClothes->m_fMuscleStat = this->musculeStat;
 		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
-	}
+	}*/
 
 	if (this->modelType == 0) {
 		model = ModelsService::validPedModel(this->modelId);
@@ -157,15 +157,15 @@ CPed* Actor::spawnPed() {
 
 	ped->DisablePedSpeech(1);
 
-	if (this->modelType == 0 && this->modelId == 0 && this->dressUp) {
-		Command<Commands::SET_PLAYER_MODEL>(0, playerModel);
-		const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
-		std::memcpy(playerClothes->m_anTextureKeys, textures.data(), sizeof playerClothes->m_anTextureKeys);
-		std::memcpy(playerClothes->m_anModelKeys, models.data(), sizeof playerClothes->m_anModelKeys);
-		playerClothes->m_fFatStat = fats;
-		playerClothes->m_fMuscleStat = muscular;
-		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
-	}
+	//if (this->modelType == 0 && this->modelId == 0 && this->dressUp) {
+	//	Command<Commands::SET_PLAYER_MODEL>(0, playerModel);
+	//	const auto playerClothes = CWorld::Players[0].m_pPed->m_pPlayerData->m_pPedClothesDesc;
+	//	std::memcpy(playerClothes->m_anTextureKeys, textures.data(), sizeof playerClothes->m_anTextureKeys);
+	//	std::memcpy(playerClothes->m_anModelKeys, models.data(), sizeof playerClothes->m_anModelKeys);
+	//	playerClothes->m_fFatStat = fats;
+	//	playerClothes->m_fMuscleStat = muscular;
+	//	CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
+	//}
 
 	Command<Commands::SET_CHAR_STAY_IN_SAME_PLACE>(newPed, static_cast<int>(this->stayInSamePlace));
 	Command<Commands::SET_CHAR_KINDA_STAY_IN_SAME_PLACE>(newPed, static_cast<int>(this->kindaStayInSamePlace));
