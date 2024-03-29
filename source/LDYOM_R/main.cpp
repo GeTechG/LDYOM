@@ -3,6 +3,7 @@
 #include <CMenuManager.h>
 #include <CTheScripts.h>
 #include <CWorld.h>
+#include <extensions/KeyCheck.h>
 
 #include <extensions/ScriptCommands.h>
 #include "additional_events.h"
@@ -40,6 +41,9 @@ using namespace std::chrono_literals;
 bool initServices = false;
 
 extern bool isInitImgui;
+
+extern void debugInfoOverlay();
+bool showDebugInfo = false;
 
 bool restart = false;
 
@@ -95,6 +99,18 @@ public:
 			if (Command<0x0ADC>("MISSIOMAFIA")) {
 				CHud::SetHelpMessage("~w~I MISSIO MAFIA", false, false, false);
 				CHud::DrawHelpText();
+			}
+
+			KeyCheck::Update();
+
+			if (KeyCheck::CheckJustUp(VK_F5)) {
+				if (showDebugInfo) {
+					showDebugInfo = false;
+					Windows::WindowsRenderService::getInstance().removeRender("debugInfoOverlay");
+				} else {
+					showDebugInfo = true;
+					Windows::WindowsRenderService::getInstance().addRender("debugInfoOverlay", debugInfoOverlay);
+				}
 			}
 		};
 

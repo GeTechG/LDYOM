@@ -458,6 +458,9 @@
     <Filter Include="Data\Objectives\Vehicle\FollowCarrecPath">
       <UniqueIdentifier>{9cd7b96b-2e65-400d-97fa-a19a29d23cab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\DebugInfoOverlay">
+      <UniqueIdentifier>{2e5cdaa7-7730-4192-971d-0e66be0dcf3e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1157,6 +1160,9 @@
     </ClCompile>
     <ClCompile Include="utils\CarrecPathServiceWrapper.cpp">
       <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\DebugInfoOverlay.cpp">
+      <Filter>Utils\DebugInfoOverlay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

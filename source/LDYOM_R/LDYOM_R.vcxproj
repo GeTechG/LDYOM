@@ -38,6 +38,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -125,7 +126,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;$(ProjectDir)LuaJIT-2.0.5\src;%(AdditionalLibraryDirectories);$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4-master\output\Release;$(ProjectDir)thirdparty\lib\Release;$(DIRECTX9_SDK_DIR)\Lib\x86;C:\local\boost_1_83_0\lib32-msvc-14.3;$(SolutionDir)Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(PLUGIN_SDK_DIR)\output\lib\;$(ProjectDir)LuaJIT-2.0.5\src;%(AdditionalLibraryDirectories);$(PLUGIN_SDK_DIR)\bass;$(PLUGIN_SDK_DIR)\CLEO4-master\output\Release;$(ProjectDir)thirdparty\lib\Release;$(DIRECTX9_SDK_DIR)\Lib\x86;C:\local\boost_1_83_0\lib32-msvc-14.3;$(ProjectDir)thirdparty\discordSDK\lib\x86;$(SolutionDir)Release</AdditionalLibraryDirectories>
       <AdditionalDependencies>plugin.lib;d3d9.lib;d3dx9.lib;dinput8.lib;lua51.lib;luajit.lib;buildvm.lib;dxguid.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies);bass.lib;CLEO.lib;hde.lib;discord_game_sdk.dll.lib;ImGuiLuaWrapper.lib;OpcodesLuaWrapper.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
@@ -292,6 +293,7 @@
     <ClCompile Include="utils\CheckpointWrapper.cpp" />
     <ClCompile Include="utils\ConvertWrapper.cpp" />
     <ClCompile Include="utils\CounterService.cpp" />
+    <ClCompile Include="utils\DebugInfoOverlay.cpp" />
     <ClCompile Include="utils\EditByPlayerService.cpp" />
     <ClCompile Include="utils\EventsWrapper.cpp" />
     <ClCompile Include="utils\FilesystemLuaWrapper.cpp" />
