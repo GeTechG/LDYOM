@@ -116,6 +116,7 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 	static_cast<CAutomobile*>(newVehicle)->UpdateMovingCollision(this->extraPartsAngle_);
 	Command<Commands::FORCE_CAR_LIGHTS>(newVehicle,
 	                                    this->isIsLightsOn() ? 2 : 0);
+	newVehicle->m_nVehicleFlags.bEngineOn = static_cast<unsigned char>(this->isLightsOn_);
 	for (int i = 0; i < 6; ++i) {
 		const int carNodeIndexFromDoor = utils::GetCarNodeIndexFromDoor(i);
 		newVehicle->OpenDoor(nullptr, carNodeIndexFromDoor, static_cast<eDoors>(i),

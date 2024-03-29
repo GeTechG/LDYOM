@@ -134,7 +134,9 @@ void characteristicsSection(Localization &local, Vehicle *vehicle) {
 
 		if (ImGui::Checkbox(local.get("vehicle.lights_on").c_str(), &vehicle->isIsLightsOn())) {
 			Command<Commands::FORCE_CAR_LIGHTS>(vehicle->getEditorVehicle().value(),
-			                                    vehicle->isIsLightsOn());
+			                                    vehicle->isIsLightsOn() ? 2 : 0);
+			vehicle->getEditorVehicle().value()->m_nVehicleFlags.bEngineOn = static_cast<unsigned char>(vehicle->
+				isIsLightsOn());
 		}
 
 		if (ImGui::SliderFloat(local.get("vehicle.dirty_level").c_str(), &vehicle->getDirtyLevel(), 0.f, 15.f)) {
