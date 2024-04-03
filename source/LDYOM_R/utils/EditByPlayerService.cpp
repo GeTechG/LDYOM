@@ -10,10 +10,6 @@
 #include <CWorld.h>
 #include <extensions/ScriptCommands.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 #include "CarrecPathsService.h"
 #include "CCamera.h"
 #include "HotKeyService.h"
@@ -26,11 +22,11 @@
 #include "utils.h"
 #include "WindowsRenderService.h"
 #include "../Data/Actor.h"
+#include "../Data/CCameraExtend.h"
+#include "../Data/CMatrixUtils.h"
 #include "../Data/Vehicle.h"
 #include "../Windows/ObjectsWindow.h"
 #include "extensions/KeyCheck.h"
-
-#include "glm/gtx/quaternion.hpp"
 
 
 class Vehicle;
@@ -380,34 +376,13 @@ void EditByPlayerService::positionalObject(CEntity *entity, std::function<void(C
 	Tasker::getInstance().addTask("createFastObject", positionalObjectTask, entity, setMatrix, posO, quat, fastCreate);
 }
 
-glm::mat4 CMatrixToGlmMat4(const CMatrix &cMatrix) {
-	glm::mat4 result(1.0f);
-
-	result[0][0] = cMatrix.right.x;
-	result[0][1] = cMatrix.up.x;
-	result[0][2] = cMatrix.at.x;
-
-	result[1][0] = cMatrix.right.y;
-	result[1][1] = cMatrix.up.y;
-	result[1][2] = cMatrix.at.y;
-
-	result[2][0] = cMatrix.right.z;
-	result[2][1] = cMatrix.up.z;
-	result[2][2] = cMatrix.at.z;
-
-	result[3][0] = cMatrix.pos.x;
-	result[3][1] = cMatrix.pos.y;
-	result[3][2] = cMatrix.pos.z;
-
-	return result;
-}
-
 ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen, std::function<void()> callback) {
 	Windows::WindowsRenderService::getInstance().setRenderWindows(false);
 
 	speedCameraMultiplier = Settings::getInstance().get<float>("camera.editByPlayerSpeed").value_or(1.f);
 
 	Command<Commands::SET_PLAYER_CONTROL>(0, 1);
+	TheCameraExtend.setExtendMode(false);
 
 	Windows::WindowsRenderService::getInstance().addRender("editByPlayerOverlay", [&] {
 		auto &local = Localization::getInstance();
@@ -468,12 +443,8 @@ ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen
 			pos[1] = TheCamera.m_mCameraMatrix.pos.y;
 			pos[2] = TheCamera.m_mCameraMatrix.pos.z;
 
-			const glm::vec3 direction = {
-				TheCamera.m_mViewMatrix.right.z, TheCamera.m_mViewMatrix.up.z,
-				TheCamera.m_mViewMatrix.at.z
-			};
-			auto quat = quatLookAtLH(direction, glm::vec3(0, 0, 1));
-			*rotation = {.imag = CVector(quat.x, quat.y, quat.z), .real = quat.w};
+			const auto q = quat_cast(CMatrixToGlmMat4(TheCameraExtend.matrix));
+			*rotation = {.imag = {q.x, q.y, q.z}, .real = q.w};
 
 			break;
 		}
@@ -531,6 +502,7 @@ ktwait editByPlayerCameraTask(float *pos, CQuaternion *rotation, bool widescreen
 
 	Windows::WindowsRenderService::getInstance().removeRender("editByPlayerOverlay");
 	Windows::WindowsRenderService::getInstance().setRenderWindows(true);
+	TheCameraExtend.setExtendMode(true);
 
 	callback();
 }

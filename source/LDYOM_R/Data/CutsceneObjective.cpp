@@ -13,6 +13,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/euler_angles.hpp>
+
+#include "CCameraExtend.h"
 #include "CutsceneMutex.h"
 #include "EditByPlayerService.h"
 #include "imgui.h"
@@ -65,23 +67,8 @@ void CutsceneObjective::updateLocation() {
 			break;
 	}
 
-	const CVector pos = {this->position_[0], this->position_[1], this->position_[2]};
-	CVector up = {0.f, sinf(RAD(this->xAngle_)), cosf(RAD(this->xAngle_))};
-	TheCamera.Restore();
-	TheCamera.SetCamPositionForFixedMode(&pos, &up);
-
-	glm::quat q = {rotation_.real, rotation_.imag.x, rotation_.imag.y, rotation_.imag.z};
-	glm::vec3 directionVector(0, 0, 1);
-	directionVector = q * directionVector;
-	CVector aimPos = {directionVector.x, directionVector.y, directionVector.z};
-	aimPos += pos;
-
-	if (this->getFollowType() != 0 && followEntity != nullptr && this->move == 0) {
-		CVector offset(0, 0, 0);
-		TheCamera.TakeControlNoEntity(&followEntity->GetPosition(), 2, 1);
-	} else {
-		TheCamera.TakeControlNoEntity(&aimPos, 2, 1);
-	}
+	TheCameraExtend.matrix.SetRotate(this->getRotation());
+	TheCameraExtend.matrix.SetTranslateOnly(this->position_[0], this->position_[1], this->position_[2]);
 }
 
 CutsceneObjective::CutsceneObjective(const CVector &position, const CQuaternion &rotation): BaseObjective(nullptr),
@@ -103,23 +90,15 @@ void CutsceneObjective::draw(Localization &local, std::vector<std::string> &list
 		this->updateLocation();
 	});
 
-	static CQuaternion lastQ;
+	auto q = glm::quat(this->rotation_.real, this->rotation_.imag.x, this->rotation_.imag.y, this->rotation_.imag.z);
+	auto eularVec = degrees(eulerAngles(q));
+	float eularArr[3] = {eularVec[0], eularVec[1], eularVec[2]};
 
-	const auto q = this->getRotation();
-	const glm::quat quaternion(q.real, q.imag.x, q.imag.y, q.imag.z);
-	const glm::vec3 eulerAngles = glm::eulerAngles(quaternion);
 
 	//rotations
-	static std::array<float, 3> eularRot = {0, 0, 0};
-	if (abs(q.real - lastQ.real) > FLT_EPSILON || abs(q.imag.x - lastQ.imag.x) > FLT_EPSILON ||
-		abs(q.imag.y - lastQ.imag.y) > FLT_EPSILON || abs(q.imag.z - lastQ.imag.z) > FLT_EPSILON) {
-		eularRot[0] = glm::degrees(eulerAngles.x);
-		eularRot[1] = glm::degrees(eulerAngles.y);
-		eularRot[2] = glm::degrees(eulerAngles.z);
-		lastQ = q;
-	}
-	DragRotations(eularRot.data(), [&] {
-		this->getRotation().Set(RAD(eularRot[1]), RAD(eularRot[2]), RAD(eularRot[0]));
+	DragRotations(eularArr, [&] {
+		auto q = glm::quat(radians(glm::vec3(eularArr[0], eularArr[1], eularArr[2])));
+		this->getRotation() = {.imag = CVector(q.x, q.y, q.z), .real = q.w};
 		this->updateLocation();
 	});
 
@@ -250,16 +229,6 @@ void CutsceneObjective::draw(Localization &local, std::vector<std::string> &list
 	utils::ToggleButton(local.get("cutscene_objective.asynchronous").c_str(), &this->async_);
 
 	listOverlay.emplace_back(local.get("info_overlay.rotate_with_shift"));
-
-	if (plugin::KeyPressed(VK_SHIFT)) {
-		if (plugin::KeyPressed('Q')) {
-			this->xAngle_ += 1.f;
-			this->updateLocation();
-		} else if (plugin::KeyPressed('E')) {
-			this->xAngle_ += -1.f;
-			this->updateLocation();
-		}
-	}
 }
 
 ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
@@ -281,7 +250,7 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 	CEntity *targetAttach = nullptr;
 	int indexAttach = -1;
 	glm::vec3 targetPositionOffset = {0.f, 0.f, 0.f};
-	CQuaternion targetOffsetRotation;
+	glm::quat targetOffsetRotation{};
 
 	if (this->attachType_ > 0) {
 		switch (this->attachType_) {
@@ -299,22 +268,11 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 							                                    -scene->getActors().at(indexAttach)->
 							                                            getHeadingAngle()),
 						                                    glm::vec3(0.0f, 0.0f, 1.0f));
-						targetPositionOffset = glm::quat(
-							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y,
-							rotQuaternion.z) * targetPositionOffset;
+						targetPositionOffset = rotQuaternion * targetPositionOffset;
 						glm::quat quat(this->rotation_.real, this->rotation_.imag.x,
 						               this->rotation_.imag.y,
 						               this->rotation_.imag.z);
-						quat = normalize(quat);
-						auto anglePre = degrees(eulerAngles(quat));
-						glm::quat q = normalize(glm::quat(
-							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y, rotQuaternion.z) * quat);
-						auto angle = degrees(eulerAngles(q));
-						targetOffsetRotation = {.imag = CVector(q.x, q.y, q.z), .real = q.w};
-						auto ang2 = degrees(eulerAngles(glm::quat(targetOffsetRotation.real,
-						                                          targetOffsetRotation.imag.x,
-						                                          targetOffsetRotation.imag.y,
-						                                          targetOffsetRotation.imag.z)));
+						targetOffsetRotation = rotQuaternion * quat;
 					}
 				}
 				break;
@@ -333,22 +291,11 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 							                                    -scene->getVehicles().at(indexAttach)->
 							                                            getHeadingAngle()),
 						                                    glm::vec3(0.0f, 0.0f, 1.0f));
-						targetPositionOffset = glm::quat(
-							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y,
-							rotQuaternion.z) * targetPositionOffset;
+						targetPositionOffset = rotQuaternion * targetPositionOffset;
 						glm::quat quat(this->rotation_.real, this->rotation_.imag.x,
 						               this->rotation_.imag.y,
 						               this->rotation_.imag.z);
-						quat = normalize(quat);
-						auto anglePre = degrees(eulerAngles(quat));
-						glm::quat q = normalize(glm::quat(
-							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y, rotQuaternion.z) * quat);
-						auto angle = degrees(eulerAngles(q));
-						targetOffsetRotation = {.imag = CVector(q.x, q.y, q.z), .real = q.w};
-						auto ang2 = degrees(eulerAngles(glm::quat(targetOffsetRotation.real,
-						                                          targetOffsetRotation.imag.x,
-						                                          targetOffsetRotation.imag.y,
-						                                          targetOffsetRotation.imag.z)));
+						targetOffsetRotation = rotQuaternion * quat;
 					}
 				}
 				break;
@@ -366,22 +313,11 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 						};
 						glm::quat rotQuaternion(objectRef->getRotations().real, objectRef->getRotations().imag.x,
 						                        objectRef->getRotations().imag.y, objectRef->getRotations().imag.z);
-						targetPositionOffset = glm::quat(
-							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y,
-							rotQuaternion.z) * targetPositionOffset;
+						targetPositionOffset = rotQuaternion * targetPositionOffset;
 						glm::quat quat(this->rotation_.real, this->rotation_.imag.x,
 						               this->rotation_.imag.y,
 						               this->rotation_.imag.z);
-						quat = normalize(quat);
-						auto anglePre = degrees(eulerAngles(quat));
-						glm::quat q = normalize(glm::quat(
-							rotQuaternion.w, rotQuaternion.x, rotQuaternion.y, rotQuaternion.z) * quat);
-						auto angle = degrees(eulerAngles(q));
-						targetOffsetRotation = {.imag = CVector(q.x, q.y, q.z), .real = q.w};
-						auto ang2 = degrees(eulerAngles(glm::quat(targetOffsetRotation.real,
-						                                          targetOffsetRotation.imag.x,
-						                                          targetOffsetRotation.imag.y,
-						                                          targetOffsetRotation.imag.z)));
+						targetOffsetRotation = rotQuaternion * quat;
 					}
 				}
 				break;
@@ -397,22 +333,11 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 					};
 					glm::quat rotQuaternion = angleAxis(-FindPlayerHeading(0),
 					                                    glm::vec3(0.0f, 0.0f, 1.0f));
-					targetPositionOffset = glm::quat(
-						rotQuaternion.w, rotQuaternion.x, rotQuaternion.y,
-						rotQuaternion.z) * targetPositionOffset;
+					targetPositionOffset = rotQuaternion * targetPositionOffset;
 					glm::quat quat(this->rotation_.real, this->rotation_.imag.x,
 					               this->rotation_.imag.y,
 					               this->rotation_.imag.z);
-					quat = normalize(quat);
-					auto anglePre = degrees(eulerAngles(quat));
-					glm::quat q = normalize(glm::quat(
-						rotQuaternion.w, rotQuaternion.x, rotQuaternion.y, rotQuaternion.z) * quat);
-					auto angle = degrees(eulerAngles(q));
-					targetOffsetRotation = {.imag = CVector(q.x, q.y, q.z), .real = q.w};
-					auto ang2 = degrees(eulerAngles(glm::quat(targetOffsetRotation.real,
-					                                          targetOffsetRotation.imag.x,
-					                                          targetOffsetRotation.imag.y,
-					                                          targetOffsetRotation.imag.z)));
+					targetOffsetRotation = rotQuaternion * quat;
 				}
 				break;
 			default:
@@ -487,79 +412,37 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 	CHud::bScriptDontDisplayRadar = true;
 
 	static auto task = [](CutsceneObjective *cutscene, glm::vec3 targetPositionOffset,
-	                      CQuaternion targetOffsetRotation,
+	                      glm::quat targetOffsetRotation,
 	                      CEntity *targetFollow, CEntity *targetAttach, bool lockPlayerControl) -> ktwait {
 		CutsceneMutexGuard guard;
 
 		if (cutscene->isStartFadeOut())
 			plugin::Command<Commands::DO_FADE>(static_cast<int>(cutscene->getStartFadeOutTime() * 1000.f), 1);
 
-		bool useEndFadeIn = false;
-
 		const CVector pos = {cutscene->getPosition()[0], cutscene->getPosition()[1], cutscene->getPosition()[2]};
-		auto endUp = RAD(cutscene->getXAngle());
 
-		const CVector up = {0.f, sinf(RAD(cutscene->getXAngle())), cosf(RAD(cutscene->getXAngle()))};
-
-		glm::quat q = {
-			cutscene->getRotation().real, cutscene->getRotation().imag.x, cutscene->getRotation().imag.y,
-			cutscene->getRotation().imag.z
-		};
-		//q = conjugate(q);
+		TheCameraExtend.setExtendMode(true);
 
 		if (cutscene->move == 0) {
-			TheCamera.SetCamPositionForFixedMode(&pos, &up);
 			if (cutscene->getAttachType() == 0 && cutscene->getFollowType() == 0) {
-				glm::vec3 directionVector(0, 0, 1);
-				directionVector = q * directionVector;
-				CVector aimPos = {directionVector.x, directionVector.y, directionVector.z};
-				aimPos += pos;
-				TheCamera.TakeControlNoEntity(&aimPos, 2, 1);
+				TheCameraExtend.matrix.SetRotate(cutscene->getRotation());
+				TheCameraExtend.matrix.SetTranslateOnly(pos.x, pos.y, pos.z);
 			} else {
-				if (targetFollow == nullptr) {
-					q = {
-						targetOffsetRotation.real, targetOffsetRotation.imag.x, targetOffsetRotation.imag.y,
-						targetOffsetRotation.imag.z
-					};
-				}
-				glm::vec3 directionVector(0, 0, 1);
-				directionVector = q * directionVector;
-				CVector aimPos = {directionVector.x, directionVector.y, directionVector.z};
-				auto targetPosOffset = CVector(targetPositionOffset.x, targetPositionOffset.y, targetPositionOffset.z);
-				aimPos += targetPosOffset;
-				if (targetAttach == nullptr) {
-					CStreaming::RequestModel(3090, GAME_REQUIRED);
-					CStreaming::LoadAllRequestedModels(false);
-
-					int newObjectHandle;
-					Command<Commands::CREATE_OBJECT_NO_OFFSET>(3090, pos.x, pos.y, pos.z, &newObjectHandle);
-					CStreaming::SetMissionDoesntRequireModel(3090);
-					const auto newObject = CPools::GetObject(newObjectHandle);
-					newObject->m_bUsesCollision = false;
-					cutscene->attachFreeCamera = newObject;
-					ProjectPlayerService::getInstance().getOnProjectStopped().emplace_back([=] {
-						if (cutscene->attachFreeCamera.has_value()) {
-							if (const auto object = cutscene->attachFreeCamera.value(); CPools::ms_pObjectPool->
-								IsObjectValid(object)) {
-								const int objectRef = CPools::GetObjectRef(object);
-								Command<Commands::DELETE_OBJECT>(objectRef);
-							}
-						}
-						cutscene->attachFreeCamera = std::nullopt;
-					});
-					targetAttach = cutscene->attachFreeCamera.value();
-				}
-				TheCamera.TakeControlAttachToEntity(targetFollow, targetAttach, &targetPosOffset, &aimPos, endUp, 2,
-				                                    1);
+				const CQuaternion rotationOffset = {
+					{targetOffsetRotation.x, targetOffsetRotation.y, targetOffsetRotation.z}, targetOffsetRotation.w
+				};
+				const CVector positionOffset = {targetPositionOffset.x, targetPositionOffset.y, targetPositionOffset.z};
+				TheCameraExtend.attachToEntity(targetAttach, targetFollow, rotationOffset, positionOffset);
 			}
 		} else {
 			auto startPos = TheCamera.GetPosition();
 			glm::vec3 directionVector(0, 0, 1);
-			directionVector = q * directionVector;
+			directionVector = glm::quat(cutscene->rotation_.real, cutscene->rotation_.imag.x,
+			                            cutscene->rotation_.imag.y,
+			                            cutscene->rotation_.imag.z) * directionVector;
 			CVector aimPos = {directionVector.x, directionVector.y, directionVector.z};
 			aimPos += pos;
-			auto startPoint = startPos + CVector(TheCamera.m_mViewMatrix.right.z, TheCamera.m_mViewMatrix.up.z,
-			                                     TheCamera.m_mViewMatrix.at.z);
+			auto startPoint = startPos + TheCameraExtend.matrix.at;
 
 			TheCamera.VectorTrackLinear(&aimPos, &startPoint, cutscene->getTextTime() * 1000.f, cutscene->move == 2);
 			TheCamera.VectorMoveLinear(const_cast<CVector*>(&pos), &startPos, cutscene->getTextTime() * 1000.f,
@@ -575,6 +458,12 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 		} else {
 			co_await duration;
 		}
+
+		const CVector up = {0.0f, 0.0f, 1.0f};
+		TheCamera.SetCamPositionForFixedMode(&TheCameraExtend.matrix.pos, &up);
+		const CVector fixedVector = TheCameraExtend.matrix.pos + TheCameraExtend.matrix.at;
+		TheCamera.TakeControlNoEntity(&fixedVector, 2, 1);
+		TheCameraExtend.setExtendMode(false);
 
 		if (cutscene->isEndCutscene()) {
 			CTheScripts::bDisplayHud = true;
@@ -606,7 +495,13 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 
 void CutsceneObjective::open() {
 	WorldObjective::open();
+	TheCameraExtend.setExtendMode(true);
 	updateLocation();
+}
+
+void CutsceneObjective::close() {
+	TheCameraExtend.setExtendMode(false);
+	WorldObjective::close();
 }
 
 int& CutsceneObjective::getAttachType() {

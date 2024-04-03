@@ -32,6 +32,7 @@
 #include "vehicle_renderer.h"
 #include "WindowsRenderService.h"
 #include "Data/Audio.h"
+#include "Data/CCameraExtend.h"
 #include "easylogging/easylogging++.h"
 #include "Localization/Localization.h"
 
@@ -127,6 +128,7 @@ public:
 				PopupWeaponSelector::getInstance().Init();
 				PopupSpriteBlipSelector::Init();
 				DiscordService::getInstance().Init();
+				TheCameraExtend.InitHook();
 
 				const auto projectName = ProjectsService::getInstance().getCurrentProject().getProjectInfo()->name;
 				DiscordService::getInstance().updateActivity(projectName, DiscordActivityType::CREATING);

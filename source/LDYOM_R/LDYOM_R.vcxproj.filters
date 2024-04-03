@@ -461,6 +461,9 @@
     <Filter Include="Utils\DebugInfoOverlay">
       <UniqueIdentifier>{2e5cdaa7-7730-4192-971d-0e66be0dcf3e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\CCameraExtend">
+      <UniqueIdentifier>{62e63cd8-e2f5-4ef0-8458-8f93b024db89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1163,6 +1166,9 @@
     </ClCompile>
     <ClCompile Include="utils\DebugInfoOverlay.cpp">
       <Filter>Utils\DebugInfoOverlay</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\CCameraExtend.cpp">
+      <Filter>Data\CCameraExtend</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2696,6 +2702,12 @@
     </ClInclude>
     <ClInclude Include="Data\FollowCarrecPathVehicleObjective.h">
       <Filter>Data\Objectives\Vehicle\FollowCarrecPath</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CCameraExtend.h">
+      <Filter>Data\CCameraExtend</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CMatrixUtils.h">
+      <Filter>Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
