@@ -1,10 +1,10 @@
 import Layout from "@theme/Layout";
 import {JSX} from "react";
-import Beta0_8_0_Preview_9 from "./versions/beta0_8_0_Preview_9";
-import Beta_0_7_2 from "./versions/beta_0_7_2";
-import Beta_0_7_1 from "./versions/beta_0_7_1";
-import Beta_0_7_0 from "./versions/beta_0_7_0";
 import Beta0_8_0_Preview_10 from "@site/src/pages/download/versions/beta0_8_0_Preview_10";
+import Beta0_8_0_Preview_9 from "@site/src/pages/download/versions/beta0_8_0_Preview_9";
+import Beta_0_7_2 from "@site/src/pages/download/versions/beta_0_7_2";
+import Beta_0_7_1 from "@site/src/pages/download/versions/beta_0_7_1";
+import Beta_0_7_0 from "@site/src/pages/download/versions/beta_0_7_0";
 
 
 export default function Downloads(): JSX.Element {

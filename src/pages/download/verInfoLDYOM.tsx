@@ -2,7 +2,7 @@ import styles from "@site/src/pages/download/index.module.css";
 import Link from "@docusaurus/Link";
 import {JSX} from "react";
 
-type VersionInfoProps = {
+export type VersionInfoProps = {
     version: string,
     date: string,
     changes: JSX.Element,
@@ -12,7 +12,10 @@ type VersionInfoProps = {
     updatedDate?: string
 }
 
-function convertToDateTime(dateString: string) {
+export function convertToDateTime(dateString: string) {
+    if (!dateString) {
+        return '';
+    }
     const parts = dateString.split('.');
 
     const day = Number(parts[0]);
@@ -24,7 +27,7 @@ function convertToDateTime(dateString: string) {
     return date.toISOString().split('T')[0];
 }
 
-const VersionInfo = ({version, date, changes, supportOld, buttons, blogLink, updatedDate}: VersionInfoProps) => {
+export default function VerInfoLDYOM({version, date, changes, supportOld, buttons, blogLink, updatedDate}: VersionInfoProps) {
     return (
         <div className={styles.version}>
             <div id="#version">
@@ -47,5 +50,3 @@ const VersionInfo = ({version, date, changes, supportOld, buttons, blogLink, upd
         </div>
     )
 }
-
-export default VersionInfo;
