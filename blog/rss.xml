@@ -4,15 +4,26 @@
         <title>LDYOM Blog</title>
         <link>https://getechg.github.io/LDYOM/blog</link>
         <description>LDYOM Blog</description>
-        <lastBuildDate>Fri, 03 May 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 12 Apr 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
         <item>
+            <title><![CDATA[Beta 0.8.0 Preview 10]]></title>
+            <link>https://getechg.github.io/LDYOM/blog/2024/04/12/beta-0-8-0-preview-10</link>
+            <guid>https://getechg.github.io/LDYOM/blog/2024/04/12/beta-0-8-0-preview-10</guid>
+            <pubDate>Fri, 12 Apr 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[This version introduced Carrec paths as well as paths for the camera or cinematic cameras. Additionally, there are improvements for the car and other fixes.]]></description>
+            <content:encoded><![CDATA[<p>This version introduced Carrec paths as well as paths for the camera or cinematic cameras. Additionally, there are improvements for the car and other fixes.</p>
+<p>Download new version: <a href="https://github.com/GeTechG/LDYOM/releases/tag/Beta_0.8_preview_10" target="_blank" rel="noopener noreferrer">Beta 0.8.0 Preview 10</a></p>]]></content:encoded>
+            <category>0.8.0 Preview 10</category>
+            <category>preview-version</category>
+        </item>
+        <item>
             <title><![CDATA[Beta 0.8.0 Preview 9]]></title>
-            <link>https://getechg.github.io/LDYOM/blog/2024/05/03/13-57-beta-0-8-0-preview-9</link>
-            <guid>https://getechg.github.io/LDYOM/blog/2024/05/03/13-57-beta-0-8-0-preview-9</guid>
-            <pubDate>Fri, 03 May 2024 00:00:00 GMT</pubDate>
+            <link>https://getechg.github.io/LDYOM/blog/2024/03/05/beta-0-8-0-preview-9</link>
+            <guid>https://getechg.github.io/LDYOM/blog/2024/03/05/beta-0-8-0-preview-9</guid>
+            <pubDate>Tue, 05 Mar 2024 00:00:00 GMT</pubDate>
             <description><![CDATA[Introducing the latest version featuring the reinstatement of key features like the Lua engine and node editor, paving the way for a polished beta release with a call for user input on additional features, alongside plans for documentation enhancement and website revision, while also announcing a clean build for LDYOM available for download.]]></description>
             <content:encoded><![CDATA[<p>I'm pleased to introduce the new version! Finally, we've reached a stage where the removed features have been reinstated, namely the Lua engine and node editor. Starting from the next version, I'll be focusing on polishing the release version for the new beta release. This means that a new version is coming soon; however, it doesn't mean that there won't be anything new. On the contrary, I'm looking forward to your suggestions for the features you most need to be added to this version. Additionally, I'll be working on documentation and revising the website soon, and there might be some instructional videos.</p>
 <p>Download new version: <a href="https://github.com/GeTechG/LDYOM/releases/tag/Beta_0.8_preview_9" target="_blank" rel="noopener noreferrer">Beta 0.8.0 Preview 9</a></p>

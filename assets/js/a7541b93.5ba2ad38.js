@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkldyom_site=self.webpackChunkldyom_site||[]).push([[653],{7593:e=>{e.exports=JSON.parse('{"label":"0.8.0 Preview 10","permalink":"/LDYOM/blog/tags/0-8-0-preview-10","allTagsPath":"/LDYOM/blog/tags","count":1,"unlisted":false}')}}]);

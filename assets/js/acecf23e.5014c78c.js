@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkldyom_site=self.webpackChunkldyom_site||[]).push([[1903],{1912:e=>{e.exports=JSON.parse('{"blogBasePath":"/LDYOM/blog","blogTitle":"Blog"}')}}]);

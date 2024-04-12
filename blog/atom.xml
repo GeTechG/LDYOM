@@ -2,16 +2,31 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getechg.github.io/LDYOM/blog</id>
     <title>LDYOM Blog</title>
-    <updated>2024-05-03T00:00:00.000Z</updated>
+    <updated>2024-04-12T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getechg.github.io/LDYOM/blog"/>
     <subtitle>LDYOM Blog</subtitle>
     <icon>https://getechg.github.io/LDYOM/img/favicon.ico</icon>
     <entry>
+        <title type="html"><![CDATA[Beta 0.8.0 Preview 10]]></title>
+        <id>https://getechg.github.io/LDYOM/blog/2024/04/12/beta-0-8-0-preview-10</id>
+        <link href="https://getechg.github.io/LDYOM/blog/2024/04/12/beta-0-8-0-preview-10"/>
+        <updated>2024-04-12T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[This version introduced Carrec paths as well as paths for the camera or cinematic cameras. Additionally, there are improvements for the car and other fixes.]]></summary>
+        <content type="html"><![CDATA[<p>This version introduced Carrec paths as well as paths for the camera or cinematic cameras. Additionally, there are improvements for the car and other fixes.</p>
+<p>Download new version: <a href="https://github.com/GeTechG/LDYOM/releases/tag/Beta_0.8_preview_10" target="_blank" rel="noopener noreferrer">Beta 0.8.0 Preview 10</a></p>]]></content>
+        <author>
+            <name>SKIC</name>
+            <uri>https://github.com/GeTechG</uri>
+        </author>
+        <category label="0.8.0 Preview 10" term="0.8.0 Preview 10"/>
+        <category label="preview-version" term="preview-version"/>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Beta 0.8.0 Preview 9]]></title>
-        <id>https://getechg.github.io/LDYOM/blog/2024/05/03/13-57-beta-0-8-0-preview-9</id>
-        <link href="https://getechg.github.io/LDYOM/blog/2024/05/03/13-57-beta-0-8-0-preview-9"/>
-        <updated>2024-05-03T00:00:00.000Z</updated>
+        <id>https://getechg.github.io/LDYOM/blog/2024/03/05/beta-0-8-0-preview-9</id>
+        <link href="https://getechg.github.io/LDYOM/blog/2024/03/05/beta-0-8-0-preview-9"/>
+        <updated>2024-03-05T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Introducing the latest version featuring the reinstatement of key features like the Lua engine and node editor, paving the way for a polished beta release with a call for user input on additional features, alongside plans for documentation enhancement and website revision, while also announcing a clean build for LDYOM available for download.]]></summary>
         <content type="html"><![CDATA[<p>I'm pleased to introduce the new version! Finally, we've reached a stage where the removed features have been reinstated, namely the Lua engine and node editor. Starting from the next version, I'll be focusing on polishing the release version for the new beta release. This means that a new version is coming soon; however, it doesn't mean that there won't be anything new. On the contrary, I'm looking forward to your suggestions for the features you most need to be added to this version. Additionally, I'll be working on documentation and revising the website soon, and there might be some instructional videos.</p>
 <p>Download new version: <a href="https://github.com/GeTechG/LDYOM/releases/tag/Beta_0.8_preview_9" target="_blank" rel="noopener noreferrer">Beta 0.8.0 Preview 9</a></p>

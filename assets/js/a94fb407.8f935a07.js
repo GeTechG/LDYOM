@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkldyom_site=self.webpackChunkldyom_site||[]).push([[950],{3490:e=>{e.exports=JSON.parse('{"permalink":"/LDYOM/blog/tags/0-7-0","page":1,"postsPerPage":10,"totalPages":1,"totalCount":1,"blogDescription":"Blog","blogTitle":"Blog"}')}}]);
