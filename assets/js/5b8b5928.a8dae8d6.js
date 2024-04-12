@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkldyom_site=self.webpackChunkldyom_site||[]).push([[3088],{7841:(e,r,s)=>{s.r(r),s.d(r,{default:()=>i});var t=s(781),d=s(4848);function i(){return(0,d.jsx)(t.A,{description:"Create your world",children:(0,d.jsx)("div",{})})}}}]);
