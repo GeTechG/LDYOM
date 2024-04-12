@@ -464,6 +464,18 @@
     <Filter Include="Data\CCameraExtend">
       <UniqueIdentifier>{62e63cd8-e2f5-4ef0-8458-8f93b024db89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\СameraPath">
+      <UniqueIdentifier>{3889d55d-6c7e-4cba-825e-52907ca0d172}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\tinynurbs">
+      <UniqueIdentifier>{784d9245-4bf8-4bf3-908b-5938dd049789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\CameraPathsWindow">
+      <UniqueIdentifier>{4454e8a3-5127-4c70-ae73-0adc20013767}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\PlayCameraPath">
+      <UniqueIdentifier>{abeadb77-c4b1-462d-9ad3-67622f03a2c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1169,6 +1181,21 @@
     </ClCompile>
     <ClCompile Include="Data\CCameraExtend.cpp">
       <Filter>Data\CCameraExtend</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\CameraPath.cpp">
+      <Filter>Data\СameraPath</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\CameraPathsWindow.cpp">
+      <Filter>Windows\CameraPathsWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\PlayCameraPath.cpp">
+      <Filter>Data\Objectives\World\PlayCameraPath</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\CameraPathWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\CameraExtendWrapper.cpp">
+      <Filter>Lua\Wrappers\LdyomWrappers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2708,6 +2735,51 @@
     </ClInclude>
     <ClInclude Include="Data\CMatrixUtils.h">
       <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CameraPath.h">
+      <Filter>Data\СameraPath</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinynurbs\core\basis.h">
+      <Filter>Utils\tinynurbs</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinynurbs\core\check.h">
+      <Filter>Utils\tinynurbs</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinynurbs\core\curve.h">
+      <Filter>Utils\tinynurbs</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinynurbs\core\evaluate.h">
+      <Filter>Utils\tinynurbs</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinynurbs\core\modify.h">
+      <Filter>Utils\tinynurbs</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinynurbs\core\surface.h">
+      <Filter>Utils\tinynurbs</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinynurbs\tinynurbs.h">
+      <Filter>Utils\tinynurbs</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinynurbs\util\array2.h">
+      <Filter>Utils\tinynurbs</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinynurbs\util\util.h">
+      <Filter>Utils\tinynurbs</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\CameraPathsWindow.h">
+      <Filter>Windows\CameraPathsWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\rationalCurveSerialize.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\glmSerialization.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\CQuaternionUtils.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\PlayCameraPath.h">
+      <Filter>Data\Objectives\World\PlayCameraPath</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

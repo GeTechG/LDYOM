@@ -7,6 +7,7 @@
 
 #include "ActorsWindow.h"
 #include "AudioWindow.h"
+#include "CameraPathsWindow.h"
 #include "CheckpointsWindow.h"
 #include "ObjectsWindow.h"
 #include "ParticlesWindow.h"
@@ -66,6 +67,12 @@ void Windows::EntitiesWindow::draw() {
 			fmt::format("{} {}", ICON_FA_MAP_MARKER_ALT, Localization::getInstance().get("entities.checkpoints")).
 			c_str(), ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
 			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, CheckpointsWindow>();
+		}
+
+		if (ImGui::Button(fmt::format("{} {}", ICON_FA_CAMERA_MOVIE,
+		                              Localization::getInstance().get("entities.camera_paths")).
+		                  c_str(), ImVec2(ImGui::GetFontSize() * 12.5f, .0f))) {
+			WindowsRenderService::getInstance().replaceWindow<EntitiesWindow, CameraPathsWindow>();
 		}
 	}
 	ImGui::End();

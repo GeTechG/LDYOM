@@ -6,6 +6,7 @@
 
 #include "Audio.h"
 #include "BaseObjective.h"
+#include "CameraPath.h"
 #include "Checkpoint.h"
 #include "CheckpointObjective.h"
 #include "Object.h"
@@ -35,6 +36,7 @@ class Scene final : public INameable {
 	std::vector<std::unique_ptr<Audio>> audio_;
 	std::vector<std::unique_ptr<VisualEffect>> visualEffects_;
 	std::vector<std::unique_ptr<Checkpoint>> checkpoints_;
+	std::vector<std::unique_ptr<CameraPath>> cameraPaths_;
 
 	SceneSettings sceneSettings_;
 	bool toggleSceneSettings_ = true;
@@ -52,6 +54,7 @@ public:
 	      std::vector<std::unique_ptr<Pyrotechnics>> pyrotechnics, std::vector<std::unique_ptr<Audio>> audio,
 	      std::vector<std::unique_ptr<VisualEffect>> visualEffects,
 	      std::vector<std::unique_ptr<Checkpoint>> checkpoints,
+	      std::vector<std::unique_ptr<CameraPath>> cameraPaths,
 	      SceneSettings sceneSettings, bool toggleSceneSettings)
 		: name(std::move(name)),
 		  id_(id),
@@ -66,6 +69,7 @@ public:
 		  audio_(std::move(audio)),
 		  visualEffects_(std::move(visualEffects)),
 		  checkpoints_(std::move(checkpoints)),
+		  cameraPaths_(std::move(cameraPaths)),
 		  sceneSettings_(std::move(sceneSettings)),
 		  toggleSceneSettings_(toggleSceneSettings) {}
 
@@ -87,6 +91,7 @@ public:
 	std::vector<std::unique_ptr<Audio>>& getAudio();
 	std::vector<std::unique_ptr<VisualEffect>>& getVisualEffects();
 	std::vector<std::unique_ptr<Checkpoint>>& getCheckpoints();
+	std::vector<std::unique_ptr<CameraPath>>& getCameraPaths();
 
 	SceneSettings& getSceneSettings();
 	bool& isToggleSceneSettings();
@@ -103,6 +108,7 @@ public:
 	void createNewAudio();
 	void createNewVisualEffect();
 	void createNewCheckpoint();
+	void createNewCameraPath();
 
 	template <typename T,
 	          typename = std::enable_if_t<std::is_base_of_v<BaseObjective, T>>>
@@ -117,6 +123,7 @@ public:
 	void createNewAudioFrom(Audio &a);
 	void createNewVisualEffectFrom(VisualEffect &visualEffect);
 	void createNewCheckpointFrom(Checkpoint &checkpoint);
+	void createNewCameraPathFrom(CameraPath &cameraPath);
 
 	void updateEditorObjectsCollision() const;
 

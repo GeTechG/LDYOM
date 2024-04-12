@@ -1,10 +1,8 @@
 ﻿#include <sol.hpp>
 
 #include <windows.h>
-#include "imgui_notify.h"
 #include "ktcoro_wait.hpp"
 #include "LuaEngine.h"
-#include "easylogging/easylogging++.h"
 
 void ktcoroWrapper(sol::state &state) {
 	state.new_usertype<ktcoro_tasklist>("ktcoro_tasklist", sol::no_constructor,

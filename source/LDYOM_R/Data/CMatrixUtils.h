@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "CDraw.h"
+#include "plugin.h"
 
 #ifndef CMatrixUtils_H
 #define CMatrixUtils_H
@@ -57,6 +59,17 @@ inline CMatrix GlmMat4ToCMatrix(const glm::mat4 &mat) {
 	result.pos.z = mat[3].z;
 
 	return result;
+}
+
+inline void CalcWorldCoors(RwV3d *screenCoords, RwV3d *worldCoords) {
+	const float invZ = 1.f / screenCoords->z;
+	screenCoords->x = screenCoords->x / static_cast<RwReal>(RsGlobal.maximumWidth) / invZ;
+	screenCoords->y = screenCoords->y / static_cast<RwReal>(RsGlobal.maximumHeight) / invZ;
+
+	RwMatrix viewMatrixInverse;
+	RwMatrixInvert(&viewMatrixInverse, reinterpret_cast<const RwMatrix*>(&TheCamera.m_mViewMatrix));
+
+	*worldCoords = *RwV3dTransformPoint(worldCoords, screenCoords, &viewMatrixInverse);
 }
 
 #endif // CMatrixUtils_H

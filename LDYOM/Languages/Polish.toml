@@ -131,6 +131,7 @@ nothing_params = "Ten cel nie ma parametrów"
 set_increment_global_variable = "Ustaw/zwiększ zmienną globalną"
 set_characteristics_vehicle = "Ustawienia cech pojazdu"
 follow_carrec_path_vehicle = "Podążanie ścieżką Carrec dla pojazdu"
+play_camera_path = "Odtwórz ścieżkę kamery"
 
 [objective_categories]
 world = "Świat"
@@ -358,6 +359,8 @@ visual_effects = "Efekty wizualne"
 visual_effect = "Efekt wizualny"
 checkpoints = "Punkty kontrolne"
 checkpoint = "Punkt kontrolny"
+camera_paths = "Ścieżki kamery"
+camera_path = "Ścieżka kamery"
 
 [skin_selector]
 title = "Wybór skina"
@@ -1008,3 +1011,17 @@ play = "Odtwórz"
 rerec = "Nagranie ponowne"
 create_copy_vehicle = "Utwórz kopię pojazdu"
 overlay_states = ["Gdy będziesz gotowy do nagrywania, naciśnij I", "Nagrywanie rozpoczęte, naciśnij O, aby zatrzymać", "Naciśnij ponownie O, aby ponownie odtworzyć, naciśnij P, aby zapisać"]
+
+[camera_paths]
+control = "Sterowanie kamerą (PPM+):\n  Przesuwanie: WASD lub strzałki, QE\n  Prędkość przesuwania: %.2f (zmiana za pomocą kółka myszy)\n  Widok: ruch myszy"
+degree = "Stopień"
+weight = "Waga punktu"
+control_points = "Punkty kontrolne"
+add_control_point = "Dodaj punkt kontrolny"
+custom_control_knots = "Edycja węzłów kontrolnych"
+preview_current_point = "Podgląd bieżącego punktu"
+update_control_point = "Aktualizuj punkt kontrolny"
+rotation_easing = "Typ łagodzenia obrotu"
+play = "Odtwórz"
+catmull_rom_rotations = "Obroty Catmull-Roma"
+invalid_curve_warning = "Dane krzywej są niewłaściwe, spróbuj zmniejszyć stopień krzywej lub dodać więcej punktów kontrolnych"

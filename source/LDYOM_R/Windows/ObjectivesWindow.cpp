@@ -33,6 +33,7 @@
 #include "../Data/LevelWantedPlayerObjective.h"
 #include "../Data/PhoneCallPlayerObjective.h"
 #include "../Data/PhotographObjectObjective.h"
+#include "../Data/PlayCameraPath.h"
 #include "../Data/RemoveTimerObjective.h"
 #include "../Data/RemoveWeaponsObjective.h"
 #include "../Data/SaveObjective.h"
@@ -112,7 +113,10 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
 						fast_dynamic_cast<SetIncrementGlobalVariable&>(*objective));
 					break;
-
+				case 10:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<PlayCameraPathObjective&>(*objective));
+					break;
 				default:
 					break;
 			}
@@ -383,6 +387,12 @@ void Windows::ObjectivesWindow::drawListWindow() {
 			if (ImGui::MenuItem(Localization::getInstance().get("objective.set_increment_global_variable").c_str())) {
 				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
 					SetIncrementGlobalVariable>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.play_camera_path").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
+					PlayCameraPathObjective>(nullptr);
 				this->selectElement(this->getListSize() - 1);
 			}
 

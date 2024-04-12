@@ -44,6 +44,7 @@ variable = "Zmienna"
 global_variable = "Zmienna globalna"
 objective = "Cel"
 char = "Postać"
+camera_path = "Ścieżka kamery"
 [nodes.types.core]
 flow = "Przepływ"
 number = "Liczba"
@@ -234,3 +235,10 @@ on_complete = "Po zakończeniu"
 
 [nodes.core.stop_carrec_path_vehicle]
 title = "Zatrzymaj ścieżkę Carrec dla pojazdu"
+
+[nodes.core.play_camera_path]
+title = "Odtwórz ścieżkę kamery"
+on_complete = "Po zakończeniu"
+
+[nodes.core.stop_camera_path]
+title = "Zatrzymaj ścieżkę kamery"

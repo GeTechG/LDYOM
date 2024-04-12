@@ -17,6 +17,7 @@ extern void visualEffectWrapper(sol::state &state);
 extern void checkpointWrapper(sol::state &state);
 extern void sceneSettingsWrapper(sol::state &state);
 extern void weaponWrapper(sol::state &state);
+extern void cameraPathWrapper(sol::state &state);
 
 extern void eventsWrapper(sol::state &state);
 extern void settingsWrapper(sol::state &state);
@@ -24,6 +25,8 @@ extern void taskerWrapper(sol::state &state);
 extern void hotKeyServiceWrapper(sol::state &state);
 extern void modelsServiceWrapper(sol::state &state);
 extern void carrecPathServiceWrapper(sol::state &state);
+extern void cameraExtendWrapper(sol::state &state);
+
 
 void ldyomWrapper(sol::state &state) {
 	projectsServiceWrapper(state);
@@ -43,10 +46,12 @@ void ldyomWrapper(sol::state &state) {
 	checkpointWrapper(state);
 	sceneSettingsWrapper(state);
 	weaponWrapper(state);
+	cameraPathWrapper(state);
 	eventsWrapper(state);
 	settingsWrapper(state);
 	taskerWrapper(state);
 	hotKeyServiceWrapper(state);
 	modelsServiceWrapper(state);
 	carrecPathServiceWrapper(state);
+	cameraExtendWrapper(state);
 }

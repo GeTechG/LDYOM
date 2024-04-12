@@ -120,6 +120,8 @@ std::vector<std::unique_ptr<Checkpoint>>& Scene::getCheckpoints() {
 	return checkpoints_;
 }
 
+std::vector<std::unique_ptr<CameraPath>>& Scene::getCameraPaths() { return cameraPaths_; }
+
 SceneSettings& Scene::getSceneSettings() {
 	return sceneSettings_;
 }
@@ -218,6 +220,12 @@ void Scene::createNewCheckpoint() {
 	this->checkpoints_.back()->spawnEditorCheckpoint();
 }
 
+void Scene::createNewCameraPath() {
+	const auto defaultName = fmt::format("{} #{}", Localization::getInstance().get("entities.camera_path"),
+	                                     this->cameraPaths_.size());
+	this->cameraPaths_.emplace_back(std::make_unique<CameraPath>(defaultName.c_str()));
+}
+
 void Scene::createNewActorFrom(Actor &actor) {
 	this->actors_.emplace_back(std::make_unique<Actor>(actor.copy()));
 }
@@ -256,6 +264,10 @@ void Scene::createNewVisualEffectFrom(VisualEffect &visualEffect) {
 
 void Scene::createNewCheckpointFrom(Checkpoint &checkpoint) {
 	this->checkpoints_.emplace_back(std::make_unique<Checkpoint>(checkpoint.copy()));
+}
+
+void Scene::createNewCameraPathFrom(CameraPath &cameraPath) {
+	this->cameraPaths_.emplace_back(std::make_unique<CameraPath>(cameraPath.copy()));
 }
 
 void Scene::updateEditorObjectsCollision() const {

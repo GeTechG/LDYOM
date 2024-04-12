@@ -3,6 +3,7 @@
 #include "../Data/Actor.h"
 #include "../Data/Audio.h"
 #include "../Data/BaseObjective.h"
+#include "../Data/CameraPath.h"
 #include "../Data/Checkpoint.h"
 #include "../Data/Object.h"
 #include "../Data/Particle.h"
@@ -55,6 +56,9 @@ void indexUuidWrapper(sol::state &state) {
 		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<VisualEffect>> &vector,
+		                                         const std::string &uuid) {
+			               return indexByUuuidGeneric(vector, uuid);
+		               }, [&indexByUuuidGeneric](const std::vector<std::unique_ptr<CameraPath>> &vector,
 		                                         const std::string &uuid) {
 			               return indexByUuuidGeneric(vector, uuid);
 		               }));

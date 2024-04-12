@@ -56,6 +56,7 @@
 
 #include "zip.h"
 #include "../Data/FollowCarrecPathVehicleObjective.h"
+#include "../Data/PlayCameraPath.h"
 #include "boost/archive/xml_oarchive.hpp"
 #include "boost/serialization/utility.hpp"
 #include "easylogging/easylogging++.h"
@@ -82,6 +83,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 				{"audio", c.getAudio()},
 				{"visualEffects", c.getVisualEffects()},
 				{"checkpoints", c.getCheckpoints()},
+				{"cameraPaths", c.getCameraPaths()},
 				{"sceneSettings", c.getSceneSettings()},
 				{"toggleSceneSettings", c.isToggleSceneSettings()},
 			};
@@ -121,7 +123,9 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 							case 9:
 								jsonObjectives.push_back(fast_dynamic_cast<SetIncrementGlobalVariable&>(*objective));
 								break;
-
+							case 10:
+								jsonObjectives.push_back(fast_dynamic_cast<PlayCameraPathObjective&>(*objective));
+								break;
 							default:
 								break;
 						}
@@ -325,6 +329,11 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 								objectives.emplace_back(
 									std::make_unique<SetIncrementGlobalVariable>(
 										jsonObjective.get<SetIncrementGlobalVariable>()));
+								break;
+							case 10:
+								objectives.emplace_back(
+									std::make_unique<PlayCameraPathObjective>(
+										jsonObjective.get<PlayCameraPathObjective>()));
 								break;
 							default:
 								break;
@@ -539,6 +548,9 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 				j.at("audio").get<std::vector<std::unique_ptr<Audio>>>(),
 				j.at("visualEffects").get<std::vector<std::unique_ptr<VisualEffect>>>(),
 				j.at("checkpoints").get<std::vector<std::unique_ptr<Checkpoint>>>(),
+				j.contains("cameraPaths")
+					? j.at("cameraPaths").get<std::vector<std::unique_ptr<CameraPath>>>()
+					: std::vector<std::unique_ptr<CameraPath>>(),
 				j.at("sceneSettings").get<SceneSettings>(),
 				j.at("toggleSceneSettings").get<bool>()
 			};
@@ -816,6 +828,7 @@ void ProjectsService::loadProjectData(const std::filesystem::path &projectDirect
 				scene->getAudio().swap(s.getAudio());
 				scene->getVisualEffects().swap(s.getVisualEffects());
 				scene->getCheckpoints().swap(s.getCheckpoints());
+				scene->getCameraPaths().swap(s.getCameraPaths());
 				scene->getSceneSettings() = s.getSceneSettings();
 				scene->isToggleSceneSettings() = s.isToggleSceneSettings();
 				scene->getObjectives().swap(s.getObjectives());

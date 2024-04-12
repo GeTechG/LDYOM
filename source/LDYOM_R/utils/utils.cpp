@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include <CDraw.h>
 #include <CRadar.h>
 #include <filesystem>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "memsafe.h"
 #include "plugin.h"
 #include "strUtils.h"
+#include "../Data/CCameraExtend.h"
 
 bool utils::Combo(const char *label, int *currentItem, const std::vector<std::string> &items, int count) {
 	const int size = count == 0 ? static_cast<int>(items.size()) : count;

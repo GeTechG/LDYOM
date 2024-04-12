@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include <CCamera.h>
 
+#include "CameraPath.h"
+
 
 class CCameraExtend {
 private:
@@ -15,6 +17,8 @@ public:
 	CMatrix localMatrix;
 	CEntity *attachEntity = nullptr;
 	CEntity *lookEntity = nullptr;
+	CameraPath *playingPath = nullptr;
+	float pathTimeProgress = 0.0f;
 
 	CCameraExtend(CCamera *camera);
 
@@ -25,6 +29,10 @@ public:
 	void setExtendMode(bool mode);
 	void attachToEntity(CEntity *attachEntity, CEntity *lookEntity, const CQuaternion &rotationOffset,
 	                    const CVector &posOffset);
+	bool playCameraPath(CameraPath *path);
+	void stopCameraPath();
+	bool isPlayingPath() const;
+	float getPathProgress() const;
 };
 
 extern CCameraExtend TheCameraExtend;

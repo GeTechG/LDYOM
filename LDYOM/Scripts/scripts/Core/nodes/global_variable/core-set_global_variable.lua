@@ -148,7 +148,6 @@ local setVariableNode = {
         if var then
             LDNodeEditor.defaultInput(editor, ctx, builder, node.inputs[2], ld.loc.get("general.value"), function ()
                 local type = editor.dataTypes[node.inputs[2].type];
-                print("type", node.varValue)
                 node.varValue = type.drawEditValue(node.varValue, "##varValue", fontScale * 100);
             end);
         end

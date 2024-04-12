@@ -6,6 +6,7 @@
 #include "AbstractWindow.h"
 #include "ActorsWindow.h"
 #include "AudioWindow.h"
+#include "CameraPathsWindow.h"
 #include "CarrecPathsWindow.h"
 #include "CheckpointsWindow.h"
 #include "ConsoleWindow.h"
@@ -107,6 +108,8 @@ void addWindows() {
 		std::make_unique<Windows::LuaWrapperWindow>());
 	windows.emplace_back(
 		std::make_unique<Windows::CarrecPathsWindow>());
+	windows.emplace_back(
+		std::make_unique<Windows::CameraPathsWindow>());
 	Windows::WindowsRenderService::getInstance().addRender("showEntitiesName", [] {
 		if (!ProjectPlayerService::getInstance().isProjectRunning()) {
 			if (Settings::getInstance().get<bool>("main.showEntitiesName").value_or(false))

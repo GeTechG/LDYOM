@@ -44,6 +44,7 @@ variable = "Переменная"
 global_variable = "Гл. переменная"
 objective = "Цель"
 char = "Персонаж"
+camera_path = "Путь камеры"
 
 [nodes.types.core]
 flow = "Поток"
@@ -244,3 +245,10 @@ on_complete = "При завершении"
 
 [nodes.core.stop_carrec_path_vehicle]
 title = "Остановить Carrec пути для ТС"
+
+[nodes.core.play_camera_path]
+title = "Воспроизвести путь камеры"
+on_complete = "При завершении"
+
+[nodes.core.stop_camera_path]
+title = "Остановить путь камеры"

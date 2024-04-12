@@ -131,6 +131,7 @@ nothing_params = "Sem parâmetros"
 set_increment_global_variable = "Definir/aumentar variável global"
 set_characteristics_vehicle = "Definir características do veículo"
 follow_carrec_path_vehicle = "Seguir caminho Carrec do veículo"
+play_camera_path = "Reproduzir caminho da câmera"
 
 [objective_categories]
 world = "Mundo"
@@ -358,6 +359,8 @@ pyrotechnics = "Pirotecnia"
 audio = "Áudio"
 visual_effect = "Efeito visual"
 checkpoint = "Ponto de verificação"
+camera_paths = "Caminhos da câmera"
+camera_path = "Caminho da câmera"
 
 [skin_selector]
 title = "Seleção de Skin"
@@ -1008,3 +1011,17 @@ play = "Reproduzir"
 rerec = "Refazer"
 create_copy_vehicle = "Criar cópia do veículo"
 overlay_states = ["Quando estiver pronto para gravar, pressione I", "Gravação iniciada, pressione O para parar", "Pressione O novamente para regravar, pressione P para salvar"]
+
+[camera_paths]
+control = "Controle da câmera (Botão direito do mouse +):\n  Movimento: WASD ou setas, QE\n  Velocidade de movimento: %.2f (altera com a roda do mouse)\n  Vista: movimento do mouse"
+degree = "Grau"
+weight = "Peso do ponto"
+control_points = "Pontos de controle"
+add_control_point = "Adicionar ponto de controle"
+custom_control_knots = "Edição de nós personalizada"
+preview_current_point = "Visualizar ponto atual"
+update_control_point = "Atualizar ponto de controle"
+rotation_easing = "Tipo de suavização de rotação"
+play = "Reproduzir"
+catmull_rom_rotations = "Rotações Catmull-Rom centrípetas"
+invalid_curve_warning = "A curva é inválida, tente reduzir o grau da curva ou adicionar mais pontos de controle"

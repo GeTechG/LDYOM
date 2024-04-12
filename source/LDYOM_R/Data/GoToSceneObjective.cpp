@@ -227,7 +227,7 @@ void GoToSceneObjective::draw(Localization &local, std::vector<std::string> &lis
 	if (scenes.contains(this->sceneId_)) {
 		const auto &objectives = ProjectsService::getInstance().getCurrentProject().getScenes().at(this->sceneId_)->
 		                                                        getObjectives();
-		this->startObjective_ = max(min(this->startObjective_, objectives.size() - 1), 0);
+		this->startObjective_ = std::max(std::min(this->startObjective_, static_cast<int>(objectives.size() - 1)), 0);
 		const auto previewValue = objectives.empty() ? "" : objectives.at(this->startObjective_)->getName();
 		if (ImGui::BeginCombo(local.get("objective.title").c_str(), previewValue.c_str())) {
 			for (int i = 0; i < objectives.size(); ++i) {

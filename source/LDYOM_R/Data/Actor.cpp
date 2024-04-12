@@ -39,7 +39,8 @@ void Actor::spawnProjectEntity() {
 		Command<Commands::GET_PLAYER_GROUP>(0, &g);
 		Command<Commands::SET_GROUP_MEMBER>(g, CPools::GetPedRef(this->projectPed_.value()));
 	}
-	this->projectPed_.value()->m_fMaxHealth = max(this->projectPed_.value()->m_fMaxHealth, this->health);
+	this->projectPed_.value()->m_fMaxHealth = std::max(this->projectPed_.value()->m_fMaxHealth,
+	                                                   static_cast<float>(this->health));
 	this->projectPed_.value()->m_fHealth = static_cast<float>(this->health);
 
 	updateLocation();
@@ -48,7 +49,7 @@ void Actor::spawnProjectEntity() {
 	auto tasklist = ProjectPlayerService::getInstance().getSceneTasklist();
 
 	if (this->isShowHealthBarCounter()) {
-		const auto initialHealth = static_cast<int>(static_cast<float>(this->getHealth()) / static_cast<float>(max(
+		const auto initialHealth = static_cast<int>(static_cast<float>(this->getHealth()) / static_cast<float>(std::max(
 			this->getHealth(), 100)) * 100.f);
 		this->projectHealthBarCounter = CounterService::getInstance().addBarCounter(
 			this->getHealthBarCounterText(), initialHealth);
@@ -58,8 +59,8 @@ void Actor::spawnProjectEntity() {
 		tasklist->add_task([](Actor *actor) -> ktwait {
 			while (actor->getProjectPed().has_value()) {
 				if (actor->getProjectHealthBarCounter().has_value()) {
-					const auto counterHealth = static_cast<int>(actor->getProjectPed().value()->m_fHealth / max(
-						actor->getProjectPed().value()->m_fMaxHealth, 100) * 100.f);
+					const auto counterHealth = static_cast<int>(actor->getProjectPed().value()->m_fHealth / std::max(
+						actor->getProjectPed().value()->m_fMaxHealth, 100.f) * 100.f);
 					CounterService::getInstance().updateCounter(actor->getProjectHealthBarCounter().value(),
 					                                            counterHealth);
 				}

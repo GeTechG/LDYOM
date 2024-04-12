@@ -241,7 +241,7 @@ local charFollowPathNode = {
             local execute = true
             local step = 1
             local index = 1
-            local startTime = time.snTimeInMilliseconds
+            local startTime = time.getSnTimeInMilliseconds()
 
             if node.startFromNearest then
                 local x, y, z = CharOp.getCoordinates(ped)
@@ -272,11 +272,11 @@ local charFollowPathNode = {
 
                 TaskOp.goStraightToCoord(ped, x, y, z, moveState[moveType + 1], -1)
 
-                local timeCondition = pathType == 0 or time.snTimeInMilliseconds - startTime < executeTime * 1000
+                local timeCondition = pathType == 0 or time.getSnTimeInMilliseconds() - startTime < executeTime * 1000
                 local reachDistance = moveType == 0 and 0.5 or 1
 
                 while CharOp.doesExist(ped) and distanceBetweenPoints(x, y, z, CharOp.getCoordinates(ped)) > reachDistance and timeCondition do
-                    timeCondition = (pathType == 0) or (time.snTimeInMilliseconds - startTime < executeTime * 1000)
+                    timeCondition = (pathType == 0) or (time.getSnTimeInMilliseconds() - startTime < executeTime * 1000)
                     coroutine.yield(1)
                 end
 

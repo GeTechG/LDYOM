@@ -116,7 +116,7 @@ void Windows::ListWindow::drawOverlay() const {
 void Windows::ListWindow::draw() {
 	this->listOverlays.clear();
 
-	this->currentElement = min(this->currentElement, getListSize() - 1);
+	this->currentElement = std::min(this->currentElement, getListSize() - 1);
 	const ImVec2 listSize = drawList();
 	if (this->currentElement != -1) {
 		const auto displaySize = ImGui::GetIO().DisplaySize;

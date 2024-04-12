@@ -44,6 +44,7 @@ variable = "Variável"
 global_variable = "Variável Global"
 objective = "Objetivo"
 char = "Personagem"
+camera_path = "Caminho da câmera"
 [nodes.types.core]
 flow = "Fluxo"
 number = "Número"
@@ -231,3 +232,10 @@ on_complete = "Ao completar"
 
 [nodes.core.stop_carrec_path_vehicle]
 title = "Parar caminho Carrec para veículo"
+
+[nodes.core.play_camera_path]
+title = "Reproduzir caminho da câmera"
+on_complete = "Ao concluir"
+
+[nodes.core.stop_camera_path]
+title = "Parar caminho da câmera"

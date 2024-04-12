@@ -174,6 +174,7 @@
     <ClCompile Include="Data\AnimationPlayerObjective.cpp" />
     <ClCompile Include="Data\Audio.cpp" />
     <ClCompile Include="Data\BaseObjective.cpp" />
+    <ClCompile Include="Data\CameraPath.cpp" />
     <ClCompile Include="Data\CCameraExtend.cpp" />
     <ClCompile Include="Data\Checkpoint.cpp" />
     <ClCompile Include="Data\CheckpointObjective.cpp" />
@@ -206,6 +207,7 @@
     <ClCompile Include="Data\PhotographObjectObjective.cpp" />
     <ClCompile Include="Data\Pickup.cpp" />
     <ClCompile Include="Data\PickupObjective.cpp" />
+    <ClCompile Include="Data\PlayCameraPath.cpp" />
     <ClCompile Include="Data\PlayerObjective.cpp" />
     <ClCompile Include="Data\Pyrotechnics.cpp" />
     <ClCompile Include="Data\RemoveTimerObjective.cpp" />
@@ -289,6 +291,8 @@
     <ClCompile Include="utils\AudioWrapper.cpp" />
     <ClCompile Include="utils\BlueprintNodeBuilder.cpp" />
     <ClCompile Include="utils\boostWrapper.cpp" />
+    <ClCompile Include="utils\CameraExtendWrapper.cpp" />
+    <ClCompile Include="utils\CameraPathWrapper.cpp" />
     <ClCompile Include="utils\CarrecPathServiceWrapper.cpp" />
     <ClCompile Include="utils\CarrecPathsService.cpp" />
     <ClCompile Include="utils\CheckpointWrapper.cpp" />
@@ -362,6 +366,7 @@
     <ClCompile Include="utils\WeaponWrapper.cpp" />
     <ClCompile Include="Windows\ActorsWindow.cpp" />
     <ClCompile Include="Windows\AudioWindow.cpp" />
+    <ClCompile Include="Windows\CameraPathsWindow.cpp" />
     <ClCompile Include="Windows\CarrecPathsWindow.cpp" />
     <ClCompile Include="Windows\CheckpointsWindow.cpp" />
     <ClCompile Include="Windows\ConsoleWindow.cpp" />
@@ -412,6 +417,7 @@
     <ClInclude Include="Data\AnimationPlayerObjective.h" />
     <ClInclude Include="Data\Audio.h" />
     <ClInclude Include="Data\BaseObjective.h" />
+    <ClInclude Include="Data\CameraPath.h" />
     <ClInclude Include="Data\CCameraExtend.h" />
     <ClInclude Include="Data\Checkpoint.h" />
     <ClInclude Include="Data\CheckpointObjective.h" />
@@ -419,6 +425,7 @@
     <ClInclude Include="Data\CMatrixUtils.h" />
     <ClInclude Include="Data\CollectPickupObjective.h" />
     <ClInclude Include="Data\CountdownObjective.h" />
+    <ClInclude Include="Data\CQuaternionUtils.h" />
     <ClInclude Include="Data\CSoundSystem.h" />
     <ClInclude Include="Data\CutsceneMutex.h" />
     <ClInclude Include="Data\CutsceneObjective.h" />
@@ -435,6 +442,7 @@
     <ClInclude Include="Data\FollowPathActorObjective.h" />
     <ClInclude Include="Data\FollowPathVehicleObjective.h" />
     <ClInclude Include="Data\GetInVehicleObjective.h" />
+    <ClInclude Include="Data\glmSerialization.h" />
     <ClInclude Include="Data\GoToSceneObjective.h" />
     <ClInclude Include="Data\IRenderable.h" />
     <ClInclude Include="Data\IUuidable.h" />
@@ -452,8 +460,10 @@
     <ClInclude Include="Data\PhotographObjectObjective.h" />
     <ClInclude Include="Data\Pickup.h" />
     <ClInclude Include="Data\PickupObjective.h" />
+    <ClInclude Include="Data\PlayCameraPath.h" />
     <ClInclude Include="Data\PlayerObjective.h" />
     <ClInclude Include="Data\Pyrotechnics.h" />
+    <ClInclude Include="Data\rationalCurveSerialize.h" />
     <ClInclude Include="Data\RemoveTimerObjective.h" />
     <ClInclude Include="Data\RemoveWeaponsObjective.h" />
     <ClInclude Include="Data\Result.h" />
@@ -504,6 +514,15 @@
     <ClInclude Include="include\ktcoro_wait.hpp" />
     <ClInclude Include="include\pool_object_extender.h" />
     <ClInclude Include="include\singleton.h" />
+    <ClInclude Include="include\tinynurbs\core\basis.h" />
+    <ClInclude Include="include\tinynurbs\core\check.h" />
+    <ClInclude Include="include\tinynurbs\core\curve.h" />
+    <ClInclude Include="include\tinynurbs\core\evaluate.h" />
+    <ClInclude Include="include\tinynurbs\core\modify.h" />
+    <ClInclude Include="include\tinynurbs\core\surface.h" />
+    <ClInclude Include="include\tinynurbs\tinynurbs.h" />
+    <ClInclude Include="include\tinynurbs\util\array2.h" />
+    <ClInclude Include="include\tinynurbs\util\util.h" />
     <ClInclude Include="lz4\lz4.h" />
     <ClInclude Include="lz4\lz4hc.h" />
     <ClInclude Include="Services\DiscordService.h" />
@@ -875,6 +894,7 @@
     <ClInclude Include="utils\VirtualScene.h" />
     <ClInclude Include="Windows\ActorsWindow.h" />
     <ClInclude Include="Windows\AudioWindow.h" />
+    <ClInclude Include="Windows\CameraPathsWindow.h" />
     <ClInclude Include="Windows\CarrecPathsWindow.h" />
     <ClInclude Include="Windows\CheckpointsWindow.h" />
     <ClInclude Include="Windows\ConsoleWindow.h" />

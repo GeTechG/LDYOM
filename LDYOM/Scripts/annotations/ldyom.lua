@@ -870,6 +870,20 @@ LDActor = {
     copy = function() end,
 }
 
+
+---@class LDCameraPath
+---@field getName fun(self): string
+---@field copy fun(self): LDCameraPath
+---@field getUuid fun(self): uuid
+---@field getPositionCurve fun(self): userdata
+---@field isCustomControlKnots fun(self): boolean
+---@field getRotationsCurve fun(self): CQuaternion[]
+---@field getRotationsEasing fun(self): integer[]
+---@field getTime fun(self): number
+---@field isCatmullRomRotations fun(self): boolean
+---@field isValid fun(self): boolean
+
+
 ---@class LDSceneSettings
 ---@field groupRelations integer[][]
 ---@field time integer[]
@@ -908,6 +922,8 @@ LDScene = {
     getVisualEffects = function() end,
     ---@return LDCheckpoint[]
     getCheckpoints = function() end,
+    ---@return LDCameraPath[]
+    getCameraPaths = function() end,
     ---@return LDSceneSettings
     getSceneSettings = function() end,
     ---@return boolean
@@ -1016,8 +1032,45 @@ ld.settings = {
 time = {}
 
 ---current time in milliseconds
----@type number
-time.snTimeInMilliseconds = nil
+---@return number
+time.getSnTimeInMilliseconds = function ()
+end
+
+
+---@class CCameraExtend
+CCameraExtend = {
+    ---@param mode boolean
+    setExtendMode = function(self, mode) end,
+    ---@param attachEntity userdata
+    ---@param lookEntity userdata
+    ---@param rotationOffset CQuaternion
+    ---@param posOffset number[]
+    attachToEntity = function(self, attachEntity, lookEntity, rotationOffset, posOffset) end,
+    ---@param path LDCameraPath
+    ---@return boolean
+    playCameraPath = function(self, path) end,
+    stopCameraPath = function(self) end,
+    ---@return boolean
+    isPlayingPath = function(self) end,
+    ---@return number
+    getPathProgress = function(self) end,
+}
+
+
+---@class CCameraExtend
+ld.TheCameraExtend = nil
+
+
+ld.CameraMutex = {
+    ---@return boolean
+    isLocked = function() end,
+}
+
+---@class CutsceneMutexGuard
+CutsceneMutexGuard = {
+    ---@return CutsceneMutexGuard
+    new = function() end,
+}
 
 glm = {}
 

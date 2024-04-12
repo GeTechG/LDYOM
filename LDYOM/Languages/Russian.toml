@@ -130,6 +130,7 @@ nothing_params = "У этой цели нет параметров"
 set_increment_global_variable = "Установить/увеличить гл. переменную"
 set_characteristics_vehicle = "Установить характеристики ТС"
 follow_carrec_path_vehicle = "Следование по Carrec пути"
+play_camera_path = "Воспроизвести путь камеры"
 
 [objective_categories]
 world = "Мир"
@@ -384,6 +385,7 @@ particles = "Частицы"
 pickups = "Пикапы"
 visual_effects = "Визуальные эффекты"
 checkpoints = "Контрольные точки"
+camera_paths = "Кинокамеры"
 actor = "Актер"
 vehicle = "ТС-во"
 object = "Объект"
@@ -394,6 +396,7 @@ pyrotechnics = "Пиротехника"
 audio = "Аудио"
 visual_effect = "Визуальный эффект"
 checkpoint = "Контрольная точка"
+camera_path = "Кинокамера"
 
 [skin_selector]
 title = "Выбор скина"
@@ -544,6 +547,24 @@ conditions = [
   "Актер мертв",
   "Игрок в ТС"
 ]
+
+[camera_paths]
+control = """Управление камерой (ПКМ+):
+  Перемещение: WASD или стрелки, QE
+  Скорость перемещения: %.2f (изменяется колесом мыши)
+  Вид: движение мыши"""
+degree = "Степень"
+weight = "Вес точки"
+control_points = "Контрольные точки"
+add_control_point = "Добавить контрольную точку"
+custom_control_knots = "Редактирование узлов"
+preview_current_point = "Предпросмотр текущей точки"
+update_control_point = "Обновить контрольную точку"
+rotation_easing = "Тип сглаживания вращения"
+play = "Воспроизвести"
+catmull_rom_rotations = "Центростремительное вращение Кэтмулла-Рома"
+invalid_curve_warning = "Данные кривой недействительны, попробуйте уменьшить степень кривой или добавить больше контрольных точек"
+
 
 [hotkey_editor]
 title = "Редактор горячих клавиш"

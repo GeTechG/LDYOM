@@ -48,7 +48,7 @@ void Windows::ProjectsWindowPopup::projectInfo(Localization &local, const Projec
 		const float scaleX = BASE_WIDTH / static_cast<float>(icon->getWidth());
 		const float scaleY = (BASE_WIDTH - 100.0f) / static_cast<float>(icon->getHeight());
 
-		const float scale = min(scaleX, scaleY);
+		const float scale = std::min(scaleX, scaleY);
 
 		const auto size = ImVec2(static_cast<float>(icon->getWidth()) * scale,
 		                         static_cast<float>(icon->getHeight()) * scale);
