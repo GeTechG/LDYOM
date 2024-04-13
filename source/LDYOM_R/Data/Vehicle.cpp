@@ -17,6 +17,11 @@
 
 using namespace plugin;
 
+std::set<unsigned> recolorBan = {
+	MODEL_LEVIATHN, MODEL_HUNTER, MODEL_SEASPAR, MODEL_RCBARON, MODEL_RCRAIDER, MODEL_SPARROW, MODEL_MAVERICK,
+	MODEL_VCNMAV, MODEL_POLMAV, MODEL_RCGOBLIN, MODEL_CARGOBOB, MODEL_RAINDANC
+};
+
 void Vehicle::recolorVehicle(const bool recolor, CVehicle *const newVehicle) {
 	if (recolor) {
 		colors_.clear();
@@ -51,9 +56,23 @@ void Vehicle::recolorVehicle(const bool recolor, CVehicle *const newVehicle) {
 				};
 				colors_.emplace_back(type, color_rgba);
 			});
-		this->setEditorPrimaryColor();
-		this->setEditorSecondaryColor();
+		if (this->isIsGameColorsMode() || this->isRecolorBanned()) {
+			newVehicle->m_nPrimaryColor = this->primaryColorId;
+			newVehicle->m_nSecondaryColor = this->secondaryColorId;
+			newVehicle->m_nTertiaryColor = this->tertiaryColorId;
+			newVehicle->m_nQuaternaryColor = this->quaternaryColorId;
+		} else {
+			this->setEditorPrimaryColor();
+			this->setEditorSecondaryColor();
+		}
 	} else {
+		if (this->isIsGameColorsMode() || this->isRecolorBanned()) {
+			newVehicle->m_nPrimaryColor = this->primaryColorId;
+			newVehicle->m_nSecondaryColor = this->secondaryColorId;
+			newVehicle->m_nTertiaryColor = this->tertiaryColorId;
+			newVehicle->m_nQuaternaryColor = this->quaternaryColorId;
+			return;
+		}
 		components::extractComObjMatVehicle(
 			newVehicle, [&](const int i, components::VehicleComponent comp, components::VehicleAtomic obj,
 			                components::VehicleMaterial mat) {
@@ -125,6 +144,13 @@ CVehicle* Vehicle::spawnVehicle(bool recolor) {
 	newVehicle->m_eDoorLock = this->isLocked() ? DOORLOCK_LOCKED : DOORLOCK_UNLOCKED;
 	newVehicle->m_fDirtLevel = this->dirtyLevel_;
 	Command<Commands::SET_CAR_HEAVY>(newVehicle, this->isHeavy());
+
+	if (recolor) {
+		this->primaryColorId = newVehicle->m_nPrimaryColor;
+		this->secondaryColorId = newVehicle->m_nSecondaryColor;
+		this->tertiaryColorId = newVehicle->m_nTertiaryColor;
+		this->quaternaryColorId = newVehicle->m_nQuaternaryColor;
+	}
 
 	restoreUpgrades(newVehicle, recolor);
 
@@ -262,6 +288,11 @@ std::array<float, 6>& Vehicle::getOpenDoorsRation() { return openDoorsRation_; }
 float& Vehicle::getDirtyLevel() { return dirtyLevel_; }
 bool& Vehicle::isHeavy() { return heavy_; }
 int& Vehicle::getInteriorId() { return interiorId; }
+bool& Vehicle::isIsGameColorsMode() { return isGameColorsMode; }
+unsigned char& Vehicle::getPrimaryColorId() { return primaryColorId; }
+unsigned char& Vehicle::getSecondaryColorId() { return secondaryColorId; }
+unsigned char& Vehicle::getTertiaryColorId() { return tertiaryColorId; }
+unsigned char& Vehicle::getQuaternaryColorId() { return quaternaryColorId; }
 
 
 void Vehicle::updateLocation() const {
@@ -396,4 +427,8 @@ void Vehicle::restoreUpgrades(CVehicle *newVehicle, bool recolor) {
 		                              }
 		                              this_->recolorVehicle(recolor, newVehicle);
 	                              }, this, newVehicle, recolor);
+}
+
+bool Vehicle::isRecolorBanned() const {
+	return recolorBan.contains(this->modelId_);
 }

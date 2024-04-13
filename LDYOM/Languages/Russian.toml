@@ -263,6 +263,11 @@ lights_on = "Включить фары"
 open_doors = "Открыть двери"
 dirty_level = "Грязность"
 heavy = "Тяжелый"
+game_colors = "Цвета игры"
+primary_color_game = "Основной цвет"
+secondary_color_game = "Вторичный цвет"
+tertiary_color_game = "Третичный цвет"
+quaternary_color_game = "Четвертый цвет"
 
 
 [train]

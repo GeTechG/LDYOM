@@ -240,6 +240,11 @@ lights_on = "Ligar as luzes"
 open_doors = "Abrir as portas"
 dirty_level = "Nível de sujeira"
 heavy = "Pesado"
+game_colors = "Cores do jogo"
+primary_color_game = "Cor primária do jogo"
+secondary_color_game = "Cor secundária do jogo"
+tertiary_color_game = "Cor terciária do jogo"
+quaternary_color_game = "Cor quaternária do jogo"
 vehicle_unbreakable = ["À prova de balas", "À prova de fogo", "À prova de explosão", "À prova de colisões", "Proteção contra impactos", "Vulnerabilidade aos pneus"]
 components = ["Roda dianteira esquerda", "Roda dianteira direita", "Roda traseira esquerda", "Roda traseira direita", "Capô", "Porta-malas", "Porta dianteira esquerda", "Porta dianteira direita", "Porta traseira esquerda", "Porta traseira direita", "Paralama dianteiro esquerdo", "Paralama dianteiro direito", "Paralama traseiro esquerdo", "Paralama traseiro direito", "Para-brisa", "Para-choque dianteiro", "Para-choque traseiro"]
 

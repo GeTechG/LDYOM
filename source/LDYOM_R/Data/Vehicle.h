@@ -48,6 +48,11 @@ private:
 	float dirtyLevel_ = 0.f;
 	bool heavy_ = false;
 	int interiorId = 0;
+	bool isGameColorsMode = false;
+	unsigned char primaryColorId = 0;
+	unsigned char secondaryColorId = 0;
+	unsigned char tertiaryColorId = 0;
+	unsigned char quaternaryColorId = 0;
 
 public:
 	Vehicle() = default;
@@ -93,6 +98,11 @@ public:
 	float& getDirtyLevel();
 	bool& isHeavy();
 	int& getInteriorId();
+	bool& isIsGameColorsMode();
+	unsigned char& getPrimaryColorId();
+	unsigned char& getSecondaryColorId();
+	unsigned char& getTertiaryColorId();
+	unsigned char& getQuaternaryColorId();
 
 	void updateLocation() const;
 
@@ -114,6 +124,8 @@ public:
 	void recolorVehicle(bool recolor, CVehicle *newVehicle);
 	void takeUpgrades();
 	void restoreUpgrades(CVehicle *newVehicle, bool recolor);
+
+	bool isRecolorBanned() const;
 };
 
 
@@ -168,6 +180,11 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			j["dirtyLevel"] = a.getDirtyLevel();
 			j["heavy"] = a.isHeavy();
 			j["interiorId"] = a.getInteriorId();
+			j["isGameColorsMode"] = a.isIsGameColorsMode();
+			j["primaryColorId"] = a.getPrimaryColorId();
+			j["secondaryColorId"] = a.getSecondaryColorId();
+			j["tertiaryColorId"] = a.getTertiaryColorId();
+			j["quaternaryColorId"] = a.getQuaternaryColorId();
 		}
 
 		static void from_json(const json &j, Vehicle &obj) {
@@ -228,6 +245,15 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 			obj.getDirtyLevel() = j.contains("dirtyLevel") ? j.at("dirtyLevel").get<float>() : 0.f;
 			obj.isHeavy() = j.contains("heavy") ? j.at("heavy").get<bool>() : false;
 			obj.getInteriorId() = j.contains("interiorId") ? j.at("interiorId").get<int>() : 0;
+			obj.isIsGameColorsMode() = j.contains("isGameColorsMode") ? j.at("isGameColorsMode").get<bool>() : false;
+			obj.getPrimaryColorId() = j.contains("primaryColorId") ? j.at("primaryColorId").get<unsigned char>() : 0;
+			obj.getSecondaryColorId() = j.contains("secondaryColorId")
+				                            ? j.at("secondaryColorId").get<unsigned char>()
+				                            : 0;
+			obj.getTertiaryColorId() = j.contains("tertiaryColorId") ? j.at("tertiaryColorId").get<unsigned char>() : 0;
+			obj.getQuaternaryColorId() = j.contains("quaternaryColorId")
+				                             ? j.at("quaternaryColorId").get<unsigned char>()
+				                             : 0;
 		}
 	};
 

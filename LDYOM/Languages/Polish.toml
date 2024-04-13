@@ -240,6 +240,11 @@ lights_on = "Włącz światła"
 open_doors = "Otwórz drzwi"
 dirty_level = "Poziom brudu"
 heavy = "ciężki"
+game_colors = "Kolory gry"
+primary_color_game = "Główny kolor gry"
+secondary_color_game = "Wtórny kolor gry"
+tertiary_color_game = "Trzeci kolor gry"
+quaternary_color_game = "Czwarty kolor gry"
 vehicle_unbreakable = ["Odporne na pociski", "Ognioodporne", "Odporność na eksplozje", "Odporność na kolizje", "Odporność na ciosy", "Wrażliwość opon"]
 components = ["Lewe przednie koło", "Prawe przednie koło", "Lewe tylne koło", "Prawe tylne koło", "Maska", "Bagażnik", "Lewe przednie drzwi", "Prawe przednie drzwi", "Lewe tylne drzwi", "Prawe tylne drzwi", "Lewe przednie skrzydło", "Prawe przednie skrzydło", "Lewe tylne skrzydło", "Prawe tylne skrzydło", "Szyba przednia", "Zderzak przedni", "Zderzak tylny"]
 

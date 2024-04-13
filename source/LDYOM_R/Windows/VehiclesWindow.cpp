@@ -57,50 +57,125 @@ void characteristicsSection(Localization &local, Vehicle *vehicle) {
 	const auto scaleFont = ImGui::GetFontSize() / 16.f;
 	if (ImGui::TreeNode(local.get("general.characteristics").c_str())) {
 		ImGui::BeginChild("##characteristics", ImVec2(0, scaleFont * 200.f));
-		utils::ToggleButton(local.get("vehicle.extended_colors").c_str(), &vehicle->isExtendedColor());
-		if (vehicle->isExtendedColor()) {
-			if (ImGui::TreeNode(local.get("general.colors").c_str())) {
-				components::extractComObjMatVehicle(vehicle->getEditorVehicle().value(),
-				                                    [&](int i, components::VehicleComponent comp,
-				                                        components::VehicleAtomic obj,
-				                                        components::VehicleMaterial mat) {
-					                                    ImGui::PushID(i);
-					                                    if (ImGui::ColorEdit4(
-						                                    std::to_string(i).c_str(),
-						                                    vehicle->getColors()[i].second.data(),
-						                                    ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs
-						                                    +
-						                                    ImGuiColorEditFlags_NoLabel)) {
-						                                    mat.setColor(
-							                                    floatColorToCRGBA(vehicle->getColors()[i].second));
-					                                    }
-					                                    ImGui::SameLine();
-					                                    const auto &nameC = fmt::format(
-						                                    "{}:{}:{}", comp.getName(), !mat._material->texture
-								                                    ? "[no texture]"
-								                                    : mat._material->texture->name,
-						                                    mat.getRawPointer());
-					                                    ImGui::Text(nameC.c_str());
-					                                    ImGui::PopID();
-				                                    });
-				ImGui::TreePop();
+		if (!vehicle->isRecolorBanned()) {
+			if (utils::ToggleButton(local.get("vehicle.game_colors").c_str(), &vehicle->isIsGameColorsMode())) {
+				if (vehicle->getEditorVehicle().has_value()) {
+					vehicle->spawnEditorVehicle(true);
+				}
 			}
+		}
+		static unsigned char *colorId = nullptr;
+		if (vehicle->isIsGameColorsMode() || vehicle->isRecolorBanned()) {
+			const auto primary = CVehicleModelInfo::ms_vehicleColourTable[vehicle->getPrimaryColorId()];
+			if (ImGui::ColorButton("##primaryColor",
+			                       ImColor(primary.r, primary.g, primary.b),
+			                       ImGuiColorEditFlags_NoTooltip)) {
+				colorId = &vehicle->getPrimaryColorId();
+				ImGui::OpenPopup("colorPopupSelect");
+			}
+			ImGui::SameLine();
+			ImGui::Text(local.get("vehicle.primary_color_game").c_str());
+			const auto secondary = CVehicleModelInfo::ms_vehicleColourTable[vehicle->getSecondaryColorId()];
+			if (ImGui::ColorButton("##secondaryColor",
+			                       ImColor(secondary.r, secondary.g, secondary.b),
+			                       ImGuiColorEditFlags_NoTooltip)) {
+				colorId = &vehicle->getSecondaryColorId();
+				ImGui::OpenPopup("colorPopupSelect");
+			}
+			ImGui::SameLine();
+			ImGui::Text(local.get("vehicle.secondary_color_game").c_str());
+			const auto tertiary = CVehicleModelInfo::ms_vehicleColourTable[vehicle->getTertiaryColorId()];
+			if (ImGui::ColorButton("##tertiaryColor",
+			                       ImColor(tertiary.r, tertiary.g, tertiary.b),
+			                       ImGuiColorEditFlags_NoTooltip)) {
+				colorId = &vehicle->getTertiaryColorId();
+				ImGui::OpenPopup("colorPopupSelect");
+			}
+			ImGui::SameLine();
+			ImGui::Text(local.get("vehicle.tertiary_color_game").c_str());
+			const auto quaternary = CVehicleModelInfo::ms_vehicleColourTable[vehicle->getQuaternaryColorId()];
+			if (ImGui::ColorButton("##quaternaryColor",
+			                       ImColor(quaternary.r, quaternary.g, quaternary.b, quaternary.a),
+			                       ImGuiColorEditFlags_NoTooltip)) {
+				colorId = &vehicle->getQuaternaryColorId();
+				ImGui::OpenPopup("colorPopupSelect");
+			}
+			ImGui::SameLine();
+			ImGui::Text(local.get("vehicle.quaternary_color_game").c_str());
 		} else {
-			if (ImGui::ColorEdit4("##primaryColorE", vehicle->getPrimaryColor(),
-			                      ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
-			                      ImGuiColorEditFlags_NoLabel)) {
-				vehicle->setEditorPrimaryColor();
-			}
-			ImGui::SameLine();
-			ImGui::Text(local.get("vehicle.primary_color").c_str());
+			utils::ToggleButton(local.get("vehicle.extended_colors").c_str(), &vehicle->isExtendedColor());
+			if (vehicle->isExtendedColor()) {
+				if (ImGui::TreeNode(local.get("general.colors").c_str())) {
+					components::extractComObjMatVehicle(vehicle->getEditorVehicle().value(),
+					                                    [&](int i, components::VehicleComponent comp,
+					                                        components::VehicleAtomic obj,
+					                                        components::VehicleMaterial mat) {
+						                                    ImGui::PushID(i);
+						                                    if (ImGui::ColorEdit4(
+							                                    std::to_string(i).c_str(),
+							                                    vehicle->getColors()[i].second.data(),
+							                                    ImGuiColorEditFlags_AlphaBar +
+							                                    ImGuiColorEditFlags_NoInputs
+							                                    +
+							                                    ImGuiColorEditFlags_NoLabel)) {
+							                                    mat.setColor(
+								                                    floatColorToCRGBA(vehicle->getColors()[i].second));
+						                                    }
+						                                    ImGui::SameLine();
+						                                    const auto &nameC = fmt::format(
+							                                    "{}:{}:{}", comp.getName(), !mat._material->texture
+									                                    ? "[no texture]"
+									                                    : mat._material->texture->name,
+							                                    mat.getRawPointer());
+						                                    ImGui::Text(nameC.c_str());
+						                                    ImGui::PopID();
+					                                    });
+					ImGui::TreePop();
+				}
+			} else {
+				if (ImGui::ColorEdit4("##primaryColorE", vehicle->getPrimaryColor(),
+				                      ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
+				                      ImGuiColorEditFlags_NoLabel)) {
+					vehicle->setEditorPrimaryColor();
+				}
+				ImGui::SameLine();
+				ImGui::Text(local.get("vehicle.primary_color").c_str());
 
-			if (ImGui::ColorEdit4("##secondaryColorE", vehicle->getSecondaryColor(),
-			                      ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
-			                      ImGuiColorEditFlags_NoLabel)) {
-				vehicle->setEditorSecondaryColor();
+				if (ImGui::ColorEdit4("##secondaryColorE", vehicle->getSecondaryColor(),
+				                      ImGuiColorEditFlags_AlphaBar + ImGuiColorEditFlags_NoInputs +
+				                      ImGuiColorEditFlags_NoLabel)) {
+					vehicle->setEditorSecondaryColor();
+				}
+				ImGui::SameLine();
+				ImGui::Text(local.get("vehicle.secondary_color").c_str());
 			}
-			ImGui::SameLine();
-			ImGui::Text(local.get("vehicle.secondary_color").c_str());
+		}
+
+		auto applyColors = [vehicle] {
+			if (vehicle->getEditorVehicle().has_value()) {
+				auto a = vehicle->getEditorVehicle().value()->m_nPrimaryColor;
+				vehicle->getEditorVehicle().value()->m_nPrimaryColor = vehicle->getPrimaryColorId();
+				a = vehicle->getEditorVehicle().value()->m_nPrimaryColor;
+				vehicle->getEditorVehicle().value()->m_nSecondaryColor = vehicle->getSecondaryColorId();
+				vehicle->getEditorVehicle().value()->m_nTertiaryColor = vehicle->getTertiaryColorId();
+				vehicle->getEditorVehicle().value()->m_nQuaternaryColor = vehicle->getQuaternaryColorId();
+			}
+		};
+
+		if (ImGui::BeginPopup("colorPopupSelect")) {
+			for (int i = 0; i < 128; ++i) {
+				const auto crgba = CVehicleModelInfo::ms_vehicleColourTable[i];
+				if (i % 8 != 0) {
+					ImGui::SameLine();
+				}
+				if (ImGui::ColorButton(std::to_string(i).c_str(), ImColor(crgba.r, crgba.g, crgba.b, crgba.a),
+				                       ImGuiColorEditFlags_NoTooltip)) {
+					*colorId = static_cast<unsigned char>(i);
+					applyColors();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			ImGui::EndPopup();
 		}
 
 		ImGui::Separator();

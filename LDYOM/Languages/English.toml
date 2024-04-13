@@ -239,6 +239,11 @@ lights_on = "Turn on headlights"
 open_doors = "Open components"
 dirty_level = "Grunge/Dirtiness level"
 heavy = "Heavy"
+game_colors = "Game Colors"
+primary_color_game = "Primary Color"
+secondary_color_game = "Secondary Color"
+tertiary_color_game = "Tertiary Color"
+quaternary_color_game = "Quaternary Color"
 vehicle_unbreakable = ["Bulletproof", "Fireproof", "Explosionproof", "Collisionproof", "Meleeproof", "Tire Vulnerability"]
 components = ["Left front wheel", "Right front wheel", "Left rear wheel", "Right rear wheel", "Hood", "Trunk", "Left front door", "Right front door", "Left rear door", "Right rear door", "Left front fender", "Right front fender", "Left rear fender", "Right rear fender", "Windshield", "Front bumper", "Rear bumper"]
 
