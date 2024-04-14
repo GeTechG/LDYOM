@@ -117,5 +117,8 @@ output_draw="""
 LDNodeEditor.defaultOutput(editor, ctx, builder, node.outputs[{index}], "{name}");
 """
 input_run="local {field} = inputValues[{index}] or node.{field}"
+input_run_check="""if {field} == nil or {field} == 0 then
+            error("Input {name} is not set")
+        end"""
 run_call="{clazz}Op.{method}({inps})"
 run_call_ret="local {outs} = {clazz}Op.{method}({inps})"

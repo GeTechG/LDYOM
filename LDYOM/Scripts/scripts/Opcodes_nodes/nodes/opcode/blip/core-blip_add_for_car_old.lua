@@ -168,6 +168,9 @@ local blipAddForCarOldNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local vehicle = inputValues[2] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		local color = inputValues[3] or node.color
 		local display = inputValues[4] or node.display
 		local handle = BlipOp.addForCarOld(vehicle, color, display)

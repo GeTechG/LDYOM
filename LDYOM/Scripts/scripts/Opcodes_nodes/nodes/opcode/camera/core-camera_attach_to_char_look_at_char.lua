@@ -180,10 +180,16 @@ local cameraAttachToCharLookAtCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local xOffset = inputValues[3] or node.xOffset
 		local yOffset = inputValues[4] or node.yOffset
 		local zOffset = inputValues[5] or node.zOffset
 		local char = inputValues[6] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local tilt = inputValues[7] or node.tilt
 		local switchStyle = inputValues[8] or node.switchStyle
 		CameraOp.attachToCharLookAtChar(handle, xOffset, yOffset, zOffset, char, tilt, switchStyle)

@@ -91,6 +91,9 @@ local taskUseAttractorNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local attractor = inputValues[3] or node.attractor
 		TaskOp.useAttractor(char, attractor)
         return {1}

@@ -92,7 +92,13 @@ local taskDestroyCarNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local vehicle = inputValues[3] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		TaskOp.destroyCar(char, vehicle)
         return {1}
     end

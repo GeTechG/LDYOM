@@ -120,6 +120,9 @@ local carLockDoorsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local lockStatus = inputValues[3] or node.lockStatus
 		CarOp.lockDoors(self_, lockStatus)
         return {1}

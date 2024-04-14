@@ -103,6 +103,9 @@ local charSetInformRespectedFriendsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local radius = inputValues[3] or node.radius
 		local _p3 = inputValues[4] or node._p3
 		CharOp.setInformRespectedFriends(self_, radius, _p3)

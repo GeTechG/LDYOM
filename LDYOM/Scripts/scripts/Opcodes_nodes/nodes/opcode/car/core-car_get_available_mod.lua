@@ -128,6 +128,9 @@ local carGetAvailableModNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local slotId = inputValues[3] or node.slotId
 		local modelId = CarOp.getAvailableMod(self_, slotId)
         return {1, modelId}

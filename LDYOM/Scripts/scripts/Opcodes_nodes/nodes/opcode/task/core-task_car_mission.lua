@@ -196,8 +196,17 @@ local taskCarMissionNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local vehicle = inputValues[3] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		local targetVehicle = inputValues[4] or node.targetVehicle
+		if targetVehicle == nil or targetVehicle == 0 then
+            error("Input targetVehicle is not set")
+        end
 		local missionId = inputValues[5] or node.missionId
 		local cruiseSpeed = inputValues[6] or node.cruiseSpeed
 		local drivingStyle = inputValues[7] or node.drivingStyle

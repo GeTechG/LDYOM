@@ -88,6 +88,9 @@ local blipAddForDeadCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local handle = BlipOp.addForDeadChar(char)
         return {1, handle}
     end

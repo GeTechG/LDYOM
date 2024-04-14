@@ -1,6 +1,9 @@
 ﻿#include <sol.hpp>
 
 #include <windows.h>
+
+#include <fmt/core.h>
+#include "imgui_notify.h"
 #include "ktcoro_wait.hpp"
 #include "LuaEngine.h"
 
@@ -16,6 +19,11 @@ void ktcoroWrapper(sol::state &state) {
 				                                    auto result = coroutine();
 				                                    if (!result.valid()) {
 					                                    LuaEngine::errorHandler(result);
+					                                    const sol::error err = result;
+					                                    ImGui::InsertNotification({
+						                                    ImGuiToastType_Error, 1000,
+						                                    fmt::format("Error: {}", err.what()).c_str()
+					                                    });
 					                                    break;
 				                                    }
 				                                    int time = 1;

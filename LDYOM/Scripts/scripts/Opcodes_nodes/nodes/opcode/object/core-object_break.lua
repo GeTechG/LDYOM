@@ -92,6 +92,9 @@ local objectBreakNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local intensity = inputValues[3] or node.intensity
 		ObjectOp["break"](self_, intensity)
         return {1}

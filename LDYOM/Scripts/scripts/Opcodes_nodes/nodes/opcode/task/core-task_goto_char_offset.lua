@@ -128,7 +128,13 @@ local taskGotoCharOffsetNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local target = inputValues[3] or node.target
+		if target == nil or target == 0 then
+            error("Input target is not set")
+        end
 		local time = inputValues[4] or node.time
 		local radius = inputValues[5] or node.radius
 		local heading = inputValues[6] or node.heading

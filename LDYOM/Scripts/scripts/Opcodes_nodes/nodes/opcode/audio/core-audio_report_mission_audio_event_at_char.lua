@@ -91,6 +91,9 @@ local audioReportMissionAudioEventAtCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local soundId = inputValues[3] or node.soundId
 		AudioOp.reportMissionAudioEventAtChar(handle, soundId)
         return {1}

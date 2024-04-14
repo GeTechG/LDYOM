@@ -199,6 +199,9 @@ local taskGoToCoordWhileAimingNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local x = inputValues[3] or node.x
 		local y = inputValues[4] or node.y
 		local z = inputValues[5] or node.z
@@ -206,6 +209,9 @@ local taskGoToCoordWhileAimingNode = {
 		local turnRadius = inputValues[7] or node.turnRadius
 		local stopRadius = inputValues[8] or node.stopRadius
 		local target = inputValues[9] or node.target
+		if target == nil or target == 0 then
+            error("Input target is not set")
+        end
 		local xOffset = inputValues[10] or node.xOffset
 		local yOffset = inputValues[11] or node.yOffset
 		local zOffset = inputValues[12] or node.zOffset

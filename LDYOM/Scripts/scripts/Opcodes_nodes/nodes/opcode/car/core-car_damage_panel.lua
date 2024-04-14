@@ -92,6 +92,9 @@ local carDamagePanelNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local panelId = inputValues[3] or node.panelId
 		CarOp.damagePanel(self_, panelId)
         return {1}

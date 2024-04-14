@@ -139,7 +139,13 @@ local taskDrivePointRouteAdvancedNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local vehicle = inputValues[3] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		local speed = inputValues[4] or node.speed
 		local _p4 = inputValues[5] or node._p4
 		local _p5 = inputValues[6] or node._p5

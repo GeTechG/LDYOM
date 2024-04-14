@@ -92,7 +92,13 @@ local taskKillCharOnFootNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local killer = inputValues[2] or node.killer
+		if killer == nil or killer == 0 then
+            error("Input killer is not set")
+        end
 		local target = inputValues[3] or node.target
+		if target == nil or target == 0 then
+            error("Input target is not set")
+        end
 		TaskOp.killCharOnFoot(killer, target)
         return {1}
     end

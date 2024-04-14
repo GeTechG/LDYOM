@@ -113,6 +113,9 @@ local carIsPassengerSeatFreeNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[1] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local seatIndex = inputValues[2] or node.seatIndex
 		local result = CarOp.isPassengerSeatFree(self_, seatIndex)
         return {result}

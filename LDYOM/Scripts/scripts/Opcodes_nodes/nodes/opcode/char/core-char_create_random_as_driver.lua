@@ -88,6 +88,9 @@ local charCreateRandomAsDriverNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local vehicle = inputValues[2] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		local handle = CharOp.createRandomAsDriver(vehicle)
         return {1, handle}
     end

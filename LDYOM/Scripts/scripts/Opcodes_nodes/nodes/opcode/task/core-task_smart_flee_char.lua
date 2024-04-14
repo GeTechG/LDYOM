@@ -116,7 +116,13 @@ local taskSmartFleeCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local threat = inputValues[3] or node.threat
+		if threat == nil or threat == 0 then
+            error("Input threat is not set")
+        end
 		local radius = inputValues[4] or node.radius
 		local time = inputValues[5] or node.time
 		TaskOp.smartFleeChar(handle, threat, radius, time)

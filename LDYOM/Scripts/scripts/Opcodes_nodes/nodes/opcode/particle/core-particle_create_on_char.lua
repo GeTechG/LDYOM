@@ -149,6 +149,9 @@ local particleCreateOnCharNode = {
     run = function(editor, context, node, inputValues)
         local name = inputValues[2] or node.name
 		local char = inputValues[3] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local xOffset = inputValues[4] or node.xOffset
 		local yOffset = inputValues[5] or node.yOffset
 		local zOffset = inputValues[6] or node.zOffset

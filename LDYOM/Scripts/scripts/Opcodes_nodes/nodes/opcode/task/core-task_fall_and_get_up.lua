@@ -104,6 +104,9 @@ local taskFallAndGetUpNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local fallDown = inputValues[3] or node.fallDown
 		local timeOnGround = inputValues[4] or node.timeOnGround
 		TaskOp.fallAndGetUp(handle, fallDown, timeOnGround)

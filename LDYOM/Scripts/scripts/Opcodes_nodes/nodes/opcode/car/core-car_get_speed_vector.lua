@@ -103,6 +103,9 @@ local carGetSpeedVectorNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local x, y, z = CarOp.getSpeedVector(self_)
         return {1, x, y, z}
     end

@@ -149,6 +149,9 @@ local particleCreateOnObjectNode = {
     run = function(editor, context, node, inputValues)
         local name = inputValues[2] or node.name
 		local object = inputValues[3] or node.object
+		if object == nil or object == 0 then
+            error("Input object is not set")
+        end
 		local xOffset = inputValues[4] or node.xOffset
 		local yOffset = inputValues[5] or node.yOffset
 		local zOffset = inputValues[6] or node.zOffset

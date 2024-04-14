@@ -92,7 +92,13 @@ local taskSetCharDecisionMakerNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local decisionMakerChar = inputValues[3] or node.decisionMakerChar
+		if decisionMakerChar == nil or decisionMakerChar == 0 then
+            error("Input decisionMakerChar is not set")
+        end
 		TaskOp.setCharDecisionMaker(char, decisionMakerChar)
         return {1}
     end

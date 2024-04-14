@@ -179,10 +179,16 @@ local cameraAttachToCharLookAtVehicleNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local xOffset = inputValues[3] or node.xOffset
 		local yOffset = inputValues[4] or node.yOffset
 		local zOffset = inputValues[5] or node.zOffset
 		local vehicle = inputValues[6] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		local tilt = inputValues[7] or node.tilt
 		local switchStyle = inputValues[8] or node.switchStyle
 		CameraOp.attachToCharLookAtVehicle(char, xOffset, yOffset, zOffset, vehicle, tilt, switchStyle)

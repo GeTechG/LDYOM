@@ -181,19 +181,24 @@ def generate():
                     name = inp["name"] if inp["name"] != "" else ("inp" + str(len(inputs) - 1))
                     if name == "self":
                         name = "self_"
+                    type_end = ""
                     if inp["type"] in enums:
-                        inputs.append(templates["input"].format(type="core.number"))
+                        type_end = "core.number";
+                        inputs.append(templates["input"].format(type=type_end))
                         fields.append("---@field {} {}".format(name, "integer"))
                         fields_init.append("{} = {}".format(name, def_val["integer"]))
                         draws.append(templates["input_enum_draw"].format(index=len(inputs), field=name, name=inp["name"], enum=inp["type"]))
                     else:
-                        inputs.append(templates["input"].format(type=types[inp["type"]]))
+                        type_end = types[inp["type"]]
+                        inputs.append(templates["input"].format(type=type_end))
                         type_lua_c = types_lua[inp["type"]]
                         fields.append("---@field {} {}".format(name, type_lua_c))
                         fields_init.append("{} = {}".format(name, def_val[type_lua_c]))
                         draws.append(templates["input_draw"].format(index=len(inputs), field=name, name=inp["name"]))
 
                     run.append(templates["input_run"].format(index=len(inputs), field=name))
+                    if type_end not in ["core.number", "core.bool", "core.string"]:
+                        run.append(templates["input_run_check"].format(field=name, name=inp["name"]))
                     inps.append(name)
 
             outputs = []
@@ -256,7 +261,7 @@ def generate():
             )
             lang_toml["nodes"]["node_editor"]["categories"][stringcase.snakecase(command["class"])] = command["class"]
             lang_toml["nodes"]["core"][stringcase.snakecase(node_name)] = dict()
-            lang_toml["nodes"]["core"][stringcase.snakecase(node_name)]["title"] = command["member"]
+            lang_toml["nodes"]["core"][stringcase.snakecase(node_name)]["title"] = command["class"] + command["member"]
             if "short_desc" in command and command["short_desc"] != "":
                 lang_toml["nodes"]["core"][stringcase.snakecase(node_name)]["short_desc"] = command["short_desc"]
 

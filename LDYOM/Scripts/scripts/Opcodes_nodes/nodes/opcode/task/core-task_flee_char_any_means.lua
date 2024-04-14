@@ -163,7 +163,13 @@ local taskFleeCharAnyMeansNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local threat = inputValues[3] or node.threat
+		if threat == nil or threat == 0 then
+            error("Input threat is not set")
+        end
 		local runDistance = inputValues[4] or node.runDistance
 		local time = inputValues[5] or node.time
 		local changeCourse = inputValues[6] or node.changeCourse

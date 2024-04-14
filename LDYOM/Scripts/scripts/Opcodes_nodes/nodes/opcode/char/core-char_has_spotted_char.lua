@@ -85,7 +85,13 @@ local charHasSpottedCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[1] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local target = inputValues[2] or node.target
+		if target == nil or target == 0 then
+            error("Input target is not set")
+        end
 		local result = CharOp.hasSpottedChar(self_, target)
         return {result}
     end

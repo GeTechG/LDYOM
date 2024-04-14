@@ -128,6 +128,9 @@ local carGetDoorAngleRatioNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local door = inputValues[3] or node.door
 		local ratio = CarOp.getDoorAngleRatio(self_, door)
         return {1, ratio}

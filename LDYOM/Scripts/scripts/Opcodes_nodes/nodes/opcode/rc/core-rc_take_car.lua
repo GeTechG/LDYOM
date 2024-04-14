@@ -93,6 +93,9 @@ local rcTakeCarNode = {
     run = function(editor, context, node, inputValues)
         local player = inputValues[2] or node.player
 		local vehicle = inputValues[3] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		RcOp.takeCar(player, vehicle)
         return {1}
     end

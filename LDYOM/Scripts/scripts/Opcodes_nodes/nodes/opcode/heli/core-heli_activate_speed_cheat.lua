@@ -92,6 +92,9 @@ local heliActivateSpeedCheatNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local power = inputValues[3] or node.power
 		HeliOp.activateSpeedCheat(self_, power)
         return {1}

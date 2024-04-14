@@ -152,6 +152,9 @@ local taskFollowPathNodesToCoordWithRadiusNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local x = inputValues[3] or node.x
 		local y = inputValues[4] or node.y
 		local z = inputValues[5] or node.z

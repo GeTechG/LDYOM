@@ -115,6 +115,9 @@ local planeFlyInDirectionNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local heading = inputValues[3] or node.heading
 		local minAltitude = inputValues[4] or node.minAltitude
 		local maxAltitude = inputValues[5] or node.maxAltitude

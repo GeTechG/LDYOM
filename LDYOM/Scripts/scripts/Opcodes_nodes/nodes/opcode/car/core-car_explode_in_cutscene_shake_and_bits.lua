@@ -116,6 +116,9 @@ local carExplodeInCutsceneShakeAndBitsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local shake = inputValues[3] or node.shake
 		local effect = inputValues[4] or node.effect
 		local sound = inputValues[5] or node.sound

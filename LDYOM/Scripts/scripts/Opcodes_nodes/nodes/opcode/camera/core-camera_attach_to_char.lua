@@ -204,6 +204,9 @@ local cameraAttachToCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local xOffset = inputValues[3] or node.xOffset
 		local yOffset = inputValues[4] or node.yOffset
 		local zOffset = inputValues[5] or node.zOffset

@@ -160,6 +160,9 @@ local cameraPointAtCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local mode = inputValues[3] or node.mode
 		local switchStyle = inputValues[4] or node.switchStyle
 		CameraOp.pointAtChar(char, mode, switchStyle)

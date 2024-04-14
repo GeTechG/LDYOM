@@ -92,6 +92,9 @@ local taskJumpNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local state = inputValues[3] or node.state
 		TaskOp.jump(handle, state)
         return {1}

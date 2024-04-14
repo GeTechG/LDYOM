@@ -88,6 +88,9 @@ local blipAddForPickupNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local pickup = inputValues[2] or node.pickup
+		if pickup == nil or pickup == 0 then
+            error("Input pickup is not set")
+        end
 		local handle = BlipOp.addForPickup(pickup)
         return {1, handle}
     end

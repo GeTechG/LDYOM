@@ -116,7 +116,13 @@ local taskChatWithCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local other = inputValues[3] or node.other
+		if other == nil or other == 0 then
+            error("Input other is not set")
+        end
 		local leadSpeaker = inputValues[4] or node.leadSpeaker
 		local _p4 = inputValues[5] or node._p4
 		TaskOp.chatWithChar(char, other, leadSpeaker, _p4)

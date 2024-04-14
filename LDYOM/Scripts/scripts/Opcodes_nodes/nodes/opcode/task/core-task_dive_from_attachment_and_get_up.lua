@@ -91,6 +91,9 @@ local taskDiveFromAttachmentAndGetUpNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local time = inputValues[3] or node.time
 		TaskOp.diveFromAttachmentAndGetUp(handle, time)
         return {1}

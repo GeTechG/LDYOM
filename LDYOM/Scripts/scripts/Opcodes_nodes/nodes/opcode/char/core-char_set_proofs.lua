@@ -140,6 +140,9 @@ local charSetProofsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local bulletProof = inputValues[3] or node.bulletProof
 		local fireProof = inputValues[4] or node.fireProof
 		local explosionProof = inputValues[5] or node.explosionProof

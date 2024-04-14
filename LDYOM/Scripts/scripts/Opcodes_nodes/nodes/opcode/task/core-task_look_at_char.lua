@@ -104,7 +104,13 @@ local taskLookAtCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local observer = inputValues[2] or node.observer
+		if observer == nil or observer == 0 then
+            error("Input observer is not set")
+        end
 		local target = inputValues[3] or node.target
+		if target == nil or target == 0 then
+            error("Input target is not set")
+        end
 		local time = inputValues[4] or node.time
 		TaskOp.lookAtChar(observer, target, time)
         return {1}

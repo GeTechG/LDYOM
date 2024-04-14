@@ -176,6 +176,9 @@ local taskPlayAnimSecondaryNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local animationFile = inputValues[3] or node.animationFile
 		local animationName = inputValues[4] or node.animationName
 		local frameDelta = inputValues[5] or node.frameDelta

@@ -104,6 +104,9 @@ local worldGetDeadCharPickupCoordsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local x, y, z = WorldOp.getDeadCharPickupCoords(char)
         return {1, x, y, z}
     end

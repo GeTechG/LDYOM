@@ -116,6 +116,9 @@ local menuChangeCarColorNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local vehicle = inputValues[3] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		local colorSlot = inputValues[4] or node.colorSlot
 		local row = inputValues[5] or node.row
 		MenuOp.changeCarColor(self_, vehicle, colorSlot, row)

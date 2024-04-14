@@ -132,6 +132,9 @@ local carSetTempActionNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local actionId = inputValues[3] or node.actionId
 		local timeInMs = inputValues[4] or node.timeInMs
 		CarOp.setTempAction(self_, actionId, timeInMs)

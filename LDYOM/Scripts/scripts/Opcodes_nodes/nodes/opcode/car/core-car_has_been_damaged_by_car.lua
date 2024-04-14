@@ -85,7 +85,13 @@ local carHasBeenDamagedByCarNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[1] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local other = inputValues[2] or node.other
+		if other == nil or other == 0 then
+            error("Input other is not set")
+        end
 		local result = CarOp.hasBeenDamagedByCar(self_, other)
         return {result}
     end

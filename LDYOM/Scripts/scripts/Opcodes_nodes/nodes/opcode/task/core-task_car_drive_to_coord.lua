@@ -203,7 +203,13 @@ local taskCarDriveToCoordNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local driver = inputValues[2] or node.driver
+		if driver == nil or driver == 0 then
+            error("Input driver is not set")
+        end
 		local vehicle = inputValues[3] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		local x = inputValues[4] or node.x
 		local y = inputValues[5] or node.y
 		local z = inputValues[6] or node.z

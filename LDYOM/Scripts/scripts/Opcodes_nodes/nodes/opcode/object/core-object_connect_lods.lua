@@ -92,7 +92,13 @@ local objectConnectLodsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local lodObject = inputValues[3] or node.lodObject
+		if lodObject == nil or lodObject == 0 then
+            error("Input lodObject is not set")
+        end
 		ObjectOp.connectLods(self_, lodObject)
         return {1}
     end

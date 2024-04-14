@@ -88,6 +88,9 @@ local blipAddForObjectNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local object = inputValues[2] or node.object
+		if object == nil or object == 0 then
+            error("Input object is not set")
+        end
 		local handle = BlipOp.addForObject(object)
         return {1, handle}
     end

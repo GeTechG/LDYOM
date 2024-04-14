@@ -100,6 +100,9 @@ local carAddModNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local modelId = inputValues[3] or node.modelId
 		local handle = CarOp.addMod(self_, modelId)
         return {1, handle}

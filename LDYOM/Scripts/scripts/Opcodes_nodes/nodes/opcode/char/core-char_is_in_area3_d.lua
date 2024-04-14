@@ -157,6 +157,9 @@ local charIsInArea3DNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[1] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local leftBottomX = inputValues[2] or node.leftBottomX
 		local leftBottomY = inputValues[3] or node.leftBottomY
 		local leftBottomZ = inputValues[4] or node.leftBottomZ

@@ -116,7 +116,13 @@ local taskGotoCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local walking = inputValues[2] or node.walking
+		if walking == nil or walking == 0 then
+            error("Input walking is not set")
+        end
 		local target = inputValues[3] or node.target
+		if target == nil or target == 0 then
+            error("Input target is not set")
+        end
 		local time = inputValues[4] or node.time
 		local radius = inputValues[5] or node.radius
 		TaskOp.gotoChar(walking, target, time, radius)

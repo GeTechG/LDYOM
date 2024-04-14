@@ -88,6 +88,9 @@ local blipAddForSearchlightNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local searchlight = inputValues[2] or node.searchlight
+		if searchlight == nil or searchlight == 0 then
+            error("Input searchlight is not set")
+        end
 		local handle = BlipOp.addForSearchlight(searchlight)
         return {1, handle}
     end

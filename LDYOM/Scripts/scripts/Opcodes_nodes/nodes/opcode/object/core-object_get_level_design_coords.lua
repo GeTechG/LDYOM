@@ -115,6 +115,9 @@ local objectGetLevelDesignCoordsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local nth = inputValues[3] or node.nth
 		local x, y, z = ObjectOp.getLevelDesignCoords(self_, nth)
         return {1, x, y, z}

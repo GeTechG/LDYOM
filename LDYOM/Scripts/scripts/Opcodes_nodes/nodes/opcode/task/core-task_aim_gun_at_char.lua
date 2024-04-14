@@ -104,7 +104,13 @@ local taskAimGunAtCharNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local target = inputValues[3] or node.target
+		if target == nil or target == 0 then
+            error("Input target is not set")
+        end
 		local time = inputValues[4] or node.time
 		TaskOp.aimGunAtChar(char, target, time)
         return {1}

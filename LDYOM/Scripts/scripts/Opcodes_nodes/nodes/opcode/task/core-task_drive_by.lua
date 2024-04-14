@@ -187,8 +187,17 @@ local taskDriveByNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local targetChar = inputValues[3] or node.targetChar
+		if targetChar == nil or targetChar == 0 then
+            error("Input targetChar is not set")
+        end
 		local targetVehicle = inputValues[4] or node.targetVehicle
+		if targetVehicle == nil or targetVehicle == 0 then
+            error("Input targetVehicle is not set")
+        end
 		local x = inputValues[5] or node.x
 		local y = inputValues[6] or node.y
 		local z = inputValues[7] or node.z

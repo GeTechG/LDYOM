@@ -140,6 +140,9 @@ local charCreateInsideCarNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local vehicle = inputValues[2] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		local pedType = inputValues[3] or node.pedType
 		local modelId = inputValues[4] or node.modelId
 		local handle = CharOp.createInsideCar(vehicle, pedType, modelId)

@@ -121,6 +121,9 @@ local audioAttachMissionAudioToCarNode = {
     run = function(editor, context, node, inputValues)
         local slotId = inputValues[2] or node.slotId
 		local handle = inputValues[3] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		AudioOp.attachMissionAudioToCar(slotId, handle)
         return {1}
     end

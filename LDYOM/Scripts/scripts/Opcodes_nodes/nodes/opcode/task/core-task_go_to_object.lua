@@ -116,7 +116,13 @@ local taskGoToObjectNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local object = inputValues[3] or node.object
+		if object == nil or object == 0 then
+            error("Input object is not set")
+        end
 		local time = inputValues[4] or node.time
 		local radius = inputValues[5] or node.radius
 		TaskOp.goToObject(char, object, time, radius)

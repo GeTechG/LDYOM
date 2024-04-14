@@ -116,7 +116,13 @@ local taskEnterCarAsPassengerNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local vehicle = inputValues[3] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		local time = inputValues[4] or node.time
 		local seatId = inputValues[5] or node.seatId
 		TaskOp.enterCarAsPassenger(char, vehicle, time, seatId)

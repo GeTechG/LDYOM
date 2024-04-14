@@ -127,6 +127,9 @@ local carControlHydraulicsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local _p2 = inputValues[3] or node._p2
 		local _p3 = inputValues[4] or node._p3
 		local _p4 = inputValues[5] or node._p4

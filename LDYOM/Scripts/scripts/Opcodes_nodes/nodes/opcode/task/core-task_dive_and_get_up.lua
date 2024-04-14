@@ -116,6 +116,9 @@ local taskDiveAndGetUpNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local handle = inputValues[2] or node.handle
+		if handle == nil or handle == 0 then
+            error("Input handle is not set")
+        end
 		local directionX = inputValues[3] or node.directionX
 		local directionY = inputValues[4] or node.directionY
 		local timeOnGround = inputValues[5] or node.timeOnGround

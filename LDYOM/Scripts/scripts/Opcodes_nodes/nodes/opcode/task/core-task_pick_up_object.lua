@@ -188,7 +188,13 @@ local taskPickUpObjectNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local char = inputValues[2] or node.char
+		if char == nil or char == 0 then
+            error("Input char is not set")
+        end
 		local object = inputValues[3] or node.object
+		if object == nil or object == 0 then
+            error("Input object is not set")
+        end
 		local xOffset = inputValues[4] or node.xOffset
 		local yOffset = inputValues[5] or node.yOffset
 		local zOffset = inputValues[6] or node.zOffset

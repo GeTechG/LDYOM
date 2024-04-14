@@ -158,6 +158,9 @@ local worldSetCharUsesCollisionClosestObjectOfTypeNode = {
 		local modelId = inputValues[6] or node.modelId
 		local state = inputValues[7] or node.state
 		local target = inputValues[8] or node.target
+		if target == nil or target == 0 then
+            error("Input target is not set")
+        end
 		WorldOp.setCharUsesCollisionClosestObjectOfType(x, y, z, radius, modelId, state, target)
         return {1}
     end

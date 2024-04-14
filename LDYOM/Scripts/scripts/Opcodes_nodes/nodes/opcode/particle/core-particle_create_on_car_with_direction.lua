@@ -185,6 +185,9 @@ local particleCreateOnCarWithDirectionNode = {
     run = function(editor, context, node, inputValues)
         local name = inputValues[2] or node.name
 		local vehicle = inputValues[3] or node.vehicle
+		if vehicle == nil or vehicle == 0 then
+            error("Input vehicle is not set")
+        end
 		local xOffset = inputValues[4] or node.xOffset
 		local yOffset = inputValues[5] or node.yOffset
 		local zOffset = inputValues[6] or node.zOffset

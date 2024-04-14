@@ -85,6 +85,9 @@ local charIsModelNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[1] or node.self_
+		if self_ == nil or self_ == 0 then
+            error("Input self is not set")
+        end
 		local modelId = inputValues[2] or node.modelId
 		local result = CharOp.isModel(self_, modelId)
         return {result}
