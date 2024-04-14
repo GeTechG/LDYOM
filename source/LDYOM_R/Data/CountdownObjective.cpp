@@ -7,6 +7,7 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "strUtils.h"
+#include "TimeUtils.h"
 
 CountdownObjective::CountdownObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.countdown"));
@@ -41,7 +42,7 @@ ktwait CountdownObjective::execute(Scene *scene, Result &result, ktcoro_tasklist
 			text = this->gameTextGo.data();
 		}
 		CMessages::AddBigMessageQ(text, 1000, 3);
-		co_await 1s;
+		co_await waitInGame(1000);
 	}
 
 	Command<Commands::SET_PLAYER_CONTROL>(0, 1);

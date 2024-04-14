@@ -91,7 +91,13 @@ local waitNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local waitTime = inputValues[2] or node.waitTime
-        _ = coroutine.yield(waitTime * 1000)
+
+        local allTime = math.floor(waitTime * 1000);
+        local elapsed = 0
+        while elapsed < allTime do
+            coroutine.yield(1)
+            elapsed = elapsed + time.getSnTimeInMilliseconds() - time.getSnPreviousTimeInMilliseconds()
+        end
         return {1}
     end
 }

@@ -11,6 +11,7 @@
 #include "ProjectsService.h"
 #include "Settings.h"
 #include "strUtils.h"
+#include "TimeUtils.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
 
@@ -381,7 +382,7 @@ ktwait GoToSceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist
 
 		if (_this->isFade()) {
 			TheCamera.Fade(_this->getFadeInTime(), 0);
-			co_await std::chrono::duration<float>(_this->getFadeInTime());
+			co_await waitInGame(static_cast<unsigned>(_this->getFadeInTime() * 1000.f));
 		}
 
 		const auto &scenes = ProjectsService::getInstance().getCurrentProject().getScenes();

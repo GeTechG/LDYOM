@@ -11,6 +11,7 @@
 #include "imgui_stdlib.h"
 #include "ModelsService.h"
 #include "strUtils.h"
+#include "TimeUtils.h"
 #include "utils.h"
 
 StartMissionObjective::StartMissionObjective(void *_new): BaseObjective(_new) {
@@ -93,7 +94,7 @@ ktwait StartMissionObjective::execute(Scene *scene, Result &result, ktcoro_taskl
 
 	if (this->fade_) {
 		TheCamera.Fade(this->fadeInTime_, 0);
-		co_await std::chrono::duration<float>(this->fadeInTime_);
+		co_await waitInGame(static_cast<unsigned>(this->fadeInTime_ * 1000.f));
 	}
 
 	if (CTheScripts::ScriptSpace[CTheScripts::OnAMissionFlag] == 1) {

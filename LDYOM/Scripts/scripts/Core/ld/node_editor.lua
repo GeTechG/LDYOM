@@ -118,7 +118,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -134,7 +134,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -150,7 +150,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -166,7 +166,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -182,7 +182,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -198,7 +198,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -214,7 +214,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -230,7 +230,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -246,7 +246,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -262,7 +262,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -278,7 +278,7 @@ LDNodeEditor.new = function()
                     return value
                 end,
                 makeNew = function()
-                    return ""
+                    return nil
                 end,
                 equals = function(a, b)
                     return a == b
@@ -506,7 +506,7 @@ LDNodeEditor.runNode = function(ed, context, node)
     local nodeType = LDNodeEditor.getNodeType(ed, node.nodeType)
     local inputValues = LDNodeEditor.getInputValues(ed, context, node)
 
-    print("Running node " .. node.nodeType)
+    -- print("Running node " .. node.nodeType)
     local outputValues = nodeType.run(ed, context, node, inputValues)
     if #outputValues ~= #node.outputs then
         error("The number of outputs of the node " .. node.nodeType .. " is different from the number of returned values")

@@ -889,6 +889,7 @@
     <ClInclude Include="utils\strUtils.h" />
     <ClInclude Include="utils\Tasker.h" />
     <ClInclude Include="utils\TimerService.h" />
+    <ClInclude Include="utils\TimeUtils.h" />
     <ClInclude Include="utils\utils.h" />
     <ClInclude Include="utils\vehicle_renderer.h" />
     <ClInclude Include="utils\VirtualScene.h" />

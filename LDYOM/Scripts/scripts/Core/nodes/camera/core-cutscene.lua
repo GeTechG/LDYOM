@@ -5,6 +5,14 @@ local nodesIcons = require("ld.node_icons")
 
 local speedCameraMultiplier = 1;
 
+function waitInGame(time)
+    local elapsed = 0
+    while elapsed < time do
+        coroutine.yield(1)
+        elapsed = elapsed + time.getSnTimeInMilliseconds() - time.getSnPreviousTimeInMilliseconds()
+    end
+end
+
 function editByPlayerCameraTask(pos, pointView, widescreen)
     ld.window.setRenderWindows(false)
 
@@ -592,12 +600,12 @@ local cutsceneForNode = {
             if node.endFadeIn then
                 local fadeInDuration = math.floor(node.endFadeInTime * 1000)
                 ld.tasker:addTask("cutsceneFadeIn", function ()
-                    coroutine.yield(duration - fadeInDuration)
+                    waitInGame(duration - fadeInDuration)
                     CameraOp.doFade(fadeInDuration, 0)
-                    coroutine.yield(fadeInDuration)
+                    waitInGame(fadeInDuration)
                 end)
             else
-                coroutine.yield(duration)
+                waitInGame(duration)
             end
 
             if lockPlayerControl then

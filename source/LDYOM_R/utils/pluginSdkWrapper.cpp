@@ -7,8 +7,12 @@
 #include <extensions/KeyCheck.h>
 
 void pluginSdkWrapper(sol::state &state) {
-	state["time"].get_or_create<sol::table>().set("getSnTimeInMilliseconds", [] {
+	auto timeTable = state.create_table("time");
+	timeTable.set("getSnTimeInMilliseconds", [] {
 		return CTimer::m_snTimeInMilliseconds;
+	});
+	timeTable.set("getSnPreviousTimeInMilliseconds", [] {
+		return CTimer::m_snPreviousTimeInMilliseconds;
 	});
 	state.set("distanceBetweenPoints",
 	          [](const float x1, const float y1, const float z1, const float x2, const float y2, const float z2) {

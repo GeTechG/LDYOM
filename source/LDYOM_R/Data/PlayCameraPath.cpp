@@ -10,6 +10,7 @@
 #include "CutsceneMutex.h"
 #include "ProjectsService.h"
 #include "Settings.h"
+#include "TimeUtils.h"
 #include "utilsRender.h"
 
 PlayCameraPathObjective::PlayCameraPathObjective(void *_new) : BaseObjective(nullptr) {}
@@ -108,11 +109,11 @@ ktwait PlayCameraPathObjective::execute(Scene *scene, Result &result, ktcoro_tas
 		if (playCameraPathObjective->isEndFadeIn()) {
 			const std::chrono::milliseconds fadeInDuration(
 				static_cast<int>(playCameraPathObjective->getEndFadeInTime() * 1000.f));
-			co_await(duration - fadeInDuration);
+			co_await waitInGame((duration - fadeInDuration).count());
 			plugin::Command<Commands::DO_FADE>(static_cast<int>(fadeInDuration.count()), 0);
-			co_await fadeInDuration;
+			co_await waitInGame(fadeInDuration.count());
 		} else {
-			co_await duration;
+			co_await waitInGame(duration.count());
 		}
 
 		TheCameraExtend.stopCameraPath();

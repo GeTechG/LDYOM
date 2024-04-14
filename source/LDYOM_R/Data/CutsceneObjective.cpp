@@ -23,6 +23,7 @@
 #include "ProjectsService.h"
 #include "Settings.h"
 #include "strUtils.h"
+#include "TimeUtils.h"
 #include "utils.h"
 #include "../Windows/utilsRender.h"
 
@@ -451,11 +452,11 @@ ktwait CutsceneObjective::execute(Scene *scene, Result &result, ktcoro_tasklist 
 		const std::chrono::milliseconds duration(static_cast<unsigned>(cutscene->getTextTime() * 1000.f));
 		if (cutscene->isEndFadeIn()) {
 			const std::chrono::milliseconds fadeInDuration(static_cast<int>(cutscene->getEndFadeInTime() * 1000.f));
-			co_await (duration - fadeInDuration);
+			co_await waitInGame((duration - fadeInDuration).count());
 			plugin::Command<Commands::DO_FADE>(static_cast<int>(fadeInDuration.count()), 0);
-			co_await fadeInDuration;
+			co_await waitInGame(fadeInDuration.count());
 		} else {
-			co_await duration;
+			co_await waitInGame(duration.count());
 		}
 
 		const CVector up = {0.0f, 0.0f, 1.0f};

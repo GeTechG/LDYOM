@@ -4,6 +4,7 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "strUtils.h"
+#include "TimeUtils.h"
 
 TimeoutObjective::TimeoutObjective(void *_new): BaseObjective(_new) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.timeout"));
@@ -26,5 +27,5 @@ ktwait TimeoutObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &
 
 	CMessages::AddMessage(const_cast<char*>(this->gameText.c_str()), static_cast<unsigned>(this->time_ * 1000.f), 0,
 	                      false);
-	co_await std::chrono::milliseconds(static_cast<long long>(this->time_ * 1000.f));
+	co_await waitInGame(static_cast<unsigned>(this->time_ * 1000.f));
 }

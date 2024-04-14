@@ -20,5 +20,5 @@ void SaveObjective::draw(Localization &local, std::vector<std::string> &listOver
 
 ktwait SaveObjective::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
 	//TODO : implement
-	co_await 0;
+	co_return;
 }

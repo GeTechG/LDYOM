@@ -2781,6 +2781,9 @@
     <ClInclude Include="Data\PlayCameraPath.h">
       <Filter>Data\Objectives\World\PlayCameraPath</Filter>
     </ClInclude>
+    <ClInclude Include="utils\TimeUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="thirdparty\glm\glm\detail\func_common.inl">

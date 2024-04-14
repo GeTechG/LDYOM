@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "strUtils.h"
+#include "TimeUtils.h"
 #include "utils.h"
 
 PhoneCallPlayerObjective::PhoneCallPlayerObjective(void *_new): BaseObjective(_new) {
@@ -63,7 +64,7 @@ ktwait PhoneCallPlayerObjective::execute(Scene *scene, Result &result, ktcoro_ta
 	CStreaming::LoadAllRequestedModels(false);
 
 	Command<Commands::TASK_USE_MOBILE_PHONE>(static_cast<CPed*>(FindPlayerPed()), true);
-	co_await 2.5s;
+	co_await waitInGame(2500);
 
 	for (auto dialog : this->dialogs_) {
 		auto cp1251Text = utf8ToCp1251(dialog.text);
@@ -73,10 +74,10 @@ ktwait PhoneCallPlayerObjective::execute(Scene *scene, Result &result, ktcoro_ta
 			Command<Commands::START_CHAR_FACIAL_TALK>(static_cast<CPed*>(FindPlayerPed()), -1);
 		CMessages::AddMessageJumpQ(const_cast<char*>(dialog.gameText.c_str()),
 		                           static_cast<unsigned>(dialog.textTime * 1000.f), 0, false);
-		co_await milliseconds(static_cast<long long>(dialog.textTime * 1000.f));
+		co_await waitInGame(static_cast<unsigned>(dialog.textTime * 1000.f));
 		Command<Commands::STOP_CHAR_FACIAL_TALK>(static_cast<CPed*>(FindPlayerPed()));
 	}
 
 	Command<Commands::TASK_USE_MOBILE_PHONE>(static_cast<CPed*>(FindPlayerPed()), false);
-	co_await 2.5s;
+	co_await waitInGame(2500);
 }
