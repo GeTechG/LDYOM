@@ -132,6 +132,8 @@ set_increment_global_variable = "Ustaw/zwiększ zmienną globalną"
 set_characteristics_vehicle = "Ustawienia cech pojazdu"
 follow_carrec_path_vehicle = "Podążanie ścieżką Carrec dla pojazdu"
 play_camera_path = "Odtwórz ścieżkę kamery"
+attach_ped_to_entity = "Tryb wieży dla pieszego"
+dettach_ped_to_entity = "Wyłącz tryb wieży dla pieszego"
 
 [objective_categories]
 world = "Świat"
@@ -1030,3 +1032,16 @@ rotation_easing = "Typ łagodzenia obrotu"
 play = "Odtwórz"
 catmull_rom_rotations = "Obroty Catmull-Roma"
 invalid_curve_warning = "Dane krzywej są niewłaściwe, spróbuj zmniejszyć stopień krzywej lub dodać więcej punktów kontrolnych"
+
+[attach_ped_to_entity]
+attach_type = "Typ dołączenia"
+target_attach = "Docelowe dołączenie"
+position_type = "Typ pozycji"
+limit_angle_x = "Ograniczenie kąta X"
+limit_angle_y = "Ograniczenie kąta Y"
+attach_types = ["Gracz", "Aktor"]
+target_attach_types = ["Pojazd", "Obiekt"]
+position_types = ["Do przodu", "W lewo", "Do tyłu", "W prawo"]
+
+[dettach_ped_to_entity]
+dettach_type = "Typ odłączenia"

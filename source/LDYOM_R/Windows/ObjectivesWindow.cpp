@@ -13,6 +13,7 @@
 #include "../Data/AddWeaponsPlayerObjective.h"
 #include "../Data/AnimationActorObjective.h"
 #include "../Data/AnimationPlayerObjective.h"
+#include "../Data/AttachPedToEntity.h"
 #include "../Data/CheckpointObjective.h"
 #include "../Data/ClockTimeObjective.h"
 #include "../Data/CollectPickupObjective.h"
@@ -21,6 +22,7 @@
 #include "../Data/DamageActorObjective.h"
 #include "../Data/DamageObjectObjective.h"
 #include "../Data/DestroyVehicleObjective.h"
+#include "../Data/DettachPedToEntity.h"
 #include "../Data/EndMissionObjective.h"
 #include "../Data/EnterVehicleActorObjective.h"
 #include "../Data/FollowCarrecPathVehicleObjective.h"
@@ -116,6 +118,14 @@ void Windows::ObjectivesWindow::createNewElementFrom(int i) {
 				case 10:
 					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
 						fast_dynamic_cast<PlayCameraPathObjective&>(*objective));
+					break;
+				case 11:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<AttachPedToEntity&>(*objective));
+					break;
+				case 12:
+					ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectiveFrom(
+						fast_dynamic_cast<DettachPedToEntity&>(*objective));
 					break;
 				default:
 					break;
@@ -393,6 +403,19 @@ void Windows::ObjectivesWindow::drawListWindow() {
 			if (ImGui::MenuItem(Localization::getInstance().get("objective.play_camera_path").c_str())) {
 				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
 					PlayCameraPathObjective>(nullptr);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.attach_ped_to_entity").c_str())) {
+				auto &position = FindPlayerPed()->GetPosition();
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
+					AttachPedToEntity>(position);
+				this->selectElement(this->getListSize() - 1);
+			}
+
+			if (ImGui::MenuItem(Localization::getInstance().get("objective.dettach_ped_to_entity").c_str())) {
+				ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewObjectives<
+					DettachPedToEntity>(nullptr);
 				this->selectElement(this->getListSize() - 1);
 			}
 

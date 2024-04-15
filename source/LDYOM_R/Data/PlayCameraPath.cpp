@@ -13,7 +13,10 @@
 #include "TimeUtils.h"
 #include "utilsRender.h"
 
-PlayCameraPathObjective::PlayCameraPathObjective(void *_new) : BaseObjective(nullptr) {}
+PlayCameraPathObjective::PlayCameraPathObjective(void *_new) : BaseObjective(nullptr) {
+	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.play_camera_path"));
+	this->name += suffix;
+}
 
 void PlayCameraPathObjective::draw(Localization &local, std::vector<std::string> &listOverlay) {
 	const auto &cameraPaths = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getCameraPaths();

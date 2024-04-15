@@ -167,7 +167,7 @@ void Windows::ActorsWindow::drawOptions() {
 		this->currentElement).get();
 
 	//position
-	InputPosition(actor->getPosition(), [actor] {
+	DragPosition(actor->getPosition(), [actor] {
 		actor->getInteriorId() = CGame::currArea;
 		actor->updateLocation();
 	});

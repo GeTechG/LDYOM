@@ -172,6 +172,7 @@
     <ClCompile Include="Data\AddWeaponsPlayerObjective.cpp" />
     <ClCompile Include="Data\AnimationActorObjective.cpp" />
     <ClCompile Include="Data\AnimationPlayerObjective.cpp" />
+    <ClCompile Include="Data\AttachPedToEntity.cpp" />
     <ClCompile Include="Data\Audio.cpp" />
     <ClCompile Include="Data\BaseObjective.cpp" />
     <ClCompile Include="Data\CameraPath.cpp" />
@@ -187,6 +188,7 @@
     <ClCompile Include="Data\DamageActorObjective.cpp" />
     <ClCompile Include="Data\DamageObjectObjective.cpp" />
     <ClCompile Include="Data\DestroyVehicleObjective.cpp" />
+    <ClCompile Include="Data\DettachPedToEntity.cpp" />
     <ClCompile Include="Data\EndMissionObjective.cpp" />
     <ClCompile Include="Data\EnterVehicleActorObjective.cpp" />
     <ClCompile Include="Data\FollowCarrecPathVehicleObjective.cpp" />
@@ -415,6 +417,7 @@
     <ClInclude Include="Data\AddWeaponsPlayerObjective.h" />
     <ClInclude Include="Data\AnimationActorObjective.h" />
     <ClInclude Include="Data\AnimationPlayerObjective.h" />
+    <ClInclude Include="Data\AttachPedToEntity.h" />
     <ClInclude Include="Data\Audio.h" />
     <ClInclude Include="Data\BaseObjective.h" />
     <ClInclude Include="Data\CameraPath.h" />
@@ -434,6 +437,7 @@
     <ClInclude Include="Data\DamageActorObjective.h" />
     <ClInclude Include="Data\DamageObjectObjective.h" />
     <ClInclude Include="Data\DestroyVehicleObjective.h" />
+    <ClInclude Include="Data\DettachPedToEntity.h" />
     <ClInclude Include="Data\EndMissionObjective.h" />
     <ClInclude Include="Data\EnterVehicleActorObjective.h" />
     <ClInclude Include="Data\FixedFloat.h" />

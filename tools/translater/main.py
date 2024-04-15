@@ -1,14 +1,14 @@
 import json
 from itertools import batched
 from dotenv import load_dotenv
-from openai import OpenAI
 import rtoml
 import time
 from os import walk
+from g4f.client import Client
 
 load_dotenv()
 
-client = OpenAI()
+client = Client()
 instruction = """"You are an advanced artificial intelligence translator. In your request, you will receive a JSON 
 object with the value being the text in {} for translation. This text is intended for the interface of a mod for the 
 GTA SA game (Lua Design Your Own Mission), focused on creating custom missions. Please consider this context when 
@@ -22,7 +22,7 @@ def translate(fields: dict, current_lang: str) -> dict:
     a = instruction.format(default_lang_name, current_lang)
     b = json.dumps(fields, ensure_ascii=False)
     completion = client.chat.completions.create(
-        model="gpt-3.5-turbo-1106",
+        model="gpt-3.5-turbo",
         response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": a},
@@ -79,8 +79,6 @@ def translate_langs():
         if iter_lang != default_lang_name:
             print(f'Generating {iter_lang}...')
             recusive(default_lang, langs[iter_lang], iter_lang)
-
-        time.sleep(10)
 
 
 try:

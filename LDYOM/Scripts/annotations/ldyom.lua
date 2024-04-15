@@ -80,13 +80,6 @@ end
 function CalcScreenCoors(posn, out, checkMaxVisible, checkMinVisible)
 end
 
--- state["removePlayerFromWorld"] = []() {
--- 	CWorld::Remove(FindPlayerPed());
--- };
--- state["addPlayerToWorld"] = []() {
--- 	CWorld::Add(FindPlayerPed());
--- };
-
 
 function removePlayerFromWorld()
 end
@@ -1034,6 +1027,11 @@ time = {}
 ---current time in milliseconds
 ---@return number
 time.getSnTimeInMilliseconds = function ()
+end
+
+---previous time in milliseconds
+---@return number
+time.getSnPreviousTimeInMilliseconds = function ()
 end
 
 

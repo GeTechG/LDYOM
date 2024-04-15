@@ -378,6 +378,7 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	FindPlayerPed()->m_fMaxHealth = 100.f;
 	FindPlayerPed()->m_pIntelligence->ClearTasks(true, true);
 	CWorld::Players[0].m_nMoney = 0;
+	FindPlayerPed()->DettachPedFromEntity();
 	Command<Commands::SET_PLAYER_MODEL>(0, 0);
 	CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
 	CTheScripts::bDisplayHud = true;

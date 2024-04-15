@@ -131,6 +131,8 @@ set_increment_global_variable = "Set/Increment Global Variable"
 set_characteristics_vehicle = "Set vehicle characteristics"
 follow_carrec_path_vehicle = "Following Carrec Path with Vehicle"
 play_camera_path = "Play camera path"
+attach_ped_to_entity = "Turret mode for pedestrian"
+dettach_ped_to_entity = "Disable turret mode for pedestrian"
 
 [objective_categories]
 world = "World"
@@ -1029,3 +1031,16 @@ rotation_easing = "Rotation Easing Type"
 play = "Play"
 catmull_rom_rotations = "Catmull-Rom Centripetal Rotations"
 invalid_curve_warning = "Invalid curve data, try reducing the degree of the curve or adding more control points"
+
+[attach_ped_to_entity]
+attach_type = "Attachment type"
+target_attach = "Target for attachment"
+position_type = "Position type"
+limit_angle_x = "X angle limit"
+limit_angle_y = "Y angle limit"
+attach_types = ["Player", "Actor"]
+target_attach_types = ["Vehicle", "Object"]
+position_types = ["Forward", "Left", "Back", "Right"]
+
+[dettach_ped_to_entity]
+dettach_type = "Detachment type"

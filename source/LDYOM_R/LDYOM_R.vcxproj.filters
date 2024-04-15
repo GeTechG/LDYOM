@@ -476,6 +476,12 @@
     <Filter Include="Data\Objectives\World\PlayCameraPath">
       <UniqueIdentifier>{abeadb77-c4b1-462d-9ad3-67622f03a2c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Objectives\World\AttachPedToEntity">
+      <UniqueIdentifier>{71e31c13-7dc0-42cc-875f-995baf15a48c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Objectives\World\DettachPedToEntity">
+      <UniqueIdentifier>{8ad710cf-895c-4c0c-8809-9621f82b2490}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -1196,6 +1202,12 @@
     </ClCompile>
     <ClCompile Include="utils\CameraExtendWrapper.cpp">
       <Filter>Lua\Wrappers\LdyomWrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\AttachPedToEntity.cpp">
+      <Filter>Data\Objectives\World\AttachPedToEntity</Filter>
+    </ClCompile>
+    <ClCompile Include="Data\DettachPedToEntity.cpp">
+      <Filter>Data\Objectives\World\DettachPedToEntity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2783,6 +2795,12 @@
     </ClInclude>
     <ClInclude Include="utils\TimeUtils.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\AttachPedToEntity.h">
+      <Filter>Data\Objectives\World\AttachPedToEntity</Filter>
+    </ClInclude>
+    <ClInclude Include="Data\DettachPedToEntity.h">
+      <Filter>Data\Objectives\World\DettachPedToEntity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

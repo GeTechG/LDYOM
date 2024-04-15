@@ -132,6 +132,8 @@ set_increment_global_variable = "Definir/aumentar variável global"
 set_characteristics_vehicle = "Definir características do veículo"
 follow_carrec_path_vehicle = "Seguir caminho Carrec do veículo"
 play_camera_path = "Reproduzir caminho da câmera"
+attach_ped_to_entity = "Modo de torreta para pedestres"
+dettach_ped_to_entity = "Desativar modo de torreta para pedestres"
 
 [objective_categories]
 world = "Mundo"
@@ -1030,3 +1032,16 @@ rotation_easing = "Tipo de suavização de rotação"
 play = "Reproduzir"
 catmull_rom_rotations = "Rotações Catmull-Rom centrípetas"
 invalid_curve_warning = "A curva é inválida, tente reduzir o grau da curva ou adicionar mais pontos de controle"
+
+[attach_ped_to_entity]
+attach_type = "Tipo de anexo"
+target_attach = "Alvo de anexo"
+position_type = "Tipo de posição"
+limit_angle_x = "Limite de ângulo X"
+limit_angle_y = "Limite de ângulo Y"
+attach_types = ["Jogador", "Ator"]
+target_attach_types = ["Veículo", "Objeto"]
+position_types = ["Frente", "Esquerda", "Atrás", "Direita"]
+
+[dettach_ped_to_entity]
+dettach_type = "Tipo de desanexo"

@@ -55,6 +55,8 @@
 #include "fmt/core.h"
 
 #include "zip.h"
+#include "../Data/AttachPedToEntity.h"
+#include "../Data/DettachPedToEntity.h"
 #include "../Data/FollowCarrecPathVehicleObjective.h"
 #include "../Data/PlayCameraPath.h"
 #include "boost/archive/xml_oarchive.hpp"
@@ -125,6 +127,12 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 								break;
 							case 10:
 								jsonObjectives.push_back(fast_dynamic_cast<PlayCameraPathObjective&>(*objective));
+								break;
+							case 11:
+								jsonObjectives.push_back(fast_dynamic_cast<AttachPedToEntity&>(*objective));
+								break;
+							case 12:
+								jsonObjectives.push_back(fast_dynamic_cast<DettachPedToEntity&>(*objective));
 								break;
 							default:
 								break;
@@ -334,6 +342,16 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 								objectives.emplace_back(
 									std::make_unique<PlayCameraPathObjective>(
 										jsonObjective.get<PlayCameraPathObjective>()));
+								break;
+							case 11:
+								objectives.emplace_back(
+									std::make_unique<AttachPedToEntity>(
+										jsonObjective.get<AttachPedToEntity>()));
+								break;
+							case 12:
+								objectives.emplace_back(
+									std::make_unique<DettachPedToEntity>(
+										jsonObjective.get<DettachPedToEntity>()));
 								break;
 							default:
 								break;
