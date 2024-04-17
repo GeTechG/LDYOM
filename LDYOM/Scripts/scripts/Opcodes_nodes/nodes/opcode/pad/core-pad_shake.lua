@@ -134,7 +134,7 @@ local padShakeNode = {
         local pad = inputValues[2] or node.pad
 		local time = inputValues[3] or node.time
 		local intensity = inputValues[4] or node.intensity
-		PadOp.shake(pad, time, intensity)
+		PadOp.shake(pad, math.floor(time), math.floor(intensity))
         return {1}
     end
 }

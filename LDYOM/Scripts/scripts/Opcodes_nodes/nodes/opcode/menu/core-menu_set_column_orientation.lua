@@ -105,7 +105,7 @@ local menuSetColumnOrientationNode = {
         local self_ = inputValues[2] or node.self_
 		local column = inputValues[3] or node.column
 		local alignment = inputValues[4] or node.alignment
-		MenuOp.setColumnOrientation(self_, column, alignment)
+		MenuOp.setColumnOrientation(self_, math.floor(column), math.floor(alignment))
         return {1}
     end
 }

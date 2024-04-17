@@ -125,7 +125,7 @@ local taskGoToObjectNode = {
         end
 		local time = inputValues[4] or node.time
 		local radius = inputValues[5] or node.radius
-		TaskOp.goToObject(char, object, time, radius)
+		TaskOp.goToObject(char, object, math.floor(time), radius)
         return {1}
     end
 }

@@ -177,7 +177,7 @@ local taskGoToCoordWhileShootingNode = {
 		if target == nil or target == 0 then
             error("Input target is not set")
         end
-		TaskOp.goToCoordWhileShooting(char, x, y, z, mode, turnRadius, stopRadius, target)
+		TaskOp.goToCoordWhileShooting(char, x, y, z, math.floor(mode), turnRadius, stopRadius, target)
         return {1}
     end
 }

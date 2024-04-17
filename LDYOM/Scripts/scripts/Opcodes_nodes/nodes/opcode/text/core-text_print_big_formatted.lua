@@ -147,7 +147,7 @@ local textPrintBigFormattedNode = {
 		local time = inputValues[3] or node.time
 		local style = inputValues[4] or node.style
 		local args = inputValues[5] or node.args
-		TextOp.printBigFormatted(fmt, time, style, args)
+		TextOp.printBigFormatted(fmt, math.floor(time), style, args)
         return {1}
     end
 }

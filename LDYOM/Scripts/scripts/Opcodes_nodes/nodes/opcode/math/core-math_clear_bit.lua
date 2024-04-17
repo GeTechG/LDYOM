@@ -93,7 +93,7 @@ local mathClearBitNode = {
     run = function(editor, context, node, inputValues)
         local number = inputValues[2] or node.number
 		local n = inputValues[3] or node.n
-		MathOp.clearBit(number, n)
+		MathOp.clearBit(math.floor(number), math.floor(n))
         return {1}
     end
 }

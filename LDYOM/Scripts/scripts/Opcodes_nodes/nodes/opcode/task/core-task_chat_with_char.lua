@@ -125,7 +125,7 @@ local taskChatWithCharNode = {
         end
 		local leadSpeaker = inputValues[4] or node.leadSpeaker
 		local _p4 = inputValues[5] or node._p4
-		TaskOp.chatWithChar(char, other, leadSpeaker, _p4)
+		TaskOp.chatWithChar(char, other, leadSpeaker, math.floor(_p4))
         return {1}
     end
 }

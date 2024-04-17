@@ -109,7 +109,7 @@ local charSetHeadingLimitForAttachedNode = {
         end
 		local orientation = inputValues[3] or node.orientation
 		local headingLimit = inputValues[4] or node.headingLimit
-		CharOp.setHeadingLimitForAttached(self_, orientation, headingLimit)
+		CharOp.setHeadingLimitForAttached(self_, math.floor(orientation), headingLimit)
         return {1}
     end
 }

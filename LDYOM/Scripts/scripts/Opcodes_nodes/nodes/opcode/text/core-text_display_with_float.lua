@@ -132,7 +132,7 @@ local textDisplayWithFloatNode = {
 		local key = inputValues[4] or node.key
 		local value = inputValues[5] or node.value
 		local precision = inputValues[6] or node.precision
-		TextOp.displayWithFloat(leftTopX, leftTopY, key, value, precision)
+		TextOp.displayWithFloat(leftTopX, leftTopY, key, value, math.floor(precision))
         return {1}
     end
 }

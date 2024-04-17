@@ -92,7 +92,7 @@ local hudSetCounterFlashWhenFirstDisplayedNode = {
     run = function(editor, context, node, inputValues)
         local counter = inputValues[2] or node.counter
 		local state = inputValues[3] or node.state
-		HudOp.setCounterFlashWhenFirstDisplayed(counter, state)
+		HudOp.setCounterFlashWhenFirstDisplayed(math.floor(counter), state)
         return {1}
     end
 }

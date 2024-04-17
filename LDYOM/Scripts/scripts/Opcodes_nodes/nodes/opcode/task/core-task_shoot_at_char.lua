@@ -111,7 +111,7 @@ local taskShootAtCharNode = {
             error("Input target is not set")
         end
 		local time = inputValues[4] or node.time
-		TaskOp.shootAtChar(handle, target, time)
+		TaskOp.shootAtChar(handle, target, math.floor(time))
         return {1}
     end
 }

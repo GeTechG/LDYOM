@@ -93,7 +93,7 @@ local cameraSetDarknessEffectNode = {
     run = function(editor, context, node, inputValues)
         local enable = inputValues[2] or node.enable
 		local pitchBlack = inputValues[3] or node.pitchBlack
-		CameraOp.setDarknessEffect(enable, pitchBlack)
+		CameraOp.setDarknessEffect(enable, math.floor(pitchBlack))
         return {1}
     end
 }

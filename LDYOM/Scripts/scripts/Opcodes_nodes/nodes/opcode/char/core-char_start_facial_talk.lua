@@ -96,7 +96,7 @@ local charStartFacialTalkNode = {
             error("Input self is not set")
         end
 		local duration = inputValues[3] or node.duration
-		CharOp.startFacialTalk(self_, duration)
+		CharOp.startFacialTalk(self_, math.floor(duration))
         return {1}
     end
 }

@@ -146,7 +146,7 @@ local playerGiveClothesNode = {
 		local textureHash = inputValues[3] or node.textureHash
 		local modelHash = inputValues[4] or node.modelHash
 		local bodyPart = inputValues[5] or node.bodyPart
-		PlayerOp.giveClothes(self_, textureHash, modelHash, bodyPart)
+		PlayerOp.giveClothes(self_, math.floor(textureHash), math.floor(modelHash), bodyPart)
         return {1}
     end
 }

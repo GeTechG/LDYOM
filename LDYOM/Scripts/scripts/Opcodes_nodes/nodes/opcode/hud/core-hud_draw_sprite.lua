@@ -184,7 +184,7 @@ local hudDrawSpriteNode = {
 		local g = inputValues[8] or node.g
 		local b = inputValues[9] or node.b
 		local a = inputValues[10] or node.a
-		HudOp.drawSprite(memorySlot, offsetLeft, offsetTop, width, height, r, g, b, a)
+		HudOp.drawSprite(math.floor(memorySlot), offsetLeft, offsetTop, width, height, math.floor(r), math.floor(g), math.floor(b), math.floor(a))
         return {1}
     end
 }

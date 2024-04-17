@@ -217,7 +217,7 @@ local taskCarDriveToCoordNode = {
 		local _p7 = inputValues[8] or node._p7
 		local _p8 = inputValues[9] or node._p8
 		local drivingStyle = inputValues[10] or node.drivingStyle
-		TaskOp.carDriveToCoord(driver, vehicle, x, y, z, speed, _p7, _p8, drivingStyle)
+		TaskOp.carDriveToCoord(driver, vehicle, x, y, z, speed, math.floor(_p7), math.floor(_p8), drivingStyle)
         return {1}
     end
 }

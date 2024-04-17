@@ -158,7 +158,7 @@ local charCreateAsPassengerNode = {
 		local pedType = inputValues[3] or node.pedType
 		local modelId = inputValues[4] or node.modelId
 		local seatId = inputValues[5] or node.seatId
-		local handle = CharOp.createAsPassenger(vehicle, pedType, modelId, seatId)
+		local handle = CharOp.createAsPassenger(vehicle, pedType, modelId, math.floor(seatId))
         return {1, handle}
     end
 }

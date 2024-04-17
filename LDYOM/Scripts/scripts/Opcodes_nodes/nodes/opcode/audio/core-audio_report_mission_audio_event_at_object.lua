@@ -95,7 +95,7 @@ local audioReportMissionAudioEventAtObjectNode = {
             error("Input handle is not set")
         end
 		local soundId = inputValues[3] or node.soundId
-		AudioOp.reportMissionAudioEventAtObject(handle, soundId)
+		AudioOp.reportMissionAudioEventAtObject(handle, math.floor(soundId))
         return {1}
     end
 }

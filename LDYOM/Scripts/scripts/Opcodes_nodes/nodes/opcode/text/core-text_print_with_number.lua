@@ -119,7 +119,7 @@ local textPrintWithNumberNode = {
 		local num = inputValues[3] or node.num
 		local duration = inputValues[4] or node.duration
 		local flag = inputValues[5] or node.flag
-		TextOp.printWithNumber(key, num, duration, flag)
+		TextOp.printWithNumber(key, math.floor(num), math.floor(duration), math.floor(flag))
         return {1}
     end
 }

@@ -95,7 +95,7 @@ local pickupUpdateMoneyPerDayNode = {
             error("Input self is not set")
         end
 		local value = inputValues[3] or node.value
-		PickupOp.updateMoneyPerDay(self_, value)
+		PickupOp.updateMoneyPerDay(self_, math.floor(value))
         return {1}
     end
 }

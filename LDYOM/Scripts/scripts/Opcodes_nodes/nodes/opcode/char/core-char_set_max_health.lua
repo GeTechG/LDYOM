@@ -96,7 +96,7 @@ local charSetMaxHealthNode = {
             error("Input self is not set")
         end
 		local maxHealth = inputValues[3] or node.maxHealth
-		CharOp.setMaxHealth(self_, maxHealth)
+		CharOp.setMaxHealth(self_, math.floor(maxHealth))
         return {1}
     end
 }

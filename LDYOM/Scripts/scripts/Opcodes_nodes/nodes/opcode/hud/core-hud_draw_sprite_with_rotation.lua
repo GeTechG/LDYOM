@@ -197,7 +197,7 @@ local hudDrawSpriteWithRotationNode = {
 		local green = inputValues[9] or node.green
 		local blue = inputValues[10] or node.blue
 		local alpha = inputValues[11] or node.alpha
-		HudOp.drawSpriteWithRotation(memorySlot, offsetLeft, offsetTop, width, height, angle, red, green, blue, alpha)
+		HudOp.drawSpriteWithRotation(math.floor(memorySlot), offsetLeft, offsetTop, width, height, angle, math.floor(red), math.floor(green), math.floor(blue), math.floor(alpha))
         return {1}
     end
 }

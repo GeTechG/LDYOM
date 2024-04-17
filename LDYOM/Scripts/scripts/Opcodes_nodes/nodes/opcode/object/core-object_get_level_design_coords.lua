@@ -119,7 +119,7 @@ local objectGetLevelDesignCoordsNode = {
             error("Input self is not set")
         end
 		local nth = inputValues[3] or node.nth
-		local x, y, z = ObjectOp.getLevelDesignCoords(self_, nth)
+		local x, y, z = ObjectOp.getLevelDesignCoords(self_, math.floor(nth))
         return {1, x, y, z}
     end
 }

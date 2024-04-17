@@ -93,7 +93,7 @@ local playerSetModelNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local modelId = inputValues[3] or node.modelId
-		PlayerOp.setModel(self_, modelId)
+		PlayerOp.setModel(self_, math.floor(modelId))
         return {1}
     end
 }

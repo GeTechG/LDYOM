@@ -89,7 +89,7 @@ local charIsRespondingToEventNode = {
             error("Input self is not set")
         end
 		local eventId = inputValues[2] or node.eventId
-		local result = CharOp.isRespondingToEvent(self_, eventId)
+		local result = CharOp.isRespondingToEvent(self_, math.floor(eventId))
         return {result}
     end
 }

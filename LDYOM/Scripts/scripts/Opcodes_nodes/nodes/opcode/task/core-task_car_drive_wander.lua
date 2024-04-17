@@ -125,7 +125,7 @@ local taskCarDriveWanderNode = {
         end
 		local speed = inputValues[4] or node.speed
 		local drivingStyle = inputValues[5] or node.drivingStyle
-		TaskOp.carDriveWander(char, vehicle, speed, drivingStyle)
+		TaskOp.carDriveWander(char, vehicle, speed, math.floor(drivingStyle))
         return {1}
     end
 }

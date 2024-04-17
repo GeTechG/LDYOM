@@ -104,7 +104,7 @@ local carGetCharInPassengerSeatNode = {
             error("Input self is not set")
         end
 		local seatIndex = inputValues[3] or node.seatIndex
-		local handle = CarOp.getCharInPassengerSeat(self_, seatIndex)
+		local handle = CarOp.getCharInPassengerSeat(self_, math.floor(seatIndex))
         return {1, handle}
     end
 }

@@ -93,7 +93,7 @@ local worldSetExtraColorsNode = {
     run = function(editor, context, node, inputValues)
         local color = inputValues[2] or node.color
 		local fade = inputValues[3] or node.fade
-		WorldOp.setExtraColors(color, fade)
+		WorldOp.setExtraColors(math.floor(color), fade)
         return {1}
     end
 }

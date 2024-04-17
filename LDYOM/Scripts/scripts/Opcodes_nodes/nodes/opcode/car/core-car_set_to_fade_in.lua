@@ -96,7 +96,7 @@ local carSetToFadeInNode = {
             error("Input self is not set")
         end
 		local alpha = inputValues[3] or node.alpha
-		CarOp.setToFadeIn(self_, alpha)
+		CarOp.setToFadeIn(self_, math.floor(alpha))
         return {1}
     end
 }

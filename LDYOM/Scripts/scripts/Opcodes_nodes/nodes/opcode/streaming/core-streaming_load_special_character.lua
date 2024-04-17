@@ -93,7 +93,7 @@ local streamingLoadSpecialCharacterNode = {
     run = function(editor, context, node, inputValues)
         local slotId = inputValues[2] or node.slotId
 		local modelName = inputValues[3] or node.modelName
-		StreamingOp.loadSpecialCharacter(slotId, modelName)
+		StreamingOp.loadSpecialCharacter(math.floor(slotId), modelName)
         return {1}
     end
 }

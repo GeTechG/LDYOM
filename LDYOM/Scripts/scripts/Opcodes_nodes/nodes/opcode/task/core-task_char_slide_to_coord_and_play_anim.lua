@@ -252,7 +252,7 @@ local taskCharSlideToCoordAndPlayAnimNode = {
 		local lockY = inputValues[13] or node.lockY
 		local lockF = inputValues[14] or node.lockF
 		local time = inputValues[15] or node.time
-		TaskOp.charSlideToCoordAndPlayAnim(handle, x, y, z, angle, radius, animationName, animationFile, frameDelta, loop, lockX, lockY, lockF, time)
+		TaskOp.charSlideToCoordAndPlayAnim(handle, x, y, z, angle, radius, animationName, animationFile, frameDelta, loop, lockX, lockY, lockF, math.floor(time))
         return {1}
     end
 }

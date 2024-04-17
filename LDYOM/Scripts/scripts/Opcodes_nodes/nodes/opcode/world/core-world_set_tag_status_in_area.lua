@@ -132,7 +132,7 @@ local worldSetTagStatusInAreaNode = {
 		local rightTopX = inputValues[4] or node.rightTopX
 		local rightTopY = inputValues[5] or node.rightTopY
 		local percent = inputValues[6] or node.percent
-		WorldOp.setTagStatusInArea(leftBottomX, leftBottomY, rightTopX, rightTopY, percent)
+		WorldOp.setTagStatusInArea(leftBottomX, leftBottomY, rightTopX, rightTopY, math.floor(percent))
         return {1}
     end
 }

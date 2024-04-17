@@ -73,7 +73,7 @@ local streamingHasCarRecordingBeenLoadedNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local pathId = inputValues[1] or node.pathId
-		local result = StreamingOp.hasCarRecordingBeenLoaded(pathId)
+		local result = StreamingOp.hasCarRecordingBeenLoaded(math.floor(pathId))
         return {result}
     end
 }

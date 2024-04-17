@@ -121,7 +121,7 @@ local audioLoadMissionAudioNode = {
     run = function(editor, context, node, inputValues)
         local slotId = inputValues[2] or node.slotId
 		local audioId = inputValues[3] or node.audioId
-		AudioOp.loadMissionAudio(slotId, audioId)
+		AudioOp.loadMissionAudio(slotId, math.floor(audioId))
         return {1}
     end
 }

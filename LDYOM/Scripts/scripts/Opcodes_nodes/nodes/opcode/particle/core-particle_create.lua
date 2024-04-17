@@ -140,7 +140,7 @@ local particleCreateNode = {
 		local y = inputValues[4] or node.y
 		local z = inputValues[5] or node.z
 		local type = inputValues[6] or node.type
-		local handle = ParticleOp.create(name, x, y, z, type)
+		local handle = ParticleOp.create(name, x, y, z, math.floor(type))
         return {1, handle}
     end
 }

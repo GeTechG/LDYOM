@@ -134,7 +134,7 @@ local textPrintBigQNode = {
         local key = inputValues[2] or node.key
 		local duration = inputValues[3] or node.duration
 		local style = inputValues[4] or node.style
-		TextOp.printBigQ(key, duration, style)
+		TextOp.printBigQ(key, math.floor(duration), style)
         return {1}
     end
 }

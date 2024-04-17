@@ -121,7 +121,7 @@ local charPerformSequenceFromProgressNode = {
 		local sequence = inputValues[3] or node.sequence
 		local _p3 = inputValues[4] or node._p3
 		local _p4 = inputValues[5] or node._p4
-		CharOp.performSequenceFromProgress(self_, sequence, _p3, _p4)
+		CharOp.performSequenceFromProgress(self_, sequence, math.floor(_p3), math.floor(_p4))
         return {1}
     end
 }

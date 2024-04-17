@@ -156,7 +156,7 @@ local particleCreateOnObjectNode = {
 		local yOffset = inputValues[5] or node.yOffset
 		local zOffset = inputValues[6] or node.zOffset
 		local type = inputValues[7] or node.type
-		local handle = ParticleOp.createOnObject(name, object, xOffset, yOffset, zOffset, type)
+		local handle = ParticleOp.createOnObject(name, object, xOffset, yOffset, zOffset, math.floor(type))
         return {1, handle}
     end
 }

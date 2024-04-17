@@ -96,7 +96,7 @@ local charSetAreaVisibleNode = {
             error("Input self is not set")
         end
 		local interiorId = inputValues[3] or node.interiorId
-		CharOp.setAreaVisible(self_, interiorId)
+		CharOp.setAreaVisible(self_, math.floor(interiorId))
         return {1}
     end
 }

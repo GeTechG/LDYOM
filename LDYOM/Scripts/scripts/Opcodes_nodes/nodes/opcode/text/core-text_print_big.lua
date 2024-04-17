@@ -134,7 +134,7 @@ local textPrintBigNode = {
         local key = inputValues[2] or node.key
 		local time = inputValues[3] or node.time
 		local style = inputValues[4] or node.style
-		TextOp.printBig(key, time, style)
+		TextOp.printBig(key, math.floor(time), style)
         return {1}
     end
 }

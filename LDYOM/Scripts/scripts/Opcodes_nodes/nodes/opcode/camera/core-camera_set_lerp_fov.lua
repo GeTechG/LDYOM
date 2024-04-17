@@ -119,7 +119,7 @@ local cameraSetLerpFovNode = {
 		local to = inputValues[3] or node.to
 		local time = inputValues[4] or node.time
 		local ease = inputValues[5] or node.ease
-		CameraOp.setLerpFov(from, to, time, ease)
+		CameraOp.setLerpFov(from, to, math.floor(time), ease)
         return {1}
     end
 }

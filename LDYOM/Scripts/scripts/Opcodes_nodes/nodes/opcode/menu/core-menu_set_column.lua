@@ -261,7 +261,7 @@ local menuSetColumnNode = {
 		local row9 = inputValues[14] or node.row9
 		local row10 = inputValues[15] or node.row10
 		local row11 = inputValues[16] or node.row11
-		MenuOp.setColumn(self_, column, title, row0, row1, row2, row3, row4, row5, row6, row7, row8, row9, row10, row11)
+		MenuOp.setColumn(self_, math.floor(column), title, row0, row1, row2, row3, row4, row5, row6, row7, row8, row9, row10, row11)
         return {1}
     end
 }

@@ -140,7 +140,7 @@ local trainCreateNode = {
 		local y = inputValues[4] or node.y
 		local z = inputValues[5] or node.z
 		local direction = inputValues[6] or node.direction
-		local handle = TrainOp.create(type, x, y, z, direction)
+		local handle = TrainOp.create(math.floor(type), x, y, z, direction)
         return {1, handle}
     end
 }

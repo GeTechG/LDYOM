@@ -275,7 +275,7 @@ local worldAddStuntJumpNode = {
 		local cameraY = inputValues[15] or node.cameraY
 		local cameraZ = inputValues[16] or node.cameraZ
 		local reward = inputValues[17] or node.reward
-		WorldOp.addStuntJump(startX, startY, startZ, startRadiusX, startRadiusY, startRadiusZ, finishX, finishY, finishZ, finishRadiusX, finishRadiusY, finishRadiusZ, cameraX, cameraY, cameraZ, reward)
+		WorldOp.addStuntJump(startX, startY, startZ, startRadiusX, startRadiusY, startRadiusZ, finishX, finishY, finishZ, finishRadiusX, finishRadiusY, finishRadiusZ, cameraX, cameraY, cameraZ, math.floor(reward))
         return {1}
     end
 }

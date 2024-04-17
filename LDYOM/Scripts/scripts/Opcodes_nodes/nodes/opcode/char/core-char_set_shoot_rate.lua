@@ -96,7 +96,7 @@ local charSetShootRateNode = {
             error("Input self is not set")
         end
 		local rate = inputValues[3] or node.rate
-		CharOp.setShootRate(self_, rate)
+		CharOp.setShootRate(self_, math.floor(rate))
         return {1}
     end
 }

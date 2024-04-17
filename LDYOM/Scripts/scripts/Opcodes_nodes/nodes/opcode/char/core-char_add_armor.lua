@@ -96,7 +96,7 @@ local charAddArmorNode = {
             error("Input self is not set")
         end
 		local amount = inputValues[3] or node.amount
-		CharOp.addArmor(self_, amount)
+		CharOp.addArmor(self_, math.floor(amount))
         return {1}
     end
 }

@@ -150,7 +150,7 @@ local carControlDoorNode = {
 		local door = inputValues[3] or node.door
 		local latch = inputValues[4] or node.latch
 		local angle = inputValues[5] or node.angle
-		CarOp.controlDoor(self_, door, latch, angle)
+		CarOp.controlDoor(self_, door, math.floor(latch), angle)
         return {1}
     end
 }

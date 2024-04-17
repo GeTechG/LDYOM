@@ -108,7 +108,7 @@ local charSetInformRespectedFriendsNode = {
         end
 		local radius = inputValues[3] or node.radius
 		local _p3 = inputValues[4] or node._p3
-		CharOp.setInformRespectedFriends(self_, radius, _p3)
+		CharOp.setInformRespectedFriends(self_, radius, math.floor(_p3))
         return {1}
     end
 }

@@ -147,7 +147,7 @@ local hudDisplayNthCounterWithStringNode = {
 		local display = inputValues[3] or node.display
 		local slot = inputValues[4] or node.slot
 		local text = inputValues[5] or node.text
-		HudOp.displayNthCounterWithString(counter, display, slot, text)
+		HudOp.displayNthCounterWithString(math.floor(counter), display, math.floor(slot), text)
         return {1}
     end
 }

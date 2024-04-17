@@ -111,7 +111,7 @@ local taskWarpCharIntoCarAsPassengerNode = {
             error("Input vehicle is not set")
         end
 		local seatId = inputValues[4] or node.seatId
-		TaskOp.warpCharIntoCarAsPassenger(char, vehicle, seatId)
+		TaskOp.warpCharIntoCarAsPassenger(char, vehicle, math.floor(seatId))
         return {1}
     end
 }

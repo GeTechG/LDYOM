@@ -125,7 +125,7 @@ local taskEnterCarAsPassengerNode = {
         end
 		local time = inputValues[4] or node.time
 		local seatId = inputValues[5] or node.seatId
-		TaskOp.enterCarAsPassenger(char, vehicle, time, seatId)
+		TaskOp.enterCarAsPassenger(char, vehicle, math.floor(time), math.floor(seatId))
         return {1}
     end
 }

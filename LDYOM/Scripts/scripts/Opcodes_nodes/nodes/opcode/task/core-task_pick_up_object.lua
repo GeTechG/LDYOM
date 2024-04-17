@@ -203,7 +203,7 @@ local taskPickUpObjectNode = {
 		local animationName = inputValues[9] or node.animationName
 		local animationFile = inputValues[10] or node.animationFile
 		local time = inputValues[11] or node.time
-		TaskOp.pickUpObject(char, object, xOffset, yOffset, zOffset, boneId, _p7, animationName, animationFile, time)
+		TaskOp.pickUpObject(char, object, xOffset, yOffset, zOffset, math.floor(boneId), math.floor(_p7), animationName, animationFile, math.floor(time))
         return {1}
     end
 }

@@ -111,7 +111,7 @@ local taskDrivePointRouteNode = {
             error("Input vehicle is not set")
         end
 		local speed = inputValues[4] or node.speed
-		TaskOp.drivePointRoute(char, vehicle, speed)
+		TaskOp.drivePointRoute(char, vehicle, math.floor(speed))
         return {1}
     end
 }

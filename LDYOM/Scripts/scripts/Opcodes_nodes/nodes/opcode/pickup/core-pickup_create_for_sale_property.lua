@@ -140,7 +140,7 @@ local pickupCreateForSalePropertyNode = {
 		local z = inputValues[4] or node.z
 		local price = inputValues[5] or node.price
 		local message = inputValues[6] or node.message
-		local handle = PickupOp.createForSaleProperty(x, y, z, price, message)
+		local handle = PickupOp.createForSaleProperty(x, y, z, math.floor(price), message)
         return {1, handle}
     end
 }

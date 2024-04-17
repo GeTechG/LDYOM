@@ -92,7 +92,7 @@ local menuSetActiveItemNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local row = inputValues[3] or node.row
-		MenuOp.setActiveItem(self_, row)
+		MenuOp.setActiveItem(self_, math.floor(row))
         return {1}
     end
 }

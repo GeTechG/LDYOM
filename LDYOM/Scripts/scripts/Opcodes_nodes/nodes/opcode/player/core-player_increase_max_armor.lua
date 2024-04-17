@@ -93,7 +93,7 @@ local playerIncreaseMaxArmorNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local value = inputValues[3] or node.value
-		PlayerOp.increaseMaxArmor(self_, value)
+		PlayerOp.increaseMaxArmor(self_, math.floor(value))
         return {1}
     end
 }

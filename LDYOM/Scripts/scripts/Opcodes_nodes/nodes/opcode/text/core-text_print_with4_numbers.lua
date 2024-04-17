@@ -186,7 +186,7 @@ local textPrintWith4NumbersNode = {
 		local num4 = inputValues[6] or node.num4
 		local duration = inputValues[7] or node.duration
 		local style = inputValues[8] or node.style
-		TextOp.printWith4Numbers(key, num1, num2, num3, num4, duration, style)
+		TextOp.printWith4Numbers(key, math.floor(num1), math.floor(num2), math.floor(num3), math.floor(num4), math.floor(duration), style)
         return {1}
     end
 }

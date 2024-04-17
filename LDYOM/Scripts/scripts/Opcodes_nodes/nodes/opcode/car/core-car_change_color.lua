@@ -109,7 +109,7 @@ local carChangeColorNode = {
         end
 		local primaryColor = inputValues[3] or node.primaryColor
 		local secondaryColor = inputValues[4] or node.secondaryColor
-		CarOp.changeColor(self_, primaryColor, secondaryColor)
+		CarOp.changeColor(self_, math.floor(primaryColor), math.floor(secondaryColor))
         return {1}
     end
 }

@@ -121,7 +121,7 @@ local padSetDrunkInputDelayNode = {
     run = function(editor, context, node, inputValues)
         local pad = inputValues[2] or node.pad
 		local delay = inputValues[3] or node.delay
-		PadOp.setDrunkInputDelay(pad, delay)
+		PadOp.setDrunkInputDelay(pad, math.floor(delay))
         return {1}
     end
 }

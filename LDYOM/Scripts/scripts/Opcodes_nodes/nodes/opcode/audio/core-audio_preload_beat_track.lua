@@ -79,7 +79,7 @@ local audioPreloadBeatTrackNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local trackId = inputValues[2] or node.trackId
-		AudioOp.preloadBeatTrack(trackId)
+		AudioOp.preloadBeatTrack(math.floor(trackId))
         return {1}
     end
 }

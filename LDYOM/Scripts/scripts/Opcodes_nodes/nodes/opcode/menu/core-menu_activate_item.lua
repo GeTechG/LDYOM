@@ -105,7 +105,7 @@ local menuActivateItemNode = {
         local self_ = inputValues[2] or node.self_
 		local row = inputValues[3] or node.row
 		local state = inputValues[4] or node.state
-		MenuOp.activateItem(self_, row, state)
+		MenuOp.activateItem(self_, math.floor(row), state)
         return {1}
     end
 }

@@ -92,7 +92,7 @@ local zoneSetPopulationRaceNode = {
     run = function(editor, context, node, inputValues)
         local zone = inputValues[2] or node.zone
 		local _p2 = inputValues[3] or node._p2
-		ZoneOp.setPopulationRace(zone, _p2)
+		ZoneOp.setPopulationRace(zone, math.floor(_p2))
         return {1}
     end
 }

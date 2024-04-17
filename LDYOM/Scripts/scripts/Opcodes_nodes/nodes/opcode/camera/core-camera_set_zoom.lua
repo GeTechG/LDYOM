@@ -80,7 +80,7 @@ local cameraSetZoomNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local zoom = inputValues[2] or node.zoom
-		CameraOp.setZoom(zoom)
+		CameraOp.setZoom(math.floor(zoom))
         return {1}
     end
 }

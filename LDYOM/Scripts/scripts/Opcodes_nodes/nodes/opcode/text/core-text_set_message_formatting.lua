@@ -106,7 +106,7 @@ local textSetMessageFormattingNode = {
         local _p1 = inputValues[2] or node._p1
 		local margin = inputValues[3] or node.margin
 		local width = inputValues[4] or node.width
-		TextOp.setMessageFormatting(_p1, margin, width)
+		TextOp.setMessageFormatting(_p1, math.floor(margin), math.floor(width))
         return {1}
     end
 }

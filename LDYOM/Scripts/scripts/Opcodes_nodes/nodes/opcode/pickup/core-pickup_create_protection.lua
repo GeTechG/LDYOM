@@ -140,7 +140,7 @@ local pickupCreateProtectionNode = {
 		local z = inputValues[4] or node.z
 		local revenueLimit = inputValues[5] or node.revenueLimit
 		local revenueRate = inputValues[6] or node.revenueRate
-		local handle = PickupOp.createProtection(x, y, z, revenueLimit, revenueRate)
+		local handle = PickupOp.createProtection(x, y, z, math.floor(revenueLimit), math.floor(revenueRate))
         return {1, handle}
     end
 }

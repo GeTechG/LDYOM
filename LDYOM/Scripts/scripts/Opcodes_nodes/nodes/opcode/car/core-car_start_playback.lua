@@ -96,7 +96,7 @@ local carStartPlaybackNode = {
             error("Input self is not set")
         end
 		local path = inputValues[3] or node.path
-		CarOp.startPlayback(self_, path)
+		CarOp.startPlayback(self_, math.floor(path))
         return {1}
     end
 }

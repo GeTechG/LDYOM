@@ -179,7 +179,7 @@ local menuGridCreateNode = {
 		local interactive = inputValues[7] or node.interactive
 		local background = inputValues[8] or node.background
 		local alignment = inputValues[9] or node.alignment
-		local handle = MenuGridOp.create(header, topLeftX, topLeftY, width, numColumns, interactive, background, alignment)
+		local handle = MenuGridOp.create(header, topLeftX, topLeftY, width, math.floor(numColumns), interactive, background, math.floor(alignment))
         return {1, handle}
     end
 }

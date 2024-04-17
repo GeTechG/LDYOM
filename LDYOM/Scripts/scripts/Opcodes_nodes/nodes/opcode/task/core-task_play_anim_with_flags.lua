@@ -213,7 +213,7 @@ local taskPlayAnimWithFlagsNode = {
 		local time = inputValues[10] or node.time
 		local disableForce = inputValues[11] or node.disableForce
 		local disableLockZ = inputValues[12] or node.disableLockZ
-		TaskOp.playAnimWithFlags(handle, animationName, animationFile, frameDelta, loop, lockX, lockY, lockF, time, disableForce, disableLockZ)
+		TaskOp.playAnimWithFlags(handle, animationName, animationFile, frameDelta, loop, lockX, lockY, lockF, math.floor(time), disableForce, disableLockZ)
         return {1}
     end
 }

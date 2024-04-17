@@ -158,7 +158,7 @@ local worldCreateScriptRoadblockNode = {
 		local rightTopY = inputValues[6] or node.rightTopY
 		local rightTopZ = inputValues[7] or node.rightTopZ
 		local type = inputValues[8] or node.type
-		WorldOp.createScriptRoadblock(leftBottomX, leftBottomY, leftBottomZ, rightTopX, rightTopY, rightTopZ, type)
+		WorldOp.createScriptRoadblock(leftBottomX, leftBottomY, leftBottomZ, rightTopX, rightTopY, rightTopZ, math.floor(type))
         return {1}
     end
 }

@@ -96,7 +96,7 @@ local charSetHealthNode = {
             error("Input self is not set")
         end
 		local health = inputValues[3] or node.health
-		CharOp.setHealth(self_, health)
+		CharOp.setHealth(self_, math.floor(health))
         return {1}
     end
 }

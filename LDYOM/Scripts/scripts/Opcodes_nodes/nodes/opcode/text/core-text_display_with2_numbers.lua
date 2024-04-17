@@ -132,7 +132,7 @@ local textDisplayWith2NumbersNode = {
 		local key = inputValues[4] or node.key
 		local num1 = inputValues[5] or node.num1
 		local num2 = inputValues[6] or node.num2
-		TextOp.displayWith2Numbers(offsetLeft, offsetTop, key, num1, num2)
+		TextOp.displayWith2Numbers(offsetLeft, offsetTop, key, math.floor(num1), math.floor(num2))
         return {1}
     end
 }

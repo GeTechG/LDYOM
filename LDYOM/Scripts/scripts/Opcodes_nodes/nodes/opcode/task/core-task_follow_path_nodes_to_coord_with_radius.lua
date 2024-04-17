@@ -161,7 +161,7 @@ local taskFollowPathNodesToCoordWithRadiusNode = {
 		local mode = inputValues[6] or node.mode
 		local time = inputValues[7] or node.time
 		local radius = inputValues[8] or node.radius
-		TaskOp.followPathNodesToCoordWithRadius(handle, x, y, z, mode, time, radius)
+		TaskOp.followPathNodesToCoordWithRadius(handle, x, y, z, math.floor(mode), math.floor(time), radius)
         return {1}
     end
 }

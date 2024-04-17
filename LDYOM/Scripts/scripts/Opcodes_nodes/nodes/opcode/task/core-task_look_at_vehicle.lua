@@ -112,7 +112,7 @@ local taskLookAtVehicleNode = {
             error("Input vehicle is not set")
         end
 		local time = inputValues[4] or node.time
-		TaskOp.lookAtVehicle(char, vehicle, time)
+		TaskOp.lookAtVehicle(char, vehicle, math.floor(time))
         return {1}
     end
 }

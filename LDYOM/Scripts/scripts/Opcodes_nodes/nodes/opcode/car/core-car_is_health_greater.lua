@@ -89,7 +89,7 @@ local carIsHealthGreaterNode = {
             error("Input self is not set")
         end
 		local health = inputValues[2] or node.health
-		local result = CarOp.isHealthGreater(self_, health)
+		local result = CarOp.isHealthGreater(self_, math.floor(health))
         return {result}
     end
 }

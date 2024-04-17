@@ -104,7 +104,7 @@ local trainGetCarriageNode = {
             error("Input self is not set")
         end
 		local number = inputValues[3] or node.number
-		local carriage = TrainOp.getCarriage(self_, number)
+		local carriage = TrainOp.getCarriage(self_, math.floor(number))
         return {1, carriage}
     end
 }

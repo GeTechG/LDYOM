@@ -109,7 +109,7 @@ local taskFallAndGetUpNode = {
         end
 		local fallDown = inputValues[3] or node.fallDown
 		local timeOnGround = inputValues[4] or node.timeOnGround
-		TaskOp.fallAndGetUp(handle, fallDown, timeOnGround)
+		TaskOp.fallAndGetUp(handle, fallDown, math.floor(timeOnGround))
         return {1}
     end
 }

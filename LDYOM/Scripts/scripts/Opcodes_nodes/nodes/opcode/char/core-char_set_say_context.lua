@@ -104,7 +104,7 @@ local charSetSayContextNode = {
             error("Input self is not set")
         end
 		local speech = inputValues[3] or node.speech
-		local _p3 = CharOp.setSayContext(self_, speech)
+		local _p3 = CharOp.setSayContext(self_, math.floor(speech))
         return {1, _p3}
     end
 }

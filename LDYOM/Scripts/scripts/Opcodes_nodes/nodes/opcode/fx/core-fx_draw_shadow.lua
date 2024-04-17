@@ -225,7 +225,7 @@ local fxDrawShadowNode = {
 		local r = inputValues[9] or node.r
 		local g = inputValues[10] or node.g
 		local b = inputValues[11] or node.b
-		FxOp.drawShadow(textureType, x, y, z, angle, length, intensity, r, g, b)
+		FxOp.drawShadow(textureType, x, y, z, angle, length, math.floor(intensity), math.floor(r), math.floor(g), math.floor(b))
         return {1}
     end
 }

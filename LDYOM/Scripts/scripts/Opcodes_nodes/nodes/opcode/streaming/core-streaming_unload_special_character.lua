@@ -80,7 +80,7 @@ local streamingUnloadSpecialCharacterNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local slotId = inputValues[2] or node.slotId
-		StreamingOp.unloadSpecialCharacter(slotId)
+		StreamingOp.unloadSpecialCharacter(math.floor(slotId))
         return {1}
     end
 }

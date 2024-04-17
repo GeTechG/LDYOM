@@ -132,7 +132,7 @@ local textSetDropshadowNode = {
 		local green = inputValues[4] or node.green
 		local blue = inputValues[5] or node.blue
 		local alpha = inputValues[6] or node.alpha
-		TextOp.setDropshadow(intensity, red, green, blue, alpha)
+		TextOp.setDropshadow(math.floor(intensity), math.floor(red), math.floor(green), math.floor(blue), math.floor(alpha))
         return {1}
     end
 }

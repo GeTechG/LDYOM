@@ -112,7 +112,7 @@ local charWarpIntoCarAsPassengerNode = {
             error("Input handle is not set")
         end
 		local seatId = inputValues[4] or node.seatId
-		CharOp.warpIntoCarAsPassenger(self_, handle, seatId)
+		CharOp.warpIntoCarAsPassenger(self_, handle, math.floor(seatId))
         return {1}
     end
 }

@@ -80,7 +80,7 @@ local gameSetMaxFireGenerationsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local limit = inputValues[2] or node.limit
-		GameOp.setMaxFireGenerations(limit)
+		GameOp.setMaxFireGenerations(math.floor(limit))
         return {1}
     end
 }

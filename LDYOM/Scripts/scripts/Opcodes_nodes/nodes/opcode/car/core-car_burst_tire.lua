@@ -96,7 +96,7 @@ local carBurstTireNode = {
             error("Input self is not set")
         end
 		local tireId = inputValues[3] or node.tireId
-		CarOp.burstTire(self_, tireId)
+		CarOp.burstTire(self_, math.floor(tireId))
         return {1}
     end
 }

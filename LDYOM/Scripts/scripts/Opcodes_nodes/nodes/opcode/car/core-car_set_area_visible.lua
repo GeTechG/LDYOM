@@ -95,7 +95,7 @@ local carSetAreaVisibleNode = {
             error("Input self is not set")
         end
 		local interiorId = inputValues[3] or node.interiorId
-		CarOp.setAreaVisible(self_, interiorId)
+		CarOp.setAreaVisible(self_, math.floor(interiorId))
         return {1}
     end
 }

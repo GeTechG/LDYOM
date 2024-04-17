@@ -134,7 +134,7 @@ local playerSetMoodNode = {
         local self_ = inputValues[2] or node.self_
 		local mood = inputValues[3] or node.mood
 		local time = inputValues[4] or node.time
-		PlayerOp.setMood(self_, mood, time)
+		PlayerOp.setMood(self_, mood, math.floor(time))
         return {1}
     end
 }

@@ -148,7 +148,7 @@ local taskFollowPathNodesToCoordNode = {
 		local z = inputValues[5] or node.z
 		local walkSpeed = inputValues[6] or node.walkSpeed
 		local time = inputValues[7] or node.time
-		TaskOp.followPathNodesToCoord(handle, x, y, z, walkSpeed, time)
+		TaskOp.followPathNodesToCoord(handle, x, y, z, math.floor(walkSpeed), math.floor(time))
         return {1}
     end
 }

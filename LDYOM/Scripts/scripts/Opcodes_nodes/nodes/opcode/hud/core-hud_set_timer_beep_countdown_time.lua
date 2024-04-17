@@ -93,7 +93,7 @@ local hudSetTimerBeepCountdownTimeNode = {
     run = function(editor, context, node, inputValues)
         local timer = inputValues[2] or node.timer
 		local timeInSec = inputValues[3] or node.timeInSec
-		HudOp.setTimerBeepCountdownTime(timer, timeInSec)
+		HudOp.setTimerBeepCountdownTime(math.floor(timer), math.floor(timeInSec))
         return {1}
     end
 }

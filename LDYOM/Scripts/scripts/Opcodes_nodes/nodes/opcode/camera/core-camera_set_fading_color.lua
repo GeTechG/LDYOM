@@ -106,7 +106,7 @@ local cameraSetFadingColorNode = {
         local r = inputValues[2] or node.r
 		local g = inputValues[3] or node.g
 		local b = inputValues[4] or node.b
-		CameraOp.setFadingColor(r, g, b)
+		CameraOp.setFadingColor(math.floor(r), math.floor(g), math.floor(b))
         return {1}
     end
 }

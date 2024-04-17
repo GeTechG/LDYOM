@@ -195,7 +195,7 @@ local particleCreateOnCarWithDirectionNode = {
 		local yDirection = inputValues[8] or node.yDirection
 		local zDirection = inputValues[9] or node.zDirection
 		local type = inputValues[10] or node.type
-		local handle = ParticleOp.createOnCarWithDirection(name, vehicle, xOffset, yOffset, zOffset, xDirection, yDirection, zDirection, type)
+		local handle = ParticleOp.createOnCarWithDirection(name, vehicle, xOffset, yOffset, zOffset, xDirection, yDirection, zDirection, math.floor(type))
         return {1, handle}
     end
 }

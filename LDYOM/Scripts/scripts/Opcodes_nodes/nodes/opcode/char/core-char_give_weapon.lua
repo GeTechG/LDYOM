@@ -137,7 +137,7 @@ local charGiveWeaponNode = {
         end
 		local weaponType = inputValues[3] or node.weaponType
 		local ammo = inputValues[4] or node.ammo
-		CharOp.giveWeapon(self_, weaponType, ammo)
+		CharOp.giveWeapon(self_, weaponType, math.floor(ammo))
         return {1}
     end
 }

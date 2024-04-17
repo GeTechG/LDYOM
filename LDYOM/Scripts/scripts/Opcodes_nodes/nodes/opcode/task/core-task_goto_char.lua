@@ -125,7 +125,7 @@ local taskGotoCharNode = {
         end
 		local time = inputValues[4] or node.time
 		local radius = inputValues[5] or node.radius
-		TaskOp.gotoChar(walking, target, time, radius)
+		TaskOp.gotoChar(walking, target, math.floor(time), radius)
         return {1}
     end
 }

@@ -118,7 +118,7 @@ local audioReportMissionAudioEventAtPositionNode = {
 		local y = inputValues[3] or node.y
 		local z = inputValues[4] or node.z
 		local soundId = inputValues[5] or node.soundId
-		AudioOp.reportMissionAudioEventAtPosition(x, y, z, soundId)
+		AudioOp.reportMissionAudioEventAtPosition(x, y, z, math.floor(soundId))
         return {1}
     end
 }

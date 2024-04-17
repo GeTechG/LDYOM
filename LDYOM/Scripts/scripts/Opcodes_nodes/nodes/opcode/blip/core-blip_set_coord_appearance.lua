@@ -93,7 +93,7 @@ local blipSetCoordAppearanceNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local color = inputValues[3] or node.color
-		BlipOp.setCoordAppearance(self_, color)
+		BlipOp.setCoordAppearance(self_, math.floor(color))
         return {1}
     end
 }

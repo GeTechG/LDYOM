@@ -112,7 +112,7 @@ local taskEnterCarAsDriverNode = {
             error("Input vehicle is not set")
         end
 		local time = inputValues[4] or node.time
-		TaskOp.enterCarAsDriver(char, vehicle, time)
+		TaskOp.enterCarAsDriver(char, vehicle, math.floor(time))
         return {1}
     end
 }

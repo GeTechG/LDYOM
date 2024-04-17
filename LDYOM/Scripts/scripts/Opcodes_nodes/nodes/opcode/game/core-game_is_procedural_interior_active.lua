@@ -73,7 +73,7 @@ local gameIsProceduralInteriorActiveNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local interiorId = inputValues[1] or node.interiorId
-		local result = GameOp.isProceduralInteriorActive(interiorId)
+		local result = GameOp.isProceduralInteriorActive(math.floor(interiorId))
         return {result}
     end
 }

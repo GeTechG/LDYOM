@@ -96,7 +96,7 @@ local charSetAccuracyNode = {
             error("Input self is not set")
         end
 		local accuracy = inputValues[3] or node.accuracy
-		CharOp.setAccuracy(self_, accuracy)
+		CharOp.setAccuracy(self_, math.floor(accuracy))
         return {1}
     end
 }

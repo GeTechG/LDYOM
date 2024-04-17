@@ -103,7 +103,7 @@ local audioGetBeatProximityNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local _p1 = inputValues[2] or node._p1
-		local _p2, _p3, _p4 = AudioOp.getBeatProximity(_p1)
+		local _p2, _p3, _p4 = AudioOp.getBeatProximity(math.floor(_p1))
         return {1, _p2, _p3, _p4}
     end
 }

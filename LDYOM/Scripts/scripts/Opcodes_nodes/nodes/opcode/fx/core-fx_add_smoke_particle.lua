@@ -222,7 +222,7 @@ local fxAddSmokeParticleNode = {
 		local alpha = inputValues[11] or node.alpha
 		local size = inputValues[12] or node.size
 		local lastFactor = inputValues[13] or node.lastFactor
-		FxOp.addSmokeParticle(x, y, z, velocityX, velocityY, velocityZ, red, green, blue, alpha, size, lastFactor)
+		FxOp.addSmokeParticle(x, y, z, velocityX, velocityY, velocityZ, math.floor(red), math.floor(green), math.floor(blue), math.floor(alpha), size, lastFactor)
         return {1}
     end
 }

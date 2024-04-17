@@ -96,7 +96,7 @@ local charSetMoneyNode = {
             error("Input self is not set")
         end
 		local amount = inputValues[3] or node.amount
-		CharOp.setMoney(self_, amount)
+		CharOp.setMoney(self_, math.floor(amount))
         return {1}
     end
 }

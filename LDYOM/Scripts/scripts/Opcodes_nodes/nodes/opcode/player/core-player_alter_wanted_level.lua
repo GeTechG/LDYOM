@@ -93,7 +93,7 @@ local playerAlterWantedLevelNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local wantedLevel = inputValues[3] or node.wantedLevel
-		PlayerOp.alterWantedLevel(self_, wantedLevel)
+		PlayerOp.alterWantedLevel(self_, math.floor(wantedLevel))
         return {1}
     end
 }

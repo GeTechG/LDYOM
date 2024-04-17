@@ -80,7 +80,7 @@ local cameraShakeNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local intensity = inputValues[2] or node.intensity
-		CameraOp.shake(intensity)
+		CameraOp.shake(math.floor(intensity))
         return {1}
     end
 }

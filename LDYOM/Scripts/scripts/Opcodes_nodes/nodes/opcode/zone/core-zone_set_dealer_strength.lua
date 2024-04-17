@@ -93,7 +93,7 @@ local zoneSetDealerStrengthNode = {
     run = function(editor, context, node, inputValues)
         local zone = inputValues[2] or node.zone
 		local strength = inputValues[3] or node.strength
-		ZoneOp.setDealerStrength(zone, strength)
+		ZoneOp.setDealerStrength(zone, math.floor(strength))
         return {1}
     end
 }

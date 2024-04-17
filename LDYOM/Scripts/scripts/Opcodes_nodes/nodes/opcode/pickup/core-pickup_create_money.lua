@@ -140,7 +140,7 @@ local pickupCreateMoneyNode = {
 		local z = inputValues[4] or node.z
 		local cashAmount = inputValues[5] or node.cashAmount
 		local permanent = inputValues[6] or node.permanent
-		local handle = PickupOp.createMoney(x, y, z, cashAmount, permanent)
+		local handle = PickupOp.createMoney(x, y, z, math.floor(cashAmount), permanent)
         return {1, handle}
     end
 }

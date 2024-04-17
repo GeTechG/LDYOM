@@ -181,7 +181,7 @@ local pickupCreateWithAmmoNode = {
 		local x = inputValues[5] or node.x
 		local y = inputValues[6] or node.y
 		local z = inputValues[7] or node.z
-		local handle = PickupOp.createWithAmmo(modelId, pickupType, ammo, x, y, z)
+		local handle = PickupOp.createWithAmmo(modelId, pickupType, math.floor(ammo), x, y, z)
         return {1, handle}
     end
 }

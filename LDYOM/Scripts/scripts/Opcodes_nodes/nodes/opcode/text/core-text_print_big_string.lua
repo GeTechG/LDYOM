@@ -134,7 +134,7 @@ local textPrintBigStringNode = {
         local text = inputValues[2] or node.text
 		local time = inputValues[3] or node.time
 		local style = inputValues[4] or node.style
-		TextOp.printBigString(text, time, style)
+		TextOp.printBigString(text, math.floor(time), style)
         return {1}
     end
 }

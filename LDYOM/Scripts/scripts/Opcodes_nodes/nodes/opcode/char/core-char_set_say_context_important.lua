@@ -142,7 +142,7 @@ local charSetSayContextImportantNode = {
 		local _p3 = inputValues[4] or node._p3
 		local _p4 = inputValues[5] or node._p4
 		local _p5 = inputValues[6] or node._p5
-		local _p6 = CharOp.setSayContextImportant(self_, _p2, _p3, _p4, _p5)
+		local _p6 = CharOp.setSayContextImportant(self_, math.floor(_p2), _p3, _p4, _p5)
         return {1, _p6}
     end
 }

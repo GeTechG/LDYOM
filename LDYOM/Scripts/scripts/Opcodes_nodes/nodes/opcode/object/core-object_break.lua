@@ -96,7 +96,7 @@ local objectBreakNode = {
             error("Input self is not set")
         end
 		local intensity = inputValues[3] or node.intensity
-		ObjectOp["break"](self_, intensity)
+		ObjectOp["break"](self_, math.floor(intensity))
         return {1}
     end
 }

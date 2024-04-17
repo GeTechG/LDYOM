@@ -212,7 +212,7 @@ local textPrintWith6NumbersNode = {
 		local num6 = inputValues[8] or node.num6
 		local duration = inputValues[9] or node.duration
 		local style = inputValues[10] or node.style
-		TextOp.printWith6Numbers(key, num1, num2, num3, num4, num5, num6, duration, style)
+		TextOp.printWith6Numbers(key, math.floor(num1), math.floor(num2), math.floor(num3), math.floor(num4), math.floor(num5), math.floor(num6), math.floor(duration), style)
         return {1}
     end
 }

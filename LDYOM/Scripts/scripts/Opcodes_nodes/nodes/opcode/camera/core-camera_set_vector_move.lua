@@ -171,7 +171,7 @@ local cameraSetVectorMoveNode = {
 		local toZ = inputValues[7] or node.toZ
 		local time = inputValues[8] or node.time
 		local ease = inputValues[9] or node.ease
-		CameraOp.setVectorMove(fromX, fromY, fromZ, toX, toY, toZ, time, ease)
+		CameraOp.setVectorMove(fromX, fromY, fromZ, toX, toY, toZ, math.floor(time), ease)
         return {1}
     end
 }

@@ -124,7 +124,7 @@ local taskGotoCarNode = {
         end
 		local time = inputValues[4] or node.time
 		local radius = inputValues[5] or node.radius
-		TaskOp.gotoCar(char, vehicle, time, radius)
+		TaskOp.gotoCar(char, vehicle, math.floor(time), radius)
         return {1}
     end
 }

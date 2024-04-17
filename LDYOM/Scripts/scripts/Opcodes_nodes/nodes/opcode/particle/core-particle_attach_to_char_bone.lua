@@ -112,7 +112,7 @@ local particleAttachToCharBoneNode = {
             error("Input handle is not set")
         end
 		local boneId = inputValues[4] or node.boneId
-		ParticleOp.attachToCharBone(self_, handle, boneId)
+		ParticleOp.attachToCharBone(self_, handle, math.floor(boneId))
         return {1}
     end
 }

@@ -96,7 +96,7 @@ local taskTiredNode = {
             error("Input handle is not set")
         end
 		local time = inputValues[3] or node.time
-		TaskOp.tired(handle, time)
+		TaskOp.tired(handle, math.floor(time))
         return {1}
     end
 }

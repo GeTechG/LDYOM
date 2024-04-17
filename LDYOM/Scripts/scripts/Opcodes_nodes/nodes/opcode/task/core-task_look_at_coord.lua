@@ -135,7 +135,7 @@ local taskLookAtCoordNode = {
 		local y = inputValues[4] or node.y
 		local z = inputValues[5] or node.z
 		local time = inputValues[6] or node.time
-		TaskOp.lookAtCoord(handle, x, y, z, time)
+		TaskOp.lookAtCoord(handle, x, y, z, math.floor(time))
         return {1}
     end
 }

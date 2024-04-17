@@ -106,7 +106,7 @@ local menuHighlightItemNode = {
         local self_ = inputValues[2] or node.self_
 		local row = inputValues[3] or node.row
 		local state = inputValues[4] or node.state
-		MenuOp.highlightItem(self_, row, state)
+		MenuOp.highlightItem(self_, math.floor(row), state)
         return {1}
     end
 }

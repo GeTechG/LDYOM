@@ -151,7 +151,7 @@ local taskGoToCoordAnyMeansNode = {
 		if vehicle == nil or vehicle == 0 then
             error("Input vehicle is not set")
         end
-		TaskOp.goToCoordAnyMeans(char, x, y, z, walkSpeed, vehicle)
+		TaskOp.goToCoordAnyMeans(char, x, y, z, math.floor(walkSpeed), vehicle)
         return {1}
     end
 }

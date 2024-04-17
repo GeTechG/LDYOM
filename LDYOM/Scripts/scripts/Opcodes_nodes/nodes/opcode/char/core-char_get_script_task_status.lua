@@ -104,7 +104,7 @@ local charGetScriptTaskStatusNode = {
             error("Input self is not set")
         end
 		local taskId = inputValues[3] or node.taskId
-		local status = CharOp.getScriptTaskStatus(self_, taskId)
+		local status = CharOp.getScriptTaskStatus(self_, math.floor(taskId))
         return {1, status}
     end
 }

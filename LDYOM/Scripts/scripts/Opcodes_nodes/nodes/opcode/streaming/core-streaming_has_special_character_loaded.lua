@@ -73,7 +73,7 @@ local streamingHasSpecialCharacterLoadedNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local slotId = inputValues[1] or node.slotId
-		local result = StreamingOp.hasSpecialCharacterLoaded(slotId)
+		local result = StreamingOp.hasSpecialCharacterLoaded(math.floor(slotId))
         return {result}
     end
 }

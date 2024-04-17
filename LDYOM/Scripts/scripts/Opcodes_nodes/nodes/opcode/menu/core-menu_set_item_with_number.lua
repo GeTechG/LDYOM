@@ -132,7 +132,7 @@ local menuSetItemWithNumberNode = {
 		local row = inputValues[4] or node.row
 		local gxt = inputValues[5] or node.gxt
 		local number = inputValues[6] or node.number
-		MenuOp.setItemWithNumber(self_, column, row, gxt, number)
+		MenuOp.setItemWithNumber(self_, math.floor(column), math.floor(row), gxt, math.floor(number))
         return {1}
     end
 }

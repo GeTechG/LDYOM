@@ -112,7 +112,7 @@ local taskKillCharOnFootTimedNode = {
             error("Input target is not set")
         end
 		local time = inputValues[4] or node.time
-		TaskOp.killCharOnFootTimed(handle, target, time)
+		TaskOp.killCharOnFootTimed(handle, target, math.floor(time))
         return {1}
     end
 }

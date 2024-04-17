@@ -93,7 +93,7 @@ local streamingAttachAnimsToModelNode = {
     run = function(editor, context, node, inputValues)
         local pedModelId = inputValues[2] or node.pedModelId
 		local animationFile = inputValues[3] or node.animationFile
-		StreamingOp.attachAnimsToModel(pedModelId, animationFile)
+		StreamingOp.attachAnimsToModel(math.floor(pedModelId), animationFile)
         return {1}
     end
 }

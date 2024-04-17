@@ -176,7 +176,7 @@ local taskGoStraightToCoordNode = {
 		local z = inputValues[5] or node.z
 		local moveState = inputValues[6] or node.moveState
 		local time = inputValues[7] or node.time
-		TaskOp.goStraightToCoord(handle, x, y, z, moveState, time)
+		TaskOp.goStraightToCoord(handle, x, y, z, moveState, math.floor(time))
         return {1}
     end
 }

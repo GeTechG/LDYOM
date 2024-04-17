@@ -95,7 +95,7 @@ local taskDiveFromAttachmentAndGetUpNode = {
             error("Input handle is not set")
         end
 		local time = inputValues[3] or node.time
-		TaskOp.diveFromAttachmentAndGetUp(handle, time)
+		TaskOp.diveFromAttachmentAndGetUp(handle, math.floor(time))
         return {1}
     end
 }

@@ -106,7 +106,7 @@ local cameraSetShakeSimulationSimpleNode = {
         local type = inputValues[2] or node.type
 		local timeInMs = inputValues[3] or node.timeInMs
 		local intensity = inputValues[4] or node.intensity
-		CameraOp.setShakeSimulationSimple(type, timeInMs, intensity)
+		CameraOp.setShakeSimulationSimple(math.floor(type), timeInMs, intensity)
         return {1}
     end
 }

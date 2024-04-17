@@ -80,7 +80,7 @@ local hudClearCounterNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local counter = inputValues[2] or node.counter
-		HudOp.clearCounter(counter)
+		HudOp.clearCounter(math.floor(counter))
         return {1}
     end
 }

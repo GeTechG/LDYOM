@@ -125,7 +125,7 @@ local taskSmartFleeCharNode = {
         end
 		local radius = inputValues[4] or node.radius
 		local time = inputValues[5] or node.time
-		TaskOp.smartFleeChar(handle, threat, radius, time)
+		TaskOp.smartFleeChar(handle, threat, radius, math.floor(time))
         return {1}
     end
 }

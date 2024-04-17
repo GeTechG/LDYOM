@@ -80,7 +80,7 @@ local audioPlayMissionPassedTuneNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local soundId = inputValues[2] or node.soundId
-		AudioOp.playMissionPassedTune(soundId)
+		AudioOp.playMissionPassedTune(math.floor(soundId))
         return {1}
     end
 }

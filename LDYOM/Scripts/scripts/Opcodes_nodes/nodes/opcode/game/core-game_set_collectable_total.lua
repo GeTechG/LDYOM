@@ -80,7 +80,7 @@ local gameSetCollectableTotalNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local amount = inputValues[2] or node.amount
-		GameOp.setCollectableTotal(amount)
+		GameOp.setCollectableTotal(math.floor(amount))
         return {1}
     end
 }

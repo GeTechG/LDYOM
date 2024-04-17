@@ -127,7 +127,7 @@ local playerCreateNode = {
 		local x = inputValues[3] or node.x
 		local y = inputValues[4] or node.y
 		local z = inputValues[5] or node.z
-		local handle = PlayerOp.create(playerIndex, x, y, z)
+		local handle = PlayerOp.create(math.floor(playerIndex), x, y, z)
         return {1, handle}
     end
 }

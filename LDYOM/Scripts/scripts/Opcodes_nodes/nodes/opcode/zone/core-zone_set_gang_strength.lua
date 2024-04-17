@@ -134,7 +134,7 @@ local zoneSetGangStrengthNode = {
         local zoneId = inputValues[2] or node.zoneId
 		local gangId = inputValues[3] or node.gangId
 		local density = inputValues[4] or node.density
-		ZoneOp.setGangStrength(zoneId, gangId, density)
+		ZoneOp.setGangStrength(zoneId, gangId, math.floor(density))
         return {1}
     end
 }

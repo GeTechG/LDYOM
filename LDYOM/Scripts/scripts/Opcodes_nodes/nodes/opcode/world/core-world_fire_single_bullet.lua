@@ -157,7 +157,7 @@ local worldFireSingleBulletNode = {
 		local toY = inputValues[6] or node.toY
 		local toZ = inputValues[7] or node.toZ
 		local energy = inputValues[8] or node.energy
-		WorldOp.fireSingleBullet(fromX, fromY, fromZ, toX, toY, toZ, energy)
+		WorldOp.fireSingleBullet(fromX, fromY, fromZ, toX, toY, toZ, math.floor(energy))
         return {1}
     end
 }

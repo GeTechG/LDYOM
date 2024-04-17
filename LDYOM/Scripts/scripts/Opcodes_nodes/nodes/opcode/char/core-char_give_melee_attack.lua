@@ -137,7 +137,7 @@ local charGiveMeleeAttackNode = {
         end
 		local fightStyle = inputValues[3] or node.fightStyle
 		local moveId = inputValues[4] or node.moveId
-		CharOp.giveMeleeAttack(self_, fightStyle, moveId)
+		CharOp.giveMeleeAttack(self_, fightStyle, math.floor(moveId))
         return {1}
     end
 }

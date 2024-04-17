@@ -96,7 +96,7 @@ local taskSayNode = {
             error("Input handle is not set")
         end
 		local phraseId = inputValues[3] or node.phraseId
-		TaskOp.say(handle, phraseId)
+		TaskOp.say(handle, math.floor(phraseId))
         return {1}
     end
 }

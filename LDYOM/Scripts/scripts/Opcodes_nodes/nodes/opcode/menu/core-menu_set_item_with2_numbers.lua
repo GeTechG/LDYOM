@@ -144,7 +144,7 @@ local menuSetItemWith2NumbersNode = {
 		local gxt = inputValues[5] or node.gxt
 		local number1 = inputValues[6] or node.number1
 		local number2 = inputValues[7] or node.number2
-		MenuOp.setItemWith2Numbers(self_, column, row, gxt, number1, number2)
+		MenuOp.setItemWith2Numbers(self_, math.floor(column), math.floor(row), gxt, math.floor(number1), math.floor(number2))
         return {1}
     end
 }

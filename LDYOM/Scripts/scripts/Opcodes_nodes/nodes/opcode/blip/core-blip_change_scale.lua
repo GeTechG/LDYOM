@@ -93,7 +93,7 @@ local blipChangeScaleNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local size = inputValues[3] or node.size
-		BlipOp.changeScale(self_, size)
+		BlipOp.changeScale(self_, math.floor(size))
         return {1}
     end
 }

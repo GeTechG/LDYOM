@@ -96,7 +96,7 @@ local taskLookAboutNode = {
             error("Input handle is not set")
         end
 		local time = inputValues[3] or node.time
-		TaskOp.lookAbout(handle, time)
+		TaskOp.lookAbout(handle, math.floor(time))
         return {1}
     end
 }

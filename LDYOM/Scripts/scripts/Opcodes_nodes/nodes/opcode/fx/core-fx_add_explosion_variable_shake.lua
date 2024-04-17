@@ -132,7 +132,7 @@ local fxAddExplosionVariableShakeNode = {
 		local z = inputValues[4] or node.z
 		local type = inputValues[5] or node.type
 		local shake = inputValues[6] or node.shake
-		FxOp.addExplosionVariableShake(x, y, z, type, shake)
+		FxOp.addExplosionVariableShake(x, y, z, math.floor(type), shake)
         return {1}
     end
 }

@@ -137,7 +137,7 @@ local carSetTempActionNode = {
         end
 		local actionId = inputValues[3] or node.actionId
 		local timeInMs = inputValues[4] or node.timeInMs
-		CarOp.setTempAction(self_, actionId, timeInMs)
+		CarOp.setTempAction(self_, actionId, math.floor(timeInMs))
         return {1}
     end
 }

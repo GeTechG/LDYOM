@@ -96,7 +96,7 @@ local carSetRandomRouteSeedNode = {
             error("Input self is not set")
         end
 		local routeSeed = inputValues[3] or node.routeSeed
-		CarOp.setRandomRouteSeed(self_, routeSeed)
+		CarOp.setRandomRouteSeed(self_, math.floor(routeSeed))
         return {1}
     end
 }

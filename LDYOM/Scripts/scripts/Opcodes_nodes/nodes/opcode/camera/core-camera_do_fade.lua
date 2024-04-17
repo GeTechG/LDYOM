@@ -121,7 +121,7 @@ local cameraDoFadeNode = {
     run = function(editor, context, node, inputValues)
         local time = inputValues[2] or node.time
 		local direction = inputValues[3] or node.direction
-		CameraOp.doFade(time, direction)
+		CameraOp.doFade(math.floor(time), direction)
         return {1}
     end
 }

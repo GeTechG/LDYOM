@@ -93,7 +93,7 @@ local playerAddScoreNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local money = inputValues[3] or node.money
-		PlayerOp.addScore(self_, money)
+		PlayerOp.addScore(self_, math.floor(money))
         return {1}
     end
 }

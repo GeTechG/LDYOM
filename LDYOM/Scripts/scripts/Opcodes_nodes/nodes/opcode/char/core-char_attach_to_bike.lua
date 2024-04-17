@@ -217,7 +217,7 @@ local charAttachToBikeNode = {
 		local _p7 = inputValues[8] or node._p7
 		local _p8 = inputValues[9] or node._p8
 		local weaponType = inputValues[10] or node.weaponType
-		CharOp.attachToBike(self_, vehicle, xOffset, yOffset, zOffset, position, _p7, _p8, weaponType)
+		CharOp.attachToBike(self_, vehicle, xOffset, yOffset, zOffset, math.floor(position), _p7, _p8, weaponType)
         return {1}
     end
 }

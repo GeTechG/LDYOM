@@ -80,7 +80,7 @@ local streamingRemoveCarRecordingNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local pathId = inputValues[2] or node.pathId
-		StreamingOp.removeCarRecording(pathId)
+		StreamingOp.removeCarRecording(math.floor(pathId))
         return {1}
     end
 }

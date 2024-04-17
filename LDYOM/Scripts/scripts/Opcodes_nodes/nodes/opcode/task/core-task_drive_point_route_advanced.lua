@@ -150,7 +150,7 @@ local taskDrivePointRouteAdvancedNode = {
 		local _p4 = inputValues[5] or node._p4
 		local _p5 = inputValues[6] or node._p5
 		local _p6 = inputValues[7] or node._p6
-		TaskOp.drivePointRouteAdvanced(char, vehicle, speed, _p4, _p5, _p6)
+		TaskOp.drivePointRouteAdvanced(char, vehicle, speed, math.floor(_p4), math.floor(_p5), math.floor(_p6))
         return {1}
     end
 }

@@ -178,7 +178,7 @@ local checkpointCreateNode = {
 		local pointY = inputValues[7] or node.pointY
 		local pointZ = inputValues[8] or node.pointZ
 		local radius = inputValues[9] or node.radius
-		local handle = CheckpointOp.create(type, x, y, z, pointX, pointY, pointZ, radius)
+		local handle = CheckpointOp.create(math.floor(type), x, y, z, pointX, pointY, pointZ, radius)
         return {1, handle}
     end
 }

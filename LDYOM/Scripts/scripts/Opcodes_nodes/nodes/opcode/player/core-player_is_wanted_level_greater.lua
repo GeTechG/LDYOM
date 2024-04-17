@@ -86,7 +86,7 @@ local playerIsWantedLevelGreaterNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[1] or node.self_
 		local wantedLevel = inputValues[2] or node.wantedLevel
-		local result = PlayerOp.isWantedLevelGreater(self_, wantedLevel)
+		local result = PlayerOp.isWantedLevelGreater(self_, math.floor(wantedLevel))
         return {result}
     end
 }

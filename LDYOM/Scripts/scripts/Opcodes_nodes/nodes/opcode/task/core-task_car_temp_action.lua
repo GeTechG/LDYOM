@@ -124,7 +124,7 @@ local taskCarTempActionNode = {
         end
 		local actionId = inputValues[4] or node.actionId
 		local time = inputValues[5] or node.time
-		TaskOp.carTempAction(char, vehicle, actionId, time)
+		TaskOp.carTempAction(char, vehicle, math.floor(actionId), math.floor(time))
         return {1}
     end
 }

@@ -205,7 +205,7 @@ local charAttachToObjectNode = {
 		local orientation = inputValues[7] or node.orientation
 		local angleLimit = inputValues[8] or node.angleLimit
 		local weaponType = inputValues[9] or node.weaponType
-		CharOp.attachToObject(self_, handle, xOffset, yOffset, zOffset, orientation, angleLimit, weaponType)
+		CharOp.attachToObject(self_, handle, xOffset, yOffset, zOffset, math.floor(orientation), angleLimit, weaponType)
         return {1}
     end
 }

@@ -96,7 +96,7 @@ local carSetHealthNode = {
             error("Input self is not set")
         end
 		local health = inputValues[3] or node.health
-		CarOp.setHealth(self_, health)
+		CarOp.setHealth(self_, math.floor(health))
         return {1}
     end
 }

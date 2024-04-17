@@ -199,6 +199,8 @@ def generate():
                     run.append(templates["input_run"].format(index=len(inputs), field=name))
                     if type_end not in ["core.number", "core.bool", "core.string"]:
                         run.append(templates["input_run_check"].format(field=name, name=inp["name"]))
+                    if inp["type"] == 'int':
+                        name = f"math.floor({name})"
                     inps.append(name)
 
             outputs = []

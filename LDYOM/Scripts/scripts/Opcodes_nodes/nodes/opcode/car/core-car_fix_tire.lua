@@ -96,7 +96,7 @@ local carFixTireNode = {
             error("Input self is not set")
         end
 		local typeId = inputValues[3] or node.typeId
-		CarOp.fixTire(self_, typeId)
+		CarOp.fixTire(self_, math.floor(typeId))
         return {1}
     end
 }

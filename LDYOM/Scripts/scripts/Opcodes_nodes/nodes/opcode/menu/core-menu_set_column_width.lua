@@ -106,7 +106,7 @@ local menuSetColumnWidthNode = {
         local self_ = inputValues[2] or node.self_
 		local column = inputValues[3] or node.column
 		local width = inputValues[4] or node.width
-		MenuOp.setColumnWidth(self_, column, width)
+		MenuOp.setColumnWidth(self_, math.floor(column), math.floor(width))
         return {1}
     end
 }

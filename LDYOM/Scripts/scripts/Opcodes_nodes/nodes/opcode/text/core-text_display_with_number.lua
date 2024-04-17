@@ -119,7 +119,7 @@ local textDisplayWithNumberNode = {
 		local offsetTop = inputValues[3] or node.offsetTop
 		local key = inputValues[4] or node.key
 		local num = inputValues[5] or node.num
-		TextOp.displayWithNumber(offsetLeft, offsetTop, key, num)
+		TextOp.displayWithNumber(offsetLeft, offsetTop, key, math.floor(num))
         return {1}
     end
 }

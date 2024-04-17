@@ -138,7 +138,7 @@ local taskGotoCharOffsetNode = {
 		local time = inputValues[4] or node.time
 		local radius = inputValues[5] or node.radius
 		local heading = inputValues[6] or node.heading
-		TaskOp.gotoCharOffset(char, target, time, radius, heading)
+		TaskOp.gotoCharOffset(char, target, math.floor(time), radius, heading)
         return {1}
     end
 }

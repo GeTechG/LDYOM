@@ -187,7 +187,7 @@ local taskPlayAnimNode = {
 		local lockY = inputValues[8] or node.lockY
 		local lockF = inputValues[9] or node.lockF
 		local time = inputValues[10] or node.time
-		TaskOp.playAnim(handle, animationName, animationFile, frameDelta, loop, lockX, lockY, lockF, time)
+		TaskOp.playAnim(handle, animationName, animationFile, frameDelta, loop, lockX, lockY, lockF, math.floor(time))
         return {1}
     end
 }

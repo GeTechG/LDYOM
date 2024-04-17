@@ -93,7 +93,7 @@ local playerSetDrunkennessNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local intensity = inputValues[3] or node.intensity
-		PlayerOp.setDrunkenness(self_, intensity)
+		PlayerOp.setDrunkenness(self_, math.floor(intensity))
         return {1}
     end
 }

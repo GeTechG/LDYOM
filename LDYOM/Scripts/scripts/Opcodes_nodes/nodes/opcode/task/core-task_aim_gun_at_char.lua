@@ -112,7 +112,7 @@ local taskAimGunAtCharNode = {
             error("Input target is not set")
         end
 		local time = inputValues[4] or node.time
-		TaskOp.aimGunAtChar(char, target, time)
+		TaskOp.aimGunAtChar(char, target, math.floor(time))
         return {1}
     end
 }

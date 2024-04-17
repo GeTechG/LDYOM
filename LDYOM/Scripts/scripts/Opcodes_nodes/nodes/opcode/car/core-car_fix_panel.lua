@@ -95,7 +95,7 @@ local carFixPanelNode = {
             error("Input self is not set")
         end
 		local panelId = inputValues[3] or node.panelId
-		CarOp.fixPanel(self_, panelId)
+		CarOp.fixPanel(self_, math.floor(panelId))
         return {1}
     end
 }

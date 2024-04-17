@@ -171,7 +171,7 @@ local worldCreateBirdsNode = {
 		local zTo = inputValues[7] or node.zTo
 		local quantity = inputValues[8] or node.quantity
 		local type = inputValues[9] or node.type
-		WorldOp.createBirds(xFrom, yFrom, zFrom, xTo, yTo, zTo, quantity, type)
+		WorldOp.createBirds(xFrom, yFrom, zFrom, xTo, yTo, zTo, math.floor(quantity), math.floor(type))
         return {1}
     end
 }

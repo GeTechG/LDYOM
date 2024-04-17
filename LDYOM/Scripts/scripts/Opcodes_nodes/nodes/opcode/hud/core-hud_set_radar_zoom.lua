@@ -79,7 +79,7 @@ local hudSetRadarZoomNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local zoom = inputValues[2] or node.zoom
-		HudOp.setRadarZoom(zoom)
+		HudOp.setRadarZoom(math.floor(zoom))
         return {1}
     end
 }

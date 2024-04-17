@@ -93,7 +93,7 @@ local clockSetTimeOfDayNode = {
     run = function(editor, context, node, inputValues)
         local hours = inputValues[2] or node.hours
 		local minutes = inputValues[3] or node.minutes
-		ClockOp.setTimeOfDay(hours, minutes)
+		ClockOp.setTimeOfDay(math.floor(hours), math.floor(minutes))
         return {1}
     end
 }

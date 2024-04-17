@@ -96,7 +96,7 @@ local heliActivateSpeedCheatNode = {
             error("Input self is not set")
         end
 		local power = inputValues[3] or node.power
-		HeliOp.activateSpeedCheat(self_, power)
+		HeliOp.activateSpeedCheat(self_, math.floor(power))
         return {1}
     end
 }

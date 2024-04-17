@@ -106,7 +106,7 @@ local carSetModelComponentsNode = {
         local _unused = inputValues[2] or node._unused
 		local component1 = inputValues[3] or node.component1
 		local component2 = inputValues[4] or node.component2
-		CarOp.setModelComponents(_unused, component1, component2)
+		CarOp.setModelComponents(_unused, math.floor(component1), math.floor(component2))
         return {1}
     end
 }

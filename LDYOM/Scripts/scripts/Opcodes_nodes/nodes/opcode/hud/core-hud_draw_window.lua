@@ -145,7 +145,7 @@ local hudDrawWindowNode = {
 		local rightBottomY = inputValues[5] or node.rightBottomY
 		local header = inputValues[6] or node.header
 		local zIndex = inputValues[7] or node.zIndex
-		HudOp.drawWindow(leftTopX, leftTopY, rightBottomX, rightBottomY, header, zIndex)
+		HudOp.drawWindow(leftTopX, leftTopY, rightBottomX, rightBottomY, header, math.floor(zIndex))
         return {1}
     end
 }

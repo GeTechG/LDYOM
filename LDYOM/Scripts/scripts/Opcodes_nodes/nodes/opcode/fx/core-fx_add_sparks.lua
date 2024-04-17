@@ -157,7 +157,7 @@ local fxAddSparksNode = {
 		local velocityY = inputValues[6] or node.velocityY
 		local velocityZ = inputValues[7] or node.velocityZ
 		local density = inputValues[8] or node.density
-		FxOp.addSparks(x, y, z, velocityX, velocityY, velocityZ, density)
+		FxOp.addSparks(x, y, z, velocityX, velocityY, velocityZ, math.floor(density))
         return {1}
     end
 }

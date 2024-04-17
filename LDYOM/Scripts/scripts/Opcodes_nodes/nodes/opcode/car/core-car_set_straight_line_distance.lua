@@ -96,7 +96,7 @@ local carSetStraightLineDistanceNode = {
             error("Input self is not set")
         end
 		local distance = inputValues[3] or node.distance
-		CarOp.setStraightLineDistance(self_, distance)
+		CarOp.setStraightLineDistance(self_, math.floor(distance))
         return {1}
     end
 }

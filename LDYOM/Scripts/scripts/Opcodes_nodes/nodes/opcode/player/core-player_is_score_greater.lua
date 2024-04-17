@@ -86,7 +86,7 @@ local playerIsScoreGreaterNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[1] or node.self_
 		local money = inputValues[2] or node.money
-		local result = PlayerOp.isScoreGreater(self_, money)
+		local result = PlayerOp.isScoreGreater(self_, math.floor(money))
         return {result}
     end
 }

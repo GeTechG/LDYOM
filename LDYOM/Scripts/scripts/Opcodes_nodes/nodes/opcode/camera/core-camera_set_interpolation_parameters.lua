@@ -93,7 +93,7 @@ local cameraSetInterpolationParametersNode = {
     run = function(editor, context, node, inputValues)
         local _p1 = inputValues[2] or node._p1
 		local time = inputValues[3] or node.time
-		CameraOp.setInterpolationParameters(_p1, time)
+		CameraOp.setInterpolationParameters(_p1, math.floor(time))
         return {1}
     end
 }

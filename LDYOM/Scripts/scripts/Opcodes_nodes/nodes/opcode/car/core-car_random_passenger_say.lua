@@ -96,7 +96,7 @@ local carRandomPassengerSayNode = {
             error("Input self is not set")
         end
 		local speechId = inputValues[3] or node.speechId
-		CarOp.randomPassengerSay(self_, speechId)
+		CarOp.randomPassengerSay(self_, math.floor(speechId))
         return {1}
     end
 }

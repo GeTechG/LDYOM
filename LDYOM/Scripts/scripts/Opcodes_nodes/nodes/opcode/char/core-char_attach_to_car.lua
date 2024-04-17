@@ -205,7 +205,7 @@ local charAttachToCarNode = {
 		local position = inputValues[7] or node.position
 		local angleLimit = inputValues[8] or node.angleLimit
 		local weaponType = inputValues[9] or node.weaponType
-		CharOp.attachToCar(self_, vehicle, xOffset, yOffset, zOffset, position, angleLimit, weaponType)
+		CharOp.attachToCar(self_, vehicle, xOffset, yOffset, zOffset, math.floor(position), angleLimit, weaponType)
         return {1}
     end
 }

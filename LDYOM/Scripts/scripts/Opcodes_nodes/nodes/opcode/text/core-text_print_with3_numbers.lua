@@ -173,7 +173,7 @@ local textPrintWith3NumbersNode = {
 		local num3 = inputValues[5] or node.num3
 		local duration = inputValues[6] or node.duration
 		local style = inputValues[7] or node.style
-		TextOp.printWith3Numbers(key, num1, num2, num3, duration, style)
+		TextOp.printWith3Numbers(key, math.floor(num1), math.floor(num2), math.floor(num3), math.floor(duration), style)
         return {1}
     end
 }

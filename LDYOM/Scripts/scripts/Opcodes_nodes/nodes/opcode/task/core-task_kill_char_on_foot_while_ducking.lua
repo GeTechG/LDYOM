@@ -137,7 +137,7 @@ local taskKillCharOnFootWhileDuckingNode = {
 		local flags = inputValues[4] or node.flags
 		local actionDelay = inputValues[5] or node.actionDelay
 		local actionChance = inputValues[6] or node.actionChance
-		TaskOp.killCharOnFootWhileDucking(char, target, flags, actionDelay, actionChance)
+		TaskOp.killCharOnFootWhileDucking(char, target, math.floor(flags), math.floor(actionDelay), math.floor(actionChance))
         return {1}
     end
 }

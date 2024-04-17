@@ -106,7 +106,7 @@ local textPrintFormattedNowNode = {
         local fmt = inputValues[2] or node.fmt
 		local time = inputValues[3] or node.time
 		local arg = inputValues[4] or node.arg
-		TextOp.printFormattedNow(fmt, time, arg)
+		TextOp.printFormattedNow(fmt, math.floor(time), arg)
         return {1}
     end
 }

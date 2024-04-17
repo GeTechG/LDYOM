@@ -80,7 +80,7 @@ local gameSetScriptLimitToGangSizeNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local maxSize = inputValues[2] or node.maxSize
-		GameOp.setScriptLimitToGangSize(maxSize)
+		GameOp.setScriptLimitToGangSize(math.floor(maxSize))
         return {1}
     end
 }

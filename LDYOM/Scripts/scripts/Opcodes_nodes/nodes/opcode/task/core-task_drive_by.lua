@@ -205,7 +205,7 @@ local taskDriveByNode = {
 		local style = inputValues[9] or node.style
 		local rightHandCarSeat = inputValues[10] or node.rightHandCarSeat
 		local fireRate = inputValues[11] or node.fireRate
-		TaskOp.driveBy(handle, targetChar, targetVehicle, x, y, z, radius, style, rightHandCarSeat, fireRate)
+		TaskOp.driveBy(handle, targetChar, targetVehicle, x, y, z, radius, math.floor(style), rightHandCarSeat, math.floor(fireRate))
         return {1}
     end
 }

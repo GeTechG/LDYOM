@@ -96,7 +96,7 @@ local carStartPlaybackLoopedNode = {
             error("Input self is not set")
         end
 		local pathId = inputValues[3] or node.pathId
-		CarOp.startPlaybackLooped(self_, pathId)
+		CarOp.startPlaybackLooped(self_, math.floor(pathId))
         return {1}
     end
 }

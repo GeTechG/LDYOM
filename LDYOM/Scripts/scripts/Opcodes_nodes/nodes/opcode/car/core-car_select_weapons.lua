@@ -96,7 +96,7 @@ local carSelectWeaponsNode = {
             error("Input self is not set")
         end
 		local _p2 = inputValues[3] or node._p2
-		CarOp.selectWeapons(self_, _p2)
+		CarOp.selectWeapons(self_, math.floor(_p2))
         return {1}
     end
 }

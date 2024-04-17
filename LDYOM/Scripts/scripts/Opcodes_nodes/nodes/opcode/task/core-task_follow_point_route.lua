@@ -109,7 +109,7 @@ local taskFollowPointRouteNode = {
         end
 		local walkSpeed = inputValues[3] or node.walkSpeed
 		local flag = inputValues[4] or node.flag
-		TaskOp.followPointRoute(handle, walkSpeed, flag)
+		TaskOp.followPointRoute(handle, math.floor(walkSpeed), math.floor(flag))
         return {1}
     end
 }

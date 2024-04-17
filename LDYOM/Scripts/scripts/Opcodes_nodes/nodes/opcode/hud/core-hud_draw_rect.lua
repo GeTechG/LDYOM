@@ -171,7 +171,7 @@ local hudDrawRectNode = {
 		local g = inputValues[7] or node.g
 		local b = inputValues[8] or node.b
 		local a = inputValues[9] or node.a
-		HudOp.drawRect(x, y, width, height, r, g, b, a)
+		HudOp.drawRect(x, y, width, height, math.floor(r), math.floor(g), math.floor(b), math.floor(a))
         return {1}
     end
 }

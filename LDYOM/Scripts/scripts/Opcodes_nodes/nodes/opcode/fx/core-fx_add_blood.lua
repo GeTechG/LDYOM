@@ -173,7 +173,7 @@ local fxAddBloodNode = {
 		if handle == nil or handle == 0 then
             error("Input handle is not set")
         end
-		FxOp.addBlood(x, y, z, offsetX, offsetY, offsetZ, density, handle)
+		FxOp.addBlood(x, y, z, offsetX, offsetY, offsetZ, math.floor(density), handle)
         return {1}
     end
 }

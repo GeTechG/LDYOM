@@ -96,7 +96,7 @@ local carGivePaintjobNode = {
             error("Input self is not set")
         end
 		local paintjobId = inputValues[3] or node.paintjobId
-		CarOp.givePaintjob(self_, paintjobId)
+		CarOp.givePaintjob(self_, math.floor(paintjobId))
         return {1}
     end
 }

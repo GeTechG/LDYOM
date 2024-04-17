@@ -104,7 +104,7 @@ local charCreateRandomAsPassengerNode = {
             error("Input vehicle is not set")
         end
 		local seatId = inputValues[3] or node.seatId
-		local handle = CharOp.createRandomAsPassenger(vehicle, seatId)
+		local handle = CharOp.createRandomAsPassenger(vehicle, math.floor(seatId))
         return {1, handle}
     end
 }

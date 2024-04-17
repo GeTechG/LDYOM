@@ -215,7 +215,7 @@ local taskGoToCoordWhileAimingNode = {
 		local xOffset = inputValues[10] or node.xOffset
 		local yOffset = inputValues[11] or node.yOffset
 		local zOffset = inputValues[12] or node.zOffset
-		TaskOp.goToCoordWhileAiming(char, x, y, z, mode, turnRadius, stopRadius, target, xOffset, yOffset, zOffset)
+		TaskOp.goToCoordWhileAiming(char, x, y, z, math.floor(mode), turnRadius, stopRadius, target, xOffset, yOffset, zOffset)
         return {1}
     end
 }

@@ -93,7 +93,7 @@ local mathSetBitNode = {
     run = function(editor, context, node, inputValues)
         local number = inputValues[2] or node.number
 		local n = inputValues[3] or node.n
-		MathOp.setBit(number, n)
+		MathOp.setBit(math.floor(number), math.floor(n))
         return {1}
     end
 }

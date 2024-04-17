@@ -80,7 +80,7 @@ local gameMakeRoomInPlayerGangForMissionPedsNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local _p1 = inputValues[2] or node._p1
-		GameOp.makeRoomInPlayerGangForMissionPeds(_p1)
+		GameOp.makeRoomInPlayerGangForMissionPeds(math.floor(_p1))
         return {1}
     end
 }

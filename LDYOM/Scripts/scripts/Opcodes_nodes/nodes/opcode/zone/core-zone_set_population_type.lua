@@ -92,7 +92,7 @@ local zoneSetPopulationTypeNode = {
     run = function(editor, context, node, inputValues)
         local zone = inputValues[2] or node.zone
 		local type = inputValues[3] or node.type
-		ZoneOp.setPopulationType(zone, type)
+		ZoneOp.setPopulationType(zone, math.floor(type))
         return {1}
     end
 }

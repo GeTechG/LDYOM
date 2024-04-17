@@ -158,7 +158,7 @@ local fxDrawLightWithRangeNode = {
 		local green = inputValues[6] or node.green
 		local blue = inputValues[7] or node.blue
 		local radius = inputValues[8] or node.radius
-		FxOp.drawLightWithRange(x, y, z, red, green, blue, radius)
+		FxOp.drawLightWithRange(x, y, z, math.floor(red), math.floor(green), math.floor(blue), radius)
         return {1}
     end
 }

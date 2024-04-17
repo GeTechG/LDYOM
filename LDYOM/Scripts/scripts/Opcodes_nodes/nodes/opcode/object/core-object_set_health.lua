@@ -95,7 +95,7 @@ local objectSetHealthNode = {
             error("Input self is not set")
         end
 		local health = inputValues[3] or node.health
-		ObjectOp.setHealth(self_, health)
+		ObjectOp.setHealth(self_, math.floor(health))
         return {1}
     end
 }

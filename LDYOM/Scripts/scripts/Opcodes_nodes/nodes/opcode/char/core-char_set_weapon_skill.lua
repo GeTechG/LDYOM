@@ -96,7 +96,7 @@ local charSetWeaponSkillNode = {
             error("Input self is not set")
         end
 		local skillId = inputValues[3] or node.skillId
-		CharOp.setWeaponSkill(self_, skillId)
+		CharOp.setWeaponSkill(self_, math.floor(skillId))
         return {1}
     end
 }

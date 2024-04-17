@@ -147,7 +147,7 @@ local textPrintStringInStringNowNode = {
 		local replacementKey = inputValues[3] or node.replacementKey
 		local duration = inputValues[4] or node.duration
 		local style = inputValues[5] or node.style
-		TextOp.printStringInStringNow(templateKey, replacementKey, duration, style)
+		TextOp.printStringInStringNow(templateKey, replacementKey, math.floor(duration), style)
         return {1}
     end
 }

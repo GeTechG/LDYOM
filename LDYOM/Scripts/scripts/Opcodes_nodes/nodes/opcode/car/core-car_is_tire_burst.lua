@@ -89,7 +89,7 @@ local carIsTireBurstNode = {
             error("Input self is not set")
         end
 		local tireId = inputValues[2] or node.tireId
-		local result = CarOp.isTireBurst(self_, tireId)
+		local result = CarOp.isTireBurst(self_, math.floor(tireId))
         return {result}
     end
 }

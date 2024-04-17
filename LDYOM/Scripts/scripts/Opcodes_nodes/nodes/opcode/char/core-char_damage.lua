@@ -109,7 +109,7 @@ local charDamageNode = {
         end
 		local amount = inputValues[3] or node.amount
 		local damageArmour = inputValues[4] or node.damageArmour
-		CharOp.damage(self_, amount, damageArmour)
+		CharOp.damage(self_, math.floor(amount), damageArmour)
         return {1}
     end
 }

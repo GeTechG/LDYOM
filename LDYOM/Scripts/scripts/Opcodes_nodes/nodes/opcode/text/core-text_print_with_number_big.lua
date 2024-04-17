@@ -147,7 +147,7 @@ local textPrintWithNumberBigNode = {
 		local num = inputValues[3] or node.num
 		local duration = inputValues[4] or node.duration
 		local style = inputValues[5] or node.style
-		TextOp.printWithNumberBig(key, num, duration, style)
+		TextOp.printWithNumberBig(key, math.floor(num), math.floor(duration), style)
         return {1}
     end
 }

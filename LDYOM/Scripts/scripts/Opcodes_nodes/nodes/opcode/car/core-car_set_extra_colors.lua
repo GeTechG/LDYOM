@@ -109,7 +109,7 @@ local carSetExtraColorsNode = {
         end
 		local color1 = inputValues[3] or node.color1
 		local color2 = inputValues[4] or node.color2
-		CarOp.setExtraColors(self_, color1, color2)
+		CarOp.setExtraColors(self_, math.floor(color1), math.floor(color2))
         return {1}
     end
 }

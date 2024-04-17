@@ -171,7 +171,7 @@ local cameraSetVectorTrackNode = {
 		local toZ = inputValues[7] or node.toZ
 		local time = inputValues[8] or node.time
 		local ease = inputValues[9] or node.ease
-		CameraOp.setVectorTrack(fromX, fromY, fromZ, toX, toY, toZ, time, ease)
+		CameraOp.setVectorTrack(fromX, fromY, fromZ, toX, toY, toZ, math.floor(time), ease)
         return {1}
     end
 }

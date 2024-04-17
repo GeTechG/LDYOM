@@ -101,7 +101,7 @@ local mathRandomIntInRangeNode = {
     run = function(editor, context, node, inputValues)
         local min = inputValues[2] or node.min
 		local max = inputValues[3] or node.max
-		local result = MathOp.randomIntInRange(min, max)
+		local result = MathOp.randomIntInRange(math.floor(min), math.floor(max))
         return {1, result}
     end
 }

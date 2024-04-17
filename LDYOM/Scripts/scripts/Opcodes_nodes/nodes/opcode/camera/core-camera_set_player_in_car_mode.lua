@@ -80,7 +80,7 @@ local cameraSetPlayerInCarModeNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local mode = inputValues[2] or node.mode
-		CameraOp.setPlayerInCarMode(mode)
+		CameraOp.setPlayerInCarMode(math.floor(mode))
         return {1}
     end
 }

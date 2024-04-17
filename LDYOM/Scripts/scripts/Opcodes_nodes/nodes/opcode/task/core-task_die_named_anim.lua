@@ -135,7 +135,7 @@ local taskDieNamedAnimNode = {
 		local animationFile = inputValues[4] or node.animationFile
 		local frameDelta = inputValues[5] or node.frameDelta
 		local time = inputValues[6] or node.time
-		TaskOp.dieNamedAnim(handle, animationName, animationFile, frameDelta, time)
+		TaskOp.dieNamedAnim(handle, animationName, animationFile, frameDelta, math.floor(time))
         return {1}
     end
 }

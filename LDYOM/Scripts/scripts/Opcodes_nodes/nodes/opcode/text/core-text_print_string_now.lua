@@ -93,7 +93,7 @@ local textPrintStringNowNode = {
     run = function(editor, context, node, inputValues)
         local text = inputValues[2] or node.text
 		local time = inputValues[3] or node.time
-		TextOp.printStringNow(text, time)
+		TextOp.printStringNow(text, math.floor(time))
         return {1}
     end
 }

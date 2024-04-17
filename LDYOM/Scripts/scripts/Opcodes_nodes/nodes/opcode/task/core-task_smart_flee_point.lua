@@ -148,7 +148,7 @@ local taskSmartFleePointNode = {
 		local z = inputValues[5] or node.z
 		local radius = inputValues[6] or node.radius
 		local time = inputValues[7] or node.time
-		TaskOp.smartFleePoint(handle, x, y, z, radius, time)
+		TaskOp.smartFleePoint(handle, x, y, z, radius, math.floor(time))
         return {1}
     end
 }

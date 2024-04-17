@@ -96,7 +96,7 @@ local carDamagePanelNode = {
             error("Input self is not set")
         end
 		local panelId = inputValues[3] or node.panelId
-		CarOp.damagePanel(self_, panelId)
+		CarOp.damagePanel(self_, math.floor(panelId))
         return {1}
     end
 }

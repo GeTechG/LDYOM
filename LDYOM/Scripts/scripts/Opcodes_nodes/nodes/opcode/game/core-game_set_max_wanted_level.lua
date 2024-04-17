@@ -80,7 +80,7 @@ local gameSetMaxWantedLevelNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local wantedLevel = inputValues[2] or node.wantedLevel
-		GameOp.setMaxWantedLevel(wantedLevel)
+		GameOp.setMaxWantedLevel(math.floor(wantedLevel))
         return {1}
     end
 }

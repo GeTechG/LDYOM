@@ -95,7 +95,7 @@ local heliSetReachedTargetDistanceNode = {
             error("Input self is not set")
         end
 		local distance = inputValues[3] or node.distance
-		HeliOp.setReachedTargetDistance(self_, distance)
+		HeliOp.setReachedTargetDistance(self_, math.floor(distance))
         return {1}
     end
 }

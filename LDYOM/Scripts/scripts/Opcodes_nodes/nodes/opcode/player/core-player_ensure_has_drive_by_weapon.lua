@@ -93,7 +93,7 @@ local playerEnsureHasDriveByWeaponNode = {
     run = function(editor, context, node, inputValues)
         local self_ = inputValues[2] or node.self_
 		local ammo = inputValues[3] or node.ammo
-		PlayerOp.ensureHasDriveByWeapon(self_, ammo)
+		PlayerOp.ensureHasDriveByWeapon(self_, math.floor(ammo))
         return {1}
     end
 }

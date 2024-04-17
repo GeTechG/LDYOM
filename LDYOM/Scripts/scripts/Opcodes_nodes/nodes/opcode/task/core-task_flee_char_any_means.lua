@@ -176,7 +176,7 @@ local taskFleeCharAnyMeansNode = {
 		local _p6 = inputValues[7] or node._p6
 		local _p7 = inputValues[8] or node._p7
 		local radius = inputValues[9] or node.radius
-		TaskOp.fleeCharAnyMeans(handle, threat, runDistance, time, changeCourse, _p6, _p7, radius)
+		TaskOp.fleeCharAnyMeans(handle, threat, runDistance, math.floor(time), changeCourse, math.floor(_p6), math.floor(_p7), radius)
         return {1}
     end
 }

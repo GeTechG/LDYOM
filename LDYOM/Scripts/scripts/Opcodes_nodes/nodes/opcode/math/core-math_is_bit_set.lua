@@ -86,7 +86,7 @@ local mathIsBitSetNode = {
     run = function(editor, context, node, inputValues)
         local number = inputValues[1] or node.number
 		local n = inputValues[2] or node.n
-		local result = MathOp.isBitSet(number, n)
+		local result = MathOp.isBitSet(math.floor(number), math.floor(n))
         return {result}
     end
 }

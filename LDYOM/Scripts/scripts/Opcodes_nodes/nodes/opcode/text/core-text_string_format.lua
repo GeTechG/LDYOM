@@ -106,7 +106,7 @@ local textStringFormatNode = {
         local buffer = inputValues[2] or node.buffer
 		local format = inputValues[3] or node.format
 		local args = inputValues[4] or node.args
-		TextOp.stringFormat(buffer, format, args)
+		TextOp.stringFormat(math.floor(buffer), format, args)
         return {1}
     end
 }

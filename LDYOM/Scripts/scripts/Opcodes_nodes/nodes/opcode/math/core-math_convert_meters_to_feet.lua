@@ -88,7 +88,7 @@ local mathConvertMetersToFeetNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local meters = inputValues[2] or node.meters
-		local feet = MathOp.convertMetersToFeet(meters)
+		local feet = MathOp.convertMetersToFeet(math.floor(meters))
         return {1, feet}
     end
 }

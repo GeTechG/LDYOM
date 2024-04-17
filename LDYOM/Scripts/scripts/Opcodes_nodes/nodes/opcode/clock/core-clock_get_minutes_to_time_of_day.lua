@@ -101,7 +101,7 @@ local clockGetMinutesToTimeOfDayNode = {
     run = function(editor, context, node, inputValues)
         local hours = inputValues[2] or node.hours
 		local minutes = inputValues[3] or node.minutes
-		local minutesLeft = ClockOp.getMinutesToTimeOfDay(hours, minutes)
+		local minutesLeft = ClockOp.getMinutesToTimeOfDay(math.floor(hours), math.floor(minutes))
         return {1, minutesLeft}
     end
 }

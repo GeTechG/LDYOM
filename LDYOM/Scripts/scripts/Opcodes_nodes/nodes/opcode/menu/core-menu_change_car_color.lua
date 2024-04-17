@@ -121,7 +121,7 @@ local menuChangeCarColorNode = {
         end
 		local colorSlot = inputValues[4] or node.colorSlot
 		local row = inputValues[5] or node.row
-		MenuOp.changeCarColor(self_, vehicle, colorSlot, row)
+		MenuOp.changeCarColor(self_, vehicle, math.floor(colorSlot), math.floor(row))
         return {1}
     end
 }

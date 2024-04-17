@@ -80,7 +80,7 @@ local hudClearTimerNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local timer = inputValues[2] or node.timer
-		HudOp.clearTimer(timer)
+		HudOp.clearTimer(math.floor(timer))
         return {1}
     end
 }

@@ -108,7 +108,7 @@ local carPopPanelNode = {
         end
 		local panelId = inputValues[3] or node.panelId
 		local visibility = inputValues[4] or node.visibility
-		CarOp.popPanel(self_, panelId, visibility)
+		CarOp.popPanel(self_, math.floor(panelId), visibility)
         return {1}
     end
 }

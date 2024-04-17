@@ -80,7 +80,7 @@ local textSetHelpMessageBoxSizeNode = {
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
         local size = inputValues[2] or node.size
-		TextOp.setHelpMessageBoxSize(size)
+		TextOp.setHelpMessageBoxSize(math.floor(size))
         return {1}
     end
 }

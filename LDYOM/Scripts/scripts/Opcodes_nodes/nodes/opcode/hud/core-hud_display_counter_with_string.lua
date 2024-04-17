@@ -134,7 +134,7 @@ local hudDisplayCounterWithStringNode = {
         local counter = inputValues[2] or node.counter
 		local display = inputValues[3] or node.display
 		local text = inputValues[4] or node.text
-		HudOp.displayCounterWithString(counter, display, text)
+		HudOp.displayCounterWithString(math.floor(counter), display, text)
         return {1}
     end
 }

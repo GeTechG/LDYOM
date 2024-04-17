@@ -93,7 +93,7 @@ local textPrintHelpForeverWithNumberNode = {
     run = function(editor, context, node, inputValues)
         local gxt = inputValues[2] or node.gxt
 		local number = inputValues[3] or node.number
-		TextOp.printHelpForeverWithNumber(gxt, number)
+		TextOp.printHelpForeverWithNumber(gxt, math.floor(number))
         return {1}
     end
 }

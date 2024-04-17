@@ -154,7 +154,7 @@ local charCreateAtAttractorNode = {
 		local modelId = inputValues[3] or node.modelId
 		local taskId = inputValues[4] or node.taskId
 		local attractor = inputValues[5] or node.attractor
-		local handle = CharOp.createAtAttractor(pedType, modelId, taskId, attractor)
+		local handle = CharOp.createAtAttractor(pedType, modelId, math.floor(taskId), attractor)
         return {1, handle}
     end
 }

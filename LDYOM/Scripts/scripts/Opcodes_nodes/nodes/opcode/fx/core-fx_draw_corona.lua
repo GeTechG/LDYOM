@@ -240,7 +240,7 @@ local fxDrawCoronaNode = {
 		local r = inputValues[8] or node.r
 		local g = inputValues[9] or node.g
 		local b = inputValues[10] or node.b
-		FxOp.drawCorona(x, y, z, size, coronaType, flareType, r, g, b)
+		FxOp.drawCorona(x, y, z, size, coronaType, flareType, math.floor(r), math.floor(g), math.floor(b))
         return {1}
     end
 }

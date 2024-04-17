@@ -109,7 +109,7 @@ local taskFollowPatrolRouteNode = {
         end
 		local walkSpeed = inputValues[3] or node.walkSpeed
 		local routeMode = inputValues[4] or node.routeMode
-		TaskOp.followPatrolRoute(handle, walkSpeed, routeMode)
+		TaskOp.followPatrolRoute(handle, math.floor(walkSpeed), math.floor(routeMode))
         return {1}
     end
 }

@@ -160,7 +160,7 @@ local textPrintWith2NumbersBigNode = {
 		local num2 = inputValues[4] or node.num2
 		local duration = inputValues[5] or node.duration
 		local style = inputValues[6] or node.style
-		TextOp.printWith2NumbersBig(key, num1, num2, duration, style)
+		TextOp.printWith2NumbersBig(key, math.floor(num1), math.floor(num2), math.floor(duration), style)
         return {1}
     end
 }

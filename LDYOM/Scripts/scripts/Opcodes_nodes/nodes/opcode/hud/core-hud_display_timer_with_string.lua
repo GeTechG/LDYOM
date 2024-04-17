@@ -134,7 +134,7 @@ local hudDisplayTimerWithStringNode = {
         local timer = inputValues[2] or node.timer
 		local direction = inputValues[3] or node.direction
 		local text = inputValues[4] or node.text
-		HudOp.displayTimerWithString(timer, direction, text)
+		HudOp.displayTimerWithString(math.floor(timer), direction, text)
         return {1}
     end
 }

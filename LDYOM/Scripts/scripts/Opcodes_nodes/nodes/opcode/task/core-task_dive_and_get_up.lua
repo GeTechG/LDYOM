@@ -122,7 +122,7 @@ local taskDiveAndGetUpNode = {
 		local directionX = inputValues[3] or node.directionX
 		local directionY = inputValues[4] or node.directionY
 		local timeOnGround = inputValues[5] or node.timeOnGround
-		TaskOp.diveAndGetUp(handle, directionX, directionY, timeOnGround)
+		TaskOp.diveAndGetUp(handle, directionX, directionY, math.floor(timeOnGround))
         return {1}
     end
 }

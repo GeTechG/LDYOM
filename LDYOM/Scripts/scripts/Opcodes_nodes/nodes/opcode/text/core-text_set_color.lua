@@ -119,7 +119,7 @@ local textSetColorNode = {
 		local green = inputValues[3] or node.green
 		local blue = inputValues[4] or node.blue
 		local alpha = inputValues[5] or node.alpha
-		TextOp.setColor(red, green, blue, alpha)
+		TextOp.setColor(math.floor(red), math.floor(green), math.floor(blue), math.floor(alpha))
         return {1}
     end
 }

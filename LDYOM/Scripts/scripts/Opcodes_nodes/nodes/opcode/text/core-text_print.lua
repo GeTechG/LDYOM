@@ -106,7 +106,7 @@ local textPrintNode = {
         local key = inputValues[2] or node.key
 		local time = inputValues[3] or node.time
 		local flag = inputValues[4] or node.flag
-		TextOp.print(key, time, flag)
+		TextOp.print(key, math.floor(time), math.floor(flag))
         return {1}
     end
 }
