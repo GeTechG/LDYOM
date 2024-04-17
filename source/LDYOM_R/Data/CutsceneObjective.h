@@ -45,7 +45,6 @@ public:
 	ktwait execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) override;
 
 	void open() override;
-	void close() override;
 
 	int& getAttachType();
 	boost::uuids::uuid& getAttachUuid();
