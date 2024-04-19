@@ -309,6 +309,9 @@ std::string& Windows::ObjectivesWindow::getElementName(int i) {
 }
 
 void Windows::ObjectivesWindow::deleteElement(int i) {
+	if (i != -1)
+		ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().at(i)->
+		                               close();
 	const auto begin = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().begin();
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getObjectives().erase(begin + i);
 	this->currentElement--;
