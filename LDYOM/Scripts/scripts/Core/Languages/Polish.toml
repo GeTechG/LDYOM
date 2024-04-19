@@ -242,3 +242,20 @@ on_complete = "Po zakończeniu"
 
 [nodes.core.stop_camera_path]
 title = "Zatrzymaj ścieżkę kamery"
+
+[nodes.core.char_register]
+title = "Rejestracja postaci"
+
+[nodes.core.vehicle_register]
+title = "Rejestracja pojazdu"
+
+[nodes.core.object_register]
+title = "Rejestracja obiektu"
+
+[nodes.core.cast]
+title = "Rzutowanie typu"
+warning = "Rzutowanie typu może powodować błędy"
+
+[nodes.core.comment]
+title = "Komentarz"
+edit = "Edytuj"

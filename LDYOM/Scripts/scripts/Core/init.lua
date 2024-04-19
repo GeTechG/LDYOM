@@ -70,6 +70,10 @@ function init(scriptData)
         end
     end
 
+    ld.events.onEndProject[#ld.events.onEndProject+1] = function()
+        LDNodeEditor.clearProject(editor)
+    end
+
     ld.events.onStartScene[#ld.events.onStartScene+1] = function(scene, ktcoro_tasklist)
         for _, context in pairs(editor.contexts) do
             for _, node in pairs(context.nodes) do

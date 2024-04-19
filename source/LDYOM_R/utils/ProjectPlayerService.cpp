@@ -385,7 +385,23 @@ ktwait ProjectPlayerService::startProject(int sceneIdx, int startObjective) {
 	CHud::bScriptDontDisplayRadar = false;
 	TheCamera.RestoreWithJumpCut();
 	Command<Commands::DO_FADE>(0, 1);
-	CWorld::ClearExcitingStuffFromArea(FindPlayerPed()->GetPosition(), 999999.f, true);
+	Command<Commands::CLEAR_AREA>(0.0f, 0.0f, 0.0f, 10000.f, 1);
+	auto onEndProjectsEventsTable = LuaEngine::getInstance()
+		.getLuaState()["ld"]["events"]["onEndProject"].get<sol::as_table_t<std::vector<sol::coroutine>>>();
+	for (auto &onEndProjectsEvent : onEndProjectsEventsTable) {
+		while (onEndProjectsEvent) {
+			const auto result = onEndProjectsEvent();
+			if (!result.valid()) {
+				const sol::error err = result;
+				CLOG(ERROR, "LDYOM") << "Error onEndProject event: " << err.what();
+				ImGui::InsertNotification({ImGuiToastType_Error, 5000, err.what()});
+			} else {
+				if (result.get_type() == sol::type::number) {
+					co_await result.get<int>();
+				}
+			}
+		}
+	}
 
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 9; j++) {

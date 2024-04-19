@@ -252,3 +252,20 @@ on_complete = "При завершении"
 
 [nodes.core.stop_camera_path]
 title = "Остановить путь камеры"
+
+[nodes.core.char_register]
+title = "Регистрация персонажа"
+
+[nodes.core.vehicle_register]
+title = "Регистрация транспорта"
+
+[nodes.core.object_register]
+title = "Регистрация объекта"
+
+[nodes.core.cast]
+title = "Привести тип"
+warning = "Приведение типов может привести к ошибкам"
+
+[nodes.core.comment]
+title = "Комментарий"
+edit = "Редактировать"

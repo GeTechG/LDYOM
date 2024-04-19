@@ -15,6 +15,7 @@ config.SettingsFile = ""
 ---@field __nodesFactories { [string]: LDNodeEditorNodeType }
 ---@field variables { [string]: LDNodeEditorVariable }
 ---@field nodeTypesInfo { [string]: NodeTypeInfo }
+---@field callbacksProjectClear fun()[]
 
 local LDNodeEditor = {}
 
@@ -287,7 +288,8 @@ LDNodeEditor.new = function()
         },
         __nodesFactories = {},
         variables = {},
-        nodeTypesInfo = {}
+        nodeTypesInfo = {},
+        callbacksProjectClear = {}
     }
     return newEditor
 end
@@ -536,6 +538,19 @@ LDNodeEditor.runNode = function(ed, context, node)
         for i = 1, callNum do
             LDNodeEditor.runNode(ed, context, nextNode)
         end
+    end
+end
+
+---@param editor LDNodeEditor
+---@param callback fun()
+function LDNodeEditor.registerCallbackProjectClear(editor, callback)
+    table.insert(editor.callbacksProjectClear, callback)
+end
+
+---@param editor LDNodeEditor
+function LDNodeEditor.clearProject(editor)
+    for _, callback in ipairs(editor.callbacksProjectClear) do
+        callback()
     end
 end
 

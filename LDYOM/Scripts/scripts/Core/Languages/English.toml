@@ -239,3 +239,20 @@ on_complete = "On completion"
 
 [nodes.core.stop_camera_path]
 title = "Stop camera path"
+
+[nodes.core.char_register]
+title = "Character Registration"
+
+[nodes.core.vehicle_register]
+title = "Vehicle Registration"
+
+[nodes.core.object_register]
+title = "Object Registration"
+
+[nodes.core.cast]
+title = "Cast Type"
+warning = "Type casting may cause errors"
+
+[nodes.core.comment]
+title = "Comment"
+edit = "Edit"

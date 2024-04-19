@@ -219,6 +219,8 @@ ld.events.onLoadProject = {}
 ld.events.onStartObjective = {}
 ---@type fun()[]
 ld.events.onCreateNewProject = {}
+---@type fun()[]
+ld.events.onEndProject = {}
 
 
 

@@ -5,7 +5,8 @@ local icons = {
     ["function"] = fa.ICON_FA_FUNCTION,
     ["loop"] = fa.ICON_FA_REPEAT_ALT,
     ["branch"] = fa.ICON_FA_UTENSIL_FORK,
-    ["comprasion"] = fa.ICON_FA_EQUALS
+    ["comprasion"] = fa.ICON_FA_EQUALS,
+    ["cast"] = fa.ICON_FA_MAGIC
 }
 
 return icons

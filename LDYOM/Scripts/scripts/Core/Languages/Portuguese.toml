@@ -239,3 +239,20 @@ on_complete = "Ao concluir"
 
 [nodes.core.stop_camera_path]
 title = "Parar caminho da câmera"
+
+[nodes.core.char_register]
+title = "Cadastro de personagem"
+
+[nodes.core.vehicle_register]
+title = "Cadastro de veículo"
+
+[nodes.core.object_register]
+title = "Cadastro de objeto"
+
+[nodes.core.cast]
+title = "Converter tipo"
+warning = "Converter tipos pode causar erros"
+
+[nodes.core.comment]
+title = "Comentário"
+edit = "Editar"
