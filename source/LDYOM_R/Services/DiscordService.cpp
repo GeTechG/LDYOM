@@ -37,11 +37,11 @@ bool isDiscordRunning() {
 
 void DiscordService::Init() {
 	if (isDiscordRunning()) {
-		try {
-			auto result = discord::Core::Create(1172608604138901515, DiscordCreateFlags_NoRequireDiscord, &core);
-			CLOG(INFO, "LDYOM") << "Discord core created: " << static_cast<int>(result);
-		} catch (std::exception) {
-			CLOG(ERROR, "LDYOM") << "Failed to instantiate discord core!";
+		auto result = discord::Core::Create(1172608604138901515, DiscordCreateFlags_NoRequireDiscord, &core);
+		CLOG(INFO, "LDYOM") << "Discord core created: " << static_cast<int>(result);
+		if (result != discord::Result::Ok) {
+			core = nullptr;
+			CLOG(ERROR, "LDYOM") << "Failed to create Discord core: " << static_cast<int>(result);
 			return;
 		}
 
