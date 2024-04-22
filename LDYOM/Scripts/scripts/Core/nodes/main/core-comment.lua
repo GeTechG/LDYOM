@@ -68,31 +68,33 @@ local commentNode = {
         ImGui.BeginVertical("content", ImVec2.new(), -1);
         ImGui.Text(node.comment)
         ImGui.EndVertical()
-        ImGui.PopID()
-
         if ImGui.Button(ld.loc.get("nodes.core.comment.edit"), ImVec2.new(0, 0)) then
             NodeEditor.Suspend()
             ImGui.OpenPopup("##commentTextEdit", 0);
             NodeEditor.Resume()
         end
 
+        if ImGui.IsPopupOpen("##commentTextEdit", 0) then
+            NodeEditor.Suspend();
+            ImGui.SetNextWindowPos(ImVec2.new(ImGui.GetMainViewport().Size.x / 2, ImGui.GetMainViewport().Size.y / 2), ImGuiCond.Appearing, ImVec2.new(0.5, 0.5));
+            ImGui.SetNextWindowSize(ImVec2.new(400 * fontScale, 300 * fontScale), ImGuiCond.Appearing);
+            if ImGui.BeginPopupModal("##commentTextEdit", true, ImGuiWindowFlags.AlwaysAutoResize) then
+                local text = node.comment
+                local textChanged, newText = ImGui.InputTextMultiline("##comment", text, ImVec2.new(400, 200), ImGuiInputTextFlags.AllowTabInput)
+                if textChanged then
+                    node.comment = newText
+                end
+                if ImGui.Button(ld.loc.get("general.ok"), ImVec2.new(100, 0)) then
+                    ImGui.CloseCurrentPopup()
+                end
+                ImGui.EndPopup()
+            end
+            NodeEditor.Resume()
+        end
+        ImGui.PopID()
         NodeEditor.EndNode()
         NodeEditor.PopStyleColor(2)
         ImGui.PopStyleVar(1)
-
-        NodeEditor.Suspend()
-        if ImGui.BeginPopupModal("##commentTextEdit", nil, ImGuiWindowFlags.AlwaysAutoResize) then
-            local text = node.comment
-            local textChanged, newText = ImGui.InputTextMultiline("##comment", text, ImVec2.new(400, 200), ImGuiInputTextFlags.AllowTabInput)
-            if textChanged then
-                node.comment = newText
-            end
-            if ImGui.Button(ld.loc.get("general.ok"), ImVec2.new(100, 0)) then
-                ImGui.CloseCurrentPopup()
-            end
-            ImGui.EndPopup()
-        end
-        NodeEditor.Resume()
 
     end,
     ---@param editor LDNodeEditor
