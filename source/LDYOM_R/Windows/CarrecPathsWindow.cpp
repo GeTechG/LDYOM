@@ -107,6 +107,7 @@ void Windows::CarrecPathsWindow::draw() {
 				ImGui::EndPopup();
 			}
 
+			ImGui::PushID(i);
 			if (openRenamePopup) {
 				ImGui::OpenPopup("##renameItem");
 			}
@@ -115,6 +116,7 @@ void Windows::CarrecPathsWindow::draw() {
 				ImGui::InputText("##renameItemInput", &carrecPath.getName());
 				ImGui::EndPopup();
 			}
+			ImGui::PopID();
 
 			ImGui::TableSetColumnIndex(1);
 			const auto name = &reinterpret_cast<CVehicleModelInfo*>(CModelInfo::GetModelInfo(
