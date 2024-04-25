@@ -111,6 +111,9 @@ ktwait AnimationActorObjective::execute(Scene *scene, Actor *actor, Result &resu
 
 		if (!Command<Commands::HAS_ANIMATION_LOADED>(packsNames[_this->pack].c_str()))
 			Command<Commands::REQUEST_ANIMATION>(packsNames[_this->pack].c_str());
+		while (!Command<Commands::HAS_ANIMATION_LOADED>(packsNames[_this->pack].c_str())) {
+			co_await 1;
+		}
 		const auto &anims = ModelsService::getInstance().getAnimations().at(packsNames[_this->pack]);
 		Command<Commands::TASK_PLAY_ANIM_NON_INTERRUPTABLE>(
 			actor->getProjectPed().value(),
@@ -127,6 +130,8 @@ ktwait AnimationActorObjective::execute(Scene *scene, Actor *actor, Result &resu
 			Commands::IS_CHAR_PLAYING_ANIM>(actor->getProjectPed().value(), anims[_this->animation].c_str())) {
 			co_await 1;
 		}
+
+		Command<Commands::REMOVE_ANIMATION>(packsNames[_this->pack].c_str());
 	};
 
 	if (this->endWait)
