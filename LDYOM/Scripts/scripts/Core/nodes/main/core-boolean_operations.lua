@@ -91,11 +91,11 @@ local booleanOperationsNode = {
         local a = inputValues[1]
         local b = inputValues[2]
         if node.operationType == 1 then
-            return a and b
+            return {a and b}
         elseif node.operationType == 2 then
-            return a or b
+            return {a or b}
         elseif node.operationType == 3 then
-            return (a == true and b == false) or (a == false and b == true)
+            return {(a == true and b == false) or (a == false and b == true)}
         end
     end
 }
