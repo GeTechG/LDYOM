@@ -9,6 +9,9 @@
 
 #include "CCameraExtend.h"
 #include "CMatrixUtils.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui.h"
+#include "imgui_internal.h"
 #include "ModelsService.h"
 #include "PopupWeaponSelector.h"
 #include "ProjectsService.h"
@@ -177,6 +180,11 @@ void AttachPedToEntity::draw(Localization &local, std::vector<std::string> &list
 			utils::controlCamera({position[0], position[1], position[2]});
 		}
 	}
+
+	std::array<char, 500> speedMove;
+	ImFormatString(speedMove.data(), sizeof speedMove, local.get("camera_paths.control").c_str(),
+	               speedCameraMultiplier);
+	listOverlay.emplace_back(speedMove.data());
 }
 
 ktwait AttachPedToEntity::execute(Scene *scene, Result &result, ktcoro_tasklist &tasklist) {
