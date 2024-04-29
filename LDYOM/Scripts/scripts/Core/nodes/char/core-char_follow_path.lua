@@ -232,7 +232,7 @@ local charFollowPathNode = {
     ---@param node LDNodeEditorCharFollowPathNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        ld.projectPlayerService:getSceneTasklist():add_task(function ()
+        ld.projectPlayerService:getSceneTasklist():add_task("followPath", function ()
             if inputValues[2] == nil then
                 error("Char not found")
             end

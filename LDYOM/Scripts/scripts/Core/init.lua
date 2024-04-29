@@ -82,7 +82,7 @@ function init(scriptData)
                     tasks.on_start_scene = function ()
                         LDNodeEditor.runNode(editor, context, node)
                     end
-                    ktcoro_tasklist:add_task(tasks.on_start_scene)
+                    ktcoro_tasklist:add_task("onStartScene", tasks.on_start_scene)
                 end
             end
         end
@@ -96,7 +96,7 @@ function init(scriptData)
                     tasks.main_loop = function ()
                         LDNodeEditor.runNode(editor, context, node)
                     end
-                    ktcoro_tasklist:add_task(tasks.main_loop)
+                    ktcoro_tasklist:add_task("mainLoop", tasks.main_loop)
                 end
             end
         end
@@ -110,7 +110,7 @@ function init(scriptData)
                     tasks.on_start_objective = function ()
                         LDNodeEditor.runNode(editor, context, node)
                     end
-                    ktcoro_tasklist:add_task(tasks.on_start_objective)
+                    ktcoro_tasklist:add_task("onStartObjective", tasks.on_start_objective)
                 end
             end
         end

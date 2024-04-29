@@ -380,7 +380,8 @@ data.playing.globalVariables = {}
 ---@class ktcoro_tasklist
 ktcoro_tasklist = {
     ---@param task function
-    add_task = function(self, task) end,
+    ---@param id string
+    add_task = function(self, id, task) end,
 }
 
 ---@class LDCheckpoint

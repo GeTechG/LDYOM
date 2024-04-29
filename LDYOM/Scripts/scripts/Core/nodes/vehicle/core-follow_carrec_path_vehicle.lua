@@ -141,7 +141,7 @@ local followCarrecPathVehicleNode = {
     ---@param node LDNodeEditorFollowCarrecPathVehicleNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        ld.projectPlayerService:getSceneTasklist():add_task(function ()
+        ld.projectPlayerService:getSceneTasklist():add_task("followCarrecPath", function ()
             local useAI = inputValues[3] or node.useAI
             local looped = inputValues[4] or node.looped
             local vehicleRef = inputValues[2]

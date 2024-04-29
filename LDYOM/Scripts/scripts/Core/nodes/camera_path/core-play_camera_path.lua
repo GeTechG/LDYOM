@@ -248,7 +248,7 @@ local playCameraPathNode = {
         HudOp.display(false);
         HudOp.displayRadar(false);
         
-        ld.projectPlayerService:getSceneTasklist():add_task(function ()
+        ld.projectPlayerService:getSceneTasklist():add_task("playCameraPath", function ()
             (function ()
                 local guard = ld.createCutsceneGuard();
                 if startFadeOut then

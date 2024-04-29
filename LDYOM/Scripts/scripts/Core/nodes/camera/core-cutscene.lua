@@ -572,7 +572,7 @@ local cutsceneForNode = {
         HudOp.display(false)
         HudOp.displayRadar(true)
 
-        ld.projectPlayerService:getSceneTasklist():add_task(function ()
+        ld.projectPlayerService:getSceneTasklist():add_task("cutscene", function ()
             if node.startFadeOut then
                 CameraOp.doFade(math.floor(node.startFadeOutTime * 1000), 1);
             end
