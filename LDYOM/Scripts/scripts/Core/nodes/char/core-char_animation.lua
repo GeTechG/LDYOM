@@ -253,7 +253,7 @@ local charAnimationNode = {
     ---@param node LDNodeEditorCharAnimationNode
     ---@param inputValues any[]
     run = function(editor, context, node, inputValues)
-        ld.projectPlayerService:getSceneTasklist():add_task(function ()
+        ld.projectPlayerService:getSceneTasklist():add_task("Animation", function ()
             if inputValues[2] == nil then
                 error("Char not found")
             end
@@ -264,6 +264,10 @@ local charAnimationNode = {
 
             if not StreamingOp.hasAnimationLoaded(packsNames[node.pack]) then
                 StreamingOp.requestAnimation(packsNames[node.pack])
+            end
+
+            while not StreamingOp.hasAnimationLoaded(packsNames[node.pack]) do
+                coroutine.yield(1)
             end
 
             local animations = ld.models.getAnimations()
@@ -286,6 +290,8 @@ local charAnimationNode = {
             while CharOp.isPlayingAnim(ped, anims[node.animation]) do
                 coroutine.yield(1)
             end
+
+            StreamingOp.removeAnimation(packsNames[node.pack])
 
             for _, link in ipairs(context.__links) do
                 if link.outputId == node.outputs[2].id then
