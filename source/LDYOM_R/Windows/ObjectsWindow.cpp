@@ -2,6 +2,7 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <CCamera.h>
+#include <CGame.h>
 #include <CWorld.h>
 #include <extensions/ScriptCommands.h>
 
@@ -75,6 +76,7 @@ void Windows::ObjectsWindow::drawOptions() {
 
 	//position
 	DragPosition(object->getPosition(), [object] {
+		object->getInteriorId() = CGame::currArea;
 		object->updateLocation();
 	});
 

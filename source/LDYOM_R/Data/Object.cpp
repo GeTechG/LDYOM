@@ -99,7 +99,6 @@ void Object::updateLocation() {
 	newMatrix.right *= this->scale[2];
 	newMatrix.up *= this->scale[0];
 	newMatrix.at *= this->scale[1];
-	Command<Commands::GET_AREA_VISIBLE>(&this->interiorId);
 
 	if (this->editorObject_.has_value()) {
 		CWorld::Remove(this->editorObject_.value());
