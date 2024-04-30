@@ -8,7 +8,7 @@
 
 class CheckpointObjective final : virtual public WorldObjective {
 private:
-	boost::uuids::uuid checkpointUuid_;
+	boost::uuids::uuid checkpointUuid_{};
 	std::string text_;
 	int onWhatArrive_;
 	float textTime_;
@@ -17,15 +17,12 @@ private:
 	int colorBlipComeBackVehicle_;
 	std::optional<int> projectComeBackBlip_;
 
-	std::string gameText_ = {""};
+	std::string gameText_{};
 	PopupSpriteBlipSelector popupSpriteBlipSelector_;
 
 public:
 	CheckpointObjective() = default;
 	explicit CheckpointObjective(void *_new);
-
-	CheckpointObjective(const CheckpointObjective &other);
-	CheckpointObjective& operator=(const CheckpointObjective &other);
 	~CheckpointObjective() override;
 
 	int getTypeCategory() override {

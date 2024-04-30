@@ -21,50 +21,12 @@ extern bool restart;
 
 CheckpointObjective::CheckpointObjective(void *_new): WorldObjective(nullptr),
                                                       BaseObjective(nullptr),
-                                                      checkpointUuid_(boost::uuids::uuid{}), text_(""),
+                                                      checkpointUuid_(boost::uuids::uuid{}),
                                                       onWhatArrive_(0), textTime_(2),
                                                       comeBackVehicle_(boost::uuids::uuid{}),
-                                                      textComeBackVehicle_(""),
                                                       colorBlipComeBackVehicle_(0) {
 	const auto suffix = fmt::format(" : {}", Localization::getInstance().get("objective.checkpoint"));
 	this->name += suffix;
-}
-
-CheckpointObjective::CheckpointObjective(const CheckpointObjective &other): WorldObjective{other}, BaseObjective{other},
-                                                                            checkpointUuid_{other.checkpointUuid_},
-                                                                            text_{other.text_},
-                                                                            onWhatArrive_{other.onWhatArrive_},
-                                                                            textTime_{other.textTime_},
-                                                                            comeBackVehicle_{other.comeBackVehicle_},
-                                                                            textComeBackVehicle_{
-	                                                                            other.textComeBackVehicle_
-                                                                            },
-                                                                            colorBlipComeBackVehicle_{
-	                                                                            other.colorBlipComeBackVehicle_
-                                                                            },
-                                                                            projectComeBackBlip_{
-	                                                                            other.projectComeBackBlip_
-                                                                            },
-                                                                            gameText_{other.gameText_},
-                                                                            popupSpriteBlipSelector_{
-	                                                                            other.popupSpriteBlipSelector_
-                                                                            } {}
-
-CheckpointObjective& CheckpointObjective::operator=(const CheckpointObjective &other) {
-	if (this == &other)
-		return *this;
-	WorldObjective::operator =(other);
-	checkpointUuid_ = other.checkpointUuid_;
-	text_ = other.text_;
-	onWhatArrive_ = other.onWhatArrive_;
-	textTime_ = other.textTime_;
-	comeBackVehicle_ = other.comeBackVehicle_;
-	textComeBackVehicle_ = other.textComeBackVehicle_;
-	colorBlipComeBackVehicle_ = other.colorBlipComeBackVehicle_;
-	projectComeBackBlip_ = other.projectComeBackBlip_;
-	gameText_ = other.gameText_;
-	popupSpriteBlipSelector_ = other.popupSpriteBlipSelector_;
-	return *this;
 }
 
 CheckpointObjective::~CheckpointObjective() {

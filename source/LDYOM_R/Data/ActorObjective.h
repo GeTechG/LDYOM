@@ -29,14 +29,6 @@ protected:
 	virtual ktwait execute(Scene *scene, Actor *actor, Result &result, ktcoro_tasklist &tasklist) = 0;
 
 public:
-	ActorObjective(const ActorObjective &other)
-		: BaseObjective{other},
-		  actorUuid{other.actorUuid},
-		  text{other.text},
-		  textTime{other.textTime},
-		  colorBlip{other.colorBlip},
-		  gameText{other.gameText} {}
-
 	~ActorObjective() override;
 
 	int getCategory() override {
