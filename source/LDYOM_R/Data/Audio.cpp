@@ -8,6 +8,7 @@
 #include <extensions/ScriptCommands.h>
 #include <extensions/scripting/ScriptCommandNames.h>
 
+#include "imgui_notify.h"
 #include "ModelsService.h"
 #include "ProjectPlayerService.h"
 #include "ProjectsService.h"
@@ -235,6 +236,12 @@ void Audio::spawnProjectEntity() {
 		this->deleteProjectEntity();
 
 	this->projectAudio_ = loadAudio();
+	if (!this->projectAudio_.has_value()) {
+		auto err = "Failed to load audio, perhaps the audio is not selected or the file has been deleted.";
+		CLOG(ERROR, "LDYOM") << err;
+		ImGui::InsertNotification({ImGuiToastType_Error, 1000, err});
+		return;
+	}
 	updateLocation(ProjectPlayerService::getInstance().getCurrentScene().value());
 	const auto &audioStream = reinterpret_cast<CLEO::CAudioStream*>(this->projectAudio_.value());
 	audioStream->Play();
