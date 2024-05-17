@@ -79,14 +79,15 @@ local whileForNode = {
             error("Condition is not set")
         end
         while not condition do
+            local pinsInputs = {}
             for _, link in ipairs(context.__links) do
                 if link.outputId == node.outputs[1].id then
                     local nodeCallId = math.floor(link.inputId / 100) * 100
-                    LDNodeEditor.runNode(editor, context, context.nodes[nodeCallId])
+                    LDNodeEditor.runNode(editor, context, context.nodes[nodeCallId], pinsInputs)
                 end
             end
             coroutine.yield(1)
-            inputValues = LDNodeEditor.getInputValues(editor, context, node)
+            inputValues = LDNodeEditor.getInputValues(editor, context, node, pinsInputs)
             condition = inputValues[2]
             if condition == nil then
                 error("Condition is not set")

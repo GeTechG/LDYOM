@@ -479,7 +479,8 @@ end
 ---@param ed LDNodeEditor
 ---@param context LDNodeEditorContext
 ---@param node LDNodeEditorNode
-LDNodeEditor.getInputValues = function(ed, context, node)
+---@param pinsInputs table<number, any>
+LDNodeEditor.getInputValues = function(ed, context, node, pinsInputs)
     local inputValues = {}
     local calledNodes = {}
     for i, input in ipairs(node.inputs) do
@@ -489,11 +490,11 @@ LDNodeEditor.getInputValues = function(ed, context, node)
                 local outNodeId = math.floor(link.outputId / 100) * 100;
                 local outNodeType = LDNodeEditor.getNodeType(ed, context.nodes[outNodeId].nodeType);
                 if outNodeType.isCallable == false and not table.contains(calledNodes, outNodeId) then
-                    LDNodeEditor.runNode(ed, context, context.nodes[outNodeId])
+                    LDNodeEditor.runNode(ed, context, context.nodes[outNodeId], pinsInputs)
                     table.insert(calledNodes, outNodeId)
                 end
 
-                inputValues[i] = context.__pinsValues[link.outputId]
+                inputValues[i] = pinsInputs[link.outputId]
                 break;
             end
         end
@@ -504,9 +505,10 @@ end
 ---@param ed LDNodeEditor
 ---@param context LDNodeEditorContext
 ---@param node LDNodeEditorNode
-LDNodeEditor.runNode = function(ed, context, node)
+---@param pinsInputs table<number, any>
+LDNodeEditor.runNode = function(ed, context, node, pinsInputs)
     local nodeType = LDNodeEditor.getNodeType(ed, node.nodeType)
-    local inputValues = LDNodeEditor.getInputValues(ed, context, node)
+    local inputValues = LDNodeEditor.getInputValues(ed, context, node, pinsInputs)
 
     -- print("Running node " .. node.nodeType)
     local outputValues = nodeType.run(ed, context, node, inputValues)
@@ -518,7 +520,7 @@ LDNodeEditor.runNode = function(ed, context, node)
     ---@type LDNodeEditorNode[]
     local flowCalls = {}
     for i, output in ipairs(node.outputs) do
-        context.__pinsValues[output.id] = outputValues[i]
+        pinsInputs[output.id] = outputValues[i]
 
         if output.type == "core.flow" and outputValues[i] > 0 then
             callNum = outputValues[i]
@@ -536,7 +538,7 @@ LDNodeEditor.runNode = function(ed, context, node)
 
     for _, nextNode in ipairs(flowCalls) do
         for i = 1, callNum do
-            LDNodeEditor.runNode(ed, context, nextNode)
+            LDNodeEditor.runNode(ed, context, nextNode, pinsInputs)
         end
     end
 end

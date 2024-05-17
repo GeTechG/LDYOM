@@ -5,7 +5,6 @@
 ---@field __links LDNodeEditorLink[]
 ---@field newLinkPin LDNodeEditorPin | nil
 ---@field __nextUniqueId integer
----@field __pinsValues table<number, any>
 ---@field __loaded boolean
 
 local LDNodeEditorContext = {}
@@ -18,7 +17,6 @@ LDNodeEditorContext.new = function(context, name)
         nodes = {},
         __links = {},
         __nextUniqueId = 0,
-        __pinsValues = {},
         __loaded = false
     }
     return newContext

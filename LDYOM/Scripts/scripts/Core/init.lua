@@ -55,16 +55,14 @@ function init(scriptData)
         for _, var in pairs(editor.variables) do
             var.value = var.defaultValue
         end
-        for _, context in pairs(editor.contexts) do
-            context.__pinsValues = {}
-        end
     end
 
     ld.events.onStartProject[#ld.events.onStartProject+1] = function()
         for _, context in pairs(editor.contexts) do
             for _, node in pairs(context.nodes) do
                 if node.nodeType == "core.on_start_project" then
-                    LDNodeEditor.runNode(editor, context, node)
+                    local pinsInputs = {}
+                    LDNodeEditor.runNode(editor, context, node, pinsInputs)
                 end
             end
         end
@@ -80,7 +78,8 @@ function init(scriptData)
                 ---@cast node LDNodeEditorOnStartSceneNode
                 if node.nodeType == "core.on_start_scene" and scene:getId() == node.sceneId then
                     tasks.on_start_scene = function ()
-                        LDNodeEditor.runNode(editor, context, node)
+                        local pinsInputs = {}
+                        LDNodeEditor.runNode(editor, context, node, pinsInputs)
                     end
                     ktcoro_tasklist:add_task("onStartScene", tasks.on_start_scene)
                 end
@@ -94,7 +93,8 @@ function init(scriptData)
                 ---@cast node LDNodeEditorOnStartSceneNode
                 if node.nodeType == "core.main_loop" then
                     tasks.main_loop = function ()
-                        LDNodeEditor.runNode(editor, context, node)
+                        local pinsInputs = {}
+                        LDNodeEditor.runNode(editor, context, node, pinsInputs)
                     end
                     ktcoro_tasklist:add_task("mainLoop", tasks.main_loop)
                 end
@@ -108,7 +108,8 @@ function init(scriptData)
                 ---@cast node LDNodeEditorOnStartObjectiveNode
                 if node.nodeType == "core.on_start_objective" and tostring(objective:getUuid()) == node.objectiveUuid then
                     tasks.on_start_objective = function ()
-                        LDNodeEditor.runNode(editor, context, node)
+                        local pinsInputs = {}
+                        LDNodeEditor.runNode(editor, context, node, pinsInputs)
                     end
                     ktcoro_tasklist:add_task("onStartObjective", tasks.on_start_objective)
                 end

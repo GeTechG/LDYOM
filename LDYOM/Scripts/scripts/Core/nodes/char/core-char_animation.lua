@@ -296,7 +296,8 @@ local charAnimationNode = {
             for _, link in ipairs(context.__links) do
                 if link.outputId == node.outputs[2].id then
                     local nodeCallId = math.floor(link.inputId / 100) * 100
-                    LDNodeEditor.runNode(editor, context, context.nodes[nodeCallId])
+                    local pinsInputs = {}
+                    LDNodeEditor.runNode(editor, context, context.nodes[nodeCallId], pinsInputs)
                 end
             end
 
