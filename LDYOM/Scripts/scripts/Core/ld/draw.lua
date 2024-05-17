@@ -571,6 +571,7 @@ function draw(ed)
             -- ImGui.OpenPopup("linkContextPopup", 0);
         elseif NodeEditor.ShowBackgroundContextMenu() then
             ImGui.OpenPopup("createNodePopup", 0);
+            searchBuffer = "";
             newNodeLinkPin = nil;
         end
         NodeEditor.Resume();
