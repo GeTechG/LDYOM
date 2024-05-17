@@ -256,3 +256,6 @@ warning = "Type casting may cause errors"
 [nodes.core.comment]
 title = "Comment"
 edit = "Edit"
+
+[nodes.core.delta_time]
+title = "Time Delta"

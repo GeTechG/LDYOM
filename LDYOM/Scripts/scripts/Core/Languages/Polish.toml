@@ -259,3 +259,6 @@ warning = "Rzutowanie typu może powodować błędy"
 [nodes.core.comment]
 title = "Komentarz"
 edit = "Edytuj"
+
+[nodes.core.delta_time]
+title = "Czas delta"

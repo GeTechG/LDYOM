@@ -269,3 +269,6 @@ warning = "Приведение типов может привести к оши
 [nodes.core.comment]
 title = "Комментарий"
 edit = "Редактировать"
+
+[nodes.core.delta_time]
+title = "Дельта времени"

@@ -50,6 +50,9 @@ void pluginSdkWrapper(sol::state &state) {
 	state["addPlayerToWorld"] = []() {
 		CWorld::Add(FindPlayerPed());
 	};
+	state["getDeltaTime"] = []() {
+		return static_cast<float>(CTimer::m_snTimeInMilliseconds - CTimer::m_snPreviousTimeInMilliseconds) / 1000.0f;
+	};
 	auto keyCheckTable = state.create_table("KeyCheck");
 	keyCheckTable.set("Update", KeyCheck::Update);
 	keyCheckTable.set("CheckJustDown", KeyCheck::CheckJustDown);

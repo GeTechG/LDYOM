@@ -87,6 +87,11 @@ end
 function addPlayerToWorld()
 end
 
+---get delta time in seconds
+---@return number
+function getDeltaTime()
+end
+
 ---@enum MathCondition
 MathCondition = {
     Equal = 0,

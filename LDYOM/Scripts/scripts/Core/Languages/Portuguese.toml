@@ -256,3 +256,6 @@ warning = "Converter tipos pode causar erros"
 [nodes.core.comment]
 title = "Comentário"
 edit = "Editar"
+
+[nodes.core.delta_time]
+title = "Diferença de tempo"
