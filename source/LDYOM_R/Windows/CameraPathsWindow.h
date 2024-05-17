@@ -17,5 +17,6 @@ namespace Windows {
 		void drawOptions() override;
 		void close() override;
 		void open() override;
+		void selectElement(int i) override;
 	};
 }

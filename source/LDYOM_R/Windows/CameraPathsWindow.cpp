@@ -36,6 +36,7 @@ int Windows::CameraPathsWindow::getListSize() {
 
 void Windows::CameraPathsWindow::createNewElement() {
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->createNewCameraPath();
+	this->currentPoint = -1;
 }
 
 void Windows::CameraPathsWindow::createNewElementFrom(int i) {
@@ -43,6 +44,7 @@ void Windows::CameraPathsWindow::createNewElementFrom(int i) {
 	const auto &cameraPath = currentScene->getCameraPaths().at(i);
 	currentScene->createNewCameraPathFrom(*cameraPath);
 	currentScene->getObjects().back()->spawnEditorObject();
+	this->currentPoint = -1;
 }
 
 std::string& Windows::CameraPathsWindow::getElementName(int i) {
@@ -53,6 +55,7 @@ void Windows::CameraPathsWindow::deleteElement(int i) {
 	const auto begin = ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getCameraPaths().begin();
 	ProjectsService::getInstance().getCurrentProject().getCurrentScene()->getCameraPaths().erase(begin + i);
 	this->currentElement--;
+	this->currentPoint = -1;
 }
 
 enum EditorMouseMode {
@@ -129,13 +132,15 @@ void Windows::CameraPathsWindow::drawOptions() {
 
 	ImGui::Text(local.get("camera_paths.control_points").c_str());
 	if (ImGui::BeginListBox("##controlPoints", ImVec2(fontScale * 300, 0))) {
-		for (int i = 0; i < positionCurve.control_points.size(); ++i) {
+		auto controlsSize = positionCurve.control_points.size();
+		for (int i = 0; i < controlsSize; ++i) {
 			if (currentMousePoint == i) {
 				ImGui::PushStyleColor(ImGuiCol_Header, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
 			}
 
 			auto &point = positionCurve.control_points[i];
-			auto name = fmt::format("{}, {}, {}", point.x, point.y, point.z);
+			float currentTime = cameraPath->getTime() * (i / static_cast<float>(controlsSize - 1));
+			auto name = fmt::format("{}, {}, {}, {}s", point.x, point.y, point.z, currentTime);
 			if (ImGui::Selectable(name.c_str(), currentPoint == i || currentMousePoint == i)) {
 				currentPoint = i;
 			}
@@ -160,6 +165,7 @@ void Windows::CameraPathsWindow::drawOptions() {
 		cameraPath->getRotationsCurve().push_back(CQuaternion{{q.x, q.y, q.z}, q.w});
 		cameraPath->getRotationsEasing().push_back(17);
 		recalcKnots = true;
+		currentPoint = positionCurve.control_points.size() - 1;
 	}
 
 	ImGui::SameLine();
@@ -176,7 +182,7 @@ void Windows::CameraPathsWindow::drawOptions() {
 	utils::ToggleButton(local.get("camera_paths.catmull_rom_rotations").c_str(),
 	                    &cameraPath->isCatmullRomRotations());
 
-	if (currentPoint != -1) {
+	if (currentPoint != -1 && currentPoint < positionCurve.weights.size()) {
 		ImGui::DragFloat(local.get("camera_paths.weight").c_str(), &positionCurve.weights[currentPoint], 0.01f, 0, 0);
 		ImGui::BeginDisabled(cameraPath->isCatmullRomRotations());
 		EasingCombo(local.get("camera_paths.rotation_easing").c_str(), &cameraPath->getRotationsEasing()[currentPoint]);
@@ -340,7 +346,7 @@ void Windows::CameraPathsWindow::drawOptions() {
 			eular.z += RAD(-dt.x);
 			auto quat = glm::quat(eular);
 			TheCameraExtend.matrix.SetRotate({{quat.x, quat.y, quat.z}, quat.w});
-			if (previewCurrentPoint) {
+			if (previewCurrentPoint && this->currentPoint != -1) {
 				cameraPath->getRotationsCurve()[currentPoint] = {{quat.x, quat.y, quat.z}, quat.w};
 			}
 		}
@@ -421,4 +427,9 @@ void Windows::CameraPathsWindow::open() {
 	TheCameraExtend.setExtendMode(true);
 	Command<Commands::FREEZE_CHAR_POSITION_AND_DONT_LOAD_COLLISION>(FindPlayerPed(), true);
 	CWorld::Remove(FindPlayerPed());
+}
+
+void Windows::CameraPathsWindow::selectElement(int i) {
+	ListWindow::selectElement(i);
+	this->currentPoint = -1;
 }
