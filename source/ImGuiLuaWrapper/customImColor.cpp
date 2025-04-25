@@ -29,5 +29,4 @@ void bindImColor(sol::state &state) {
 	classImColor["Value"] = &ImColor::Value;
 	classImColor["HSV"] = &ImColor_HSV;
 	classImColor["SetHSV"] = &ImColor_SetHSV;
-	classImColor["__gc"] = sol::destructor(&ImColor_destroy);
 }
