@@ -1,0 +1,261 @@
+[nodes.node_editor]
+title = "Editor de Nós"
+incorrect_pin_kind = "x Tipo de pino incorreto"
+incorrect_pin_type = "x Tipo de pino incorreto"
+create_link = "+ Criar Conexão"
+create_node = "+ Criar Nó"
+node_context_menu = "Menu de Contexto do Nó"
+pin_context_menu = "Menu de Contexto do Pino"
+link_context_menu = "Menu de Contexto da Conexão"
+delete = "Apagar"
+type = "Tipo: %s"
+contexts = "Contextos"
+variables = "Variáveis"
+variable = "Variável"
+rename = "Renomear"
+edit = "Editar"
+player_position = "Posição do Jogador"
+clear_anim = "Limpar Animação"
+
+[nodes.node_editor.details]
+title = "Detalhes"
+name = "Nome"
+type = "Tipo"
+default_value = "Valor Padrão"
+value = "Valor"
+
+[nodes.node_editor.categories]
+main = "Principal"
+debug = "Depuração"
+project = "Projeto"
+scene = "Cena"
+actor = "Ator"
+audio = "Áudio"
+checkpoint = "Checkpoint"
+object = "Objeto"
+particle = "Partícula"
+pickup = "Pegar"
+pyrotechnics = "Pirotécnico"
+train = "Trem"
+vehicle = "Veículo"
+visual_effect = "Efeito Visual"
+player = "Jogador"
+variable = "Variável"
+global_variable = "Variável Global"
+objective = "Objetivo"
+char = "Personagem"
+camera_path = "Caminho da câmera"
+[nodes.types.core]
+flow = "Fluxo"
+number = "Número"
+bool = "Booleano"
+string = "String"
+Char = "Personagem"
+Object = "Objeto"
+Checkpoint = "Checkpoint"
+DecisionMakerChar = "DecisionMakerChar"
+Searchlight = "Holofote"
+AudioStream3D = "Stream de Áudio 3D"
+AudioStream = "Stream de Áudio"
+Vehicle = "Veículo"
+ScriptFire = "Fogo de Script"
+Particle = "Partícula"
+Train = "Trem"
+[nodes.core.on_start_project]
+title = "Ao Iniciar Projeto"
+
+[nodes.core.debug_print]
+title = "Imprimir Depuração"
+
+[nodes.core.on_start_scene]
+title = "Ao Iniciar Cena"
+
+[nodes.core.main_loop]
+title = "Loop Principal"
+
+[nodes.core.branch]
+title = "Ramificação"
+
+[nodes.core.comprasion]
+title = "Comparação"
+
+[nodes.core.invert]
+title = "Inverter"
+
+[nodes.core.wait]
+title = "Aguardar"
+
+[nodes.core.spawn_actor]
+title = "Criar Ator"
+
+[nodes.core.destroy_actor]
+title = "Destruir Ator"
+
+[nodes.core.get_char]
+title = "Obter Personagem"
+
+[nodes.core.play_audio]
+title = "Reproduzir Áudio"
+
+[nodes.core.stop_audio]
+title = "Parar Áudio"
+
+[nodes.core.spawn_checkpoint]
+title = "Criar Checkpoint"
+
+[nodes.core.destroy_checkpoint]
+title = "Destruir Checkpoint"
+
+[nodes.core.spawn_object]
+title = "Criar Objeto"
+
+[nodes.core.destroy_object]
+title = "Destruir Objeto"
+
+[nodes.core.get_object]
+title = "Obter Objeto"
+
+[nodes.core.spawn_particle]
+title = "Criar Partícula"
+
+[nodes.core.destroy_particle]
+title = "Destruir Partícula"
+
+[nodes.core.spawn_pickup]
+title = "Criar Pegar"
+
+[nodes.core.destroy_pickup]
+title = "Destruir Pegar"
+
+[nodes.core.spawn_pyrotechnics]
+title = "Criar Pirotécnico"
+
+[nodes.core.destroy_pyrotechnics]
+title = "Destruir Pirotécnico"
+
+[nodes.core.spawn_train]
+title = "Criar Trem"
+
+[nodes.core.destroy_train]
+title = "Destruir Trem"
+
+[nodes.core.get_train]
+title = "Obter Trem"
+
+[nodes.core.spawn_vehicle]
+title = "Criar Veículo"
+
+[nodes.core.destroy_vehicle]
+title = "Destruir Veículo"
+
+[nodes.core.get_vehicle]
+title = "Obter Veículo"
+
+[nodes.core.spawn_visual_effect]
+title = "Criar Efeito Visual"
+
+[nodes.core.destroy_visual_effect]
+title = "Destruir Efeito Visual"
+
+[nodes.core.set_variable]
+title = "Definir Variável"
+
+[nodes.core.get_variable]
+title = "Obter Variável"
+
+[nodes.core.number_to_string]
+title = "Número para String"
+
+[nodes.core.calc_number]
+title = "Calculadora"
+
+[nodes.core.concat_string]
+title = "Concatenar String"
+
+[nodes.core.set_global_variable]
+title = "Definir Variável Global"
+
+[nodes.core.get_global_variable]
+title = "Obter Variável Global"
+
+[nodes.core.emit_signal]
+title = "Emitir Sinal"
+
+[nodes.core.is_current_objective]
+title = "É Objetivo Atual"
+
+[nodes.core.on_start_objective]
+title = "Ao Iniciar Objetivo"
+
+[nodes.core.while_for]
+title = "Enquanto"
+to = "Até"
+on_true = "Quando Verdadeiro"
+
+[nodes.core.char_follow_path]
+title = "Seguir Caminho do Personagem"
+on_complete = "Ao Completar"
+start_from_nearest = "Começar do Mais Próximo"
+
+[nodes.core.char_animation]
+title = "Animação do Personagem"
+on_complete = "Ao Completar"
+play_type = "Tipo de Reprodução"
+play_types_info = "Normal - reproduz a animação\nIninterrupta - reproduz uma animação que não pode ser interrompida\nSecundária - reproduz a animação das partes superiores do corpo\nEspecial - reproduz a animação com parâmetros adicionais"
+unlock_x = "Desbloquear X"
+unlock_y = "Desbloquear Y"
+lock_f = "Bloquear último quadro"
+disable_force = "Desativar interrupção"
+disable_lock_z = "Desbloquear Z"
+play_types = ["Normal", "Ininterrupta", "Secundária", "Especial"]
+
+[nodes.core.boolean_operations]
+title = "Operações Lógicas"
+
+[nodes.core.get_checkpoint_data]
+title = "Obter dados do ponto de verificação"
+
+[nodes.core.merge_flow]
+title = "Unir Fluxos"
+
+[nodes.core.cutscene]
+title = "Cena cortada"
+point_to_x = "Ponto da câmera X"
+point_to_y = "Ponto da câmera Y"
+point_to_z = "Ponto da câmera Z"
+on_complete = "Ao completar"
+entities_types = ["Ausente", "Ator", "Veículo", "Jogador"]
+
+[nodes.core.follow_carrec_path_vehicle]
+title = "Iniciar caminho Carrec para veículo"
+on_complete = "Ao completar"
+
+[nodes.core.stop_carrec_path_vehicle]
+title = "Parar caminho Carrec para veículo"
+
+[nodes.core.play_camera_path]
+title = "Reproduzir caminho da câmera"
+on_complete = "Ao concluir"
+
+[nodes.core.stop_camera_path]
+title = "Parar caminho da câmera"
+
+[nodes.core.char_register]
+title = "Cadastro de personagem"
+
+[nodes.core.vehicle_register]
+title = "Cadastro de veículo"
+
+[nodes.core.object_register]
+title = "Cadastro de objeto"
+
+[nodes.core.cast]
+title = "Converter tipo"
+warning = "Converter tipos pode causar erros"
+
+[nodes.core.comment]
+title = "Comentário"
+edit = "Editar"
+
+[nodes.core.delta_time]
+title = "Diferença de tempo"

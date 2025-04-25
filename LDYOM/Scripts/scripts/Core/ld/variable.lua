@@ -1,0 +1,5 @@
+---@class LDNodeEditorVariable
+---@field name string
+---@field type string
+---@field defaultValue any
+---@field value any

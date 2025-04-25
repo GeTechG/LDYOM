@@ -1,0 +1,4946 @@
+[nodes.node_editor.categories]
+opcode = "Опкод"
+camera = "Камера"
+math = "Математика"
+car = "Автомобиль"
+text = "Текст"
+clock = "Часы"
+mission = "Миссия"
+pad = "Панель"
+car_generator = "Генератор автомобилей"
+hud = "Интерфейс"
+blip = "Метка"
+restart = "Перезапуск"
+fx = "Спецэффект"
+sound = "Звук"
+weather = "Погода"
+path = "Путь"
+world = "Мир"
+game = "Игра"
+kill_frenzy = "Безумие"
+pickup = "Подбор"
+garage = "Гараж"
+gang = "Банда"
+streaming = "Стриминг"
+cutscene = "Катсцена"
+script_fire = "Скриптовый огонь"
+boat = "Лодка"
+zone = "Зона"
+stat = "Статистика"
+txd = "TXD"
+audio = "Аудио"
+sphere = "Сфера"
+stuck_car_check = "Проверка застрявших автомобилей"
+credits = "Кредиты"
+rc = "RC"
+heli = "Вертолет"
+plane = "Самолет"
+task = "Задание"
+card_decks = "Колоды карт"
+debugger = "Отладчик"
+decision_maker_char = "Принятие решения персонажа"
+sequence = "Последовательность"
+attractor = "Магнит"
+group = "Группа"
+particle = "Частица"
+decision_maker = "Принятие решения"
+decision_maker_group = "Группа принятия решений"
+searchlight = "Прожектор"
+train = "Поезд"
+conversation = "Диалог"
+shopping = "Шоппинг"
+weapon = "Оружие"
+crane = "Кран"
+trailer = "Прицеп"
+streamed_script = "Потоковый скрипт"
+menu = "Меню"
+skip = "Пропустить"
+menu_grid = "Сетка меню"
+user3_d_marker = "Маркер пользователя 3D"
+mouse = "Мышь"
+memory = "Память"
+fs = "Файловая система"
+file = "Файл"
+dynamic_library = "Динамическая библиотека"
+audio_stream = "Аудиопоток"
+audio_stream3_d = "3D аудиопоток"
+find_file = "Поиск файла"
+
+[nodes.core.camera_shake]
+title = "CameraShake"
+short_desc = "Shakes the camera with the given intensity"
+
+[nodes.core.camera_is_point_on_screen]
+title = "CameraIsPointOnScreen"
+short_desc = "Returns true if any part of the radius of the specified point is visible on screen"
+
+[nodes.core.camera_point_at_car]
+title = "CameraPointAtCar"
+short_desc = "Attaches the camera to the specified vehicle"
+
+[nodes.core.camera_point_at_char]
+title = "CameraPointAtChar"
+short_desc = "Attaches the camera to the specified character"
+
+[nodes.core.camera_restore]
+title = "CameraRestore"
+short_desc = "Restores the camera to its usual position"
+
+[nodes.core.camera_set_fixed_position]
+title = "CameraSetFixedPosition"
+short_desc = "Sets the camera's position and rotation"
+
+[nodes.core.camera_point_at_point]
+title = "CameraPointAtPoint"
+short_desc = "Points the camera at the specified location and applies the position set by 0159"
+
+[nodes.core.camera_set_fading_color]
+title = "CameraSetFadingColor"
+short_desc = "Sets the RGB color of the fade command (016A)"
+
+[nodes.core.camera_do_fade]
+title = "CameraDoFade"
+short_desc = "Fades the screen for the specified time"
+
+[nodes.core.camera_get_fading_status]
+title = "CameraGetFadingStatus"
+short_desc = "Returns true if the screen is fading (016A)"
+
+[nodes.core.camera_restore_jumpcut]
+title = "CameraRestoreJumpcut"
+short_desc = "Restores the camera, putting it back behind the player"
+
+[nodes.core.camera_set_zoom]
+title = "CameraSetZoom"
+short_desc = "Sets how far behind the camera is from the player"
+
+[nodes.core.camera_set_behind_player]
+title = "CameraSetBehindPlayer"
+short_desc = "Puts the camera behind the player"
+
+[nodes.core.camera_set_in_front_of_player]
+title = "CameraSetInFrontOfPlayer"
+short_desc = "Puts the camera in front of the player, pointing towards the player"
+
+[nodes.core.camera_set_near_clip]
+title = "CameraSetNearClip"
+short_desc = "Sets the near clip"
+
+[nodes.core.camera_get_debug_coordinates]
+title = "CameraGetDebugCoordinates"
+short_desc = "Returns the debug camera position"
+
+[nodes.core.camera_set_interpolation_parameters]
+title = "CameraSetInterpolationParameters"
+short_desc = "Sets how long the camera transition will last"
+
+[nodes.core.camera_get_debug_point_at]
+title = "CameraGetDebugPointAt"
+short_desc = "Stores the location the debug camera is pointing to"
+
+[nodes.core.camera_attach_to_vehicle]
+title = "CameraAttachToVehicle"
+short_desc = "Keeps the camera relative to the car with the specified offset"
+
+[nodes.core.camera_attach_to_vehicle_look_at_vehicle]
+title = "CameraAttachToVehicleLookAtVehicle"
+short_desc = "Puts the camera on the vehicle like in 0679"
+
+[nodes.core.camera_attach_to_vehicle_look_at_char]
+title = "CameraAttachToVehicleLookAtChar"
+short_desc = "Attaches the camera to the vehicle and points it at the specified character"
+
+[nodes.core.camera_attach_to_char]
+title = "CameraAttachToChar"
+short_desc = "Keeps the camera relative to the actor with the specified offset"
+
+[nodes.core.camera_attach_to_char_look_at_vehicle]
+title = "CameraAttachToCharLookAtVehicle"
+
+[nodes.core.camera_attach_to_char_look_at_char]
+title = "CameraAttachToCharLookAtChar"
+short_desc = "Puts the camera on the character like with 067C"
+
+[nodes.core.camera_get_active_coordinates]
+title = "CameraGetActiveCoordinates"
+short_desc = "Stores the cameras coordinates"
+
+[nodes.core.camera_get_active_point_at]
+title = "CameraGetActivePointAt"
+short_desc = "Gets the coordinates the camera is pointing to"
+
+[nodes.core.camera_set_two_player_mode]
+title = "CameraSetTwoPlayerMode"
+short_desc = "Enables the cooperative camera mode"
+
+[nodes.core.camera_get_fov]
+title = "CameraGetFov"
+short_desc = "Returns the cameras field of view"
+
+[nodes.core.camera_set_first_person_in_car_mode]
+title = "CameraSetFirstPersonInCarMode"
+short_desc = "Enables vehicle bumper view for the camera"
+
+[nodes.core.camera_do_bump]
+title = "CameraDoBump"
+short_desc = "Bumps the camera in the specified direction as if it had collided"
+
+[nodes.core.camera_set_vector_track]
+title = "CameraSetVectorTrack"
+short_desc = "Makes the camera point at the first coordinates and then rotate to point at the second coordinates"
+
+[nodes.core.camera_set_lerp_fov]
+title = "CameraSetLerpFov"
+short_desc = "Sets the cameras zoom factors"
+
+[nodes.core.camera_set_darkness_effect]
+title = "CameraSetDarknessEffect"
+short_desc = "Darkens the game"
+
+[nodes.core.camera_reset_new_scriptables]
+title = "CameraResetNewScriptables"
+short_desc = "Stops the camera propagating, interpolating, shaking and zooming"
+
+[nodes.core.camera_persist_track]
+title = "CameraPersistTrack"
+short_desc = "Locks the camera target point in position after propagating"
+
+[nodes.core.camera_persist_pos]
+title = "CameraPersistPos"
+short_desc = "Locks the cameras position"
+
+[nodes.core.camera_persist_fov]
+title = "CameraPersistFov"
+short_desc = "Locks the zoom level after the camera has finished zooming"
+
+[nodes.core.camera_is_vector_move_running]
+title = "CameraIsVectorMoveRunning"
+short_desc = "Returns true if the camera is moving in position"
+
+[nodes.core.camera_is_vector_track_running]
+title = "CameraIsVectorTrackRunning"
+short_desc = "Returns true if the camera is moving in angle"
+
+[nodes.core.camera_set_vector_move]
+title = "CameraSetVectorMove"
+short_desc = "Puts the camera at the position of the first passed coordinates and moves it to the second passed coordinates"
+
+[nodes.core.camera_set_cinema]
+title = "CameraSetCinema"
+short_desc = "Locks the camera on cinematic vehicle mode"
+
+[nodes.core.camera_set_in_front_of_char]
+title = "CameraSetInFrontOfChar"
+short_desc = "Puts the camera in front of the specified character"
+
+[nodes.core.camera_set_shake_simulation_simple]
+title = "CameraSetShakeSimulationSimple"
+short_desc = "Jiggles the camera in a variety of different ways"
+
+[nodes.core.camera_set_player_in_car_mode]
+title = "CameraSetPlayerInCarMode"
+short_desc = "Changes the camera mode on the current vehicle, just like when the user presses the 'change view' key"
+
+[nodes.core.camera_allow_fixed_collision]
+title = "CameraAllowFixedCollision"
+short_desc = "Makes the camera remain behind the player when in any garage"
+
+[nodes.core.camera_set_vehicle_tweak]
+title = "CameraSetVehicleTweak"
+short_desc = "Sets the position the camera automatically moves to while driving a vehicle of the specified type"
+
+[nodes.core.camera_reset_vehicle_tweak]
+title = "CameraResetVehicleTweak"
+short_desc = "Resets any changes made with 09EF"
+
+[nodes.core.camera_take_photo]
+title = "CameraTakePhoto"
+short_desc = "Takes a screenshot of the screen without any HUD elements and stores the file in the \"GTA San Andreas User FilesGallery\" folder"
+
+[nodes.core.camera_set_position_unfixed]
+title = "CameraSetPositionUnfixed"
+short_desc = "Sets the position of the camera to an offset of the targeted entity"
+
+[nodes.core.camera_set_photo_effect]
+title = "CameraSetPhotoEffect"
+short_desc = "Puts the camera in first-person mode if the player is holding a weapon with a first-person shooting mode (such as a sniper rifle or camera)"
+
+[nodes.core.camera_get_player_in_car_mode]
+title = "CameraGetPlayerInCarMode"
+short_desc = "Gets the players chosen camera mode of the current vehicle"
+
+[nodes.core.player_create]
+title = "PlayerCreate"
+short_desc = "Creates a player at the specified location"
+
+[nodes.core.player_add_score]
+title = "PlayerAddScore"
+short_desc = "Adds to the player's money"
+
+[nodes.core.player_is_score_greater]
+title = "PlayerIsScoreGreater"
+short_desc = "Returns true if the player's money is over the specified value"
+
+[nodes.core.player_store_score]
+title = "PlayerStoreScore"
+short_desc = "Returns the player's money"
+
+[nodes.core.player_alter_wanted_level]
+title = "PlayerAlterWantedLevel"
+short_desc = "Sets the player's wanted level"
+
+[nodes.core.player_alter_wanted_level_no_drop]
+title = "PlayerAlterWantedLevelNoDrop"
+short_desc = "Sets the player's wanted level if the specified level is higher than the current one"
+
+[nodes.core.player_is_wanted_level_greater]
+title = "PlayerIsWantedLevelGreater"
+short_desc = "Returns true if the player's wanted level is over the specified value"
+
+[nodes.core.player_clear_wanted_level]
+title = "PlayerClearWantedLevel"
+short_desc = "Clears the player's wanted level"
+
+[nodes.core.player_is_dead]
+title = "PlayerIsDead"
+short_desc = "Returns true if the handle is an invalid player handle or the player is dead (wasted)"
+
+[nodes.core.player_is_pressing_horn]
+title = "PlayerIsPressingHorn"
+short_desc = "Returns true if the player is honking the horn in a car"
+
+[nodes.core.player_set_control]
+title = "PlayerSetControl"
+short_desc = "Sets whether player's control is enabled"
+
+[nodes.core.player_store_wanted_level]
+title = "PlayerStoreWantedLevel"
+short_desc = "Returns the player's current wanted level"
+
+[nodes.core.player_get_char]
+title = "PlayerGetChar"
+short_desc = "Gets the character handle for the specified player"
+
+[nodes.core.player_apply_brakes_to_car]
+title = "PlayerApplyBrakesToCar"
+short_desc = "Applies brakes to the player's car"
+
+[nodes.core.player_is_in_remote_mode]
+title = "PlayerIsInRemoteMode"
+short_desc = "Returns true if the player is controlling a remote-control vehicle"
+
+[nodes.core.player_is_playing]
+title = "PlayerIsPlaying"
+short_desc = "Returns true if the player hasn't been wasted or busted (the player is still playing)"
+
+[nodes.core.player_reset_num_of_models_killed]
+title = "PlayerResetNumOfModelsKilled"
+short_desc = "Resets the count of how many times the player has destroyed a certain model"
+
+[nodes.core.player_get_num_of_models_killed]
+title = "PlayerGetNumOfModelsKilled"
+short_desc = "Returns the number of times the player has destroyed a specific model"
+
+[nodes.core.player_set_never_gets_tired]
+title = "PlayerSetNeverGetsTired"
+short_desc = "Defines whether the player can run fast forever"
+
+[nodes.core.player_set_fast_reload]
+title = "PlayerSetFastReload"
+short_desc = "Defines whether the player can reload their gun 4x times faster"
+
+[nodes.core.player_can_start_mission]
+title = "PlayerCanStartMission"
+short_desc = "Returns true if the player can move"
+
+[nodes.core.player_make_safe_for_cutscene]
+title = "PlayerMakeSafeForCutscene"
+short_desc = "Makes the player safe, putting the character in a safe location"
+
+[nodes.core.player_set_free_health_care]
+title = "PlayerSetFreeHealthCare"
+short_desc = "Sets whether the player loses the cash when gets wasted (works once)"
+
+[nodes.core.player_is_targeting_char]
+title = "PlayerIsTargetingChar"
+short_desc = "Returns true if the player is aiming at the specified character"
+
+[nodes.core.player_is_targeting_object]
+title = "PlayerIsTargetingObject"
+short_desc = "Returns true if the player is aiming at the specified object"
+
+[nodes.core.player_set_mood]
+title = "PlayerSetMood"
+short_desc = "Sets the players mood, affecting the dialogue spoken by the player"
+
+[nodes.core.player_get_wheelie_stats]
+title = "PlayerGetWheelieStats"
+short_desc = "Returns the stats of the most recent wheelie or stoppie attempt"
+
+[nodes.core.player_is_wearing]
+title = "PlayerIsWearing"
+short_desc = "Returns true if the player's bodypart has the specified model (0784 or 087B) "
+
+[nodes.core.player_set_can_do_drive_by]
+title = "PlayerSetCanDoDriveBy"
+short_desc = "Sets the players driveby mode"
+
+[nodes.core.player_set_drunkenness]
+title = "PlayerSetDrunkenness"
+short_desc = "Makes the camera start moving around in a swirling motion with the specified intensity as if drunk"
+
+[nodes.core.player_make_fire_proof]
+title = "PlayerMakeFireProof"
+short_desc = "Makes the player immune to fire"
+
+[nodes.core.player_increase_max_health]
+title = "PlayerIncreaseMaxHealth"
+short_desc = "Increases the players maximum health by the specified amount"
+
+[nodes.core.player_increase_max_armor]
+title = "PlayerIncreaseMaxArmor"
+short_desc = "Increases the players armor by the specified amount"
+
+[nodes.core.player_ensure_has_drive_by_weapon]
+title = "PlayerEnsureHasDriveByWeapon"
+short_desc = "Sets the amount of ammo a player has during a driveby"
+
+[nodes.core.player_is_in_info_zone]
+title = "PlayerIsInInfoZone"
+short_desc = "Returns true if the player is in the specified zone"
+
+[nodes.core.player_is_targeting_anything]
+title = "PlayerIsTargetingAnything"
+short_desc = "Returns true if the specified player is aiming at anything using autoaim"
+
+[nodes.core.player_disable_sprint]
+title = "PlayerDisableSprint"
+
+[nodes.core.player_delete]
+title = "PlayerDelete"
+short_desc = "Removes the specified player"
+
+[nodes.core.player_build_model]
+title = "PlayerBuildModel"
+short_desc = "Rebuilds the player model, applying any required texture changes"
+
+[nodes.core.player_give_clothes]
+title = "PlayerGiveClothes"
+
+[nodes.core.player_store_clothes_state]
+title = "PlayerStoreClothesState"
+short_desc = "Stores the players current clothes to later be restored with 0794"
+
+[nodes.core.player_restore_clothes_state]
+title = "PlayerRestoreClothesState"
+short_desc = "Restores the players clothes stored with 0793"
+
+[nodes.core.player_get_group]
+title = "PlayerGetGroup"
+
+[nodes.core.player_set_group_recruitment]
+title = "PlayerSetGroupRecruitment"
+
+[nodes.core.player_is_performing_wheelie]
+title = "PlayerIsPerformingWheelie"
+
+[nodes.core.player_is_performing_stoppie]
+title = "PlayerIsPerformingStoppie"
+short_desc = "Returns true if the player is performing a stoppie"
+
+[nodes.core.player_get_total_number_of_peds_killed]
+title = "PlayerGetTotalNumberOfPedsKilled"
+short_desc = "Returns the number of peds killed by the player since the last reset (0297)"
+
+[nodes.core.player_get_city_is_in]
+title = "PlayerGetCityIsIn"
+short_desc = "Gets the players current town ID"
+
+[nodes.core.player_set_heading_for_attached]
+title = "PlayerSetHeadingForAttached"
+short_desc = "Sets the view angle for the player attached to an object or vehicle"
+
+[nodes.core.player_is_attached_heading_achieved]
+title = "PlayerIsAttachedHeadingAchieved"
+short_desc = "Returns true if the heading has finished being applied, as started by 0858"
+
+[nodes.core.player_give_clothes_outside_shop]
+title = "PlayerGiveClothesOutsideShop"
+short_desc = "Sets the players clothing"
+
+[nodes.core.player_make_gang_disappear]
+title = "PlayerMakeGangDisappear"
+
+[nodes.core.player_make_gang_reappear]
+title = "PlayerMakeGangReappear"
+
+[nodes.core.player_get_clothes_item]
+title = "PlayerGetClothesItem"
+
+[nodes.core.player_get_max_armor]
+title = "PlayerGetMaxArmor"
+
+[nodes.core.player_set_model]
+title = "PlayerSetModel"
+short_desc = "Changes the player to use the specified model"
+
+[nodes.core.player_force_interior_lighting]
+title = "PlayerForceInteriorLighting"
+
+[nodes.core.player_use_detonator]
+title = "PlayerUseDetonator"
+short_desc = "Detonates all satchel charges and car bombs planted by the player"
+
+[nodes.core.player_is_control_on]
+title = "PlayerIsControlOn"
+short_desc = "Returns true if the player control hasn't been disabled using 01B4"
+
+[nodes.core.player_take_off_goggles]
+title = "PlayerTakeOffGoggles"
+short_desc = "Removes the players Goggles and disables night/heat vision"
+
+[nodes.core.player_is_using_jetpack]
+title = "PlayerIsUsingJetpack"
+short_desc = "Returns true if player is using a jetpack"
+
+[nodes.core.player_set_group_to_follow_always]
+title = "PlayerSetGroupToFollowAlways"
+short_desc = "Controls the players ability to tell their group to wait and automatically orders any group members to continue following"
+
+[nodes.core.player_is_climbing]
+title = "PlayerIsClimbing"
+short_desc = "Returns true if the player is climbing"
+
+[nodes.core.player_set_group_to_follow_never]
+title = "PlayerSetGroupToFollowNever"
+short_desc = "Sets whether the player's group stops following the player, even if the player uses the \"group follow\" button"
+
+[nodes.core.player_is_last_building_model_shot]
+title = "PlayerIsLastBuildingModelShot"
+short_desc = "Returns true if the player's last shot model is the model specified"
+
+[nodes.core.player_clear_last_building_model_shot]
+title = "PlayerClearLastBuildingModelShot"
+short_desc = "Resets the status of the last model the player has shot"
+
+[nodes.core.player_get_char_is_targeting]
+title = "PlayerGetCharIsTargeting"
+
+[nodes.core.math_abs]
+title = "MathAbs"
+short_desc = "Returns the absolute value of the local float variable"
+
+[nodes.core.math_random]
+title = "MathRandom"
+short_desc = "Returns a random integer between -32767 and 32767 (SA) or 0 and 65535 (III & VC)"
+
+[nodes.core.math_sqrt]
+title = "MathSqrt"
+short_desc = "Returns the square root of a number"
+
+[nodes.core.math_random_float_in_range]
+title = "MathRandomFloatInRange"
+short_desc = "Returns a random float between the specified ranges"
+
+[nodes.core.math_random_int_in_range]
+title = "MathRandomIntInRange"
+short_desc = "Returns a random integer between the specified ranges"
+
+[nodes.core.math_sin]
+title = "MathSin"
+short_desc = "Returns the sine of the angle"
+
+[nodes.core.math_cos]
+title = "MathCos"
+short_desc = "Returns the cosine of the angle"
+
+[nodes.core.math_convert_meters_to_feet]
+title = "MathConvertMetersToFeet"
+short_desc = "Returns the result of converting meters to feet"
+
+[nodes.core.math_get_distance_between_coords2_d]
+title = "MathGetDistanceBetweenCoords2D"
+short_desc = "Gets the distance between two points"
+
+[nodes.core.math_get_distance_between_coords3_d]
+title = "MathGetDistanceBetweenCoords3D"
+short_desc = "Gets the distance between two points"
+
+[nodes.core.math_get_angle_between2_d_vectors]
+title = "MathGetAngleBetween2DVectors"
+short_desc = "Gets the angle between the two 2D vectors"
+
+[nodes.core.math_do2_d_rectangles_collide]
+title = "MathDo2DRectanglesCollide"
+short_desc = "Returns true if rectangle1 is inside rectangle2 or partially intersects it"
+
+[nodes.core.math_get2_d_lines_intersect_point]
+title = "MathGet2DLinesIntersectPoint"
+short_desc = "Returns the point of intersection of two lines. If they do not intersect, both returned values are -1000000.0 and the condition result is false"
+
+[nodes.core.math_get_heading_from_vector2_d]
+title = "MathGetHeadingFromVector2D"
+short_desc = "Gets the angle for the XY offset"
+
+[nodes.core.math_limit_angle]
+title = "MathLimitAngle"
+short_desc = "Gets the exact angle of an angle"
+
+[nodes.core.math_is_bit_set]
+title = "MathIsBitSet"
+short_desc = "Checks if the nth bit of the number is set"
+
+[nodes.core.math_set_bit]
+title = "MathSetBit"
+short_desc = "Sets the nth bit of the number"
+
+[nodes.core.math_clear_bit]
+title = "MathClearBit"
+short_desc = "Clears the nth bit of the number"
+
+[nodes.core.math_pow]
+title = "MathPow"
+short_desc = "Returns the specified number raised to the specified power"
+
+[nodes.core.math_log]
+title = "MathLog"
+short_desc = "Returns the logarithm of the specified number in the specified base"
+
+[nodes.core.char_create]
+title = "CharCreate"
+short_desc = "Creates a character at the specified location, with the specified model and pedtype"
+
+[nodes.core.char_delete]
+title = "CharDelete"
+short_desc = "Removes the character from the game and mission cleanup list, freeing game memory"
+
+[nodes.core.char_get_coordinates]
+title = "CharGetCoordinates"
+short_desc = "Returns the character's coordinates"
+
+[nodes.core.char_set_coordinates]
+title = "CharSetCoordinates"
+short_desc = "Puts the character at the specified location"
+
+[nodes.core.char_is_in_area2_d]
+title = "CharIsInArea2D"
+short_desc = "Returns true if the character is within the specified 2D area"
+
+[nodes.core.char_is_in_area3_d]
+title = "CharIsInArea3D"
+short_desc = "Returns true if the character is within the specified 3D area"
+
+[nodes.core.char_store_car_is_in]
+title = "CharStoreCarIsIn"
+short_desc = "Returns the current vehicle of the character and adds it to the mission cleanup list (alts:03C0,0811,0484)"
+
+[nodes.core.char_is_in_car]
+title = "CharIsInCar"
+short_desc = "Returns true if the character is in the specified vehicle"
+
+[nodes.core.char_is_in_model]
+title = "CharIsInModel"
+short_desc = "Returns true if the character is driving a vehicle with the specified model"
+
+[nodes.core.char_is_in_any_car]
+title = "CharIsInAnyCar"
+short_desc = "Returns true if the character has a vehicle, even if they are not actually sat inside it (opening and closing the door)"
+
+[nodes.core.char_locate_any_means2_d]
+title = "CharLocateAnyMeans2D"
+short_desc = "Returns true if the character is within the 2D radius of the coordinates point"
+
+[nodes.core.char_locate_on_foot2_d]
+title = "CharLocateOnFoot2D"
+short_desc = "Returns true if the character is within the 2D radius of the coordinates point on foot"
+
+[nodes.core.char_locate_in_car2_d]
+title = "CharLocateInCar2D"
+short_desc = "Returns true if the character is within the 2D radius of the coordinates point in a vehicle"
+
+[nodes.core.char_locate_stopped_any_means2_d]
+title = "CharLocateStoppedAnyMeans2D"
+short_desc = "Returns true if the character stopped within the 2D radius of the coordinates point"
+
+[nodes.core.char_locate_stopped_on_foot2_d]
+title = "CharLocateStoppedOnFoot2D"
+short_desc = "Returns true if the character stopped within the 2D radius of the coordinates point on foot"
+
+[nodes.core.char_locate_stopped_in_car2_d]
+title = "CharLocateStoppedInCar2D"
+short_desc = "Returns true if the character stopped within the 2D radius of the coordinates point in a vehicle"
+
+[nodes.core.char_locate_any_means_char2_d]
+title = "CharLocateAnyMeansChar2D"
+short_desc = "Returns true if the character is within the 2D radius of the other character"
+
+[nodes.core.char_locate_on_foot_char2_d]
+title = "CharLocateOnFootChar2D"
+short_desc = "Returns true if the character is within the 2D radius of the other character on foot"
+
+[nodes.core.char_locate_in_car_char2_d]
+title = "CharLocateInCarChar2D"
+short_desc = "Returns true if the character is within the 2D radius of the other character in a vehicle"
+
+[nodes.core.char_locate_any_means3_d]
+title = "CharLocateAnyMeans3D"
+short_desc = "Returns true if the character is within the 3D radius of the coordinates point"
+
+[nodes.core.char_locate_on_foot3_d]
+title = "CharLocateOnFoot3D"
+short_desc = "Returns true if the character is within the 3D radius of the coordinates point on foot"
+
+[nodes.core.char_locate_in_car3_d]
+title = "CharLocateInCar3D"
+short_desc = "Returns true if the character is within the 3D radius of the coordinates point in a vehicle"
+
+[nodes.core.char_locate_stopped_any_means3_d]
+title = "CharLocateStoppedAnyMeans3D"
+short_desc = "Returns true if the character stopped within the 3D radius of the coordinates point"
+
+[nodes.core.char_locate_stopped_on_foot3_d]
+title = "CharLocateStoppedOnFoot3D"
+short_desc = "Returns true if the character stopped within the 3D radius of the coordinates point on foot"
+
+[nodes.core.char_locate_stopped_in_car3_d]
+title = "CharLocateStoppedInCar3D"
+short_desc = "Returns true if the character stopped within the 3D radius of the coordinates point in a vehicle"
+
+[nodes.core.char_locate_any_means_char3_d]
+title = "CharLocateAnyMeansChar3D"
+short_desc = "Returns true if the character is within the 3D radius of the other character"
+
+[nodes.core.char_locate_on_foot_char3_d]
+title = "CharLocateOnFootChar3D"
+short_desc = "Returns true if the character is within the 3D radius of the other character on foot"
+
+[nodes.core.char_locate_in_car_char3_d]
+title = "CharLocateInCarChar3D"
+short_desc = "Returns true if the character is within the 3D radius of the other character in a vehicle"
+
+[nodes.core.char_add_ammo]
+title = "CharAddAmmo"
+short_desc = "Adds the specified amount of ammo to the character's weapon, if the character has the weapon"
+
+[nodes.core.char_is_dead]
+title = "CharIsDead"
+short_desc = "Returns true if the handle is an invalid character handle or the character is dead (wasted)"
+
+[nodes.core.char_create_inside_car]
+title = "CharCreateInsideCar"
+short_desc = "Creates a character in the driver's seat of the vehicle"
+
+[nodes.core.char_is_in_zone]
+title = "CharIsInZone"
+short_desc = "Returns true if the character is in the specified map zone"
+
+[nodes.core.char_get_heading]
+title = "CharGetHeading"
+short_desc = "Returns the character's heading (z-angle)"
+
+[nodes.core.char_set_heading]
+title = "CharSetHeading"
+short_desc = "Sets the character's heading (z-angle)"
+
+[nodes.core.char_is_touching_object]
+title = "CharIsTouchingObject"
+short_desc = "Returns true if the character is colliding with the specified object"
+
+[nodes.core.char_set_ammo]
+title = "CharSetAmmo"
+short_desc = "Sets the amount of ammo the character has in the specified weapon"
+
+[nodes.core.char_is_health_greater]
+title = "CharIsHealthGreater"
+short_desc = "Returns true if the character's health is over the specified value"
+
+[nodes.core.char_is_in_area_on_foot2_d]
+title = "CharIsInAreaOnFoot2D"
+short_desc = "Returns true if the character is within the specified 2D area on foot"
+
+[nodes.core.char_is_in_area_in_car2_d]
+title = "CharIsInAreaInCar2D"
+short_desc = "Returns true if the character is within the specified 2D area in a vehicle"
+
+[nodes.core.char_is_stopped_in_area2_d]
+title = "CharIsStoppedInArea2D"
+short_desc = "Returns true if the character stopped within the specified 2D area"
+
+[nodes.core.char_is_stopped_in_area_on_foot2_d]
+title = "CharIsStoppedInAreaOnFoot2D"
+short_desc = "Returns true if the character stopped within the specified 2D area on foot"
+
+[nodes.core.char_is_stopped_in_area_in_car2_d]
+title = "CharIsStoppedInAreaInCar2D"
+short_desc = "Returns true if the character stopped within the specified 2D area in a vehicle"
+
+[nodes.core.char_is_in_area_on_foot3_d]
+title = "CharIsInAreaOnFoot3D"
+short_desc = "Returns true if the character is within the specified 3D area on foot"
+
+[nodes.core.char_is_in_area_in_car3_d]
+title = "CharIsInAreaInCar3D"
+short_desc = "Returns true if the character is within the specified 3D area in a vehicle"
+
+[nodes.core.char_is_stopped_in_area3_d]
+title = "CharIsStoppedInArea3D"
+short_desc = "Returns true if the character stopped within the specified 3D area"
+
+[nodes.core.char_is_stopped_in_area_on_foot3_d]
+title = "CharIsStoppedInAreaOnFoot3D"
+short_desc = "Returns true if the character stopped within the specified 3D area on foot"
+
+[nodes.core.char_is_stopped_in_area_in_car3_d]
+title = "CharIsStoppedInAreaInCar3D"
+short_desc = "Returns true if the character stopped within the specified 3D area in a vehicle"
+
+[nodes.core.char_give_weapon]
+title = "CharGiveWeapon"
+short_desc = "Gives the character the weapon with the specified amount of ammo"
+
+[nodes.core.char_set_current_weapon]
+title = "CharSetCurrentWeapon"
+short_desc = "Sets the character's currently held weapon"
+
+[nodes.core.char_mark_as_no_longer_needed]
+title = "CharMarkAsNoLongerNeeded"
+short_desc = "Allows the character to be deleted by the game if necessary, and also removes them from the mission cleanup list, if applicable"
+
+[nodes.core.char_dont_remove]
+title = "CharDontRemove"
+short_desc = "Removes the character from the mission cleanup list, preventing it from being deleted when the mission ends"
+
+[nodes.core.char_create_as_passenger]
+title = "CharCreateAsPassenger"
+short_desc = "Creates a character with the specified model in the passenger seat of the vehicle"
+
+[nodes.core.char_locate_any_means_car2_d]
+title = "CharLocateAnyMeansCar2D"
+short_desc = "Returns true if the character is within the 2D radius of the vehicle"
+
+[nodes.core.char_locate_on_foot_car2_d]
+title = "CharLocateOnFootCar2D"
+short_desc = "Returns true if the character is within the 2D radius of the vehicle on foot"
+
+[nodes.core.char_locate_in_car_car2_d]
+title = "CharLocateInCarCar2D"
+short_desc = "Returns true if the character is within the 2D radius of the vehicle in a vehicle"
+
+[nodes.core.char_locate_any_means_car3_d]
+title = "CharLocateAnyMeansCar3D"
+short_desc = "Returns true if the character is within the 3D radius of the vehicle"
+
+[nodes.core.char_locate_on_foot_car3_d]
+title = "CharLocateOnFootCar3D"
+short_desc = "Returns true if the character is within the 3D radius of the vehicle on foot"
+
+[nodes.core.char_locate_in_car_car3_d]
+title = "CharLocateInCarCar3D"
+short_desc = "Returns true if the character is within the 3D radius of the vehicle in a vehicle"
+
+[nodes.core.char_set_health]
+title = "CharSetHealth"
+short_desc = "Sets the character's health"
+
+[nodes.core.char_get_health]
+title = "CharGetHealth"
+short_desc = "Returns the character's health"
+
+[nodes.core.char_is_touching_object_on_foot]
+title = "CharIsTouchingObjectOnFoot"
+short_desc = "Returns true if the character is colliding with the specified object on foot"
+
+[nodes.core.char_set_anim_group]
+title = "CharSetAnimGroup"
+short_desc = "Sets the animation group for the character"
+
+[nodes.core.char_is_stopped]
+title = "CharIsStopped"
+short_desc = "Returns true if the character is not moving"
+
+[nodes.core.char_set_only_damaged_by_player]
+title = "CharSetOnlyDamagedByPlayer"
+short_desc = "Makes a character immune to everything except the player"
+
+[nodes.core.char_set_proofs]
+title = "CharSetProofs"
+short_desc = "Sets the character's immunities"
+
+[nodes.core.char_is_on_screen]
+title = "CharIsOnScreen"
+short_desc = "Returns true if the character is visible"
+
+[nodes.core.char_is_shooting_in_area]
+title = "CharIsShootingInArea"
+short_desc = "Returns true if the character fired a weapon within the specified 2D area"
+
+[nodes.core.char_is_current_weapon]
+title = "CharIsCurrentWeapon"
+short_desc = "Returns true if the character is holding the given type of weapon"
+
+[nodes.core.char_is_shooting]
+title = "CharIsShooting"
+short_desc = "Returns true if the character is firing a weapon"
+
+[nodes.core.char_set_accuracy]
+title = "CharSetAccuracy"
+short_desc = "Affects how often the character will hit the target when attacking with a weapon"
+
+[nodes.core.char_is_model]
+title = "CharIsModel"
+short_desc = "Returns true if the character's model ID is equivalent to the model ID passed"
+
+[nodes.core.char_has_been_damaged_by_weapon]
+title = "CharHasBeenDamagedByWeapon"
+short_desc = "Returns true if the character has been hit by the specified weapon"
+
+[nodes.core.char_explode_head]
+title = "CharExplodeHead"
+short_desc = "Dismembers the character"
+
+[nodes.core.char_set_bleeding]
+title = "CharSetBleeding"
+short_desc = "Makes a character bleed"
+
+[nodes.core.char_set_visible]
+title = "CharSetVisible"
+short_desc = "Sets whether the character is visible or not"
+
+[nodes.core.char_remove_elegantly]
+title = "CharRemoveElegantly"
+short_desc = "Removes the character with a fade, freeing game memory"
+
+[nodes.core.char_set_stay_in_same_place]
+title = "CharSetStayInSamePlace"
+short_desc = "Makes the character maintain their position when attacked"
+
+[nodes.core.char_add_armor]
+title = "CharAddArmor"
+short_desc = "Increases the character's armor by the specified value to the maximum of 100.0"
+
+[nodes.core.char_warp_from_car_to_coord]
+title = "CharWarpFromCarToCoord"
+short_desc = "Pulls the character out of their car and places at the location"
+
+[nodes.core.char_has_spotted_char]
+title = "CharHasSpottedChar"
+short_desc = "Returns true if the character can see the target character"
+
+[nodes.core.char_warp_into_car]
+title = "CharWarpIntoCar"
+short_desc = "Puts the character in the specified vehicle"
+
+[nodes.core.char_create_random]
+title = "CharCreateRandom"
+short_desc = "Creates a character with a randomised model and pedtype at the specified coordinates"
+
+[nodes.core.char_set_anim_speed]
+title = "CharSetAnimSpeed"
+short_desc = "Makes an actor perform an animation at the specified speed"
+
+[nodes.core.char_set_cant_be_dragged_out]
+title = "CharSetCantBeDraggedOut"
+short_desc = "Locks the character while in a car"
+
+[nodes.core.char_is_male]
+title = "CharIsMale"
+short_desc = "Returns true if the character is male"
+
+[nodes.core.char_store_car_is_in_no_save]
+title = "CharStoreCarIsInNoSave"
+short_desc = "Returns the character's vehicle handle without marking it as used by the script, therefore allowing it to be deleted by the game at any time (alts:00D9,0811,0484)"
+
+[nodes.core.char_set_money]
+title = "CharSetMoney"
+short_desc = "Sets the character's cash sum, setting how much cash they will drop when dead"
+
+[nodes.core.char_get_ammo_in_weapon]
+title = "CharGetAmmoInWeapon"
+short_desc = "Gets the amount of ammo in the specified weapon of the character"
+
+[nodes.core.char_warp_into_car_as_passenger]
+title = "CharWarpIntoCarAsPassenger"
+short_desc = "Puts the character into a vehicle's passenger seat"
+
+[nodes.core.char_set_is_chris_criminal]
+title = "CharSetIsChrisCriminal"
+short_desc = "Sets whether the character is a psychotic killer or not"
+
+[nodes.core.char_set_suffers_critical_hits]
+title = "CharSetSuffersCriticalHits"
+short_desc = "Sets whether the specified character is immune to headshots"
+
+[nodes.core.char_is_sitting_in_car]
+title = "CharIsSittingInCar"
+short_desc = "Returns true if the character is sitting in the specified vehicle"
+
+[nodes.core.char_is_sitting_in_any_car]
+title = "CharIsSittingInAnyCar"
+short_desc = "Returns true if the character is sitting in any vehicle"
+
+[nodes.core.char_is_on_foot]
+title = "CharIsOnFoot"
+short_desc = "Returns true if the character is on foot, and not occupying a vehicle"
+
+[nodes.core.char_attach_to_car]
+title = "CharAttachToCar"
+short_desc = "Puts character into a turret on the vehicle, allowing them to shoot"
+
+[nodes.core.char_detach_from_car]
+title = "CharDetachFromCar"
+short_desc = "Takes the character out of turret mode (0464)"
+
+[nodes.core.char_clear_last_weapon_damage]
+title = "CharClearLastWeaponDamage"
+short_desc = "Clears the character's last weapon damage (see 031D)"
+
+[nodes.core.char_get_number_of_followers]
+title = "CharGetNumberOfFollowers"
+short_desc = "Returns the number of members which are in a group of the character (01DE)"
+
+[nodes.core.char_get_current_weapon]
+title = "CharGetCurrentWeapon"
+short_desc = "Returns the type of weapon that the character is currently holding"
+
+[nodes.core.char_locate_any_means_object2_d]
+title = "CharLocateAnyMeansObject2D"
+short_desc = "Returns true if the character is within the 2D radius of the object"
+
+[nodes.core.char_locate_on_foot_object2_d]
+title = "CharLocateOnFootObject2D"
+short_desc = "Returns true if the character is within the 2D radius of the object on foot"
+
+[nodes.core.char_locate_in_car_object2_d]
+title = "CharLocateInCarObject2D"
+short_desc = "Returns true if the character is within the 2D radius of the object in a vehicle"
+
+[nodes.core.char_locate_any_means_object3_d]
+title = "CharLocateAnyMeansObject3D"
+short_desc = "Returns true if the character is within the 3D radius of the object"
+
+[nodes.core.char_locate_on_foot_object3_d]
+title = "CharLocateOnFootObject3D"
+short_desc = "Returns true if the character is within the 3D radius of the object on foot"
+
+[nodes.core.char_locate_in_car_object3_d]
+title = "CharLocateInCarObject3D"
+short_desc = "Returns true if the character is within the 3D radius of the object in a vehicle"
+
+[nodes.core.char_is_on_any_bike]
+title = "CharIsOnAnyBike"
+short_desc = "Returns true if the character is riding a bike"
+
+[nodes.core.char_can_see_dead_char]
+title = "CharCanSeeDeadChar"
+short_desc = "Returns true if the character sees a dead body of the given type"
+
+[nodes.core.char_shut_up]
+title = "CharShutUp"
+short_desc = "Sets the character's ability to talk"
+
+[nodes.core.char_remove_all_weapons]
+title = "CharRemoveAllWeapons"
+short_desc = "Removes the characters weapons"
+
+[nodes.core.char_has_got_weapon]
+title = "CharHasGotWeapon"
+short_desc = "Returns true if the character has the specified weapon"
+
+[nodes.core.char_is_in_any_boat]
+title = "CharIsInAnyBoat"
+short_desc = "Returns true if the character is driving a boat"
+
+[nodes.core.char_is_in_any_heli]
+title = "CharIsInAnyHeli"
+short_desc = "Returns true if the character is flying a helicopter"
+
+[nodes.core.char_is_in_any_plane]
+title = "CharIsInAnyPlane"
+short_desc = "Returns true if the character is in a plane"
+
+[nodes.core.char_is_in_water]
+title = "CharIsInWater"
+short_desc = "Returns true if the character is in water"
+
+[nodes.core.char_get_weapon_in_slot]
+title = "CharGetWeaponInSlot"
+short_desc = "Returns the weapon type, ammo and model from the specified slot"
+
+[nodes.core.char_get_offset_in_world_coords]
+title = "CharGetOffsetInWorldCoords"
+short_desc = "Returns the coordinates of the character, with an offset"
+
+[nodes.core.char_has_been_photographed]
+title = "CharHasBeenPhotographed"
+short_desc = "Returns true if the character has been photographed"
+
+[nodes.core.char_is_in_flying_vehicle]
+title = "CharIsInFlyingVehicle"
+short_desc = "Returns true if the character is in a flying vehicle"
+
+[nodes.core.char_freeze_position]
+title = "CharFreezePosition"
+short_desc = "Sets whether the character's position remains unchanged"
+
+[nodes.core.char_set_drowns_in_water]
+title = "CharSetDrownsInWater"
+short_desc = "Controls whether the character can drown in water"
+
+[nodes.core.char_get_armor]
+title = "CharGetArmor"
+short_desc = "Returns the character's armor amount"
+
+[nodes.core.char_is_waiting_for_world_collision]
+title = "CharIsWaitingForWorldCollision"
+
+[nodes.core.char_attach_to_object]
+title = "CharAttachToObject"
+short_desc = "Attaches the character to the specified object, in turret mode"
+
+[nodes.core.char_create_swat_rope]
+title = "CharCreateSwatRope"
+short_desc = "Creates a character descending from a rope"
+
+[nodes.core.char_has_been_damaged_by_char]
+title = "CharHasBeenDamagedByChar"
+short_desc = "Returns true if the character has been hurt by the other character"
+
+[nodes.core.char_has_been_damaged_by_car]
+title = "CharHasBeenDamagedByCar"
+short_desc = "Returns true if the actor has been hurt by the specified vehicle"
+
+[nodes.core.char_set_stay_in_car_when_jacked]
+title = "CharSetStayInCarWhenJacked"
+short_desc = "Makes the character stay in the vehicle when it is jacked (characters let themselves get \"kidnapped\")"
+
+[nodes.core.char_is_touching_vehicle]
+title = "CharIsTouchingVehicle"
+short_desc = "Returns true if the character is colliding with a car"
+
+[nodes.core.char_set_can_be_shot_in_vehicle]
+title = "CharSetCanBeShotInVehicle"
+short_desc = "Makes the character immune to a damage while in a vehicle"
+
+[nodes.core.char_clear_last_damage_entity]
+title = "CharClearLastDamageEntity"
+
+[nodes.core.char_remove_weapon]
+title = "CharRemoveWeapon"
+short_desc = "Removes the weapon from the character"
+
+[nodes.core.char_create_random_as_driver]
+title = "CharCreateRandomAsDriver"
+short_desc = "Creates a driver in the vehicle"
+
+[nodes.core.char_create_random_as_passenger]
+title = "CharCreateRandomAsPassenger"
+short_desc = "Creates a random character in the passenger seat of the vehicle"
+
+[nodes.core.char_set_never_targeted]
+title = "CharSetNeverTargeted"
+short_desc = "Sets whether the character won't be targeted by the autoaim system"
+
+[nodes.core.char_is_in_any_police_vehicle]
+title = "CharIsInAnyPoliceVehicle"
+short_desc = "Returns true if the character is driving a police vehicle"
+
+[nodes.core.char_does_exist]
+title = "CharDoesExist"
+short_desc = "Returns true if the handle is a valid character handle"
+
+[nodes.core.char_freeze_position_and_dont_load_collision]
+title = "CharFreezePositionAndDontLoadCollision"
+
+[nodes.core.char_set_load_collision_flag]
+title = "CharSetLoadCollisionFlag"
+
+[nodes.core.char_is_ducking]
+title = "CharIsDucking"
+short_desc = "Returns true if the specified character is crouching"
+
+[nodes.core.char_is_in_angled_area2_d]
+title = "CharIsInAngledArea2D"
+short_desc = "Checks if the character is within the angled 2D area"
+
+[nodes.core.char_is_in_angled_area_on_foot2_d]
+title = "CharIsInAngledAreaOnFoot2D"
+short_desc = "Checks if the character is within the angled 2D area"
+
+[nodes.core.char_is_in_angled_area_in_car2_d]
+title = "CharIsInAngledAreaInCar2D"
+short_desc = "Checks if the character is in a car which is within the angled 2D area"
+
+[nodes.core.char_is_stopped_in_angled_area2_d]
+title = "CharIsStoppedInAngledArea2D"
+short_desc = "Checks if the character is within the angled 2D area and is motionless"
+
+[nodes.core.char_is_stopped_in_angled_area_on_foot2_d]
+title = "CharIsStoppedInAngledAreaOnFoot2D"
+short_desc = "Checks if the character is within the angled 2D area"
+
+[nodes.core.char_is_stopped_in_angled_area_in_car2_d]
+title = "CharIsStoppedInAngledAreaInCar2D"
+short_desc = "Checks if the character is in a motionless car within the angled 2D area"
+
+[nodes.core.char_is_in_angled_area3_d]
+title = "CharIsInAngledArea3D"
+short_desc = "Checks if the character is within the angled 3D area"
+
+[nodes.core.char_is_in_angled_area_on_foot3_d]
+title = "CharIsInAngledAreaOnFoot3D"
+short_desc = "Checks if the character is within the angled 3D area"
+
+[nodes.core.char_is_in_angled_area_in_car3_d]
+title = "CharIsInAngledAreaInCar3D"
+
+[nodes.core.char_is_stopped_in_angled_area3_d]
+title = "CharIsStoppedInAngledArea3D"
+
+[nodes.core.char_is_stopped_in_angled_area_on_foot3_d]
+title = "CharIsStoppedInAngledAreaOnFoot3D"
+
+[nodes.core.char_is_stopped_in_angled_area_in_car3_d]
+title = "CharIsStoppedInAngledAreaInCar3D"
+
+[nodes.core.char_is_in_taxi]
+title = "CharIsInTaxi"
+short_desc = "Returns true if the character is driving a taxi"
+
+[nodes.core.char_set_decision_maker]
+title = "CharSetDecisionMaker"
+short_desc = "Sets the decision maker for the character"
+
+[nodes.core.char_set_sense_range]
+title = "CharSetSenseRange"
+short_desc = "Sets the characters melee accuracy"
+
+[nodes.core.char_is_playing_anim]
+title = "CharIsPlayingAnim"
+short_desc = "Returns true if character is performing the specified animation"
+
+[nodes.core.char_set_anim_playing_flag]
+title = "CharSetAnimPlayingFlag"
+short_desc = "Sets whether the animation is playing"
+
+[nodes.core.char_get_anim_current_time]
+title = "CharGetAnimCurrentTime"
+short_desc = "Returns the progress of the animation on the actor, ranging from 0.0 to 1.0"
+
+[nodes.core.char_set_anim_current_time]
+title = "CharSetAnimCurrentTime"
+short_desc = "Sets how far through the animation the character is, with 1"
+
+[nodes.core.char_perform_sequence]
+title = "CharPerformSequence"
+short_desc = "Assigns the character to the specified action sequence"
+
+[nodes.core.char_set_collision]
+title = "CharSetCollision"
+short_desc = "Sets whether collision detection is enabled for the character"
+
+[nodes.core.char_get_anim_total_time]
+title = "CharGetAnimTotalTime"
+short_desc = "Returns a float of the length of the animation in milliseconds"
+
+[nodes.core.char_create_at_attractor]
+title = "CharCreateAtAttractor"
+
+[nodes.core.char_get_script_task_status]
+title = "CharGetScriptTaskStatus"
+short_desc = "Returns the status of the specified script task of the character"
+
+[nodes.core.char_is_at_scripted_attractor]
+title = "CharIsAtScriptedAttractor"
+
+[nodes.core.char_get_sequence_progress]
+title = "CharGetSequenceProgress"
+short_desc = "Gets the characters task sequence progress, as started by 0618"
+
+[nodes.core.char_clear_look_at]
+title = "CharClearLookAt"
+short_desc = "Clears the actor's look task, making them stop looking at whatever they were assigned to look at"
+
+[nodes.core.char_set_follow_node_threshold_distance]
+title = "CharSetFollowNodeThresholdDistance"
+short_desc = "Sets the range within which the char responds to events"
+
+[nodes.core.char_get_model]
+title = "CharGetModel"
+short_desc = "Returns the characters model"
+
+[nodes.core.char_clear_tasks]
+title = "CharClearTasks"
+short_desc = "Clears the char's task, making them quit whatever they were doing"
+
+[nodes.core.char_attach_to_bike]
+title = "CharAttachToBike"
+
+[nodes.core.char_hide_weapon_for_scripted_cutscene]
+title = "CharHideWeaponForScriptedCutscene"
+short_desc = "Hides all of the specified actor's weapons"
+
+[nodes.core.char_get_speed]
+title = "CharGetSpeed"
+short_desc = "Returns the actor's movement speed"
+
+[nodes.core.char_remove_from_group]
+title = "CharRemoveFromGroup"
+short_desc = "Removes the character from their current group"
+
+[nodes.core.char_is_group_member]
+title = "CharIsGroupMember"
+short_desc = "Returns true if the character is a member of the specified group"
+
+[nodes.core.char_is_group_leader]
+title = "CharIsGroupLeader"
+short_desc = "Returns true if the character is the leader of the specified group"
+
+[nodes.core.char_is_near_any_chars]
+title = "CharIsNearAnyChars"
+short_desc = "Returns true if any characters are within range of the character"
+
+[nodes.core.char_drop_object]
+title = "CharDropObject"
+
+[nodes.core.char_is_holding_object]
+title = "CharIsHoldingObject"
+short_desc = "Returns true if the actor is lifting the specified object"
+
+[nodes.core.char_has_been_arrested]
+title = "CharHasBeenArrested"
+short_desc = "Returns true if the character has been arrested"
+
+[nodes.core.char_set_inform_respected_friends]
+title = "CharSetInformRespectedFriends"
+
+[nodes.core.char_is_responding_to_event]
+title = "CharIsRespondingToEvent"
+short_desc = "Returns true if the character is responding to the specified ped event"
+
+[nodes.core.char_set_is_target_priority]
+title = "CharSetIsTargetPriority"
+short_desc = "Causes the auto aim to be more likely to target the specified actor than actors without this flag"
+
+[nodes.core.char_set_relationship]
+title = "CharSetRelationship"
+
+[nodes.core.char_clear_relationship]
+title = "CharClearRelationship"
+
+[nodes.core.char_clear_all_relationships]
+title = "CharClearAllRelationships"
+
+[nodes.core.char_clear_tasks_immediately]
+title = "CharClearTasksImmediately"
+short_desc = "Clears all the characters tasks immediately, resetting the character to an idle state"
+
+[nodes.core.char_perform_sequence_from_progress]
+title = "CharPerformSequenceFromProgress"
+
+[nodes.core.char_set_next_desired_move_state]
+title = "CharSetNextDesiredMoveState"
+short_desc = "Sets how the character chooses to go to their destination in the next task without a parameter specifying this"
+
+[nodes.core.char_get_sequence_progress_recursive]
+title = "CharGetSequenceProgressRecursive"
+
+[nodes.core.char_is_in_any_searchlight]
+title = "CharIsInAnySearchlight"
+short_desc = "Returns the handle for the searchlight that's targeting the character"
+
+[nodes.core.char_listen_to_player_group_commands]
+title = "CharListenToPlayerGroupCommands"
+
+[nodes.core.char_set_shoot_rate]
+title = "CharSetShootRate"
+short_desc = "Sets the attack rate of the actor"
+
+[nodes.core.char_give_melee_attack]
+title = "CharGiveMeleeAttack"
+short_desc = "Sets the specified characters fighting style and moves"
+
+[nodes.core.char_get_highest_priority_event]
+title = "CharGetHighestPriorityEvent"
+short_desc = "Gets the characters active ped event"
+
+[nodes.core.char_get_car_is_using]
+title = "CharGetCarIsUsing"
+short_desc = "Stores a handle for the vehicle the character is in or entering (alts: 00D9,03C0,0484)"
+
+[nodes.core.char_set_kinda_stay_in_same_place]
+title = "CharSetKindaStayInSamePlace"
+short_desc = "Sets whether the character shouldn't chase their victim far (to attempt a melee attack or get in weapon range)"
+
+[nodes.core.char_is_in_air]
+title = "CharIsInAir"
+short_desc = "Returns true if the character is in the air"
+
+[nodes.core.char_get_height_above_ground]
+title = "CharGetHeightAboveGround"
+short_desc = "Returns the actor's distance from ground"
+
+[nodes.core.char_set_weapon_skill]
+title = "CharSetWeaponSkill"
+short_desc = "Sets the characters weapon accuracy"
+
+[nodes.core.char_set_velocity]
+title = "CharSetVelocity"
+short_desc = "Sets the characters velocity"
+
+[nodes.core.char_get_velocity]
+title = "CharGetVelocity"
+short_desc = "Gets the characters velocity"
+
+[nodes.core.char_set_rotation]
+title = "CharSetRotation"
+short_desc = "Sets the characters rotation"
+
+[nodes.core.char_damage]
+title = "CharDamage"
+short_desc = "Decreases the characters health"
+
+[nodes.core.char_set_allowed_to_duck]
+title = "CharSetAllowedToDuck"
+short_desc = "Sets whether the character can crouch"
+
+[nodes.core.char_set_area_visible]
+title = "CharSetAreaVisible"
+short_desc = "Sets the interior that the char is in"
+
+[nodes.core.char_set_drops_weapons_when_dead]
+title = "CharSetDropsWeaponsWhenDead"
+short_desc = "Sets whether the character will drop any of their weapons when they die"
+
+[nodes.core.char_set_never_leaves_group]
+title = "CharSetNeverLeavesGroup"
+short_desc = "Prevents the character from leaving their group"
+
+[nodes.core.char_set_heading_limit_for_attached]
+title = "CharSetHeadingLimitForAttached"
+short_desc = "Sets the heading limit for a character attached to an object or vehicle"
+
+[nodes.core.char_get_coordinates_of_died]
+title = "CharGetCoordinatesOfDied"
+
+[nodes.core.char_get_ped_type]
+title = "CharGetPedType"
+short_desc = "Gets the ped type of the character"
+
+[nodes.core.char_set_has_used_entry_exit]
+title = "CharSetHasUsedEntryExit"
+short_desc = "Locates the entry/exit marker in the specified radius of the specified coordinates and links it to the character, also setting the appropriate interior ID for the character and setting the appropriate sky color if the character is player-controlled"
+
+[nodes.core.char_set_max_health]
+title = "CharSetMaxHealth"
+short_desc = "Sets the characters max health"
+
+[nodes.core.char_set_can_be_knocked_off_bike]
+title = "CharSetCanBeKnockedOffBike"
+short_desc = "Sets whether the character always stays on bike in collisions"
+
+[nodes.core.char_set_coordinates_dont_warp_gang]
+title = "CharSetCoordinatesDontWarpGang"
+short_desc = "Sets the character's coordinates without warping the rest of their group"
+
+[nodes.core.char_set_bulletproof_vest]
+title = "CharSetBulletproofVest"
+short_desc = "Specifies that the character should only use upper-body damage animations, meaning they can still run if shot in the legs etc"
+
+[nodes.core.char_set_uses_upperbody_damage_anims_only]
+title = "CharSetUsesUpperbodyDamageAnimsOnly"
+
+[nodes.core.char_set_say_context]
+title = "CharSetSayContext"
+short_desc = "Works similar to 05C1, but returns which phrase was spoken and is not run as a task"
+
+[nodes.core.char_get_name_of_entry_exit_used]
+title = "CharGetNameOfEntryExitUsed"
+short_desc = "Gets the name of the characters interior"
+
+[nodes.core.char_get_position_of_entry_exit_char_used]
+title = "CharGetPositionOfEntryExitCharUsed"
+short_desc = "Returns the coordinates and heading of the entry (enex) marker the character used to get to the current interior"
+
+[nodes.core.char_is_talking]
+title = "CharIsTalking"
+short_desc = "Returns true if the character is playing any speech"
+
+[nodes.core.char_disable_speech]
+title = "CharDisableSpeech"
+short_desc = "Prevents any character speech from playing"
+
+[nodes.core.char_enable_speech]
+title = "CharEnableSpeech"
+short_desc = "Enables pain audio if it was disabled using 094E"
+
+[nodes.core.char_is_stuck_under_car]
+title = "CharIsStuckUnderCar"
+short_desc = "Returns true if the actor is stuck under a car"
+
+[nodes.core.char_set_keep_task]
+title = "CharSetKeepTask"
+short_desc = "Sets whether the character should keep their tasks after mission cleanup (basically cleanup will be skipped for this character)"
+
+[nodes.core.char_is_swimming]
+title = "CharIsSwimming"
+
+[nodes.core.char_get_swim_state]
+title = "CharGetSwimState"
+
+[nodes.core.char_start_facial_talk]
+title = "CharStartFacialTalk"
+short_desc = "Makes a character move their mouth as if they were talking"
+
+[nodes.core.char_stop_facial_talk]
+title = "CharStopFacialTalk"
+short_desc = "Stops the character moving their mouth as if they were talking"
+
+[nodes.core.char_set_coordinates_no_offset]
+title = "CharSetCoordinatesNoOffset"
+short_desc = "Puts the characters at the coordinates by the center of body instead of the feet"
+
+[nodes.core.char_set_force_die_in_car]
+title = "CharSetForceDieInCar"
+short_desc = "Makes a character remain in the car upon death"
+
+[nodes.core.char_drop_second_object]
+title = "CharDropSecondObject"
+
+[nodes.core.char_set_drugged_up]
+title = "CharSetDruggedUp"
+
+[nodes.core.char_is_head_missing]
+title = "CharIsHeadMissing"
+short_desc = "Returns true if the character has had its head shot off"
+
+[nodes.core.char_is_in_any_train]
+title = "CharIsInAnyTrain"
+short_desc = "Returns true if the specified character is in a train"
+
+[nodes.core.char_set_signal_after_kill]
+title = "CharSetSignalAfterKill"
+short_desc = "Sets whether the character signals after killing"
+
+[nodes.core.char_set_wanted_by_police]
+title = "CharSetWantedByPolice"
+short_desc = "Sets whether police should chase the character"
+
+[nodes.core.char_set_coordinates_dont_warp_gang_no_offset]
+title = "CharSetCoordinatesDontWarpGangNoOffset"
+short_desc = "This command is a combination of 0972 and 08C7"
+
+[nodes.core.char_is_using_map_attractor]
+title = "CharIsUsingMapAttractor"
+short_desc = "Returns true if the character is using a map attractor"
+
+[nodes.core.char_remove_from_car_maintain_position]
+title = "CharRemoveFromCarMaintainPosition"
+short_desc = "Removes the character from the vehicle"
+
+[nodes.core.char_set_say_context_important]
+title = "CharSetSayContextImportant"
+
+[nodes.core.char_set_say_script]
+title = "CharSetSayScript"
+
+[nodes.core.char_is_getting_in_to_a_car]
+title = "CharIsGettingInToACar"
+short_desc = "Returns true if the character is entering a car, but is not in the car"
+
+[nodes.core.char_get_area_visible]
+title = "CharGetAreaVisible"
+short_desc = "Returns the interior ID that the character is in"
+
+[nodes.core.char_has_spotted_char_in_front]
+title = "CharHasSpottedCharInFront"
+short_desc = "Returns true if the character can see the other character in front of them"
+
+[nodes.core.char_ignore_height_difference_following_nodes]
+title = "CharIgnoreHeightDifferenceFollowingNodes"
+
+[nodes.core.char_set_get_out_upside_down_car]
+title = "CharSetGetOutUpsideDownCar"
+short_desc = "Controls whether the character will try to exit an upside-down car until it is on fire"
+
+[nodes.core.char_shut_up_for_scripted_speech]
+title = "CharShutUpForScriptedSpeech"
+short_desc = "Works similar to 0489, but mutes more things, including ambient speeches (needs confirming)"
+
+[nodes.core.char_is_touching_char]
+title = "CharIsTouchingChar"
+short_desc = "Returns true if the character is touching the other character"
+
+[nodes.core.char_set_death_weapons_persist]
+title = "CharSetDeathWeaponsPersist"
+short_desc = "Prevents pickups, which are created when this character dies, from disappearing until picked up by the player"
+
+[nodes.core.char_set_swim_speed]
+title = "CharSetSwimSpeed"
+short_desc = "Sets the speed that the character swims at, changing their swimming animation speed"
+
+[nodes.core.char_is_attached_to_any_car]
+title = "CharIsAttachedToAnyCar"
+short_desc = "Returns true if the actor is turreted on any vehicle"
+
+[nodes.core.char_store_car_is_attached_to_no_save]
+title = "CharStoreCarIsAttachedToNoSave"
+short_desc = "Returns the vehicle the character is attached to"
+
+[nodes.core.char_store_closest_entities]
+title = "CharStoreClosestEntities"
+short_desc = "Stores the handles of a vehicle and ped closest to the char or -1 otherwise"
+
+[nodes.core.car_create]
+title = "CarCreate"
+short_desc = "Creates a vehicle at the specified location, with the specified model"
+
+[nodes.core.car_delete]
+title = "CarDelete"
+short_desc = "Removes the vehicle from the game"
+
+[nodes.core.car_goto_coordinates]
+title = "CarGotoCoordinates"
+short_desc = "Makes the AI drive to the specified location by any means"
+
+[nodes.core.car_wander_randomly]
+title = "CarWanderRandomly"
+short_desc = "Clears any current tasks the vehicle has and makes it drive around aimlessly"
+
+[nodes.core.car_set_idle]
+title = "CarSetIdle"
+short_desc = "Sets the car's mission to idle (MISSION_NONE), stopping any driving activity"
+
+[nodes.core.car_get_coordinates]
+title = "CarGetCoordinates"
+short_desc = "Returns the vehicle's coordinates"
+
+[nodes.core.car_set_coordinates]
+title = "CarSetCoordinates"
+short_desc = "Puts the vehicle at the specified location"
+
+[nodes.core.car_set_cruise_speed]
+title = "CarSetCruiseSpeed"
+short_desc = "Sets the vehicle's max speed"
+
+[nodes.core.car_set_driving_style]
+title = "CarSetDrivingStyle"
+short_desc = "Sets the behavior of the vehicle's AI driver"
+
+[nodes.core.car_set_mission]
+title = "CarSetMission"
+short_desc = "Sets the mission of the vehicle's AI driver"
+
+[nodes.core.car_is_in_area2_d]
+title = "CarIsInArea2D"
+short_desc = "Returns true if the vehicle is located within the specified 2D area"
+
+[nodes.core.car_is_in_area3_d]
+title = "CarIsInArea3D"
+short_desc = "Returns true if the vehicle is located within the specified 3D area"
+
+[nodes.core.car_is_dead]
+title = "CarIsDead"
+short_desc = "Returns true if the handle is an invalid vehicle handle or the vehicle has been destroyed (wrecked)"
+
+[nodes.core.car_is_model]
+title = "CarIsModel"
+short_desc = "Returns true if the vehicle has the specified model"
+
+[nodes.core.car_get_heading]
+title = "CarGetHeading"
+short_desc = "Returns the vehicle's heading (z-angle)"
+
+[nodes.core.car_set_heading]
+title = "CarSetHeading"
+short_desc = "Sets the vehicle's heading (z-angle)"
+
+[nodes.core.car_is_health_greater]
+title = "CarIsHealthGreater"
+short_desc = "Returns true if the car's health is over the specified value"
+
+[nodes.core.car_is_stuck_on_roof]
+title = "CarIsStuckOnRoof"
+short_desc = "Returns true if the car has been upside down for more than 2 seconds (requires 0190)"
+
+[nodes.core.car_add_upsidedown_check]
+title = "CarAddUpsidedownCheck"
+short_desc = "Activates upside-down car check for the car"
+
+[nodes.core.car_remove_upsidedown_check]
+title = "CarRemoveUpsidedownCheck"
+short_desc = "Deactivates upside-down car check (0190) for the car"
+
+[nodes.core.car_is_stopped_in_area2_d]
+title = "CarIsStoppedInArea2D"
+
+[nodes.core.car_is_stopped_in_area3_d]
+title = "CarIsStoppedInArea3D"
+
+[nodes.core.car_locate2_d]
+title = "CarLocate2D"
+
+[nodes.core.car_locate_stopped2_d]
+title = "CarLocateStopped2D"
+
+[nodes.core.car_locate3_d]
+title = "CarLocate3D"
+
+[nodes.core.car_locate_stopped3_d]
+title = "CarLocateStopped3D"
+short_desc = "Returns true if the car is stopped in the radius of the specified point"
+
+[nodes.core.car_is_stopped]
+title = "CarIsStopped"
+short_desc = "Returns true if the vehicle is not moving"
+
+[nodes.core.car_mark_as_no_longer_needed]
+title = "CarMarkAsNoLongerNeeded"
+short_desc = "Allows the vehicle to be deleted by the game if necessary, and also removes it from the mission cleanup list, if applicable"
+
+[nodes.core.car_get_number_of_passengers]
+title = "CarGetNumberOfPassengers"
+short_desc = "Returns the number of passengers sitting in the car"
+
+[nodes.core.car_get_maximum_number_of_passengers]
+title = "CarGetMaximumNumberOfPassengers"
+short_desc = "Returns the maximum number of passengers that could sit in the car"
+
+[nodes.core.car_set_heavy]
+title = "CarSetHeavy"
+short_desc = "Sets whether the car is heavy"
+
+[nodes.core.car_is_in_air_proper]
+title = "CarIsInAirProper"
+short_desc = "Returns true if the vehicle is in the air"
+
+[nodes.core.car_is_upsidedown]
+title = "CarIsUpsidedown"
+short_desc = "Returns true if the car is upside down"
+
+[nodes.core.car_lock_doors]
+title = "CarLockDoors"
+short_desc = "Sets the locked status of the car's doors"
+
+[nodes.core.car_explode]
+title = "CarExplode"
+short_desc = "Makes the vehicle explode"
+
+[nodes.core.car_is_upright]
+title = "CarIsUpright"
+short_desc = "Returns true if the vehicle is in the normal position (upright)"
+
+[nodes.core.car_set_taxi_lights]
+title = "CarSetTaxiLights"
+short_desc = "Sets whether the taxi's roof light is on"
+
+[nodes.core.car_set_health]
+title = "CarSetHealth"
+short_desc = "Sets the vehicle's health"
+
+[nodes.core.car_get_health]
+title = "CarGetHealth"
+short_desc = "Returns the vehicle's health"
+
+[nodes.core.car_change_color]
+title = "CarChangeColor"
+short_desc = "Sets the car's primary and secondary colors"
+
+[nodes.core.car_arm_with_bomb]
+title = "CarArmWithBomb"
+short_desc = "Arms the vehicle with a bomb of the given type (In SA, this command only supports the mobile version)"
+
+[nodes.core.car_set_can_respray]
+title = "CarSetCanRespray"
+short_desc = "Enables or disables the ability to Pay'n'Spray the car"
+
+[nodes.core.car_set_only_damaged_by_player]
+title = "CarSetOnlyDamagedByPlayer"
+short_desc = "Makes a vehicle immune to everything except the player"
+
+[nodes.core.car_set_proofs]
+title = "CarSetProofs"
+short_desc = "Sets the vehicle's immunities"
+
+[nodes.core.car_is_in_water]
+title = "CarIsInWater"
+short_desc = "Returns true if the vehicle is submerged in water"
+
+[nodes.core.car_goto_coordinates_accurate]
+title = "CarGotoCoordinatesAccurate"
+short_desc = "Makes the AI drive to the specified location obeying the traffic rules"
+
+[nodes.core.car_is_on_screen]
+title = "CarIsOnScreen"
+short_desc = "Returns true if the car is visible"
+
+[nodes.core.car_get_speed]
+title = "CarGetSpeed"
+short_desc = "Gets the car's speed"
+
+[nodes.core.car_get_forward_x]
+title = "CarGetForwardX"
+short_desc = "Returns the X coord of the vehicle's angle"
+
+[nodes.core.car_get_forward_y]
+title = "CarGetForwardY"
+short_desc = "Returns the Y coord of the vehicle's angle"
+
+[nodes.core.car_has_been_damaged_by_weapon]
+title = "CarHasBeenDamagedByWeapon"
+short_desc = "Returns true if the vehicle has been hit by the specified weapon"
+
+[nodes.core.car_set_visible]
+title = "CarSetVisible"
+short_desc = "Sets whether the vehicle is visible or not"
+
+[nodes.core.car_switch_siren]
+title = "CarSwitchSiren"
+short_desc = "Sets whether the car's alarm can be activated"
+
+[nodes.core.car_set_watertight]
+title = "CarSetWatertight"
+short_desc = "Makes the vehicle watertight, meaning characters inside will not be harmed if the vehicle is submerged in water"
+
+[nodes.core.car_turn_to_face_coord]
+title = "CarTurnToFaceCoord"
+short_desc = "Sets the car's heading so that it is facing the 2D coordinate"
+
+[nodes.core.car_set_status]
+title = "CarSetStatus"
+short_desc = "Sets the car's status"
+
+[nodes.core.car_set_strong]
+title = "CarSetStrong"
+short_desc = "Defines whether the car is more resistant to collisions than normal"
+
+[nodes.core.car_is_visibly_damaged]
+title = "CarIsVisiblyDamaged"
+short_desc = "Returns true if any of the car components is visibly damaged or lost"
+
+[nodes.core.car_set_upsidedown_not_damaged]
+title = "CarSetUpsidedownNotDamaged"
+short_desc = "Disables the car from exploding when it is upside down, as long as the player is not in the vehicle"
+
+[nodes.core.car_get_colors]
+title = "CarGetColors"
+short_desc = "Gets the car's primary and secondary colors"
+
+[nodes.core.car_set_can_be_damaged]
+title = "CarSetCanBeDamaged"
+short_desc = "Sets whether the car receives damage"
+
+[nodes.core.car_get_offset_in_world_coords]
+title = "CarGetOffsetInWorldCoords"
+short_desc = "Returns the coordinates of an offset of the vehicle's position, depending on the vehicle's rotation"
+
+[nodes.core.car_set_traction]
+title = "CarSetTraction"
+short_desc = "Overrides the default vehicle traction value of 1.0"
+
+[nodes.core.car_set_avoid_level_transitions]
+title = "CarSetAvoidLevelTransitions"
+short_desc = "Sets whether the vehicle will avoid paths between levels (0426)"
+
+[nodes.core.car_is_passenger_seat_free]
+title = "CarIsPassengerSeatFree"
+short_desc = "Returns true if the specified car seat is empty"
+
+[nodes.core.car_get_char_in_passenger_seat]
+title = "CarGetCharInPassengerSeat"
+short_desc = "Returns the handle of a character sitting in the specified car seat"
+
+[nodes.core.car_get_model]
+title = "CarGetModel"
+short_desc = "Returns the car's model id"
+
+[nodes.core.car_set_stay_in_fast_lane]
+title = "CarSetStayInFastLane"
+
+[nodes.core.car_clear_last_weapon_damage]
+title = "CarClearLastWeaponDamage"
+short_desc = "Clears the vehicle's last weapon damage (see 031E)"
+
+[nodes.core.car_get_driver]
+title = "CarGetDriver"
+short_desc = "Returns the car's driver handle"
+
+[nodes.core.car_set_temp_action]
+title = "CarSetTempAction"
+short_desc = "Makes the AI driver perform the action in the vehicle for the specified period of time"
+
+[nodes.core.car_set_random_route_seed]
+title = "CarSetRandomRouteSeed"
+short_desc = "Sets the car on a specific route"
+
+[nodes.core.car_is_on_fire]
+title = "CarIsOnFire"
+short_desc = "Returns true if the car is burning"
+
+[nodes.core.car_is_tire_burst]
+title = "CarIsTireBurst"
+short_desc = "Returns true if a given tire on the car is deflated"
+
+[nodes.core.car_set_forward_speed]
+title = "CarSetForwardSpeed"
+short_desc = "Sets the speed of the car"
+
+[nodes.core.car_mark_as_convoy_car]
+title = "CarMarkAsConvoyCar"
+short_desc = "Marks the car as being part of a convoy, which seems to follow a path set by 0994"
+
+[nodes.core.car_set_straight_line_distance]
+title = "CarSetStraightLineDistance"
+short_desc = "Sets the minimum distance for the AI driver to start ignoring car paths and go straight to the target"
+
+[nodes.core.car_pop_boot]
+title = "CarPopBoot"
+short_desc = "Opens the car's trunk and keeps it open"
+
+[nodes.core.car_is_waiting_for_world_collision]
+title = "CarIsWaitingForWorldCollision"
+
+[nodes.core.car_burst_tire]
+title = "CarBurstTire"
+short_desc = "Deflates the car's tire"
+
+[nodes.core.car_set_model_components]
+title = "CarSetModelComponents"
+short_desc = "Sets the variation of the next car to be created"
+
+[nodes.core.car_close_all_doors]
+title = "CarCloseAllDoors"
+short_desc = "Closes all car doors, hoods and boots"
+
+[nodes.core.car_freeze_position]
+title = "CarFreezePosition"
+short_desc = "Locks the vehicle's position"
+
+[nodes.core.car_has_been_damaged_by_char]
+title = "CarHasBeenDamagedByChar"
+short_desc = "Returns true if the car has been damaged by the specified actor"
+
+[nodes.core.car_has_been_damaged_by_car]
+title = "CarHasBeenDamagedByCar"
+short_desc = "Returns true if the vehicle has been damaged by another specified vehicle"
+
+[nodes.core.car_set_can_burst_tires]
+title = "CarSetCanBurstTires"
+short_desc = "Sets whether the car's tires can be deflated"
+
+[nodes.core.car_clear_last_damage_entity]
+title = "CarClearLastDamageEntity"
+short_desc = "Clears the car's last damage entity"
+
+[nodes.core.car_does_exist]
+title = "CarDoesExist"
+short_desc = "Returns true if the handle is a valid vehicle handle"
+
+[nodes.core.car_freeze_position_and_dont_load_collision]
+title = "CarFreezePositionAndDontLoadCollision"
+short_desc = "Makes the car maintain its position"
+
+[nodes.core.car_set_load_collision_flag]
+title = "CarSetLoadCollisionFlag"
+
+[nodes.core.car_set_to_fade_in]
+title = "CarSetToFadeIn"
+short_desc = "Sets the alpha transparency of a distant vehicle"
+
+[nodes.core.car_start_playback]
+title = "CarStartPlayback"
+short_desc = "Assigns a car to a path"
+
+[nodes.core.car_stop_playback]
+title = "CarStopPlayback"
+short_desc = "Stops car from following path"
+
+[nodes.core.car_pause_playback]
+title = "CarPausePlayback"
+short_desc = "Freezes the car on its path"
+
+[nodes.core.car_unpause_playback]
+title = "CarUnpausePlayback"
+short_desc = "Unfreezes the vehicle on its path"
+
+[nodes.core.car_set_escort_car_left]
+title = "CarSetEscortCarLeft"
+short_desc = "Makes the vehicle stay on the other vehicle's left side, keeping parallel"
+
+[nodes.core.car_set_escort_car_right]
+title = "CarSetEscortCarRight"
+short_desc = "Makes the vehicle stay by the right side of the other vehicle, keeping parallel"
+
+[nodes.core.car_set_escort_car_rear]
+title = "CarSetEscortCarRear"
+short_desc = "Makes the vehicle stay behind the other car, keeping parallel"
+
+[nodes.core.car_set_escort_car_front]
+title = "CarSetEscortCarFront"
+short_desc = "Makes the vehicle stay in front of the other, keeping parallel"
+
+[nodes.core.car_is_playback_going_on]
+title = "CarIsPlaybackGoingOn"
+short_desc = "Returns true if the car is assigned to a path"
+
+[nodes.core.car_open_door]
+title = "CarOpenDoor"
+short_desc = "Opens the specified car door"
+
+[nodes.core.car_custom_plate_for_next_car]
+title = "CarCustomPlateForNextCar"
+short_desc = "Sets the numberplate of the next car to be spawned with the specified model"
+
+[nodes.core.car_force_lights]
+title = "CarForceLights"
+short_desc = "Sets an override for the car's lights"
+
+[nodes.core.car_attach_to_car]
+title = "CarAttachToCar"
+
+[nodes.core.car_detach]
+title = "CarDetach"
+
+[nodes.core.car_is_attached]
+title = "CarIsAttached"
+
+[nodes.core.car_pop_door]
+title = "CarPopDoor"
+short_desc = "Removes the specified car door component from the car"
+
+[nodes.core.car_fix_door]
+title = "CarFixDoor"
+short_desc = "Repairs the car door"
+
+[nodes.core.car_task_everyone_leave]
+title = "CarTaskEveryoneLeave"
+short_desc = "Makes all passengers of the car leave it"
+
+[nodes.core.car_pop_panel]
+title = "CarPopPanel"
+
+[nodes.core.car_fix_panel]
+title = "CarFixPanel"
+
+[nodes.core.car_fix_tire]
+title = "CarFixTire"
+short_desc = "Repairs a car's tire"
+
+[nodes.core.car_get_speed_vector]
+title = "CarGetSpeedVector"
+
+[nodes.core.car_get_mass]
+title = "CarGetMass"
+short_desc = "Returns the vehicle's mass"
+
+[nodes.core.car_get_roll]
+title = "CarGetRoll"
+short_desc = "Returns the Y Angle of the vehicle"
+
+[nodes.core.car_skip_to_end_and_stop_playback]
+title = "CarSkipToEndAndStopPlayback"
+
+[nodes.core.car_get_available_mod]
+title = "CarGetAvailableMod"
+short_desc = "Returns a model id available for the vehicle's mod slot, or -1 otherwise"
+
+[nodes.core.car_add_mod]
+title = "CarAddMod"
+short_desc = "Adds a new mod with the model to the vehicle"
+
+[nodes.core.car_remove_mod]
+title = "CarRemoveMod"
+short_desc = "Removes the vehicle's mod with the specified model"
+
+[nodes.core.car_get_num_available_paintjobs]
+title = "CarGetNumAvailablePaintjobs"
+short_desc = "Gets the number of possible paintjobs that can be applied to the car"
+
+[nodes.core.car_give_paintjob]
+title = "CarGivePaintjob"
+short_desc = "Sets the car's paintjob"
+
+[nodes.core.car_does_have_stuck_car_check]
+title = "CarDoesHaveStuckCarCheck"
+short_desc = "Returns true if the car has car stuck check enabled"
+
+[nodes.core.car_set_playback_speed]
+title = "CarSetPlaybackSpeed"
+short_desc = "Sets the playback speed of the car playing a car recording"
+
+[nodes.core.car_goto_coordinates_racing]
+title = "CarGotoCoordinatesRacing"
+short_desc = "Makes the AI drive to the destination as fast as possible, trying to overtake other vehicles"
+
+[nodes.core.car_start_playback_using_ai]
+title = "CarStartPlaybackUsingAi"
+short_desc = "Starts the playback of a recorded car with driver AI enabled"
+
+[nodes.core.car_skip_in_playback]
+title = "CarSkipInPlayback"
+short_desc = "Advances the recorded car playback by the specified amount"
+
+[nodes.core.car_explode_in_cutscene]
+title = "CarExplodeInCutscene"
+short_desc = "Makes the vehicle explode without affecting its surroundings"
+
+[nodes.core.car_set_stay_in_slow_lane]
+title = "CarSetStayInSlowLane"
+
+[nodes.core.car_damage_panel]
+title = "CarDamagePanel"
+short_desc = "Damages a panel on the car"
+
+[nodes.core.car_set_roll]
+title = "CarSetRoll"
+short_desc = "Sets the Y Angle of the vehicle to the specified value"
+
+[nodes.core.car_set_can_go_against_traffic]
+title = "CarSetCanGoAgainstTraffic"
+short_desc = "Sets whether the vehicle will drive the wrong way on roads"
+
+[nodes.core.car_damage_door]
+title = "CarDamageDoor"
+short_desc = "Damages a component on the vehicle"
+
+[nodes.core.car_set_as_mission_car]
+title = "CarSetAsMissionCar"
+short_desc = "Sets the script as the owner of the vehicle and adds it to the mission cleanup list"
+
+[nodes.core.car_get_pitch]
+title = "CarGetPitch"
+short_desc = "Returns the X Angle of the vehicle"
+
+[nodes.core.car_get_quaternion]
+title = "CarGetQuaternion"
+short_desc = "Gets the quaternion values of the car"
+
+[nodes.core.car_set_quaternion]
+title = "CarSetQuaternion"
+short_desc = "Sets the rotation of a vehicle using quaternion values"
+
+[nodes.core.car_apply_force]
+title = "CarApplyForce"
+
+[nodes.core.car_add_to_rotation_velocity]
+title = "CarAddToRotationVelocity"
+
+[nodes.core.car_set_rotation_velocity]
+title = "CarSetRotationVelocity"
+
+[nodes.core.car_set_always_create_skids]
+title = "CarSetAlwaysCreateSkids"
+
+[nodes.core.car_control_hydraulics]
+title = "CarControlHydraulics"
+
+[nodes.core.car_set_follow_car]
+title = "CarSetFollowCar"
+
+[nodes.core.car_set_hydraulics]
+title = "CarSetHydraulics"
+short_desc = "Enables hydraulic suspension on the car"
+
+[nodes.core.car_does_have_hydraulics]
+title = "CarDoesHaveHydraulics"
+short_desc = "Returns true if the car has hydraulics installed"
+
+[nodes.core.car_set_engine_broken]
+title = "CarSetEngineBroken"
+short_desc = "Sets whether the car's engine is broken"
+
+[nodes.core.car_get_upright_value]
+title = "CarGetUprightValue"
+short_desc = "Gets the car's vertical angle"
+
+[nodes.core.car_set_area_visible]
+title = "CarSetAreaVisible"
+
+[nodes.core.car_select_weapons]
+title = "CarSelectWeapons"
+short_desc = "Sets the vehicle to use its secondary guns"
+
+[nodes.core.car_set_can_be_targeted]
+title = "CarSetCanBeTargeted"
+short_desc = "Sets whether the vehicle can be targeted"
+
+[nodes.core.car_set_can_be_visibly_damaged]
+title = "CarSetCanBeVisiblyDamaged"
+short_desc = "Sets whether the vehicle can be visibly damaged"
+
+[nodes.core.car_start_playback_looped]
+title = "CarStartPlaybackLooped"
+short_desc = "Starts looped playback of a recorded car path"
+
+[nodes.core.car_set_dirt_level]
+title = "CarSetDirtLevel"
+short_desc = "Sets the dirt level of the car"
+
+[nodes.core.car_set_air_resistance_multiplier]
+title = "CarSetAirResistanceMultiplier"
+short_desc = "Sets the air resistance for the vehicle"
+
+[nodes.core.car_set_coordinates_no_offset]
+title = "CarSetCoordinatesNoOffset"
+short_desc = "Sets the vehicle coordinates without applying offsets to account for the height of the vehicle"
+
+[nodes.core.car_is_touching_object]
+title = "CarIsTouchingObject"
+short_desc = "Returns true if the vehicle is in contact with the object"
+
+[nodes.core.car_control_movable_part]
+title = "CarControlMovablePart"
+short_desc = "Sets the angle of a vehicle's extra"
+
+[nodes.core.car_winch_can_pick_up]
+title = "CarWinchCanPickUp"
+short_desc = "Sets whether the vehicle can be picked up using the magnocrane"
+
+[nodes.core.car_open_door_a_bit]
+title = "CarOpenDoorABit"
+short_desc = "Sets the angle of a car door"
+
+[nodes.core.car_is_door_fully_open]
+title = "CarIsDoorFullyOpen"
+
+[nodes.core.car_explode_in_cutscene_shake_and_bits]
+title = "CarExplodeInCutsceneShakeAndBits"
+short_desc = "Causes the vehicle to explode, without damage to surrounding entities"
+
+[nodes.core.car_get_class]
+title = "CarGetClass"
+short_desc = "Returns the vehicle's class as defined in vehicles.ide"
+
+[nodes.core.car_can_be_targeted_by_hs_missile]
+title = "CarCanBeTargetedByHsMissile"
+short_desc = "Sets whether the player can target this vehicle with a heatseeking rocket launcher"
+
+[nodes.core.car_set_freebies]
+title = "CarSetFreebies"
+short_desc = "Sets whether the player can receive items from this vehicle, such as shotgun ammo from a police car and cash from a taxi"
+
+[nodes.core.car_set_engine_on]
+title = "CarSetEngineOn"
+short_desc = "Sets whether the vehicle's engine is turned on or off"
+
+[nodes.core.car_set_lights_on]
+title = "CarSetLightsOn"
+short_desc = "Sets whether the vehicle's lights are on"
+
+[nodes.core.car_attach_to_object]
+title = "CarAttachToObject"
+short_desc = "Attaches the car to object with offset and rotation"
+
+[nodes.core.car_does_provide_cover]
+title = "CarDoesProvideCover"
+short_desc = "Sets whether characters in combat will choose to use the vehicle as cover from gunfire"
+
+[nodes.core.car_control_door]
+title = "CarControlDoor"
+short_desc = "Sets the car's door angle and latch state"
+
+[nodes.core.car_get_door_angle_ratio]
+title = "CarGetDoorAngleRatio"
+short_desc = "Gets the specified car doors angle, relative to the hinge"
+
+[nodes.core.car_is_big]
+title = "CarIsBig"
+short_desc = "Returns true if the specified vehicle has the 'is big' flag set in vehicles"
+
+[nodes.core.car_store_mod_state]
+title = "CarStoreModState"
+
+[nodes.core.car_restore_mod_state]
+title = "CarRestoreModState"
+
+[nodes.core.car_get_current_mod]
+title = "CarGetCurrentMod"
+short_desc = "Returns the model of the component installed on the specified slot of the vehicle, or -1 otherwise"
+
+[nodes.core.car_is_low_rider]
+title = "CarIsLowRider"
+short_desc = "Returns true if the vehicle is a low rider"
+
+[nodes.core.car_is_street_racer]
+title = "CarIsStreetRacer"
+short_desc = "Returns true if the vehicle is a street racer"
+
+[nodes.core.car_is_emergency_services]
+title = "CarIsEmergencyServices"
+
+[nodes.core.car_get_num_colors]
+title = "CarGetNumColors"
+
+[nodes.core.car_get_blocking_car]
+title = "CarGetBlockingCar"
+short_desc = "Returns a handle of the vehicle preventing this car from getting to its destination"
+
+[nodes.core.car_get_current_paintjob]
+title = "CarGetCurrentPaintjob"
+short_desc = "Gets the car's paintjob"
+
+[nodes.core.car_get_moving_component_offset]
+title = "CarGetMovingComponentOffset"
+short_desc = "Sets the angle of a vehicle's extra"
+
+[nodes.core.car_set_collision]
+title = "CarSetCollision"
+
+[nodes.core.car_change_playback_to_use_ai]
+title = "CarChangePlaybackToUseAi"
+short_desc = "Changes vehicle control from playback to AI driven"
+
+[nodes.core.car_random_passenger_say]
+title = "CarRandomPassengerSay"
+short_desc = "Makes a passenger in the vehicle speak from an ambient speech ID, if one exists for the character"
+
+[nodes.core.car_set_is_considered_by_player]
+title = "CarSetIsConsideredByPlayer"
+
+[nodes.core.car_get_door_lock_status]
+title = "CarGetDoorLockStatus"
+short_desc = "Returns the door lock mode of the vehicle"
+
+[nodes.core.car_is_door_damaged]
+title = "CarIsDoorDamaged"
+short_desc = "Returns true if the specified vehicle part is visibly damaged"
+
+[nodes.core.car_set_petrol_tank_weakpoint]
+title = "CarSetPetrolTankWeakpoint"
+short_desc = "Sets whether the car can be blown up by shooting at the petrol tank"
+
+[nodes.core.car_is_touching_car]
+title = "CarIsTouchingCar"
+short_desc = "Returns true if the car is touching the other car"
+
+[nodes.core.car_is_on_all_wheels]
+title = "CarIsOnAllWheels"
+short_desc = "Returns true if all the vehicle's wheels are touching the ground"
+
+[nodes.core.car_get_model_value]
+title = "CarGetModelValue"
+short_desc = "Returns the value of the specified car model"
+
+[nodes.core.car_give_non_player_nitro]
+title = "CarGiveNonPlayerNitro"
+short_desc = "Makes the car have one nitro"
+
+[nodes.core.car_reset_hydraulics]
+title = "CarResetHydraulics"
+short_desc = "This resets all the hydraulics on the car, making it \"sit\""
+
+[nodes.core.car_set_extra_colors]
+title = "CarSetExtraColors"
+short_desc = "Sets the car extra colors"
+
+[nodes.core.car_get_extra_colors]
+title = "CarGetExtraColors"
+short_desc = "Returns the car extra colors (0A11)"
+
+[nodes.core.car_has_been_resprayed]
+title = "CarHasBeenResprayed"
+short_desc = "Returns true if the vehicle was resprayed in the last frame"
+
+[nodes.core.car_improve_by_cheating]
+title = "CarImproveByCheating"
+short_desc = "Sets whether a ped driven vehicle's handling is affected by the 'perfect handling' cheat"
+
+[nodes.core.car_fix]
+title = "CarFix"
+short_desc = "Restores the vehicle to full health and removes the damage"
+
+[nodes.core.car_get_number_of_gears]
+title = "CarGetNumberOfGears"
+short_desc = "Gets the total number of gears of the vehicle and stores it to the variable"
+
+[nodes.core.car_get_current_gear]
+title = "CarGetCurrentGear"
+short_desc = "Returns the current gear of the vehicle"
+
+[nodes.core.car_is_siren_on]
+title = "CarIsSirenOn"
+
+[nodes.core.car_is_engine_on]
+title = "CarIsEngineOn"
+
+[nodes.core.car_cleo_set_engine_on]
+title = "CarCleoSetEngineOn"
+
+[nodes.core.text_print_big]
+title = "TextPrintBig"
+short_desc = "Displays a styled message for the specified time"
+
+[nodes.core.text_print]
+title = "TextPrint"
+short_desc = "Displays a message positioned on the bottom of the screen for the specified time"
+
+[nodes.core.text_print_now]
+title = "TextPrintNow"
+short_desc = "Displays a message positioned on the bottom of the screen for the specified time"
+
+[nodes.core.text_clear_prints]
+title = "TextClearPrints"
+short_desc = "Clears all priority text and some styles of big texts"
+
+[nodes.core.text_print_with_number_big]
+title = "TextPrintWithNumberBig"
+short_desc = "Displays a styled message in which the first string token~1~ is substituted with the specified number"
+
+[nodes.core.text_print_with_number]
+title = "TextPrintWithNumber"
+short_desc = "Displays a styled message in which the first string token ~1~ is substituted with the specified number"
+
+[nodes.core.text_print_with_number_now]
+title = "TextPrintWithNumberNow"
+short_desc = "Displays a styled message in which the first string token ~1~ is substituted with the specified number"
+
+[nodes.core.text_print_big_q]
+title = "TextPrintBigQ"
+short_desc = "Displays a low-priority styled message for the specified time"
+
+[nodes.core.text_print_with2_numbers_now]
+title = "TextPrintWith2NumbersNow"
+short_desc = "Displays a styled message in which the first two ~1~ tokens are substituted with the specified numbers"
+
+[nodes.core.text_print_with3_numbers]
+title = "TextPrintWith3Numbers"
+short_desc = "Displays a styled message in which the first three ~1~ tokens are substituted with the specified numbers"
+
+[nodes.core.text_print_with4_numbers]
+title = "TextPrintWith4Numbers"
+short_desc = "Displays a styled message in which the first four ~1~ tokens are substituted with the specified numbers"
+
+[nodes.core.text_print_with4_numbers_now]
+title = "TextPrintWith4NumbersNow"
+short_desc = "Displays a styled message in which the first four ~1~ tokens are substituted with the specified numbers"
+
+[nodes.core.text_print_with6_numbers]
+title = "TextPrintWith6Numbers"
+short_desc = "Displays a styled message in which the first six ~1~ tokens are substituted with the specified numbers"
+
+[nodes.core.text_display]
+title = "TextDisplay"
+short_desc = "Draws text at the specified on-screen position"
+
+[nodes.core.text_set_scale]
+title = "TextSetScale"
+short_desc = "Scales the width and height of the text letters"
+
+[nodes.core.text_set_color]
+title = "TextSetColor"
+short_desc = "Sets the color of the text letters"
+
+[nodes.core.text_set_justify]
+title = "TextSetJustify"
+short_desc = "Sets the text to be drawn justified, which means the text will wrap in order to fill an even rectangle of space"
+
+[nodes.core.text_set_center]
+title = "TextSetCenter"
+short_desc = "Centers the text"
+
+[nodes.core.text_set_wrap_x]
+title = "TextSetWrapX"
+short_desc = "Sets the line width of the text"
+
+[nodes.core.text_set_center_size]
+title = "TextSetCenterSize"
+short_desc = "Sets the line width of the centered text"
+
+[nodes.core.text_set_background]
+title = "TextSetBackground"
+short_desc = "Gives the text a background (0346)"
+
+[nodes.core.text_set_proportional]
+title = "TextSetProportional"
+short_desc = "Makes the text size proportionate"
+
+[nodes.core.text_set_font]
+title = "TextSetFont"
+short_desc = "Sets the text draw font"
+
+[nodes.core.text_print_with2_numbers_big]
+title = "TextPrintWith2NumbersBig"
+short_desc = "Displays a styled message in which the first two ~1~ tokens are substituted with the specified numbers"
+
+[nodes.core.text_print_string_in_string_now]
+title = "TextPrintStringInStringNow"
+short_desc = "Displays a styled message in which the first string token ~a~ is substituted with the specified text"
+
+[nodes.core.text_clear_this_print]
+title = "TextClearThisPrint"
+short_desc = "Removes the priority text from the screen"
+
+[nodes.core.text_clear_this_big_print]
+title = "TextClearThisBigPrint"
+short_desc = "Removes the styled text from the screen"
+
+[nodes.core.text_set_draw_before_fade]
+title = "TextSetDrawBeforeFade"
+short_desc = "Causes the next text to be drawn before the fade is drawn"
+
+[nodes.core.text_set_right_justify]
+title = "TextSetRightJustify"
+short_desc = "Sets the text draw to be aligned to the right"
+
+[nodes.core.text_print_help]
+title = "TextPrintHelp"
+short_desc = "Displays a black text box for a few seconds"
+
+[nodes.core.text_clear_help]
+title = "TextClearHelp"
+short_desc = "Removes the text box from the screen"
+
+[nodes.core.text_clear_small_prints]
+title = "TextClearSmallPrints"
+short_desc = "Clears small messages from the screen"
+
+[nodes.core.text_use_commands]
+title = "TextUseCommands"
+short_desc = "Enables text and texture drawing"
+
+[nodes.core.text_display_with_number]
+title = "TextDisplayWithNumber"
+short_desc = "Draws text with one number"
+
+[nodes.core.text_display_with2_numbers]
+title = "TextDisplayWith2Numbers"
+short_desc = "Draws text with two numbers"
+
+[nodes.core.text_print_help_forever]
+title = "TextPrintHelpForever"
+short_desc = "Shows a text box which stays on screen until it is removed by another command"
+
+[nodes.core.text_print_help_forever_with_number]
+title = "TextPrintHelpForeverWithNumber"
+short_desc = "Shows a text box with one number"
+
+[nodes.core.text_load_mission_text]
+title = "TextLoadMissionText"
+short_desc = "Makes the game use GXT Entries from the specified GXT Table"
+
+[nodes.core.text_set_dropshadow]
+title = "TextSetDropshadow"
+short_desc = "Sets shadow for the current text draw"
+
+[nodes.core.text_is_message_being_displayed]
+title = "TextIsMessageBeingDisplayed"
+short_desc = "Returns true if a priority GXT string is displayed on screen"
+
+[nodes.core.text_display_with_float]
+title = "TextDisplayWithFloat"
+short_desc = "Converts the float to two separate numbers to use in a 2-numbered GXT entry, and draws the text"
+
+[nodes.core.text_set_edge]
+title = "TextSetEdge"
+short_desc = "Adds an outline to the next text drawn using a text draw command"
+
+[nodes.core.text_is_empty]
+title = "TextIsEmpty"
+short_desc = "Returns true if the string is empty"
+
+[nodes.core.text_is_help_message_being_displayed]
+title = "TextIsHelpMessageBeingDisplayed"
+short_desc = "Returns true if any help message is being displayed"
+
+[nodes.core.text_set_message_formatting]
+title = "TextSetMessageFormatting"
+short_desc = "Overrides the position of the text on screen"
+
+[nodes.core.text_set_help_message_box_size]
+title = "TextSetHelpMessageBoxSize"
+short_desc = "Sets the global width of text boxes displayed on screen"
+
+[nodes.core.text_get_hash_key]
+title = "TextGetHashKey"
+short_desc = "Returns the CRC hash of the input string"
+
+[nodes.core.text_add_next_message_to_previous_briefs]
+title = "TextAddNextMessageToPreviousBriefs"
+short_desc = "Sets whether the next text is added to the brief in the menu"
+
+[nodes.core.text_get_string_width]
+title = "TextGetStringWidth"
+short_desc = "Gets the width of the GXT entry string"
+
+[nodes.core.text_get_string_width_with_number]
+title = "TextGetStringWidthWithNumber"
+short_desc = "Gets the width of the GXT entry string with the specified number"
+
+[nodes.core.text_clear_this_print_big_now]
+title = "TextClearThisPrintBigNow"
+short_desc = "Removes the print big text with the specified style from the screen"
+
+[nodes.core.text_set_area_name]
+title = "TextSetAreaName"
+short_desc = "Displays the text of the specified GXT entry using San Andreas' area name text style"
+
+[nodes.core.text_is_this_help_message_being_displayed]
+title = "TextIsThisHelpMessageBeingDisplayed"
+short_desc = "Returns true if a help message with the specified GXT entry is being displayed"
+
+[nodes.core.text_draw_subtitles_before_fade]
+title = "TextDrawSubtitlesBeforeFade"
+short_desc = "Sets whether the text stays on the screen when it fades out"
+
+[nodes.core.text_draw_oddjob_title_before_fade]
+title = "TextDrawOddjobTitleBeforeFade"
+short_desc = "Sets whether the styled text stays on the screen when it fades out"
+
+[nodes.core.text_display_non_minigame_help_messages]
+title = "TextDisplayNonMinigameHelpMessages"
+short_desc = "Overrides the text block set by 09BD"
+
+[nodes.core.text_print_help_string]
+title = "TextPrintHelpString"
+short_desc = "Displays a custom text (provided as a literal or an address) in a black box similarly to PRINT_HELP"
+
+[nodes.core.text_print_big_string]
+title = "TextPrintBigString"
+short_desc = "Displays a custom text (provided as a literal or an address) similarly to PRINT_BIG"
+
+[nodes.core.text_print_string]
+title = "TextPrintString"
+short_desc = "Displays a custom text (provided as a literal or an address) similarly to PRINT"
+
+[nodes.core.text_print_string_now]
+title = "TextPrintStringNow"
+short_desc = "Displays a custom text (provided as a literal or an address) similarly to PRINT_NOW"
+
+[nodes.core.text_print_help_formatted]
+title = "TextPrintHelpFormatted"
+short_desc = "Displays a black text box for a few seconds respecting the format of the String entered"
+
+[nodes.core.text_print_big_formatted]
+title = "TextPrintBigFormatted"
+short_desc = "Formats args according to the format string fmt, then displays it similarly to PRINT_BIG"
+
+[nodes.core.text_print_formatted]
+title = "TextPrintFormatted"
+short_desc = "Formats args according to the format string fmt, then displays it similarly to PRINT"
+
+[nodes.core.text_print_formatted_now]
+title = "TextPrintFormattedNow"
+short_desc = "Formats args according to the format string fmt, then displays it similarly to PRINT_NOW"
+
+[nodes.core.text_string_format]
+title = "TextStringFormat"
+short_desc = "Formats a text according to the format string and given arguments and writes it in the buffer"
+
+[nodes.core.text_scan_string]
+title = "TextScanString"
+short_desc = "Extracts data from a string using sscanf"
+
+[nodes.core.text_get_label_string]
+title = "TextGetLabelString"
+short_desc = "Returns the text associated with the GXT key"
+
+[nodes.core.text_add_label]
+title = "TextAddLabel"
+short_desc = "Adds or updates the text associated with the dynamic GXT key. It does nothing if the same key is defined in a FXT file"
+
+[nodes.core.text_remove_label]
+title = "TextRemoveLabel"
+short_desc = "Deletes the key and associated text created with ADD_TEXT_LABEL or defined in a FXT file"
+
+[nodes.core.text_string_float_format]
+title = "TextStringFloatFormat"
+
+[nodes.core.clock_get_time_of_day]
+title = "ClockGetTimeOfDay"
+short_desc = "Returns the number of hours and minutes passed since midnight"
+
+[nodes.core.clock_set_time_of_day]
+title = "ClockSetTimeOfDay"
+short_desc = "Sets the current in-game time"
+
+[nodes.core.clock_get_minutes_to_time_of_day]
+title = "ClockGetMinutesToTimeOfDay"
+short_desc = "Returns the number of minutes left until the clock matches the time specified"
+
+[nodes.core.clock_set_time_scale]
+title = "ClockSetTimeScale"
+short_desc = "Sets the game to run at the specified speed"
+
+[nodes.core.clock_get_game_timer]
+title = "ClockGetGameTimer"
+short_desc = "Returns the time passed in milliseconds since the game started"
+
+[nodes.core.clock_store]
+title = "ClockStore"
+short_desc = "Saves the current time in game"
+
+[nodes.core.clock_restore]
+title = "ClockRestore"
+short_desc = "Restores the game time to the time when it was saved with 0253"
+
+[nodes.core.clock_get_current_day_of_week]
+title = "ClockGetCurrentDayOfWeek"
+short_desc = "Returns an integer representation of the in-game day of the week"
+
+[nodes.core.clock_get_current_date]
+title = "ClockGetCurrentDate"
+short_desc = "Returns the in-game day of the month and month of the year"
+
+[nodes.core.clock_set_time_one_day_forward]
+title = "ClockSetTimeOneDayForward"
+short_desc = "Progresses the game to the next day"
+
+[nodes.core.pad_is_button_pressed]
+title = "PadIsButtonPressed"
+short_desc = "Returns true if the pad's button has been pressed"
+
+[nodes.core.pad_get_state]
+title = "PadGetState"
+short_desc = "Stores the status of the specified key into a variable"
+
+[nodes.core.pad_shake]
+title = "PadShake"
+short_desc = "Shakes the player's joypad at the specified intensity for the specified time"
+
+[nodes.core.pad_get_controller_mode]
+title = "PadGetControllerMode"
+short_desc = "Returns the controller mode"
+
+[nodes.core.pad_set_drunk_input_delay]
+title = "PadSetDrunkInputDelay"
+short_desc = "Affects the delay to the left and right steering while driving"
+
+[nodes.core.pad_get_position_of_analogue_sticks]
+title = "PadGetPositionOfAnalogueSticks"
+short_desc = "Returns the offset of the specified Left/Right, Up/Down, Look Left/Look Right and Look Up/Look Down keys"
+
+[nodes.core.pad_set_player_enter_car_button]
+title = "PadSetPlayerEnterCarButton"
+short_desc = "Sets whether the player can enter and exit vehicles"
+
+[nodes.core.pad_set_player_duck_button]
+title = "PadSetPlayerDuckButton"
+short_desc = "Sets whether the player can use the crouch button"
+
+[nodes.core.pad_set_player_fire_button]
+title = "PadSetPlayerFireButton"
+short_desc = "Sets whether the player is able to use weapons"
+
+[nodes.core.pad_is_skip_cutscene_button_pressed]
+title = "PadIsSkipCutsceneButtonPressed"
+short_desc = "Returns true if the player is pressing a key used to skip cutscenes or the game has been minimised"
+
+[nodes.core.pad_set_player_jump_button]
+title = "PadSetPlayerJumpButton"
+short_desc = "Sets whether the player can jump"
+
+[nodes.core.pad_set_player_display_vital_stats_button]
+title = "PadSetPlayerDisplayVitalStatsButton"
+short_desc = "Sets whether a player can use the ACTION key to display their stats"
+
+[nodes.core.pad_set_player_cycle_weapon_button]
+title = "PadSetPlayerCycleWeaponButton"
+
+[nodes.core.pad_is_key_pressed]
+title = "PadIsKeyPressed"
+short_desc = "Returns true if the player is pressing a keyboard button with the specified code"
+
+[nodes.core.pad_test_cheat]
+title = "PadTestCheat"
+short_desc = "Returns true if the specified string of letters has been typed on the keyboard"
+
+[nodes.core.object_create]
+title = "ObjectCreate"
+short_desc = "Creates an object at the specified location, with the specified model"
+
+[nodes.core.object_delete]
+title = "ObjectDelete"
+short_desc = "Destroys the object, freeing game memory"
+
+[nodes.core.object_get_heading]
+title = "ObjectGetHeading"
+short_desc = "Returns the object's heading (z-angle)"
+
+[nodes.core.object_set_heading]
+title = "ObjectSetHeading"
+short_desc = "Sets the object's heading (z-angle)"
+
+[nodes.core.object_get_coordinates]
+title = "ObjectGetCoordinates"
+short_desc = "Returns the object's coordinates"
+
+[nodes.core.object_set_coordinates]
+title = "ObjectSetCoordinates"
+short_desc = "Puts the object at the specified location"
+
+[nodes.core.object_mark_as_no_longer_needed]
+title = "ObjectMarkAsNoLongerNeeded"
+short_desc = "Allows the object to be deleted by the game if necessary, and also removes it from the mission cleanup list, if applicable"
+
+[nodes.core.object_dont_remove]
+title = "ObjectDontRemove"
+short_desc = "Removes the object from the mission cleanup list, preventing it from being deleted when the mission ends"
+
+[nodes.core.object_create_no_offset]
+title = "ObjectCreateNoOffset"
+short_desc = "Creates an object without offset at the location"
+
+[nodes.core.object_is_on_screen]
+title = "ObjectIsOnScreen"
+short_desc = "Returns true if the object is visible"
+
+[nodes.core.object_rotate]
+title = "ObjectRotate"
+short_desc = "Rotates the object from one angle to another, optionally accounting for a collision during the rotation"
+
+[nodes.core.object_slide]
+title = "ObjectSlide"
+short_desc = "Returns true if the object has finished moving"
+
+[nodes.core.object_place_relative_to_car]
+title = "ObjectPlaceRelativeToCar"
+short_desc = "Places the object at an offset from the car"
+
+[nodes.core.object_make_targetable]
+title = "ObjectMakeTargetable"
+short_desc = "Sets whether the object can be targeted (auto-aimed) or not"
+
+[nodes.core.object_has_been_damaged]
+title = "ObjectHasBeenDamaged"
+short_desc = "Returns true if the object is damaged"
+
+[nodes.core.object_set_velocity]
+title = "ObjectSetVelocity"
+short_desc = "Sets the object's velocity"
+
+[nodes.core.object_set_collision]
+title = "ObjectSetCollision"
+short_desc = "Sets the object's collision detection"
+
+[nodes.core.object_add_to_velocity]
+title = "ObjectAddToVelocity"
+short_desc = "Adds the given vector to the object's velocity (0381)"
+
+[nodes.core.object_set_dynamic]
+title = "ObjectSetDynamic"
+short_desc = "Defines whether or not the object is moveable"
+
+[nodes.core.object_does_exist]
+title = "ObjectDoesExist"
+short_desc = "Returns true if the handle is a valid object handle"
+
+[nodes.core.object_get_offset_in_world_coords]
+title = "ObjectGetOffsetInWorldCoords"
+short_desc = "Returns the object's coordinates with an offset"
+
+[nodes.core.object_set_draw_last]
+title = "ObjectSetDrawLast"
+short_desc = "Sets the specified object to always draw on top of other objects"
+
+[nodes.core.object_set_rotation]
+title = "ObjectSetRotation"
+short_desc = "Sets the object rotation along X, Y and Z axis"
+
+[nodes.core.object_set_records_collisions]
+title = "ObjectSetRecordsCollisions"
+short_desc = "Enables the use of collision checking for the object"
+
+[nodes.core.object_has_collided_with_anything]
+title = "ObjectHasCollidedWithAnything"
+short_desc = "Returns true if the object has collided"
+
+[nodes.core.object_locate2_d]
+title = "ObjectLocate2D"
+short_desc = "Returns true if the object is near the specified coordinates"
+
+[nodes.core.object_locate3_d]
+title = "ObjectLocate3D"
+short_desc = "Returns true if the object is near the specified point"
+
+[nodes.core.object_is_in_water]
+title = "ObjectIsInWater"
+short_desc = "Returns true if the object is in water"
+
+[nodes.core.object_is_in_area2_d]
+title = "ObjectIsInArea2D"
+short_desc = "Returns true if object is in the specified area"
+
+[nodes.core.object_is_in_area3_d]
+title = "ObjectIsInArea3D"
+short_desc = "Returns true if the object is in the specified area"
+
+[nodes.core.object_sort_out_collision_with_car]
+title = "ObjectSortOutCollisionWithCar"
+short_desc = "Makes the specified car have no collision with the specified object"
+
+[nodes.core.object_freeze_position]
+title = "ObjectFreezePosition"
+short_desc = "Sets whether the object's position remains unchanged"
+
+[nodes.core.object_set_area_visible]
+title = "ObjectSetAreaVisible"
+short_desc = "Sets the visibility of the object to the specified interior"
+
+[nodes.core.object_get_velocity]
+title = "ObjectGetVelocity"
+short_desc = "Returns the object's X, Y, and Z velocity"
+
+[nodes.core.object_add_to_rotation_velocity]
+title = "ObjectAddToRotationVelocity"
+short_desc = "Sets the object's rotation velocity from the center of its body"
+
+[nodes.core.object_set_rotation_velocity]
+title = "ObjectSetRotationVelocity"
+short_desc = "Sets the object's rotation velocity with frame sync applied?"
+
+[nodes.core.object_is_static]
+title = "ObjectIsStatic"
+short_desc = "Returns true if the object is not moving"
+
+[nodes.core.object_get_rotation_velocity]
+title = "ObjectGetRotationVelocity"
+
+[nodes.core.object_add_velocity_relative]
+title = "ObjectAddVelocityRelative"
+short_desc = "Sets the object's velocity"
+
+[nodes.core.object_get_speed]
+title = "ObjectGetSpeed"
+short_desc = "Gets the speed of the object"
+
+[nodes.core.object_set_render_scorched]
+title = "ObjectSetRenderScorched"
+short_desc = "Makes the object look like it has been burnt"
+
+[nodes.core.object_attach_to_car]
+title = "ObjectAttachToCar"
+
+[nodes.core.object_detach]
+title = "ObjectDetach"
+
+[nodes.core.object_is_attached]
+title = "ObjectIsAttached"
+
+[nodes.core.object_attach_to_object]
+title = "ObjectAttachToObject"
+
+[nodes.core.object_attach_to_char]
+title = "ObjectAttachToChar"
+
+[nodes.core.object_get_health]
+title = "ObjectGetHealth"
+
+[nodes.core.object_set_health]
+title = "ObjectSetHealth"
+
+[nodes.core.object_break]
+title = "ObjectBreak"
+short_desc = "Smashes the object to pieces"
+
+[nodes.core.object_set_visible]
+title = "ObjectSetVisible"
+short_desc = "Sets whether the object is visible"
+
+[nodes.core.object_play_anim]
+title = "ObjectPlayAnim"
+short_desc = "Plays an object animation"
+
+[nodes.core.object_get_rope_height]
+title = "ObjectGetRopeHeight"
+
+[nodes.core.object_set_rope_height]
+title = "ObjectSetRopeHeight"
+
+[nodes.core.object_grab_entity_on_rope]
+title = "ObjectGrabEntityOnRope"
+
+[nodes.core.object_release_entity_from_rope]
+title = "ObjectReleaseEntityFromRope"
+
+[nodes.core.object_get_quaternion]
+title = "ObjectGetQuaternion"
+short_desc = "Gets the object's quaternion"
+
+[nodes.core.object_set_quaternion]
+title = "ObjectSetQuaternion"
+short_desc = "Sets the object's quaternion"
+
+[nodes.core.object_set_collision_damage_effect]
+title = "ObjectSetCollisionDamageEffect"
+short_desc = "Sets whether the object can be destroyed or not"
+
+[nodes.core.object_get_level_design_coords]
+title = "ObjectGetLevelDesignCoords"
+
+[nodes.core.object_set_coordinates_and_velocity]
+title = "ObjectSetCoordinatesAndVelocity"
+short_desc = "Sets the object's coordinates without affecting the rotation"
+
+[nodes.core.object_connect_lods]
+title = "ObjectConnectLods"
+short_desc = "Sets which LOD object should show when the object is being viewed from far away"
+
+[nodes.core.object_has_been_photographed]
+title = "ObjectHasBeenPhotographed"
+short_desc = "Returns true if the object has been photographed"
+
+[nodes.core.object_set_anim_speed]
+title = "ObjectSetAnimSpeed"
+short_desc = "Sets the object's animation speed"
+
+[nodes.core.object_is_playing_anim]
+title = "ObjectIsPlayingAnim"
+short_desc = "Returns true if the object is playing the specified animation"
+
+[nodes.core.object_get_anim_current_time]
+title = "ObjectGetAnimCurrentTime"
+short_desc = "Gets the current progress of the object's animation"
+
+[nodes.core.object_set_anim_current_time]
+title = "ObjectSetAnimCurrentTime"
+short_desc = "Sets the progress of an animation, with 0"
+
+[nodes.core.object_set_only_damaged_by_player]
+title = "ObjectSetOnlyDamagedByPlayer"
+short_desc = "Makes the object damageable only by the player"
+
+[nodes.core.object_set_scale]
+title = "ObjectSetScale"
+short_desc = "Sets the scale of the object"
+
+[nodes.core.object_is_in_angled_area2_d]
+title = "ObjectIsInAngledArea2D"
+
+[nodes.core.object_is_in_angled_area3_d]
+title = "ObjectIsInAngledArea3D"
+
+[nodes.core.object_set_as_stealable]
+title = "ObjectSetAsStealable"
+short_desc = "Sets whether the object can be picked up and carried"
+
+[nodes.core.object_has_been_damaged_by_weapon]
+title = "ObjectHasBeenDamagedByWeapon"
+short_desc = "Returns true if the object has been damaged by the specified weapon or damage type"
+
+[nodes.core.object_clear_last_weapon_damage]
+title = "ObjectClearLastWeaponDamage"
+short_desc = "Clears the object's last damaging weapon ID"
+
+[nodes.core.object_lock_door]
+title = "ObjectLockDoor"
+short_desc = "Sets whether the door object is locked at its current rotation and allows it to be pushed open by entities once"
+
+[nodes.core.object_set_mass]
+title = "ObjectSetMass"
+short_desc = "Sets the object's mass"
+
+[nodes.core.object_get_mass]
+title = "ObjectGetMass"
+short_desc = "Returns the object's mass"
+
+[nodes.core.object_set_turn_mass]
+title = "ObjectSetTurnMass"
+short_desc = "Sets the object's turn mass"
+
+[nodes.core.object_get_turn_mass]
+title = "ObjectGetTurnMass"
+short_desc = "Returns the object's turn mass"
+
+[nodes.core.object_winch_can_pick_up]
+title = "ObjectWinchCanPickUp"
+short_desc = "Sets whether the object can be picked up with the magnocrane"
+
+[nodes.core.object_has_been_uprooted]
+title = "ObjectHasBeenUprooted"
+short_desc = "Returns true if the object has been made moveable by the 0392"
+
+[nodes.core.object_is_within_brain_activation_range]
+title = "ObjectIsWithinBrainActivationRange"
+short_desc = "Returns true if the object is within the external script trigger radius"
+
+[nodes.core.object_get_model]
+title = "ObjectGetModel"
+short_desc = "Returns the object's model index"
+
+[nodes.core.object_remove_elegantly]
+title = "ObjectRemoveElegantly"
+short_desc = "Fades the object out of existence, freeing game memory"
+
+[nodes.core.object_set_proofs]
+title = "ObjectSetProofs"
+short_desc = "Sets what immunities the object has"
+
+[nodes.core.object_does_have_this_model]
+title = "ObjectDoesHaveThisModel"
+short_desc = "Returns true if the object's model is the model specified"
+
+[nodes.core.object_is_intersecting_world]
+title = "ObjectIsIntersectingWorld"
+short_desc = "Appears to return true if something had entered the object's position since it was created or its position was changed"
+
+[nodes.core.object_enable_disabled_attractors]
+title = "ObjectEnableDisabledAttractors"
+short_desc = "Sets whether the object attracts spawned peds to interact with it"
+
+[nodes.core.hud_display_timer]
+title = "HudDisplayTimer"
+short_desc = "Creates a countdown or countup onscreen timer"
+
+[nodes.core.hud_clear_timer]
+title = "HudClearTimer"
+short_desc = "Removes the onscreen timer"
+
+[nodes.core.hud_clear_counter]
+title = "HudClearCounter"
+short_desc = "Removes the onscreen counter (0150 or 03C4)"
+
+[nodes.core.hud_switch_widescreen]
+title = "HudSwitchWidescreen"
+short_desc = "Enables widescreen"
+
+[nodes.core.hud_draw_sprite]
+title = "HudDrawSprite"
+short_desc = "Draws a loaded texture (038F) at the specified on-screen X and Y coordinates, with the specified size and RGBA color"
+
+[nodes.core.hud_draw_rect]
+title = "HudDrawRect"
+short_desc = "Draws a box at the specified screen X and Y position, with the specified size and RGBA colors"
+
+[nodes.core.hud_freeze_timer]
+title = "HudFreezeTimer"
+short_desc = "Makes the on-screen timer stop updating"
+
+[nodes.core.hud_display_timer_with_string]
+title = "HudDisplayTimerWithString"
+short_desc = "Creates a countdown or countup onscreen timer with the text"
+
+[nodes.core.hud_display_counter_with_string]
+title = "HudDisplayCounterWithString"
+short_desc = "Displays an onscreen counter with the text, either shown in numbers or as a bar"
+
+[nodes.core.hud_set_sprites_draw_before_fade]
+title = "HudSetSpritesDrawBeforeFade"
+short_desc = "Causes the next texture to be drawn (038D) before the fade is drawn"
+
+[nodes.core.hud_flash_object]
+title = "HudFlashObject"
+short_desc = "Makes a specific part of the HUD disappear and reappear several times"
+
+[nodes.core.hud_display_nth_counter_with_string]
+title = "HudDisplayNthCounterWithString"
+short_desc = "Displays an onscreen counter with the text in the specified slot, either shown in numbers or as a bar"
+
+[nodes.core.hud_display_radar]
+title = "HudDisplayRadar"
+short_desc = "Displays or hides the radar"
+
+[nodes.core.hud_set_counter_flash_when_first_displayed]
+title = "HudSetCounterFlashWhenFirstDisplayed"
+
+[nodes.core.hud_draw_sprite_with_rotation]
+title = "HudDrawSpriteWithRotation"
+short_desc = "This is an extended version of 038D with scale and angle parameters"
+
+[nodes.core.hud_set_radar_zoom]
+title = "HudSetRadarZoom"
+
+[nodes.core.hud_display]
+title = "HudDisplay"
+short_desc = "Sets whether the HUD displays"
+
+[nodes.core.hud_set_timer_beep_countdown_time]
+title = "HudSetTimerBeepCountdownTime"
+short_desc = "Starts a sound when the countdown timer reaches the specified number of seconds"
+
+[nodes.core.hud_get_color]
+title = "HudGetColor"
+short_desc = "Returns the RGBA of the specified HUD color"
+
+[nodes.core.hud_draw_window]
+title = "HudDrawWindow"
+short_desc = "Draws a black box with styled text from corner A to corner B"
+
+[nodes.core.hud_draw_crosshair]
+title = "HudDrawCrosshair"
+short_desc = "Sets whether the HUD should always display weapon aiming crosshairs, used in the mission 'Catalyst' where the player must throw crates of ammo to Ryder"
+
+[nodes.core.hud_display_car_names]
+title = "HudDisplayCarNames"
+short_desc = "Sets whether the name of the current vehicle should be displayed"
+
+[nodes.core.hud_display_zone_names]
+title = "HudDisplayZoneNames"
+short_desc = "Sets whether the area text for the current area should show"
+
+[nodes.core.hud_force_big_message_and_counter]
+title = "HudForceBigMessageAndCounter"
+short_desc = "Prevents timers and big texts from being hidden if there is another conflicting type of text on screen"
+
+[nodes.core.blip_add_for_car_old]
+title = "BlipAddForCarOld"
+short_desc = "Adds a blip with properties to the vehicle"
+
+[nodes.core.blip_remove]
+title = "BlipRemove"
+short_desc = "Removes the blip"
+
+[nodes.core.blip_change_color]
+title = "BlipChangeColor"
+short_desc = "Sets the blip's color"
+
+[nodes.core.blip_add_for_coord_old]
+title = "BlipAddForCoordOld"
+short_desc = "Adds a blip with properties at the location"
+
+[nodes.core.blip_change_scale]
+title = "BlipChangeScale"
+short_desc = "Sets the blip's size"
+
+[nodes.core.blip_add_for_car]
+title = "BlipAddForCar"
+short_desc = "Adds a blip and a marker to the vehicle"
+
+[nodes.core.blip_add_for_char]
+title = "BlipAddForChar"
+short_desc = "Adds a blip and a marker to the character"
+
+[nodes.core.blip_add_for_object]
+title = "BlipAddForObject"
+short_desc = "Adds a blip and a marker to the object"
+
+[nodes.core.blip_add_for_coord]
+title = "BlipAddForCoord"
+short_desc = "Adds a blip to the location"
+
+[nodes.core.blip_change_display]
+title = "BlipChangeDisplay"
+short_desc = "Changes the display of the specified blip"
+
+[nodes.core.blip_add_sprite_for_contact_point]
+title = "BlipAddSpriteForContactPoint"
+short_desc = "Adds a sprite blip to the contact point"
+
+[nodes.core.blip_add_sprite_for_coord]
+title = "BlipAddSpriteForCoord"
+short_desc = "Adds a sprite blip to the location"
+
+[nodes.core.blip_add_for_pickup]
+title = "BlipAddForPickup"
+short_desc = "Adds a blip and a marker to the pickup"
+
+[nodes.core.blip_add_short_range_sprite_for_coord]
+title = "BlipAddShortRangeSpriteForCoord"
+short_desc = "Adds a sprite blip for the specified coordinates"
+
+[nodes.core.blip_add_short_range_sprite_for_contact_point]
+title = "BlipAddShortRangeSpriteForContactPoint"
+short_desc = "Adds a contact sprite blip for the specified coordinates"
+
+[nodes.core.blip_add_for_searchlight]
+title = "BlipAddForSearchlight"
+short_desc = "Creates a blip indicating the searchlights position on the radar"
+
+[nodes.core.blip_does_exist]
+title = "BlipDoesExist"
+short_desc = "Returns true if the handle is a valid blip handle"
+
+[nodes.core.blip_set_always_display_on_zoomed_radar]
+title = "BlipSetAlwaysDisplayOnZoomedRadar"
+short_desc = "Sets whether the tracking blip will remain regardless of the entities existance"
+
+[nodes.core.blip_set_as_friendly]
+title = "BlipSetAsFriendly"
+
+[nodes.core.blip_add_for_dead_char]
+title = "BlipAddForDeadChar"
+short_desc = "Adds a blip and a marker to the character (identical to 0187)"
+
+[nodes.core.blip_set_entry_exit]
+title = "BlipSetEntryExit"
+short_desc = "Assigns the blip to the specified entrance/exit marker"
+
+[nodes.core.blip_set_coord_appearance]
+title = "BlipSetCoordAppearance"
+short_desc = "Works similar to 0165, except this command does not work on tracking blips, has different colors and does not support direct RGBA setting"
+
+[nodes.core.fx_draw_shadow]
+title = "FxDrawShadow"
+short_desc = "Draws a shadow in the current frame"
+
+[nodes.core.fx_add_explosion]
+title = "FxAddExplosion"
+short_desc = "Creates an explosion at the point"
+
+[nodes.core.fx_draw_corona]
+title = "FxDrawCorona"
+short_desc = "Displays a corona at the specified location"
+
+[nodes.core.fx_draw_weaponshop_corona]
+title = "FxDrawWeaponshopCorona"
+short_desc = "Displays a corona with the lowered draw distance at the specified coordinates"
+
+[nodes.core.fx_add_explosion_no_sound]
+title = "FxAddExplosionNoSound"
+short_desc = "Creates an explosion with no sound"
+
+[nodes.core.fx_add_big_gun_flash]
+title = "FxAddBigGunFlash"
+short_desc = "Creates a gun flash particle effect"
+
+[nodes.core.fx_add_sparks]
+title = "FxAddSparks"
+
+[nodes.core.fx_add_explosion_variable_shake]
+title = "FxAddExplosionVariableShake"
+short_desc = "Creates an explosion at the specified coordinates"
+
+[nodes.core.fx_add_smoke_particle]
+title = "FxAddSmokeParticle"
+
+[nodes.core.fx_add_blood]
+title = "FxAddBlood"
+
+[nodes.core.fx_draw_light_with_range]
+title = "FxDrawLightWithRange"
+short_desc = "Draws colored light in radius of the specified point"
+
+[nodes.core.weather_force]
+title = "WeatherForce"
+short_desc = "Forces the game weather to the specified type"
+
+[nodes.core.weather_force_now]
+title = "WeatherForceNow"
+short_desc = "Forces the upcoming weather to the specified type"
+
+[nodes.core.weather_release]
+title = "WeatherRelease"
+short_desc = "Allows the game to continue its usual weather pattern after using 01B5"
+
+[nodes.core.weather_set_heathaze_effect]
+title = "WeatherSetHeathazeEffect"
+short_desc = "Specifies whether the heat haze effect should be enabled in sunny conditions"
+
+[nodes.core.weather_set_to_appropriate_type_now]
+title = "WeatherSetToAppropriateTypeNow"
+short_desc = "Sets the current weather ID according to the game clock and the players current town number"
+
+[nodes.core.world_set_car_density_multiplier]
+title = "WorldSetCarDensityMultiplier"
+short_desc = "Sets the quantity of traffic that will spawn in the game"
+
+[nodes.core.world_get_ground_z_for3_d_coord]
+title = "WorldGetGroundZFor3DCoord"
+short_desc = "Stores the ground position at the location"
+
+[nodes.core.world_is_projectile_in_area]
+title = "WorldIsProjectileInArea"
+short_desc = "Returns true if a projectile is in the specified 3D area"
+
+[nodes.core.world_remove_all_script_fires]
+title = "WorldRemoveAllScriptFires"
+short_desc = "Removes all script fires (02CF)"
+
+[nodes.core.world_get_random_car_of_type_in_area]
+title = "WorldGetRandomCarOfTypeInArea"
+short_desc = "Returns the handle of a random car with the specified model in the specified 2D area, or -1 otherwise"
+
+[nodes.core.world_is_area_occupied]
+title = "WorldIsAreaOccupied"
+short_desc = "Returns true if there is anything with the specified properties within the 3D area"
+
+[nodes.core.world_is_explosion_in_area]
+title = "WorldIsExplosionInArea"
+short_desc = "Returns true if there is an explosion of the specified type in the 3D area"
+
+[nodes.core.world_set_visibility_of_closest_object_of_type]
+title = "WorldSetVisibilityOfClosestObjectOfType"
+short_desc = "Sets the visibility of the object closest to the specified coordinates, matching the specified model"
+
+[nodes.core.world_is_point_obscured_by_a_mission_entity]
+title = "WorldIsPointObscuredByAMissionEntity"
+short_desc = "Returns true if there is a vehicle in the specified area"
+
+[nodes.core.world_clear_area]
+title = "WorldClearArea"
+short_desc = "Clears the area, removing all vehicles and pedestrians"
+
+[nodes.core.world_swap_nearest_building_model]
+title = "WorldSwapNearestBuildingModel"
+short_desc = "Swaps a map model with another map model nearest to the center of the search area"
+
+[nodes.core.world_switch_processing]
+title = "WorldSwitchProcessing"
+short_desc = "Sets whether the game should render the world or only the cutscene objects"
+
+[nodes.core.world_clear_area_of_cars]
+title = "WorldClearAreaOfCars"
+short_desc = "Clears all cars in the specified 3D area"
+
+[nodes.core.world_create_random_car_for_car_park]
+title = "WorldCreateRandomCarForCarPark"
+short_desc = "Starts spawning random cars at the specified location"
+
+[nodes.core.world_set_ped_density_multiplier]
+title = "WorldSetPedDensityMultiplier"
+short_desc = "Sets the quantity of pedestrians to spawn in the game"
+
+[nodes.core.world_clear_area_of_chars]
+title = "WorldClearAreaOfChars"
+short_desc = "Clears all pedestrians from the given area"
+
+[nodes.core.world_is_any_pickup_at_coords]
+title = "WorldIsAnyPickupAtCoords"
+short_desc = "Returns true if the pickup at the specified coordinates is available to be picked up"
+
+[nodes.core.world_get_dead_char_pickup_coords]
+title = "WorldGetDeadCharPickupCoords"
+short_desc = "Returns appropriate coordinates for creating a pickup by a dead character"
+
+[nodes.core.world_create_script_roadblock]
+title = "WorldCreateScriptRoadblock"
+short_desc = "Creates a roadblock in the specified area with the specified type"
+
+[nodes.core.world_clear_all_script_roadblocks]
+title = "WorldClearAllScriptRoadblocks"
+short_desc = "Removes references to all created roadblocks (04C0), freeing game memory"
+
+[nodes.core.world_add_set_piece]
+title = "WorldAddSetPiece"
+short_desc = "Creates a trigger zone for police to appear during chases"
+
+[nodes.core.world_set_extra_colors]
+title = "WorldSetExtraColors"
+short_desc = "Sets the extra color of the sky"
+
+[nodes.core.world_clear_extra_colors]
+title = "WorldClearExtraColors"
+short_desc = "Clears the extra color of the sky"
+
+[nodes.core.world_get_random_car_of_type_in_area_no_save]
+title = "WorldGetRandomCarOfTypeInAreaNoSave"
+short_desc = "Loops through the pool of vehicles to retrieve one that matches the specified model in the specified 2D area"
+
+[nodes.core.world_fire_single_bullet]
+title = "WorldFireSingleBullet"
+
+[nodes.core.world_is_line_of_sight_clear]
+title = "WorldIsLineOfSightClear"
+short_desc = "Checks if there is something in the range of the two specified points"
+
+[nodes.core.world_get_number_of_fires_in_range]
+title = "WorldGetNumberOfFiresInRange"
+
+[nodes.core.world_delete_mission_trains]
+title = "WorldDeleteMissionTrains"
+short_desc = "Destroys all script-created trains"
+
+[nodes.core.world_delete_all_trains]
+title = "WorldDeleteAllTrains"
+short_desc = "Destroys all trains, including those that are not created by the script"
+
+[nodes.core.world_get_percentage_tagged_in_area]
+title = "WorldGetPercentageTaggedInArea"
+short_desc = "Gets the percentage of the number of tags sprayed in the area"
+
+[nodes.core.world_set_tag_status_in_area]
+title = "WorldSetTagStatusInArea"
+short_desc = "Sets whether all tags in the area are sprayed"
+
+[nodes.core.world_is_closest_object_of_type_smashed_or_damaged]
+title = "WorldIsClosestObjectOfTypeSmashedOrDamaged"
+
+[nodes.core.world_is_flame_in_angled_area2_d]
+title = "WorldIsFlameInAngledArea2D"
+short_desc = "Returns true if there's any fire particles within the specified area"
+
+[nodes.core.world_is_flame_in_angled_area3_d]
+title = "WorldIsFlameInAngledArea3D"
+short_desc = "Returns true if there's any flames within the specified area"
+
+[nodes.core.world_get_random_car_in_sphere_no_save]
+title = "WorldGetRandomCarInSphereNoSave"
+
+[nodes.core.world_get_random_char_in_sphere]
+title = "WorldGetRandomCharInSphere"
+
+[nodes.core.world_get_number_of_fires_in_area]
+title = "WorldGetNumberOfFiresInArea"
+short_desc = "Gets the number of fires within the specified area"
+
+[nodes.core.world_get_nearest_tag_position]
+title = "WorldGetNearestTagPosition"
+
+[nodes.core.world_remove_oil_puddles_in_area]
+title = "WorldRemoveOilPuddlesInArea"
+
+[nodes.core.world_get_city_from_coords]
+title = "WorldGetCityFromCoords"
+short_desc = "Returns the town the specified location is within"
+
+[nodes.core.world_has_object_of_type_been_smashed]
+title = "WorldHasObjectOfTypeBeenSmashed"
+
+[nodes.core.world_switch_entry_exit]
+title = "WorldSwitchEntryExit"
+short_desc = "Locates the enex marker via the specified name and sets whether it is visible and usable"
+
+[nodes.core.world_get_parking_node_in_area]
+title = "WorldGetParkingNodeInArea"
+short_desc = "Stores the coordinates of the nearest car park node in the specified area"
+
+[nodes.core.world_add_stunt_jump]
+title = "WorldAddStuntJump"
+short_desc = "Creates a trigger for a Unique Jump bonus"
+
+[nodes.core.world_set_pool_table_coords]
+title = "WorldSetPoolTableCoords"
+short_desc = "Creates a pool collision object"
+
+[nodes.core.world_get_sound_level_at_coords]
+title = "WorldGetSoundLevelAtCoords"
+short_desc = "Gets the level that the character can hear noise at the specified position"
+
+[nodes.core.world_create_emergency_services_car]
+title = "WorldCreateEmergencyServicesCar"
+short_desc = "Creates an emergency service vehicle on the closest road to the specified coordinates"
+
+[nodes.core.world_get_closest_stealable_object]
+title = "WorldGetClosestStealableObject"
+short_desc = "Gets the closest object which can be stolen for burglary missions"
+
+[nodes.core.world_create_birds]
+title = "WorldCreateBirds"
+short_desc = "Creates a flock of birds flying in the specified direction"
+
+[nodes.core.world_set_uses_collision_of_closest_object_of_type]
+title = "WorldSetUsesCollisionOfClosestObjectOfType"
+short_desc = "Toggles collision of the object closest to the given coordinates and matching the model"
+
+[nodes.core.world_get_random_char_in_sphere_only_drugs_buyers]
+title = "WorldGetRandomCharInSphereOnlyDrugsBuyers"
+short_desc = "Loops through the ped pool and returns the first character that is within the specified radius and has the \"buys drugs\" flag set in peds"
+
+[nodes.core.world_get_random_char_in_sphere_no_brain]
+title = "WorldGetRandomCharInSphereNoBrain"
+short_desc = "Finds the nearest character to the specified point, in the specified radius"
+
+[nodes.core.world_disable_all_entry_exits]
+title = "WorldDisableAllEntryExits"
+short_desc = "Disables all entry/exit markers"
+
+[nodes.core.world_get_user_of_closest_map_attractor]
+title = "WorldGetUserOfClosestMapAttractor"
+short_desc = "Returns the character using a map attractor with the specified model in the specified area"
+
+[nodes.core.world_get_water_height_at_coords]
+title = "WorldGetWaterHeightAtCoords"
+short_desc = "Gets the height of the water at the specified 2D coordinates"
+
+[nodes.core.world_sync_water]
+title = "WorldSyncWater"
+short_desc = "Flattens water waves"
+
+[nodes.core.world_extinguish_fire_at_point]
+title = "WorldExtinguishFireAtPoint"
+short_desc = "Removes all fires within the specified area"
+
+[nodes.core.world_set_char_uses_collision_closest_object_of_type]
+title = "WorldSetCharUsesCollisionClosestObjectOfType"
+short_desc = "Sets whether collision of the object closest to the given coordinates and matching the model applies to the target character"
+
+[nodes.core.world_clear_all_script_fire_flags]
+title = "WorldClearAllScriptFireFlags"
+short_desc = "Marks all fires as no longer needed, allowing them to disappear"
+
+[nodes.core.world_set_closest_entry_exit_flag]
+title = "WorldSetClosestEntryExitFlag"
+short_desc = "This command is like 098E, except it finds the appropriate enex marker via its position instead of its name"
+
+[nodes.core.world_get_random_car_of_type_in_angled_area_no_save]
+title = "WorldGetRandomCarOfTypeInAngledAreaNoSave"
+
+[nodes.core.world_is_cop_vehicle_in_area3_d_no_save]
+title = "WorldIsCopVehicleInArea3DNoSave"
+short_desc = "Returns true if there's any kind of police vehicle in the specified 3D area"
+
+[nodes.core.world_is_money_pickup_at_coords]
+title = "WorldIsMoneyPickupAtCoords"
+short_desc = "Returns true if a money pickup exists near the specified coordinates"
+
+[nodes.core.world_get_random_char_in_area_offset_no_save]
+title = "WorldGetRandomCharInAreaOffsetNoSave"
+short_desc = "Returns the first char in the ped pool within radius of the specified point"
+
+[nodes.core.world_set_railtrack_resistance_mult]
+title = "WorldSetRailtrackResistanceMult"
+short_desc = "Sets the friction/slowdown rate on all rail tracks"
+
+[nodes.core.world_get_target_coords]
+title = "WorldGetTargetCoords"
+short_desc = "Gets the coordinates of the location targeted in the game map"
+
+[nodes.core.world_spawn_vehicle_by_cheating]
+title = "WorldSpawnVehicleByCheating"
+short_desc = "Creates a vehicle with the model (no pre-loading needed) in front of the player"
+
+[nodes.core.world_get_random_char_in_sphere_no_save_recursive]
+title = "WorldGetRandomCharInSphereNoSaveRecursive"
+
+[nodes.core.world_get_random_car_in_sphere_no_save_recursive]
+title = "WorldGetRandomCarInSphereNoSaveRecursive"
+
+[nodes.core.world_get_random_object_in_sphere_no_save_recursive]
+title = "WorldGetRandomObjectInSphereNoSaveRecursive"
+
+[nodes.core.game_set_max_wanted_level]
+title = "GameSetMaxWantedLevel"
+short_desc = "Sets the maximum wanted level the player can receive"
+
+[nodes.core.game_set_police_ignore_player]
+title = "GameSetPoliceIgnorePlayer"
+short_desc = "Sets whether cops should ignore the player regardless of wanted level"
+
+[nodes.core.game_set_collectable_total]
+title = "GameSetCollectableTotal"
+short_desc = "Sets the total number of hidden packages to collect"
+
+[nodes.core.game_set_free_resprays]
+title = "GameSetFreeResprays"
+short_desc = "Defines whether the player can respray their car for free"
+
+[nodes.core.game_set_everyone_ignore_player]
+title = "GameSetEveryoneIgnorePlayer"
+short_desc = "Makes pedestrians pay no attention to the player"
+
+[nodes.core.game_set_wanted_multiplier]
+title = "GameSetWantedMultiplier"
+short_desc = "Sets sensitivity to crime, changing how many crimes a player can commit before police begin to pursue"
+
+[nodes.core.game_activate_save_menu]
+title = "GameActivateSaveMenu"
+short_desc = "Displays a screen prompting the player to save"
+
+[nodes.core.game_has_save_game_finished]
+title = "GameHasSaveGameFinished"
+short_desc = "Returns true if the player has saved their game"
+
+[nodes.core.game_set_all_cars_can_be_damaged]
+title = "GameSetAllCarsCanBeDamaged"
+short_desc = "Sets whether all cars receive damage"
+
+[nodes.core.game_is_german]
+title = "GameIsGerman"
+short_desc = "Returns true if the game language is set to German"
+
+[nodes.core.game_are_measurements_in_meters]
+title = "GameAreMeasurementsInMeters"
+short_desc = "Returns true if the game uses metric measurements (meters instead of feet)"
+
+[nodes.core.game_are_any_car_cheats_activated]
+title = "GameAreAnyCarCheatsActivated"
+short_desc = "Returns true if the player has used any of the cheats"
+
+[nodes.core.game_is_pc_version]
+title = "GameIsPcVersion"
+short_desc = "Returns true on PC versions of the game"
+
+[nodes.core.game_get_max_wanted_level]
+title = "GameGetMaxWantedLevel"
+short_desc = "Gets the maximum wanted level the player can receive"
+
+[nodes.core.game_set_all_taxis_have_nitro]
+title = "GameSetAllTaxisHaveNitro"
+short_desc = "Toggles whether all taxis have nitrous"
+
+[nodes.core.game_set_is_in_stadium]
+title = "GameSetIsInStadium"
+short_desc = "Greys out the radar"
+
+[nodes.core.game_is_australian]
+title = "GameIsAustralian"
+short_desc = "Returns true if the current game is an Australian release"
+
+[nodes.core.game_set_la_riots]
+title = "GameSetLaRiots"
+short_desc = "Enables the LS Riots, making smoke appear on houses, random car fires occur, peds stealing things and attacking each other in a frenzy"
+
+[nodes.core.game_switch_emergency_services]
+title = "GameSwitchEmergencyServices"
+short_desc = "Sets whether emergency traffic spawns"
+
+[nodes.core.game_switch_random_trains]
+title = "GameSwitchRandomTrains"
+short_desc = "Sets whether trains are generated"
+
+[nodes.core.game_limit_two_player_distance]
+title = "GameLimitTwoPlayerDistance"
+short_desc = "Sets how far apart players can get on 2-player mode"
+
+[nodes.core.game_release_two_player_distance]
+title = "GameReleaseTwoPlayerDistance"
+short_desc = "Releases the distance limit set by LIMIT_TWO_PLAYER_DISTANCE"
+
+[nodes.core.game_set_player_player_targeting]
+title = "GameSetPlayerPlayerTargeting"
+short_desc = "Enables each player to target the other player"
+
+[nodes.core.game_set_players_can_be_in_separate_cars]
+title = "GameSetPlayersCanBeInSeparateCars"
+short_desc = "Sets whether the players can be in separate cars during a 2-player mission"
+
+[nodes.core.game_switch_cops_on_bikes]
+title = "GameSwitchCopsOnBikes"
+short_desc = "Disables the game from creating police bikes and their riders on the roads"
+
+[nodes.core.game_set_relationship]
+title = "GameSetRelationship"
+short_desc = "Sets the attitude of peds with one pedtype towards peds of another pedtype"
+
+[nodes.core.game_clear_relationship]
+title = "GameClearRelationship"
+
+[nodes.core.game_set_area51_sam_site]
+title = "GameSetArea51SamSite"
+short_desc = "Enables or disables the SAM site at the Area 51"
+
+[nodes.core.game_is_relationship_set]
+title = "GameIsRelationshipSet"
+short_desc = "Returns true if the specified relationship between ped types is set"
+
+[nodes.core.game_is2_player_game_going_on]
+title = "GameIs2PlayerGameGoingOn"
+short_desc = "Returns true if the game is in 2-player mode"
+
+[nodes.core.game_set_max_fire_generations]
+title = "GameSetMaxFireGenerations"
+short_desc = "Sets the limit on how many fires can be created from other fires when \"propagation\" was enabled on 02CF"
+
+[nodes.core.game_activate_interior_peds]
+title = "GameActivateInteriorPeds"
+short_desc = "Enables ped spawning in interiors"
+
+[nodes.core.game_enable_entry_exit_player_group_warping]
+title = "GameEnableEntryExitPlayerGroupWarping"
+short_desc = "Enables the entry/exit marker in the specified radius of the coordinates"
+
+[nodes.core.game_is_procedural_interior_active]
+title = "GameIsProceduralInteriorActive"
+short_desc = "Returns true in interactive interiors"
+
+[nodes.core.game_set_gang_wars_active]
+title = "GameSetGangWarsActive"
+short_desc = "Sets whether gang wars can be started by the player or enemy gangs"
+
+[nodes.core.game_is_gang_war_going_on]
+title = "GameIsGangWarGoingOn"
+short_desc = "Returns true if there is a gang war happening"
+
+[nodes.core.game_can_trigger_gang_war_when_on_a_mission]
+title = "GameCanTriggerGangWarWhenOnAMission"
+short_desc = "Allows the player to provoke turf wars while a mission is active"
+
+[nodes.core.game_set_always_draw3_d_markers]
+title = "GameSetAlwaysDraw3DMarkers"
+short_desc = "Enables an increase in the distance that markers hovering above entities can be seen from"
+
+[nodes.core.game_set_gang_wars_training_mission]
+title = "GameSetGangWarsTrainingMission"
+short_desc = "Disables highlighting of gang territory on the map and radar"
+
+[nodes.core.game_set_night_vision]
+title = "GameSetNightVision"
+short_desc = "Enables night vision effects"
+
+[nodes.core.game_set_infrared_vision]
+title = "GameSetInfraredVision"
+short_desc = "Enables thermal vision effects"
+
+[nodes.core.game_switch_death_penalties]
+title = "GameSwitchDeathPenalties"
+short_desc = "Sets whether or not the player loses their weapons and inventory when taken to hospital"
+
+[nodes.core.game_switch_arrest_penalties]
+title = "GameSwitchArrestPenalties"
+short_desc = "Sets whether or not the player loses their weapons and inventory when busted"
+
+[nodes.core.game_set_create_random_gang_members]
+title = "GameSetCreateRandomGangMembers"
+short_desc = "Sets whether gang members will spawn"
+
+[nodes.core.game_set_script_limit_to_gang_size]
+title = "GameSetScriptLimitToGangSize"
+short_desc = "Sets the maximum number of members that the player can recruit"
+
+[nodes.core.game_clear_specific_zones_to_trigger_gang_war]
+title = "GameClearSpecificZonesToTriggerGangWar"
+short_desc = "Enables turf wars to be provoked in all zones"
+
+[nodes.core.game_switch_ambient_planes]
+title = "GameSwitchAmbientPlanes"
+short_desc = "Enables or disables planes"
+
+[nodes.core.game_find_max_number_of_group_members]
+title = "GameFindMaxNumberOfGroupMembers"
+
+[nodes.core.game_switch_police_helis]
+title = "GameSwitchPoliceHelis"
+short_desc = "Sets whether ghetto birds spawn"
+
+[nodes.core.game_force_death_restart]
+title = "GameForceDeathRestart"
+
+[nodes.core.game_reset_stuff_upon_resurrection]
+title = "GameResetStuffUponResurrection"
+short_desc = "Emulates the shared effects of being wasted or busted"
+
+[nodes.core.game_set_only_create_gang_members]
+title = "GameSetOnlyCreateGangMembers"
+short_desc = "Sets whether gangs appear everywhere, like when \"Gangs control the streets\" cheat is activated"
+
+[nodes.core.game_set_gunshot_sense_range_for_riot2]
+title = "GameSetGunshotSenseRangeForRiot2"
+
+[nodes.core.game_set_named_entry_exit_flag]
+title = "GameSetNamedEntryExitFlag"
+short_desc = "Sets the specified enex flag"
+
+[nodes.core.game_is_night_vision_active]
+title = "GameIsNightVisionActive"
+short_desc = "Returns true if night vision is active"
+
+[nodes.core.game_set_create_random_cops]
+title = "GameSetCreateRandomCops"
+
+[nodes.core.game_show_blips_on_all_levels]
+title = "GameShowBlipsOnAllLevels"
+short_desc = "Enables entity blips showing on the radar and map while in interiors"
+
+[nodes.core.game_hide_all_frontend_blips]
+title = "GameHideAllFrontendBlips"
+
+[nodes.core.game_set_minigame_in_progress]
+title = "GameSetMinigameInProgress"
+short_desc = "Disables displaying help messages in other scripts"
+
+[nodes.core.game_is_minigame_in_progress]
+title = "GameIsMinigameInProgress"
+short_desc = "Returns true if 09BD has been used in any script to disable help messages"
+
+[nodes.core.game_set_force_random_car_model]
+title = "GameSetForceRandomCarModel"
+short_desc = "Forces all cars spawned to be of the specified model"
+
+[nodes.core.game_are_subtitles_switched_on]
+title = "GameAreSubtitlesSwitchedOn"
+short_desc = "Returns true if subtitles are switched on in the settings menu"
+
+[nodes.core.game_enable_ambient_crime]
+title = "GameEnableAmbientCrime"
+short_desc = "Sets whether cops will chase and kill criminals when their task is 'TASK_COMPLEX_KILL_CRIMINAL'"
+
+[nodes.core.game_clear_wanted_level_in_garage]
+title = "GameClearWantedLevelInGarage"
+short_desc = "Suspends the current players wanted level"
+
+[nodes.core.game_make_room_in_player_gang_for_mission_peds]
+title = "GameMakeRoomInPlayerGangForMissionPeds"
+short_desc = "Ensures there is x amount of space for new members to be added to the players gang"
+
+[nodes.core.game_set_aircraft_carrier_sam_site]
+title = "GameSetAircraftCarrierSamSite"
+short_desc = "Enables missiles to be fired from the aircraft carrier by Easter Bay Naval Station, San Fierro"
+
+[nodes.core.game_enable_burglary_houses]
+title = "GameEnableBurglaryHouses"
+short_desc = "Switches enex markers used for burglary missions on or off"
+
+[nodes.core.game_shut_all_chars_up]
+title = "GameShutAllCharsUp"
+short_desc = "Prevents all peds from attempting to start conversations with the player"
+
+[nodes.core.game_do_weapon_stuff_at_start_of2_p_game]
+title = "GameDoWeaponStuffAtStartOf2PGame"
+short_desc = "Gives all the weapons of player 1 to player 2 during a cooperative mission"
+
+[nodes.core.game_has_game_just_returned_from_frontend]
+title = "GameHasGameJustReturnedFromFrontend"
+short_desc = "Returns true if the player just exited the menu on the last frame"
+
+[nodes.core.game_get_current_language]
+title = "GameGetCurrentLanguage"
+short_desc = "Returns the current language set in the menu language settings"
+
+[nodes.core.game_is_gang_war_fighting_going_on]
+title = "GameIsGangWarFightingGoingOn"
+short_desc = "Returns true if the player provoked a gang war or is defending territory"
+
+[nodes.core.game_has_language_changed]
+title = "GameHasLanguageChanged"
+short_desc = "Returns true if the current language set is different from the previous language set"
+
+[nodes.core.game_manage_all_population]
+title = "GameManageAllPopulation"
+
+[nodes.core.game_set_no_resprays]
+title = "GameSetNoResprays"
+short_desc = "Disables respray garages from opening for the player"
+
+[nodes.core.game_is_widescreen_on_in_options]
+title = "GameIsWidescreenOnInOptions"
+short_desc = "Returns true if widescreen is switched on in the display settings"
+
+[nodes.core.game_force_all_vehicle_lights_off]
+title = "GameForceAllVehicleLightsOff"
+short_desc = "Disables all vehicle lights from being rendered if enabled"
+
+[nodes.core.game_activate_pimp_cheat]
+title = "GameActivatePimpCheat"
+short_desc = "Sets whether sleeping with a prostitute earns you money instead of taking it away from you"
+
+[nodes.core.game_set_script_coop_game]
+title = "GameSetScriptCoopGame"
+short_desc = "Sets an unused flag at address 0x96A8A8"
+
+[nodes.core.game_get_rid_of_player_prostitute]
+title = "GameGetRidOfPlayerProstitute"
+short_desc = "Cancels any prostitute invitations received in-game and makes any current prostitutes quit"
+
+[nodes.core.game_switch_object_brains]
+title = "GameSwitchObjectBrains"
+short_desc = "Enables or disables all triggers of the specified type (0928 or 0929)"
+
+[nodes.core.game_allow_pause_in_widescreen]
+title = "GameAllowPauseInWidescreen"
+short_desc = "Enables the player to access the pause menu while widescreen is enabled"
+
+[nodes.core.game_is_pc_using_joypad]
+title = "GameIsPcUsingJoypad"
+short_desc = "Returns true if players controls are set to joystick and not mouse+keyboard"
+
+[nodes.core.game_is_version_original]
+title = "GameIsVersionOriginal"
+short_desc = "Returns true if the game version is vanilla 1.0"
+
+[nodes.core.game_get_platform]
+title = "GameGetPlatform"
+short_desc = "Returns platform type info (device/operating system)"
+
+[nodes.core.pickup_create]
+title = "PickupCreate"
+short_desc = "Creates a pickup with the given model and type"
+
+[nodes.core.pickup_has_been_collected]
+title = "PickupHasBeenCollected"
+short_desc = "Returns true if specified pickup has been collected"
+
+[nodes.core.pickup_remove]
+title = "PickupRemove"
+short_desc = "Destroys the specified pickup, freeing game memory"
+
+[nodes.core.pickup_create_money]
+title = "PickupCreateMoney"
+short_desc = "Creates a money pickup with the specified cash value"
+
+[nodes.core.pickup_create_with_ammo]
+title = "PickupCreateWithAmmo"
+short_desc = "Creates a weapon pickup, giving the player the specified amount of ammo when they pick it up"
+
+[nodes.core.pickup_create_protection]
+title = "PickupCreateProtection"
+short_desc = "Creates an asset revenue pickup"
+
+[nodes.core.pickup_create_locked_property]
+title = "PickupCreateLockedProperty"
+short_desc = "Creates an asset icon for an asset that is not for sale"
+
+[nodes.core.pickup_create_for_sale_property]
+title = "PickupCreateForSaleProperty"
+short_desc = "Creates an asset pickup for an asset which can be bought"
+
+[nodes.core.pickup_get_coordinates]
+title = "PickupGetCoordinates"
+short_desc = "Returns the X, Y and Z coordinates of the pickup"
+
+[nodes.core.pickup_update_money_per_day]
+title = "PickupUpdateMoneyPerDay"
+
+[nodes.core.pickup_create_snapshot]
+title = "PickupCreateSnapshot"
+
+[nodes.core.pickup_create_horseshoe]
+title = "PickupCreateHorseshoe"
+
+[nodes.core.pickup_create_oyster]
+title = "PickupCreateOyster"
+
+[nodes.core.pickup_does_exist]
+title = "PickupDoesExist"
+short_desc = "Returns true if the handle is a valid pickup handle"
+
+[nodes.core.streaming_load_special_character]
+title = "StreamingLoadSpecialCharacter"
+short_desc = "Requests a special character's model to be loaded into the specified slot"
+
+[nodes.core.streaming_has_special_character_loaded]
+title = "StreamingHasSpecialCharacterLoaded"
+short_desc = "Returns true if the special character's model (023C) is available for creation"
+
+[nodes.core.streaming_request_model]
+title = "StreamingRequestModel"
+short_desc = "Requests a new model to load"
+
+[nodes.core.streaming_has_model_loaded]
+title = "StreamingHasModelLoaded"
+short_desc = "Returns true if the model is available for creation"
+
+[nodes.core.streaming_mark_model_as_no_longer_needed]
+title = "StreamingMarkModelAsNoLongerNeeded"
+short_desc = "Releases the specified model, freeing game memory"
+
+[nodes.core.streaming_unload_special_character]
+title = "StreamingUnloadSpecialCharacter"
+short_desc = "Releases the special character (023C), freeing game memory"
+
+[nodes.core.streaming_load_all_models_now]
+title = "StreamingLoadAllModelsNow"
+short_desc = "Loads any requested models (0247 or 0353) synchronously"
+
+[nodes.core.streaming_switch]
+title = "StreamingSwitch"
+short_desc = "Sets the streaming of additional models like peds, cars, and maps"
+
+[nodes.core.streaming_load_scene]
+title = "StreamingLoadScene"
+short_desc = "Starts loading a specific location, just like if the player was there, removing LOD textures"
+
+[nodes.core.streaming_is_model_available]
+title = "StreamingIsModelAvailable"
+short_desc = "Returns true if the specified model exists in the loaded "
+
+[nodes.core.streaming_set_area_visible]
+title = "StreamingSetAreaVisible"
+short_desc = "Sets the visibility of an interior area"
+
+[nodes.core.streaming_request_collision]
+title = "StreamingRequestCollision"
+short_desc = "Reloads the area at the specified coordinates"
+
+[nodes.core.streaming_request_animation]
+title = "StreamingRequestAnimation"
+short_desc = "Loads the specified IFP File"
+
+[nodes.core.streaming_has_animation_loaded]
+title = "StreamingHasAnimationLoaded"
+short_desc = "Returns true if the specified IFP file is loaded"
+
+[nodes.core.streaming_remove_animation]
+title = "StreamingRemoveAnimation"
+short_desc = "Releases the specified IFP file, freeing game memory"
+
+[nodes.core.streaming_mark_mission_trains_as_no_longer_needed]
+title = "StreamingMarkMissionTrainsAsNoLongerNeeded"
+short_desc = "Marks the train as no longer needed by the script, allowing it to be deleted by the game"
+
+[nodes.core.streaming_get_vehicle_mod_type]
+title = "StreamingGetVehicleModType"
+short_desc = "Returns a slot the upgrade model is for"
+
+[nodes.core.streaming_request_vehicle_mod]
+title = "StreamingRequestVehicleMod"
+short_desc = "Loads the upgrade model and any associated models"
+
+[nodes.core.streaming_has_vehicle_mod_loaded]
+title = "StreamingHasVehicleModLoaded"
+short_desc = "Returns true if the vehicle upgrade model has loaded"
+
+[nodes.core.streaming_mark_vehicle_mod_as_no_longer_needed]
+title = "StreamingMarkVehicleModAsNoLongerNeeded"
+short_desc = "Marks the vehicle upgrade model as no longer needed, allowing it to be unloaded by the streamer"
+
+[nodes.core.streaming_custom_plate_design_for_next_car]
+title = "StreamingCustomPlateDesignForNextCar"
+short_desc = "Sets the town ID of the license plate which is created on the specified model, affecting which texture is chosen for the plate"
+
+[nodes.core.streaming_request_ipl]
+title = "StreamingRequestIpl"
+
+[nodes.core.streaming_remove_ipl]
+title = "StreamingRemoveIpl"
+
+[nodes.core.streaming_remove_ipl_discreetly]
+title = "StreamingRemoveIplDiscreetly"
+
+[nodes.core.streaming_get_area_visible]
+title = "StreamingGetAreaVisible"
+short_desc = "Gets the current interior ID"
+
+[nodes.core.streaming_request_car_recording]
+title = "StreamingRequestCarRecording"
+short_desc = "Loads the specified car recording"
+
+[nodes.core.streaming_has_car_recording_been_loaded]
+title = "StreamingHasCarRecordingBeenLoaded"
+short_desc = "Returns true if the car recording has finished loading"
+
+[nodes.core.streaming_is_model_in_cdimage]
+title = "StreamingIsModelInCdimage"
+short_desc = "Returns true if a file for the model exists"
+
+[nodes.core.streaming_get_model_dimensions]
+title = "StreamingGetModelDimensions"
+
+[nodes.core.streaming_is_this_model_a_boat]
+title = "StreamingIsThisModelABoat"
+short_desc = "Returns true if the model is the model of a boat"
+
+[nodes.core.streaming_is_this_model_a_plane]
+title = "StreamingIsThisModelAPlane"
+short_desc = "Returns true if the model is the model of a plane"
+
+[nodes.core.streaming_is_this_model_a_heli]
+title = "StreamingIsThisModelAHeli"
+short_desc = "Returns true if the model is the model of a helicopter"
+
+[nodes.core.streaming_remove_car_recording]
+title = "StreamingRemoveCarRecording"
+short_desc = "Unloads the car recording"
+
+[nodes.core.streaming_attach_anims_to_model]
+title = "StreamingAttachAnimsToModel"
+short_desc = "Sets an animation pack to be loaded along with the specified model"
+
+[nodes.core.streaming_get_random_car_model_in_memory]
+title = "StreamingGetRandomCarModelInMemory"
+
+[nodes.core.streaming_is_this_model_a_car]
+title = "StreamingIsThisModelACar"
+short_desc = "Returns true if a valid car model is passed"
+
+[nodes.core.streaming_load_scene_in_direction]
+title = "StreamingLoadSceneInDirection"
+
+[nodes.core.streaming_get_name_of_vehicle_model]
+title = "StreamingGetNameOfVehicleModel"
+
+[nodes.core.boat_goto]
+title = "BoatGoto"
+short_desc = "Makes the boat sail to the location"
+
+[nodes.core.boat_stop]
+title = "BoatStop"
+short_desc = "Turns off the car's engine"
+
+[nodes.core.boat_set_cruise_speed]
+title = "BoatSetCruiseSpeed"
+short_desc = "Sets the boat's max speed"
+
+[nodes.core.boat_anchor]
+title = "BoatAnchor"
+short_desc = "Makes the boat stay motionless in the water"
+
+[nodes.core.zone_get_random_char]
+title = "ZoneGetRandomChar"
+short_desc = "Gets a random character in the specified zone whose pedtype matches the specified values"
+
+[nodes.core.zone_set_population_type]
+title = "ZoneSetPopulationType"
+
+[nodes.core.zone_set_dealer_strength]
+title = "ZoneSetDealerStrength"
+short_desc = "Sets the total number of drug dealers in the zone"
+
+[nodes.core.zone_get_dealer_strength]
+title = "ZoneGetDealerStrength"
+short_desc = "Returns the drug dealer density of the specified zone"
+
+[nodes.core.zone_set_gang_strength]
+title = "ZoneSetGangStrength"
+short_desc = "Sets the density of the gang members in the specified zone"
+
+[nodes.core.zone_get_gang_strength]
+title = "ZoneGetGangStrength"
+short_desc = "Returns the density of the gang members in the specified zone"
+
+[nodes.core.zone_get_name]
+title = "ZoneGetName"
+short_desc = "Gets the name of the zone at the specified coordinates"
+
+[nodes.core.zone_set_population_race]
+title = "ZoneSetPopulationRace"
+
+[nodes.core.zone_set_for_gang_wars_training]
+title = "ZoneSetForGangWarsTraining"
+short_desc = "Sets the zone as the only zone where a turf war can be provoked"
+
+[nodes.core.zone_init_population_settings]
+title = "ZoneInitPopulationSettings"
+short_desc = "Resets all changes made to the zone info"
+
+[nodes.core.zone_get_current_population_zone_type]
+title = "ZoneGetCurrentPopulationZoneType"
+
+[nodes.core.zone_set_trigger_gang_war]
+title = "ZoneSetTriggerGangWar"
+
+[nodes.core.zone_switch_audio]
+title = "ZoneSwitchAudio"
+short_desc = "Sets whether the IPL defined audio for the specified area should play"
+
+[nodes.core.zone_set_no_cops]
+title = "ZoneSetNoCops"
+short_desc = "Sets whether cops should be prevented from spawning in the specified area"
+
+[nodes.core.zone_set_disable_military_zones]
+title = "ZoneSetDisableMilitaryZones"
+short_desc = "Causes the players wanted level to be set at 4 when in restricted areas"
+
+[nodes.core.audio_play_mission_passed_tune]
+title = "AudioPlayMissionPassedTune"
+short_desc = "Plays an audio file with the specified ID from the Audio directory"
+
+[nodes.core.audio_load_mission_audio]
+title = "AudioLoadMissionAudio"
+short_desc = "Loads the file from the audio directory"
+
+[nodes.core.audio_has_mission_audio_loaded]
+title = "AudioHasMissionAudioLoaded"
+short_desc = "Returns true if the mission audio has loaded (03CF)"
+
+[nodes.core.audio_play_mission_audio]
+title = "AudioPlayMissionAudio"
+short_desc = "Plays the loaded sound (03CF)"
+
+[nodes.core.audio_has_mission_audio_finished]
+title = "AudioHasMissionAudioFinished"
+short_desc = "Returns true if the audio (03CF) is no longer playing"
+
+[nodes.core.audio_set_mission_audio_position]
+title = "AudioSetMissionAudioPosition"
+short_desc = "Sets the location of the mission audio (03CF) where it can be heard"
+
+[nodes.core.audio_clear_mission_audio]
+title = "AudioClearMissionAudio"
+short_desc = "Unloads the mission audio (03CF), freeing game memory"
+
+[nodes.core.audio_set_radio_channel]
+title = "AudioSetRadioChannel"
+short_desc = "Sets the current radio station that is playing, if the player is in a vehicle"
+
+[nodes.core.audio_set_music_does_fade]
+title = "AudioSetMusicDoesFade"
+short_desc = "Sets whether sounds should fade along with the screen"
+
+[nodes.core.audio_get_radio_channel]
+title = "AudioGetRadioChannel"
+short_desc = "Returns the current radio station that is being played"
+
+[nodes.core.audio_get_beat_proximity]
+title = "AudioGetBeatProximity"
+
+[nodes.core.audio_attach_mission_audio_to_char]
+title = "AudioAttachMissionAudioToChar"
+short_desc = "Sets the loaded audio to play at the char's location"
+
+[nodes.core.audio_preload_beat_track]
+title = "AudioPreloadBeatTrack"
+
+[nodes.core.audio_get_beat_track_status]
+title = "AudioGetBeatTrackStatus"
+
+[nodes.core.audio_play_beat_track]
+title = "AudioPlayBeatTrack"
+
+[nodes.core.audio_stop_beat_track]
+title = "AudioStopBeatTrack"
+
+[nodes.core.audio_report_mission_audio_event_at_position]
+title = "AudioReportMissionAudioEventAtPosition"
+
+[nodes.core.audio_report_mission_audio_event_at_object]
+title = "AudioReportMissionAudioEventAtObject"
+
+[nodes.core.audio_attach_mission_audio_to_object]
+title = "AudioAttachMissionAudioToObject"
+short_desc = "Sets the loaded audio to play at the object's location"
+
+[nodes.core.audio_pause_current_beat_track]
+title = "AudioPauseCurrentBeatTrack"
+short_desc = "Sets whether the loaded soundtrack is paused"
+
+[nodes.core.audio_report_mission_audio_event_at_char]
+title = "AudioReportMissionAudioEventAtChar"
+
+[nodes.core.audio_report_mission_audio_event_at_car]
+title = "AudioReportMissionAudioEventAtCar"
+short_desc = "Plays the audio event at the car's position"
+
+[nodes.core.audio_attach_mission_audio_to_car]
+title = "AudioAttachMissionAudioToCar"
+short_desc = "Sets the loaded audio to play at the vehicle's location"
+
+[nodes.core.audio_set_radio_to_players_favourite_station]
+title = "AudioSetRadioToPlayersFavouriteStation"
+short_desc = "Sets the radio station of the vehicle the player is currently in to the favourite station, retrieved from the stats (ID 326)"
+
+[nodes.core.rc_give_model_to_player]
+title = "RcGiveModelToPlayer"
+short_desc = "Puts the player in control of a remote-control vehicle"
+
+[nodes.core.rc_get_car]
+title = "RcGetCar"
+short_desc = "Returns the player's radio-controlled vehicle (alts:00D9,03C0,0811)"
+
+[nodes.core.rc_set_enable_detonate]
+title = "RcSetEnableDetonate"
+short_desc = "Enables a remote-control vehicle detonation"
+
+[nodes.core.rc_set_enable_detonate_on_contact]
+title = "RcSetEnableDetonateOnContact"
+short_desc = "Sets whether RC Bandits detonate on contact with the wheels of any four-wheeled vehicles"
+
+[nodes.core.rc_remove_buggy]
+title = "RcRemoveBuggy"
+short_desc = "Exits remote-control mode"
+
+[nodes.core.rc_take_car]
+title = "RcTakeCar"
+short_desc = "Puts the specified player in control of a remote-control vehicle"
+
+[nodes.core.heli_goto_coords]
+title = "HeliGotoCoords"
+short_desc = "Makes the helicopter fly to the specified location, keeping a specific Z height/altitude"
+
+[nodes.core.heli_set_orientation]
+title = "HeliSetOrientation"
+short_desc = "Forces the heli rotation relative to the north"
+
+[nodes.core.heli_clear_orientation]
+title = "HeliClearOrientation"
+short_desc = "Resets the heli rotation set with 04D0"
+
+[nodes.core.heli_set_stabiliser]
+title = "HeliSetStabiliser"
+short_desc = "Limits the amount a helicopter can tilt"
+
+[nodes.core.heli_fire_hunter_gun]
+title = "HeliFireHunterGun"
+short_desc = "Makes the Hunter helicopter fire cannon gun"
+
+[nodes.core.heli_make_come_crashing_down]
+title = "HeliMakeComeCrashingDown"
+short_desc = "Makes helicopter simulate crash landing, exploding on the way if high up"
+
+[nodes.core.heli_attack_player]
+title = "HeliAttackPlayer"
+short_desc = "Makes the heli follow and attack the current player in the given radius"
+
+[nodes.core.heli_follow_entity]
+title = "HeliFollowEntity"
+short_desc = "Makes the heli follow the specified actor or vehicle in the air"
+
+[nodes.core.heli_chase_entity]
+title = "HeliChaseEntity"
+short_desc = "Makes the helicopter hunt down the character or the vehicle within the specified radius"
+
+[nodes.core.heli_land_at_coords]
+title = "HeliLandAtCoords"
+
+[nodes.core.heli_keep_entity_in_view]
+title = "HeliKeepEntityInView"
+
+[nodes.core.heli_attach_winch]
+title = "HeliAttachWinch"
+
+[nodes.core.heli_release_entity_from_winch]
+title = "HeliReleaseEntityFromWinch"
+
+[nodes.core.heli_grab_entity_on_winch]
+title = "HeliGrabEntityOnWinch"
+short_desc = "Retrieves the entity attached to the heli's magnet and returns to specific variables depending on the entities type"
+
+[nodes.core.heli_activate_speed_cheat]
+title = "HeliActivateSpeedCheat"
+short_desc = "Provides the heli with extra thrust power"
+
+[nodes.core.heli_set_blades_full_speed]
+title = "HeliSetBladesFullSpeed"
+short_desc = "Makes the helicopter rotor spin at full speed instantly"
+
+[nodes.core.heli_set_reached_target_distance]
+title = "HeliSetReachedTargetDistance"
+
+[nodes.core.heli_disable_audio]
+title = "HeliDisableAudio"
+short_desc = "Sets whether the helicopter sound is muted"
+
+[nodes.core.plane_goto_coords]
+title = "PlaneGotoCoords"
+
+[nodes.core.plane_attack_player]
+title = "PlaneAttackPlayer"
+short_desc = "Sets the planes mission to attack the player"
+
+[nodes.core.plane_fly_in_direction]
+title = "PlaneFlyInDirection"
+
+[nodes.core.plane_follow_entity]
+title = "PlaneFollowEntity"
+
+[nodes.core.plane_set_throttle]
+title = "PlaneSetThrottle"
+
+[nodes.core.plane_starts_in_air]
+title = "PlaneStartsInAir"
+short_desc = "Provides the aircraft with full power so it can start flying mid-air"
+
+[nodes.core.plane_attack_player_using_dog_fight]
+title = "PlaneAttackPlayerUsingDogFight"
+
+[nodes.core.plane_set_undercarriage_up]
+title = "PlaneSetUndercarriageUp"
+short_desc = "Sets whether the plane's landing wheels are up"
+
+[nodes.core.plane_get_undercarriage_position]
+title = "PlaneGetUndercarriagePosition"
+
+[nodes.core.task_toggle_duck]
+title = "TaskToggleDuck"
+short_desc = "Makes the character crouch"
+
+[nodes.core.task_pause]
+title = "TaskPause"
+short_desc = "Makes the character pause for the specified amount of time"
+
+[nodes.core.task_stand_still]
+title = "TaskStandStill"
+short_desc = "Makes the character stand still"
+
+[nodes.core.task_fall_and_get_up]
+title = "TaskFallAndGetUp"
+short_desc = "Makes actor fall to the ground and stay there for the specified time"
+
+[nodes.core.task_jump]
+title = "TaskJump"
+short_desc = "Makes the actor perform a jump"
+
+[nodes.core.task_tired]
+title = "TaskTired"
+short_desc = "Makes the actor stop to regain breath"
+
+[nodes.core.task_die]
+title = "TaskDie"
+short_desc = "Kills the character"
+
+[nodes.core.task_look_at_char]
+title = "TaskLookAtChar"
+short_desc = "Makes the character look at another character"
+
+[nodes.core.task_look_at_vehicle]
+title = "TaskLookAtVehicle"
+short_desc = "Makes the actor look at the specified vehicle"
+
+[nodes.core.task_say]
+title = "TaskSay"
+short_desc = "Makes the character say a phrase from the specified audio table"
+
+[nodes.core.task_shake_fist]
+title = "TaskShakeFist"
+short_desc = "Makes the actor lift their hand up in the air angrily"
+
+[nodes.core.task_cower]
+title = "TaskCower"
+short_desc = "Makes the actor stumble backwards with their arms in front of their face as if he is backing away from something in fear"
+
+[nodes.core.task_hands_up]
+title = "TaskHandsUp"
+short_desc = "Makes the actor put their hands in the air"
+
+[nodes.core.task_duck]
+title = "TaskDuck"
+short_desc = "Makes a character duck with their arms over head"
+
+[nodes.core.task_use_atm]
+title = "TaskUseAtm"
+short_desc = "Makes a character use an ATM machine"
+
+[nodes.core.task_scratch_head]
+title = "TaskScratchHead"
+short_desc = "Makes a character scratch their head while looking around"
+
+[nodes.core.task_look_about]
+title = "TaskLookAbout"
+short_desc = "Makes a character look out ahead"
+
+[nodes.core.task_enter_car_as_passenger]
+title = "TaskEnterCarAsPassenger"
+short_desc = "Makes a character approach the car and occupy the specified passenger seat"
+
+[nodes.core.task_enter_car_as_driver]
+title = "TaskEnterCarAsDriver"
+short_desc = "Makes a character approach the car and occupy the driver seat"
+
+[nodes.core.task_leave_car]
+title = "TaskLeaveCar"
+short_desc = "Makes the character exit the specified vehicle, if they are currently in it"
+
+[nodes.core.task_leave_car_and_flee]
+title = "TaskLeaveCarAndFlee"
+short_desc = "Makes the character exit the vehicle and flee to the specified position"
+
+[nodes.core.task_car_drive_to_coord]
+title = "TaskCarDriveToCoord"
+
+[nodes.core.task_car_drive_wander]
+title = "TaskCarDriveWander"
+short_desc = "Makes the character drive around aimlessly in a vehicle"
+
+[nodes.core.task_go_straight_to_coord]
+title = "TaskGoStraightToCoord"
+short_desc = "Makes the character walk to the specified coordinates"
+
+[nodes.core.task_achieve_heading]
+title = "TaskAchieveHeading"
+short_desc = "Rotates a character to the specified angle"
+
+[nodes.core.task_follow_point_route]
+title = "TaskFollowPointRoute"
+short_desc = "Makes the character follow the path route"
+
+[nodes.core.task_goto_char]
+title = "TaskGotoChar"
+short_desc = "Approaches the character from any direction within the specified radius"
+
+[nodes.core.task_flee_point]
+title = "TaskFleePoint"
+short_desc = "Makes the character run away from a point, scared and often screaming"
+
+[nodes.core.task_flee_char]
+title = "TaskFleeChar"
+short_desc = "Makes the character run away from another character"
+
+[nodes.core.task_smart_flee_point]
+title = "TaskSmartFleePoint"
+short_desc = "Makes the character run away from the specified coordinates"
+
+[nodes.core.task_smart_flee_char]
+title = "TaskSmartFleeChar"
+short_desc = "Makes the character flee from another character"
+
+[nodes.core.task_wander_standard]
+title = "TaskWanderStandard"
+short_desc = "Makes the character walk around the ped path"
+
+[nodes.core.task_kill_char_on_foot]
+title = "TaskKillCharOnFoot"
+short_desc = "Makes a character attack another character on foot"
+
+[nodes.core.task_follow_path_nodes_to_coord]
+title = "TaskFollowPathNodesToCoord"
+short_desc = "Makes the character go to the specified coordinates"
+
+[nodes.core.task_go_to_coord_any_means]
+title = "TaskGoToCoordAnyMeans"
+short_desc = "Assigns the character the task of getting to the specified coordinates"
+
+[nodes.core.task_play_anim]
+title = "TaskPlayAnim"
+short_desc = "Makes the character perform an animation"
+
+[nodes.core.task_leave_car_immediately]
+title = "TaskLeaveCarImmediately"
+short_desc = "Makes the character jump out of the vehicle while it is in motion"
+
+[nodes.core.task_leave_any_car]
+title = "TaskLeaveAnyCar"
+short_desc = "Makes the actor exit the car, if he is in one"
+
+[nodes.core.task_kill_char_on_foot_while_ducking]
+title = "TaskKillCharOnFootWhileDucking"
+
+[nodes.core.task_aim_gun_at_char]
+title = "TaskAimGunAtChar"
+short_desc = "Makes a character aim at another character"
+
+[nodes.core.task_go_to_coord_while_shooting]
+title = "TaskGoToCoordWhileShooting"
+short_desc = "Makes a character go to the location while shooting at another character"
+
+[nodes.core.task_stay_in_same_place]
+title = "TaskStayInSamePlace"
+short_desc = "Makes the character stay in the same place"
+
+[nodes.core.task_turn_char_to_face_char]
+title = "TaskTurnCharToFaceChar"
+short_desc = "Makes a character face another character"
+
+[nodes.core.task_look_at_object]
+title = "TaskLookAtObject"
+short_desc = "Makes the character look at an object"
+
+[nodes.core.task_aim_gun_at_coord]
+title = "TaskAimGunAtCoord"
+short_desc = "Makes the character aim at the specified coordinates"
+
+[nodes.core.task_shoot_at_coord]
+title = "TaskShootAtCoord"
+short_desc = "Makes the character turn round and shoot at the specified coordinates"
+
+[nodes.core.task_destroy_car]
+title = "TaskDestroyCar"
+short_desc = "Makes the character attack a vehicle"
+
+[nodes.core.task_dive_and_get_up]
+title = "TaskDiveAndGetUp"
+short_desc = "Makes the character perform a dive in the specified direction"
+
+[nodes.core.task_shuffle_to_next_car_seat]
+title = "TaskShuffleToNextCarSeat"
+short_desc = "Makes the character move to the seat on the right"
+
+[nodes.core.task_chat_with_char]
+title = "TaskChatWithChar"
+short_desc = "Makes the character chat with another character"
+
+[nodes.core.task_toggle_ped_threat_scanner]
+title = "TaskTogglePedThreatScanner"
+
+[nodes.core.task_dive_from_attachment_and_get_up]
+title = "TaskDiveFromAttachmentAndGetUp"
+
+[nodes.core.task_goto_char_offset]
+title = "TaskGotoCharOffset"
+short_desc = "Approaches the char at the specified offset, specified by the radius and angle"
+
+[nodes.core.task_look_at_coord]
+title = "TaskLookAtCoord"
+short_desc = "Makes the actor look at the specified coordinates"
+
+[nodes.core.task_sit_down]
+title = "TaskSitDown"
+short_desc = "Makes the actor sit down for the specified amount of time"
+
+[nodes.core.task_turn_char_to_face_coord]
+title = "TaskTurnCharToFaceCoord"
+
+[nodes.core.task_drive_point_route]
+title = "TaskDrivePointRoute"
+
+[nodes.core.task_go_to_coord_while_aiming]
+title = "TaskGoToCoordWhileAiming"
+
+[nodes.core.task_car_temp_action]
+title = "TaskCarTempAction"
+
+[nodes.core.task_car_mission]
+title = "TaskCarMission"
+short_desc = "Sets the car's current mission with various parameters"
+
+[nodes.core.task_go_to_object]
+title = "TaskGoToObject"
+short_desc = "Makes the character go to an object"
+
+[nodes.core.task_weapon_roll]
+title = "TaskWeaponRoll"
+
+[nodes.core.task_char_arrest_char]
+title = "TaskCharArrestChar"
+short_desc = "Makes the character attempt to arrest another character"
+
+[nodes.core.task_pick_up_object]
+title = "TaskPickUpObject"
+short_desc = "Attaches the specified actor to an object with the optional addition of having it perform an animation"
+
+[nodes.core.task_drive_by]
+title = "TaskDriveBy"
+
+[nodes.core.task_use_mobile_phone]
+title = "TaskUseMobilePhone"
+short_desc = "Makes a character pull out a cellphone, answer it, and hold it to their ear"
+
+[nodes.core.task_warp_char_into_car_as_driver]
+title = "TaskWarpCharIntoCarAsDriver"
+short_desc = "Warps the character into the specified vehicle's driver seat"
+
+[nodes.core.task_warp_char_into_car_as_passenger]
+title = "TaskWarpCharIntoCarAsPassenger"
+
+[nodes.core.task_use_attractor]
+title = "TaskUseAttractor"
+
+[nodes.core.task_shoot_at_char]
+title = "TaskShootAtChar"
+
+[nodes.core.task_flee_char_any_means]
+title = "TaskFleeCharAnyMeans"
+
+[nodes.core.task_dead]
+title = "TaskDead"
+short_desc = "Kills the character"
+
+[nodes.core.task_goto_car]
+title = "TaskGotoCar"
+
+[nodes.core.task_climb]
+title = "TaskClimb"
+short_desc = "Makes the character jump and climb on an object"
+
+[nodes.core.task_goto_char_aiming]
+title = "TaskGotoCharAiming"
+
+[nodes.core.task_kill_char_on_foot_timed]
+title = "TaskKillCharOnFootTimed"
+short_desc = "Makes the character attack the specified character"
+
+[nodes.core.task_jetpack]
+title = "TaskJetpack"
+
+[nodes.core.task_set_char_decision_maker]
+title = "TaskSetCharDecisionMaker"
+short_desc = "Sets the decision maker used by the specified actor"
+
+[nodes.core.task_complex_pickup_object]
+title = "TaskComplexPickupObject"
+
+[nodes.core.task_char_slide_to_coord]
+title = "TaskCharSlideToCoord"
+
+[nodes.core.task_swim_to_coord]
+title = "TaskSwimToCoord"
+
+[nodes.core.task_drive_point_route_advanced]
+title = "TaskDrivePointRouteAdvanced"
+
+[nodes.core.task_char_slide_to_coord_and_play_anim]
+title = "TaskCharSlideToCoordAndPlayAnim"
+short_desc = "Makes a character go to the specified point and play an anim"
+
+[nodes.core.task_play_anim_non_interruptable]
+title = "TaskPlayAnimNonInterruptable"
+short_desc = "Makes the character perform an animation"
+
+[nodes.core.task_follow_patrol_route]
+title = "TaskFollowPatrolRoute"
+short_desc = "Assigns the character to the patrol path"
+
+[nodes.core.task_greet_partner]
+title = "TaskGreetPartner"
+short_desc = "Makes a character greet another character with a handshake"
+
+[nodes.core.task_die_named_anim]
+title = "TaskDieNamedAnim"
+short_desc = "Makes the actor perform an animation similarly to 0605"
+
+[nodes.core.task_follow_footsteps]
+title = "TaskFollowFootsteps"
+short_desc = "Makes one actor follow another"
+
+[nodes.core.task_walk_alongside_char]
+title = "TaskWalkAlongsideChar"
+short_desc = "Makes the character walk alongside the specified character"
+
+[nodes.core.task_kinda_stay_in_same_place]
+title = "TaskKindaStayInSamePlace"
+short_desc = "Makes the character stay near their current position"
+
+[nodes.core.task_play_anim_with_flags]
+title = "TaskPlayAnimWithFlags"
+short_desc = "Makes the actor perform an animation"
+
+[nodes.core.task_use_closest_map_attractor]
+title = "TaskUseClosestMapAttractor"
+
+[nodes.core.task_set_ignore_weapon_range_flag]
+title = "TaskSetIgnoreWeaponRangeFlag"
+
+[nodes.core.task_pick_up_second_object]
+title = "TaskPickUpSecondObject"
+
+[nodes.core.task_play_anim_secondary]
+title = "TaskPlayAnimSecondary"
+short_desc = "Makes a character play an animation that affects only the upper half of their body"
+
+[nodes.core.task_hand_gesture]
+title = "TaskHandGesture"
+short_desc = "Makes a character face the other character and make a gesture"
+
+[nodes.core.task_follow_path_nodes_to_coord_with_radius]
+title = "TaskFollowPathNodesToCoordWithRadius"
+short_desc = "Makes the specified character run in panic to the specified position"
+
+[nodes.core.particle_create]
+title = "ParticleCreate"
+short_desc = "Creates a particle effect"
+
+[nodes.core.particle_play]
+title = "ParticlePlay"
+short_desc = "Makes the specified particle visible"
+
+[nodes.core.particle_stop]
+title = "ParticleStop"
+short_desc = "Stops the specified particle at the source"
+
+[nodes.core.particle_play_and_kill]
+title = "ParticlePlayAndKill"
+short_desc = "Starts the particle effect and relinquishes script control over it"
+
+[nodes.core.particle_kill]
+title = "ParticleKill"
+short_desc = "Stops the particle and deletes it"
+
+[nodes.core.particle_create_on_char]
+title = "ParticleCreateOnChar"
+short_desc = "Creates a particle attached to a character"
+
+[nodes.core.particle_create_on_char_with_direction]
+title = "ParticleCreateOnCharWithDirection"
+short_desc = "Creates a particle effect attached to a character"
+
+[nodes.core.particle_create_on_car]
+title = "ParticleCreateOnCar"
+short_desc = "Creates a particle effect attached to a vehicle"
+
+[nodes.core.particle_create_on_car_with_direction]
+title = "ParticleCreateOnCarWithDirection"
+short_desc = "Creates a particle and attaches it to the specified vehicle with the specified offset and direction"
+
+[nodes.core.particle_create_on_object]
+title = "ParticleCreateOnObject"
+short_desc = "Creates a particle effect on an object"
+
+[nodes.core.particle_create_on_object_with_direction]
+title = "ParticleCreateOnObjectWithDirection"
+short_desc = "Creates particle effect on an object"
+
+[nodes.core.particle_attach_to_char_bone]
+title = "ParticleAttachToCharBone"
+short_desc = "Attaches the specified particle to the specified character"
+
+[nodes.core.particle_kill_now]
+title = "ParticleKillNow"
+short_desc = "Destroys the specified particle"
+
+[nodes.core.checkpoint_create]
+title = "CheckpointCreate"
+
+[nodes.core.checkpoint_delete]
+title = "CheckpointDelete"
+
+[nodes.core.checkpoint_set_coords]
+title = "CheckpointSetCoords"
+
+[nodes.core.checkpoint_set_heading]
+title = "CheckpointSetHeading"
+
+[nodes.core.train_create]
+title = "TrainCreate"
+short_desc = "Creates a script handled train from a predefined type (the type dictates how long the train is and the varieties of carriages) and sets the direction for the train to head in"
+
+[nodes.core.train_set_speed]
+title = "TrainSetSpeed"
+short_desc = "Sets the trains acceleration"
+
+[nodes.core.train_set_cruise_speed]
+title = "TrainSetCruiseSpeed"
+short_desc = "Sets the trains speed"
+
+[nodes.core.train_get_caboose]
+title = "TrainGetCaboose"
+short_desc = "Gets the handle of the last carriage (known as the \"caboose\")"
+
+[nodes.core.train_get_carriage]
+title = "TrainGetCarriage"
+short_desc = "Gets the nth train carriage"
+
+[nodes.core.train_delete]
+title = "TrainDelete"
+short_desc = "Removes the specified script created train"
+
+[nodes.core.train_mark_as_no_longer_needed]
+title = "TrainMarkAsNoLongerNeeded"
+short_desc = "Removes the specified script created train from the list of trains that the game shouldn't delete"
+
+[nodes.core.train_set_coordinates]
+title = "TrainSetCoordinates"
+short_desc = "Puts the train on the rails nearest to the specified coordinates"
+
+[nodes.core.train_has_derailed]
+title = "TrainHasDerailed"
+short_desc = "Returns true if the train has derailed (usually from going too fast)"
+
+[nodes.core.train_set_forced_to_slow_down]
+title = "TrainSetForcedToSlowDown"
+short_desc = "Sets whether the train should stop at each station it encounters"
+
+[nodes.core.train_find_direction]
+title = "TrainFindDirection"
+short_desc = "Returns true if the train is travelling clockwise, around San Andreas"
+
+[nodes.core.train_is_next_station_allowed]
+title = "TrainIsNextStationAllowed"
+short_desc = "Returns true if the next station is accessible (at the start of the game, railroad blocks prevent the player from travelling to stations whose area is not unlocked)"
+
+[nodes.core.train_skip_to_next_allowed_station]
+title = "TrainSkipToNextAllowedStation"
+short_desc = "Puts the script created train at the next allowed station"
+
+[nodes.core.weapon_get_model]
+title = "WeaponGetModel"
+short_desc = "Gets the model ID of the weapon according to the weapon type"
+
+[nodes.core.weapon_get_slot]
+title = "WeaponGetSlot"
+
+[nodes.core.trailer_is_attached_to_cab]
+title = "TrailerIsAttachedToCab"
+short_desc = "Returns true if CAR A has CAR B attached to it like a trailer"
+
+[nodes.core.trailer_detach_from_cab]
+title = "TrailerDetachFromCab"
+short_desc = "Detaches the trailer from the car which it is attached to"
+
+[nodes.core.trailer_attach_to_cab]
+title = "TrailerAttachToCab"
+
+[nodes.core.menu_create]
+title = "MenuCreate"
+short_desc = "Creates the specified panel on the screen with basic settings"
+
+[nodes.core.menu_set_column_orientation]
+title = "MenuSetColumnOrientation"
+
+[nodes.core.menu_get_item_selected]
+title = "MenuGetItemSelected"
+short_desc = "Returns the currently highlighted row in a panel"
+
+[nodes.core.menu_get_item_accepted]
+title = "MenuGetItemAccepted"
+short_desc = "Returns the last row of a panel selected with the sprint key"
+
+[nodes.core.menu_activate_item]
+title = "MenuActivateItem"
+
+[nodes.core.menu_delete]
+title = "MenuDelete"
+short_desc = "Removes the specified panel from the screen"
+
+[nodes.core.menu_set_column]
+title = "MenuSetColumn"
+
+[nodes.core.menu_set_item_with_number]
+title = "MenuSetItemWithNumber"
+short_desc = "Sets the numbered GXT of the specified panel row"
+
+[nodes.core.menu_set_item_with2_numbers]
+title = "MenuSetItemWith2Numbers"
+
+[nodes.core.menu_set_active_item]
+title = "MenuSetActiveItem"
+
+[nodes.core.menu_set_column_width]
+title = "MenuSetColumnWidth"
+short_desc = "Sets the width of the specified menu column"
+
+[nodes.core.menu_change_car_color]
+title = "MenuChangeCarColor"
+
+[nodes.core.menu_highlight_item]
+title = "MenuHighlightItem"
+short_desc = "Highlights the menu item - used to indicate an owned shopping item"
+
+[nodes.core.menu_grid_create]
+title = "MenuGridCreate"
+short_desc = "Creates the same color chart that you see in car modification shops"
