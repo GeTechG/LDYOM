@@ -1,6 +1,3 @@
-[submodule "glm"]
-	path = source/LDYOM_R/thirdparty/glm
-	url = https://github.com/g-truc/glm.git
-[submodule "source/ImGuiLuaWrapper/cimgui"]
-	path = source/ImGuiLuaWrapper/cimgui
-	url = https://github.com/GeTechG/cimgui
+[submodule "sol2"]
+	path = LDYOM2/thirdparty/sol2
+	url = https://github.com/ThePhD/sol2.git

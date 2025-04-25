@@ -1,2 +1,0 @@
-require("enums")
-require("structs")

@@ -1,5 +1,0 @@
-import parse_for_cpp_wrap
-import parse_lua_opcodes_annotation
-
-parse_for_cpp_wrap.generate()
-parse_lua_opcodes_annotation.generate()

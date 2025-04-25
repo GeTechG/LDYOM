@@ -1,7 +1,0 @@
----@class LDNodeEditorDataType
----@field isMakeable boolean
----@field colorGetter fun(): ImVec4
----@field makeNew fun(): any
----@field drawEditValue fun(value: any, name: string, availContent: number): any
----@field equals fun(a: any, b: any): boolean
----@field iconType NodeEditorIconType
