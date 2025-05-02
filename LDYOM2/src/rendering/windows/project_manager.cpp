@@ -6,6 +6,7 @@
 #include <format>
 #include <imgui_widgets/imgui_widgets.h>
 #include <projects_manager.h>
+#include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
 #include <window_manager.h>
 
@@ -237,6 +238,10 @@ void ProjectManager::renderSidebar(ProjectManager* window, float sidebarWidth, f
 
 		if (ImGui::Button(editText.c_str(), ImVec2(-1.0f, buttonHeight))) {
 			ProjectsManager::instance().openProject(window->m_selectedProjectIndex);
+			ScenesManager::instance().loadScenesInfo();
+			if (!ScenesManager::instance().getScenesInfo().empty()) {
+				ScenesManager::instance().loadScene(ScenesManager::instance().getScenesInfo()[0].id);
+			}
 			window->close();
 			WindowManager::instance().closeWindow("project_manager");
 			WindowManager::instance().openWindow("main_menu");

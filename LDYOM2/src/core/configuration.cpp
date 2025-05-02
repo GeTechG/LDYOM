@@ -15,7 +15,8 @@ Configuration& Configuration::instance() {
 void Configuration::initialize() {
 	this->m_config = {{"lang", "en"},
 	                  {"hotkeys", std::unordered_map<std::string, std::string>()},
-	                  {"display_scale", 1.f}};
+	                  {"display_scale", 1.f},
+	                  {"active_addons", {"skic.core"}}};
 
 	std::filesystem::path configPath(LDYOM_PATH(CONFIG_FILE_PATH));
 	if (exists(configPath)) {

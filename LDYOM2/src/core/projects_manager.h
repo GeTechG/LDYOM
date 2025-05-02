@@ -1,9 +1,9 @@
 #pragma once
+#include "project_info.h"
 #include <optional>
 #include <string>
 #include <vector>
 
-struct ProjectInfo;
 
 class ProjectsManager {
   public:
@@ -31,4 +31,10 @@ class ProjectsManager {
 	static const std::string PROJECT_INFO_FILE_NAME;
 };
 
-#define proj ::ProjectsManager::instance().getCurrentProject();
+inline std::string projectPath(std::string_view projectName) {
+	auto currentProject = ProjectsManager::instance().getCurrentProject();
+	if (!currentProject.has_value()) {
+		return std::string();
+	}
+	return currentProject.value().get().path + "/" + std::string(projectName);
+}

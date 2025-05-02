@@ -89,7 +89,10 @@
         "regex": "cpp",
         "cwctype": "cpp",
         "deque": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "bitset": "cpp",
+        "shared_mutex": "cpp",
+        "variant": "cpp"
     },
     "editor.formatOnSave": true,
 }

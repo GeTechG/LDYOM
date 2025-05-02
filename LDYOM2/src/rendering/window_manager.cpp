@@ -110,6 +110,22 @@ bool WindowManager::isWindowOpen(std::string_view id) const {
 	return it != m_windows.end() && it->second->isOpen();
 }
 
+bool WindowManager::isAnyWindowOpen() const {
+	checkInitialized();
+
+	return std::ranges::any_of(m_windows, [](const auto& pair) { return pair.second->isOpen(); });
+}
+
+void WindowManager::closeAllWindows() {
+	checkInitialized();
+
+	for (auto& [id, window] : m_windows) {
+		if (window->isOpen()) {
+			window->close();
+		}
+	}
+}
+
 void WindowManager::registerHotkey(ImGuiKey key, bool ctrl, bool alt, bool shift, std::string_view windowId) {
 	checkInitialized();
 
@@ -191,8 +207,7 @@ void WindowManager::render() {
 	ControlEnabled(!isLockPlayerControl);
 
 	static bool mouseShown = false;
-	const bool isSomeWindowOpen =
-		std::ranges::any_of(m_windows, [](const auto& pair) { return pair.second->isOpen(); });
+	const bool isSomeWindowOpen = this->isAnyWindowOpen();
 	const bool isRenderWindows = isSomeWindowOpen && !FrontEndMenuManager.m_bMenuActive;
 	if (mouseShown != isRenderWindows) {
 		mouseShown = isRenderWindows;

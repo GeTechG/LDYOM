@@ -71,6 +71,9 @@ class WindowManager {
 	void closeWindow(std::string_view id);
 	bool isWindowOpen(std::string_view id) const;
 
+	bool isAnyWindowOpen() const;
+	void closeAllWindows();
+
 	void registerHotkey(ImGuiKey key, bool ctrl, bool alt, bool shift, std::string_view windowId);
 	bool unregisterHotkey(ImGuiKey key, bool ctrl, bool alt, bool shift);
 	void processHotkeys();

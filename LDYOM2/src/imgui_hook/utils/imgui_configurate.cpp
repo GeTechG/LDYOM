@@ -73,22 +73,6 @@ void ImGuiConfigurate::update(int width, int height) {
 	ImGuiStyle* style = &ImGui::GetStyle();
 	screenScale = ImVec2(width / 1280.0f, height / 720.0f);
 
-	style->TabRounding = 5.0f;
-	style->ChildBorderSize = 1.0f;
-	style->WindowBorderSize = 1.0f;
-	style->FrameBorderSize = 1.0f;
-	style->TabBorderSize = 1.0f;
-	style->PopupBorderSize = 1.0f;
-	style->FramePadding = ImVec2(6 * screenScale.x, 4 * screenScale.y);
-	style->ItemSpacing = ImVec2(6 * screenScale.x, 6 * screenScale.y);
-	style->ScrollbarSize = 14 * screenScale.x;
-	style->IndentSpacing = 24 * screenScale.x;
-	style->ItemInnerSpacing = ImVec2(4 * screenScale.x, 4 * screenScale.y);
-	style->Colors[ImGuiCol_Header] = ImVec4(0.2f, 0.2f, 0.2f, 1.00f);
-	style->Colors[ImGuiCol_ResizeGrip] = ImVec4(0.2f, 0.2f, 0.2f, 1.00f);
-	style->WindowTitleAlign = ImVec2(0.5f, 0.5f);
-	style->ButtonTextAlign = ImVec2(0.5f, 0.5f);
-
 	const std::string currentTheme = Configuration::instance().getSetting<std::string>("theme", "");
 	if (!currentTheme.empty()) {
 		ThemeLoader::loadThemeFromJson(currentTheme);

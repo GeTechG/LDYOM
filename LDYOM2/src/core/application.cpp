@@ -1,7 +1,9 @@
 #include "application.h"
+#include "addons_manager.h"
 #include "configuration.h"
 #include "hotkeys.h"
 #include "localization.h"
+#include "lua_manager.h"
 #include "render_hook.h"
 #include <logger.h>
 #include <plugin.h>
@@ -22,23 +24,21 @@ void Application::Initialize() {
 		WindowManager::instance().initialize();
 		ThemeLoader::initialize();
 		ProjectsManager::instance().initialize();
+		LuaManager::instance().initialize();
+		AddonsManager::instance().initialize();
 
 		HookImgui(RenderFrames);
 
 		Hotkeys::instance().addHotkeyCallback("openEditor", []() {
 			const auto currentProjectIndex = ProjectsManager::instance().getCurrentProjectIndex();
-			if (currentProjectIndex == -1) {
-				if (WindowManager::instance().isWindowOpen("project_manager")) {
-					WindowManager::instance().closeWindow("project_manager");
-				} else {
-					WindowManager::instance().openWindow("project_manager");
-				}
+
+			if (WindowManager::instance().isAnyWindowOpen()) {
+				WindowManager::instance().closeAllWindows();
 			} else {
-				if (WindowManager::instance().isWindowOpen("main_menu")) {
-					WindowManager::instance().closeWindow("main_menu");
-				} else {
+				if (currentProjectIndex == -1)
+					WindowManager::instance().openWindow("project_manager");
+				else
 					WindowManager::instance().openWindow("main_menu");
-				}
 			}
 		});
 
@@ -59,6 +59,8 @@ void Application::Initialize() {
 
 void Application::Shutdown() {
 	LDYOM_INFO("Application shutdown");
+
+	AddonsManager::instance().shutdown();
 	WindowManager::instance().shutdown();
 	LDYOM_INFO("Window Manager shutdown");
 
@@ -66,6 +68,7 @@ void Application::Shutdown() {
 	LDYOM_INFO("ImGui unhooked");
 
 	Localization::instance().shutdown();
+	LuaManager::instance().shutdown();
 
 	Logger::Shutdown();
 }
