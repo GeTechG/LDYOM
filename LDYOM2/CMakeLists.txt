@@ -15,12 +15,17 @@ project(ldyom C CXX)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 
-set(SOL2_LUA_VERSION "luajit" CACHE STRING "")
+set(SOL2_LUA_VERSION "libluajit" CACHE STRING "")
 set(SOL2_BUILD_LUA OFF CACHE BOOL "")
 set(SOL2_PLATFORM "x86" CACHE STRING "")
-set(BUILD_LUA_AS_DLL)
+set(SOL2_TESTS_EXAMPLES OFF CACHE BOOL "")
+set(BUILD_LUA_AS_DLL OFF)
+set(LUAJIT_FORCE_UTF8_FOPEN ON)
+set(LUAJIT_BUILD_TOOL OFF)
+set(BUILD_SHARED_LIBS OFF)
 
 add_subdirectory(thirdparty/sol2)
+add_subdirectory(thirdparty/LuaJIT)
 
 find_package(plugin REQUIRED)
 find_package(minhook REQUIRED)
@@ -30,7 +35,6 @@ find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
 find_package(stduuid)
 find_package(watcher)
-find_package(luajit)
 
 
 file(GLOB_RECURSE SRC_FILES "src/*")
@@ -47,8 +51,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     fmt::fmt
     stduuid::stduuid
     watcher::watcher
-    luajit::luajit
     sol2::sol2
+    libluajit
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -60,6 +64,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/imgui
     ${CMAKE_CURRENT_SOURCE_DIR}/src/rendering
     ${CMAKE_CURRENT_SOURCE_DIR}/src/fonts
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/lua
 )
 
 set(GTA_SA_DIR "C:/Games/GTA San Andreas")
