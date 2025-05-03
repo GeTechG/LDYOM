@@ -64,8 +64,8 @@ class WindowManager {
 	WindowManager& operator=(WindowManager&&) = delete;
 
 	Window& addWindow(std::string_view id, std::unique_ptr<Window> window);
-	std::optional<std::reference_wrapper<Window>> getWindow(std::string_view id);
-	std::optional<std::reference_wrapper<const Window>> getWindow(std::string_view id) const;
+	std::optional<Window*> getWindow(std::string_view id);
+	std::optional<const Window*> getWindow(std::string_view id) const;
 	bool removeWindow(std::string_view id);
 	void openWindow(std::string_view id);
 	void closeWindow(std::string_view id);

@@ -52,22 +52,22 @@ Window& WindowManager::addWindow(std::string_view id, std::unique_ptr<Window> wi
 	return windowRef;
 }
 
-std::optional<std::reference_wrapper<Window>> WindowManager::getWindow(const std::string_view id) {
+std::optional<Window*> WindowManager::getWindow(const std::string_view id) {
 	checkInitialized();
 
 	auto it = findWindowMutable(id);
 	if (it != m_windows.end()) {
-		return std::ref(*it->second);
+		return &*it->second;
 	}
 	return std::nullopt;
 }
 
-std::optional<std::reference_wrapper<const Window>> WindowManager::getWindow(const std::string_view id) const {
+std::optional<const Window*> WindowManager::getWindow(const std::string_view id) const {
 	checkInitialized();
 
 	auto it = findWindow(id);
 	if (it != m_windows.end()) {
-		return std::cref(*it->second);
+		return &*it->second;
 	}
 	return std::nullopt;
 }
@@ -166,10 +166,10 @@ void WindowManager::processHotkeys() {
 		if (ImGui::IsKeyPressed(hotkeyInfo.key, false)) {
 			const auto window = this->getWindow(windowId);
 			if (window) {
-				if (window.value().get().isOpen() && window.value().get().isFocused())
-					window.value().get().close();
+				if (window.value()->isOpen() && window.value()->isFocused())
+					window.value()->close();
 				else
-					window.value().get().open();
+					window.value()->open();
 			}
 		}
 	}
