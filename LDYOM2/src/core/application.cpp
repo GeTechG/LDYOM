@@ -4,6 +4,7 @@
 #include "hotkeys.h"
 #include "localization.h"
 #include "lua_manager.h"
+#include "objectives_manager.h"
 #include "render_hook.h"
 #include <logger.h>
 #include <plugin.h>
@@ -12,6 +13,7 @@
 #include <utils/theme_loader.h>
 #include <window_manager.h>
 #include <windows/init.h>
+
 
 void Application::Initialize() {
 	Logger::Initialize();
@@ -44,7 +46,7 @@ void Application::Initialize() {
 
 		initWindows();
 
-		// WindowManager::instance().registerHotkey(ImGuiKey_I, false, false, false, "project_manager");
+		ObjectivesManager::instance().registerCoreObjectives();
 	} catch (const std::exception& e) {
 		LDYOM_CRITICAL("Error during application initialization: {}", e.what());
 		LDYOM_DUMP_BACKTRACE();

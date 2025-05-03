@@ -13,6 +13,10 @@ void MainMenu::renderContent(Window* window) {
 		WindowManager::instance().openWindow("scenes_settings");
 		window->close();
 	}
+	if (ImGui::Button(_("objectives.title", ICON_FA_BULLSEYE_ARROW).c_str())) {
+		WindowManager::instance().openWindow("objectives");
+		window->close();
+	}
 	if (ImGui::Button(_("addons_settings.title", ICON_FA_PUZZLE_PIECE).c_str())) {
 		WindowManager::instance().openWindow("addons_settings");
 	}
