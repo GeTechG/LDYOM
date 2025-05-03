@@ -13,7 +13,7 @@ void Window::close() { m_open = false; }
 
 void Window::configurateWindow() {
 	const auto screenScale = ImGuiConfigurate::getScreenScale();
-	ImGui::SetNextWindowPos(this->m_position * screenScale, ImGuiCond_FirstUseEver, this->m_pivot);
+	ImGui::SetNextWindowPos(this->m_position * screenScale, this->m_positionCondition, this->m_pivot);
 	ImGui::SetNextWindowSize(this->m_size * screenScale, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(this->m_sizeMin * screenScale, ImVec2(FLT_MAX, FLT_MAX));
 }

@@ -18,6 +18,7 @@ class Window {
 	ImVec2 m_sizeMin = ImVec2(0, 70);
 	ImVec2 m_pivot = ImVec2(0, 0);
 	ImVec2 m_position = ImVec2(0, 0);
+	ImGuiCond m_positionCondition = ImGuiCond_FirstUseEver;
 	ImGuiWindowFlags m_flags = ImGuiWindowFlags_None;
 	std::function<void(Window*)> m_renderCallback = nullptr;
 
@@ -60,6 +61,9 @@ class Window {
 
 	void setPosition(float x, float y) { m_position = ImVec2(x, y); }
 	ImVec2 getPosition() const { return m_position; }
+
+	void setPositionCondition(ImGuiCond condition) { m_positionCondition = condition; }
+	ImGuiCond getPositionCondition() const { return m_positionCondition; }
 
 	void setFlags(ImGuiWindowFlags flags) { m_flags = flags; }
 	ImGuiWindowFlags getFlags() const { return m_flags; }
