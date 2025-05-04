@@ -14,8 +14,7 @@
 #include <window_manager.h>
 #include <windows/init.h>
 
-
-void Application::Initialize() {
+void Application::initialize() {
 	Logger::Initialize();
 	LDYOM_INFO("LDYOM Application starting...");
 
@@ -29,7 +28,7 @@ void Application::Initialize() {
 		LuaManager::instance().initialize();
 		AddonsManager::instance().initialize();
 
-		HookImgui(RenderFrames);
+		HookImgui(renderFrames);
 
 		Hotkeys::instance().addHotkeyCallback("openEditor", []() {
 			const auto currentProjectIndex = ProjectsManager::instance().getCurrentProjectIndex();
@@ -59,7 +58,7 @@ void Application::Initialize() {
 	LDYOM_INFO("Application initialization completed");
 }
 
-void Application::Shutdown() {
+void Application::shutdown() {
 	LDYOM_INFO("Application shutdown");
 
 	AddonsManager::instance().shutdown();
@@ -75,7 +74,9 @@ void Application::Shutdown() {
 	Logger::Shutdown();
 }
 
-void Application::RenderFrames() {
+void Application::process() {}
+
+void Application::renderFrames() {
 	Hotkeys::instance().update();
 	rocket::dispatch_queued_calls();
 	WindowManager::instance().render();

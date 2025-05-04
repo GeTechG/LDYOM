@@ -14,12 +14,13 @@ class Application {
 	Application& operator=(const Application&) = delete;
 	Application& operator=(Application&&) = delete;
 
-	void Initialize();
-	void Shutdown();
+	void initialize();
+	void shutdown();
+	void process();
 
-	static void RenderFrames();
+	static void renderFrames();
 
-	static Application& Instance() {
+	static Application& instance() {
 		static Application instance;
 		return instance;
 	}

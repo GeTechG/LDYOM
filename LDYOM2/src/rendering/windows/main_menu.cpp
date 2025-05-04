@@ -9,18 +9,22 @@
 #include <window_manager.h>
 
 void MainMenu::renderContent(Window* window) {
-	if (ImGui::Button(_("scenes_settings.title", ICON_FA_FILM).c_str())) {
+	// Calculate the maximum button width needed
+	float buttonWidth = 250.0f * (SCL_PX).x;
+	ImVec2 buttonSize(buttonWidth, 0.0f); // Height 0 means use default height
+
+	if (ImGui::Button(_("scenes_settings.title", ICON_FA_FILM).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("scenes_settings");
 		window->close();
 	}
-	if (ImGui::Button(_("objectives.title", ICON_FA_BULLSEYE_ARROW).c_str())) {
+	if (ImGui::Button(_("objectives.title", ICON_FA_BULLSEYE_ARROW).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("objectives");
 		window->close();
 	}
-	if (ImGui::Button(_("addons_settings.title", ICON_FA_PUZZLE_PIECE).c_str())) {
+	if (ImGui::Button(_("addons_settings.title", ICON_FA_PUZZLE_PIECE).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("addons_settings");
 	}
-	if (ImGui::Button(_("main_menu.close_project", ICON_FA_RIGHT_FROM_BRACKET).c_str())) {
+	if (ImGui::Button(_("main_menu.close_project", ICON_FA_RIGHT_FROM_BRACKET).c_str(), buttonSize)) {
 		ProjectsManager::instance().closeProject();
 		window->close();
 		WindowManager::instance().openWindow("project_manager");
