@@ -92,7 +92,9 @@
         "future": "cpp",
         "bitset": "cpp",
         "shared_mutex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "resumable": "cpp",
+        "queue": "cpp"
     },
     "editor.formatOnSave": true,
 }

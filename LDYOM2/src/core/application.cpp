@@ -10,6 +10,7 @@
 #include <plugin.h>
 #include <projects_manager.h>
 #include <sol/sol.hpp>
+#include <task_manager.h>
 #include <utils/theme_loader.h>
 #include <window_manager.h>
 #include <windows/init.h>
@@ -70,11 +71,12 @@ void Application::shutdown() {
 
 	Localization::instance().shutdown();
 	LuaManager::instance().shutdown();
+	TaskManager::instance().shutdown();
 
 	Logger::Shutdown();
 }
 
-void Application::process() {}
+void Application::process() { TaskManager::instance().processAll(); }
 
 void Application::renderFrames() {
 	Hotkeys::instance().update();
