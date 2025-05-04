@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <typeindex>
 #include <typeinfo>
@@ -9,6 +10,8 @@ class DataContainer {
   public:
 	virtual ~DataContainer() = default;
 	virtual void callRenderer() = 0;
+	virtual nlohmann::json toJson() const = 0;
+	virtual void fromJson(const nlohmann::json& j) = 0;
 };
 
 template <typename T> class TypedDataContainer : public DataContainer {
@@ -19,6 +22,10 @@ template <typename T> class TypedDataContainer : public DataContainer {
 	TypedDataContainer(T initialValue, std::function<void(T&)> callback)
 		: value(initialValue),
 		  editorCallback(callback) {}
+
+	nlohmann::json toJson() const override { return nlohmann::json(value); }
+
+	void fromJson(const nlohmann::json& j) override { this->value = j; }
 
 	void callRenderer() override {
 		if (editorCallback) {
@@ -38,10 +45,10 @@ class Objective {
 
 	template <typename T>
 	Objective(std::string_view type, std::string_view name, T initialValue, std::function<void(T&)> callback)
-		: type(std::string(type)),
-		  name(std::string(name)),
-		  content(std::make_shared<TypedDataContainer<T>>(initialValue, callback)),
-		  contentType(typeid(T)) {}
+		: content(std::make_shared<TypedDataContainer<T>>(initialValue, callback)),
+		  contentType(typeid(T)),
+		  type(std::string(type)),
+		  name(std::string(name)) {}
 
 	template <typename T> T& getValue() {
 		if (typeid(T) != contentType) {
@@ -61,6 +68,17 @@ class Objective {
 	void renderEditor() {
 		if (content) {
 			content->callRenderer();
+		}
+	}
+
+	friend void to_json(nlohmann::json& j, const Objective& p) {
+		j = nlohmann::json{{"type", p.type}, {"name", p.name}, {"content", p.content->toJson()}};
+	}
+
+	friend void from_json(const nlohmann::json& j, Objective& p) {
+		j.at("name").get_to(p.name);
+		if (j.contains("content")) {
+			p.content->fromJson(j.at("content"));
 		}
 	}
 };

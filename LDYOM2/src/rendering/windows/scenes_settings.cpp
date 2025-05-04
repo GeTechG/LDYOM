@@ -16,7 +16,7 @@ void ScenesSettings::renderContent(ScenesSettings* window) {
 	} else {
 		ImGui::BeginListBox("##ScenesList", ImVec2(0, 200) * SCL_PX);
 		for (size_t i = 0; i < scenesInfo.size(); i++) {
-			const auto& sceneInfo = scenesInfo[i];
+			auto& sceneInfo = scenesInfo[i];
 			ImGui::PushID(sceneInfo.id.c_str());
 			auto isSelected = (window->m_selectedSceneIndex == static_cast<int>(i));
 			auto isCurrentScene = (scenesManager.getCurrentScene().info.id == sceneInfo.id);
@@ -24,6 +24,32 @@ void ScenesSettings::renderContent(ScenesSettings* window) {
 					(sceneInfo.name + (isCurrentScene ? _("scenes_settings.current") : "")).c_str(), isSelected)) {
 				window->m_selectedSceneIndex = static_cast<int>(i);
 			}
+			char renamePopupId[32];
+			sprintf(renamePopupId, "rename_popup_%d", i);
+
+			bool openRenamePopupIndex = false;
+			static std::string renameBuffer = "";
+			if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+				renameBuffer = sceneInfo.name;
+				openRenamePopupIndex = true;
+			}
+
+			if (openRenamePopupIndex) {
+				ImGui::OpenPopup(renamePopupId);
+			}
+
+			if (ImGui::RenamePopup(renamePopupId, &renameBuffer)) {
+				if (!renameBuffer.empty()) {
+					if (isCurrentScene) {
+						sceneInfo.name = renameBuffer;
+						scenesManager.getCurrentScene().info.name = renameBuffer;
+					} else {
+						sceneInfo.name = renameBuffer;
+						scenesManager.rewriteSceneInfo(sceneInfo.id);
+					}
+				}
+			}
+
 			ImGui::PopID();
 		}
 		ImGui::EndListBox();

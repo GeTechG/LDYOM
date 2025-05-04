@@ -1,10 +1,10 @@
 #pragma once
-#include "objective.h"
+#include "objectives_container.h"
 #include "scene_info.h"
-
+#include <scenes_manager.h>
 
 struct Scene {
 	SceneInfo info;
-	std::vector<Objective> objectives;
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Scene, info)
+	ObjectivesContainer objectives;
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Scene, info, objectives)
 };

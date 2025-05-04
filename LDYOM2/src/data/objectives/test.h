@@ -8,6 +8,7 @@ constexpr const char* TEST_OBJECTIVE_TYPE = "core.test";
 struct TestObjectiveData {
 	int value = 0;
 	std::string value2 = "default";
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(TestObjectiveData, value, value2)
 };
 
 void renderTestObjectiveEditor(TestObjectiveData& data) {

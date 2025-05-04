@@ -10,15 +10,18 @@ ObjectivesManager& ObjectivesManager::instance() {
 
 void ObjectivesManager::registerObjectiveBuilder(ObjectiveBuilderData data) { m_objectivesBuilders[data.type] = data; }
 
-void ObjectivesManager::createNewObjective(std::string_view type) {
+Objective ObjectivesManager::createNewObjectiveRaw(std::string_view type) {
 	auto it = m_objectivesBuilders.find(std::string(type));
 	if (it != m_objectivesBuilders.end()) {
 		auto& builderData = it->second;
-		Objective objective = builderData.builder();
-		ScenesManager::instance().getCurrentScene().objectives.push_back(objective);
-	} else {
-		throw std::runtime_error("Objective type not registered: " + std::string(type));
+		return builderData.builder();
 	}
+	throw std::runtime_error("Objective type not registered: " + std::string(type));
+}
+
+void ObjectivesManager::createNewObjective(std::string_view type) {
+	Objective objective = this->createNewObjectiveRaw(type);
+	ScenesManager::instance().getCurrentScene().objectives.data.push_back(objective);
 }
 
 void ObjectivesManager::registerCoreObjectives() { this->registerObjectiveBuilder(createTestObjectiveBuilder()); }

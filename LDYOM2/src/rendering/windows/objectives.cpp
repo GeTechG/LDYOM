@@ -2,6 +2,7 @@
 #include "objectives.h"
 #include <fa_icons.h>
 #include <imgui_internal.h>
+#include <imgui_widgets/imgui_widgets.h>
 #include <localization.h>
 #include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
@@ -14,7 +15,7 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 	const ImVec2 squareButtonSize(buttonSize, buttonSize);
 	const ImVec2 availContentSize = ImGui::GetContentRegionAvail();
 
-	auto& objectives = ScenesManager::instance().getCurrentScene().objectives;
+	auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
 
 	if (ImGui::BeginChild("TopButtons", ImVec2(-1.0f, buttonSize), false)) {
 		if (ImGui::Button(ICON_FA_ARROW_TURN_LEFT, squareButtonSize)) {
@@ -68,8 +69,13 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 				ImGui::PopStyleColor(2);
 			}
 
+			char renamePopupId[32];
+			sprintf(renamePopupId, "rename_popup_%d", i);
+
+			bool openRenamePopupIndex = false;
 			if (ImGui::BeginPopupContextItem("objective_context_menu")) {
 				if (ImGui::MenuItem(_("objectives.rename", ICON_FA_I_CURSOR).c_str())) {
+					openRenamePopupIndex = true;
 				}
 
 				if (ImGui::MenuItem(_("objectives.delete", ICON_FA_TRASH).c_str())) {
@@ -83,6 +89,12 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 
 				ImGui::EndPopup();
 			}
+
+			if (openRenamePopupIndex) {
+				ImGui::OpenPopup(renamePopupId);
+			}
+
+			ImGui::RenamePopup(renamePopupId, &objectives[i].name);
 
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
 				ImGui::SetDragDropPayload("OBJECTIVE_DND", &i, sizeof(int));

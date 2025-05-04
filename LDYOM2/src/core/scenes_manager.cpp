@@ -92,6 +92,33 @@ void ScenesManager::removeScene(std::string_view sceneId) {
 	}
 }
 
+void ScenesManager::rewriteSceneInfo(std::string_view sceneId) {
+	auto it = std::ranges::find_if(m_scenesInfo, [&sceneId](const SceneInfo& info) { return info.id == sceneId; });
+	if (it != m_scenesInfo.end()) {
+		// открыть файл сцены и перезаписать информацию
+		std::filesystem::path scenePath(projectPath(SCENE_FOLDER_NAME) + "/" + it->id + ".json");
+		std::ifstream file(scenePath);
+		if (!file.is_open()) {
+			LDYOM_ERROR("Failed to open scene file for rewriting: {}", scenePath.string());
+			return;
+		}
+		nlohmann::json jsonData;
+		file >> jsonData;
+		file.close();
+		jsonData["info"] = *it;
+		std::ofstream outFile(scenePath);
+		if (outFile.is_open()) {
+			outFile << jsonData.dump(4);
+			outFile.close();
+			LDYOM_INFO("Rewrote scene info: {}", sceneId);
+		} else {
+			LDYOM_ERROR("Failed to open scene file for writing: {}", scenePath.string());
+		}
+	} else {
+		LDYOM_ERROR("Scene with ID {} not found", sceneId);
+	}
+}
+
 void ScenesManager::saveCurrentScene() {
 	if (!m_currentScene) {
 		LDYOM_ERROR("No current scene to save");
