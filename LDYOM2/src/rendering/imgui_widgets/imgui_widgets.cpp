@@ -1,5 +1,6 @@
 #include "imgui_widgets.h"
 #include <algorithm>
+#include <imgui_stdlib.h>
 #include <string>
 
 bool ImGui::TextSelectable(const char* label, bool selected, const ImVec2& size) {
@@ -115,4 +116,46 @@ bool ImGui::SelectableGTAColored(const char* label, bool selected, ImGuiSelectab
 
 	ImGui::EndGroup();
 	return isClicked;
+}
+
+bool ImGui::RenamePopup(const char* popupId, char* buffer, size_t bufferSize) {
+	bool renamed = false;
+	if (ImGui::BeginPopup(popupId)) {
+		ImGui::SetKeyboardFocusHere();
+
+		if (ImGui::InputText("##rename", buffer, bufferSize, ImGuiInputTextFlags_EnterReturnsTrue)) {
+			renamed = true;
+			ImGui::CloseCurrentPopup();
+		}
+
+		if (ImGui::IsMouseClicked(0) && !ImGui::IsItemHovered() &&
+		    ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) == false) {
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	return renamed;
+}
+
+bool ImGui::RenamePopup(const char* popupId, std::string* buffer) {
+	bool renamed = false;
+	if (ImGui::BeginPopup(popupId)) {
+		ImGui::SetKeyboardFocusHere();
+
+		if (ImGui::InputText("##rename", buffer, ImGuiInputTextFlags_EnterReturnsTrue)) {
+			renamed = true;
+			ImGui::CloseCurrentPopup();
+		}
+
+		if (ImGui::IsMouseClicked(0) && !ImGui::IsItemHovered() &&
+		    ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) == false) {
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	return renamed;
 }
