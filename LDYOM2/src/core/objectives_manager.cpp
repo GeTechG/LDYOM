@@ -1,6 +1,7 @@
 #include "objectives_manager.h"
 #include "scenes_manager.h"
 #include <objectives/test.h>
+#include <objectives/wait_signal.h>
 #include <stdexcept>
 
 ObjectivesManager& ObjectivesManager::instance() {
@@ -53,9 +54,15 @@ void ObjectivesManager::moveObjective(int fromIndex, int toIndex) {
 
 		objectives.erase(objectives.begin() + fromIndex);
 
-		int actualToIndex = (toIndex > fromIndex) ? toIndex - 1 : toIndex;
-		objectives.insert(objectives.begin() + actualToIndex, std::move(movingObjective));
+		if (toIndex == objectives.size()) {
+			objectives.emplace_back(std::move(movingObjective));
+		} else {
+			objectives.insert(objectives.begin() + toIndex, std::move(movingObjective));
+		}
 	}
 }
 
-void ObjectivesManager::registerCoreObjectives() { this->registerObjectiveBuilder(createTestObjectiveBuilder()); }
+void ObjectivesManager::registerCoreObjectives() {
+	this->registerObjectiveBuilder(test_objective::builder());
+	this->registerObjectiveBuilder(wait_signal_objective::builder());
+}

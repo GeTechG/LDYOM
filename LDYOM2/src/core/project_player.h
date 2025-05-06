@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <rocket.hpp>
 #include <string>
 
 struct ProjectPlayerState {
@@ -22,6 +23,8 @@ class ProjectPlayer {
 	static ktwait run();
 
   public:
+	rocket::thread_safe_signal<void(std::string)> signals;
+
 	static ProjectPlayer& instance();
 
 	ProjectPlayer(const ProjectPlayer&) = delete;
