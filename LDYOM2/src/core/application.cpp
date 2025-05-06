@@ -5,6 +5,7 @@
 #include "localization.h"
 #include "lua_manager.h"
 #include "objectives_manager.h"
+#include "project_player.h"
 #include "render_hook.h"
 #include <logger.h>
 #include <plugin.h>
@@ -14,6 +15,7 @@
 #include <utils/theme_loader.h>
 #include <window_manager.h>
 #include <windows/init.h>
+
 
 void Application::initialize() {
 	Logger::Initialize();
@@ -34,13 +36,15 @@ void Application::initialize() {
 		Hotkeys::instance().addHotkeyCallback("openEditor", []() {
 			const auto currentProjectIndex = ProjectsManager::instance().getCurrentProjectIndex();
 
-			if (WindowManager::instance().isAnyWindowOpen()) {
-				WindowManager::instance().closeAllWindows();
-			} else {
-				if (currentProjectIndex == -1)
-					WindowManager::instance().openWindow("project_manager");
-				else
-					WindowManager::instance().openWindow("main_menu");
+			if (!ProjectPlayer::instance().isPlaying()) {
+				if (WindowManager::instance().isAnyWindowOpen()) {
+					WindowManager::instance().closeAllWindows();
+				} else {
+					if (currentProjectIndex == -1)
+						WindowManager::instance().openWindow("project_manager");
+					else
+						WindowManager::instance().openWindow("main_menu");
+				}
 			}
 		});
 

@@ -23,8 +23,12 @@ class ObjectivesManager {
 	void operator=(const ObjectivesManager&) = delete;
 
 	void registerObjectiveBuilder(ObjectiveBuilderData data);
-	Objective createNewObjectiveRaw(std::string_view type);
-	void createNewObjective(std::string_view type);
+	Objective createObjective(std::string_view type);
+	void addNewObjective(std::string_view type);
+
+	Objective& getObjectiveMutable(int index);
+	void removeObjective(int index);
+	void moveObjective(int fromIndex, int toIndex);
 
 	std::unordered_map<std::string, ObjectiveBuilderData>& getObjectiveTypes() { return m_objectivesBuilders; }
 
