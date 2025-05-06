@@ -1,35 +1,38 @@
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_widgets.h"
 #include <algorithm>
 #include <imgui_stdlib.h>
+#include <localization.h>
 #include <string>
+#include <utils/imgui_configurate.h>
 
 bool ImGui::TextSelectable(const char* label, bool selected, const ImVec2& size) {
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 	if (!selected) {
-		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		PushStyleColor(ImGuiCol_Text, GetStyleColorVec4(ImGuiCol_TextDisabled));
 	}
-	const auto result = ImGui::Button(label, size);
-	ImGui::PopStyleColor(3);
+	const auto result = Button(label, size);
+	PopStyleColor(3);
 	if (!selected) {
-		ImGui::PopStyleColor();
+		PopStyleColor();
 	}
 	return result;
 }
 
 bool ImGui::TextButton(const char* label, const ImVec2& size) {
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	const auto result = ImGui::Button(label, size);
-	ImGui::PopStyleColor(3);
+	PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+	const auto result = Button(label, size);
+	PopStyleColor(3);
 	return result;
 }
 
 void ImGui::TextGTAColored(const char* label) {
 	bool isHighlighted = false;
-	ImVec4 currentColor = ImGui::GetStyle().Colors[ImGuiCol_Text]; // Цвет по умолчанию
+	ImVec4 currentColor = GetStyle().Colors[ImGuiCol_Text]; // Default color
 	size_t len = strlen(label);
 
 	std::string textChunk;
@@ -37,10 +40,10 @@ void ImGui::TextGTAColored(const char* label) {
 	for (size_t i = 0; i < len; ++i) {
 		if (i + 2 < len && label[i] == '~' && label[i + 2] == '~') {
 			if (!textChunk.empty()) {
-				ImGui::PushStyleColor(ImGuiCol_Text, currentColor);
-				ImGui::TextUnformatted(textChunk.c_str());
-				ImGui::PopStyleColor();
-				ImGui::SameLine(0.0f, 0.0f);
+				PushStyleColor(ImGuiCol_Text, currentColor);
+				TextUnformatted(textChunk.c_str());
+				PopStyleColor();
+				SameLine(0.0f, 0.0f);
 				textChunk.clear();
 			}
 
@@ -95,45 +98,45 @@ void ImGui::TextGTAColored(const char* label) {
 	}
 
 	if (!textChunk.empty()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, currentColor);
-		ImGui::TextUnformatted(textChunk.c_str());
-		ImGui::PopStyleColor();
+		PushStyleColor(ImGuiCol_Text, currentColor);
+		TextUnformatted(textChunk.c_str());
+		PopStyleColor();
 	}
 }
 
 bool ImGui::SelectableGTAColored(const char* label, bool selected, ImGuiSelectableFlags flags, const ImVec2& size) {
-	ImGui::BeginGroup();
+	BeginGroup();
 
-	ImVec2 startPos = ImGui::GetCursorPos();
+	ImVec2 startPos = GetCursorPos();
 
-	bool isClicked = ImGui::Selectable("##hidden", selected, flags, size);
+	bool isClicked = Selectable("##hidden", selected, flags, size);
 
-	ImGui::SetCursorPos(startPos);
+	SetCursorPos(startPos);
 
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+	PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 	TextGTAColored(label);
-	ImGui::PopStyleVar();
+	PopStyleVar();
 
-	ImGui::EndGroup();
+	EndGroup();
 	return isClicked;
 }
 
 bool ImGui::RenamePopup(const char* popupId, char* buffer, size_t bufferSize) {
 	bool renamed = false;
-	if (ImGui::BeginPopup(popupId)) {
-		ImGui::SetKeyboardFocusHere();
+	if (BeginPopup(popupId)) {
+		SetKeyboardFocusHere();
 
-		if (ImGui::InputText("##rename", buffer, bufferSize, ImGuiInputTextFlags_EnterReturnsTrue)) {
+		if (InputText("##rename", buffer, bufferSize, ImGuiInputTextFlags_EnterReturnsTrue)) {
 			renamed = true;
-			ImGui::CloseCurrentPopup();
+			CloseCurrentPopup();
 		}
 
-		if (ImGui::IsMouseClicked(0) && !ImGui::IsItemHovered() &&
-		    ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) == false) {
-			ImGui::CloseCurrentPopup();
+		if (IsMouseClicked(0) && !IsItemHovered() &&
+		    IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) == false) {
+			CloseCurrentPopup();
 		}
 
-		ImGui::EndPopup();
+		EndPopup();
 	}
 
 	return renamed;
@@ -141,21 +144,74 @@ bool ImGui::RenamePopup(const char* popupId, char* buffer, size_t bufferSize) {
 
 bool ImGui::RenamePopup(const char* popupId, std::string* buffer) {
 	bool renamed = false;
-	if (ImGui::BeginPopup(popupId)) {
-		ImGui::SetKeyboardFocusHere();
+	if (BeginPopup(popupId)) {
+		SetKeyboardFocusHere();
 
-		if (ImGui::InputText("##rename", buffer, ImGuiInputTextFlags_EnterReturnsTrue)) {
+		if (InputText("##rename", buffer, ImGuiInputTextFlags_EnterReturnsTrue)) {
 			renamed = true;
-			ImGui::CloseCurrentPopup();
+			CloseCurrentPopup();
 		}
 
-		if (ImGui::IsMouseClicked(0) && !ImGui::IsItemHovered() &&
-		    ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) == false) {
-			ImGui::CloseCurrentPopup();
+		if (IsMouseClicked(0) && !IsItemHovered() &&
+		    IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) == false) {
+			CloseCurrentPopup();
 		}
 
-		ImGui::EndPopup();
+		EndPopup();
 	}
 
 	return renamed;
+}
+
+int ImGui::ConfirmDialog(const char* title, const char* message, const char* yesButtonText, const char* noButtonText) {
+	int result = -1;
+
+	if (!IsPopupOpen(title)) {
+		OpenPopup(title);
+	}
+
+	// Center the dialog on screen
+	ImVec2 center = GetMainViewport()->GetCenter();
+	SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+	// Set compact window size
+	SetNextWindowSize(ImVec2(0, 0));
+
+	// Modal popup that cannot be closed by clicking outside
+	if (BeginPopupModal(title, nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		Text(message);
+		Separator();
+
+		// Add spacing before buttons
+		Dummy(ImVec2(0.0f, 5.0f) * SCL_PX);
+
+		// Create block for centering buttons
+		float width = GetWindowWidth();
+		float buttonWidth = 120.0f * (SCL_PX).x;
+		float spacingX = 10.0f * (SCL_PX).x;
+		float totalWidth = 2 * buttonWidth + spacingX;
+		float offsetX = (width - totalWidth) * 0.5f;
+
+		if (offsetX > 0)
+			SetCursorPosX(offsetX);
+
+		if (Button(_(yesButtonText).c_str(), ImVec2(buttonWidth, 0))) {
+			result = 1;
+			CloseCurrentPopup();
+		}
+
+		SameLine(0, spacingX);
+
+		if (Button(_(noButtonText).c_str(), ImVec2(buttonWidth, 0)) || IsKeyPressed(ImGuiKey_Escape)) {
+			result = 0;
+			CloseCurrentPopup();
+		}
+
+		EndPopup();
+	} else {
+		// If the window was closed by other means
+		result = 0;
+	}
+
+	return result;
 }
