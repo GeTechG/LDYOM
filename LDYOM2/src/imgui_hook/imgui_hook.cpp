@@ -25,6 +25,22 @@ void ImguiHook::SetControlEnabled(bool state) { controlEnabled = state; }
 void ImguiHook::dirtyObjectsFlag() { dirtyObjects = true; }
 
 LRESULT ImguiHook::hkWndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	// Обработка системных сообщений для минимизации/восстановления окна
+	if (uMsg == WM_SYSCOMMAND && ((wParam & 0xFFF0) == SC_MINIMIZE || (wParam & 0xFFF0) == SC_RESTORE)) {
+		// Даем возможность обработать сообщение оригинальному процессору окна
+		LRESULT result = CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
+
+		// Если это восстановление окна, дадим немного времени для восстановления контекста
+		if ((wParam & 0xFFF0) == SC_RESTORE) {
+			// Можно добавить небольшую задержку или принудительно обновить состояние окна
+			// Обновляем состояние ImGui
+			ImGui::GetIO().AddMousePosEvent(-FLT_MAX, -FLT_MAX); // Сбрасываем позицию мыши
+			ImGui::GetIO().ClearInputKeys();                     // Очищаем состояние клавиш
+		}
+
+		return result;
+	}
+
 	if (m_bInitialized) {
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 
