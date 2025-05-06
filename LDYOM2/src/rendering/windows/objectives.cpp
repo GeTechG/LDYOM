@@ -1,12 +1,11 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "objectives.h"
-
 #include "logger.h"
-
 #include <fa_icons.h>
 #include <imgui_internal.h>
 #include <imgui_widgets/imgui_widgets.h>
 #include <localization.h>
+#include <objectives_manager.h>
 #include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
 #include <window_manager.h>
@@ -47,7 +46,7 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 		if (ImGui::BeginDragDropTargetCustom(emptySpaceRect, currentWindow->ID)) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("OBJECTIVE_DND")) {
 				int draggedIdx = *static_cast<int*>(payload->Data);
-				ObjectivesManager::instance().moveObjective(draggedIdx, 0);
+				ObjectivesManager::instance().moveObjective(draggedIdx, objectives.size() - 1);
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -139,7 +138,7 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 
 	if (window->m_selectedObjectiveIndex >= 0 &&
 	    window->m_selectedObjectiveIndex < static_cast<int>(objectives.size())) {
-		ImGui::SetNextWindowPos(ImGui::GetIO().DisplaySize, ImGuiCond_FirstUseEver, ImVec2(1, 1));
+		ImGui::SetNextWindowPos(ImGui::GetIO().DisplaySize, ImGuiCond_Always, ImVec2(1, 1));
 		if (ImGui::Begin("##objective", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
 			auto& selectedObjective =
 				ObjectivesManager::instance().getObjectiveMutable(window->m_selectedObjectiveIndex);
