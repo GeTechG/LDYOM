@@ -38,7 +38,7 @@ void WindowManager::shutdown() noexcept {
 	}
 }
 
-Window& WindowManager::addWindow(std::string_view id, std::unique_ptr<Window> window) {
+void WindowManager::addWindow(std::string_view id, std::unique_ptr<Window>&& window) {
 	checkInitialized();
 
 	std::string idStr(id);
@@ -47,9 +47,7 @@ Window& WindowManager::addWindow(std::string_view id, std::unique_ptr<Window> wi
 		throw WindowManagerException(std::format("Window with id '{}' already exists", idStr));
 	}
 
-	Window& windowRef = *window;
 	m_windows.emplace(idStr, std::move(window));
-	return windowRef;
 }
 
 std::optional<Window*> WindowManager::getWindow(const std::string_view id) {
