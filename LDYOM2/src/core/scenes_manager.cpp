@@ -9,8 +9,7 @@
 const std::string ScenesManager::SCENE_FOLDER_NAME = "scenes";
 
 ScenesManager::ScenesManager() {
-	this->m_currentScene =
-		std::make_unique<Scene>(Scene{.info = SceneInfo{.name = _("scenes_settings.default_scene_name")}});
+	this->m_currentScene = std::make_unique<Scene>(Scene{.info = SceneInfo{.name = _("scenes.default_scene_name")}});
 };
 
 ScenesManager& ScenesManager::instance() {
@@ -51,6 +50,15 @@ void ScenesManager::loadScenesInfo() {
 }
 
 void ScenesManager::loadScene(std::string_view sceneId) {
+	std::unique_lock<std::shared_mutex> lock(m_sceneMutex);
+	loadSceneInternal(sceneId);
+}
+
+void ScenesManager::loadSceneInternal(std::string_view sceneId) {
+	if (m_currentScene->info.id == sceneId) {
+		LDYOM_INFO("Scene with ID {} is already loaded", sceneId);
+		return;
+	}
 	auto it = std::ranges::find_if(m_scenesInfo, [&sceneId](const SceneInfo& info) { return info.id == sceneId; });
 	if (it != m_scenesInfo.end()) {
 		std::filesystem::path scenePath(projectPath(SCENE_FOLDER_NAME) + "/" + it->id + ".json");
@@ -82,8 +90,9 @@ void ScenesManager::removeScene(std::string_view sceneId) {
 	if (it != m_scenesInfo.end()) {
 		std::filesystem::path scenePath(projectPath(SCENE_FOLDER_NAME) + "/" + it->id + ".json");
 		if (std::filesystem::remove(scenePath)) {
+			std::string sceneIdStr(sceneId);
 			m_scenesInfo.erase(it);
-			LDYOM_INFO("Removed scene: {}", sceneId);
+			LDYOM_INFO("Removed scene: {}", sceneIdStr);
 		} else {
 			LDYOM_ERROR("Failed to remove scene file: {}", scenePath.string());
 		}

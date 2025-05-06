@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-
 class ProjectsManager {
   public:
 	static ProjectsManager& instance();
@@ -14,12 +13,14 @@ class ProjectsManager {
 
 	void initialize();
 	std::vector<ProjectInfo>& getProjects();
-	std::optional<std::reference_wrapper<ProjectInfo>> getCurrentProject();
+	std::optional<ProjectInfo*> getCurrentProject();
 	int getCurrentProjectIndex() const noexcept;
 
 	bool createNewProject(std::string_view name, std::string_view author = "");
-	void openProject(int index);
+	bool loadProject(int index);
 	void closeProject();
+
+	void saveCurrentProject();
 
   private:
 	std::vector<ProjectInfo> m_projects;
@@ -36,5 +37,5 @@ inline std::string projectPath(std::string_view projectName) {
 	if (!currentProject.has_value()) {
 		return std::string();
 	}
-	return currentProject.value().get().path + "/" + std::string(projectName);
+	return currentProject.value()->path + "/" + std::string(projectName);
 }

@@ -1,7 +1,6 @@
 #pragma once
 #include "objectives_container.h"
 #include "scene_info.h"
-#include <scenes_manager.h>
 
 struct Scene {
 	SceneInfo info;

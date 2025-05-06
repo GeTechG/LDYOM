@@ -1,5 +1,6 @@
 #include "projects_manager.h"
 #include "data/project_info.h"
+#include "scenes_manager.h"
 #include <filesystem>
 #include <fstream>
 #include <logger.h>
@@ -44,9 +45,9 @@ void ProjectsManager::initialize() {
 
 std::vector<ProjectInfo>& ProjectsManager::getProjects() { return m_projects; }
 
-std::optional<std::reference_wrapper<ProjectInfo>> ProjectsManager::getCurrentProject() {
+std::optional<ProjectInfo*> ProjectsManager::getCurrentProject() {
 	if (m_currentProjectIndex >= 0 && m_currentProjectIndex < static_cast<int>(m_projects.size())) {
-		return std::ref(m_projects[m_currentProjectIndex]);
+		return &m_projects[m_currentProjectIndex];
 	}
 	return std::nullopt;
 }
@@ -74,10 +75,51 @@ bool ProjectsManager::createNewProject(std::string_view name, std::string_view a
 	return true;
 }
 
-void ProjectsManager::openProject(int index) { m_currentProjectIndex = index; }
+bool ProjectsManager::loadProject(int index) {
+	if (index < 0 || index >= static_cast<int>(m_projects.size())) {
+		LDYOM_ERROR("Invalid project index: {}", index);
+		return false;
+	}
+	m_currentProjectIndex = index;
+	ScenesManager::instance().loadScenesInfo();
+	auto currentProject = getCurrentProject();
+	if (!currentProject.has_value()) {
+		LDYOM_ERROR("No current project set, cannot load project info");
+		return false;
+	}
+	auto sceneToLoad = currentProject.value()->startSceneId;
+	if (!std::ranges::any_of(ScenesManager::instance().getScenesInfo(),
+	                         [sceneToLoad](const SceneInfo& info) { return info.id == sceneToLoad; })) {
+		sceneToLoad = ScenesManager::instance().getScenesInfo()[0].id;
+		currentProject.value()->startSceneId = sceneToLoad;
+		LDYOM_INFO("Scene {} not found, loading first scene instead", currentProject.value()->startSceneId);
+	}
+	ScenesManager::instance().loadScene(sceneToLoad);
+	LDYOM_INFO("Loaded project: {}", currentProject.value()->name);
+	return true;
+}
 
 void ProjectsManager::closeProject() {
 	if (m_currentProjectIndex >= 0 && m_currentProjectIndex < static_cast<int>(m_projects.size())) {
 		m_currentProjectIndex = -1;
 	}
+}
+
+void ProjectsManager::saveCurrentProject() {
+	auto currentProject = getCurrentProject();
+	if (!currentProject.has_value()) {
+		LDYOM_ERROR("No current project set, cannot save project info");
+		return;
+	}
+	std::filesystem::path projectPath = currentProject.value()->path;
+	std::filesystem::path infoFilePath = projectPath / (PROJECT_INFO_FILE_NAME + ".json");
+	std::ofstream file(infoFilePath);
+	if (!file) {
+		LDYOM_ERROR("Failed to open project info file for writing: {}", infoFilePath.string());
+		return;
+	}
+	nlohmann::json jsonData = *currentProject.value();
+	file << jsonData.dump(4);
+	file.close();
+	LDYOM_INFO("Saved project info: {}", currentProject.value()->name);
 }
