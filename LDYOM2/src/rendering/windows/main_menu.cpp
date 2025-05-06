@@ -4,6 +4,7 @@
 #include <fa_icons.h>
 #include <fmt/format.h>
 #include <localization.h>
+#include <project_player.h>
 #include <utils/imgui_configurate.h>
 #include <utils/theme_loader.h>
 #include <window_manager.h>
@@ -13,12 +14,16 @@ void MainMenu::renderContent(Window* window) {
 	float buttonWidth = 250.0f * (SCL_PX).x;
 	ImVec2 buttonSize(buttonWidth, 0.0f); // Height 0 means use default height
 
-	if (ImGui::Button(_("scenes_settings.title", ICON_FA_FILM).c_str(), buttonSize)) {
-		WindowManager::instance().openWindow("scenes_settings");
-		window->close();
-	}
 	if (ImGui::Button(_("objectives.title", ICON_FA_BULLSEYE_ARROW).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("objectives");
+		window->close();
+	}
+	if (ImGui::Button(_("main_menu.run_project", ICON_FA_PLAY).c_str(), buttonSize)) {
+		ProjectPlayer::instance().startCurrentProject();
+		WindowManager::instance().closeAllWindows();
+	}
+	if (ImGui::Button(_("scenes.title", ICON_FA_FILM).c_str(), buttonSize)) {
+		WindowManager::instance().openWindow("scenes");
 		window->close();
 	}
 	if (ImGui::Button(_("addons_settings.title", ICON_FA_PUZZLE_PIECE).c_str(), buttonSize)) {

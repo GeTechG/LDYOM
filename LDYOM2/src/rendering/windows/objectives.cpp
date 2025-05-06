@@ -1,5 +1,8 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "objectives.h"
+
+#include "logger.h"
+
 #include <fa_icons.h>
 #include <imgui_internal.h>
 #include <imgui_widgets/imgui_widgets.h>
@@ -37,16 +40,14 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 	if (ImGui::BeginChild("ObjectivesList", ImVec2(-1.0f, remainingHeight), true)) {
 
 		ImGuiWindow* currentWindow = ImGui::GetCurrentWindow();
-		ImRect emptySpaceRect =
+		auto emptySpaceRect =
 			ImRect(currentWindow->DC.CursorPos, currentWindow->DC.CursorPos + ImVec2(ImGui::GetContentRegionAvail().x,
 		                                                                             ImGui::GetContentRegionAvail().y));
 
 		if (ImGui::BeginDragDropTargetCustom(emptySpaceRect, currentWindow->ID)) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("OBJECTIVE_DND")) {
-				int draggedIdx = *(int*)payload->Data;
-				Objective temp = objectives[draggedIdx];
-				objectives.erase(objectives.begin() + draggedIdx);
-				objectives.insert(objectives.begin(), temp);
+				int draggedIdx = *static_cast<int*>(payload->Data);
+				ObjectivesManager::instance().moveObjective(draggedIdx, 0);
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -79,22 +80,31 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 				}
 
 				if (ImGui::MenuItem(_("objectives.delete", ICON_FA_TRASH).c_str())) {
-					objectives.erase(objectives.begin() + i);
-					if (window->m_selectedObjectiveIndex == i) {
-						window->m_selectedObjectiveIndex = -1;
-					} else if (window->m_selectedObjectiveIndex > i) {
-						window->m_selectedObjectiveIndex--;
-					}
+					window->m_indexToRemove = i;
 				}
 
 				ImGui::EndPopup();
 			}
 
+			// TODO: MAYBE PROBLEM WITH POINTERS
+			static int lastPtr = 0;
+			if (&window->m_renameBuffer == NULL) {
+				LDYOM_INFO("Window pointer: {}", (void*)window);
+				LDYOM_INFO("Last pointer: {}", (void*)lastPtr);
+			}
+			lastPtr = (int)window;
 			if (openRenamePopupIndex) {
 				ImGui::OpenPopup(renamePopupId);
+				window->m_renameBuffer = objectives[i].name;
 			}
 
-			ImGui::RenamePopup(renamePopupId, &objectives[i].name);
+			if (ImGui::RenamePopup(renamePopupId, &window->m_renameBuffer)) {
+				if (!window->m_renameBuffer.empty()) {
+					auto& objective = ObjectivesManager::instance().getObjectiveMutable(i);
+					objective.name = window->m_renameBuffer;
+					window->m_renameBuffer.clear();
+				}
+			}
 
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
 				ImGui::SetDragDropPayload("OBJECTIVE_DND", &i, sizeof(int));
@@ -104,16 +114,12 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 
 			if (ImGui::BeginDragDropTarget()) {
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("OBJECTIVE_DND")) {
-					int draggedIdx = *(int*)payload->Data;
+					int draggedIdx = *static_cast<int*>(payload->Data);
 					if (draggedIdx != i) {
-						Objective temp = objectives[draggedIdx];
-
-						objectives.erase(objectives.begin() + draggedIdx);
-						int targetIdx = (draggedIdx < i) ? i - 1 : i;
-						objectives.insert(objectives.begin() + targetIdx, temp);
+						ObjectivesManager::instance().moveObjective(draggedIdx, i);
 
 						if (window->m_selectedObjectiveIndex == draggedIdx) {
-							window->m_selectedObjectiveIndex = targetIdx;
+							window->m_selectedObjectiveIndex = i;
 						} else if (window->m_selectedObjectiveIndex > draggedIdx &&
 						           window->m_selectedObjectiveIndex <= i) {
 							window->m_selectedObjectiveIndex--;
@@ -135,10 +141,23 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 	    window->m_selectedObjectiveIndex < static_cast<int>(objectives.size())) {
 		ImGui::SetNextWindowPos(ImGui::GetIO().DisplaySize, ImGuiCond_FirstUseEver, ImVec2(1, 1));
 		if (ImGui::Begin("##objective", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
-			auto& selectedObjective = objectives[window->m_selectedObjectiveIndex];
+			auto& selectedObjective =
+				ObjectivesManager::instance().getObjectiveMutable(window->m_selectedObjectiveIndex);
 			selectedObjective.renderEditor();
 		}
 		ImGui::End();
+	}
+
+	if (window->m_indexToRemove != -1) {
+		auto state = ImGui::ConfirmDialog(_("objectives.remove_title").c_str(), _("objectives.remove_message").c_str());
+		if (state == 1) {
+			ObjectivesManager::instance().removeObjective(window->m_indexToRemove);
+			window->m_selectedObjectiveIndex =
+				std::min(window->m_selectedObjectiveIndex, static_cast<int>(objectives.size() - 1));
+			window->m_indexToRemove = -1;
+		} else if (state == 0) {
+			window->m_indexToRemove = -1;
+		}
 	}
 }
 
@@ -148,5 +167,6 @@ ObjectivesWindow::ObjectivesWindow()
 	setPosition(0, 0);
 	setPivot(0, 0);
 	setFlags(ImGuiWindowFlags_NoTitleBar);
-	setRenderCallback<ObjectivesWindow>(ObjectivesWindow::renderContent);
+	setRenderCallback<ObjectivesWindow>(renderContent);
+	m_renameBuffer = "";
 }

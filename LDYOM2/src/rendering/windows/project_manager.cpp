@@ -237,14 +237,11 @@ void ProjectManager::renderSidebar(ProjectManager* window, float sidebarWidth, f
 		}
 
 		if (ImGui::Button(editText.c_str(), ImVec2(-1.0f, buttonHeight))) {
-			ProjectsManager::instance().openProject(window->m_selectedProjectIndex);
-			ScenesManager::instance().loadScenesInfo();
-			if (!ScenesManager::instance().getScenesInfo().empty()) {
-				ScenesManager::instance().loadScene(ScenesManager::instance().getScenesInfo()[0].id);
+			if (ProjectsManager::instance().loadProject(window->m_selectedProjectIndex)) {
+				window->close();
+				WindowManager::instance().closeWindow("project_manager");
+				WindowManager::instance().openWindow("main_menu");
 			}
-			window->close();
-			WindowManager::instance().closeWindow("project_manager");
-			WindowManager::instance().openWindow("main_menu");
 		}
 
 		if (ImGui::Button(runText.c_str(), ImVec2(-1.0f, buttonHeight))) {

@@ -171,7 +171,7 @@ void CreateNewObjective::renderContent(CreateNewObjective* window) {
 	                     (availableRegion.x - buttonsWidth) * 0.1f);
 	if (ImGui::Button(createText.c_str())) {
 		if (!window->m_selectedType.empty()) {
-			ObjectivesManager::instance().createNewObjective(window->m_selectedType);
+			ObjectivesManager::instance().addNewObjective(window->m_selectedType);
 			window->close();
 		}
 	}
