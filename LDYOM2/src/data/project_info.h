@@ -7,7 +7,8 @@ struct ProjectInfo {
 	std::string name;
 	std::string path = "";
 	std::string author;
+	std::string startSceneId;
 	time_t timestamp;
 	uuids::uuid uuid = uuids::uuid_system_generator{}();
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(ProjectInfo, name, author, timestamp, uuid)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(ProjectInfo, name, author, startSceneId, timestamp, uuid)
 };

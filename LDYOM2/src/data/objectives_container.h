@@ -1,6 +1,5 @@
 #pragma once
 #include "objective.h"
-#include <objectives_manager.h>
 
 struct ObjectivesContainer {
 	std::vector<Objective> data;
