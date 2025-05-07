@@ -32,7 +32,7 @@ ktwait execute(Data& data) {
 
 Objective make() {
 	return Objective(TYPE, _("objectives." + std::string(TYPE) + ".name"), Data{},
-	                 std::function<void(Data&)>(renderEditor));
+	                 std::function<void(Data&)>(renderEditor), std::function<ktwait(Data&)>(execute));
 }
 
 ObjectiveBuilderData builder() { return ObjectiveBuilderData{.type = TYPE, .category = "", .builder = make}; }

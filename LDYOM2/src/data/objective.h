@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <ktcoro_wait.hpp>
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -10,6 +11,7 @@ class DataContainer {
   public:
 	virtual ~DataContainer() = default;
 	virtual void callRenderer() = 0;
+	virtual ktwait callExecutor() = 0;
 	virtual nlohmann::json toJson() const = 0;
 	virtual void fromJson(const nlohmann::json& j) = 0;
 };
@@ -18,20 +20,21 @@ template <typename T> class TypedDataContainer : public DataContainer {
   public:
 	T value;
 	std::function<void(T&)> editorCallback;
+	std::function<ktwait(T&)> executorCallback;
 
-	TypedDataContainer(T initialValue, std::function<void(T&)> callback)
+	TypedDataContainer(T initialValue, std::function<void(T&)> editorCallback,
+	                   std::function<ktwait(T&)> executorCallback)
 		: value(initialValue),
-		  editorCallback(callback) {}
+		  editorCallback(editorCallback),
+		  executorCallback(executorCallback) {}
 
 	nlohmann::json toJson() const override { return nlohmann::json(value); }
 
 	void fromJson(const nlohmann::json& j) override { this->value = j; }
 
-	void callRenderer() override {
-		if (editorCallback) {
-			editorCallback(value);
-		}
-	}
+	void callRenderer() override { editorCallback(value); }
+
+	ktwait callExecutor() override { return executorCallback(value); }
 };
 
 class Objective {
@@ -44,8 +47,9 @@ class Objective {
 	std::string name;
 
 	template <typename T>
-	Objective(std::string_view type, std::string_view name, T initialValue, std::function<void(T&)> callback)
-		: content(std::make_shared<TypedDataContainer<T>>(initialValue, callback)),
+	Objective(std::string_view type, std::string_view name, T initialValue, std::function<void(T&)> editorCallback,
+	          std::function<ktwait(T&)> executorCallback = nullptr)
+		: content(std::make_shared<TypedDataContainer<T>>(initialValue, editorCallback, executorCallback)),
 		  contentType(typeid(T)),
 		  type(std::string(type)),
 		  name(std::string(name)) {}
@@ -69,6 +73,13 @@ class Objective {
 		if (content) {
 			content->callRenderer();
 		}
+	}
+
+	ktwait execute() {
+		if (!content) {
+			throw std::runtime_error("Content is not initialized");
+		}
+		return content->callExecutor();
 	}
 
 	friend void to_json(nlohmann::json& j, const Objective& p) {
