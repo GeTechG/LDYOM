@@ -34,7 +34,9 @@ class ktcoro_tasklist {
 	}
 
 	void process() {
-		// Создаем копию списка задач под блокировкой мьютекса
+
+		processDeferredOperations();
+
 		list_type tasks_to_process;
 		{
 			std::lock_guard<std::mutex> lock(tasks_mutex);
@@ -46,7 +48,6 @@ class ktcoro_tasklist {
 				try {
 					task.handle();
 
-					// Маркируем задачу как завершенную в оригинальном списке
 					std::lock_guard<std::mutex> lock(tasks_mutex);
 					auto original_task_it = std::find_if(tasks.begin(), tasks.end(), [&task](const auto& t) {
 						return t.handle.address() == task.handle.address();
@@ -59,7 +60,6 @@ class ktcoro_tasklist {
 					LDYOM_ERROR("Exception in coroutine task: {}", e.what());
 					LDYOM_DUMP_BACKTRACE();
 
-					// Маркируем задачу как завершенную в оригинальном списке
 					std::lock_guard<std::mutex> lock(tasks_mutex);
 					auto original_task_it = std::find_if(tasks.begin(), tasks.end(), [&task](const auto& t) {
 						return t.handle.address() == task.handle.address();
@@ -72,7 +72,6 @@ class ktcoro_tasklist {
 					LDYOM_CRITICAL("Unknown exception in coroutine task");
 					LDYOM_DUMP_BACKTRACE();
 
-					// Маркируем задачу как завершенную в оригинальном списке
 					std::lock_guard<std::mutex> lock(tasks_mutex);
 					auto original_task_it = std::find_if(tasks.begin(), tasks.end(), [&task](const auto& t) {
 						return t.handle.address() == task.handle.address();
@@ -85,17 +84,45 @@ class ktcoro_tasklist {
 			}
 		}
 
-		// Удаляем завершенные задачи под блокировкой мьютекса
-		std::lock_guard<std::mutex> lock(tasks_mutex);
-		tasks.remove_if([](auto& task) { return task.completed; });
+		{
+			std::lock_guard<std::mutex> lock(tasks_mutex);
+			tasks.remove_if([](auto& task) { return task.completed; });
+		}
+
+		processDeferredOperations();
 	}
 
 	void remove_task(ktwait& task);
-	void complete_task(ktwait& task); // Добавляем новый метод для завершения задачи
+	void complete_task(ktwait& task);
+
+	void completed(void* task_addr) {
+		{
+			std::lock_guard<std::mutex> lock(deferred_ops_mutex);
+			auto it = std::find(tasks_to_remove.begin(), tasks_to_remove.end(), task_addr);
+			if (it != tasks_to_remove.end()) {
+				tasks_to_remove.erase(it);
+			}
+		}
+		{
+			std::lock_guard<std::mutex> lock(deferred_ops_mutex);
+			auto it = std::find(tasks_to_complete.begin(), tasks_to_complete.end(), task_addr);
+			if (it != tasks_to_complete.end()) {
+				tasks_to_complete.erase(it);
+			}
+		}
+	}
 
   private:
+	inline void do_remove_task(void* task_addr);
+	inline void do_complete_task(void* task_addr);
+	inline void processDeferredOperations();
+
 	list_type tasks;
-	std::mutex tasks_mutex; // Мьютекс для синхронизации доступа к списку задач
+	std::mutex tasks_mutex;
+
+	std::vector<void*> tasks_to_remove;
+	std::vector<void*> tasks_to_complete;
+	std::mutex deferred_ops_mutex;
 };
 
 struct ktwait {
@@ -113,6 +140,10 @@ struct ktwait {
 				constexpr void await_suspend(std::coroutine_handle<promise_type> h) const noexcept {}
 
 				void await_resume() const noexcept {
+					if (me->coro_tasklist) {
+						auto h = std::coroutine_handle<promise_type>::from_promise(*me);
+						me->coro_tasklist->completed(h.address());
+					}
 					if (me->waiter)
 						me->waiter();
 				}
@@ -198,46 +229,35 @@ inline bool remove_task_recursively(std::coroutine_handle<ktwait::promise_type>&
 		return true;
 	}
 	if (remove_task_recursively(waiter.promise().waiter, task)) {
-		// Если рекурсивный вызов вернул true (task была найдена и удалена где-то глубже)...
-		waiter.destroy(); // ...то уничтожаем и текущего waiter-а, так как он ждал удаленную задачу.
-		return true;      // Сообщаем об успехе.
+
+		waiter.destroy();
+		return true;
 	}
 	return false;
 }
 
-// Новая функция для поиска и добавления задач, ожидаемых удаляемой задачей
 inline void find_awaited_tasks(std::coroutine_handle<ktwait::promise_type> task,
                                std::vector<std::coroutine_handle<ktwait::promise_type>>& tasks_to_remove,
                                std::vector<void*>& visited_addresses, int depth = 0) {
-	// Проверяем уровень глубины рекурсии для защиты от переполнения стека
+
 	if (depth > 100) {
 		LDYOM_ERROR("Possible cyclic dependency detected in coroutine tasks. Stopping recursion.");
 		return;
 	}
 
-	// Проверяем, ожидает ли задача кого-то
 	if (task && task.promise().waiter) {
-		// Получаем ожидаемую задачу
-		auto awaited_task = std::coroutine_handle<ktwait::promise_type>::from_address(task.promise().waiter.address());
 
-		// Проверяем, не было ли уже посещено это задание (защита от циклических зависимостей)
+		auto awaited_task = std::coroutine_handle<ktwait::promise_type>::from_address(task.promise().waiter.address());
 		void* task_address = awaited_task.address();
 		if (std::find(visited_addresses.begin(), visited_addresses.end(), task_address) != visited_addresses.end()) {
 			LDYOM_WARN("Cyclic dependency detected in coroutine tasks!");
 			return;
 		}
-
-		// Добавляем адрес текущей задачи в список посещенных
 		visited_addresses.push_back(task_address);
-
-		// Проверяем, не добавлена ли уже эта задача в список для удаления
 		if (std::find_if(tasks_to_remove.begin(), tasks_to_remove.end(), [&awaited_task](const auto& item) {
 				return item.address() == awaited_task.address();
 			}) == tasks_to_remove.end()) {
-			// Добавляем ожидаемую задачу в список для удаления
 			tasks_to_remove.push_back(awaited_task);
-
-			// Рекурсивно ищем задачи, ожидаемые найденной задачей
 			find_awaited_tasks(awaited_task, tasks_to_remove, visited_addresses, depth + 1);
 		}
 	}
@@ -253,41 +273,87 @@ template <typename Coroutine, typename... Args> ktwait ktcoro_tasklist::add_task
 }
 
 inline void ktcoro_tasklist::remove_task(ktwait& task) {
-	// Создаем вектор для хранения задач, которые ожидает удаляемая задача
-	std::vector<std::coroutine_handle<ktwait::promise_type>> awaited_tasks;
-	std::vector<void*> visited_addresses;
 
-	// Находим задачи, которые ожидает удаляемая задача
-	if (auto coro_handle = std::coroutine_handle<ktwait::promise_type>::from_address(task.coro_handle.address())) {
-		detail::find_awaited_tasks(coro_handle, awaited_tasks, visited_addresses);
+	if (!task.coro_handle) {
+		LDYOM_WARN("Attempted to remove a task with null coroutine handle");
+		return;
 	}
 
-	// Блокируем список задач перед изменением
-	std::lock_guard<std::mutex> lock(tasks_mutex);
-
-	// Сначала удаляем задачи, которые ожидаются удаляемой задачей
-	for (auto& awaited_task : awaited_tasks) {
-		for (auto it = tasks.begin(); it != tasks.end();) {
-			if (it->handle.address() == awaited_task.address()) {
-				// Уничтожаем корутин и удаляем задачу из списка
-				awaited_task.destroy();
-				tasks.erase(it++);
-				break;
-			}
-			++it;
+	void* addr = task.coro_handle.address();
+	{
+		std::lock_guard<std::mutex> lock(deferred_ops_mutex);
+		if (std::find(tasks_to_remove.begin(), tasks_to_remove.end(), addr) == tasks_to_remove.end()) {
+			tasks_to_remove.push_back(addr);
 		}
 	}
 
-	// Теперь обрабатываем основную удаляемую задачу и всех её ожидающих
+	task.coro_handle = nullptr;
+}
+
+inline void ktcoro_tasklist::complete_task(ktwait& task) {
+
+	if (!task.coro_handle) {
+		LDYOM_WARN("Attempted to complete a task with null coroutine handle");
+		return;
+	}
+
+	void* addr = task.coro_handle.address();
+	{
+		std::lock_guard<std::mutex> lock(deferred_ops_mutex);
+		if (std::find(tasks_to_complete.begin(), tasks_to_complete.end(), addr) == tasks_to_complete.end()) {
+			tasks_to_complete.push_back(addr);
+		}
+	}
+
+	task.coro_handle = nullptr;
+}
+
+inline void ktcoro_tasklist::do_remove_task(void* task_addr) {
+	if (!task_addr) {
+		return;
+	}
+
+	std::vector<std::coroutine_handle<ktwait::promise_type>> awaited_tasks;
+	std::vector<void*> visited_addresses;
+
+	if (auto coro_handle = std::coroutine_handle<ktwait::promise_type>::from_address(task_addr)) {
+		if (!coro_handle.done()) {
+			detail::find_awaited_tasks(coro_handle, awaited_tasks, visited_addresses);
+		}
+	}
+
+	std::lock_guard<std::mutex> tasks_lock(tasks_mutex);
+
+	for (auto& awaited_task : awaited_tasks) {
+		if (awaited_task && !awaited_task.done()) {
+			for (auto it = tasks.begin(); it != tasks.end();) {
+				if (it->handle.address() == awaited_task.address()) {
+
+					awaited_task.destroy();
+					tasks.erase(it++);
+					break;
+				}
+				++it;
+			}
+		}
+	}
+
 	for (auto it = tasks.begin(); it != tasks.end();) {
-		if (it->handle == task.coro_handle) {
-			it->handle.destroy();
+		if (it->handle.address() == task_addr) {
+			auto handle = it->handle;
+			if (handle) {
+				handle.destroy();
+			}
 			tasks.erase(it++);
 		} else if (auto coro_handle{std::coroutine_handle<ktwait::promise_type>::from_address(it->handle.address())}) {
 			auto& tw = coro_handle.promise().waiter;
-			if (detail::remove_task_recursively(tw, task.coro_handle)) {
+			auto task = std::coroutine_handle<ktwait::promise_type>::from_address(task_addr);
+			if (detail::remove_task_recursively(tw, task)) {
 				coro_handle.destroy();
 				tasks.erase(it++);
+			} else if (tw && tw.address() == task_addr) {
+				tw = nullptr;
+				++it;
 			} else {
 				++it;
 			}
@@ -295,54 +361,46 @@ inline void ktcoro_tasklist::remove_task(ktwait& task) {
 			++it;
 		}
 	}
-
-	// Очищаем handle в самой задаче, чтобы предотвратить double-free
-	task.coro_handle = nullptr;
 }
 
-inline void ktcoro_tasklist::complete_task(ktwait& task) {
-	// Проверяем, что указатель корутины действителен
-	if (!task.coro_handle) {
-		LDYOM_WARN("Attempted to complete a task with null coroutine handle");
+inline void ktcoro_tasklist::do_complete_task(void* task_addr) {
+	if (!task_addr) {
 		return;
 	}
 
-	// Временные переменные для хранения информации о задаче, которую нужно активировать
 	std::coroutine_handle<> waiter_to_activate = nullptr;
+	bool task_found = false;
 
-	// Первый блок с блокировкой мьютекса для обработки задачи
 	{
-		std::lock_guard<std::mutex> lock(tasks_mutex);
-
-		bool task_found = false;
+		std::lock_guard<std::mutex> tasks_lock(tasks_mutex);
 		for (auto it = tasks.begin(); it != tasks.end(); ++it) {
-			if (it->handle.address() == task.coro_handle.address()) {
+			if (it->handle.address() == task_addr) {
 				task_found = true;
-				// Получаем доступ к promise задачи
+
 				if (auto coro_handle =
 				        std::coroutine_handle<ktwait::promise_type>::from_address(it->handle.address())) {
-					// Проверяем, есть ли у задачи ожидающие задачи
-					if (coro_handle.promise().waiter) {
-						// Сохраняем ожидающую задачу для активации после освобождения мьютекса
-						waiter_to_activate = coro_handle.promise().waiter;
-						coro_handle.promise().waiter = nullptr;
+
+					if (!coro_handle.done()) {
+
+						if (coro_handle.promise().waiter) {
+
+							waiter_to_activate = coro_handle.promise().waiter;
+							coro_handle.promise().waiter = nullptr;
+						}
+
+						coro_handle.destroy();
+					} else {
+						LDYOM_WARN("Attempted to complete an already done coroutine");
 					}
-					// Уничтожаем корутин, так как он больше не нужен
-					coro_handle.destroy();
 				}
-				// Помечаем задачу как завершённую для удаления в process()
+
 				it->completed = true;
-				it->handle = nullptr; // Очищаем указатель для предотвращения повторного использования
+				it->handle = nullptr;
 				break;
 			}
 		}
-
-		if (!task_found) {
-			LDYOM_WARN("Attempted to complete a task that was not found in the task list");
-		}
 	}
 
-	// Вне блокировки активируем ожидающую задачу, если она есть
 	if (waiter_to_activate) {
 		try {
 			add_started_task(waiter_to_activate,
@@ -352,6 +410,28 @@ inline void ktcoro_tasklist::complete_task(ktwait& task) {
 		}
 	}
 
-	// Очищаем handle в самой задаче, чтобы предотвратить double-free
-	task.coro_handle = nullptr;
+	if (!task_found) {
+		LDYOM_WARN("Deferred completion: Task not found in the task list");
+	}
+}
+
+inline void ktcoro_tasklist::processDeferredOperations() {
+	std::vector<void*> remove_addrs;
+	std::vector<void*> complete_addrs;
+
+	{
+		std::lock_guard<std::mutex> deferred_lock(deferred_ops_mutex);
+		remove_addrs = std::move(tasks_to_remove);
+		complete_addrs = std::move(tasks_to_complete);
+		tasks_to_remove.clear();
+		tasks_to_complete.clear();
+	}
+
+	for (void* addr : complete_addrs) {
+		do_complete_task(addr);
+	}
+
+	for (void* addr : remove_addrs) {
+		do_remove_task(addr);
+	}
 }
