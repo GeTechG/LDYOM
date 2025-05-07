@@ -21,6 +21,7 @@ class ProjectPlayer {
 	ProjectPlayer() = default;
 
 	static ktwait run();
+	static ktwait processStopCheat();
 
   public:
 	rocket::thread_safe_signal<void(std::string)> signals;
@@ -31,6 +32,8 @@ class ProjectPlayer {
 	void operator=(const ProjectPlayer&) = delete;
 
 	void startCurrentProject(std::string_view sceneId = "");
+	void stopCurrentProject();
+	void transitionPlayingState(bool toPlayMode);
 
 	bool isPlaying() const { return m_state.isPlaying; }
 	std::string getCurrentSceneId() const { return m_state.currentSceneId; }
