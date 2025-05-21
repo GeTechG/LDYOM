@@ -39,3 +39,5 @@ class ProjectPlayer {
 	std::string getCurrentSceneId() const { return m_state.currentSceneId; }
 	int getCurrentObjectiveIndex() const { return m_state.currentObjectiveIndex; }
 };
+
+#define IS_PLAYING ProjectPlayer::instance().isPlaying()

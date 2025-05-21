@@ -15,7 +15,7 @@ ktwait ProjectPlayer::run() {
 	auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
 
 	for (int i = 0; i < static_cast<int>(objectives.size()); i++) {
-		auto& objective = ObjectivesManager::instance().getObjectiveMutable(i);
+		auto& objective = ObjectivesManager::instance().getUnsafeObjective(i);
 		co_await objective.execute();
 	}
 
