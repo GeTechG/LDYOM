@@ -24,9 +24,34 @@ void ImguiHook::SetControlEnabled(bool state) { controlEnabled = state; }
 
 void ImguiHook::dirtyObjectsFlag() { dirtyObjects = true; }
 
+// Timer ID for window restoration
+static const UINT_PTR RESTORE_TIMER_ID = 1001;
+static bool isRestoreTimerActive = false;
+
+// Callback function for the timer
+static void CALLBACK RestoreTimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) {
+	if (idEvent == RESTORE_TIMER_ID) {
+		// Stop the timer after it fires
+		KillTimer(hwnd, RESTORE_TIMER_ID);
+		isRestoreTimerActive = false;
+	}
+}
+
 LRESULT ImguiHook::hkWndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	// Handle timer messages if restore timer is active
+	if (isRestoreTimerActive && uMsg != WM_TIMER) {
+		// Redirect messages to original window procedure during the timer period
+		return CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
+	}
+
 	// Обработка системных сообщений для минимизации/восстановления окна
 	if (uMsg == WM_SYSCOMMAND && ((wParam & 0xFFF0) == SC_MINIMIZE || (wParam & 0xFFF0) == SC_RESTORE)) {
+		// For window restoration, set up a timer for 100ms
+		if ((wParam & 0xFFF0) == SC_RESTORE) {
+			SetTimer(hWnd, RESTORE_TIMER_ID, 100, RestoreTimerProc);
+			isRestoreTimerActive = true;
+		}
+
 		// Даем возможность обработать сообщение оригинальному процессору окна
 		LRESULT result = CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
 
