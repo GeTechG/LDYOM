@@ -99,7 +99,7 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 
 			if (ImGui::RenamePopup(renamePopupId, &window->m_renameBuffer)) {
 				if (!window->m_renameBuffer.empty()) {
-					auto& objective = ObjectivesManager::instance().getObjectiveMutable(i);
+					auto& objective = ObjectivesManager::instance().getUnsafeObjective(i);
 					objective.name = window->m_renameBuffer;
 					window->m_renameBuffer.clear();
 				}
@@ -141,7 +141,7 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 		ImGui::SetNextWindowPos(ImGui::GetIO().DisplaySize, ImGuiCond_Always, ImVec2(1, 1));
 		if (ImGui::Begin("##objective", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
 			auto& selectedObjective =
-				ObjectivesManager::instance().getObjectiveMutable(window->m_selectedObjectiveIndex);
+				ObjectivesManager::instance().getUnsafeObjective(window->m_selectedObjectiveIndex);
 			selectedObjective.renderEditor();
 		}
 		ImGui::End();

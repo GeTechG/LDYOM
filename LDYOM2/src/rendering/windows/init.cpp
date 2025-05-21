@@ -3,12 +3,15 @@
 #include "windows/addons_settings.h"
 #include "windows/create_new_objective.h"
 #include "windows/create_new_project.h"
+#include "windows/entities.h"
+#include "windows/entities_menu.h"
 #include "windows/main_menu.h"
 #include "windows/objectives.h"
 #include "windows/project_manager.h"
 #include "windows/quick_settings.h"
 #include "windows/scenes.h"
 #include <logger.h>
+
 
 void initWindows() {
 	WindowManager::instance().addWindow("project_manager", std::make_unique<ProjectManager>());
@@ -19,6 +22,8 @@ void initWindows() {
 	WindowManager::instance().addWindow("scenes", std::make_unique<ScenesWindow>());
 	WindowManager::instance().addWindow("objectives", std::make_unique<ObjectivesWindow>());
 	WindowManager::instance().addWindow("create_new_objective", std::make_unique<CreateNewObjective>());
+	WindowManager::instance().addWindow("entities_menu", std::make_unique<EntitiesMenu>());
+	WindowManager::instance().addWindow("entities", std::make_unique<EntitiesWindow>());
 
 	LDYOM_INFO("Windows initialized");
 }
