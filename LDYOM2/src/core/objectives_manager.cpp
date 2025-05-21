@@ -3,6 +3,7 @@
 #include <objectives/test.h>
 #include <objectives/wait_signal.h>
 #include <stdexcept>
+#include <vector_utils.h>
 
 ObjectivesManager& ObjectivesManager::instance() {
 	static ObjectivesManager instance;
@@ -25,7 +26,7 @@ void ObjectivesManager::addNewObjective(std::string_view type) {
 	ScenesManager::instance().getMutableCurrentScene()->objectives.data.push_back(objective);
 }
 
-Objective& ObjectivesManager::getObjectiveMutable(int index) {
+Objective& ObjectivesManager::getUnsafeObjective(int index) {
 	auto currentScene = ScenesManager::instance().getMutableCurrentScene();
 	auto& objectives = currentScene->objectives.data;
 	if (index < 0 || index >= static_cast<int>(objectives.size())) {
@@ -45,20 +46,8 @@ void ObjectivesManager::removeObjective(int index) {
 void ObjectivesManager::moveObjective(int fromIndex, int toIndex) {
 	auto currentScene = ScenesManager::instance().getMutableCurrentScene();
 	auto& objectives = currentScene->objectives.data;
-	if (fromIndex >= 0 && fromIndex < static_cast<int>(objectives.size()) && toIndex >= 0 &&
-	    toIndex < static_cast<int>(objectives.size())) {
-		if (fromIndex == toIndex)
-			return;
-
-		Objective movingObjective = std::move(objectives[fromIndex]);
-
-		objectives.erase(objectives.begin() + fromIndex);
-
-		if (toIndex == objectives.size()) {
-			objectives.emplace_back(std::move(movingObjective));
-		} else {
-			objectives.insert(objectives.begin() + toIndex, std::move(movingObjective));
-		}
+	if (!utils::moveInVector(objectives, fromIndex, toIndex)) {
+		LDYOM_ERROR("Failed to move objective from {} to {}", fromIndex, toIndex);
 	}
 }
 

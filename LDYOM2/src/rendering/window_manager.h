@@ -41,11 +41,11 @@ class WindowManager {
   private:
 	std::unordered_map<std::string, std::unique_ptr<Window>> m_windows;
 	bool m_initialized = false;
-
 	std::unordered_map<HotkeyInfo, std::string> m_hotkeys;
 
-	auto findWindow(std::string_view id) const noexcept;
-	auto findWindowMutable(std::string_view id) noexcept;
+	std::unordered_map<std::string, std::unique_ptr<Window>>::const_iterator
+	findWindow(std::string_view id) const noexcept;
+	std::unordered_map<std::string, std::unique_ptr<Window>>::iterator findWindowMutable(std::string_view id) noexcept;
 
 	void checkInitialized() const;
 
@@ -70,6 +70,8 @@ class WindowManager {
 	void openWindow(std::string_view id);
 	void closeWindow(std::string_view id);
 	bool isWindowOpen(std::string_view id) const;
+	template <typename T> std::optional<T*> getWindowAs(std::string_view id);
+	template <typename T> std::optional<const T*> getWindowAs(std::string_view id) const;
 
 	bool isAnyWindowOpen() const;
 	void closeAllWindows();
@@ -82,3 +84,23 @@ class WindowManager {
 
 	void render();
 };
+
+template <typename T> std::optional<T*> WindowManager::getWindowAs(std::string_view id) {
+	checkInitialized();
+
+	auto it = findWindowMutable(id);
+	if (it != m_windows.end()) {
+		return dynamic_cast<T*>(it->second.get());
+	}
+	return std::nullopt;
+}
+
+template <typename T> std::optional<const T*> WindowManager::getWindowAs(std::string_view id) const {
+	checkInitialized();
+
+	auto it = findWindow(id);
+	if (it != m_windows.end()) {
+		return dynamic_cast<const T*>(it->second.get());
+	}
+	return std::nullopt;
+}

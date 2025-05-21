@@ -22,7 +22,7 @@ void CreateNewObjective::renderSearchBox() {
 }
 
 void CreateNewObjective::renderCategoryNode(const CategoryNode& node, int depth) {
-	auto& objectiveTypes = ObjectivesManager::instance().getObjectiveTypes();
+	auto& objectiveTypes = ObjectivesManager::instance().getObjectiveBuilders();
 	std::string searchQuery = this->m_searchQuery.data();
 	bool hasSearchQuery = !searchQuery.empty();
 
@@ -139,7 +139,7 @@ void CreateNewObjective::renderDescription() {
 
 	ImGui::BeginChild("Description", descSize, true);
 
-	auto& objectiveTypes = ObjectivesManager::instance().getObjectiveTypes();
+	auto& objectiveTypes = ObjectivesManager::instance().getObjectiveBuilders();
 	if (objectiveTypes.contains(this->m_selectedType)) {
 		const auto& objectiveType = objectiveTypes[this->m_selectedType];
 		ImGui::Text(_("create_new_objective.type", _("objectives." + objectiveType.type + ".name").c_str()).c_str());
@@ -161,8 +161,8 @@ void CreateNewObjective::renderContent(CreateNewObjective* window) {
 	auto availableRegion = ImGui::GetContentRegionAvail();
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + availableRegion.y - ImGui::GetFrameHeight());
 
-	const auto createText = _("create_new_objective.create");
-	const auto cancelText = _("create_new_objective.cancel");
+	const auto createText = _("create");
+	const auto cancelText = _("cancel");
 	const auto center = availableRegion.x / 2.f;
 	const auto buttonsWidth = ImGui::CalcTextSize(createText.c_str()).x + ImGui::CalcTextSize(cancelText.c_str()).x +
 	                          ImGui::GetStyle().FramePadding.x * 4;
@@ -185,7 +185,7 @@ void CreateNewObjective::renderContent(CreateNewObjective* window) {
 void CreateNewObjective::initializeCategories() {
 	m_rootCategory = CategoryNode{.name = "root"};
 
-	auto& objectiveTypes = ObjectivesManager::instance().getObjectiveTypes();
+	auto& objectiveTypes = ObjectivesManager::instance().getObjectiveBuilders();
 
 	for (auto& [typeName, objectiveType] : objectiveTypes) {
 		// Check if the objective type has a category

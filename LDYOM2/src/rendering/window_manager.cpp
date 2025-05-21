@@ -7,9 +7,15 @@
 #include <logger.h>
 #include <ranges>
 
-auto WindowManager::findWindow(const std::string_view id) const noexcept { return m_windows.find(std::string(id)); }
+std::unordered_map<std::string, std::unique_ptr<Window>>::const_iterator
+WindowManager::findWindow(const std::string_view id) const noexcept {
+	return m_windows.find(std::string(id));
+}
 
-auto WindowManager::findWindowMutable(const std::string_view id) noexcept { return m_windows.find(std::string(id)); }
+std::unordered_map<std::string, std::unique_ptr<Window>>::iterator
+WindowManager::findWindowMutable(const std::string_view id) noexcept {
+	return m_windows.find(std::string(id));
+}
 
 void WindowManager::checkInitialized() const {
 	if (!m_initialized) {

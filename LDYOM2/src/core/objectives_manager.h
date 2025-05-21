@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <locked_ref.h>
 #include <objective.h>
 #include <string>
 #include <unordered_map>
@@ -26,11 +27,11 @@ class ObjectivesManager {
 	Objective createObjective(std::string_view type);
 	void addNewObjective(std::string_view type);
 
-	Objective& getObjectiveMutable(int index);
+	Objective& getUnsafeObjective(int index);
 	void removeObjective(int index);
 	void moveObjective(int fromIndex, int toIndex);
 
-	std::unordered_map<std::string, ObjectiveBuilderData>& getObjectiveTypes() { return m_objectivesBuilders; }
+	std::unordered_map<std::string, ObjectiveBuilderData>& getObjectiveBuilders() { return m_objectivesBuilders; }
 
 	void registerCoreObjectives();
 };
