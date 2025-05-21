@@ -36,11 +36,22 @@ find_package(fmt REQUIRED)
 find_package(stduuid)
 find_package(watcher)
 
+if(NOT DEFINED ENV{DIRECTX9_SDK_DIR})
+    message(FATAL_ERROR "DIRECTX9_SDK_DIR environment variable is not set. Please set it to your DirectX SDK installation path.")
+else()
+    message(STATUS "Using DirectX SDK from: $ENV{DIRECTX9_SDK_DIR}")
+    # Add DirectX SDK Include directory
+    include_directories($ENV{DIRECTX9_SDK_DIR}/Include)
+    # Add DirectX SDK 32-bit Library directory
+    link_directories($ENV{DIRECTX9_SDK_DIR}/Lib/x86)
+endif()
 
 file(GLOB_RECURSE SRC_FILES "src/*")
 add_library(${PROJECT_NAME} MODULE ${SRC_FILES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    d3d9.lib
+    d3dx9.lib
     plugin::plugin_sa
     minhook::minhook
     imgui::imgui
