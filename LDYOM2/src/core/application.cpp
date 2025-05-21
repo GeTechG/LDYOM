@@ -1,12 +1,14 @@
 #include "application.h"
 #include "addons_manager.h"
 #include "configuration.h"
+#include "entities_manager.h"
 #include "hotkeys.h"
 #include "localization.h"
 #include "lua_manager.h"
 #include "objectives_manager.h"
 #include "project_player.h"
 #include "render_hook.h"
+#include "textures_manager.h"
 #include <logger.h>
 #include <plugin.h>
 #include <projects_manager.h>
@@ -16,7 +18,6 @@
 #include <window_manager.h>
 #include <windows/init.h>
 
-
 void Application::initialize() {
 	Logger::Initialize();
 	LDYOM_INFO("LDYOM Application starting...");
@@ -25,6 +26,7 @@ void Application::initialize() {
 		Configuration::instance().initialize();
 		Localization::instance().initialize();
 		Hotkeys::instance().initialize();
+		TexturesManager::instance().initialize();
 		WindowManager::instance().initialize();
 		ThemeLoader::initialize();
 		ProjectsManager::instance().initialize();
@@ -51,6 +53,8 @@ void Application::initialize() {
 		initWindows();
 
 		ObjectivesManager::instance().registerCoreObjectives();
+		ComponentsManager::instance().registerCoreComponents();
+		EntitiesManager::instance().registerCoreEntityTemplates();
 	} catch (const std::exception& e) {
 		LDYOM_CRITICAL("Error during application initialization: {}", e.what());
 		LDYOM_DUMP_BACKTRACE();
@@ -66,6 +70,7 @@ void Application::initialize() {
 void Application::shutdown() {
 	LDYOM_INFO("Application shutdown");
 
+	TexturesManager::instance().shutdown();
 	AddonsManager::instance().shutdown();
 	WindowManager::instance().shutdown();
 	LDYOM_INFO("Window Manager shutdown");
