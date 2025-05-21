@@ -7,23 +7,23 @@
 #include <typeindex>
 #include <typeinfo>
 
-class DataContainer {
+class ObjectiveDataContainer {
   public:
-	virtual ~DataContainer() = default;
+	virtual ~ObjectiveDataContainer() = default;
 	virtual void callRenderer() = 0;
 	virtual ktwait callExecutor() = 0;
 	virtual nlohmann::json toJson() const = 0;
 	virtual void fromJson(const nlohmann::json& j) = 0;
 };
 
-template <typename T> class TypedDataContainer : public DataContainer {
+template <typename T> class TypedObjectiveDataContainer : public ObjectiveDataContainer {
   public:
 	T value;
 	std::function<void(T&)> editorCallback;
 	std::function<ktwait(T&)> executorCallback;
 
-	TypedDataContainer(T initialValue, std::function<void(T&)> editorCallback,
-	                   std::function<ktwait(T&)> executorCallback)
+	TypedObjectiveDataContainer(T initialValue, std::function<void(T&)> editorCallback,
+	                            std::function<ktwait(T&)> executorCallback)
 		: value(initialValue),
 		  editorCallback(editorCallback),
 		  executorCallback(executorCallback) {}
@@ -39,7 +39,7 @@ template <typename T> class TypedDataContainer : public DataContainer {
 
 class Objective {
   private:
-	std::shared_ptr<DataContainer> content;
+	std::shared_ptr<ObjectiveDataContainer> content;
 	std::type_index contentType;
 
   public:
@@ -49,7 +49,7 @@ class Objective {
 	template <typename T>
 	Objective(std::string_view type, std::string_view name, T initialValue, std::function<void(T&)> editorCallback,
 	          std::function<ktwait(T&)> executorCallback = nullptr)
-		: content(std::make_shared<TypedDataContainer<T>>(initialValue, editorCallback, executorCallback)),
+		: content(std::make_shared<TypedObjectiveDataContainer<T>>(initialValue, editorCallback, executorCallback)),
 		  contentType(typeid(T)),
 		  type(std::string(type)),
 		  name(std::string(name)) {}
@@ -59,7 +59,7 @@ class Objective {
 			throw std::bad_cast();
 		}
 
-		auto derivedPtr = std::dynamic_pointer_cast<TypedDataContainer<T>>(content);
+		auto derivedPtr = std::dynamic_pointer_cast<TypedObjectiveDataContainer<T>>(content);
 		if (!derivedPtr) {
 			throw std::bad_cast();
 		}
