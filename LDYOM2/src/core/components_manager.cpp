@@ -1,5 +1,6 @@
 #include "components_manager.h"
 #include <components/actor.h>
+#include <components/objective_specific.h>
 
 ComponentsManager& ComponentsManager::instance() {
 	static ComponentsManager instance;
@@ -17,4 +18,7 @@ std::shared_ptr<Component> ComponentsManager::createComponent(std::string_view t
 	throw std::runtime_error("Component type not registered: " + std::string(type));
 }
 
-void ComponentsManager::registerCoreComponents() { registerComponentBuilder(components::actorBuilder()); }
+void ComponentsManager::registerCoreComponents() {
+	registerComponentBuilder(components::actorBuilder());
+	registerComponentBuilder(components::objectiveSpecificBuilder());
+}
