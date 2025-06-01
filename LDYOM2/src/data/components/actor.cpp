@@ -6,10 +6,11 @@
 #include <entity.h>
 #include <project_player.h>
 
+
 void components::Actor::sol_lua_register(sol::state_view lua_state) {
-	auto ut = lua_state.new_usertype<components::Actor>("Actor");
-	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, initialDirection, model, specialModel, ped,
-	                 cast, spawn, despawn);
+	auto ut = lua_state.new_usertype<Actor>("Actor");
+	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, initialDirection, model, specialModel,
+	                 health, headshotImmune, mustSurvive, ped, spawn, despawn);
 }
 
 components::Actor::Actor()
@@ -22,6 +23,9 @@ inline nlohmann::json components::Actor::to_json() const {
 	j["initialDirection"] = initialDirection;
 	j["model"] = model;
 	j["specialModel"] = specialModel;
+	j["health"] = health;
+	j["headshotImmune"] = headshotImmune;
+	j["mustSurvive"] = mustSurvive;
 	return j;
 }
 
@@ -30,6 +34,9 @@ void components::Actor::from_json(const nlohmann::json& j) {
 	j.at("initialDirection").get_to(initialDirection);
 	j.at("model").get_to(model);
 	j.at("specialModel").get_to(specialModel);
+	j.at("health").get_to(health);
+	j.at("headshotImmune").get_to(headshotImmune);
+	j.at("mustSurvive").get_to(mustSurvive);
 }
 
 void components::Actor::editorRender() {
@@ -38,7 +45,7 @@ void components::Actor::editorRender() {
 	ImGui::SameLine(availableWidth * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
 	if (ImGui::SliderAngle("##direction", &initialDirection, -180.0f, 180.0f, "%.0f°")) {
-		dirty |= DirtyFlags::Direction;
+		dirty |= Direction;
 	}
 
 	ImGui::Text("%s", tr("is_special").c_str());
@@ -47,7 +54,7 @@ void components::Actor::editorRender() {
 	bool isSpecial = (model == -1);
 	if (ImGui::Checkbox("##is_special", &isSpecial)) {
 		model = isSpecial ? -1 : 0;
-		dirty |= DirtyFlags::Model;
+		dirty |= Model;
 	}
 
 	const bool isSpecialModel = (this->model == -1);
@@ -71,7 +78,7 @@ void components::Actor::editorRender() {
 			for (auto& item : models) {
 				if (ImGui::Selectable(item.c_str(), item == specialModel)) {
 					specialModel = item;
-					dirty |= DirtyFlags::Model;
+					dirty |= Model;
 				}
 			}
 			ImGui::EndCombo();
@@ -82,7 +89,7 @@ void components::Actor::editorRender() {
 			for (auto& item : pedModels) {
 				if (ImGui::Selectable(std::to_string(item).c_str(), item == model)) {
 					model = item;
-					dirty |= DirtyFlags::Model;
+					dirty |= Model;
 				}
 			}
 			ImGui::EndCombo();
@@ -100,12 +107,28 @@ void components::Actor::editorRender() {
 		} else {
 			this->specialModel = selected.special;
 		}
-		dirty |= DirtyFlags::Model;
+		dirty |= Model;
 	};
-
 	PopupSkinSelector::renderPopup(skinSelectorCallback, isSpecialModel);
 
 	ImGui::EndGroup();
+
+	ImGui::Separator();
+
+	ImGui::Text(tr("health").c_str());
+	ImGui::SameLine(availableWidth * 0.45f);
+	ImGui::SetNextItemWidth(-1.f);
+	ImGui::DragFloat("##health", &health, 1.0f, 0.0f, FLT_MAX, "%.0f", ImGuiSliderFlags_ClampOnInput);
+
+	ImGui::Text(tr("headshot_immune").c_str());
+	ImGui::SameLine(availableWidth * 0.45f);
+	ImGui::SetNextItemWidth(-1.f);
+	ImGui::Checkbox("##headshotImmune", &headshotImmune);
+
+	ImGui::Text(tr("must_survive").c_str());
+	ImGui::SameLine(availableWidth * 0.45f);
+	ImGui::SetNextItemWidth(-1.f);
+	ImGui::Checkbox("##mustSurvive", &mustSurvive);
 }
 
 void components::Actor::onStart() {
@@ -124,16 +147,16 @@ void components::Actor::onStart() {
 
 void components::Actor::onUpdate(float deltaTime) {
 	Component::onUpdate(deltaTime);
-	if (this->dirty & DirtyFlags::Direction) {
+	if (this->dirty & Direction) {
 		updateDirection();
 	}
-	if (this->dirty & DirtyFlags::Position) {
+	if (this->dirty & Position) {
 		updatePosition();
 	}
-	if (this->dirty & DirtyFlags::Model) {
+	if (this->dirty & Model) {
 		spawn();
 	}
-	dirty = DirtyFlags::None;
+	dirty = None;
 }
 
 void components::Actor::onReset() {
@@ -183,6 +206,24 @@ void components::Actor::spawn() {
 	});
 	updatePosition();
 	updateDirection();
+	ped->m_fMaxHealth = std::max(ped->m_fMaxHealth, this->health);
+	ped->m_fHealth = this->health;
+
+	if (this->mustSurvive) {
+		ProjectPlayer::instance().projectTasklist->add_task(
+			[](const Actor* _this) -> ktwait {
+				while (_this->ped && IS_PLAYING) {
+					ePedState pedState = _this->ped->m_ePedState;
+					if (pedState == PEDSTATE_DEAD || pedState == PEDSTATE_DIE || pedState == PEDSTATE_DIE_BY_STEALTH) {
+						ProjectPlayer::instance().failCurrentProject();
+						break;
+					}
+					co_await 1;
+				}
+			},
+			this);
+	}
+	plugin::Command<plugin::Commands::SET_CHAR_SUFFERS_CRITICAL_HITS>(newPed, !this->headshotImmune);
 
 	if (!IS_PLAYING) {
 		this->ped->m_bUsesCollision = 0;

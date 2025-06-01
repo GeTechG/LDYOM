@@ -83,23 +83,26 @@ void components::ObjectiveSpecific::editorRender() {
 
 void components::ObjectiveSpecific::onStart() {
 	this->Component::onStart();
-	auto spawnObjectiveUuid = uuids::uuid::from_string(spawnObjective);
-	this->spawnObjectiveConnection = std::make_optional(ProjectPlayer::instance().onObjectiveStarted.connect(
-		[this, spawnObjectiveUuid](int index) {
-			if (ObjectivesManager::instance().getObjective(index).id == spawnObjectiveUuid) {
-				onSpawned();
-			}
-		},
-		rocket::queued_connection));
-	if (!despawnObjective.empty()) {
-		auto despawnObjectiveUuid = uuids::uuid::from_string(despawnObjective);
-		this->despawnObjectiveConnection = std::make_optional(ProjectPlayer::instance().onObjectiveCompleted.connect(
-			[this, despawnObjectiveUuid](int index) {
-				if (ObjectivesManager::instance().getObjective(index).id == despawnObjectiveUuid) {
-					onDespawned();
+	if (IS_PLAYING) {
+		auto spawnObjectiveUuid = uuids::uuid::from_string(spawnObjective);
+		this->spawnObjectiveConnection = std::make_optional(ProjectPlayer::instance().onObjectiveStarted.connect(
+			[this, spawnObjectiveUuid](int index) {
+				if (ObjectivesManager::instance().getObjective(index).id == spawnObjectiveUuid) {
+					onSpawned();
 				}
 			},
 			rocket::queued_connection));
+		if (!despawnObjective.empty()) {
+			auto despawnObjectiveUuid = uuids::uuid::from_string(despawnObjective);
+			this->despawnObjectiveConnection =
+				std::make_optional(ProjectPlayer::instance().onObjectiveCompleted.connect(
+					[this, despawnObjectiveUuid](int index) {
+						if (ObjectivesManager::instance().getObjective(index).id == despawnObjectiveUuid) {
+							onDespawned();
+						}
+					},
+					rocket::queued_connection));
+		}
 	}
 }
 

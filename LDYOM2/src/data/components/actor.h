@@ -11,7 +11,6 @@
 #include <rocket.hpp>
 #include <string>
 
-
 namespace components {
 
 class Actor : public Component {
@@ -39,6 +38,10 @@ class Actor : public Component {
 	float initialDirection = 0.0f;
 	int model = 0;
 	std::string specialModel;
+
+	float health = 100.0f;
+	bool headshotImmune = false;
+	bool mustSurvive = false;
 
 	int dirty = DirtyFlags::None;
 	std::shared_ptr<CPed> ped;
