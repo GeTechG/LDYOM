@@ -6,6 +6,8 @@
 #include <task_manager.h>
 #include <extensions/ScriptCommands.h>
 
+ProjectPlayer::~ProjectPlayer() { this->projectTasklist->clear_all_tasks(); }
+
 ktwait ProjectPlayer::run() {
 	instance().m_state.isPlaying = true;
 	instance().transitionPlayingState(true);
@@ -63,11 +65,21 @@ void ProjectPlayer::stopCurrentProject() {
 	LDYOM_INFO("Project player stopped");
 }
 
+void ProjectPlayer::failCurrentProject() { this->stopCurrentProject(); }
+
 void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 	if (toPlayMode) {
 		TaskManager::instance().addTask("stop_cheat", processStopCheat);
+		instance().projectTasklist->clear_all_tasks();
+		TaskManager::instance().addTask("project_tasks", []() -> ktwait {
+			while (instance().m_state.isPlaying) {
+				instance().projectTasklist->process();
+				co_await 1;
+			}
+		});
 	} else {
 		TaskManager::instance().removeTask("stop_cheat");
+		TaskManager::instance().removeTask("project_tasks");
 	}
 	ScenesManager::instance().resetCurrentScene();
 }

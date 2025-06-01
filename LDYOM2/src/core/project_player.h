@@ -19,11 +19,14 @@ class ProjectPlayer {
 	ProjectPlayerState m_state;
 
 	ProjectPlayer() = default;
+	~ProjectPlayer();
 
 	static ktwait run();
 	static ktwait processStopCheat();
 
   public:
+	std::unique_ptr<ktcoro_tasklist> projectTasklist = std::make_unique<ktcoro_tasklist>();
+
 	rocket::thread_safe_signal<void(std::string)> signals;
 	rocket::thread_safe_signal<void()> onProjectStarted;
 	rocket::thread_safe_signal<void()> onProjectStopped;
@@ -37,6 +40,7 @@ class ProjectPlayer {
 
 	void startCurrentProject(std::string_view sceneId = "");
 	void stopCurrentProject();
+	void failCurrentProject();
 	void transitionPlayingState(bool toPlayMode);
 
 	bool isPlaying() const { return m_state.isPlaying; }
