@@ -98,3 +98,75 @@
 		auto ut = lua_state.new_usertype<Type>(#Type);                                                                 \
 		SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Type, __VA_ARGS__)                                            \
 	}
+
+// Вспомогательный макрос для создания пары имя-значение enum
+#define SOL_LUA_ENUM_PAIR(EnumType, value_name) std::make_pair(#value_name, EnumType::value_name)
+
+// Макросы для создания списка пар enum значений
+#define SOL_LUA_ENUM_PAIRS_0(EnumType) /* intentionally empty */
+#define SOL_LUA_ENUM_PAIRS_1(EnumType, x) SOL_LUA_ENUM_PAIR(EnumType, x)
+#define SOL_LUA_ENUM_PAIRS_2(EnumType, x, ...)                                                                         \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_1(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_3(EnumType, x, ...)                                                                         \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_2(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_4(EnumType, x, ...)                                                                         \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_3(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_5(EnumType, x, ...)                                                                         \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_4(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_6(EnumType, x, ...)                                                                         \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_5(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_7(EnumType, x, ...)                                                                         \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_6(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_8(EnumType, x, ...)                                                                         \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_7(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_9(EnumType, x, ...)                                                                         \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_8(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_10(EnumType, x, ...)                                                                        \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_9(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_11(EnumType, x, ...)                                                                        \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_10(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_12(EnumType, x, ...)                                                                        \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_11(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_13(EnumType, x, ...)                                                                        \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_12(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_14(EnumType, x, ...)                                                                        \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_13(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_15(EnumType, x, ...)                                                                        \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_14(EnumType, __VA_ARGS__))
+#define SOL_LUA_ENUM_PAIRS_16(EnumType, x, ...)                                                                        \
+	SOL_LUA_ENUM_PAIR(EnumType, x), SOL_LUA_EXPAND(SOL_LUA_ENUM_PAIRS_15(EnumType, __VA_ARGS__))
+
+#define SOL_LUA_ENUM_PAIRS(EnumType, ...)                                                                              \
+	SOL_LUA_EXPAND(SOL_LUA_PASTE(SOL_LUA_ENUM_PAIRS_, SOL_LUA_PP_NARG(__VA_ARGS__))(EnumType, __VA_ARGS__))
+
+/**
+ * @brief Определяет статическую функцию sol_lua_register_enum для enum,
+ *        которая регистрирует указанные значения enum в Lua с использованием Sol2.
+ *
+ * @param EnumType Имя enum.
+ * @param ... Список имен значений enum для регистрации.
+ *
+ * Пример использования:
+ * enum class MyEnum { VALUE1, VALUE2, VALUE3 };
+ * SOL_LUA_DEFINE_ENUM(MyEnum, VALUE1, VALUE2, VALUE3)
+ */
+#define SOL_LUA_DEFINE_ENUM(EnumType, ...)                                                                             \
+	static void sol_lua_register_enum(sol::state_view lua_state) {                                                     \
+		lua_state.new_enum<EnumType>(#EnumType, {SOL_LUA_ENUM_PAIRS(EnumType, __VA_ARGS__)});                          \
+	}
+
+/**
+ * @brief Альтернативный макрос для регистрации enum с пользовательским именем в Lua.
+ *
+ * @param EnumType Имя enum в C++.
+ * @param LuaName Имя enum в Lua (строка).
+ * @param ... Список имен значений enum для регистрации.
+ *
+ * Пример использования:
+ * enum class MyEnum { VALUE1, VALUE2, VALUE3 };
+ * SOL_LUA_DEFINE_ENUM_NAMED(MyEnum, "CustomEnumName", VALUE1, VALUE2, VALUE3)
+ */
+#define SOL_LUA_DEFINE_ENUM_NAMED(EnumType, LuaName, ...)                                                              \
+	static void sol_lua_register_enum(sol::state_view lua_state) {                                                     \
+		lua_state.new_enum<EnumType>(LuaName, {SOL_LUA_ENUM_PAIRS(EnumType, __VA_ARGS__)});                            \
+	}
