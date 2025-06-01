@@ -112,6 +112,12 @@ class ktcoro_tasklist {
 		}
 	}
 
+	void clear_all_tasks() {
+		for (auto& task : tasks) {
+			tasks_to_remove.push_back(task.handle.address());
+		}
+	}
+
   private:
 	inline void do_remove_task(void* task_addr);
 	inline void do_complete_task(void* task_addr);
