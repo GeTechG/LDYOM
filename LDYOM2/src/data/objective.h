@@ -6,6 +6,7 @@
 #include <string>
 #include <typeindex>
 #include <typeinfo>
+#include <uuid_wrap.h>
 
 class ObjectiveDataContainer {
   public:
@@ -45,6 +46,7 @@ class Objective {
   public:
 	std::string type;
 	std::string name;
+	uuids::uuid id = uuids::uuid_system_generator{}();
 
 	template <typename T>
 	Objective(std::string_view type, std::string_view name, T initialValue, std::function<void(T&)> editorCallback,
@@ -83,7 +85,7 @@ class Objective {
 	}
 
 	friend void to_json(nlohmann::json& j, const Objective& p) {
-		j = nlohmann::json{{"type", p.type}, {"name", p.name}, {"content", p.content->toJson()}};
+		j = nlohmann::json{{"type", p.type}, {"name", p.name}, {"content", p.content->toJson()}, {"id", p.id}};
 	}
 
 	friend void from_json(const nlohmann::json& j, Objective& p) {
@@ -91,5 +93,6 @@ class Objective {
 		if (j.contains("content")) {
 			p.content->fromJson(j.at("content"));
 		}
+		j.at("id").get_to(p.id);
 	}
 };

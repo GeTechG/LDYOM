@@ -1,29 +1,31 @@
 #pragma once
-#include "component.h"
 #include <array>
-#include <components_manager.h>
 #include <lua_define_type.h>
 #include <nlohmann/json.hpp>
 #include <sol/sol.hpp>
 #include <string>
 #include <vector>
 
-struct ComponentsContainer {
-	std::vector<std::shared_ptr<Component>> data;
-};
-
-namespace nlohmann {
-void to_json(json& j, const ComponentsContainer& p);
-void from_json(const json& j, ComponentsContainer& p);
-} // namespace nlohmann
+class Component;
 
 class Entity {
+  private:
+	std::vector<std::shared_ptr<Component>> components;
+
   public:
 	std::string name;
 	std::array<float, 3> position = {0.0f, 0.0f, 0.0f};
 	std::array<float, 3> rotation = {0.0f, 0.0f, 0.0f};
 	std::array<float, 3> scale = {1.0f, 1.0f, 1.0f};
-	ComponentsContainer components;
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Entity, name, position, rotation, scale, components)
-	SOL_LUA_DEFINE_TYPE_INTRUSIVE(Entity, name, position, rotation, scale, components)
+
+	void addComponent(std::shared_ptr<Component> component);
+	const std::vector<std::shared_ptr<Component>>& getComponents() const { return components; }
+	std::shared_ptr<Component> getComponent(const std::string_view type);
+
+	void onUpdate(float deltaTime);
+	void reset();
+
+	friend void to_json(nlohmann::json& j, const Entity& p);
+	friend void from_json(const nlohmann::json& j, Entity& p);
+	static void sol_lua_register(sol::state_view lua_state);
 };

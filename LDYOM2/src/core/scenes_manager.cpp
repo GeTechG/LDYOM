@@ -167,3 +167,17 @@ void ScenesManager::saveCurrentScene() {
 		LDYOM_ERROR("Failed to open file for saving scene: {}", sceneFilePath.string());
 	}
 }
+
+void ScenesManager::onUpdate(float deltaTime) {
+	auto& currentScene = getUnsafeCurrentScene();
+	for (auto& entity : currentScene.entities) {
+		entity->onUpdate(deltaTime);
+	}
+}
+
+void ScenesManager::resetCurrentScene() {
+	auto& currentScene = getUnsafeCurrentScene();
+	for (auto& entity : currentScene.entities) {
+		entity->reset();
+	}
+}

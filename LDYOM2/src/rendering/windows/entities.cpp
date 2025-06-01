@@ -1,6 +1,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "entities.h"
 #include "logger.h"
+#include <component.h>
 #include <entities_manager.h>
 #include <fa_icons.h>
 #include <imgui_internal.h>
@@ -28,7 +29,23 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 		ImGui::SameLine();
 
 		if (ImGui::Button(ICON_FA_PLUS_LARGE, squareButtonSize)) {
-			EntitiesManager::instance().addNewEntityFromTemplate("actor");
+			switch (window->m_windowType) {
+				case EntitiesWindowType_Actor:
+					{
+						EntitiesManager::instance().addNewEntityFromTemplate("actor");
+						break;
+					}
+				case EntitiesWindowType_Car:
+					{
+						EntitiesManager::instance().addNewEntityFromTemplate("car");
+						break;
+					}
+				case EntitiesWindowType_Object:
+					{
+						EntitiesManager::instance().addNewEntityFromTemplate("object");
+						break;
+					}
+			}
 		}
 	}
 	ImGui::EndChild();
@@ -61,7 +78,7 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			}
 
-			if (ImGui::Selectable(entities[i].name.c_str(), isSelected, ImGuiSelectableFlags_AllowItemOverlap)) {
+			if (ImGui::Selectable(entities[i]->name.c_str(), isSelected, ImGuiSelectableFlags_AllowItemOverlap)) {
 				window->m_selectedEntityIndex = i;
 			}
 
@@ -94,7 +111,7 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 			lastPtr = (int)window;
 			if (openRenamePopupIndex) {
 				ImGui::OpenPopup(renamePopupId);
-				window->m_renameBuffer = entities[i].name;
+				window->m_renameBuffer = entities[i]->name;
 			}
 
 			if (ImGui::RenamePopup(renamePopupId, &window->m_renameBuffer)) {
@@ -107,7 +124,7 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
 				ImGui::SetDragDropPayload("ENTITY_DND", &i, sizeof(int));
-				ImGui::Text("%s", entities[i].name.c_str());
+				ImGui::Text("%s", entities[i]->name.c_str());
 				ImGui::EndDragDropSource();
 			}
 
@@ -135,7 +152,7 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 	ImGui::EndChild();
 
 	if (window->m_selectedEntityIndex >= 0 && window->m_selectedEntityIndex < static_cast<int>(entities.size())) {
-		EntitiesWindow::renderEntity(window, entities[window->m_selectedEntityIndex], window->m_selectedEntityIndex);
+		EntitiesWindow::renderEntity(window, *entities[window->m_selectedEntityIndex], window->m_selectedEntityIndex);
 	}
 
 	if (window->m_indexToRemove != -1) {
@@ -190,12 +207,12 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 			}
 
 			// Render components
-			auto& components = entity.components.data;
+			auto& components = entity.getComponents();
 			for (size_t j = 0; j < components.size(); j++) {
 				const auto& component = components[j];
 				ImGui::PushID(static_cast<int>(j));
 
-				if (ImGui::CollapsingHeader(component->name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+				if (ImGui::CollapsingHeader(component->getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 					component->editorRender();
 				}
 

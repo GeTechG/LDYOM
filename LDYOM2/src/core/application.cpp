@@ -9,9 +9,11 @@
 #include "project_player.h"
 #include "render_hook.h"
 #include "textures_manager.h"
+#include <components_manager.h>
 #include <logger.h>
 #include <plugin.h>
 #include <projects_manager.h>
+#include <scenes_manager.h>
 #include <sol/sol.hpp>
 #include <task_manager.h>
 #include <utils/theme_loader.h>
@@ -85,7 +87,11 @@ void Application::shutdown() {
 	Logger::Shutdown();
 }
 
-void Application::process() { TaskManager::instance().processAll(); }
+void Application::process() {
+	rocket::dispatch_queued_calls();
+	ScenesManager::instance().onUpdate(CTimer::ms_fTimeStep * 1000.0f);
+	TaskManager::instance().processAll();
+}
 
 void Application::renderFrames() {
 	Hotkeys::instance().update();

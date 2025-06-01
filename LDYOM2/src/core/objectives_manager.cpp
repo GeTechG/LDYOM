@@ -23,12 +23,21 @@ Objective ObjectivesManager::createObjective(std::string_view type) {
 
 void ObjectivesManager::addNewObjective(std::string_view type) {
 	Objective objective = this->createObjective(type);
-	ScenesManager::instance().getMutableCurrentScene()->objectives.data.push_back(objective);
+	ScenesManager::instance().getUnsafeCurrentScene().objectives.data.push_back(objective);
+}
+
+const Objective& ObjectivesManager::getObjective(int index) const {
+	auto& currentScene = ScenesManager::instance().getCurrentScene();
+	auto& objectives = currentScene.objectives.data;
+	if (index < 0 || index >= static_cast<int>(objectives.size())) {
+		throw std::out_of_range("Objective index out of range: " + std::to_string(index));
+	}
+	return objectives[index];
 }
 
 Objective& ObjectivesManager::getUnsafeObjective(int index) {
-	auto currentScene = ScenesManager::instance().getMutableCurrentScene();
-	auto& objectives = currentScene->objectives.data;
+	auto& currentScene = ScenesManager::instance().getUnsafeCurrentScene();
+	auto& objectives = currentScene.objectives.data;
 	if (index < 0 || index >= static_cast<int>(objectives.size())) {
 		throw std::out_of_range("Objective index out of range: " + std::to_string(index));
 	}
@@ -36,16 +45,16 @@ Objective& ObjectivesManager::getUnsafeObjective(int index) {
 }
 
 void ObjectivesManager::removeObjective(int index) {
-	auto currentScene = ScenesManager::instance().getMutableCurrentScene();
-	auto& objectives = currentScene->objectives.data;
+	auto& currentScene = ScenesManager::instance().getUnsafeCurrentScene();
+	auto& objectives = currentScene.objectives.data;
 	if (index >= 0 && index < static_cast<int>(objectives.size())) {
 		objectives.erase(objectives.begin() + index);
 	}
 }
 
 void ObjectivesManager::moveObjective(int fromIndex, int toIndex) {
-	auto currentScene = ScenesManager::instance().getMutableCurrentScene();
-	auto& objectives = currentScene->objectives.data;
+	auto& currentScene = ScenesManager::instance().getUnsafeCurrentScene();
+	auto& objectives = currentScene.objectives.data;
 	if (!utils::moveInVector(objectives, fromIndex, toIndex)) {
 		LDYOM_ERROR("Failed to move objective from {} to {}", fromIndex, toIndex);
 	}

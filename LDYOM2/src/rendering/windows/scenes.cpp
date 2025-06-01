@@ -42,7 +42,7 @@ void ScenesWindow::renderContent(ScenesWindow* window) {
 				if (!renameBuffer.empty()) {
 					if (isCurrentScene) {
 						sceneInfo.name = renameBuffer;
-						scenesManager.getMutableCurrentScene()->info.name = renameBuffer;
+						scenesManager.getUnsafeCurrentScene().info.name = renameBuffer;
 					} else {
 						sceneInfo.name = renameBuffer;
 						scenesManager.rewriteSceneInfo(sceneInfo.id);

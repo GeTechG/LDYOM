@@ -23,8 +23,8 @@ class EntitiesManager {
 	const std::vector<std::string>* getEntityTemplate(const std::string& type);
 
 	// Entity creation and manipulation
-	Entity createEntityFromTemplate(const std::string& templateType);
-	Entity createEmptyEntity();
+	std::unique_ptr<Entity> createEntityFromTemplate(const std::string& templateType);
+	std::unique_ptr<Entity> createEmptyEntity();
 	void addNewEntityFromTemplate(const std::string& templateType);
 	void addNewEmptyEntity();
 

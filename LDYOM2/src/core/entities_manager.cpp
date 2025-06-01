@@ -3,6 +3,7 @@
 #include "components_manager.h"
 #include "localization.h"
 #include "scenes_manager.h"
+#include <plugin.h>
 #include <stdexcept>
 
 EntitiesManager& EntitiesManager::instance() {
@@ -22,61 +23,65 @@ const EntityTemplate* EntitiesManager::getEntityTemplate(const std::string& type
 	return nullptr;
 }
 
-Entity EntitiesManager::createEntityFromTemplate(const std::string& templateType) {
+std::unique_ptr<Entity> EntitiesManager::createEntityFromTemplate(const std::string& templateType) {
 	auto templatePtr = getEntityTemplate(templateType);
 	if (!templatePtr) {
 		throw std::runtime_error("Entity template not found: " + templateType);
 	}
 
-	Entity entity = createEmptyEntity();
+	std::unique_ptr<Entity> entity = createEmptyEntity();
 
 	// Add all components defined in the template
 	for (const auto& componentType : *templatePtr) {
-		entity.components.data.push_back(ComponentsManager::instance().createComponent(componentType));
+		entity->addComponent(ComponentsManager::instance().createComponent(componentType));
 	}
 
 	return entity;
 }
 
-Entity EntitiesManager::createEmptyEntity() {
-	Entity entity;
-	entity.name = _("entities.new_entity");
+std::unique_ptr<Entity> EntitiesManager::createEmptyEntity() {
+	auto entity = std::make_unique<Entity>();
+	entity->name = _("entities.new_entity");
+	auto position = FindPlayerPed()->GetPosition();
+	entity->position = {position.x, position.y, position.z};
 	return entity;
 }
 
 void EntitiesManager::addNewEntityFromTemplate(const std::string& templateType) {
-	Entity entity = createEntityFromTemplate(templateType);
-	ScenesManager::instance().getMutableCurrentScene()->entities.push_back(entity);
+	std::unique_ptr<Entity> entity = createEntityFromTemplate(templateType);
+	ScenesManager::instance().getUnsafeCurrentScene().entities.emplace_back(std::move(entity));
 }
 
 void EntitiesManager::addNewEmptyEntity() {
-	Entity entity = createEmptyEntity();
-	ScenesManager::instance().getMutableCurrentScene()->entities.push_back(entity);
+	std::unique_ptr<Entity> entity = createEmptyEntity();
+	ScenesManager::instance().getUnsafeCurrentScene().entities.emplace_back(std::move(entity));
 }
 
 Entity& EntitiesManager::getUnsafeEntity(int index) {
-	auto currentScene = ScenesManager::instance().getMutableCurrentScene();
-	auto& entities = currentScene->entities;
+	auto& currentScene = ScenesManager::instance().getUnsafeCurrentScene();
+	auto& entities = currentScene.entities;
 	if (index < 0 || index >= static_cast<int>(entities.size())) {
 		throw std::out_of_range("Entity index out of range: " + std::to_string(index));
 	}
-	return entities[index];
+	return *entities[index];
 }
 
 void EntitiesManager::removeEntity(int index) {
-	auto currentScene = ScenesManager::instance().getMutableCurrentScene();
-	auto& entities = currentScene->entities;
+	auto& currentScene = ScenesManager::instance().getUnsafeCurrentScene();
+	auto& entities = currentScene.entities;
 	if (index >= 0 && index < static_cast<int>(entities.size())) {
 		entities.erase(entities.begin() + index);
 	}
 }
 
 void EntitiesManager::moveEntity(int fromIndex, int toIndex) {
-	auto currentScene = ScenesManager::instance().getMutableCurrentScene();
-	auto& entities = currentScene->entities;
+	auto& currentScene = ScenesManager::instance().getUnsafeCurrentScene();
+	auto& entities = currentScene.entities;
 	if (!utils::moveInVector(entities, fromIndex, toIndex)) {
 		LDYOM_ERROR("Failed to move entity from {} to {}", fromIndex, toIndex);
 	}
 }
 
-void EntitiesManager::registerCoreEntityTemplates() { registerEntityTemplate("actor", {"actor"}); }
+void EntitiesManager::registerCoreEntityTemplates() {
+	registerEntityTemplate("actor", {"actor", "objective_specific"});
+}

@@ -1,6 +1,5 @@
 #pragma once
 #include <functional>
-#include <locked_ref.h>
 #include <objective.h>
 #include <string>
 #include <unordered_map>
@@ -27,6 +26,7 @@ class ObjectivesManager {
 	Objective createObjective(std::string_view type);
 	void addNewObjective(std::string_view type);
 
+	const Objective& getObjective(int index) const;
 	Objective& getUnsafeObjective(int index);
 	void removeObjective(int index);
 	void moveObjective(int fromIndex, int toIndex);

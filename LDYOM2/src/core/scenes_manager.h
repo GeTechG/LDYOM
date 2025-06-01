@@ -1,7 +1,6 @@
 #pragma once
 #include "scene.h"
 #include "scene_info.h"
-#include <locked_ref.h>
 #include <memory>
 #include <optional>
 #include <shared_mutex>
@@ -27,7 +26,10 @@ class ScenesManager {
 	void loadScenesInfo();
 	std::vector<SceneInfo>& getScenesInfo() { return m_scenesInfo; }
 	const Scene& getCurrentScene() const { return *m_currentScene; }
-	LockedRef<Scene, std::shared_mutex> getMutableCurrentScene() { return LockedRef(*m_currentScene, m_sceneMutex); }
+	Scene& getUnsafeCurrentScene() { return *m_currentScene; }
+
+	void onUpdate(float deltaTime);
+	void resetCurrentScene();
 
 	void loadScene(std::string_view sceneId);
 	void removeScene(std::string_view sceneId);

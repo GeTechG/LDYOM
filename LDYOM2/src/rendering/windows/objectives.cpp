@@ -10,6 +10,7 @@
 #include <utils/imgui_configurate.h>
 #include <window_manager.h>
 
+
 void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 	const ImVec2 screenScale = ImGuiConfigurate::getScreenScale();
 	const float spacing = ImGui::GetStyle().ItemSpacing.x;
@@ -87,8 +88,8 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 
 			// TODO: MAYBE PROBLEM WITH POINTERS
 			static int lastPtr = 0;
-			if (&window->m_renameBuffer == NULL) {
-				LDYOM_INFO("Window pointer: {}", (void*)window);
+			if (&window->m_renameBuffer == nullptr) {
+				LDYOM_INFO("Window pointer: {}", static_cast<void*>(window));
 				LDYOM_INFO("Last pointer: {}", (void*)lastPtr);
 			}
 			lastPtr = (int)window;
