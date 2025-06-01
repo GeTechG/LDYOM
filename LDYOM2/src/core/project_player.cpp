@@ -2,25 +2,27 @@
 #include "objectives_manager.h"
 #include "projects_manager.h"
 #include "scenes_manager.h"
-#include <extensions/ScriptCommands.h>
 #include <logger.h>
 #include <task_manager.h>
+#include <extensions/ScriptCommands.h>
 
 ktwait ProjectPlayer::run() {
-	instance().transitionPlayingState(true);
-
 	instance().m_state.isPlaying = true;
+	instance().transitionPlayingState(true);
 	LDYOM_INFO("Project player started");
 
 	auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
 
 	for (int i = 0; i < static_cast<int>(objectives.size()); i++) {
+		instance().m_state.currentObjectiveIndex = i;
+		instance().onObjectiveStarted(i);
 		auto& objective = ObjectivesManager::instance().getUnsafeObjective(i);
 		co_await objective.execute();
+		instance().onObjectiveCompleted(i);
 	}
 
-	instance().transitionPlayingState(false);
 	instance().m_state.isPlaying = false;
+	instance().transitionPlayingState(false);
 	LDYOM_INFO("Project player finished");
 }
 
@@ -56,8 +58,8 @@ void ProjectPlayer::stopCurrentProject() {
 	}
 	TaskManager::instance().removeTask("run_project_player");
 
-	transitionPlayingState(false);
 	this->m_state.isPlaying = false;
+	transitionPlayingState(false);
 	LDYOM_INFO("Project player stopped");
 }
 
@@ -67,4 +69,5 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 	} else {
 		TaskManager::instance().removeTask("stop_cheat");
 	}
+	ScenesManager::instance().resetCurrentScene();
 }
