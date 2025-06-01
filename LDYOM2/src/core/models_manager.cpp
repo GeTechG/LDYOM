@@ -21,3 +21,11 @@ std::vector<std::string> ModelsManager::m_pedSpecialModels = {
 	"tbone",   "tenpen",  "torino",  "truth",   "wuzimu",  "zero",    "gangrl2", "copgrl1", "copgrl2",
 	"crogrl1", "crogrl2", "gungrl1", "gungrl2", "mecgrl2", "nurgrl2", "ryder2",  "cdeput",  "sfpdm1",
 	"lvpdm1",  "csbmydj", "psycho",  "csmech",  "csomost", "wmycd2"};
+
+bool ModelsManager::validatePedModel(int modelId) {
+	return std::ranges::find(m_pedModels, modelId) != m_pedModels.end();
+}
+
+bool ModelsManager::validatePedSpecialModel(std::string modelName) {
+	return std::ranges::find(m_pedSpecialModels, modelName) != m_pedSpecialModels.end();
+}
