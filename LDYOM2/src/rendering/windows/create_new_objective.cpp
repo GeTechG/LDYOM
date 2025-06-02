@@ -1,11 +1,14 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "create_new_objective.h"
+#include <algorithm>
 #include <fa_icons.h>
+#include <fmt/format.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <localization.h>
 #include <objectives_manager.h>
 #include <ranges>
+#include <sstream>
 #include <utils/imgui_configurate.h>
 
 void CreateNewObjective::renderSearchBox() {
@@ -21,99 +24,68 @@ void CreateNewObjective::renderSearchBox() {
 	ImGui::TextDisabled(ICON_FA_MAGNIFYING_GLASS);
 }
 
-void CreateNewObjective::renderCategoryNode(const CategoryNode& node, int depth) {
-	auto& objectiveTypes = ObjectivesManager::instance().getObjectiveBuilders();
-	std::string searchQuery = this->m_searchQuery.data();
-	bool hasSearchQuery = !searchQuery.empty();
+void CreateNewObjective::renderCategoryNode(const CategoryNode& node, int depth, const std::string& searchFilter) {
+	// Check if this category or any of its children match the search filter
+	bool shouldShowCategory = searchFilter.empty() || categoryMatchesFilter(node, searchFilter);
 
-	// First render subcategories
-	for (const auto& [subCategoryName, subCategory] : node.subcategories) {
-		// For categories other than root, create a tree node
-		if (depth > 0) {
-			// Check if any of this category's children (subcategories or objectives) match the search query
-			bool shouldShow = !hasSearchQuery;
-
-			if (hasSearchQuery) {
-				// Check category name itself
-				if (subCategoryName.find(searchQuery) != std::string::npos) {
-					shouldShow = true;
-				} else {
-					// Check all objectives in this category and subcategories
-					for (const auto& objType : subCategory.objectiveTypes) {
-						auto objectiveTypeName = _("objectives." + objType + ".name");
-						if (std::string(objectiveTypeName).find(searchQuery) != std::string::npos) {
-							shouldShow = true;
-							break;
-						}
-					}
-
-					// Recursively check subcategories (simplified check - we don't check deep into the tree)
-					if (!shouldShow) {
-						for (const auto& [_, subSubCategory] : subCategory.subcategories) {
-							for (const auto& objType : subSubCategory.objectiveTypes) {
-								auto objectiveTypeName = _("objectives." + objType + ".name");
-								if (std::string(objectiveTypeName).find(searchQuery) != std::string::npos) {
-									shouldShow = true;
-									break;
-								}
-							}
-							if (shouldShow)
-								break;
-						}
-					}
-				}
-			}
-
-			if (!shouldShow)
-				continue;
-
-			// Set tree node flags
-			ImGuiTreeNodeFlags nodeFlags = 0;
-
-			if (hasSearchQuery) {
-				nodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
-			}
-
-			// Create a unique ID for the tree node to ensure proper state tracking
-			std::string nodeId = subCategoryName + "##" + std::to_string(depth);
-
-			// If it's a category that should be shown, create a tree node
-			if (ImGui::TreeNodeEx(nodeId.c_str(), nodeFlags, "%s", subCategoryName.c_str())) {
-				renderCategoryNode(subCategory, depth + 1);
-				ImGui::TreePop();
-			}
-		} else {
-			// For root, just recurse without creating a node
-			renderCategoryNode(subCategory, depth + 1);
-		}
+	if (!shouldShowCategory) {
+		return; // Don't render this category if it doesn't match filter
 	}
 
-	// Then render objectives in this category
-	for (const auto& objType : node.objectiveTypes) {
-		// Skip if it doesn't match the search query
-		auto objectiveTypeName = _("objectives." + objType + ".name");
-		if (hasSearchQuery && std::string(objectiveTypeName).find(searchQuery) == std::string::npos) {
-			continue;
+	// Don't render the root node itself, but render its objectives and subcategories
+	if (depth > 0) {
+		const std::string nodeId = fmt::format("category_{}_{}", node.name, depth);
+
+		// If searching, force all categories to be open
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+		if (!searchFilter.empty()) {
+			flags |= ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+			ImGui::SetNextItemOpen(true);
 		}
 
-		// Add indent for objectives
-		if (depth > 0) {
-			ImGui::Indent();
+		const auto categoryLocalized = _(fmt::format("categories.{}", node.name));
+		if (ImGui::TreeNodeEx(nodeId.c_str(), flags, "%s %s", ICON_FA_FOLDER, categoryLocalized.c_str())) {
+			// Render objectives in this category
+			renderObjectivesInNode(node, searchFilter);
+
+			// Render subcategories
+			for (const auto& [subcategoryName, subcategoryNode] : node.subcategories) {
+				renderCategoryNode(subcategoryNode, depth + 1, searchFilter);
+			}
+
+			ImGui::TreePop();
+		}
+	} else {
+		// Root level - render objectives without category and subcategories
+		renderObjectivesInNode(node, searchFilter);
+
+		for (const auto& [subcategoryName, subcategoryNode] : node.subcategories) {
+			renderCategoryNode(subcategoryNode, depth + 1, searchFilter);
+		}
+	}
+}
+
+void CreateNewObjective::renderObjectivesInNode(const CategoryNode& node, const std::string& searchFilter) {
+	for (const std::string& objectiveType : node.objectiveTypes) {
+		// Filter objectives based on search query
+		if (!searchFilter.empty()) {
+			std::string lowerObjectiveType = objectiveType;
+			// StringUtils::toLower(lowerObjectiveType);
+
+			if (lowerObjectiveType.find(searchFilter) == std::string::npos) {
+				continue; // Skip this objective if it doesn't match search
+			}
 		}
 
-		bool isSelected = (this->m_selectedType == objType);
-		if (ImGui::Selectable(objectiveTypeName.c_str(), isSelected)) {
-			this->m_selectedType = objType;
-		}
+		const bool isSelected = (m_selectedType == objectiveType);
+		const std::string selectableId = fmt::format("##objective_{}", objectiveType);
 
-		if (isSelected) {
-			ImGui::SetItemDefaultFocus();
+		if (ImGui::Selectable(selectableId.c_str(), isSelected, 0, ImVec2(0, 0))) {
+			m_selectedType = objectiveType;
 		}
-
-		// Remove indent
-		if (depth > 0) {
-			ImGui::Unindent();
-		}
+		ImGui::SameLine();
+		const auto objectiveTypeLocalized = _(fmt::format("objectives.{}.name", objectiveType));
+		ImGui::Text("%s %s", ICON_FA_BULLSEYE_ARROW, objectiveTypeLocalized.c_str());
 	}
 }
 
@@ -124,8 +96,12 @@ void CreateNewObjective::renderObjectiveTree() {
 
 	ImGui::BeginChild("ObjectiveTree", treeSize, ImGuiChildFlags_FrameStyle);
 
-	// Render the category tree starting from the root
-	renderCategoryNode(m_rootCategory, 0);
+	// Get search query
+	std::string searchStr(m_searchQuery.data());
+	// StringUtils::toLower(searchStr);
+
+	// Always render category tree, but filter based on search
+	renderCategoryNode(m_rootCategory, 0, searchStr);
 
 	ImGui::EndChild();
 }
@@ -139,12 +115,41 @@ void CreateNewObjective::renderDescription() {
 
 	ImGui::BeginChild("Description", descSize, true);
 
-	auto& objectiveTypes = ObjectivesManager::instance().getObjectiveBuilders();
-	if (objectiveTypes.contains(this->m_selectedType)) {
-		const auto& objectiveType = objectiveTypes[this->m_selectedType];
-		ImGui::Text(_("create_new_objective.type", _("objectives." + objectiveType.type + ".name").c_str()).c_str());
+	if (m_selectedType.empty()) {
+		ImGui::TextWrapped("%s", _("create_new_objective.no_selection").c_str());
+	} else { // Display objective information
+		const auto objectiveTypeLocalized = _(fmt::format("objectives.{}.name", m_selectedType));
+		ImGui::Text("%s %s (%s)", ICON_FA_BULLSEYE_ARROW, objectiveTypeLocalized.c_str(), m_selectedType.c_str());
 		ImGui::Separator();
-		ImGui::TextWrapped(_("objectives." + objectiveType.type + ".description").c_str());
+
+		// Try to get localized description
+		std::string descriptionKey = "objectives." + m_selectedType + ".description";
+		std::string description = _(descriptionKey);
+
+		// If no localized description found, show default text
+		if (description == descriptionKey) {
+			description = _("create_new_objective.no_description");
+		}
+
+		ImGui::TextWrapped("%s", description.c_str());
+
+		ImGui::Spacing();
+
+		// Show objective category if available
+		auto& objectiveBuilders = ObjectivesManager::instance().getObjectiveBuilders();
+		auto it = objectiveBuilders.find(m_selectedType);
+		if (it != objectiveBuilders.end() && !it->second.category.empty()) {
+			std::vector<std::string> categories = parseCategoryPath(it->second.category);
+			ImGui::Text("%s: ", _("create_new_component.category").c_str());
+			for (size_t i = 0; i < categories.size(); ++i) {
+				const std::string& category = categories[i];
+				std::string localizedCategory = _(fmt::format("categories.{}", category));
+				ImGui::Text("%s%s", localizedCategory.c_str(), (i < categories.size() - 1) ? " -> " : "");
+				if (i < categories.size() - 1) {
+					ImGui::SameLine(0, 0);
+				}
+			}
+		}
 	}
 
 	ImGui::EndChild();
@@ -235,18 +240,39 @@ std::vector<std::string> CreateNewObjective::parseCategoryPath(const std::string
 	if (!currentCategory.empty()) {
 		result.push_back(currentCategory);
 	}
-
 	return result;
+}
+
+bool CreateNewObjective::categoryMatchesFilter(const CategoryNode& node, const std::string& searchFilter) {
+	// Check if any objective in this category matches the filter
+	for (const std::string& objectiveType : node.objectiveTypes) {
+		std::string lowerObjectiveType = objectiveType;
+		// StringUtils::toLower(lowerObjectiveType);
+
+		if (lowerObjectiveType.find(searchFilter) != std::string::npos) {
+			return true;
+		}
+	}
+
+	// Check if any subcategory has matching objectives
+	for (const auto& [subcategoryName, subcategoryNode] : node.subcategories) {
+		if (categoryMatchesFilter(subcategoryNode, searchFilter)) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void CreateNewObjective::open() {
 	ModalPopupWindow::open();
-	this->m_searchQuery.fill(0);
 	initializeCategories();
+	m_selectedType.clear();
+	m_searchQuery.fill(0);
 }
 
 CreateNewObjective::CreateNewObjective()
-	: ModalPopupWindow(_("create_new_objective.title").c_str()) {
+	: ModalPopupWindow(_("create_new_objective.title")) {
 	this->m_searchQuery.fill(0);
 	setSize(600, 500);
 	setSizeMin(500, 400);
