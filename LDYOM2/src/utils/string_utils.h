@@ -32,3 +32,15 @@ inline std::string trim_copy(std::string s) {
 	trim(s);
 	return s;
 }
+
+std::string utf8_to_cp1251(std::string_view utf8_str);
+bool is_valid_utf8(const std::string& str) noexcept;
+
+enum class GxtEncoding { ToSanAndreas, FromSanAndreas };
+
+/* Converts a string from/to San Andreas GXT encoding.
+ * The `encoding` parameter determines the direction of conversion.
+ * If `encoding` is `ToSanAndreas`, it converts from UTF-8 to San Andreas GXT encoding.
+ * If `encoding` is `FromSanAndreas`, it converts from San Andreas GXT encoding to UTF-8.
+ */
+void gxt_encode(std::string& str1251, GxtEncoding encoding = GxtEncoding::ToSanAndreas);

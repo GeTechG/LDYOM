@@ -1,8 +1,11 @@
 #include "string_utils.h"
 #include <Windows.h>
+#include <algorithm>
 #include <cctype>
 #include <codecvt>
 #include <cwctype>
+#include <functional>
+#include <settings.h>
 #include <string>
 
 std::wstring utf8_to_wstring(const std::string_view& utf8_str) {
@@ -101,23 +104,23 @@ bool is_wchar_space(wchar_t c) {
 	}
 
 	switch (c) {
-	case 0x0020: // Space
-	case 0x00A0: // No-Break Space
-	case 0x2000: // En Quad
-	case 0x2001: // Em Quad
-	case 0x2002: // En Space
-	case 0x2003: // Em Space
-	case 0x2004: // Three-Per-Em Space
-	case 0x2005: // Four-Per-Em Space
-	case 0x2006: // Six-Per-Em Space
-	case 0x2007: // Figure Space
-	case 0x2008: // Punctuation Space
-	case 0x2009: // Thin Space
-	case 0x200A: // Hair Space
-	case 0x202F: // Narrow No-Break Space
-	case 0x205F: // Medium Mathematical Space
-	case 0x3000: // Ideographic Space
-		return true;
+		case 0x0020: // Space
+		case 0x00A0: // No-Break Space
+		case 0x2000: // En Quad
+		case 0x2001: // Em Quad
+		case 0x2002: // En Space
+		case 0x2003: // Em Space
+		case 0x2004: // Three-Per-Em Space
+		case 0x2005: // Four-Per-Em Space
+		case 0x2006: // Six-Per-Em Space
+		case 0x2007: // Figure Space
+		case 0x2008: // Punctuation Space
+		case 0x2009: // Thin Space
+		case 0x200A: // Hair Space
+		case 0x202F: // Narrow No-Break Space
+		case 0x205F: // Medium Mathematical Space
+		case 0x3000: // Ideographic Space
+			return true;
 	}
 
 	return false;
@@ -168,4 +171,117 @@ std::vector<std::string> split(std::string_view s, std::string_view delimiter) {
 	}
 
 	return result;
+}
+
+// Validates if a string is valid UTF-8
+bool is_valid_utf8(const std::string& str) noexcept {
+	try {
+		const auto* data = reinterpret_cast<const unsigned char*>(str.data());
+		const auto* end = data + str.size();
+
+		while (data < end) {
+			unsigned char byte = *data++;
+
+			// Single-byte character (ASCII)
+			if (byte < 0x80) {
+				continue;
+			}
+
+			// Multi-byte character
+			int extra_bytes = 0;
+			if ((byte & 0xE0) == 0xC0) {
+				extra_bytes = 1;
+			} else if ((byte & 0xF0) == 0xE0) {
+				extra_bytes = 2;
+			} else if ((byte & 0xF8) == 0xF0) {
+				extra_bytes = 3;
+			} else {
+				return false; // Invalid UTF-8 start byte
+			}
+
+			// Check if we have enough bytes
+			if (data + extra_bytes > end) {
+				return false;
+			}
+
+			// Check continuation bytes
+			for (int i = 0; i < extra_bytes; ++i) {
+				if ((*data++ & 0xC0) != 0x80) {
+					return false;
+				}
+			}
+		}
+		return true;
+	} catch (...) {
+		return false;
+	}
+}
+
+std::string utf8_to_cp1251(std::string_view utf8_str) {
+	if (utf8_str.empty()) {
+		return {};
+	}
+
+	// Check if the input is valid UTF-8
+	if (!is_valid_utf8(std::string(utf8_str))) {
+		return std::string(utf8_str); // Return as-is if not UTF-8
+	}
+
+	constexpr UINT cp_utf8 = CP_UTF8;
+	constexpr UINT cp_1251 = 1251;
+
+	// Convert UTF-8 to wide char
+	const int wide_char_count =
+		MultiByteToWideChar(cp_utf8, 0, utf8_str.data(), static_cast<int>(utf8_str.size()), nullptr, 0);
+
+	if (wide_char_count <= 0) {
+		return std::string(utf8_str); // Return original on conversion error
+	}
+
+	std::vector<wchar_t> wide_buffer(static_cast<size_t>(wide_char_count));
+
+	const int wide_result = MultiByteToWideChar(cp_utf8, 0, utf8_str.data(), static_cast<int>(utf8_str.size()),
+	                                            wide_buffer.data(), wide_char_count);
+
+	if (wide_result != wide_char_count) {
+		return std::string(utf8_str); // Return original on conversion error
+	}
+
+	// Convert wide char to CP1251
+	const int cp1251_count =
+		WideCharToMultiByte(cp_1251, 0, wide_buffer.data(), wide_char_count, nullptr, 0, nullptr, nullptr);
+
+	if (cp1251_count <= 0) {
+		return std::string(utf8_str); // Return original on conversion error
+	}
+
+	std::vector<char> cp1251_buffer(static_cast<size_t>(cp1251_count));
+
+	const int cp1251_result = WideCharToMultiByte(cp_1251, 0, wide_buffer.data(), wide_char_count, cp1251_buffer.data(),
+	                                              cp1251_count, nullptr, nullptr);
+
+	if (cp1251_result != cp1251_count) {
+		return std::string(utf8_str); // Return original on conversion error
+	}
+
+	return std::string(cp1251_buffer.data(), static_cast<size_t>(cp1251_count));
+}
+
+void gxt_encode(std::string& str1251, GxtEncoding encoding) {
+	static const std::string from_cp1251 = utf8_to_cp1251(Settings::instance().getSetting<std::string>("gxt_from", ""));
+	static const std::string to_cp1251 = utf8_to_cp1251(Settings::instance().getSetting<std::string>("gxt_to", ""));
+
+	if (from_cp1251.size() != to_cp1251.size()) {
+		return;
+	}
+
+	const auto& source_chars = (encoding == GxtEncoding::ToSanAndreas) ? from_cp1251 : to_cp1251;
+	const auto& target_chars = (encoding == GxtEncoding::ToSanAndreas) ? to_cp1251 : from_cp1251;
+
+	std::transform(str1251.begin(), str1251.end(), str1251.begin(), [&source_chars, &target_chars](char ch) -> char {
+		if (const auto pos = source_chars.find(ch); pos != std::string::npos) {
+			return target_chars[pos];
+		}
+		return ch;
+	});
 }
