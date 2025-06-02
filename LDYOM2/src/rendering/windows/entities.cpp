@@ -220,9 +220,8 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 			}
 
 			ImGui::Dummy(ImVec2(0, 10 * (SCL_PX).y));
-
-			if (ImGui::Button("Add Component", ImVec2(-1.f, 0))) {
-				// Open component selection menu
+			if (ImGui::Button(_("entities.add_component").c_str(), ImVec2(-1.f, 0))) {
+				WindowManager::instance().openWindow("create_new_component");
 			}
 
 			ImGui::EndChild(); // Закрытие дочернего контейнера
