@@ -4,7 +4,9 @@
 #include <imgui_stdlib.h>
 #include <ktcoro_wait.hpp>
 #include <localization.h>
+#include <objectives_manager.h>
 #include <project_player.h>
+
 
 namespace wait_signal_objective {
 constexpr const char* TYPE = "core.wait_signal";

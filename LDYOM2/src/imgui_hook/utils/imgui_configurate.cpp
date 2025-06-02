@@ -1,9 +1,9 @@
 #include "imgui_configurate.h"
-#include "configuration.h"
 #include "fa_icons.h"
 #include "imgui.h"
 #include "logger.h"
 #include "paths.h"
+#include "settings.h"
 #include "theme_loader.h"
 
 #include "fa.cpp"
@@ -73,16 +73,16 @@ void ImGuiConfigurate::update(int width, int height) {
 	ImGuiStyle* style = &ImGui::GetStyle();
 	screenScale = ImVec2(width / 1280.0f, height / 720.0f);
 
-	const std::string currentTheme = Configuration::instance().getSetting<std::string>("theme", "");
+	const std::string currentTheme = Settings::instance().getSetting<std::string>("theme", "");
 	if (!currentTheme.empty()) {
 		ThemeLoader::loadThemeFromJson(currentTheme);
 	}
 }
 
-float ImGuiConfigurate::getGlobalScale() { return Configuration::instance().getSetting<float>("display_scale", 1.0f); }
+float ImGuiConfigurate::getGlobalScale() { return Settings::instance().getSetting<float>("display_scale", 1.0f); }
 ImVec2 ImGuiConfigurate::getScreenScale() { return screenScale; }
 void ImGuiConfigurate::setGlobalScale(float scale) {
-	Configuration::instance().setSetting<float>("display_scale", scale);
+	Settings::instance().setSetting<float>("display_scale", scale);
 	ImguiHook::dirtyObjectsFlag();
 }
 ImFont* ImGuiConfigurate::getHeaderFont() { return headerFont; }

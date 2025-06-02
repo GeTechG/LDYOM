@@ -2,6 +2,7 @@
 #include "../objective.h"
 #include <imgui.h>
 #include <localization.h>
+#include <objectives_manager.h>
 
 namespace test_objective {
 constexpr const char* TYPE = "core.test";

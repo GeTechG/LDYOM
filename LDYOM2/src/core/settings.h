@@ -10,12 +10,12 @@
 #include <vector>
 
 
-class Configuration {
+class Settings {
   public:
-	static Configuration& instance();
+	static Settings& instance();
 
-	Configuration(const Configuration&) = delete;
-	void operator=(const Configuration&) = delete;
+	Settings(const Settings&) = delete;
+	void operator=(const Settings&) = delete;
 
 	void initialize();
 
@@ -26,7 +26,7 @@ class Configuration {
 	template <typename T> void setSetting(const std::string& key, const T& value);
 
   private:
-	Configuration() = default;
+	Settings() = default;
 
 	static const std::string CONFIG_FILE_PATH;
 
@@ -37,7 +37,7 @@ class Configuration {
 	nlohmann::json m_config;
 };
 
-template <typename T> T Configuration::getSetting(const std::string& key, const T& defaultValue) const {
+template <typename T> T Settings::getSetting(const std::string& key, const T& defaultValue) const {
 	try {
 		auto ptr = dotToPointer(key);
 		if (m_config.contains(ptr)) {
@@ -53,7 +53,7 @@ template <typename T> T Configuration::getSetting(const std::string& key, const 
 	return defaultValue;
 }
 
-template <typename T> void Configuration::setSetting(const std::string& key, const T& value) {
+template <typename T> void Settings::setSetting(const std::string& key, const T& value) {
 	auto ptr = dotToPointer(key);
 	bool changed = !m_config.contains(ptr) || m_config[ptr] != value;
 	if (changed) {

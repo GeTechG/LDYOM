@@ -1,18 +1,18 @@
-#include "configuration.h"
+#include "settings.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <logger.h>
 #include <paths.h>
 
-const std::string Configuration::CONFIG_FILE_PATH = "settings.json";
+const std::string Settings::CONFIG_FILE_PATH = "settings.json";
 
-Configuration& Configuration::instance() {
-	static Configuration instance;
+Settings& Settings::instance() {
+	static Settings instance;
 	return instance;
 }
 
-void Configuration::initialize() {
+void Settings::initialize() {
 	this->m_config = {{"lang", "en"},
 	                  {"hotkeys", std::unordered_map<std::string, std::string>()},
 	                  {"display_scale", 1.f},
@@ -36,7 +36,7 @@ void Configuration::initialize() {
 	save();
 }
 
-bool Configuration::save() {
+bool Settings::save() {
 	try {
 		std::filesystem::path configPath(LDYOM_PATH(CONFIG_FILE_PATH));
 		create_directories(configPath.parent_path());
@@ -54,7 +54,7 @@ bool Configuration::save() {
 	return false;
 }
 
-nlohmann::json::json_pointer Configuration::dotToPointer(const std::string& dotKey) {
+nlohmann::json::json_pointer Settings::dotToPointer(const std::string& dotKey) {
 	if (dotKey.empty()) {
 		return nlohmann::json::json_pointer();
 	}

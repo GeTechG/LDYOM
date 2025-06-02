@@ -1,9 +1,10 @@
 #include "addons_manager.h"
-#include "configuration.h"
 #include "lua_manager.h"
+#include "settings.h"
 #include <logger.h>
 #include <paths.h>
 #include <unordered_set>
+
 
 const std::string AddonsManager::ADDONS_DIR_PATH = "addons";
 
@@ -25,7 +26,7 @@ void AddonsManager::initialize() {
 		}
 	}
 
-	this->activeAddons = Configuration::instance().getSetting<std::unordered_set<std::string>>("active_addons", {});
+	this->activeAddons = Settings::instance().getSetting<std::unordered_set<std::string>>("active_addons", {});
 }
 
 void AddonsManager::shutdown() {
@@ -125,7 +126,7 @@ bool AddonsManager::enableAddon(const std::string& addonId) {
 		}
 
 		this->activeAddons.insert(addonId);
-		Configuration::instance().setSetting("active_addons", this->activeAddons);
+		Settings::instance().setSetting("active_addons", this->activeAddons);
 
 		return true;
 	} catch (const std::exception& e) {
@@ -151,7 +152,7 @@ bool AddonsManager::disableAddon(const std::string& addonId) {
 		}
 
 		this->activeAddons.erase(addonId);
-		Configuration::instance().setSetting("active_addons", this->activeAddons);
+		Settings::instance().setSetting("active_addons", this->activeAddons);
 
 		return true;
 	} catch (const std::exception& e) {

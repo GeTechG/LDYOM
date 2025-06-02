@@ -1,6 +1,5 @@
 #include "application.h"
 #include "addons_manager.h"
-#include "configuration.h"
 #include "entities_manager.h"
 #include "hotkeys.h"
 #include "localization.h"
@@ -8,6 +7,7 @@
 #include "objectives_manager.h"
 #include "project_player.h"
 #include "render_hook.h"
+#include "settings.h"
 #include "textures_manager.h"
 #include <components_manager.h>
 #include <logger.h>
@@ -20,12 +20,13 @@
 #include <window_manager.h>
 #include <windows/init.h>
 
+
 void Application::initialize() {
 	Logger::Initialize();
 	LDYOM_INFO("LDYOM Application starting...");
 
 	try {
-		Configuration::instance().initialize();
+		Settings::instance().initialize();
 		Localization::instance().initialize();
 		Hotkeys::instance().initialize();
 		TexturesManager::instance().initialize();

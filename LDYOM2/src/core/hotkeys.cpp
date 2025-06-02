@@ -1,5 +1,5 @@
 #include "hotkeys.h"
-#include "configuration.h"
+#include "settings.h"
 #include <array>
 #include <string_utils.h>
 
@@ -15,7 +15,7 @@ void Hotkeys::initialize() {
 	});
 
 	const auto hotkeysConfig =
-		Configuration::instance().getSetting<std::unordered_map<std::string, std::string>>("hotkeys", {});
+		Settings::instance().getSetting<std::unordered_map<std::string, std::string>>("hotkeys", {});
 
 	for (size_t i = 0; i < m_hotkeys.size(); i++) {
 		const auto it = hotkeysConfig.find(m_hotkeys[i].functionName);
@@ -29,13 +29,12 @@ void Hotkeys::initialize() {
 void Hotkeys::saveHotkey(int index) {
 	std::array<char, 128> hotkey_str;
 	ImHotKey::GetHotKeyLib(this->m_hotkeys[index].functionKeys, hotkey_str.data(), hotkey_str.size());
-	Configuration::instance().setSetting(std::format("hotkeys.{}", this->m_hotkeys[index].functionName),
-	                                     hotkey_str.data());
+	Settings::instance().setSetting(std::format("hotkeys.{}", this->m_hotkeys[index].functionName), hotkey_str.data());
 }
 
 void Hotkeys::addHotkey(const ImHotKey::HotKey& hotkey) {
 	this->m_hotkeys.push_back(hotkey);
-	Configuration::instance().setSetting(std::format("hotkeys.{}", hotkey.functionName), hotkey.functionKeys);
+	Settings::instance().setSetting(std::format("hotkeys.{}", hotkey.functionName), hotkey.functionKeys);
 }
 
 std::vector<ImHotKey::HotKey>& Hotkeys::getHotkeys() { return this->m_hotkeys; }

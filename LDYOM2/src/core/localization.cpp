@@ -1,5 +1,5 @@
 #include "localization.h"
-#include "configuration.h"
+#include "settings.h"
 #include <filesystem>
 #include <fstream>
 #include <logger.h>
@@ -22,39 +22,41 @@ Localization::~Localization() { this->shutdown(); }
 
 void Localization::handleFileChange(const wtr::event& event) {
 	switch (event.effect_type) {
-	case wtr::event::effect_type::modify: {
-		if (event.path_name.extension() == ".json") {
-			std::string localeCode = event.path_name.stem().string();
-			if (this->m_i18n.get()->getLocale() == localeCode) {
-				LDYOM_INFO("Locale file modified: {}", event.path_name.string());
-				this->loadLocale(localeCode);
+		case wtr::event::effect_type::modify:
+			{
+				if (event.path_name.extension() == ".json") {
+					std::string localeCode = event.path_name.stem().string();
+					if (this->m_i18n.get()->getLocale() == localeCode) {
+						LDYOM_INFO("Locale file modified: {}", event.path_name.string());
+						this->loadLocale(localeCode);
+					}
+				}
+				break;
 			}
-		}
-		break;
-	}
-	case wtr::event::effect_type::create: {
-		if (event.path_name.extension() == ".json") {
-			std::string localeCode = event.path_name.stem().string();
-			if (!isLocaleAvailable(localeCode)) {
-				m_availableLocales.push_back(localeCode);
-				LDYOM_INFO("New locale added: {}", localeCode);
+		case wtr::event::effect_type::create:
+			{
+				if (event.path_name.extension() == ".json") {
+					std::string localeCode = event.path_name.stem().string();
+					if (!isLocaleAvailable(localeCode)) {
+						m_availableLocales.push_back(localeCode);
+						LDYOM_INFO("New locale added: {}", localeCode);
+					}
+				}
+				break;
 			}
-		}
-		break;
-	}
-	case wtr::event::effect_type::destroy: {
-		if (event.path_name.extension() == ".json") {
-			std::string localeCode = event.path_name.stem().string();
-			auto it = std::find(m_availableLocales.begin(), m_availableLocales.end(), localeCode);
-			if (it != m_availableLocales.end()) {
-				m_availableLocales.erase(it);
-				LDYOM_INFO("Locale removed: {}", localeCode);
+		case wtr::event::effect_type::destroy:
+			{
+				if (event.path_name.extension() == ".json") {
+					std::string localeCode = event.path_name.stem().string();
+					auto it = std::find(m_availableLocales.begin(), m_availableLocales.end(), localeCode);
+					if (it != m_availableLocales.end()) {
+						m_availableLocales.erase(it);
+						LDYOM_INFO("Locale removed: {}", localeCode);
+					}
+				}
+				break;
 			}
-		}
-		break;
-	}
-	default:
-		break;
+		default: break;
 	}
 }
 
@@ -70,7 +72,7 @@ void Localization::initialize() {
 	this->loadLocale("en");
 	this->m_i18n.get()->setFallbackLocale("en");
 
-	const auto initialLocale = Configuration::instance().getSetting<std::string>("lang", "en");
+	const auto initialLocale = Settings::instance().getSetting<std::string>("lang", "en");
 	this->loadLocale(initialLocale);
 	this->m_i18n.get()->setLocale(initialLocale);
 
@@ -88,7 +90,7 @@ void Localization::shutdown() {
 }
 
 void Localization::setLocale(const std::string& locale) {
-	Configuration::instance().setSetting<std::string>("lang", locale);
+	Settings::instance().setSetting<std::string>("lang", locale);
 	this->loadLocale(locale);
 	this->m_i18n->setLocale(locale);
 }

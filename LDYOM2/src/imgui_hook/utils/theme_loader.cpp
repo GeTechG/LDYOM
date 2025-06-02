@@ -1,6 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "theme_loader.h"
-#include "configuration.h"
+#include "settings.h"
 #include "logger.h"
 #include "paths.h"
 #include "utils/imgui_configurate.h"
@@ -206,7 +206,7 @@ bool ThemeLoader::loadThemeFromJson(std::string_view themeName) {
 		}
 
 		applyTheme(theme);
-		Configuration::instance().setSetting<std::string>("theme", std::string(themeName));
+		Settings::instance().setSetting<std::string>("theme", std::string(themeName));
 
 		return true;
 	} catch (const std::exception& e) {
@@ -216,7 +216,7 @@ bool ThemeLoader::loadThemeFromJson(std::string_view themeName) {
 }
 
 std::string ThemeLoader::getCurrentThemeName() {
-	return Configuration::instance().getSetting<std::string>("theme", "");
+	return Settings::instance().getSetting<std::string>("theme", "");
 }
 
 const std::vector<std::string>& ThemeLoader::getAvailableThemes() { return availableThemes; }
