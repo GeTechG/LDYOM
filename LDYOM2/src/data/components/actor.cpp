@@ -6,7 +6,6 @@
 #include <entity.h>
 #include <project_player.h>
 
-
 void components::Actor::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<Actor>("Actor");
 	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, initialDirection, model, specialModel,
@@ -234,10 +233,13 @@ void components::Actor::spawn() {
 		this->ped->m_nPhysicalFlags.bMeleeProof = 1;
 		plugin::Command<plugin::Commands::FREEZE_CHAR_POSITION_AND_DONT_LOAD_COLLISION>(newPed, 1);
 	}
+
+	onSpawned();
 }
 
 void components::Actor::despawn() {
 	if (ped) {
 		ped = nullptr;
 	}
+	onDespawned();
 }

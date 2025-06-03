@@ -46,6 +46,9 @@ class Actor : public Component {
 	int dirty = DirtyFlags::None;
 	std::shared_ptr<CPed> ped;
 
+	rocket::thread_safe_signal<void()> onSpawned;
+	rocket::thread_safe_signal<void()> onDespawned;
+
 	Actor();
 
 	[[nodiscard]] nlohmann::json to_json() const override;
