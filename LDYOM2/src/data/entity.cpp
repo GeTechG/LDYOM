@@ -33,6 +33,35 @@ void Entity::reset() {
 	}
 }
 
+void Entity::removeComponent(size_t index) {
+	if (index < components.size()) {
+		components.erase(components.begin() + index);
+	}
+}
+
+void Entity::duplicateComponent(size_t index) {
+	if (index < components.size()) {
+		auto& originalComponent = components[index];
+		auto json = originalComponent->to_json();
+		auto newComponent = ComponentsManager::instance().createComponent(originalComponent->getType());
+		newComponent->from_json(json);
+		newComponent->entity = this;
+		components.insert(components.begin() + index + 1, newComponent);
+	}
+}
+
+void Entity::moveComponentUp(size_t index) {
+	if (index > 0 && index < components.size()) {
+		std::swap(components[index], components[index - 1]);
+	}
+}
+
+void Entity::moveComponentDown(size_t index) {
+	if (index < components.size() - 1) {
+		std::swap(components[index], components[index + 1]);
+	}
+}
+
 void Entity::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<Entity>("Entity");
 	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Entity, name, position, rotation, scale, getComponents)

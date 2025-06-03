@@ -12,6 +12,14 @@ class EntitiesWindow : public Window {
 	std::string m_renameBuffer = "";
 	EntitiesWindowType m_windowType = EntitiesWindowType_Actor;
 
+	// Отложенные операции с компонентами
+	struct PendingComponentOperation {
+		enum Type { Remove, Duplicate, MoveUp, MoveDown };
+		Type type;
+		size_t componentIndex;
+	};
+	std::vector<PendingComponentOperation> m_pendingComponentOperations;
+
 	static void renderContent(EntitiesWindow* window);
 	static void renderEntity(EntitiesWindow* window, const Entity& entity, int i);
 

@@ -17,11 +17,16 @@ class Entity {
 	std::array<float, 3> position = {0.0f, 0.0f, 0.0f};
 	std::array<float, 3> rotation = {0.0f, 0.0f, 0.0f};
 	std::array<float, 3> scale = {1.0f, 1.0f, 1.0f};
-
 	void addComponent(std::shared_ptr<Component> component);
 	const std::vector<std::shared_ptr<Component>>& getComponents() const { return components; }
 	std::shared_ptr<Component> getComponent(const std::string_view type);
 	bool hasComponent(const std::string_view type) { return getComponent(type) != nullptr; }
+
+	// Component management operations
+	void removeComponent(size_t index);
+	void duplicateComponent(size_t index);
+	void moveComponentUp(size_t index);
+	void moveComponentDown(size_t index);
 
 	void onUpdate(float deltaTime);
 	void reset();

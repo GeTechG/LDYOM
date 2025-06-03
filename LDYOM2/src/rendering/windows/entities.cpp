@@ -1,6 +1,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "entities.h"
 #include "logger.h"
+#include <algorithm>
 #include <component.h>
 #include <entities_manager.h>
 #include <fa_icons.h>
@@ -212,11 +213,99 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 				const auto& component = components[j];
 				ImGui::PushID(static_cast<int>(j));
 
-				if (ImGui::CollapsingHeader(component->getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
-					component->editorRender();
+				// Draw the collapsing header with AllowOverlap flag
+				bool headerOpen = ImGui::CollapsingHeader(
+					component->getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowOverlap);
+				// Position menu button on the right side of the header
+				float buttonSize = ImGui::GetFrameHeight();
+				ImGui::SameLine(ImGui::GetContentRegionAvail().x - buttonSize);
+
+				// Style the menu button to look more integrated
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0)); // Transparent background
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_HeaderActive));
+
+				// Square menu button with three dots
+				char menuButtonId[32];
+				sprintf(menuButtonId, "menu_btn_%zu", j);
+				if (ImGui::Button(ICON_FA_ELLIPSIS_VERTICAL, ImVec2(buttonSize, buttonSize))) {
+					char menuPopupId[32];
+					sprintf(menuPopupId, "component_menu_%zu", j);
+					ImGui::OpenPopup(menuPopupId);
 				}
 
+				ImGui::PopStyleColor(3);
+				ImGui::PopStyleVar(); // Context menu popup
+				char menuPopupId[32];
+				sprintf(menuPopupId, "component_menu_%zu", j);
+				if (ImGui::BeginPopup(menuPopupId)) {
+					if (ImGui::MenuItem(_("entities.component_remove", ICON_FA_TRASH).c_str())) {
+						window->m_pendingComponentOperations.push_back(
+							{EntitiesWindow::PendingComponentOperation::Remove, j});
+					}
+
+					if (ImGui::MenuItem(_("entities.component_duplicate", ICON_FA_COPY).c_str())) {
+						window->m_pendingComponentOperations.push_back(
+							{EntitiesWindow::PendingComponentOperation::Duplicate, j});
+					}
+
+					ImGui::Separator();
+
+					if (ImGui::MenuItem(_("entities.component_move_up", ICON_FA_ARROW_UP).c_str(), nullptr, false,
+					                    j > 0)) {
+						window->m_pendingComponentOperations.push_back(
+							{EntitiesWindow::PendingComponentOperation::MoveUp, j});
+					}
+
+					if (ImGui::MenuItem(_("entities.component_move_down", ICON_FA_ARROW_DOWN).c_str(), nullptr, false,
+					                    j < components.size() - 1)) {
+						window->m_pendingComponentOperations.push_back(
+							{EntitiesWindow::PendingComponentOperation::MoveDown, j});
+					}
+
+					ImGui::EndPopup();
+				} // Render component content if header is open
+				if (headerOpen) {
+					component->editorRender();
+				}
 				ImGui::PopID();
+			}
+
+			// Обработка отложенных операций с компонентами
+			if (!window->m_pendingComponentOperations.empty()) {
+				auto& entity = EntitiesManager::instance().getUnsafeEntity(i);
+
+				// Сортируем операции по индексу в обратном порядке для корректной обработки удаления
+				std::sort(window->m_pendingComponentOperations.begin(), window->m_pendingComponentOperations.end(),
+				          [](const EntitiesWindow::PendingComponentOperation& a,
+				             const EntitiesWindow::PendingComponentOperation& b) {
+							  // Удаления должны идти в обратном порядке по индексу
+							  if (a.type == EntitiesWindow::PendingComponentOperation::Remove &&
+					              b.type == EntitiesWindow::PendingComponentOperation::Remove) {
+								  return a.componentIndex > b.componentIndex;
+							  }
+							  // Остальные операции в прямом порядке
+							  return a.componentIndex < b.componentIndex;
+						  });
+
+				for (const auto& operation : window->m_pendingComponentOperations) {
+					switch (operation.type) {
+						case EntitiesWindow::PendingComponentOperation::Remove:
+							entity.removeComponent(operation.componentIndex);
+							break;
+						case EntitiesWindow::PendingComponentOperation::Duplicate:
+							entity.duplicateComponent(operation.componentIndex);
+							break;
+						case EntitiesWindow::PendingComponentOperation::MoveUp:
+							entity.moveComponentUp(operation.componentIndex);
+							break;
+						case EntitiesWindow::PendingComponentOperation::MoveDown:
+							entity.moveComponentDown(operation.componentIndex);
+							break;
+					}
+				}
+				window->m_pendingComponentOperations.clear();
 			}
 
 			ImGui::Dummy(ImVec2(0, 10 * (SCL_PX).y));
