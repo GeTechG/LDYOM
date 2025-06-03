@@ -205,7 +205,7 @@ void CreateNewComponent::renderDescription() {
 				std::string localizedCategory = _(fmt::format("categories.{}", category));
 				ImGui::Text("%s%s", localizedCategory.c_str(), (i < categories.size() - 1) ? " -> " : "");
 				if (i < categories.size() - 1) {
-					ImGui::SameLine();
+					ImGui::SameLine(0,0);
 				}
 			}
 		}
