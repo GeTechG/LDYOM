@@ -21,6 +21,7 @@ class Entity {
 	void addComponent(std::shared_ptr<Component> component);
 	const std::vector<std::shared_ptr<Component>>& getComponents() const { return components; }
 	std::shared_ptr<Component> getComponent(const std::string_view type);
+	bool hasComponent(const std::string_view type) { return getComponent(type) != nullptr; }
 
 	void onUpdate(float deltaTime);
 	void reset();
