@@ -1,8 +1,10 @@
 #pragma once
 #include <functional>
+#include <lua_manager.h>
 #include <objective.h>
 #include <string>
 #include <unordered_map>
+
 
 struct ObjectiveBuilderData {
 	std::string type;
@@ -22,7 +24,7 @@ class ObjectivesManager {
 	ObjectivesManager(const ObjectivesManager&) = delete;
 	void operator=(const ObjectivesManager&) = delete;
 
-	void registerObjectiveBuilder(ObjectiveBuilderData data);
+	template <typename T> void registerObjectiveBuilder(ObjectiveBuilderData data);
 	Objective createObjective(std::string_view type);
 	void addNewObjective(std::string_view type);
 
@@ -35,3 +37,11 @@ class ObjectivesManager {
 
 	void registerCoreObjectives();
 };
+
+template <typename T> inline void ObjectivesManager::registerObjectiveBuilder(ObjectiveBuilderData data) {
+	m_objectivesBuilders[data.type] = data;
+	{
+		auto luaState = LuaManager::instance().getState();
+		T::sol_lua_register(luaState.get());
+	}
+}

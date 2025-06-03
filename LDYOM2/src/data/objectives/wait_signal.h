@@ -7,12 +7,15 @@
 #include <objectives_manager.h>
 #include <project_player.h>
 
-
-namespace wait_signal_objective {
+namespace objectives::wait_signal {
 constexpr const char* TYPE = "core.wait_signal";
 
 struct Data {
 	std::string signal = "default";
+	static void sol_lua_register(sol::state_view lua_state) {
+		auto ut = lua_state.new_usertype<Data>("ObjectiveWaitSignalData");
+		SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Data, signal)
+	}
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Data, signal)
 };
 
@@ -38,4 +41,4 @@ Objective make() {
 }
 
 ObjectiveBuilderData builder() { return ObjectiveBuilderData{.type = TYPE, .category = "", .builder = make}; }
-} // namespace wait_signal_objective
+} // namespace objectives::wait_signal

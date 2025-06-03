@@ -10,8 +10,6 @@ ObjectivesManager& ObjectivesManager::instance() {
 	return instance;
 }
 
-void ObjectivesManager::registerObjectiveBuilder(ObjectiveBuilderData data) { m_objectivesBuilders[data.type] = data; }
-
 Objective ObjectivesManager::createObjective(std::string_view type) {
 	auto it = m_objectivesBuilders.find(std::string(type));
 	if (it != m_objectivesBuilders.end()) {
@@ -61,6 +59,7 @@ void ObjectivesManager::moveObjective(int fromIndex, int toIndex) {
 }
 
 void ObjectivesManager::registerCoreObjectives() {
-	this->registerObjectiveBuilder(test_objective::builder());
-	this->registerObjectiveBuilder(wait_signal_objective::builder());
+	using namespace objectives;
+	this->registerObjectiveBuilder<test::Data>(test::builder());
+	this->registerObjectiveBuilder<wait_signal::Data>(wait_signal::builder());
 }
