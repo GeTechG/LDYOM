@@ -12,6 +12,8 @@ namespace components {
 class HealthBar : public Component {
   public:
 	static constexpr auto TYPE = "health_bar";
+	static constexpr auto CATEGORY = "entities";
+
 	static std::shared_ptr<HealthBar> cast(std::shared_ptr<Component> component) {
 		return std::dynamic_pointer_cast<HealthBar>(component);
 	}
@@ -34,11 +36,6 @@ class HealthBar : public Component {
 	void onReset() override;
 
 	static void sol_lua_register(sol::state_view lua_state);
+	static std::shared_ptr<Component> make() { return std::make_shared<HealthBar>(); }
 };
-
-inline std::shared_ptr<Component> makeHealthBar() { return std::make_shared<HealthBar>(); }
-
-inline ComponentBuilderData healthBarBuilder() {
-	return ComponentBuilderData{.type = HealthBar::TYPE, .category = "entities", .builder = makeHealthBar};
-}
 } // namespace components

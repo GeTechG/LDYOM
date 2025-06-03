@@ -31,6 +31,7 @@ class Actor : public Component {
 	SOL_LUA_DEFINE_ENUM(DirtyFlags, None, Position, Direction, Model);
 
 	static constexpr auto TYPE = "actor";
+	static constexpr auto CATEGORY = "entities";
 	static std::shared_ptr<Actor> cast(std::shared_ptr<Component> component) {
 		return std::dynamic_pointer_cast<Actor>(component);
 	}
@@ -66,11 +67,7 @@ class Actor : public Component {
 	int getPedRef() const { return this->ped ? CPools::GetPedRef(this->ped.get()) : -1; }
 
 	static void sol_lua_register(sol::state_view lua_state);
+
+	static std::shared_ptr<Component> make() { return std::make_shared<Actor>(); }
 };
-
-inline std::shared_ptr<Component> makeActor() { return std::make_shared<Actor>(); }
-
-inline ComponentBuilderData actorBuilder() {
-	return ComponentBuilderData{.type = Actor::TYPE, .category = "entities", .builder = makeActor};
-}
 } // namespace components

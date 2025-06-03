@@ -17,6 +17,8 @@ class ObjectiveSpecific : public Component {
 
   public:
 	static constexpr auto TYPE = "objective_specific";
+	static constexpr auto CATEGORY = "entities";
+
 	static std::shared_ptr<ObjectiveSpecific> cast(std::shared_ptr<Component> component) {
 		return std::dynamic_pointer_cast<ObjectiveSpecific>(component);
 	}
@@ -40,13 +42,6 @@ class ObjectiveSpecific : public Component {
 	void onReset() override;
 
 	static void sol_lua_register(sol::state_view lua_state);
+	static std::shared_ptr<Component> make() { return std::make_shared<ObjectiveSpecific>(); }
 };
-
-inline std::shared_ptr<Component> makeObjectiveSpecific() { return std::make_shared<ObjectiveSpecific>(); }
-
-inline ComponentBuilderData objectiveSpecificBuilder() {
-	return ComponentBuilderData{.type = ObjectiveSpecific::TYPE,
-	                            .category = "entities",
-	                            .builder = makeObjectiveSpecific};
-}
 } // namespace components

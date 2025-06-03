@@ -1,6 +1,7 @@
 #pragma once
 #include "component.h"
 #include <functional>
+#include <lua_manager.h>
 #include <string>
 #include <unordered_map>
 
@@ -22,10 +23,18 @@ class ComponentsManager {
 	ComponentsManager(const ComponentsManager&) = delete;
 	void operator=(const ComponentsManager&) = delete;
 
-	void registerComponentBuilder(ComponentBuilderData data);
+	template <class T> void registerComponentBuilder();
 	std::shared_ptr<Component> createComponent(std::string_view type);
 
 	std::unordered_map<std::string, ComponentBuilderData>& getComponentBuilders() { return m_componentsBuilders; }
 
 	void registerCoreComponents();
 };
+
+template <class T> inline void ComponentsManager::registerComponentBuilder() {
+	m_componentsBuilders[T::TYPE] = {.type = T::TYPE, .category = T::CATEGORY, .builder = T::make};
+	{
+		auto luaState = LuaManager::instance().getState();
+		T::sol_lua_register(luaState.get());
+	}
+}

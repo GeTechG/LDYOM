@@ -3,13 +3,10 @@
 #include <components/health_bar.h>
 #include <components/objective_specific.h>
 
-
 ComponentsManager& ComponentsManager::instance() {
 	static ComponentsManager instance;
 	return instance;
 }
-
-void ComponentsManager::registerComponentBuilder(ComponentBuilderData data) { m_componentsBuilders[data.type] = data; }
 
 std::shared_ptr<Component> ComponentsManager::createComponent(std::string_view type) {
 	auto it = m_componentsBuilders.find(std::string(type));
@@ -21,7 +18,7 @@ std::shared_ptr<Component> ComponentsManager::createComponent(std::string_view t
 }
 
 void ComponentsManager::registerCoreComponents() {
-	registerComponentBuilder(components::actorBuilder());
-	registerComponentBuilder(components::objectiveSpecificBuilder());
-	registerComponentBuilder(components::healthBarBuilder());
+	registerComponentBuilder<components::Actor>();
+	registerComponentBuilder<components::ObjectiveSpecific>();
+	registerComponentBuilder<components::HealthBar>();
 }
