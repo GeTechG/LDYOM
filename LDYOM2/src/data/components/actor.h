@@ -28,7 +28,7 @@ class Actor : public Component {
 		Direction = 1 << 1,
 		Model = 1 << 2,
 	};
-	SOL_LUA_DEFINE_ENUM(DirtyFlags, None, Position, Direction, Model);
+	SOL_LUA_DEFINE_ENUM_NAMED(DirtyFlags, "ActorComponentDirtyFlags", None, Position, Direction, Model);
 
 	static constexpr auto TYPE = "actor";
 	static constexpr auto CATEGORY = "entities";
@@ -37,6 +37,7 @@ class Actor : public Component {
 	}
 
 	float initialDirection = 0.0f;
+	bool isRandomModel = false;
 	int model = 0;
 	std::string specialModel;
 

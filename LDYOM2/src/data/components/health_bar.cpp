@@ -6,7 +6,7 @@
 #include <project_player.h>
 
 void components::HealthBar::sol_lua_register(sol::state_view lua_state) {
-	auto ut = lua_state.new_usertype<HealthBar>("HealthBar");
+	auto ut = lua_state.new_usertype<HealthBar>("HealthBarComponent");
 	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::HealthBar, cast, defaultTitle, title);
 }
 

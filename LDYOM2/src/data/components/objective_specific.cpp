@@ -4,7 +4,7 @@
 #include <project_player.h>
 
 void components::ObjectiveSpecific::sol_lua_register(sol::state_view lua_state) {
-	auto ut = lua_state.new_usertype<ObjectiveSpecific>("ObjectiveSpecific");
+	auto ut = lua_state.new_usertype<ObjectiveSpecific>("ObjectiveSpecificComponent");
 	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::ObjectiveSpecific, cast, spawnObjective,
 	                 despawnObjective, onSpawned, onDespawned);
 }

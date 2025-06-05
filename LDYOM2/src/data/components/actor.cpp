@@ -7,9 +7,10 @@
 #include <project_player.h>
 
 void components::Actor::sol_lua_register(sol::state_view lua_state) {
-	auto ut = lua_state.new_usertype<Actor>("Actor");
-	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, initialDirection, model, specialModel,
-	                 health, headshotImmune, mustSurvive, ped, spawn, despawn);
+	Actor::sol_lua_register_enum_DirtyFlags(lua_state);
+	auto ut = lua_state.new_usertype<Actor>("ActorComponent");
+	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, isRandomModel, initialDirection, model,
+	                 specialModel, health, headshotImmune, mustSurvive, ped, spawn, despawn);
 }
 
 components::Actor::Actor()
@@ -19,6 +20,7 @@ components::Actor::Actor()
 
 inline nlohmann::json components::Actor::to_json() const {
 	auto j = this->Component::to_json();
+	j["isRandomModel"] = isRandomModel;
 	j["initialDirection"] = initialDirection;
 	j["model"] = model;
 	j["specialModel"] = specialModel;
@@ -30,6 +32,7 @@ inline nlohmann::json components::Actor::to_json() const {
 
 void components::Actor::from_json(const nlohmann::json& j) {
 	this->Component::from_json(j);
+	j.at("isRandomModel").get_to(isRandomModel);
 	j.at("initialDirection").get_to(initialDirection);
 	j.at("model").get_to(model);
 	j.at("specialModel").get_to(specialModel);
@@ -47,70 +50,79 @@ void components::Actor::editorRender() {
 		dirty |= Direction;
 	}
 
-	ImGui::Text("%s", tr("is_special").c_str());
+	ImGui::Text("%s", tr("is_random_model").c_str());
 	ImGui::SameLine(availableWidth * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
-	bool isSpecial = (model == -1);
-	if (ImGui::Checkbox("##is_special", &isSpecial)) {
-		model = isSpecial ? -1 : 0;
+	if (ImGui::Checkbox("##isRandomModel", &isRandomModel)) {
 		dirty |= Model;
 	}
 
-	const bool isSpecialModel = (this->model == -1);
-
-	ImGui::Text(tr("model").c_str());
-	ImGui::SameLine(availableWidth * 0.45f);
-
-	ImGui::BeginGroup(); // Group for combo and button
-	const float currentAvailableWidthInGroup = ImGui::GetContentRegionAvail().x;
-	const float buttonWidth = ImGui::GetFrameHeight();
-	const float spacing = ImGui::GetStyle().ItemSpacing.x;
-	float comboWidth = currentAvailableWidthInGroup - buttonWidth - spacing;
-	if (comboWidth < 100.0f) {
-		comboWidth = 100.0f;
-	}
-	ImGui::SetNextItemWidth(comboWidth);
-
-	if (isSpecialModel) {
-		auto& models = ModelsManager::GetPedSpecialModels();
-		if (ImGui::BeginCombo("##specialModelCombo", specialModel.c_str())) {
-			for (auto& item : models) {
-				if (ImGui::Selectable(item.c_str(), item == specialModel)) {
-					specialModel = item;
-					dirty |= Model;
-				}
-			}
-			ImGui::EndCombo();
+	if (!this->isRandomModel) {
+		ImGui::Text("%s", tr("is_special").c_str());
+		ImGui::SameLine(availableWidth * 0.45f);
+		ImGui::SetNextItemWidth(-1.f);
+		bool isSpecial = (model == -1);
+		if (ImGui::Checkbox("##is_special", &isSpecial)) {
+			model = isSpecial ? -1 : 0;
+			dirty |= Model;
 		}
-	} else {
-		auto& pedModels = ModelsManager::GetPedModels();
-		if (ImGui::BeginCombo("##regularModelCombo", std::to_string(model).c_str())) {
-			for (auto& item : pedModels) {
-				if (ImGui::Selectable(std::to_string(item).c_str(), item == model)) {
-					model = item;
-					dirty |= Model;
-				}
-			}
-			ImGui::EndCombo();
+
+		const bool isSpecialModel = (this->model == -1);
+
+		ImGui::Text(tr("model").c_str());
+		ImGui::SameLine(availableWidth * 0.45f);
+
+		ImGui::BeginGroup(); // Group for combo and button
+		const float currentAvailableWidthInGroup = ImGui::GetContentRegionAvail().x;
+		const float buttonWidth = ImGui::GetFrameHeight();
+		const float spacing = ImGui::GetStyle().ItemSpacing.x;
+		float comboWidth = currentAvailableWidthInGroup - buttonWidth - spacing;
+		if (comboWidth < 100.0f) {
+			comboWidth = 100.0f;
 		}
-	}
+		ImGui::SetNextItemWidth(comboWidth);
 
-	ImGui::SameLine(0.0f, spacing);
-	if (ImGui::Button(ICON_FA_SHIRT, ImVec2(buttonWidth, 0))) {
-		PopupSkinSelector::showPopup();
-	}
-
-	static std::function<void(Skin)> skinSelectorCallback = [this](Skin selected) {
-		if (selected.model != -1) {
-			this->model = selected.model;
+		if (isSpecialModel) {
+			auto& models = ModelsManager::GetPedSpecialModels();
+			if (ImGui::BeginCombo("##specialModelCombo", specialModel.c_str())) {
+				for (auto& item : models) {
+					if (ImGui::Selectable(item.c_str(), item == specialModel)) {
+						specialModel = item;
+						dirty |= Model;
+					}
+				}
+				ImGui::EndCombo();
+			}
 		} else {
-			this->specialModel = selected.special;
+			auto& pedModels = ModelsManager::GetPedModels();
+			if (ImGui::BeginCombo("##regularModelCombo", std::to_string(model).c_str())) {
+				for (auto& item : pedModels) {
+					if (ImGui::Selectable(std::to_string(item).c_str(), item == model)) {
+						model = item;
+						dirty |= Model;
+					}
+				}
+				ImGui::EndCombo();
+			}
 		}
-		dirty |= Model;
-	};
-	PopupSkinSelector::renderPopup(skinSelectorCallback, isSpecialModel);
 
-	ImGui::EndGroup();
+		ImGui::SameLine(0.0f, spacing);
+		if (ImGui::Button(ICON_FA_SHIRT, ImVec2(buttonWidth, 0))) {
+			PopupSkinSelector::showPopup();
+		}
+
+		static std::function<void(Skin)> skinSelectorCallback = [this](Skin selected) {
+			if (selected.model != -1) {
+				this->model = selected.model;
+			} else {
+				this->specialModel = selected.special;
+			}
+			dirty |= Model;
+		};
+		PopupSkinSelector::renderPopup(skinSelectorCallback, isSpecialModel);
+
+		ImGui::EndGroup();
+	}
 
 	ImGui::Separator();
 
@@ -183,11 +195,20 @@ void components::Actor::updatePosition() {
 
 void components::Actor::spawn() {
 	int model = this->model;
-	if (this->model == -1 && ModelsManager::validatePedSpecialModel(this->specialModel)) {
+	std::string specialModel = this->specialModel;
+	if (this->isRandomModel) {
+		if (rand() % 100 < 50) {
+			model = -1; // use special model
+			specialModel = ModelsManager::GetPedSpecialModels()[rand() % ModelsManager::GetPedSpecialModels().size()];
+		} else {
+			model = ModelsManager::GetPedModels()[rand() % ModelsManager::GetPedModels().size()];
+		}
+	}
+	if (model == -1 && ModelsManager::validatePedSpecialModel(specialModel)) {
 		model = 290;
-		CStreaming::RequestSpecialChar(0, this->specialModel.c_str(), MISSION_REQUIRED);
-	} else if (ModelsManager::validatePedModel(this->model)) {
-		CStreaming::RequestModel(this->model, MISSION_REQUIRED);
+		CStreaming::RequestSpecialChar(0, specialModel.c_str(), MISSION_REQUIRED);
+	} else if (ModelsManager::validatePedModel(model)) {
+		CStreaming::RequestModel(model, MISSION_REQUIRED);
 	} else {
 		return;
 	}
