@@ -140,7 +140,7 @@
 	SOL_LUA_EXPAND(SOL_LUA_PASTE(SOL_LUA_ENUM_PAIRS_, SOL_LUA_PP_NARG(__VA_ARGS__))(EnumType, __VA_ARGS__))
 
 /**
- * @brief Определяет статическую функцию sol_lua_register_enum для enum,
+ * @brief Определяет статическую функцию sol_lua_register_enum_<EnumType> для enum,
  *        которая регистрирует указанные значения enum в Lua с использованием Sol2.
  *
  * @param EnumType Имя enum.
@@ -149,9 +149,10 @@
  * Пример использования:
  * enum class MyEnum { VALUE1, VALUE2, VALUE3 };
  * SOL_LUA_DEFINE_ENUM(MyEnum, VALUE1, VALUE2, VALUE3)
+ * // Создаст функцию: static void sol_lua_register_enum_MyEnum(sol::state_view lua_state)
  */
 #define SOL_LUA_DEFINE_ENUM(EnumType, ...)                                                                             \
-	static void sol_lua_register_enum(sol::state_view lua_state) {                                                     \
+	static void SOL_LUA_PASTE(sol_lua_register_enum_, EnumType)(sol::state_view lua_state) {                           \
 		lua_state.new_enum<EnumType>(#EnumType, {SOL_LUA_ENUM_PAIRS(EnumType, __VA_ARGS__)});                          \
 	}
 
@@ -165,8 +166,9 @@
  * Пример использования:
  * enum class MyEnum { VALUE1, VALUE2, VALUE3 };
  * SOL_LUA_DEFINE_ENUM_NAMED(MyEnum, "CustomEnumName", VALUE1, VALUE2, VALUE3)
+ * // Создаст функцию: static void sol_lua_register_enum_MyEnum(sol::state_view lua_state)
  */
 #define SOL_LUA_DEFINE_ENUM_NAMED(EnumType, LuaName, ...)                                                              \
-	static void sol_lua_register_enum(sol::state_view lua_state) {                                                     \
+	static void SOL_LUA_PASTE(sol_lua_register_enum_, EnumType)(sol::state_view lua_state) {                           \
 		lua_state.new_enum<EnumType>(LuaName, {SOL_LUA_ENUM_PAIRS(EnumType, __VA_ARGS__)});                            \
 	}
