@@ -2,6 +2,7 @@
 #include <components/actor.h>
 #include <components/health_bar.h>
 #include <components/objective_specific.h>
+#include <components/weapons.h>
 
 ComponentsManager& ComponentsManager::instance() {
 	static ComponentsManager instance;
@@ -21,4 +22,5 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::Actor>();
 	registerComponentBuilder<components::ObjectiveSpecific>();
 	registerComponentBuilder<components::HealthBar>();
+	registerComponentBuilder<components::Weapons>();
 }
