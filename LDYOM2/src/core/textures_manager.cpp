@@ -13,6 +13,7 @@ TexturesManager& TexturesManager::instance() {
 void TexturesManager::initialize() {
 	const std::string pedModelsIconsDirectory = LDYOM_PATH("icons/ped_models");
 	const std::string specialModelsIconsDirectory = LDYOM_PATH("icons/special_models");
+	const std::string weaponIconsDirectory = LDYOM_PATH("icons/weapons");
 
 	for (const auto& entry : std::filesystem::directory_iterator(pedModelsIconsDirectory)) {
 		if (entry.is_regular_file() && entry.path().extension() == ".jpg") {
@@ -27,6 +28,14 @@ void TexturesManager::initialize() {
 			const std::string fileName = entry.path().filename().string();
 			const std::string textureName = fileName.substr(0, fileName.find_last_of('.'));
 			loadTexture(entry.path().string(), fmt::format("special_{}", textureName));
+		}
+	}
+
+	for (const auto& entry : std::filesystem::directory_iterator(weaponIconsDirectory)) {
+		if (entry.is_regular_file() && entry.path().extension() == ".png") {
+			const std::string fileName = entry.path().filename().string();
+			const std::string textureName = fileName.substr(0, fileName.find_last_of('.'));
+			loadTexture(entry.path().string(), textureName);
 		}
 	}
 }
