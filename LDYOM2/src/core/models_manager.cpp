@@ -22,10 +22,18 @@ std::vector<std::string> ModelsManager::m_pedSpecialModels = {
 	"crogrl1", "crogrl2", "gungrl1", "gungrl2", "mecgrl2", "nurgrl2", "ryder2",  "cdeput",  "sfpdm1",
 	"lvpdm1",  "csbmydj", "psycho",  "csmech",  "csomost", "wmycd2"};
 
+std::vector<int> ModelsManager::m_weaponIds = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15,
+                                               16, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+                                               34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46};
+
 bool ModelsManager::validatePedModel(int modelId) {
 	return std::ranges::find(m_pedModels, modelId) != m_pedModels.end();
 }
 
 bool ModelsManager::validatePedSpecialModel(std::string modelName) {
 	return std::ranges::find(m_pedSpecialModels, modelName) != m_pedSpecialModels.end();
+}
+
+bool ModelsManager::validateWeaponId(int weaponId) {
+	return std::ranges::find(m_weaponIds, weaponId) != m_weaponIds.end();
 }
