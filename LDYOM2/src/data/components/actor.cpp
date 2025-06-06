@@ -244,6 +244,7 @@ void components::Actor::spawn() {
 			this);
 	}
 	plugin::Command<plugin::Commands::SET_CHAR_SUFFERS_CRITICAL_HITS>(newPed, !this->headshotImmune);
+	plugin::Command<plugin::Commands::SET_CHAR_AREA_VISIBLE>(newPed, this->entity->areaId);
 
 	if (!IS_PLAYING) {
 		this->ped->m_bUsesCollision = 0;
