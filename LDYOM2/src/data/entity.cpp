@@ -64,7 +64,7 @@ void Entity::moveComponentDown(size_t index) {
 
 void Entity::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<Entity>("Entity");
-	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Entity, name, position, rotation, scale, getComponents)
+	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Entity, name, position, rotation, scale, areaId, getComponents)
 }
 
 void to_json(nlohmann::json& j, const Entity& p) {
@@ -72,11 +72,8 @@ void to_json(nlohmann::json& j, const Entity& p) {
 	for (const auto& component : p.components) {
 		componentsArray.push_back(component->to_json());
 	}
-	j = {{"name", p.name},
-	     {"position", p.position},
-	     {"rotation", p.rotation},
-	     {"scale", p.scale},
-	     {"components", componentsArray}};
+	j = {{"name", p.name},   {"position", p.position}, {"rotation", p.rotation},
+	     {"scale", p.scale}, {"areaId", p.areaId},     {"components", componentsArray}};
 }
 
 void from_json(const nlohmann::json& j, Entity& p) {
@@ -84,6 +81,7 @@ void from_json(const nlohmann::json& j, Entity& p) {
 	j.at("position").get_to(p.position);
 	j.at("rotation").get_to(p.rotation);
 	j.at("scale").get_to(p.scale);
+	j.at("areaId").get_to(p.areaId);
 	if (j.contains("components") && j["components"].is_array()) {
 		p.components.clear();
 		for (const auto& componentJson : j["components"]) {

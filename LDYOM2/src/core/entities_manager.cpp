@@ -3,8 +3,10 @@
 #include "components_manager.h"
 #include "localization.h"
 #include "scenes_manager.h"
+#include <extensions/ScriptCommands.h>
 #include <plugin.h>
 #include <stdexcept>
+
 
 EntitiesManager& EntitiesManager::instance() {
 	static EntitiesManager instance;
@@ -44,6 +46,7 @@ std::unique_ptr<Entity> EntitiesManager::createEmptyEntity() {
 	entity->name = _("entities.new_entity");
 	auto position = FindPlayerPed()->GetPosition();
 	entity->position = {position.x, position.y, position.z};
+	plugin::Command<plugin::Commands::GET_AREA_VISIBLE>(&entity->areaId);
 	return entity;
 }
 
