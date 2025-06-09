@@ -2,16 +2,68 @@
 #include "objectives_manager.h"
 #include "projects_manager.h"
 #include "scenes_manager.h"
+#include <CCamera.h>
+#include <CClock.h>
+#include <CClothes.h>
+#include <CHud.h>
+#include <CMessages.h>
+#include <CTheScripts.h>
+#include <CWeather.h>
+#include <CWorld.h>
+#include <common.h>
+#include <eFadeFlag.h>
+#include <extensions/ScriptCommands.h>
 #include <logger.h>
 #include <task_manager.h>
-#include <extensions/ScriptCommands.h>
+#include <utils/string_utils.h>
 
 ProjectPlayer::~ProjectPlayer() { this->projectTasklist->clear_all_tasks(); }
 
 ktwait ProjectPlayer::run() {
+	TheCamera.Fade(0.5f, eFadeFlag::FADE_IN);
+	co_await 500;
+
 	instance().m_state.isPlaying = true;
 	instance().transitionPlayingState(true);
 	LDYOM_INFO("Project player started");
+	TheCamera.Fade(0.5f, eFadeFlag::FADE_OUT);
+
+	const auto& settings = ScenesManager::instance().getCurrentScene().settings;
+
+	if (settings.isPrintSceneName) {
+		// PRINT SCENE NAME
+		auto sceneName = utf8_to_cp1251(ScenesManager::instance().getCurrentScene().info.name);
+		gxt_encode(sceneName);
+		CMessages::AddBigMessage((char*)sceneName.c_str(), 1000, eMessageStyle::STYLE_BOTTOM_RIGHT);
+	}
+
+	if (settings.isSceneSettingsEnabled) {
+		// SET RELATIONS
+		for (const auto& relation : settings.groupRelations) {
+			plugin::Command<plugin::Commands::SET_RELATIONSHIP>(relation.ofPedType, relation.toPedType,
+			                                                    relation.relationType);
+		}
+		// SET TIME
+		CClock::SetGameClock(settings.time[0], settings.time[1], 0);
+
+		// SET TRAFFIC
+		plugin::Command<plugin::Commands::SET_PED_DENSITY_MULTIPLIER>(settings.trafficPed);
+		plugin::Command<plugin::Commands::SET_CAR_DENSITY_MULTIPLIER>(settings.trafficCar);
+
+		// SET WANTED
+		CWorld::Players[0].m_PlayerData.m_pWanted->SetWantedLevelNoDrop(settings.wantedMin);
+		CWanted::SetMaximumWantedLevel(settings.wantedMax);
+
+		// SET WEATHER
+		CWeather::ForceWeatherNow(static_cast<short>(settings.weather));
+
+		// SET RIOT
+		if (settings.riot) {
+			plugin::Command<plugin::Commands::SET_LA_RIOTS>(true);
+		} else {
+			plugin::Command<plugin::Commands::SET_LA_RIOTS>(false);
+		}
+	}
 
 	auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
 
@@ -80,6 +132,35 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 	} else {
 		TaskManager::instance().removeTask("stop_cheat");
 		TaskManager::instance().removeTask("project_tasks");
+		for (size_t i = PED_TYPE_PLAYER1; i <= ePedType::PED_TYPE_MISSION8; i++) {
+			for (size_t j = PED_TYPE_PLAYER1; j <= ePedType::PED_TYPE_MISSION8; j++) {
+				plugin::Command<plugin::Commands::SET_RELATIONSHIP>(i, j, eRelationshipType::TYPE_IGNORE);
+			}
+		}
+
+		plugin::Command<plugin::Commands::SET_PED_DENSITY_MULTIPLIER>(0.f);
+		plugin::Command<plugin::Commands::SET_CAR_DENSITY_MULTIPLIER>(0.f);
+
+		CWorld::Players[0].m_PlayerData.m_pWanted->SetWantedLevelNoDrop(0);
+		CWanted::SetMaximumWantedLevel(0);
+		FindPlayerPed()->SetWantedLevel(0);
+
+		plugin::Command<plugin::Commands::SET_LA_RIOTS>(false);
+
+		FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_bDoesNotGetTired = true;
+		FindPlayerPed()->ClearWeapons();
+		FindPlayerPed()->m_fHealth = 100.f;
+		FindPlayerPed()->m_fMaxHealth = 100.f;
+		FindPlayerPed()->m_pIntelligence->ClearTasks(true, true);
+		CWorld::Players[0].m_nMoney = 0;
+		FindPlayerPed()->DettachPedFromEntity();
+		plugin::Command<plugin::Commands::SET_PLAYER_MODEL>(0, 0);
+		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
+		CTheScripts::bDisplayHud = true;
+		CHud::bScriptDontDisplayRadar = false;
+		TheCamera.RestoreWithJumpCut();
+		TheCamera.Fade(0, 1);
+		plugin::Command<plugin::Commands::CLEAR_AREA>(0.0f, 0.0f, 0.0f, 10000.f, 1);
 	}
 	ScenesManager::instance().resetCurrentScene();
 }
