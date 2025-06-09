@@ -285,3 +285,41 @@ void gxt_encode(std::string& str1251, GxtEncoding encoding) {
 		return ch;
 	});
 }
+
+const char* to_string(ePedType pedType) {
+	switch (pedType) {
+		case PED_TYPE_PLAYER1: return "Player 1";
+		case PED_TYPE_PLAYER2: return "Player 2";
+		case PED_TYPE_PLAYER_NETWORK: return "Player Network";
+		case PED_TYPE_PLAYER_UNUSED: return "Player Unused";
+		case PED_TYPE_CIVMALE: return "Civilian Male";
+		case PED_TYPE_CIVFEMALE: return "Civilian Female";
+		case PED_TYPE_COP: return "Police Officer";
+		case PED_TYPE_GANG1: return "Gang 1";
+		case PED_TYPE_GANG2: return "Gang 2";
+		case PED_TYPE_GANG3: return "Gang 3";
+		case PED_TYPE_GANG4: return "Gang 4";
+		case PED_TYPE_GANG5: return "Gang 5";
+		case PED_TYPE_GANG6: return "Gang 6";
+		case PED_TYPE_GANG7: return "Gang 7";
+		case PED_TYPE_GANG8: return "Gang 8";
+		case PED_TYPE_GANG9: return "Gang 9";
+		case PED_TYPE_GANG10: return "Gang 10";
+		case PED_TYPE_DEALER: return "Dealer";
+		case PED_TYPE_MEDIC: return "Medic";
+		case PED_TYPE_FIREMAN: return "Fireman";
+		case PED_TYPE_CRIMINAL: return "Criminal";
+		case PED_TYPE_BUM: return "Bum";
+		case PED_TYPE_PROSTITUTE: return "Prostitute";
+		case PED_TYPE_SPECIAL: return "Special";
+		case PED_TYPE_MISSION1: return "Mission 1";
+		case PED_TYPE_MISSION2: return "Mission 2";
+		case PED_TYPE_MISSION3: return "Mission 3";
+		case PED_TYPE_MISSION4: return "Mission 4";
+		case PED_TYPE_MISSION5: return "Mission 5";
+		case PED_TYPE_MISSION6: return "Mission 6";
+		case PED_TYPE_MISSION7: return "Mission 7";
+		case PED_TYPE_MISSION8: return "Mission 8";
+		default: return "Unknown";
+	}
+}

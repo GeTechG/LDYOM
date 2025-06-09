@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <ePedType.h>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -44,3 +45,5 @@ enum class GxtEncoding { ToSanAndreas, FromSanAndreas };
  * If `encoding` is `FromSanAndreas`, it converts from San Andreas GXT encoding to UTF-8.
  */
 void gxt_encode(std::string& str1251, GxtEncoding encoding = GxtEncoding::ToSanAndreas);
+
+const char* to_string(ePedType pedType);
