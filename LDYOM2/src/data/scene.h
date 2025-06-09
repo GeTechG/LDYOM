@@ -2,12 +2,15 @@
 #include "entity.h"
 #include "objectives_container.h"
 #include "scene_info.h"
+#include "scene_settings.h"
+#include <lua_define_type.h>
 
 struct Scene {
 	SceneInfo info;
 	ObjectivesContainer objectives;
 	std::vector<std::unique_ptr<Entity>> entities;
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Scene, info, objectives, entities)
+	SceneSettings settings;
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Scene, info, objectives, entities, settings)
 };
 
 namespace nlohmann {

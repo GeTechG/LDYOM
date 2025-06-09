@@ -10,8 +10,10 @@
 #include "windows/objectives.h"
 #include "windows/project_manager.h"
 #include "windows/quick_settings.h"
+#include "windows/scene_settings.h"
 #include "windows/scenes.h"
 #include <logger.h>
+
 
 void initWindows() {
 	WindowManager::instance().addWindow("project_manager", std::make_unique<ProjectManager>());
@@ -25,6 +27,7 @@ void initWindows() {
 	WindowManager::instance().addWindow("create_new_component", std::make_unique<CreateNewComponent>());
 	WindowManager::instance().addWindow("entities_menu", std::make_unique<EntitiesMenu>());
 	WindowManager::instance().addWindow("entities", std::make_unique<EntitiesWindow>());
+	WindowManager::instance().addWindow("scene_settings", std::make_unique<SceneSettingsPopup>());
 
 	LDYOM_INFO("Windows initialized");
 }

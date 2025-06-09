@@ -1,6 +1,8 @@
 #include "scenes_manager.h"
 #include "localization.h"
 #include "projects_manager.h"
+#include <ePedType.h>
+#include <eRelationshipType.h>
 #include <fstream>
 #include <logger.h>
 #include <project_info.h>
@@ -10,7 +12,34 @@ const std::string ScenesManager::SCENE_FOLDER_NAME = "scenes";
 
 ScenesManager::ScenesManager() {
 	this->m_currentScene = std::make_unique<Scene>(Scene{.info = SceneInfo{.name = _("scenes.default_scene_name")}});
-};
+
+	// Initialize default group relations using the new vector structure
+	auto& relations = this->m_currentScene->settings.groupRelations;
+
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION1, PED_TYPE_PLAYER1, eRelationshipType::TYPE_HATE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION1, PED_TYPE_MISSION2, eRelationshipType::TYPE_HATE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION1, PED_TYPE_MISSION3, eRelationshipType::TYPE_HATE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION1, PED_TYPE_CIVMALE, eRelationshipType::TYPE_LIKE});
+
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION2, PED_TYPE_PLAYER1, eRelationshipType::TYPE_LIKE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION2, PED_TYPE_MISSION1, eRelationshipType::TYPE_HATE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION2, PED_TYPE_MISSION3, eRelationshipType::TYPE_HATE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION2, PED_TYPE_CIVMALE, eRelationshipType::TYPE_LIKE});
+
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION3, PED_TYPE_PLAYER1, eRelationshipType::TYPE_HATE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION3, PED_TYPE_MISSION1, eRelationshipType::TYPE_HATE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION3, PED_TYPE_MISSION2, eRelationshipType::TYPE_HATE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_MISSION3, PED_TYPE_CIVMALE, eRelationshipType::TYPE_LIKE});
+
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_CIVMALE, PED_TYPE_PLAYER1, eRelationshipType::TYPE_LIKE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_CIVMALE, PED_TYPE_MISSION1, eRelationshipType::TYPE_LIKE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_CIVMALE, PED_TYPE_MISSION2, eRelationshipType::TYPE_LIKE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_CIVMALE, PED_TYPE_MISSION3, eRelationshipType::TYPE_LIKE});
+
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_GANG1, PED_TYPE_PLAYER1, eRelationshipType::TYPE_LIKE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_GANG2, PED_TYPE_PLAYER1, eRelationshipType::TYPE_LIKE});
+	relations.emplace_back(SceneSettings::Relation{PED_TYPE_GANG3, PED_TYPE_PLAYER1, eRelationshipType::TYPE_LIKE});
+}
 
 ScenesManager& ScenesManager::instance() {
 	static ScenesManager instance;

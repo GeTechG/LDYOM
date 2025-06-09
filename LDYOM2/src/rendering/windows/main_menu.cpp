@@ -30,6 +30,9 @@ void MainMenu::renderContent(Window* window) {
 		WindowManager::instance().openWindow("scenes");
 		window->close();
 	}
+	if (ImGui::Button(_("scene_settings.title", ICON_FA_SLIDERS).c_str(), buttonSize)) {
+		WindowManager::instance().openWindow("scene_settings");
+	}
 	if (ImGui::Button(_("addons_settings.title", ICON_FA_PUZZLE_PIECE).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("addons_settings");
 	}
