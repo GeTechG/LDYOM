@@ -44,8 +44,8 @@ ktwait ProjectPlayer::run() {
 	if (settings.isSceneSettingsEnabled) {
 		// SET RELATIONS
 		for (const auto& relation : settings.groupRelations) {
-			plugin::Command<plugin::Commands::SET_RELATIONSHIP>(relation.ofPedType, relation.toPedType,
-			                                                    relation.relationType);
+			plugin::Command<plugin::Commands::SET_RELATIONSHIP>(relation.relationType, relation.ofPedType,
+			                                                    relation.toPedType);
 		}
 		// SET TIME
 		CClock::SetGameClock(settings.time[0], settings.time[1], 0);
@@ -154,7 +154,7 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 		TaskManager::instance().removeTask("scene_completion_timer");
 		for (size_t i = PED_TYPE_PLAYER1; i <= ePedType::PED_TYPE_MISSION8; i++) {
 			for (size_t j = PED_TYPE_PLAYER1; j <= ePedType::PED_TYPE_MISSION8; j++) {
-				plugin::Command<plugin::Commands::SET_RELATIONSHIP>(i, j, eRelationshipType::TYPE_IGNORE);
+				plugin::Command<plugin::Commands::SET_RELATIONSHIP>(eRelationshipType::TYPE_IGNORE, i, j);
 			}
 		}
 
