@@ -4,10 +4,10 @@
 struct Scene;
 
 class SceneSettingsPopup : public ModalPopupWindow {
-	static void renderContent(Window* window);
-	// Helper functions for rendering different sections
+	static void renderContent(Window* window); // Helper functions for rendering different sections
 	static void renderGroupRelationsSection(Scene& scene, float contentWidth);
 	static void renderTimeSection(Scene& scene, float contentWidth);
+	static void renderMissionTimeSection(Scene& scene, float contentWidth);
 	static void renderTrafficSection(Scene& scene, float contentWidth);
 	static void renderWantedLevelSection(Scene& scene, float contentWidth);
 	static void renderEnvironmentSection(Scene& scene, float contentWidth);

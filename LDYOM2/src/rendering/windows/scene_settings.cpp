@@ -41,24 +41,20 @@ void SceneSettingsPopup::renderContent(Window* window) {
 		_("scene_settings.is_scene_settings_enabled").c_str(),
 		[&]() { ImGui::Checkbox("##sceneSettingsEnabled", &scene.settings.isSceneSettingsEnabled); }, labelWidth);
 
-	if (!scene.settings.isSceneSettingsEnabled) {
-		ImGui::Spacing();
-		ImGui::TextWrapped(
-			_("scene_settings.disabled_hint", "Enable scene settings to configure advanced options").c_str());
-		return;
-	}
-
 	ImGui::Spacing();
 	ImGui::Separator();
 
 	// Scrollable content area
 	ImGui::BeginChild("SettingsContent", ImVec2(0, 0), false, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-
+	ImGui::BeginDisabled(!scene.settings.isSceneSettingsEnabled);
 	// Render each section using helper functions
 	renderGroupRelationsSection(scene, contentWidth);
 	ImGui::Spacing();
 
 	renderTimeSection(scene, contentWidth);
+	ImGui::Spacing();
+
+	renderMissionTimeSection(scene, contentWidth);
 	ImGui::Spacing();
 
 	renderTrafficSection(scene, contentWidth);
@@ -68,6 +64,7 @@ void SceneSettingsPopup::renderContent(Window* window) {
 	ImGui::Spacing();
 
 	renderEnvironmentSection(scene, contentWidth);
+	ImGui::EndDisabled();
 	ImGui::EndChild();
 }
 
@@ -210,6 +207,49 @@ void SceneSettingsPopup::renderTimeSection(Scene& scene, float contentWidth) {
 		if (timeChanged) {
 			CClock::SetGameClock(scene.settings.time[0], scene.settings.time[1], 0);
 		}
+
+		ImGui::Unindent(10.0f);
+	}
+}
+
+void SceneSettingsPopup::renderMissionTimeSection(Scene& scene, float contentWidth) {
+	if (ImGui::CollapsingHeader(
+			fmt::format("{} {}", ICON_FA_STOPWATCH, _("scene_settings.mission_time_settings")).c_str(),
+			ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::Indent(10.0f);
+		const float labelWidth = 140.0f;
+
+		renderTwoColumnRow(
+			fmt::format("{} {}", ICON_FA_EYE, _("scene_settings.show_mission_time")).c_str(),
+			[&]() { ImGui::Checkbox("##showMissionTime", &scene.settings.isShowMissionTime); }, labelWidth);
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		renderTwoColumnRow(
+			fmt::format("{} {}", ICON_FA_HOURGLASS_HALF, _("scene_settings.limit_completion_time")).c_str(),
+			[&]() { ImGui::Checkbox("##limitCompletionTime", &scene.settings.limitCompletionTime); }, labelWidth);
+
+		ImGui::Spacing();
+		ImGui::BeginDisabled(!scene.settings.limitCompletionTime);
+
+		int hours = scene.settings.completionTime / 3600;
+		int minutes = (scene.settings.completionTime % 3600) / 60;
+		int seconds = scene.settings.completionTime % 60;
+		renderTwoColumnRow(
+			fmt::format("{} {}", ICON_FA_CLOCK, _("scene_settings.completion_time")).c_str(),
+			[&]() {
+				if (ImGui::DragInt("##completionTime", &scene.settings.completionTime, 1.0f, 0, 3600,
+			                       fmt::format("{:02d}:{:02d}:{:02d}", hours, minutes, seconds).c_str())) {
+					if (scene.settings.completionTime < 0) {
+						scene.settings.completionTime = 0;
+					}
+				}
+			},
+			labelWidth);
+
+		ImGui::EndDisabled();
 
 		ImGui::Unindent(10.0f);
 	}
