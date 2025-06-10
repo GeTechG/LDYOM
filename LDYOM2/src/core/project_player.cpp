@@ -1,4 +1,5 @@
 #include "project_player.h"
+#include "localization.h"
 #include "objectives_manager.h"
 #include "projects_manager.h"
 #include "scenes_manager.h"
@@ -7,14 +8,17 @@
 #include <CClothes.h>
 #include <CHud.h>
 #include <CMessages.h>
+#include <CText.h>
 #include <CTheScripts.h>
 #include <CWeather.h>
 #include <CWorld.h>
 #include <common.h>
+#include <counter_service.h>
 #include <eFadeFlag.h>
 #include <extensions/ScriptCommands.h>
 #include <logger.h>
 #include <task_manager.h>
+#include <timer_service.h>
 #include <utils/string_utils.h>
 
 ProjectPlayer::~ProjectPlayer() { this->projectTasklist->clear_all_tasks(); }
@@ -45,6 +49,21 @@ ktwait ProjectPlayer::run() {
 		}
 		// SET TIME
 		CClock::SetGameClock(settings.time[0], settings.time[1], 0);
+
+		if (settings.limitCompletionTime && settings.completionTime > 0) {
+			// SET COMPLETION TIME
+			auto completionTime = settings.completionTime * 1000; // Convert to milliseconds
+			TimerService::instance().addTimer(TheText.Get("RTIME"), true, completionTime);
+			TaskManager::instance().addTask("scene_completion_timer", [completionTime]() -> ktwait {
+				while (TimerService::instance().getTimerTime() > 0) {
+					co_await 1000;
+				}
+				instance().failCurrentProject();
+			});
+
+		} else if (settings.isShowMissionTime) {
+			TimerService::instance().addTimer(TheText.Get("BB_19"), false, 0);
+		}
 
 		// SET TRAFFIC
 		plugin::Command<plugin::Commands::SET_PED_DENSITY_MULTIPLIER>(settings.trafficPed);
@@ -132,6 +151,7 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 	} else {
 		TaskManager::instance().removeTask("stop_cheat");
 		TaskManager::instance().removeTask("project_tasks");
+		TaskManager::instance().removeTask("scene_completion_timer");
 		for (size_t i = PED_TYPE_PLAYER1; i <= ePedType::PED_TYPE_MISSION8; i++) {
 			for (size_t j = PED_TYPE_PLAYER1; j <= ePedType::PED_TYPE_MISSION8; j++) {
 				plugin::Command<plugin::Commands::SET_RELATIONSHIP>(i, j, eRelationshipType::TYPE_IGNORE);
@@ -152,12 +172,15 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 		FindPlayerPed()->m_fHealth = 100.f;
 		FindPlayerPed()->m_fMaxHealth = 100.f;
 		FindPlayerPed()->m_pIntelligence->ClearTasks(true, true);
-		CWorld::Players[0].m_nMoney = 0;
 		FindPlayerPed()->DettachPedFromEntity();
+		CWorld::Players[0].m_nMoney = 0;
 		plugin::Command<plugin::Commands::SET_PLAYER_MODEL>(0, 0);
 		CClothes::RebuildPlayer(CWorld::Players[0].m_pPed, false);
+
 		CTheScripts::bDisplayHud = true;
 		CHud::bScriptDontDisplayRadar = false;
+		TimerService::instance().removeTimer();
+		CounterService::instance().clearAllCounters();
 		TheCamera.RestoreWithJumpCut();
 		TheCamera.Fade(0, 1);
 		plugin::Command<plugin::Commands::CLEAR_AREA>(0.0f, 0.0f, 0.0f, 10000.f, 1);
