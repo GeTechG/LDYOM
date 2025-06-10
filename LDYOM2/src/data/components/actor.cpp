@@ -277,12 +277,6 @@ void components::Actor::spawn() {
 	plugin::Command<plugin::Commands::CREATE_CHAR>(pedType, model, position[0], position[1], position[2], &newPed);
 	CStreaming::SetMissionDoesntRequireModel(model);
 
-	if (IS_PLAYING && this->isSimpleType && this->pedType == 1) {
-		int g;
-		plugin::Command<plugin::Commands::GET_PLAYER_GROUP>(0, &g);
-		plugin::Command<plugin::Commands::SET_GROUP_MEMBER>(g, newPed);
-	}
-
 	CPed* ped = CPools::GetPed(newPed);
 	this->ped = std::shared_ptr<CPed>(ped, [](CPed* ped) {
 		auto ref = CPools::GetPedRef(ped);
