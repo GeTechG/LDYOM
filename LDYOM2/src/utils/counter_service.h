@@ -33,4 +33,13 @@ class CounterService {
 
 	void updateCounter(int counterId, int value) const;
 	void clearCounter(int counterId);
+	void clearAllCounters() {
+		for (size_t i = 0; i < usedCounters.size(); ++i) {
+			if (usedCounters[i]) {
+				clearCounter(static_cast<int>(i));
+			}
+		}
+	}
+
+  private:
 };
