@@ -5,12 +5,13 @@
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <project_player.h>
+#include <string_utils.h>
 
 void components::Actor::sol_lua_register(sol::state_view lua_state) {
 	Actor::sol_lua_register_enum_DirtyFlags(lua_state);
 	auto ut = lua_state.new_usertype<Actor>("ActorComponent");
 	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, isRandomModel, initialDirection, model,
-	                 specialModel, health, headshotImmune, mustSurvive, ped, spawn, despawn);
+	                 specialModel, isSimpleType, pedType, health, headshotImmune, mustSurvive, ped, spawn, despawn);
 }
 
 components::Actor::Actor()
@@ -24,6 +25,8 @@ inline nlohmann::json components::Actor::to_json() const {
 	j["initialDirection"] = initialDirection;
 	j["model"] = model;
 	j["specialModel"] = specialModel;
+	j["isSimpleType"] = isSimpleType;
+	j["pedType"] = pedType;
 	j["health"] = health;
 	j["headshotImmune"] = headshotImmune;
 	j["mustSurvive"] = mustSurvive;
@@ -36,6 +39,8 @@ void components::Actor::from_json(const nlohmann::json& j) {
 	j.at("initialDirection").get_to(initialDirection);
 	j.at("model").get_to(model);
 	j.at("specialModel").get_to(specialModel);
+	j.at("isSimpleType").get_to(isSimpleType);
+	j.at("pedType").get_to(pedType);
 	j.at("health").get_to(health);
 	j.at("headshotImmune").get_to(headshotImmune);
 	j.at("mustSurvive").get_to(mustSurvive);
@@ -122,6 +127,41 @@ void components::Actor::editorRender() {
 		PopupSkinSelector::renderPopup(skinSelectorCallback, isSpecialModel);
 
 		ImGui::EndGroup();
+	}
+
+	ImGui::Text(tr("is_simple_type").c_str());
+	ImGui::SameLine(availableWidth * 0.45f);
+	ImGui::SetNextItemWidth(-1.f);
+	if (ImGui::Checkbox("##isSimpleType", &isSimpleType)) {
+		if (isSimpleType) {
+			this->pedType = 0; // Neutral
+		} else {
+			this->pedType = PED_TYPE_CIVMALE;
+		}
+	}
+
+	ImGui::Text(tr("ped_type").c_str());
+	ImGui::SameLine(availableWidth * 0.45f);
+	ImGui::SetNextItemWidth(-1.f);
+	if (this->isSimpleType) {
+		const auto pedTypeName = tr("simple_types." + std::to_string(this->pedType));
+		if (ImGui::BeginCombo("##pedType", pedTypeName.c_str())) {
+			for (int i = 0; i < 4; i++) {
+				if (ImGui::Selectable(tr("simple_types." + std::to_string(i)).c_str(), this->pedType == i)) {
+					this->pedType = i;
+				}
+			}
+			ImGui::EndCombo();
+		}
+	} else {
+		if (ImGui::BeginCombo("##pedType", to_string((ePedType)this->pedType))) {
+			for (int i = 0; i <= PED_TYPE_MISSION8; ++i) {
+				if (ImGui::Selectable(to_string((ePedType)i), this->pedType == i)) {
+					this->pedType = i;
+				}
+			}
+			ImGui::EndCombo();
+		}
 	}
 
 	ImGui::Separator();
@@ -214,10 +254,34 @@ void components::Actor::spawn() {
 	}
 	CStreaming::LoadAllRequestedModels(false);
 
+	int pedType = this->pedType;
+	if (this->isSimpleType) {
+		switch (pedType) {
+			case 0: // Neutral
+				pedType = PED_TYPE_CIVMALE;
+				break;
+			case 1: // Friendly
+				pedType = PED_TYPE_MISSION2;
+				break;
+			case 2: // Enemy 1
+				pedType = PED_TYPE_MISSION1;
+				break;
+			case 3: // Enemy 2
+				pedType = PED_TYPE_MISSION3;
+				break;
+		}
+	}
+
 	int newPed;
 	auto& position = this->entity->position;
-	plugin::Command<plugin::Commands::CREATE_CHAR>(23, model, position[0], position[1], position[2], &newPed);
+	plugin::Command<plugin::Commands::CREATE_CHAR>(pedType, model, position[0], position[1], position[2], &newPed);
 	CStreaming::SetMissionDoesntRequireModel(model);
+
+	if (IS_PLAYING && this->isSimpleType && this->pedType == 1) {
+		int g;
+		plugin::Command<plugin::Commands::GET_PLAYER_GROUP>(0, &g);
+		plugin::Command<plugin::Commands::SET_GROUP_MEMBER>(g, newPed);
+	}
 
 	CPed* ped = CPools::GetPed(newPed);
 	this->ped = std::shared_ptr<CPed>(ped, [](CPed* ped) {

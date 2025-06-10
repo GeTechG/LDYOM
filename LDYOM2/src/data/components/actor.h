@@ -40,6 +40,8 @@ class Actor : public Component {
 	bool isRandomModel = false;
 	int model = 0;
 	std::string specialModel;
+	bool isSimpleType = true;
+	int pedType = 0; // Neutral
 
 	float health = 100.0f;
 	bool headshotImmune = false;
