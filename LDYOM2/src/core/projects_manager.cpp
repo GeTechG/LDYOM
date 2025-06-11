@@ -1,12 +1,12 @@
 #include "projects_manager.h"
-#include "data/project_info.h"
 #include "scenes_manager.h"
+#include "data/project_info.h"
 #include <filesystem>
 #include <fstream>
 #include <logger.h>
-#include <nlohmann/json.hpp>
 #include <paths.h>
 #include <string_utils.h>
+#include <nlohmann/json.hpp>
 
 const std::string ProjectsManager::PROJECTS_DIR_PATH = "projects";
 const std::string ProjectsManager::PROJECT_INFO_FILE_NAME = "project_info";
@@ -19,15 +19,15 @@ ProjectsManager& ProjectsManager::instance() {
 void ProjectsManager::initialize() {
 	m_projects.clear();
 	const std::filesystem::path projectsDir(LDYOM_PATH(PROJECTS_DIR_PATH));
-	if (!std::filesystem::exists(projectsDir)) {
-		std::filesystem::create_directories(projectsDir);
+	if (!exists(projectsDir)) {
+		create_directories(projectsDir);
 		LDYOM_INFO("Created projects directory: {}", projectsDir.string());
 	}
 	for (const auto& entry : std::filesystem::directory_iterator(projectsDir)) {
 		if (entry.is_directory()) {
 			const std::filesystem::path projectPath = entry.path();
 			const std::filesystem::path infoFilePath = projectPath / (PROJECT_INFO_FILE_NAME + ".json");
-			if (std::filesystem::exists(infoFilePath)) {
+			if (exists(infoFilePath)) {
 				try {
 					std::ifstream file(infoFilePath);
 					nlohmann::json jsonData;
@@ -65,7 +65,7 @@ bool ProjectsManager::createNewProject(std::string_view name, std::string_view a
 		                           .author = std::string(author),
 		                           .timestamp = std::time(nullptr)};
 		std::filesystem::path projectDir(LDYOM_PATH(PROJECTS_DIR_PATH) + "/" + to_snake_case(newProjectInfo.name));
-		std::filesystem::create_directories(projectDir);
+		create_directories(projectDir);
 		nlohmann::json jsonData = newProjectInfo;
 		std::ofstream file(projectDir / (PROJECT_INFO_FILE_NAME + ".json"));
 		file << jsonData.dump(4);
@@ -96,8 +96,8 @@ bool ProjectsManager::loadProject(int index) {
 	if (!std::ranges::any_of(ScenesManager::instance().getScenesInfo(),
 	                         [sceneToLoad](const SceneInfo& info) { return info.id == sceneToLoad; })) {
 		sceneToLoad = ScenesManager::instance().getScenesInfo()[0].id;
-		currentProject.value()->startSceneId = sceneToLoad;
 		LDYOM_INFO("Scene {} not found, loading first scene instead", currentProject.value()->startSceneId);
+		currentProject.value()->startSceneId = sceneToLoad;
 	}
 	ScenesManager::instance().loadScene(sceneToLoad);
 	LDYOM_INFO("Loaded project: {}", currentProject.value()->name);

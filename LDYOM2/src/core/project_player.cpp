@@ -15,30 +15,31 @@
 #include <common.h>
 #include <counter_service.h>
 #include <eFadeFlag.h>
-#include <extensions/ScriptCommands.h>
 #include <logger.h>
 #include <task_manager.h>
 #include <timer_service.h>
+#include <extensions/ScriptCommands.h>
 #include <utils/string_utils.h>
 
 ProjectPlayer::~ProjectPlayer() { this->projectTasklist->clear_all_tasks(); }
 
 ktwait ProjectPlayer::run() {
-	TheCamera.Fade(0.5f, eFadeFlag::FADE_IN);
+	TheCamera.Fade(0.5f, FADE_IN);
 	co_await 500;
 
 	instance().m_state.isPlaying = true;
 	instance().transitionPlayingState(true);
 	LDYOM_INFO("Project player started");
-	TheCamera.Fade(0.5f, eFadeFlag::FADE_OUT);
+	TheCamera.Fade(0.5f, FADE_OUT);
 
 	const auto& settings = ScenesManager::instance().getCurrentScene().settings;
 
 	if (settings.isPrintSceneName) {
 		// PRINT SCENE NAME
-		auto sceneName = utf8_to_cp1251(ScenesManager::instance().getCurrentScene().info.name);
+		static std::string sceneName;
+		sceneName = utf8_to_cp1251(ScenesManager::instance().getCurrentScene().info.name);
 		gxt_encode(sceneName);
-		CMessages::AddBigMessage((char*)sceneName.c_str(), 1000, eMessageStyle::STYLE_BOTTOM_RIGHT);
+		CMessages::AddBigMessage((char*)sceneName.c_str(), 1000, STYLE_BOTTOM_RIGHT);
 	}
 
 	if (settings.isSceneSettingsEnabled) {
@@ -152,9 +153,9 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 		TaskManager::instance().removeTask("stop_cheat");
 		TaskManager::instance().removeTask("project_tasks");
 		TaskManager::instance().removeTask("scene_completion_timer");
-		for (size_t i = PED_TYPE_PLAYER1; i <= ePedType::PED_TYPE_MISSION8; i++) {
-			for (size_t j = PED_TYPE_PLAYER1; j <= ePedType::PED_TYPE_MISSION8; j++) {
-				plugin::Command<plugin::Commands::SET_RELATIONSHIP>(eRelationshipType::TYPE_IGNORE, i, j);
+		for (size_t i = PED_TYPE_PLAYER1; i <= PED_TYPE_MISSION8; i++) {
+			for (size_t j = PED_TYPE_PLAYER1; j <= PED_TYPE_MISSION8; j++) {
+				plugin::Command<plugin::Commands::SET_RELATIONSHIP>(TYPE_IGNORE, i, j);
 			}
 		}
 
