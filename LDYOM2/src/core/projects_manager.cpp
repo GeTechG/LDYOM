@@ -43,6 +43,11 @@ void ProjectsManager::initialize() {
 	}
 }
 
+void ProjectsManager::shutdown() {
+	closeProject();
+	m_projects.clear();
+}
+
 std::vector<ProjectInfo>& ProjectsManager::getProjects() { return m_projects; }
 
 std::optional<ProjectInfo*> ProjectsManager::getCurrentProject() {
@@ -101,6 +106,7 @@ bool ProjectsManager::loadProject(int index) {
 
 void ProjectsManager::closeProject() {
 	if (m_currentProjectIndex >= 0 && m_currentProjectIndex < static_cast<int>(m_projects.size())) {
+		ScenesManager::instance().unloadCurrentScene();
 		m_currentProjectIndex = -1;
 	}
 }

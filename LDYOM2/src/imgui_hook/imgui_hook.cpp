@@ -4,10 +4,10 @@
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
-#include "injector/injector.hpp"
 #include "kiero.h"
 #include "pad.h"
 #include "plugin.h"
+#include "injector/injector.hpp"
 #include "utils/imgui_configurate.h"
 #include <CMenuManager.h>
 
@@ -25,7 +25,7 @@ void ImguiHook::SetControlEnabled(bool state) { controlEnabled = state; }
 void ImguiHook::dirtyObjectsFlag() { dirtyObjects = true; }
 
 // Timer ID for window restoration
-static const UINT_PTR RESTORE_TIMER_ID = 1001;
+static constexpr UINT_PTR RESTORE_TIMER_ID = 1001;
 static bool isRestoreTimerActive = false;
 
 // Callback function for the timer
@@ -92,7 +92,7 @@ void ImguiHook::ProcessFrame(void* ptr) {
 
 #ifndef _WIN64
 		RsGlobal = 0xC17040;
-		width = injector::ReadMemory<int>(RsGlobal + 4, false);  // width
+		width = injector::ReadMemory<int>(RsGlobal + 4, false); // width
 		height = injector::ReadMemory<int>(RsGlobal + 8, false); // height
 #else
 		RECT rect;

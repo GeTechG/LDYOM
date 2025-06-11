@@ -5,11 +5,10 @@
 
 HINSTANCE gDllHandle;
 
-void ImGuiThread() {
-	// if (!HasGameLaunched(gDllHandle, 30, 5000))
-	// {
-	// 	return;
-	// }
+void ImGuiHook() {
+	if (!HasGameLaunched(gDllHandle, 30, 5000)) {
+		return;
+	}
 
 	if (!CheckAndPromptSilentPatch()) {
 		return;
@@ -22,12 +21,7 @@ void ImGuiThread() {
 	LDYOM_INFO("ImGui hooked successfully");
 }
 
-void HookImgui(std::function<void()> renderFunc) {
-	ImGuiThread();
-	ImguiHook::setRenderFunc(renderFunc);
+void ImGuiHookRemove() {
+	ImguiHook::Remove();
+	LDYOM_INFO("ImGui hook removed");
 }
-
-void UnhookImgui() { ImguiHook::Remove(); }
-void MouseShow(bool show) { ImguiHook::SetMouseState(show); }
-
-void ControlEnabled(bool enable) { ImguiHook::SetControlEnabled(enable); }

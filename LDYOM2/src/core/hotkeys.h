@@ -18,6 +18,7 @@ class Hotkeys {
 	void operator=(const Hotkeys&) = delete;
 
 	void initialize();
+	void shutdown();
 	void saveHotkey(int index);
 	void addHotkey(const ImHotKey::HotKey& hotkey);
 	std::vector<ImHotKey::HotKey>& getHotkeys();

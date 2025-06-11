@@ -299,56 +299,28 @@ static void Edit(HotKey* hotkey, size_t hotkeyCount, const char* popupModal, std
 		if (ImGui::IsKeyPressed((ImGuiKey)i, false)) {
 			int vk = 0;
 			switch ((ImGuiKey)i) {
-			case ImGuiKey_Tab:
-				vk = VK_TAB;
-				break;
-			case ImGuiKey_LeftArrow:
-				vk = VK_LEFT;
-				break;
-			case ImGuiKey_RightArrow:
-				vk = VK_RIGHT;
-				break;
-			case ImGuiKey_UpArrow:
-				vk = VK_UP;
-				break;
-			case ImGuiKey_DownArrow:
-				vk = VK_DOWN;
-				break;
-			case ImGuiKey_PageUp:
-				vk = VK_PRIOR;
-				break;
-			case ImGuiKey_PageDown:
-				vk = VK_NEXT;
-				break;
-			case ImGuiKey_Home:
-				vk = VK_HOME;
-				break;
-			case ImGuiKey_End:
-				vk = VK_END;
-				break;
-			case ImGuiKey_Delete:
-				vk = VK_DELETE;
-				break;
-			case ImGuiKey_Backspace:
-				vk = VK_BACK;
-				break;
-			case ImGuiKey_Enter:
-				vk = VK_RETURN;
-				break;
-			case ImGuiKey_Escape:
-				vk = VK_ESCAPE;
-				break;
-			case ImGuiKey_Space:
-				vk = VK_SPACE;
-				break;
-			default:
-				if (i >= ImGuiKey_A && i <= ImGuiKey_Z)
-					vk = 'A' + (i - ImGuiKey_A);
-				else if (i >= ImGuiKey_0 && i <= ImGuiKey_9)
-					vk = '0' + (i - ImGuiKey_0);
-				else if (i >= ImGuiKey_F1 && i <= ImGuiKey_F12)
-					vk = VK_F1 + (i - ImGuiKey_F1);
-				break;
+				case ImGuiKey_Tab: vk = VK_TAB; break;
+				case ImGuiKey_LeftArrow: vk = VK_LEFT; break;
+				case ImGuiKey_RightArrow: vk = VK_RIGHT; break;
+				case ImGuiKey_UpArrow: vk = VK_UP; break;
+				case ImGuiKey_DownArrow: vk = VK_DOWN; break;
+				case ImGuiKey_PageUp: vk = VK_PRIOR; break;
+				case ImGuiKey_PageDown: vk = VK_NEXT; break;
+				case ImGuiKey_Home: vk = VK_HOME; break;
+				case ImGuiKey_End: vk = VK_END; break;
+				case ImGuiKey_Delete: vk = VK_DELETE; break;
+				case ImGuiKey_Backspace: vk = VK_BACK; break;
+				case ImGuiKey_Enter: vk = VK_RETURN; break;
+				case ImGuiKey_Escape: vk = VK_ESCAPE; break;
+				case ImGuiKey_Space: vk = VK_SPACE; break;
+				default:
+					if (i >= ImGuiKey_A && i <= ImGuiKey_Z)
+						vk = 'A' + (i - ImGuiKey_A);
+					else if (i >= ImGuiKey_0 && i <= ImGuiKey_9)
+						vk = '0' + (i - ImGuiKey_0);
+					else if (i >= ImGuiKey_F1 && i <= ImGuiKey_F12)
+						vk = VK_F1 + (i - ImGuiKey_F1);
+					break;
 			}
 			if (vk != 0) {
 				int imKey = MapVirtualKeyA(vk, MAPVK_VK_TO_VSC);
@@ -447,6 +419,11 @@ static HotKey* GetHotKey(HotKey* hotkey, size_t hotkeyCount, bool repeat) {
 
 	ImGuiIO& io = ImGui::GetIO();
 
+	if (io.WantTextInput) {
+		// Если ImGui захватывает клавиатуру, то не обрабатываем горячие клавиши
+		return nullptr;
+	}
+
 	// Добавляем модификаторы первыми, так как они имеют наименьший порядок
 	if (io.KeyCtrl) {
 		scanCodes[scanCodeCount] = MapVirtualKeyA(VK_CONTROL, MAPVK_VK_TO_VSC);
@@ -471,56 +448,28 @@ static HotKey* GetHotKey(HotKey* hotkey, size_t hotkeyCount, bool repeat) {
 		if (ImGui::IsKeyDown((ImGuiKey)i)) {
 			int vk = 0;
 			switch ((ImGuiKey)i) {
-			case ImGuiKey_Tab:
-				vk = VK_TAB;
-				break;
-			case ImGuiKey_LeftArrow:
-				vk = VK_LEFT;
-				break;
-			case ImGuiKey_RightArrow:
-				vk = VK_RIGHT;
-				break;
-			case ImGuiKey_UpArrow:
-				vk = VK_UP;
-				break;
-			case ImGuiKey_DownArrow:
-				vk = VK_DOWN;
-				break;
-			case ImGuiKey_PageUp:
-				vk = VK_PRIOR;
-				break;
-			case ImGuiKey_PageDown:
-				vk = VK_NEXT;
-				break;
-			case ImGuiKey_Home:
-				vk = VK_HOME;
-				break;
-			case ImGuiKey_End:
-				vk = VK_END;
-				break;
-			case ImGuiKey_Delete:
-				vk = VK_DELETE;
-				break;
-			case ImGuiKey_Backspace:
-				vk = VK_BACK;
-				break;
-			case ImGuiKey_Enter:
-				vk = VK_RETURN;
-				break;
-			case ImGuiKey_Escape:
-				vk = VK_ESCAPE;
-				break;
-			case ImGuiKey_Space:
-				vk = VK_SPACE;
-				break;
-			default:
-				if (i >= ImGuiKey_A && i <= ImGuiKey_Z)
-					vk = 'A' + (i - ImGuiKey_A);
-				else if (i >= ImGuiKey_0 && i <= ImGuiKey_9)
-					vk = '0' + (i - ImGuiKey_0);
-				else if (i >= ImGuiKey_F1 && i <= ImGuiKey_F12)
-					vk = VK_F1 + (i - ImGuiKey_F1);
-				break;
+				case ImGuiKey_Tab: vk = VK_TAB; break;
+				case ImGuiKey_LeftArrow: vk = VK_LEFT; break;
+				case ImGuiKey_RightArrow: vk = VK_RIGHT; break;
+				case ImGuiKey_UpArrow: vk = VK_UP; break;
+				case ImGuiKey_DownArrow: vk = VK_DOWN; break;
+				case ImGuiKey_PageUp: vk = VK_PRIOR; break;
+				case ImGuiKey_PageDown: vk = VK_NEXT; break;
+				case ImGuiKey_Home: vk = VK_HOME; break;
+				case ImGuiKey_End: vk = VK_END; break;
+				case ImGuiKey_Delete: vk = VK_DELETE; break;
+				case ImGuiKey_Backspace: vk = VK_BACK; break;
+				case ImGuiKey_Enter: vk = VK_RETURN; break;
+				case ImGuiKey_Escape: vk = VK_ESCAPE; break;
+				case ImGuiKey_Space: vk = VK_SPACE; break;
+				default:
+					if (i >= ImGuiKey_A && i <= ImGuiKey_Z)
+						vk = 'A' + (i - ImGuiKey_A);
+					else if (i >= ImGuiKey_0 && i <= ImGuiKey_9)
+						vk = '0' + (i - ImGuiKey_0);
+					else if (i >= ImGuiKey_F1 && i <= ImGuiKey_F12)
+						vk = VK_F1 + (i - ImGuiKey_F1);
+					break;
 			}
 			if (vk != 0) {
 				int imKey = MapVirtualKeyA(vk, MAPVK_VK_TO_VSC);

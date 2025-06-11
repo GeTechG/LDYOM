@@ -26,6 +26,11 @@ void Hotkeys::initialize() {
 	}
 }
 
+void Hotkeys::shutdown() {
+	this->m_hotkeys.clear();
+	this->m_hotkeyCallbacks.clear();
+}
+
 void Hotkeys::saveHotkey(int index) {
 	std::array<char, 128> hotkey_str;
 	ImHotKey::GetHotKeyLib(this->m_hotkeys[index].functionKeys, hotkey_str.data(), hotkey_str.size());

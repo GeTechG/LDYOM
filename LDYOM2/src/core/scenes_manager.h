@@ -12,6 +12,7 @@ class ScenesManager {
 	std::vector<SceneInfo> m_scenesInfo;
 	std::unique_ptr<Scene> m_currentScene;
 	mutable std::shared_mutex m_sceneMutex;
+	bool m_isRestartGame = false;
 
 	ScenesManager();
 
@@ -30,12 +31,16 @@ class ScenesManager {
 
 	void onUpdate(float deltaTime);
 	void resetCurrentScene();
+	void unloadCurrentScene();
 
 	void loadScene(std::string_view sceneId);
 	void removeScene(std::string_view sceneId);
 	void saveCurrentScene();
 
 	void rewriteSceneInfo(std::string_view sceneId);
+
+	bool isRestartGame() const { return m_isRestartGame; }
+	void setRestartGame(bool value) { m_isRestartGame = value; }
 
   private:
 	void loadSceneInternal(std::string_view sceneId);

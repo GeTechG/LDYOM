@@ -210,3 +210,7 @@ void ScenesManager::resetCurrentScene() {
 		entity->reset();
 	}
 }
+
+void ScenesManager::unloadCurrentScene() {
+	m_currentScene = std::make_unique<Scene>(Scene{.info = SceneInfo{.name = _("scenes.default_scene_name")}});
+}

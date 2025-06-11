@@ -2,16 +2,15 @@
 #include "addons_manager.h"
 #include "entities_manager.h"
 #include "hotkeys.h"
+#include "imgui_hook.h"
 #include "localization.h"
 #include "lua_manager.h"
 #include "models_manager.h"
 #include "objectives_manager.h"
 #include "project_player.h"
-#include "render_hook.h"
 #include "settings.h"
 #include "textures_manager.h"
 #include <components_manager.h>
-#include <logger.h>
 #include <plugin.h>
 #include <projects_manager.h>
 #include <scenes_manager.h>
@@ -22,7 +21,6 @@
 #include <windows/init.h>
 
 void Application::initialize() {
-	Logger::Initialize();
 	LDYOM_INFO("LDYOM Application starting...");
 
 	try {
@@ -37,7 +35,8 @@ void Application::initialize() {
 		LuaManager::instance().initialize();
 		AddonsManager::instance().initialize();
 
-		HookImgui(renderFrames);
+		ImguiHook::setRenderFunc(renderFrames);
+		ImguiHook::dirtyObjectsFlag();
 
 		Hotkeys::instance().addHotkeyCallback("openEditor", []() {
 			const auto currentProjectIndex = ProjectsManager::instance().getCurrentProjectIndex();
@@ -79,14 +78,18 @@ void Application::shutdown() {
 	WindowManager::instance().shutdown();
 	LDYOM_INFO("Window Manager shutdown");
 
-	UnhookImgui();
-	LDYOM_INFO("ImGui unhooked");
+	ImguiHook::setRenderFunc(nullptr);
+	ImguiHook::SetMouseState(false);
+	ImguiHook::SetControlEnabled(true);
+	LDYOM_INFO("ImGui Hook render function cleared");
 
 	Localization::instance().shutdown();
+	Hotkeys::instance().shutdown();
 	LuaManager::instance().shutdown();
 	TaskManager::instance().shutdown();
-
-	Logger::Shutdown();
+	ScenesManager::instance().setRestartGame(true);
+	ProjectsManager::instance().shutdown();
+	ScenesManager::instance().setRestartGame(false);
 }
 
 void Application::process() {

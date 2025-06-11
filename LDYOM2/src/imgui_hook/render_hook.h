@@ -3,9 +3,7 @@
 
 #include <functional>
 
-void HookImgui(std::function<void()> renderFunc);
-void UnhookImgui();
-void MouseShow(bool show);
-void ControlEnabled(bool enable);
+void ImGuiHook();
+void ImGuiHookRemove();
 
 #endif // IMGUI_HOOK_H

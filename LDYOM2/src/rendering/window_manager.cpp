@@ -1,9 +1,9 @@
 #include "window_manager.h"
 #include "plugin.h"
-#include "render_hook.h"
 #include <CMenuManager.h>
 #include <format>
 #include <imgui.h>
+#include <imgui_hook.h>
 #include <logger.h>
 #include <ranges>
 
@@ -167,7 +167,7 @@ void WindowManager::processHotkeys() {
 			continue;
 		}
 
-		if (ImGui::IsKeyPressed(hotkeyInfo.key, false)) {
+		if (ImGui::IsKeyPressed(hotkeyInfo.key, false) && !io.WantTextInput) {
 			const auto window = this->getWindow(windowId);
 			if (window) {
 				if (window.value()->isOpen() && window.value()->isFocused())
@@ -208,14 +208,14 @@ void WindowManager::render() {
 	const bool isLockPlayerControl = std::ranges::any_of(
 		m_windows, [](const auto& pair) { return pair.second->isNeedLockPlayerControl() && pair.second->isOpen(); });
 
-	ControlEnabled(!isLockPlayerControl);
+	ImguiHook::SetControlEnabled(!isLockPlayerControl);
 
 	static bool mouseShown = false;
 	const bool isSomeWindowOpen = this->isAnyWindowOpen();
 	const bool isRenderWindows = isSomeWindowOpen && !FrontEndMenuManager.m_bMenuActive;
 	if (mouseShown != isRenderWindows) {
 		mouseShown = isRenderWindows;
-		MouseShow(mouseShown);
+		ImguiHook::SetMouseState(mouseShown);
 	}
 
 	if (isRenderWindows) {

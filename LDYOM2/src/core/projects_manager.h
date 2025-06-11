@@ -12,6 +12,7 @@ class ProjectsManager {
 	void operator=(const ProjectsManager&) = delete;
 
 	void initialize();
+	void shutdown();
 	std::vector<ProjectInfo>& getProjects();
 	std::optional<ProjectInfo*> getCurrentProject();
 	int getCurrentProjectIndex() const noexcept;
