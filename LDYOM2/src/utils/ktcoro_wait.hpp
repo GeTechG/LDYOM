@@ -4,6 +4,7 @@
 #include <list>
 #include <logger.h>
 #include <mutex>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -110,6 +111,7 @@ class ktcoro_tasklist {
 				tasks_to_complete.erase(it);
 			}
 		}
+		deleted_tasks.insert(task_addr);
 	}
 
 	void clear_all_tasks() {
@@ -129,6 +131,9 @@ class ktcoro_tasklist {
 	std::vector<void*> tasks_to_remove;
 	std::vector<void*> tasks_to_complete;
 	std::mutex deferred_ops_mutex;
+
+  public:
+	std::unordered_set<void*> deleted_tasks;
 };
 
 struct ktwait {

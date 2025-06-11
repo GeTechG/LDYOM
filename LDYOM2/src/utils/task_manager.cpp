@@ -116,9 +116,10 @@ void TaskManager::updateTaskStates() {
 				taskStates[key] = TaskState::Running;
 			}
 
-			if (coro_handle.done()) {
+			if (coro_handle.done() || taskList->deleted_tasks.contains(coro_handle.address())) {
 				taskStates[key] = TaskState::Completed;
 				keysToRemove.push_back(key);
+				taskList->deleted_tasks.erase(coro_handle.address());
 			}
 		}
 	}
