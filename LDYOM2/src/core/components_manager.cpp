@@ -1,10 +1,10 @@
 #include "components_manager.h"
 #include <components/actor.h>
+#include <components/actor_animation.h>
 #include <components/actor_behaviour.h>
 #include <components/health_bar.h>
 #include <components/objective_specific.h>
 #include <components/weapons.h>
-
 
 ComponentsManager& ComponentsManager::instance() {
 	static ComponentsManager instance;
@@ -26,4 +26,5 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::HealthBar>();
 	registerComponentBuilder<components::Weapons>();
 	registerComponentBuilder<components::ActorBehaviour>();
+	registerComponentBuilder<components::ActorAnimation>();
 }
