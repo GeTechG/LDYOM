@@ -2,11 +2,11 @@
 #include <CPedModelInfo.h>
 #include <CPopulation.h>
 #include <fa_icons.h>
-#include <fmt/format.h>
 #include <imgui.h>
 #include <localization.h>
 #include <models_manager.h>
 #include <textures_manager.h>
+#include <fmt/format.h>
 
 bool PopupSkinSelector::isOpen = false;
 std::optional<ModelRenderer> PopupSkinSelector::m_modelRenderer = std::nullopt;
@@ -99,7 +99,7 @@ void PopupSkinSelector::renderPopup(const std::function<void(Skin)>& onSelectCal
 
 		if (ImGui::BeginChild("##skinsButtons", ImVec2(0.0f, 0.0f), true)) {
 			const int modelsCount =
-				special ? ModelsManager::GetPedSpecialModels().size() : ModelsManager::GetPedModels().size();
+				special ? ModelsManager::getPedSpecialModels().size() : ModelsManager::getPedModels().size();
 
 			const float availableWidthInWindow =
 				ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
@@ -107,23 +107,23 @@ void PopupSkinSelector::renderPopup(const std::function<void(Skin)>& onSelectCal
 
 			for (int i = 0; i < modelsCount; ++i) {
 				if (!special) {
-					const auto model = ModelsManager::GetPedModels()[i];
+					const auto model = ModelsManager::getPedModels()[i];
 					if (filteringPed(model))
 						continue;
 				}
 
 				ImGui::PushID(i);
 
-				auto icon = PopupSkinSelector::getModelIcon(Skin{
-					.model = special ? -1 : ModelsManager::GetPedModels()[i],
-					.special = special ? ModelsManager::GetPedSpecialModels()[i] : "",
+				auto icon = getModelIcon(Skin{
+					.model = special ? -1 : ModelsManager::getPedModels()[i],
+					.special = special ? ModelsManager::getPedSpecialModels()[i] : "",
 				});
 
 				if (icon->getTexture() == nullptr) {
 					icon = TexturesManager::instance().getTexture("SkinNoIcon").value();
 				}
 
-				auto size = ImVec2((float)icon->getWidth(), (float)icon->getHeight());
+				auto size = ImVec2(static_cast<float>(icon->getWidth()), static_cast<float>(icon->getHeight()));
 				size.x *= scale;
 				size.y *= scale;
 
@@ -138,16 +138,16 @@ void PopupSkinSelector::renderPopup(const std::function<void(Skin)>& onSelectCal
 
 				if (ImGui::ImageButton("", (ImTextureID)icon->getTexture(), size)) {
 					onSelectCallback(Skin{
-						.model = special ? -1 : ModelsManager::GetPedModels()[i],
-						.special = special ? ModelsManager::GetPedSpecialModels()[i] : "",
+						.model = special ? -1 : ModelsManager::getPedModels()[i],
+						.special = special ? ModelsManager::getPedSpecialModels()[i] : "",
 					});
 					ImGui::CloseCurrentPopup();
 				}
 				if (ImGui::IsItemHovered()) {
 					if (special) {
-						ImGui::SetTooltip("%s", ModelsManager::GetPedSpecialModels()[i].c_str());
+						ImGui::SetTooltip("%s", ModelsManager::getPedSpecialModels()[i].c_str());
 					} else {
-						ImGui::SetTooltip("ID: %d", ModelsManager::GetPedModels()[i]);
+						ImGui::SetTooltip("ID: %d", ModelsManager::getPedModels()[i]);
 					}
 				}
 

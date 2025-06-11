@@ -1,10 +1,10 @@
 #include "weapon_selector.h"
 #include <fa_icons.h>
-#include <fmt/format.h>
 #include <imgui.h>
 #include <localization.h>
 #include <models_manager.h>
 #include <textures_manager.h>
+#include <fmt/format.h>
 
 std::optional<ModelRenderer> PopupWeaponSelector::m_modelRenderer = std::nullopt;
 
@@ -45,7 +45,7 @@ void PopupWeaponSelector::renderPopup(std::string_view title, bool* open,
 		ImGui::DragFloat("##scale", &scale, 0.01f, 0.1f, NULL, "%.2f");
 
 		if (ImGui::BeginChild("##weaponsButtons", ImVec2(0.0f, 0.0f), true)) {
-			const int modelsCount = ModelsManager::GetWeaponIds().size();
+			const int modelsCount = ModelsManager::getWeaponIds().size();
 
 			const float availableWidthInWindow =
 				ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
@@ -54,7 +54,7 @@ void PopupWeaponSelector::renderPopup(std::string_view title, bool* open,
 			for (int i = 0; i < modelsCount; ++i) {
 				ImGui::PushID(i);
 
-				auto icon = getWeaponIcon(ModelsManager::GetWeaponIds()[i]);
+				auto icon = getWeaponIcon(ModelsManager::getWeaponIds()[i]);
 
 				if (icon->getTexture() == nullptr) {
 					icon = TexturesManager::instance().getTexture("50px-Weapon-unk-hd").value();
@@ -74,11 +74,11 @@ void PopupWeaponSelector::renderPopup(std::string_view title, bool* open,
 				}
 
 				if (ImGui::ImageButton("", (ImTextureID)icon->getTexture(), size)) {
-					onSelectCallback(ModelsManager::GetWeaponIds()[i]);
+					onSelectCallback(ModelsManager::getWeaponIds()[i]);
 					ImGui::CloseCurrentPopup();
 				}
 				if (ImGui::IsItemHovered()) {
-					auto weaponId = ModelsManager::GetWeaponIds()[i];
+					auto weaponId = ModelsManager::getWeaponIds()[i];
 					ImGui::SetTooltip("%s, ID: %d", CWeaponInfo::ms_aWeaponNames[weaponId], weaponId);
 				}
 

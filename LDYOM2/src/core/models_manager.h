@@ -1,22 +1,31 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 class ModelsManager {
 	static std::vector<int> m_pedModels;
 	static std::vector<std::string> m_pedSpecialModels;
 	static std::vector<int> m_weaponIds;
+	static std::unordered_map<std::string, std::vector<std::string>> m_pedAnimations;
 
   public:
-	static const std::vector<int>& GetPedModels() { return m_pedModels; }
-	static const std::vector<std::string>& GetPedSpecialModels() { return m_pedSpecialModels; }
-	static const std::vector<int>& GetWeaponIds() { return m_weaponIds; }
+	static void loadData();
+	static const std::vector<int>& getPedModels() { return m_pedModels; }
+	static const std::vector<std::string>& getPedSpecialModels() { return m_pedSpecialModels; }
+	static const std::vector<int>& getWeaponIds() { return m_weaponIds; }
 
-	static void addPedModel(int modelId) { m_pedModels.push_back(modelId); }
-	static void addPedSpecialModel(std::string modelName) { m_pedSpecialModels.push_back(modelName); }
-	static void addWeaponId(int weaponId) { m_weaponIds.push_back(weaponId); }
+	static const std::unordered_map<std::string, std::vector<std::string>>& getPedAnimations();
+
+	static void addPedModel(const int modelId) { m_pedModels.push_back(modelId); }
+	static void addPedSpecialModel(const std::string& modelName) { m_pedSpecialModels.push_back(modelName); }
+	static void addWeaponId(const int weaponId) { m_weaponIds.push_back(weaponId); }
+
+	static void addPedAnimation(const std::string& packName, const std::string& animName);
 
 	static bool validatePedModel(int modelId);
 	static bool validatePedSpecialModel(std::string modelName);
 	static bool validateWeaponId(int weaponId);
+
+	static bool validatePedAnimation(const std::string& packName, const std::string& animName);
 };

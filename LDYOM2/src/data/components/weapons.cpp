@@ -5,10 +5,10 @@
 #include <CStreaming.h>
 #include <CWeaponInfo.h>
 #include <entity.h>
-#include <fmt/format.h>
 #include <models_manager.h>
-#include <rendering/popups/weapon_selector.h>
 #include <textures_manager.h>
+#include <fmt/format.h>
+#include <rendering/popups/weapon_selector.h>
 #include <utils/imgui_configurate.h>
 
 void components::Weapons::sol_lua_register(sol::state_view lua_state) {
@@ -26,7 +26,7 @@ void components::Weapons::giveWeapons() {
 	if (actor && actor->ped) {
 		actor->ped->ClearWeapons();
 		if (this->isRandom) {
-			const auto weaponIds = ModelsManager::GetWeaponIds();
+			const auto weaponIds = ModelsManager::getWeaponIds();
 			const int i = (std::rand() % (weaponIds.size() + 1)) - 1;
 			if (i >= 0) {
 				const auto weaponId = static_cast<eWeaponType>(weaponIds[i]);
@@ -190,8 +190,8 @@ void components::Weapons::editorRender() {
 					ImGui::SameLine(availableWidth * 0.35f);
 					{
 						auto icon = ModelsManager::validateWeaponId(weapon.weapon)
-						                ? PopupWeaponSelector::getWeaponIcon(weapon.weapon)
-						                : TexturesManager::instance().getTexture("50px-Weapon-unk-hd").value();
+							            ? PopupWeaponSelector::getWeaponIcon(weapon.weapon)
+							            : TexturesManager::instance().getTexture("50px-Weapon-unk-hd").value();
 						if (icon->getTexture() == nullptr) {
 							icon = TexturesManager::instance().getTexture("50px-Weapon-unk-hd").value();
 						}

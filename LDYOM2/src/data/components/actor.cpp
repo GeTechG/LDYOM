@@ -1,6 +1,6 @@
 #include "actor.h"
-#include "extensions/ScriptCommands.h"
 #include "objective_specific.h"
+#include "extensions/ScriptCommands.h"
 #include <CStreaming.h>
 #include <corecrt_math_defines.h>
 #include <entity.h>
@@ -8,7 +8,7 @@
 #include <string_utils.h>
 
 void components::Actor::sol_lua_register(sol::state_view lua_state) {
-	Actor::sol_lua_register_enum_DirtyFlags(lua_state);
+	sol_lua_register_enum_DirtyFlags(lua_state);
 	auto ut = lua_state.new_usertype<Actor>("ActorComponent");
 	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, isRandomModel, initialDirection, model,
 	                 specialModel, isSimpleType, pedType, health, headshotImmune, mustSurvive, ped, spawn, despawn);
@@ -88,7 +88,7 @@ void components::Actor::editorRender() {
 		ImGui::SetNextItemWidth(comboWidth);
 
 		if (isSpecialModel) {
-			auto& models = ModelsManager::GetPedSpecialModels();
+			auto& models = ModelsManager::getPedSpecialModels();
 			if (ImGui::BeginCombo("##specialModelCombo", specialModel.c_str())) {
 				for (auto& item : models) {
 					if (ImGui::Selectable(item.c_str(), item == specialModel)) {
@@ -99,7 +99,7 @@ void components::Actor::editorRender() {
 				ImGui::EndCombo();
 			}
 		} else {
-			auto& pedModels = ModelsManager::GetPedModels();
+			auto& pedModels = ModelsManager::getPedModels();
 			if (ImGui::BeginCombo("##regularModelCombo", std::to_string(model).c_str())) {
 				for (auto& item : pedModels) {
 					if (ImGui::Selectable(std::to_string(item).c_str(), item == model)) {
@@ -154,9 +154,9 @@ void components::Actor::editorRender() {
 			ImGui::EndCombo();
 		}
 	} else {
-		if (ImGui::BeginCombo("##pedType", to_string((ePedType)this->pedType))) {
+		if (ImGui::BeginCombo("##pedType", to_string(static_cast<ePedType>(this->pedType)))) {
 			for (int i = 0; i <= PED_TYPE_MISSION8; ++i) {
-				if (ImGui::Selectable(to_string((ePedType)i), this->pedType == i)) {
+				if (ImGui::Selectable(to_string(static_cast<ePedType>(i)), this->pedType == i)) {
 					this->pedType = i;
 				}
 			}
@@ -239,9 +239,9 @@ void components::Actor::spawn() {
 	if (this->isRandomModel) {
 		if (rand() % 100 < 50) {
 			model = -1; // use special model
-			specialModel = ModelsManager::GetPedSpecialModels()[rand() % ModelsManager::GetPedSpecialModels().size()];
+			specialModel = ModelsManager::getPedSpecialModels()[rand() % ModelsManager::getPedSpecialModels().size()];
 		} else {
-			model = ModelsManager::GetPedModels()[rand() % ModelsManager::GetPedModels().size()];
+			model = ModelsManager::getPedModels()[rand() % ModelsManager::getPedModels().size()];
 		}
 	}
 	if (model == -1 && ModelsManager::validatePedSpecialModel(specialModel)) {

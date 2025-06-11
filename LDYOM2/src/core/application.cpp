@@ -4,6 +4,7 @@
 #include "hotkeys.h"
 #include "localization.h"
 #include "lua_manager.h"
+#include "models_manager.h"
 #include "objectives_manager.h"
 #include "project_player.h"
 #include "render_hook.h"
@@ -20,7 +21,6 @@
 #include <window_manager.h>
 #include <windows/init.h>
 
-
 void Application::initialize() {
 	Logger::Initialize();
 	LDYOM_INFO("LDYOM Application starting...");
@@ -28,6 +28,7 @@ void Application::initialize() {
 	try {
 		Settings::instance().initialize();
 		Localization::instance().initialize();
+		ModelsManager::loadData();
 		Hotkeys::instance().initialize();
 		TexturesManager::instance().initialize();
 		WindowManager::instance().initialize();

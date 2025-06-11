@@ -1,10 +1,17 @@
 #include "models_manager.h"
 
+#include "paths.h"
+#include "nlohmann/json.hpp"
+
+#include <algorithm>
+#include <cctype>
+#include <filesystem>
+
 std::vector<int> ModelsManager::m_pedModels = {
-	0,   7,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,
-	30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  43,  44,  45,  46,  47,  48,  49,  50,  51,  52,  53,
-	54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  66,  67,  68,  69,  70,  71,  72,  73,  75,  76,  77,  78,
-	79,  80,  81,  82,  83,  84,  85,  87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97,  98,  99,  100, 101, 102,
+	0, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+	30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+	54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78,
+	79, 80, 81, 82, 83, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102,
 	103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 120, 121, 122, 123, 124, 125, 126,
 	127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 150,
 	151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173,
@@ -15,16 +22,40 @@ std::vector<int> ModelsManager::m_pedModels = {
 	276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288};
 
 std::vector<std::string> ModelsManager::m_pedSpecialModels = {
-	"andre",   "bbthin",  "bb",      "cat",     "cesar",   "claude",  "dwayne",  "emmet",   "forelli",
-	"janitor", "jethro",  "jizzy",   "hern",    "kendl",   "maccer",  "maddogg", "ogloc",   "paul",
-	"pulaski", "rose",    "ryder",   "ryder3",  "sindaco", "smoke",   "smokev",  "suzie",   "sweet",
-	"tbone",   "tenpen",  "torino",  "truth",   "wuzimu",  "zero",    "gangrl2", "copgrl1", "copgrl2",
-	"crogrl1", "crogrl2", "gungrl1", "gungrl2", "mecgrl2", "nurgrl2", "ryder2",  "cdeput",  "sfpdm1",
-	"lvpdm1",  "csbmydj", "psycho",  "csmech",  "csomost", "wmycd2"};
+	"andre", "bbthin", "bb", "cat", "cesar", "claude", "dwayne", "emmet", "forelli",
+	"janitor", "jethro", "jizzy", "hern", "kendl", "maccer", "maddogg", "ogloc", "paul",
+	"pulaski", "rose", "ryder", "ryder3", "sindaco", "smoke", "smokev", "suzie", "sweet",
+	"tbone", "tenpen", "torino", "truth", "wuzimu", "zero", "gangrl2", "copgrl1", "copgrl2",
+	"crogrl1", "crogrl2", "gungrl1", "gungrl2", "mecgrl2", "nurgrl2", "ryder2", "cdeput", "sfpdm1",
+	"lvpdm1", "csbmydj", "psycho", "csmech", "csomost", "wmycd2"};
 
-std::vector<int> ModelsManager::m_weaponIds = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15,
+std::vector<int> ModelsManager::m_weaponIds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                                                16, 17, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
                                                34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46};
+
+std::unordered_map<std::string, std::vector<std::string>> ModelsManager::m_pedAnimations;
+
+const auto ANIMATION_FILE_PATH = "animations.json";
+
+void ModelsManager::loadData() {
+	if (const std::filesystem::path animationsPath(LDYOM_PATH(ANIMATION_FILE_PATH)); exists(animationsPath)) {
+		std::ifstream file(animationsPath);
+		const auto json = nlohmann::json::parse(file);
+		json.get_to(m_pedAnimations);
+		file.close();
+	}
+}
+
+const std::unordered_map<std::string, std::vector<std::string>>& ModelsManager::getPedAnimations() {
+	return m_pedAnimations;
+}
+
+void ModelsManager::addPedAnimation(const std::string& packName, const std::string& animName) {
+	if (!m_pedAnimations.contains(packName)) {
+		m_pedAnimations[packName] = std::vector<std::string>();
+	}
+	m_pedAnimations[packName].push_back(animName);
+}
 
 bool ModelsManager::validatePedModel(int modelId) {
 	return std::ranges::find(m_pedModels, modelId) != m_pedModels.end();
@@ -36,4 +67,24 @@ bool ModelsManager::validatePedSpecialModel(std::string modelName) {
 
 bool ModelsManager::validateWeaponId(int weaponId) {
 	return std::ranges::find(m_weaponIds, weaponId) != m_weaponIds.end();
+}
+
+bool ModelsManager::validatePedAnimation(const std::string& packName, const std::string& animName) {
+	if (const auto it = m_pedAnimations.find(packName); it != m_pedAnimations.end()) {
+		const auto& animations = it->second;
+
+		std::string upperAnimName = animName;
+		std::ranges::transform(upperAnimName, upperAnimName.begin(),
+		                       [](const unsigned char c) { return std::toupper(c); });
+
+		const auto found = std::ranges::find_if(animations, [&upperAnimName](const std::string& animation) {
+			std::string upperAnimation = animation;
+			std::ranges::transform(upperAnimation, upperAnimation.begin(),
+			                       [](const unsigned char c) { return std::toupper(c); });
+			return upperAnimation == upperAnimName;
+		});
+
+		return found != animations.end();
+	}
+	return false;
 }
