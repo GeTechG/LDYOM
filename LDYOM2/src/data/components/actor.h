@@ -32,9 +32,12 @@ class Actor : public Component {
 
 	static constexpr auto TYPE = "actor";
 	static constexpr auto CATEGORY = "entities";
+
 	static std::shared_ptr<Actor> cast(std::shared_ptr<Component> component) {
 		return std::dynamic_pointer_cast<Actor>(component);
 	}
+
+	static Dependencies getDependencies() { return Dependencies{{}, true}; }
 
 	float initialDirection = 0.0f;
 	bool isRandomModel = false;

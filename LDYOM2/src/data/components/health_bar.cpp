@@ -84,3 +84,5 @@ void components::HealthBar::onReset() {
 		this->counterId.reset();
 	}
 }
+
+Dependencies components::HealthBar::getDependencies() { return Dependencies{{components::Actor::TYPE}, true}; }

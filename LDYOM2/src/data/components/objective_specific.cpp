@@ -1,7 +1,9 @@
 #include "objective_specific.h"
+#include "actor.h"
 #include "scenes_manager.h"
 #include <objectives_manager.h>
 #include <project_player.h>
+
 
 void components::ObjectiveSpecific::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<ObjectiveSpecific>("ObjectiveSpecificComponent");
@@ -113,3 +115,5 @@ void components::ObjectiveSpecific::onReset() {
 	this->spawnObjectiveConnection.reset();
 	this->despawnObjectiveConnection.reset();
 }
+
+Dependencies components::ObjectiveSpecific::getDependencies() { return Dependencies{{Actor::TYPE}, true}; }

@@ -139,3 +139,5 @@ void components::ActorAnimation::onReset() {
 	Component::onReset();
 	this->m_pedSpawnedConnection.reset();
 }
+
+Dependencies components::ActorAnimation::getDependencies() { return Dependencies{{Actor::TYPE}, true}; }

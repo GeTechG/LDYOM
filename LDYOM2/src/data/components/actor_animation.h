@@ -16,11 +16,13 @@ class ActorAnimation : public Component {
 
   public:
 	static constexpr auto TYPE = "actor_animation";
-	static constexpr auto CATEGORY = "entities";
+	static constexpr auto CATEGORY = "actor";
 
 	static std::shared_ptr<ActorAnimation> cast(std::shared_ptr<Component> component) {
 		return std::dynamic_pointer_cast<ActorAnimation>(component);
 	}
+
+	static Dependencies getDependencies();
 
 	std::string packName = "PED";
 	std::string animName = "IDLE_ARMED";

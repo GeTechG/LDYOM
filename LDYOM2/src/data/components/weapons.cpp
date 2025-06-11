@@ -5,10 +5,10 @@
 #include <CStreaming.h>
 #include <CWeaponInfo.h>
 #include <entity.h>
-#include <models_manager.h>
-#include <textures_manager.h>
 #include <fmt/format.h>
+#include <models_manager.h>
 #include <rendering/popups/weapon_selector.h>
+#include <textures_manager.h>
 #include <utils/imgui_configurate.h>
 
 void components::Weapons::sol_lua_register(sol::state_view lua_state) {
@@ -190,8 +190,8 @@ void components::Weapons::editorRender() {
 					ImGui::SameLine(availableWidth * 0.35f);
 					{
 						auto icon = ModelsManager::validateWeaponId(weapon.weapon)
-							            ? PopupWeaponSelector::getWeaponIcon(weapon.weapon)
-							            : TexturesManager::instance().getTexture("50px-Weapon-unk-hd").value();
+						                ? PopupWeaponSelector::getWeaponIcon(weapon.weapon)
+						                : TexturesManager::instance().getTexture("50px-Weapon-unk-hd").value();
 						if (icon->getTexture() == nullptr) {
 							icon = TexturesManager::instance().getTexture("50px-Weapon-unk-hd").value();
 						}
@@ -284,3 +284,5 @@ void components::Weapons::onReset() {
 	Component::onReset();
 	this->m_pedSpawnedConnection.reset();
 }
+
+Dependencies components::Weapons::getDependencies() { return {{Actor::TYPE}, true}; }

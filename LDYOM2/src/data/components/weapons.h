@@ -12,7 +12,6 @@
 namespace components {
 
 class Weapons : public Component {
-  private:
 	std::optional<rocket::scoped_connection> m_pedSpawnedConnection;
 
   public:
@@ -21,14 +20,17 @@ class Weapons : public Component {
 		GiveWeapons = 1 << 0,
 		UpdateDefaultWeapon = 1 << 1,
 	};
+
 	SOL_LUA_DEFINE_ENUM_NAMED(DirtyFlags, "WeaponsComponentDirtyFlags", None, GiveWeapons, UpdateDefaultWeapon);
 
 	static constexpr auto TYPE = "weapons";
-	static constexpr auto CATEGORY = "entities";
+	static constexpr auto CATEGORY = "actor";
 
 	static std::shared_ptr<Weapons> cast(std::shared_ptr<Component> component) {
 		return std::dynamic_pointer_cast<Weapons>(component);
 	}
+
+	static Dependencies getDependencies();
 
 	struct Weapon {
 		int weapon;
@@ -36,7 +38,7 @@ class Weapons : public Component {
 		NLOHMANN_DEFINE_TYPE_INTRUSIVE(Weapon, weapon, ammo)
 	};
 
-	int dirty = DirtyFlags::None;
+	int dirty = None;
 	std::vector<Weapon> weapons;
 	int defaultWeapon = 0;
 	int accuracy = 50;

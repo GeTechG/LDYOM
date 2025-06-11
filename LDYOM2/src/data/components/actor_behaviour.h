@@ -16,11 +16,13 @@ class ActorBehaviour : public Component {
 
   public:
 	static constexpr auto TYPE = "actor_behaviour";
-	static constexpr auto CATEGORY = "entities";
+	static constexpr auto CATEGORY = "actor";
 
 	static std::shared_ptr<ActorBehaviour> cast(std::shared_ptr<Component> component) {
 		return std::dynamic_pointer_cast<ActorBehaviour>(component);
 	}
+
+	static Dependencies getDependencies();
 
 	bool holdPosition = false;
 	bool directAttack = false;

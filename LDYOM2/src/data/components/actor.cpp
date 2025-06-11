@@ -1,10 +1,11 @@
 #include "actor.h"
-#include "objective_specific.h"
 #include "extensions/ScriptCommands.h"
+#include "objective_specific.h"
 #include <CStreaming.h>
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <project_player.h>
+#include <scenes_manager.h>
 #include <string_utils.h>
 
 void components::Actor::sol_lua_register(sol::state_view lua_state) {
@@ -279,8 +280,10 @@ void components::Actor::spawn() {
 
 	CPed* ped = CPools::GetPed(newPed);
 	this->ped = std::shared_ptr<CPed>(ped, [](CPed* ped) {
-		auto ref = CPools::GetPedRef(ped);
-		plugin::Command<plugin::Commands::DELETE_CHAR>(ref);
+		if (!ScenesManager::instance().isRestartGame()) {
+			auto ref = CPools::GetPedRef(ped);
+			plugin::Command<plugin::Commands::DELETE_CHAR>(ref);
+		}
 	});
 	updatePosition();
 	updateDirection();

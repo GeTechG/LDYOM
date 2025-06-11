@@ -5,6 +5,12 @@
 
 class Entity;
 
+struct Dependencies {
+	std::vector<std::string> components;
+	bool oneOf = false;
+	SOL_LUA_DEFINE_TYPE_INTRUSIVE(Dependencies, components, oneOf)
+};
+
 class Component {
   protected:
 	std::string tr(std::string_view key);

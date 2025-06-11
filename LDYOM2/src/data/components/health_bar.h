@@ -18,6 +18,8 @@ class HealthBar : public Component {
 		return std::dynamic_pointer_cast<HealthBar>(component);
 	}
 
+	static Dependencies getDependencies();
+
 	bool defaultTitle = true;
 	std::string title = "";
 

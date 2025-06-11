@@ -11,6 +11,7 @@
 #include <imgui.h>
 #include <imgui_widgets/imgui_widgets.h>
 #include <sstream>
+#include <unordered_set>
 
 CreateNewComponent::CreateNewComponent()
 	: ModalPopupWindow(_("create_new_component.title")) {
@@ -28,9 +29,17 @@ void CreateNewComponent::open() {
 	initializeCategories();
 	m_selectedType.clear();
 	m_searchQuery.fill(0);
+	// Invalidate cache when opening
+	m_dependenciesCacheValid = false;
 }
 
 void CreateNewComponent::renderContent(CreateNewComponent* window) {
+	// Check if selected entity changed to invalidate cache
+	auto entitiesWindow = WindowManager::instance().getWindowAs<EntitiesWindow>("entities");
+	int currentEntityIndex = (entitiesWindow.has_value()) ? entitiesWindow.value()->getSelectedEntityIndex() : -1;
+	if (window->m_cachedEntityIndex != currentEntityIndex) {
+		window->invalidateDependenciesCache();
+	}
 
 	window->renderSearchBox();
 
@@ -100,12 +109,13 @@ void CreateNewComponent::renderComponentTree() {
 }
 
 void CreateNewComponent::renderCategoryNode(const CategoryNode& node, int depth, const std::string& searchFilter) {
-	// Check if this category or any of its children match the search filter
-	bool shouldShowCategory = searchFilter.empty() || categoryMatchesFilter(node, searchFilter);
+	// Check if this category or any of its children have available components that match the search filter
+	bool shouldShowCategory = categoryMatchesFilter(node, searchFilter);
 
 	if (!shouldShowCategory) {
-		return; // Don't render this category if it doesn't match filter
+		return; // Don't render this category if it has no available components
 	}
+
 	// Don't render the root node itself, but render its components and subcategories
 	if (depth > 0) {
 		const std::string nodeId = fmt::format("category_{}_{}", node.name, depth);
@@ -149,6 +159,11 @@ void CreateNewComponent::renderComponentsInNode(const CategoryNode& node, const 
 			if (lowerComponentType.find(searchFilter) == std::string::npos) {
 				continue; // Skip this component if it doesn't match search
 			}
+		}
+
+		// Use cached dependency check
+		if (!isComponentAvailable(componentType)) {
+			continue;
 		}
 
 		const bool isSelected = (m_selectedType == componentType);
@@ -205,7 +220,7 @@ void CreateNewComponent::renderDescription() {
 				std::string localizedCategory = _(fmt::format("categories.{}", category));
 				ImGui::Text("%s%s", localizedCategory.c_str(), (i < categories.size() - 1) ? " -> " : "");
 				if (i < categories.size() - 1) {
-					ImGui::SameLine(0,0);
+					ImGui::SameLine(0, 0);
 				}
 			}
 		}
@@ -263,12 +278,23 @@ void CreateNewComponent::initializeCategories() {
 }
 
 bool CreateNewComponent::categoryMatchesFilter(const CategoryNode& node, const std::string& searchFilter) {
-	// Check if any component in this category matches the filter
+	// Check if any component in this category matches the filter AND is available
 	for (const std::string& componentType : node.componentTypes) {
-		std::string lowerComponentType = componentType;
-		// StringUtils::toLower(lowerComponentType);
+		// First check if component is available (dependencies satisfied)
+		if (!isComponentAvailable(componentType)) {
+			continue;
+		}
 
-		if (lowerComponentType.find(searchFilter) != std::string::npos) {
+		// Then check search filter if provided
+		if (!searchFilter.empty()) {
+			std::string lowerComponentType = componentType;
+			// StringUtils::toLower(lowerComponentType);
+
+			if (lowerComponentType.find(searchFilter) != std::string::npos) {
+				return true;
+			}
+		} else {
+			// No search filter, component is available
 			return true;
 		}
 	}
@@ -282,3 +308,73 @@ bool CreateNewComponent::categoryMatchesFilter(const CategoryNode& node, const s
 
 	return false;
 }
+
+void CreateNewComponent::updateAvailableComponents() const {
+	auto entitiesWindow = WindowManager::instance().getWindowAs<EntitiesWindow>("entities");
+	if (!entitiesWindow.has_value() || entitiesWindow.value()->getSelectedEntityIndex() < 0) {
+		m_availableComponentsSet.clear();
+		m_dependenciesCacheValid = true;
+		m_cachedEntityIndex = -1;
+		return;
+	}
+
+	int currentEntityIndex = entitiesWindow.value()->getSelectedEntityIndex();
+
+	// Check if cache is still valid
+	if (m_dependenciesCacheValid && m_cachedEntityIndex == currentEntityIndex) {
+		return;
+	}
+
+	// Clear and rebuild cache
+	m_availableComponentsSet.clear();
+	m_cachedEntityIndex = currentEntityIndex;
+
+	auto& entity = EntitiesManager::instance().getUnsafeEntity(currentEntityIndex);
+
+	// Get current entity's component types for faster lookup
+	std::unordered_set<std::string> entityComponentTypes;
+	for (const auto& component : entity.getComponents()) {
+		entityComponentTypes.insert(component->getType());
+	}
+
+	auto& componentBuilders = ComponentsManager::instance().getComponentBuilders();
+
+	// Check all component types for availability
+	for (const auto& [componentType, builderData] : componentBuilders) {
+		bool isAvailable = true;
+
+		if (!builderData.dependencies.components.empty()) {
+			if (builderData.dependencies.oneOf) {
+				// Check if at least one dependency is satisfied
+				bool oneOfSatisfied =
+					std::any_of(builderData.dependencies.components.begin(), builderData.dependencies.components.end(),
+				                [&entityComponentTypes](const std::string& dep) {
+									return entityComponentTypes.find(dep) != entityComponentTypes.end();
+								});
+				isAvailable = oneOfSatisfied;
+			} else {
+				// Check if all dependencies are satisfied
+				bool allSatisfied =
+					std::all_of(builderData.dependencies.components.begin(), builderData.dependencies.components.end(),
+				                [&entityComponentTypes](const std::string& dep) {
+									return entityComponentTypes.find(dep) != entityComponentTypes.end();
+								});
+				isAvailable = allSatisfied;
+			}
+		}
+
+		if (isAvailable) {
+			m_availableComponentsSet.insert(componentType);
+		}
+	}
+
+	m_dependenciesCacheValid = true;
+}
+
+bool CreateNewComponent::isComponentAvailable(const std::string& componentType) const {
+	updateAvailableComponents();
+
+	return m_availableComponentsSet.find(componentType) != m_availableComponentsSet.end();
+}
+
+void CreateNewComponent::invalidateDependenciesCache() const { m_dependenciesCacheValid = false; }

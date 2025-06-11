@@ -23,6 +23,8 @@ class ObjectiveSpecific : public Component {
 		return std::dynamic_pointer_cast<ObjectiveSpecific>(component);
 	}
 
+	static Dependencies getDependencies();
+
 	std::string spawnObjective = "";
 	std::string despawnObjective = "";
 

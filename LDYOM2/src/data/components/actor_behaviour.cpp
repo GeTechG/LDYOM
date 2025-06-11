@@ -84,3 +84,5 @@ void components::ActorBehaviour::onReset() {
 	Component::onReset();
 	this->m_pedSpawnedConnection.reset();
 }
+
+Dependencies components::ActorBehaviour::getDependencies() { return Dependencies{{Actor::TYPE}, true}; }
