@@ -2,6 +2,7 @@
 #include <components/actor.h>
 #include <components/actor_animation.h>
 #include <components/actor_behaviour.h>
+#include <components/actor_enter_to_vehicle.h>
 #include <components/actor_move_by_points.h>
 #include <components/health_bar.h>
 #include <components/objective_specific.h>
@@ -30,4 +31,5 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::ActorBehaviour>();
 	registerComponentBuilder<components::ActorAnimation>();
 	registerComponentBuilder<components::ActorMoveByPoints>();
+	registerComponentBuilder<components::ActorEnterToVehicle>();
 }
