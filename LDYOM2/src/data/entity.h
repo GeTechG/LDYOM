@@ -4,7 +4,9 @@
 #include <nlohmann/json.hpp>
 #include <sol/sol.hpp>
 #include <string>
+#include <uuid_wrap.h>
 #include <vector>
+
 
 class Component;
 
@@ -14,6 +16,7 @@ class Entity {
 
   public:
 	std::string name;
+	uuids::uuid id = uuids::uuid_system_generator{}();
 	std::array<float, 3> position = {0.0f, 0.0f, 0.0f};
 	std::array<float, 3> rotation = {0.0f, 0.0f, 0.0f};
 	std::array<float, 3> scale = {1.0f, 1.0f, 1.0f};

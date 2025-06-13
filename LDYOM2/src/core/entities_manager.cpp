@@ -7,7 +7,6 @@
 #include <plugin.h>
 #include <stdexcept>
 
-
 EntitiesManager& EntitiesManager::instance() {
 	static EntitiesManager instance;
 	return instance;
@@ -83,6 +82,18 @@ void EntitiesManager::moveEntity(int fromIndex, int toIndex) {
 	if (!utils::moveInVector(entities, fromIndex, toIndex)) {
 		LDYOM_ERROR("Failed to move entity from {} to {}", fromIndex, toIndex);
 	}
+}
+
+std::vector<Entity*> EntitiesManager::getEntitiesWithComponent(const std::string_view type) {
+	auto& currentScene = ScenesManager::instance().getUnsafeCurrentScene();
+	auto& entities = currentScene.entities;
+	std::vector<Entity*> result;
+	for (auto& entity : entities) {
+		if (entity->hasComponent(type)) {
+			result.push_back(entity.get());
+		}
+	}
+	return result;
 }
 
 void EntitiesManager::registerCoreEntityTemplates() {

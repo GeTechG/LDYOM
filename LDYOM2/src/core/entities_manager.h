@@ -32,6 +32,7 @@ class EntitiesManager {
 	Entity& getUnsafeEntity(int index);
 	void removeEntity(int index);
 	void moveEntity(int fromIndex, int toIndex);
+	std::vector<Entity*> getEntitiesWithComponent(const std::string_view type);
 
 	// Get all entity templates
 	const std::unordered_map<std::string, EntityTemplate>& getEntityTemplates() const { return m_entityTemplates; }
