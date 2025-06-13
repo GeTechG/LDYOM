@@ -40,8 +40,10 @@ template <> struct hash<HotkeyInfo> {
 class WindowManager {
   private:
 	std::unordered_map<std::string, std::unique_ptr<Window>> m_windows;
-	bool m_initialized = false;
+	std::unordered_map<std::string, std::function<void()>> m_backgroundRenderCallbacks;
 	std::unordered_map<HotkeyInfo, std::string> m_hotkeys;
+	bool m_initialized = false;
+	bool m_disableWindowRendering = false;
 
 	std::unordered_map<std::string, std::unique_ptr<Window>>::const_iterator
 	findWindow(std::string_view id) const noexcept;
@@ -72,6 +74,10 @@ class WindowManager {
 	bool isWindowOpen(std::string_view id) const;
 	template <typename T> std::optional<T*> getWindowAs(std::string_view id);
 	template <typename T> std::optional<const T*> getWindowAs(std::string_view id) const;
+	void disableWindowRendering(bool disable) { m_disableWindowRendering = disable; }
+
+	void addBackgroundRenderCallback(std::string_view id, std::function<void()> callback);
+	void removeBackgroundRenderCallback(std::string_view id);
 
 	bool isAnyWindowOpen() const;
 	void closeAllWindows();

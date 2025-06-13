@@ -114,6 +114,14 @@ bool WindowManager::isWindowOpen(std::string_view id) const {
 	return it != m_windows.end() && it->second->isOpen();
 }
 
+void WindowManager::addBackgroundRenderCallback(std::string_view id, std::function<void()> callback) {
+	m_backgroundRenderCallbacks[std::string(id)] = std::move(callback);
+}
+
+void WindowManager::removeBackgroundRenderCallback(std::string_view id) {
+	m_backgroundRenderCallbacks.erase(std::string(id));
+}
+
 bool WindowManager::isAnyWindowOpen() const {
 	checkInitialized();
 
@@ -208,14 +216,23 @@ void WindowManager::render() {
 	const bool isLockPlayerControl = std::ranges::any_of(
 		m_windows, [](const auto& pair) { return pair.second->isNeedLockPlayerControl() && pair.second->isOpen(); });
 
-	ImguiHook::SetControlEnabled(!isLockPlayerControl);
+	ImguiHook::SetControlEnabled(!isLockPlayerControl && !m_disableWindowRendering);
 
 	static bool mouseShown = false;
 	const bool isSomeWindowOpen = this->isAnyWindowOpen();
-	const bool isRenderWindows = isSomeWindowOpen && !FrontEndMenuManager.m_bMenuActive;
+	const bool isRenderWindows = isSomeWindowOpen && !FrontEndMenuManager.m_bMenuActive && !m_disableWindowRendering;
 	if (mouseShown != isRenderWindows) {
 		mouseShown = isRenderWindows;
 		ImguiHook::SetMouseState(mouseShown);
+	}
+	if (!FrontEndMenuManager.m_bMenuActive) {
+		auto keys = m_backgroundRenderCallbacks | std::views::keys | std::ranges::to<std::vector>();
+		for (const auto& id : keys) {
+			auto it = m_backgroundRenderCallbacks.find(id);
+			if (it != m_backgroundRenderCallbacks.end()) {
+				it->second();
+			}
+		}
 	}
 
 	if (isRenderWindows) {
