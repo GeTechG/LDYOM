@@ -1,5 +1,5 @@
 #include "actor_random_spawn.h"
-#include "actor.h"
+#include "components/actor.h"
 #include "entity.h"
 #include "extensions/ScriptCommands.h"
 #include <in_game/actor_paths_editing.h>

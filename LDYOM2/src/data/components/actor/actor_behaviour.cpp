@@ -1,5 +1,5 @@
 #include "actor_behaviour.h"
-#include "actor.h"
+#include "components/actor.h"
 #include "entity.h"
 #include "extensions/ScriptCommands.h"
 #include <project_player.h>

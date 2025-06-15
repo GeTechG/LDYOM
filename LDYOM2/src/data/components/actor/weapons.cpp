@@ -1,7 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "weapons.h"
-#include "actor.h"
-
+#include "components/actor.h"
 #include <CStreaming.h>
 #include <CWeaponInfo.h>
 #include <entity.h>

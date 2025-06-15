@@ -1,13 +1,14 @@
 #include "actor_enter_to_vehicle.h"
-#include "actor.h"
+#include "components/actor.h"
+#include "components/vehicle.h"
 #include "entity.h"
 #include "extensions/ScriptCommands.h"
-#include "vehicle.h"
 #include <entities_manager.h>
 #include <in_game/actor_paths_editing.h>
 #include <project_player.h>
 #include <scenes_manager.h>
 #include <window_manager.h>
+
 
 void components::ActorEnterToVehicle::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<ActorEnterToVehicle>("ActorEnterToVehicleComponent");

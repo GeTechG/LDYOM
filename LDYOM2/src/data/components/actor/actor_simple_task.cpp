@@ -1,5 +1,5 @@
 #include "actor_simple_task.h"
-#include "actor.h"
+#include "components/actor.h"
 #include "entity.h"
 #include "extensions/ScriptCommands.h"
 #include <project_player.h>
