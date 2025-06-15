@@ -45,6 +45,7 @@ class Weapons : public Component {
 	bool isRandom = false;
 
 	Weapons();
+	~Weapons() override;
 
 	void giveWeapons();
 	void updateDefaultWeapon();

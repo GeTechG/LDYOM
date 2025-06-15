@@ -21,6 +21,15 @@ void components::Weapons::sol_lua_register(sol::state_view lua_state) {
 components::Weapons::Weapons()
 	: Component(TYPE) {}
 
+components::Weapons::~Weapons() {
+	if (m_pedSpawnedConnection) {
+		const auto actor = Actor::cast(this->entity->getComponent(Actor::TYPE));
+		if (actor && actor->ped) {
+			actor->dirty |= Actor::DirtyFlags::Model;
+		}
+	}
+}
+
 void components::Weapons::giveWeapons() {
 	const auto actor = Actor::cast(this->entity->getComponent(Actor::TYPE));
 	if (actor && actor->ped) {
