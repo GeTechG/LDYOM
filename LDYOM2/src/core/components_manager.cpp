@@ -4,10 +4,10 @@
 #include <components/actor_behaviour.h>
 #include <components/actor_enter_to_vehicle.h>
 #include <components/actor_move_by_points.h>
+#include <components/actor_simple_task.h>
 #include <components/health_bar.h>
 #include <components/objective_specific.h>
 #include <components/weapons.h>
-
 
 ComponentsManager& ComponentsManager::instance() {
 	static ComponentsManager instance;
@@ -32,4 +32,5 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::ActorAnimation>();
 	registerComponentBuilder<components::ActorMoveByPoints>();
 	registerComponentBuilder<components::ActorEnterToVehicle>();
+	registerComponentBuilder<components::ActorSimpleTask>();
 }
