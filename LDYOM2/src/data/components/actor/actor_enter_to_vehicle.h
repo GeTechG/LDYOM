@@ -14,6 +14,12 @@ class ActorEnterToVehicle : public Component {
   private:
 	std::optional<rocket::scoped_connection> m_pedSpawnedConnection;
 
+	std::shared_ptr<components::Vehicle> findTargetVehicle(std::shared_ptr<components::Actor> actor);
+	std::shared_ptr<components::Vehicle> findNearestVehicle(std::shared_ptr<components::Actor> actor);
+	std::shared_ptr<components::Vehicle> findVehicleById();
+	void enterVehicle(std::shared_ptr<components::Actor> actor, std::shared_ptr<components::Vehicle> vehicle);
+	void renderVehicleSelection(float availableWidth, float labelWidth);
+
   public:
 	static constexpr auto TYPE = "actor_enter_to_vehicle";
 	static constexpr auto CATEGORY = "actor";
