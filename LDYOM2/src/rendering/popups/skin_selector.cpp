@@ -2,11 +2,11 @@
 #include <CPedModelInfo.h>
 #include <CPopulation.h>
 #include <fa_icons.h>
+#include <fmt/format.h>
 #include <imgui.h>
 #include <localization.h>
 #include <models_manager.h>
 #include <textures_manager.h>
-#include <fmt/format.h>
 
 bool PopupSkinSelector::isOpen = false;
 std::optional<ModelRenderer> PopupSkinSelector::m_modelRenderer = std::nullopt;
@@ -24,7 +24,8 @@ struct FilterPed {
 	bool emergency = true;
 } filterPed;
 
-inline void filterPopup() {
+namespace {
+void filterPopup() {
 	if (ImGui::BeginPopup("filter")) {
 		if (ImGui::MenuItem(_("skin_selector.male").c_str(), nullptr, filterPed.male))
 			filterPed.male = !filterPed.male;
@@ -38,6 +39,7 @@ inline void filterPopup() {
 		ImGui::EndPopup();
 	}
 }
+} // namespace
 
 bool PopupSkinSelector::filteringPed(int model) {
 	const unsigned pedType = reinterpret_cast<CPedModelInfo*>(CModelInfo::GetModelInfo(model))->m_nPedType;
