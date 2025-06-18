@@ -1,5 +1,6 @@
 #include "health_bar.h"
 #include "actor.h"
+#include "vehicle.h"
 #include <CText.h>
 #include <counter_service.h>
 #include <imgui_stdlib.h>
@@ -47,7 +48,7 @@ void components::HealthBar::onStart() {
 		if (this->entity->hasComponent(components::Actor::TYPE)) {
 			auto actor = components::Actor::cast(this->entity->getComponent(components::Actor::TYPE));
 			if (actor) {
-				actor->onSpawned.connect(
+				this->m_spawnedConnection = std::make_optional(actor->onSpawned.connect(
 					[this, actor]() {
 						auto title = this->defaultTitle ? std::string(TheText.Get("HEALTH")) : this->title;
 						if (actor->ped) {
@@ -57,9 +58,24 @@ void components::HealthBar::onStart() {
 								this->counterId = counterId;
 							}
 						}
-						rocket::current_connection().disconnect();
 					},
-					rocket::connection_flags::queued_connection);
+					rocket::connection_flags::queued_connection));
+			}
+		} else if (this->entity->hasComponent(components::Vehicle::TYPE)) {
+			auto vehicle = components::Vehicle::cast(this->entity->getComponent(components::Vehicle::TYPE));
+			if (vehicle) {
+				this->m_spawnedConnection = std::make_optional(vehicle->onSpawned.connect(
+					[this, vehicle]() {
+						auto title = this->defaultTitle ? std::string(TheText.Get("HEALTH")) : this->title;
+						if (vehicle->handle) {
+							auto initialValue = int(vehicle->health / 1000.0f * 100.0f);
+							auto counterId = CounterService::instance().addBarCounter(title, initialValue);
+							if (counterId >= 0) {
+								this->counterId = counterId;
+							}
+						}
+					},
+					rocket::connection_flags::queued_connection));
 			}
 		}
 	}
@@ -73,16 +89,24 @@ void components::HealthBar::onUpdate(float deltaTime) {
 				auto health = int(actor->ped->m_fHealth / actor->ped->m_fMaxHealth * 100.0f);
 				CounterService::instance().updateCounter(*this->counterId, health);
 			}
+		} else if (auto vehicle = components::Vehicle::cast(this->entity->getComponent(components::Vehicle::TYPE))) {
+			if (vehicle->handle && this->counterId) {
+				auto health = int(vehicle->handle->m_fHealth / 1000.0f * 100.0f);
+				CounterService::instance().updateCounter(*this->counterId, health);
+			}
 		}
 	}
 }
 
 void components::HealthBar::onReset() {
 	Component::onReset();
+	this->m_spawnedConnection.reset();
 	if (this->counterId) {
 		CounterService::instance().clearCounter(*this->counterId);
 		this->counterId.reset();
 	}
 }
 
-Dependencies components::HealthBar::getDependencies() { return Dependencies{{components::Actor::TYPE}, true}; }
+Dependencies components::HealthBar::getDependencies() {
+	return Dependencies{{components::Actor::TYPE, components::Vehicle::TYPE}, true};
+}

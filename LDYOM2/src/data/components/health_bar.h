@@ -5,11 +5,16 @@
 #include <imgui.h>
 #include <localization.h>
 #include <lua_define_type.h>
+#include <rocket.hpp>
 #include <string>
+
 
 namespace components {
 
 class HealthBar : public Component {
+  private:
+	std::optional<rocket::scoped_connection> m_spawnedConnection;
+
   public:
 	static constexpr auto TYPE = "health_bar";
 	static constexpr auto CATEGORY = "entities";
