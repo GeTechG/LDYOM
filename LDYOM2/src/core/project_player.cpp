@@ -15,11 +15,12 @@
 #include <common.h>
 #include <counter_service.h>
 #include <eFadeFlag.h>
+#include <extensions/ScriptCommands.h>
 #include <logger.h>
 #include <task_manager.h>
 #include <timer_service.h>
-#include <extensions/ScriptCommands.h>
 #include <utils/string_utils.h>
+
 
 ProjectPlayer::~ProjectPlayer() { this->projectTasklist->clear_all_tasks(); }
 
@@ -187,4 +188,15 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 		plugin::Command<plugin::Commands::CLEAR_AREA>(0.0f, 0.0f, 0.0f, 10000.f, 1);
 	}
 	ScenesManager::instance().resetCurrentScene();
+}
+
+std::vector<Entity*> ProjectPlayer::getEntities() {
+	std::vector<Entity*> entities;
+	if (isPlaying()) {
+		auto& currentScene = ScenesManager::instance().getCurrentScene();
+		for (const auto& entity : currentScene.entities) {
+			entities.push_back(entity.get());
+		}
+	}
+	return entities;
 }
