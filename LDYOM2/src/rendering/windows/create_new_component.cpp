@@ -363,6 +363,8 @@ void CreateNewComponent::updateAvailableComponents() const {
 			}
 		}
 
+		isAvailable &= !builderData.isSpecial;
+
 		if (isAvailable) {
 			m_availableComponentsSet.insert(componentType);
 		}

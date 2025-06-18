@@ -3,7 +3,7 @@
 #include "window.h"
 #include <vector>
 
-enum EntitiesWindowType { EntitiesWindowType_Actor, EntitiesWindowType_Car, EntitiesWindowType_Object };
+enum EntitiesWindowType { EntitiesWindowType_Actor, EntitiesWindowType_Vehicle, EntitiesWindowType_Object };
 
 class EntitiesWindow : public Window {
   private:
@@ -20,12 +20,19 @@ class EntitiesWindow : public Window {
 	};
 	std::vector<PendingComponentOperation> m_pendingComponentOperations;
 
+	bool filterByType(Entity& entity);
+
 	static void renderContent(EntitiesWindow* window);
 	static void renderEntity(EntitiesWindow* window, const Entity& entity, int i);
 
   public:
 	EntitiesWindow();
 	~EntitiesWindow() override = default;
+
+	void open() override {
+		Window::open();
+		m_selectedEntityIndex = -1;
+	}
 
 	int getSelectedEntityIndex() const { return m_selectedEntityIndex; }
 	void setSelectedEntityIndex(int index) { m_selectedEntityIndex = index; }

@@ -4,7 +4,6 @@
 #include <fa_icons.h>
 #include <imgui.h>
 #include <localization.h>
-#include <lua_define_type.h>
 #include <models_manager.h>
 #include <optional>
 #include <popups/skin_selector.h>
@@ -72,6 +71,7 @@ class Actor : public Component {
 	void despawn();
 	int getPedRef() const { return this->ped ? CPools::GetPedRef(this->ped.get()) : -1; }
 
+	static bool isSpecialComponent() { return true; }
 	static void sol_lua_register(sol::state_view lua_state);
 
 	static std::shared_ptr<Component> make() { return std::make_shared<Actor>(); }

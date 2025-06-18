@@ -4,6 +4,7 @@
 #include <CStreaming.h>
 #include <corecrt_math_defines.h>
 #include <entity.h>
+#include <lua_define_type.h>
 #include <project_player.h>
 #include <scenes_manager.h>
 #include <string_utils.h>
@@ -12,7 +13,8 @@ void components::Actor::sol_lua_register(sol::state_view lua_state) {
 	sol_lua_register_enum_DirtyFlags(lua_state);
 	auto ut = lua_state.new_usertype<Actor>("ActorComponent");
 	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, isRandomModel, initialDirection, model,
-	                 specialModel, isSimpleType, pedType, health, headshotImmune, mustSurvive, ped, spawn, despawn);
+	                 specialModel, isSimpleType, pedType, health, headshotImmune, mustSurvive, ped, spawn, despawn,
+	                 getPedRef);
 }
 
 components::Actor::Actor()
@@ -185,6 +187,16 @@ void components::Actor::editorRender() {
 
 void components::Actor::onStart() {
 	Component::onStart();
+	this->entity->setGetTransformCallbacks(
+		[this]() -> float* { return this->ped ? reinterpret_cast<float*>(&this->ped->GetMatrix()->pos) : nullptr; },
+		[this]() -> float* { return nullptr; }, [this]() -> float* { return nullptr; });
+	this->entity->setSetTransformCallbacks(
+		[this](float* position) {
+			if (this->ped) {
+				this->ped->SetPosn(position[0], position[1], position[2]);
+			}
+		},
+		[](float*) {}, [](float*) {});
 	if (!IS_PLAYING) {
 		spawn();
 	} else {
@@ -213,6 +225,8 @@ void components::Actor::onUpdate(float deltaTime) {
 
 void components::Actor::onReset() {
 	Component::onReset();
+	this->entity->clearGetTransformCallbacks();
+	this->entity->clearSetTransformCallbacks();
 	despawn();
 	this->onSpawnedConnection.reset();
 	this->onDespawnedConnection.reset();

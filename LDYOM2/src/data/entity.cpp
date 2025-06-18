@@ -15,6 +15,32 @@ std::shared_ptr<Component> Entity::getComponent(const std::string_view type) {
 	return nullptr;
 }
 
+void Entity::setGetTransformCallbacks(std::function<float*()> positionCallback,
+                                      std::function<float*()> rotationCallback, std::function<float*()> scaleCallback) {
+	getTransformCallbacks[0] = positionCallback;
+	getTransformCallbacks[1] = rotationCallback;
+	getTransformCallbacks[2] = scaleCallback;
+}
+void Entity::setSetTransformCallbacks(std::function<void(float*)> positionCallback,
+                                      std::function<void(float*)> rotationCallback,
+                                      std::function<void(float*)> scaleCallback) {
+	setTransformCallbacks[0] = positionCallback;
+	setTransformCallbacks[1] = rotationCallback;
+	setTransformCallbacks[2] = scaleCallback;
+}
+
+void Entity::updateSetTransformCallbacks() {
+	if (setTransformCallbacks[0]) {
+		setTransformCallbacks[0](this->position.data());
+	}
+	if (setTransformCallbacks[1]) {
+		setTransformCallbacks[1](this->rotation.data());
+	}
+	if (setTransformCallbacks[2]) {
+		setTransformCallbacks[2](this->scale.data());
+	}
+}
+
 void Entity::onUpdate(float deltaTime) {
 	for (auto& component : components) {
 		if (!component->isInitialized) {

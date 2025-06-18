@@ -3,6 +3,7 @@
 #include "logger.h"
 #include <algorithm>
 #include <component.h>
+#include <components_manager.h>
 #include <entities_manager.h>
 #include <fa_icons.h>
 #include <imgui_internal.h>
@@ -11,6 +12,15 @@
 #include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
 #include <window_manager.h>
+
+bool EntitiesWindow::filterByType(Entity& entity) {
+	switch (m_windowType) {
+		case EntitiesWindowType_Actor: return entity.hasComponent("actor");
+		case EntitiesWindowType_Vehicle: return entity.hasComponent("vehicle");
+		case EntitiesWindowType_Object: return entity.hasComponent("object");
+		default: return false;
+	}
+}
 
 void EntitiesWindow::renderContent(EntitiesWindow* window) {
 	const ImVec2 screenScale = ImGuiConfigurate::getScreenScale();
@@ -36,9 +46,9 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 						EntitiesManager::instance().addNewEntityFromTemplate("actor");
 						break;
 					}
-				case EntitiesWindowType_Car:
+				case EntitiesWindowType_Vehicle:
 					{
-						EntitiesManager::instance().addNewEntityFromTemplate("car");
+						EntitiesManager::instance().addNewEntityFromTemplate("vehicle");
 						break;
 					}
 				case EntitiesWindowType_Object:
@@ -70,6 +80,11 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 		}
 
 		for (int i = 0; i < static_cast<int>(entities.size()); i++) {
+
+			if (!window->filterByType(*entities[i])) {
+				continue; // Skip entities that don't match the filter
+			}
+
 			ImGui::PushID(i);
 
 			bool isSelected = (i == window->m_selectedEntityIndex);
@@ -182,8 +197,10 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 					ImGui::SameLine(availableWidth * 0.45f);
 					std::array<float, 3> position(entity.position);
 					ImGui::SetNextItemWidth(-1.f);
-					if (ImGui::InputFloat3("##pos", position.data())) {
-						EntitiesManager::instance().getUnsafeEntity(i).position = position;
+					if (ImGui::DragFloat3("##pos", position.data(), 0.1f, -10000.0f, 10000.0f)) {
+						auto& entity = EntitiesManager::instance().getUnsafeEntity(i);
+						entity.position = position;
+						entity.updateSetTransformCallbacks();
 					}
 
 					// Rotation
@@ -191,8 +208,10 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 					ImGui::SameLine(availableWidth * 0.45f);
 					std::array<float, 3> rotation(entity.rotation);
 					ImGui::SetNextItemWidth(-1.f);
-					if (ImGui::InputFloat3("##rot", rotation.data())) {
-						EntitiesManager::instance().getUnsafeEntity(i).rotation = rotation;
+					if (ImGui::DragFloat3("##rot", rotation.data(), 0.1f, -180.0f, 180.0f)) {
+						auto& entity = EntitiesManager::instance().getUnsafeEntity(i);
+						entity.rotation = rotation;
+						entity.updateSetTransformCallbacks();
 					}
 
 					// Scale
@@ -200,8 +219,10 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 					ImGui::SameLine(availableWidth * 0.45f);
 					std::array<float, 3> scale(entity.scale);
 					ImGui::SetNextItemWidth(-1.f);
-					if (ImGui::InputFloat3("##scale", scale.data())) {
-						EntitiesManager::instance().getUnsafeEntity(i).scale = scale;
+					if (ImGui::DragFloat3("##scale", scale.data(), 0.1f, -10000.0f, 10000.0f)) {
+						auto& entity = EntitiesManager::instance().getUnsafeEntity(i);
+						entity.scale = scale;
+						entity.updateSetTransformCallbacks();
 					}
 				}
 				ImGui::EndChild();
@@ -240,7 +261,11 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 				char menuPopupId[32];
 				sprintf(menuPopupId, "component_menu_%zu", j);
 				if (ImGui::BeginPopup(menuPopupId)) {
-					if (ImGui::MenuItem(_("entities.component_remove", ICON_FA_TRASH).c_str())) {
+					const auto& componentName = component->getType();
+					const auto isSpecial =
+						ComponentsManager::instance().getComponentBuilders().at(componentName).isSpecial;
+					if (ImGui::MenuItem(_("entities.component_remove", ICON_FA_TRASH).c_str(), nullptr, nullptr,
+					                    !isSpecial)) {
 						window->m_pendingComponentOperations.push_back(
 							{EntitiesWindow::PendingComponentOperation::Remove, j});
 					}

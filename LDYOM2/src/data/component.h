@@ -37,5 +37,6 @@ class Component {
 	virtual void onUpdate(float deltaTime) {}
 	virtual void onReset() { isInitialized = false; }
 
+	static bool isSpecialComponent() { return false; }
 	static void sol_lua_register(sol::state_view lua_state);
 };

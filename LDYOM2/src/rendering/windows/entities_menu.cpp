@@ -24,8 +24,8 @@ void EntitiesMenu::renderContent(Window* window) {
 	if (ImGui::Button(_("entities_menu.actors", ICON_FA_PERSON).c_str(), buttonSize)) {
 		openEntitiesWindow(EntitiesWindowType_Actor);
 	}
-	if (ImGui::Button(_("entities_menu.cars", ICON_FA_CARS).c_str(), buttonSize)) {
-		openEntitiesWindow(EntitiesWindowType_Car);
+	if (ImGui::Button(_("entities_menu.vehicles", ICON_FA_STEERING_WHEEL).c_str(), buttonSize)) {
+		openEntitiesWindow(EntitiesWindowType_Vehicle);
 	}
 	if (ImGui::Button(_("entities_menu.objects", ICON_FA_CUBES).c_str(), buttonSize)) {
 		openEntitiesWindow(EntitiesWindowType_Object);

@@ -9,6 +9,7 @@ struct ComponentBuilderData {
 	std::string type;
 	std::string category = "";
 	Dependencies dependencies;
+	bool isSpecial = false;
 	std::function<std::shared_ptr<Component>()> builder;
 };
 
@@ -36,6 +37,7 @@ template <class T> inline void ComponentsManager::registerComponentBuilder() {
 	m_componentsBuilders[T::TYPE] = {.type = T::TYPE,
 	                                 .category = T::CATEGORY,
 	                                 .dependencies = T::getDependencies(),
+	                                 .isSpecial = T::isSpecialComponent(),
 	                                 .builder = T::make};
 	{
 		auto luaState = LuaManager::instance().getState();

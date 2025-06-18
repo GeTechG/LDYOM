@@ -4,7 +4,6 @@
 #include <objectives_manager.h>
 #include <project_player.h>
 
-
 void components::ObjectiveSpecific::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<ObjectiveSpecific>("ObjectiveSpecificComponent");
 	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::ObjectiveSpecific, cast, spawnObjective,
@@ -116,4 +115,4 @@ void components::ObjectiveSpecific::onReset() {
 	this->despawnObjectiveConnection.reset();
 }
 
-Dependencies components::ObjectiveSpecific::getDependencies() { return Dependencies{{Actor::TYPE}, true}; }
+Dependencies components::ObjectiveSpecific::getDependencies() { return Dependencies{{}, true}; }
