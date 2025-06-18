@@ -1,13 +1,15 @@
 #pragma once
 #include "component.h"
+#include <CPools.h>
+#include <CVehicle.h>
 #include <components_manager.h>
 #include <fa_icons.h>
 #include <imgui.h>
 #include <localization.h>
 #include <lua_define_type.h>
+#include <memory>
 #include <models_manager.h>
 #include <optional>
-#include <popups/skin_selector.h>
 #include <rocket.hpp>
 #include <string>
 
@@ -39,10 +41,21 @@ class Vehicle : public Component {
 
 	static Dependencies getDependencies() { return Dependencies{{}, true}; }
 
-	bool isRandomModel = false;
-	int model = 0;
-	float health = 100.0f;
+	float initialDirection = 0.0f;
+	int model = 400;
+	int primaryColorId = 0;
+	int secondaryColorId = 0;
+	int tertiaryColorId = 0;
+	int quaternaryColorId = 0;
+	float health = 1000.0f;
+	bool bulletproof = false;
+	bool fireproof = false;
+	bool explosionproof = false;
+	bool collisionproof = false;
+	bool meleeproof = false;
+	bool tiresVulnerability = false;
 	bool mustSurvive = false;
+	bool locked = false;
 
 	int dirty = DirtyFlags::None;
 	std::shared_ptr<CVehicle> vehicle;
@@ -66,6 +79,7 @@ class Vehicle : public Component {
 	void despawn();
 	int getVehicleRef() const { return this->vehicle ? CPools::GetVehicleRef(this->vehicle.get()) : -1; }
 
+	static bool isSpecialComponent() { return true; }
 	static void sol_lua_register(sol::state_view lua_state);
 
 	static std::shared_ptr<Component> make() { return std::make_shared<Vehicle>(); }
