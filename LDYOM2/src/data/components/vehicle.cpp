@@ -449,8 +449,8 @@ void components::Vehicle::onStart() {
 	Component::onStart();
 	this->entity->setGetTransformCallbacks(
 		[this]() -> float* {
-			if (this->vehicle) {
-				return (float*)&this->vehicle->GetMatrix()->pos;
+			if (this->handle) {
+				return (float*)&this->handle->GetMatrix()->pos;
 			}
 			return nullptr;
 		},
@@ -468,8 +468,8 @@ void components::Vehicle::onStart() {
 		});
 	this->entity->setSetTransformCallbacks(
 		[this](const float* position) {
-			if (this->vehicle) {
-				this->vehicle->SetPosn(position[0], position[1], position[2]);
+			if (this->handle) {
+				this->handle->SetPosn(position[0], position[1], position[2]);
 			}
 		},
 		[this](const float* rotation) {}, [this](const float* scale) {});
@@ -507,18 +507,18 @@ void components::Vehicle::onReset() {
 }
 
 void components::Vehicle::updateDirection() {
-	if (this->vehicle) {
+	if (this->handle) {
 		auto heading = this->initialDirection * 180.0f / static_cast<float>(M_PI);
 		plugin::Command<plugin::Commands::SET_CAR_HEADING>(this->getVehicleRef(), heading);
 	}
 }
 
 void components::Vehicle::updatePosition() {
-	if (this->vehicle) {
+	if (this->handle) {
 		auto& position = this->entity->position;
-		this->vehicle->SetPosn(position[0], position[1], position[2]);
-		this->vehicle->m_nPhysicalFlags.bSubmergedInWater = 0;
-		this->vehicle->m_nPhysicalFlags.bOnSolidSurface = 0;
+		this->handle->SetPosn(position[0], position[1], position[2]);
+		this->handle->m_nPhysicalFlags.bSubmergedInWater = 0;
+		this->handle->m_nPhysicalFlags.bOnSolidSurface = 0;
 	}
 }
 
@@ -537,7 +537,7 @@ void components::Vehicle::spawn() {
 	CStreaming::SetMissionDoesntRequireModel(model);
 
 	CVehicle* vehicle = CPools::GetVehicle(newVehicle);
-	this->vehicle = std::shared_ptr<CVehicle>(vehicle, [](CVehicle* vehicle) {
+	this->handle = std::shared_ptr<CVehicle>(vehicle, [](CVehicle* vehicle) {
 		if (!ScenesManager::instance().isRestartGame()) {
 			auto ref = CPools::GetVehicleRef(vehicle);
 			plugin::Command<plugin::Commands::DELETE_CAR>(ref);
@@ -555,7 +555,7 @@ void components::Vehicle::spawn() {
 	if (this->mustSurvive) {
 		ProjectPlayer::instance().projectTasklist->add_task(
 			[](const Vehicle* _this) -> ktwait {
-				while (_this->vehicle && IS_PLAYING) {
+				while (_this->handle && IS_PLAYING) {
 					if (plugin::Command<plugin::Commands::IS_CAR_DEAD>(_this->getVehicleRef())) {
 						ProjectPlayer::instance().failCurrentProject();
 						break;
@@ -588,8 +588,8 @@ void components::Vehicle::spawn() {
 }
 
 void components::Vehicle::despawn() {
-	if (vehicle) {
-		vehicle = nullptr;
+	if (handle) {
+		handle = nullptr;
 	}
 	onDespawned();
 }

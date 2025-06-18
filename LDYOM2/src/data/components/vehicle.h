@@ -58,7 +58,7 @@ class Vehicle : public Component {
 	bool locked = false;
 
 	int dirty = DirtyFlags::None;
-	std::shared_ptr<CVehicle> vehicle;
+	std::shared_ptr<CVehicle> handle;
 
 	rocket::thread_safe_signal<void()> onSpawned;
 	rocket::thread_safe_signal<void()> onDespawned;
@@ -77,7 +77,7 @@ class Vehicle : public Component {
 
 	void spawn();
 	void despawn();
-	int getVehicleRef() const { return this->vehicle ? CPools::GetVehicleRef(this->vehicle.get()) : -1; }
+	int getVehicleRef() const { return this->handle ? CPools::GetVehicleRef(this->handle.get()) : -1; }
 
 	static bool isSpecialComponent() { return true; }
 	static void sol_lua_register(sol::state_view lua_state);
