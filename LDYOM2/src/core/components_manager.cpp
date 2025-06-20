@@ -2,7 +2,8 @@
 #include <components/actor.h>
 #include <components/actor/actor_animation.h>
 #include <components/actor/actor_behaviour.h>
-#include <components/actor/actor_enter_to_vehicle.h>
+#include <components/actor/actor_drive_by_path.h>
+#include <components/actor/actor_enter_spawn_exit_vehicle.h>
 #include <components/actor/actor_move_by_points.h>
 #include <components/actor/actor_random_spawn.h>
 #include <components/actor/actor_simple_task.h>
@@ -33,7 +34,8 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::ActorBehaviour>();
 	registerComponentBuilder<components::ActorAnimation>();
 	registerComponentBuilder<components::ActorMoveByPoints>();
-	registerComponentBuilder<components::ActorEnterToVehicle>();
+	registerComponentBuilder<components::ActorEnterSpawnExitVehicle>();
+	registerComponentBuilder<components::ActorDriveByPath>();
 	registerComponentBuilder<components::ActorSimpleTask>();
 	registerComponentBuilder<components::ActorRandomSpawn>();
 	registerComponentBuilder<components::Vehicle>();
