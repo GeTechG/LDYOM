@@ -1,14 +1,20 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "actor_paths_editing.h"
+#include <CPools.h>
 #include <CSprite.h>
+#include <CStreaming.h>
 #include <common.h>
+#include <extensions/ScriptCommands.h>
 #include <imgui_hook/utils/imgui_configurate.h>
 #include <localization.h>
+#include <models_manager.h>
+#include <utils/task_manager.h>
 #include <window_manager.h>
 
 PointsArray ActorPathsEditing::m_points;
 std::function<void(bool, const PointsArray&)> ActorPathsEditing::m_onCloseCallback;
-int ActorPathsEditing::m_currentPointIndex = 0;
+size_t ActorPathsEditing::m_currentPointIndex = 0;
+bool ActorPathsEditing::giveJetpack = false;
 
 void ActorPathsEditing::render() noexcept {
 	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
@@ -38,7 +44,7 @@ void ActorPathsEditing::render() noexcept {
 		if (lastVisible)
 			drawlist->AddCircleFilled(ImVec2(lastPoint.x, lastPoint.y), 5.f,
 			                          m_currentPointIndex == 0 ? IM_COL32(255, 0, 0, 255) : IM_COL32_WHITE);
-		for (int i = 1; i < m_points.size(); ++i) {
+		for (size_t i = 1; i < m_points.size(); ++i) {
 			RwV3d currentPoint;
 			const auto currentVisible = CSprite::CalcScreenCoors(
 				RwV3d{m_points.at(i)[0], m_points.at(i)[1], m_points.at(i)[2]}, &currentPoint, &w, &h, true, true);
@@ -99,6 +105,9 @@ void ActorPathsEditing::openPathEditor(const PointsArray& points,
                                        std::function<void(bool, const PointsArray&)> onClose) noexcept {
 	m_points = points;
 	m_onCloseCallback = std::move(onClose);
+	if (giveJetpack) {
+		plugin::Command<plugin::Commands::TASK_JETPACK>(CPools::GetPedRef(FindPlayerPed()));
+	}
 	WindowManager::instance().addBackgroundRenderCallback("ActorPathsEditor", render);
 }
 
@@ -106,6 +115,10 @@ void ActorPathsEditing::closePathEditor(bool saveChanges) noexcept {
 	if (m_onCloseCallback) {
 		m_onCloseCallback(saveChanges, m_points);
 		m_onCloseCallback = nullptr;
+	}
+	if (giveJetpack) {
+		plugin::Command<plugin::Commands::REMOVE_ALL_CHAR_WEAPONS>(CPools::GetPedRef(FindPlayerPed()));
+		giveJetpack = false;
 	}
 	WindowManager::instance().removeBackgroundRenderCallback("ActorPathsEditor");
 }
