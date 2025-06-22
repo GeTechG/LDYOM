@@ -130,35 +130,177 @@ ktwait components::ActorDriveByPath::enterVehicle(ActorDriveByPath* _this, std::
 				break;
 			}
 		}
-		const auto& point = _this->points[indexPoint];
-		float nodeX, nodeY, nodeZ;
-		plugin::Command<plugin::Commands::GET_CLOSEST_CAR_NODE>(point[0], point[1], point[2], &nodeX, &nodeY, &nodeZ);
-		const auto nodeDistance = DistanceBetweenPoints(CVector2D(nodeX, nodeY), CVector2D(vehiclePos.x, vehiclePos.y));
-		if (nodeDistance > 10.0f) {
-			plugin::Command<plugin::Commands::TASK_CAR_DRIVE_TO_COORD>(
-				actor->getPedRef(), vehicle->getVehicleRef(), point[0], point[1], point[2], speed, 2, 0, driveType);
-			plugin::Command<plugin::Commands::SET_CAR_STRONG>(vehicle->getVehicleRef(),
-			                                                  true); // Make the vehicle strong
-		} else {
-			plugin::Command<plugin::Commands::TASK_CAR_DRIVE_TO_COORD>(actor->getPedRef(), vehicle->getVehicleRef(),
-			                                                           point[0], point[1], point[2], speed, 3, 0, 8);
-		}
-		co_await 10;
+
 		if (!plugin::Command<plugin::Commands::DOES_CHAR_EXIST>(actor->getPedRef()) ||
 		    !plugin::Command<plugin::Commands::DOES_VEHICLE_EXIST>(vehicle->getVehicleRef()) ||
 		    plugin::Command<plugin::Commands::IS_CHAR_DEAD>(actor->getPedRef()) ||
 		    plugin::Command<plugin::Commands::IS_CAR_DEAD>(vehicle->getVehicleRef())) {
 			co_return;
 		}
-		while (!plugin::Command<plugin::Commands::LOCATE_CAR_2D>(vehicle->getVehicleRef(), point[0], point[1], radius,
-		                                                         radius, false)) {
+
+		const auto& point = _this->points[indexPoint];
+		if (plugin::Command<plugin::Commands::IS_THIS_MODEL_A_HELI>(vehicle->handle->m_nModelIndex)) {
+			plugin::Command<plugin::Commands::SET_HELI_BLADES_FULL_SPEED>(vehicle->getVehicleRef());
+			if (vehiclePos.z > 5.f) {
+				plugin::Command<plugin::Commands::SET_CAR_FORWARD_SPEED>(vehicle->getVehicleRef(), 50.f);
+			}
+			float groundZPoint;
+			plugin::Command<plugin::Commands::GET_GROUND_Z_FOR_3D_COORD>(point[0], point[1], point[2], &groundZPoint);
+			float minAltitude = point[2] - groundZPoint;
+			float maxAltitude = minAltitude + 1.f;
+			minAltitude -= 1.f;
+			plugin::Command<plugin::Commands::HELI_GOTO_COORDS>(vehicle->getVehicleRef(), point[0], point[1], point[2],
+			                                                    minAltitude, maxAltitude);
+			while (!plugin::Command<plugin::Commands::LOCATE_CAR_3D>(vehicle->getVehicleRef(), point[0], point[1],
+			                                                         point[2], 5.f, 5.f, 200.f, false)) {
+				co_await 10;
+			}
+			plugin::Command<plugin::Commands::SET_CAR_FORWARD_SPEED>(vehicle->getVehicleRef(), 5.f);
+		} else if (plugin::Command<plugin::Commands::IS_THIS_MODEL_A_PLANE>(vehicle->handle->m_nModelIndex)) {
+			if (vehiclePos.z > 5.f) {
+				plugin::Command<plugin::Commands::SET_CAR_FORWARD_SPEED>(vehicle->getVehicleRef(), 50.f);
+			}
+			float groundZPoint;
+			plugin::Command<plugin::Commands::GET_GROUND_Z_FOR_3D_COORD>(point[0], point[1], point[2], &groundZPoint);
+			float minAltitude = point[2] - groundZPoint;
+			float maxAltitude = minAltitude + 1.f;
+			minAltitude -= 1.f;
+			plugin::Command<plugin::Commands::PLANE_GOTO_COORDS>(vehicle->getVehicleRef(), point[0], point[1], point[2],
+			                                                     minAltitude, maxAltitude);
+			while (!plugin::Command<plugin::Commands::LOCATE_CAR_3D>(vehicle->getVehicleRef(), point[0], point[1],
+			                                                         point[2], 5.f, 5.f, 200.f, false)) {
+				co_await 10;
+			}
+		} else {
+			float nodeX, nodeY, nodeZ;
+			plugin::Command<plugin::Commands::GET_CLOSEST_CAR_NODE>(point[0], point[1], point[2], &nodeX, &nodeY,
+			                                                        &nodeZ);
+			const auto nodeDistance =
+				DistanceBetweenPoints(CVector2D(nodeX, nodeY), CVector2D(vehiclePos.x, vehiclePos.y));
+			if (nodeDistance > 10.0f) {
+				plugin::Command<plugin::Commands::TASK_CAR_DRIVE_TO_COORD>(
+					actor->getPedRef(), vehicle->getVehicleRef(), point[0], point[1], point[2], speed, 2, 0, driveType);
+				plugin::Command<plugin::Commands::SET_CAR_STRONG>(vehicle->getVehicleRef(),
+				                                                  true); // Make the vehicle strong
+			} else {
+				plugin::Command<plugin::Commands::TASK_CAR_DRIVE_TO_COORD>(
+					actor->getPedRef(), vehicle->getVehicleRef(), point[0], point[1], point[2], speed, 3, 0, 8);
+			}
 			co_await 10;
+			if (!plugin::Command<plugin::Commands::DOES_CHAR_EXIST>(actor->getPedRef()) ||
+			    !plugin::Command<plugin::Commands::DOES_VEHICLE_EXIST>(vehicle->getVehicleRef()) ||
+			    plugin::Command<plugin::Commands::IS_CHAR_DEAD>(actor->getPedRef()) ||
+			    plugin::Command<plugin::Commands::IS_CAR_DEAD>(vehicle->getVehicleRef())) {
+				co_return;
+			}
+			while (!plugin::Command<plugin::Commands::LOCATE_CAR_2D>(vehicle->getVehicleRef(), point[0], point[1],
+			                                                         radius, radius, false)) {
+				co_await 10;
+			}
 		}
 		indexPoint++;
 	}
-	plugin::Command<plugin::Commands::TASK_CAR_TEMP_ACTION>(actor->getPedRef(), vehicle->getVehicleRef(), 6,
-	                                                        1000); // Handbrake straight
-	co_await 1000;
+	if (plugin::Command<plugin::Commands::IS_THIS_MODEL_A_HELI>(vehicle->handle->m_nModelIndex)) {
+		const auto& point = _this->points.back();
+		co_await 500;
+		plugin::Command<plugin::Commands::SET_CAR_FORWARD_SPEED>(vehicle->getVehicleRef(), 0.f);
+		co_await 100;
+		plugin::Command<plugin::Commands::SET_CAR_CRUISE_SPEED>(vehicle->getVehicleRef(), 10.f);
+		plugin::Command<plugin::Commands::SET_HELI_ORIENTATION>(
+			vehicle->getVehicleRef(), plugin::Command<plugin::Commands::GET_CAR_HEADING>(vehicle->getVehicleRef()));
+		auto pointHeight = point[2];
+		pointHeight -= groundZ;
+		if (vehiclePos.z < 5.f) {
+			plugin::Command<plugin::Commands::HELI_GOTO_COORDS>(vehicle->getVehicleRef(), vehiclePos.x, vehiclePos.y,
+			                                                    groundZ, 0.0f, 0.0f);
+			while (!plugin::Command<plugin::Commands::LOCATE_CAR_3D>(
+				vehicle->getVehicleRef(), vehiclePos.x, vehiclePos.y, pointHeight, 25.f, 25.f, 5.f, false)) {
+				co_await 20;
+			}
+		} else {
+			plugin::Command<plugin::Commands::HELI_GOTO_COORDS>(vehicle->getVehicleRef(), vehiclePos.x, vehiclePos.y,
+			                                                    point[2], 0.0f, 0.0f);
+			while (!plugin::Command<plugin::Commands::LOCATE_CAR_3D>(
+				vehicle->getVehicleRef(), vehiclePos.x, vehiclePos.y, pointHeight, 25.f, 25.f, 5.f, false)) {
+				co_await 20;
+			}
+		}
+	} else if (plugin::Command<plugin::Commands::IS_THIS_MODEL_A_PLANE>(vehicle->handle->m_nModelIndex)) {
+		const auto& point = _this->points.back();
+		float groundZPoint;
+		plugin::Command<plugin::Commands::GET_GROUND_Z_FOR_3D_COORD>(point[0], point[1], point[2], &groundZPoint);
+		float minAltitude = point[2] - groundZPoint;
+		if (minAltitude > 10.f) {
+			float maxAltitude = minAltitude + 1.f;
+			minAltitude -= 1.f;
+			plugin::Command<plugin::Commands::PLANE_GOTO_COORDS>(vehicle->getVehicleRef(), point[0], point[1], point[2],
+			                                                     minAltitude, maxAltitude);
+		} else {
+			float _15, _16, _17;
+			plugin::Command<plugin::Commands::GET_OFFSET_FROM_CAR_IN_WORLD_COORDS>(vehicle->getVehicleRef(), 0.0f, 0.0f,
+			                                                                       0.0f, &_15, &_16, &_17);
+			_15 -= point[0];
+			_16 -= point[1];
+			_15 *= -1.0f;
+			_16 *= -1.0f;
+			float heading;
+			plugin::Command<plugin::Commands::GET_HEADING_FROM_VECTOR_2D>(_15, _16, &heading);
+			plugin::Command<plugin::Commands::SET_CAR_HEADING>(vehicle->getVehicleRef(), heading);
+
+			float targetZ = point[1] + 2.0f;
+			plugin::Command<plugin::Commands::CAR_GOTO_COORDINATES_ACCURATE>(vehicle->getVehicleRef(), point[0],
+			                                                                 point[1], targetZ);
+			plugin::Command<plugin::Commands::SET_PLANE_UNDERCARRIAGE_UP>(vehicle->getVehicleRef(), false);
+			plugin::Command<plugin::Commands::BOAT_STOP>(vehicle->getVehicleRef());
+
+			// Landing approach loop
+			while (true) {
+				co_await 200;
+
+				if (!plugin::Command<plugin::Commands::DOES_CHAR_EXIST>(actor->getPedRef()) ||
+				    !plugin::Command<plugin::Commands::DOES_VEHICLE_EXIST>(vehicle->getVehicleRef()) ||
+				    plugin::Command<plugin::Commands::IS_CHAR_DEAD>(actor->getPedRef()) ||
+				    plugin::Command<plugin::Commands::IS_CAR_DEAD>(vehicle->getVehicleRef())) {
+					co_return;
+				}
+
+				float currentX, currentY, currentZ;
+				plugin::Command<plugin::Commands::GET_OFFSET_FROM_CAR_IN_WORLD_COORDS>(
+					vehicle->getVehicleRef(), 0.0f, 0.0f, 0.0f, &currentX, &currentY, &currentZ);
+
+				float distance = plugin::Command<plugin::Commands::GET_DISTANCE_BETWEEN_COORDS_2D>(currentX, currentY,
+				                                                                                   point[0], targetZ);
+
+				currentX -= point[0];
+				currentY -= point[1];
+				currentX *= -1.0f;
+				currentY *= -1.0f;
+
+				plugin::Command<plugin::Commands::GET_HEADING_FROM_VECTOR_2D>(currentX, currentY, &heading);
+				plugin::Command<plugin::Commands::SET_CAR_HEADING>(vehicle->getVehicleRef(), heading);
+
+				float speed = (distance / 20.0f) + 15.0f;
+				if (speed < 65.0f) {
+					plugin::Command<plugin::Commands::SET_CAR_FORWARD_SPEED>(vehicle->getVehicleRef(), speed);
+				} else {
+					plugin::Command<plugin::Commands::SET_CAR_FORWARD_SPEED>(vehicle->getVehicleRef(), 65.0f);
+				}
+
+				if (plugin::Command<plugin::Commands::LOCATE_CAR_3D>(vehicle->getVehicleRef(), point[0], point[1],
+				                                                     point[2], 10.0f, 10.0f, 10.0f, false)) {
+					plugin::Command<plugin::Commands::SET_CAR_FORWARD_SPEED>(vehicle->getVehicleRef(), 5.0f);
+					co_await 1000;
+					plugin::Command<plugin::Commands::SET_CAR_FORWARD_SPEED>(vehicle->getVehicleRef(), 2.0f);
+					co_await 1000;
+					break;
+				}
+			}
+		}
+	} else {
+		plugin::Command<plugin::Commands::TASK_CAR_TEMP_ACTION>(actor->getPedRef(), vehicle->getVehicleRef(), 6,
+		                                                        1000); // Handbrake straight
+		co_await 1000;
+	}
 	if (_this->leaveVehicle) {
 		plugin::Command<plugin::Commands::TASK_LEAVE_ANY_CAR>(actor->getPedRef());
 	}
