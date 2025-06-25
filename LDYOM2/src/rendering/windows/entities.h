@@ -3,7 +3,12 @@
 #include "window.h"
 #include <vector>
 
-enum EntitiesWindowType { EntitiesWindowType_Actor, EntitiesWindowType_Vehicle, EntitiesWindowType_Object };
+enum EntitiesWindowType {
+	EntitiesWindowType_Actor,
+	EntitiesWindowType_Vehicle,
+	EntitiesWindowType_Object,
+	EntitiesWindowType_Pickup
+};
 
 class EntitiesWindow : public Window {
   private:

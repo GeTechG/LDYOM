@@ -30,6 +30,9 @@ void EntitiesMenu::renderContent(Window* window) {
 	if (ImGui::Button(_("entities_menu.objects", ICON_FA_CUBES).c_str(), buttonSize)) {
 		openEntitiesWindow(EntitiesWindowType_Object);
 	}
+	if (ImGui::Button(_("entities_menu.pickups", ICON_FA_HEART).c_str(), buttonSize)) {
+		openEntitiesWindow(EntitiesWindowType_Pickup);
+	}
 }
 
 EntitiesMenu::EntitiesMenu()

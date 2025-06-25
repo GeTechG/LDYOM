@@ -18,6 +18,7 @@ bool EntitiesWindow::filterByType(Entity& entity) {
 		case EntitiesWindowType_Actor: return entity.hasComponent("actor");
 		case EntitiesWindowType_Vehicle: return entity.hasComponent("vehicle");
 		case EntitiesWindowType_Object: return entity.hasComponent("object");
+		case EntitiesWindowType_Pickup: return entity.hasComponent("pickup");
 		default: return false;
 	}
 }
@@ -54,6 +55,11 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 				case EntitiesWindowType_Object:
 					{
 						EntitiesManager::instance().addNewEntityFromTemplate("object");
+						break;
+					}
+				case EntitiesWindowType_Pickup:
+					{
+						EntitiesManager::instance().addNewEntityFromTemplate("pickup");
 						break;
 					}
 			}
