@@ -448,31 +448,32 @@ void components::Vehicle::editorRender() {
 void components::Vehicle::onStart() {
 	Component::onStart();
 	this->entity->setGetTransformCallbacks(
-		[this]() -> float* {
+		[this]() -> std::array<float, 3> {
 			if (this->handle) {
-				return (float*)&this->handle->GetMatrix()->pos;
+				auto& position = this->handle->GetPosition();
+				return {position.x, position.y, position.z};
 			}
-			return nullptr;
+			return {0.0f, 0.0f, 0.0f};
 		},
-		[this]() -> float* {
+		[this]() -> std::array<float, 3> {
 			// if (this->vehicle) {
-		    // 	return (float*)&this->vehicle->GetMatrix()->rot;
+		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->rot;
 		    // }
-			return nullptr;
+			return {0.0f, 0.0f, 0.0f};
 		},
-		[this]() -> float* {
+		[this]() -> std::array<float, 3> {
 			// if (this->vehicle) {
-		    // 	return (float*)&this->vehicle->GetMatrix()->scale;
+		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->scale;
 		    // }
-			return nullptr;
+			return {0.0f, 0.0f, 0.0f};
 		});
 	this->entity->setSetTransformCallbacks(
-		[this](const float* position) {
+		[this](const std::array<float, 3>& position) {
 			if (this->handle) {
 				this->handle->SetPosn(position[0], position[1], position[2]);
 			}
 		},
-		[this](const float* rotation) {}, [this](const float* scale) {});
+		[this](const std::array<float, 3>& rotation) {}, [this](const std::array<float, 3>& scale) {});
 	if (!IS_PLAYING) {
 		spawn();
 	} else {

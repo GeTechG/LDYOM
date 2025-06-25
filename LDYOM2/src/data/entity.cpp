@@ -15,15 +15,15 @@ std::shared_ptr<Component> Entity::getComponent(const std::string_view type) {
 	return nullptr;
 }
 
-void Entity::setGetTransformCallbacks(std::function<float*()> positionCallback,
-                                      std::function<float*()> rotationCallback, std::function<float*()> scaleCallback) {
+void Entity::setGetTransformCallbacks(std::function<std::array<float,3>()> positionCallback,
+                                      std::function<std::array<float,3>()> rotationCallback, std::function<std::array<float,3>()> scaleCallback) {
 	getTransformCallbacks[0] = positionCallback;
 	getTransformCallbacks[1] = rotationCallback;
 	getTransformCallbacks[2] = scaleCallback;
 }
-void Entity::setSetTransformCallbacks(std::function<void(float*)> positionCallback,
-                                      std::function<void(float*)> rotationCallback,
-                                      std::function<void(float*)> scaleCallback) {
+void Entity::setSetTransformCallbacks(std::function<void(std::array<float,3>)> positionCallback,
+                                      std::function<void(std::array<float,3>)> rotationCallback,
+                                      std::function<void(std::array<float,3>)> scaleCallback) {
 	setTransformCallbacks[0] = positionCallback;
 	setTransformCallbacks[1] = rotationCallback;
 	setTransformCallbacks[2] = scaleCallback;
@@ -31,13 +31,13 @@ void Entity::setSetTransformCallbacks(std::function<void(float*)> positionCallba
 
 void Entity::updateSetTransformCallbacks() {
 	if (setTransformCallbacks[0]) {
-		setTransformCallbacks[0](this->position.data());
+		setTransformCallbacks[0](this->position);
 	}
 	if (setTransformCallbacks[1]) {
-		setTransformCallbacks[1](this->rotation.data());
+		setTransformCallbacks[1](this->rotation);
 	}
 	if (setTransformCallbacks[2]) {
-		setTransformCallbacks[2](this->scale.data());
+		setTransformCallbacks[2](this->scale);
 	}
 }
 

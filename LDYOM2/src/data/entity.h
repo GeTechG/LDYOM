@@ -12,8 +12,8 @@ class Component;
 class Entity {
   private:
 	std::vector<std::shared_ptr<Component>> components;
-	std::array<std::function<float*()>, 3> getTransformCallbacks;
-	std::array<std::function<void(float*)>, 3> setTransformCallbacks;
+	std::array<std::function<std::array<float, 3>()>, 3> getTransformCallbacks;
+	std::array<std::function<void(std::array<float, 3>)>, 3> setTransformCallbacks;
 
   public:
 	std::string name;
@@ -26,11 +26,12 @@ class Entity {
 	const std::vector<std::shared_ptr<Component>>& getComponents() const { return components; }
 	std::shared_ptr<Component> getComponent(const std::string_view type);
 	bool hasComponent(const std::string_view type) { return getComponent(type) != nullptr; }
-	void setGetTransformCallbacks(std::function<float*()> positionCallback, std::function<float*()> rotationCallback,
-	                              std::function<float*()> scaleCallback);
-	void setSetTransformCallbacks(std::function<void(float*)> positionCallback,
-	                              std::function<void(float*)> rotationCallback,
-	                              std::function<void(float*)> scaleCallback);
+	void setGetTransformCallbacks(std::function<std::array<float, 3>()> positionCallback,
+	                              std::function<std::array<float, 3>()> rotationCallback,
+	                              std::function<std::array<float, 3>()> scaleCallback);
+	void setSetTransformCallbacks(std::function<void(std::array<float, 3>)> positionCallback,
+	                              std::function<void(std::array<float, 3>)> rotationCallback,
+	                              std::function<void(std::array<float, 3>)> scaleCallback);
 	void clearGetTransformCallbacks() { getTransformCallbacks.fill(nullptr); }
 	void clearSetTransformCallbacks() { setTransformCallbacks.fill(nullptr); }
 	void updateSetTransformCallbacks();

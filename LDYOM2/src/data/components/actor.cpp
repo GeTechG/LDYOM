@@ -188,15 +188,28 @@ void components::Actor::editorRender() {
 void components::Actor::onStart() {
 	Component::onStart();
 	this->entity->setGetTransformCallbacks(
-		[this]() -> float* { return this->ped ? reinterpret_cast<float*>(&this->ped->GetMatrix()->pos) : nullptr; },
-		[this]() -> float* { return nullptr; }, [this]() -> float* { return nullptr; });
+		[this]() -> std::array<float, 3> {
+			if (this->ped) {
+				auto& position = this->ped->GetPosition();
+				return {position.x, position.y, position.z};
+			}
+			return {0.0f, 0.0f, 0.0f};
+		},
+		[this]() -> std::array<float, 3> {
+			if (this->ped) {
+				auto heading = this->ped->GetHeading() * static_cast<float>(M_PI) / 180.0f;
+				return {cos(heading), sin(heading), 0.0f};
+			}
+			return {1.0f, 0.0f, 0.0f};
+		},
+		[this]() -> std::array<float, 3> { return {1.0f, 1.0f, 1.0f}; });
 	this->entity->setSetTransformCallbacks(
-		[this](float* position) {
+		[this](std::array<float, 3> position) {
 			if (this->ped) {
 				this->ped->SetPosn(position[0], position[1], position[2]);
 			}
 		},
-		[](float*) {}, [](float*) {});
+		[](std::array<float, 3>) {}, [](std::array<float, 3>) {});
 	if (!IS_PLAYING) {
 		spawn();
 	} else {
