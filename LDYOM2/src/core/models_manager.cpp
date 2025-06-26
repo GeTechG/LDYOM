@@ -85,6 +85,8 @@ bool ModelsManager::validateWeaponId(int weaponId) {
 	return std::ranges::find(m_weaponIds, weaponId) != m_weaponIds.end();
 }
 
+bool ModelsManager::validObjectModel(int modelId) { return CModelInfo::GetModelInfo(modelId) != nullptr; }
+
 bool ModelsManager::validatePedAnimation(const std::string& packName, const std::string& animName) {
 	if (const auto it = m_pedAnimations.find(packName); it != m_pedAnimations.end()) {
 		const auto& animations = it->second;

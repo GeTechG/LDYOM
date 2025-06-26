@@ -30,6 +30,7 @@ class ModelsManager {
 	static bool validateVehicleModel(int modelId);
 	static bool validatePedSpecialModel(std::string modelName);
 	static bool validateWeaponId(int weaponId);
+	static bool validObjectModel(int modelId);
 
 	static bool validatePedAnimation(const std::string& packName, const std::string& animName);
 };
