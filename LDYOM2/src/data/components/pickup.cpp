@@ -17,7 +17,7 @@
 
 void components::Pickup::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<Pickup>("PickupComponent");
-	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Pickup, cast, type, spawnType, weaponType, ammo,
+	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Pickup, cast, pickupType, spawnType, weaponType, ammo,
 	                 model);
 }
 
@@ -32,7 +32,7 @@ components::Pickup::~Pickup() {
 
 inline nlohmann::json components::Pickup::to_json() const {
 	auto j = this->Component::to_json();
-	j["type"] = type;
+	j["pickupType"] = pickupType;
 	j["spawnType"] = spawnType;
 	j["weaponType"] = weaponType;
 	j["ammo"] = ammo;
@@ -42,7 +42,7 @@ inline nlohmann::json components::Pickup::to_json() const {
 
 void components::Pickup::from_json(const nlohmann::json& j) {
 	this->Component::from_json(j);
-	j.at("type").get_to(type);
+	j.at("pickupType").get_to(pickupType);
 	j.at("spawnType").get_to(spawnType);
 	j.at("weaponType").get_to(weaponType);
 	j.at("ammo").get_to(ammo);
@@ -55,13 +55,13 @@ void components::Pickup::editorRender() {
 	ImGui::Text(tr("type").c_str());
 	ImGui::SameLine(availableWidth * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
-	if (ImGui::BeginCombo("##type", tr(fmt::format("types.{}", type)).c_str())) {
+	if (ImGui::BeginCombo("##type", tr(fmt::format("types.{}", pickupType)).c_str())) {
 		for (int i = 0; i < 5; i++) {
-			if (ImGui::Selectable(tr(fmt::format("types.{}", i)).c_str(), type == i)) {
-				this->type = i;
+			if (ImGui::Selectable(tr(fmt::format("types.{}", i)).c_str(), pickupType == i)) {
+				this->pickupType = i;
 				this->dirty = true;
 			}
-			if (type == i) {
+			if (pickupType == i) {
 				ImGui::SetItemDefaultFocus();
 			}
 		}
@@ -77,7 +77,7 @@ void components::Pickup::editorRender() {
 				this->spawnType = i;
 				this->dirty = true;
 			}
-			if (type == i) {
+			if (pickupType == i) {
 				ImGui::SetItemDefaultFocus();
 			}
 		}
@@ -86,7 +86,7 @@ void components::Pickup::editorRender() {
 
 	bool openEditPopup = false;
 
-	if (type == 0) { // weapon
+	if (pickupType == 0) { // weapon
 		ImGui::Text(_("weapon").c_str());
 		ImGui::SameLine(availableWidth * 0.35f);
 		{
@@ -111,7 +111,7 @@ void components::Pickup::editorRender() {
 		// Ensure ammo is not negative
 		if (ammo < 0)
 			ammo = 0;
-	} else if (type == 4) { // object
+	} else if (pickupType == 4) { // object
 		ImGui::Text(_("model").c_str());
 		ImGui::SameLine(availableWidth * 0.35f);
 		ImGui::SetNextItemWidth(-1.f);
@@ -211,7 +211,7 @@ void components::Pickup::spawn() {
 		pickupType = 9;
 	}
 
-	if (this->type == 0) { // weapon
+	if (this->pickupType == 0) { // weapon
 		if (ModelsManager::validateWeaponId(this->weaponType)) {
 			const int weaponModel =
 				CWeaponInfo::GetWeaponInfo(static_cast<eWeaponType>(this->weaponType), 1)->m_nModelId;
@@ -226,7 +226,7 @@ void components::Pickup::spawn() {
 		}
 	} else {
 		int modelId = this->model;
-		switch (type) {
+		switch (pickupType) {
 			case 1: // health
 				modelId = 1240;
 				break;

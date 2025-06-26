@@ -32,7 +32,7 @@ class Pickup : public Component {
 	static Dependencies getDependencies() { return Dependencies{{}, true}; }
 
 	// 0 - weapon, 1 - health, 2 - armor, 3 - police bribe, 4 - object
-	int type = 0;
+	int pickupType = 0;
 	int spawnType = 0;
 	int weaponType = 1;
 	int ammo = 0;
