@@ -1,12 +1,12 @@
 #include "projects_manager.h"
-#include "scenes_manager.h"
 #include "data/project_info.h"
+#include "scenes_manager.h"
 #include <filesystem>
 #include <fstream>
 #include <logger.h>
+#include <nlohmann/json.hpp>
 #include <paths.h>
 #include <string_utils.h>
-#include <nlohmann/json.hpp>
 
 const std::string ProjectsManager::PROJECTS_DIR_PATH = "projects";
 const std::string ProjectsManager::PROJECT_INFO_FILE_NAME = "project_info";
@@ -61,10 +61,12 @@ int ProjectsManager::getCurrentProjectIndex() const noexcept { return m_currentP
 
 bool ProjectsManager::createNewProject(std::string_view name, std::string_view author) {
 	try {
+		std::filesystem::path projectDir(LDYOM_PATH(PROJECTS_DIR_PATH) + "/" + to_snake_case(name));
+
 		ProjectInfo newProjectInfo{.name = std::string(name),
+		                           .path = projectDir.string(),
 		                           .author = std::string(author),
 		                           .timestamp = std::time(nullptr)};
-		std::filesystem::path projectDir(LDYOM_PATH(PROJECTS_DIR_PATH) + "/" + to_snake_case(newProjectInfo.name));
 		create_directories(projectDir);
 		nlohmann::json jsonData = newProjectInfo;
 		std::ofstream file(projectDir / (PROJECT_INFO_FILE_NAME + ".json"));
