@@ -2,10 +2,13 @@
 #include "entities.h"
 #include "logger.h"
 #include <algorithm>
+#include <angles.h>
 #include <component.h>
 #include <components_manager.h>
 #include <entities_manager.h>
 #include <fa_icons.h>
+#include <glm/ext/quaternion_float.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <imgui_internal.h>
 #include <imgui_widgets/imgui_widgets.h>
 #include <localization.h>
@@ -212,11 +215,25 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 					// Rotation
 					ImGui::Text("Rotation");
 					ImGui::SameLine(availableWidth * 0.45f);
-					std::array<float, 3> rotation(entity.rotation);
+
+					static CQuaternion lastQ;
+					const auto q = entity.rotation;
+					const glm::quat quaternion(q.real, q.imag.x, q.imag.y, q.imag.z);
+					const glm::vec3 eulerAngles = glm::eulerAngles(quaternion);
+
+					// rotations
+					static std::array<float, 3> eularRot = {0, 0, 0};
+					if (abs(q.real - lastQ.real) > FLT_EPSILON || abs(q.imag.x - lastQ.imag.x) > FLT_EPSILON ||
+					    abs(q.imag.y - lastQ.imag.y) > FLT_EPSILON || abs(q.imag.z - lastQ.imag.z) > FLT_EPSILON) {
+						eularRot[0] = glm::degrees(eulerAngles.x);
+						eularRot[1] = glm::degrees(eulerAngles.y);
+						eularRot[2] = glm::degrees(eulerAngles.z);
+						lastQ = q;
+					}
 					ImGui::SetNextItemWidth(-1.f);
-					if (ImGui::DragFloat3("##rot", rotation.data(), 0.1f, -180.0f, 180.0f)) {
+					if (ImGui::DragFloat3("##rot", eularRot.data(), 0.1f, -180.0f, 180.0f)) {
 						auto& entity = EntitiesManager::instance().getUnsafeEntity(i);
-						entity.rotation = rotation;
+						entity.rotation.Set(RAD(eularRot[1]), RAD(eularRot[2]), RAD(eularRot[0]));
 						entity.updateSetTransformCallbacks();
 					}
 

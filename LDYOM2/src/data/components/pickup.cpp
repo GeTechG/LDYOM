@@ -7,6 +7,7 @@
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <lua_define_type.h>
+#include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
 #include <popups/weapon_selector.h>
 #include <project_player.h>
@@ -148,11 +149,11 @@ void components::Pickup::onStart() {
 			}
 			return {0.0f, 0.0f, 0.0f};
 		},
-		[this]() -> std::array<float, 3> {
+		[this]() -> CQuaternion {
 			// if (this->vehicle) {
 		    // 	return (std::array<float, 3>)&this->vehicle->GetMatrix()->rot;
 		    // }
-			return {0.0f, 0.0f, 0.0f};
+			return {};
 		},
 		[this]() -> std::array<float, 3> {
 			// if (this->vehicle) {
@@ -167,7 +168,18 @@ void components::Pickup::onStart() {
 				CPickups::aPickUps[actualIndex].SetPosn(position[0], position[1], position[2]);
 			}
 		},
-		[this](const std::array<float, 3> rotation) {}, [this](const std::array<float, 3> scale) {});
+		[this](const CQuaternion rotation) {
+			if (this->handle != -1) {
+				auto actualIndex = CPickups::GetActualPickupIndex(handle);
+				CPickups::aPickUps[actualIndex].m_pObject->m_matrix->SetRotate(rotation);
+			}
+		},
+		[this](const std::array<float, 3> scale) {
+			if (this->handle != -1) {
+				auto actualIndex = CPickups::GetActualPickupIndex(handle);
+				scaleMatrix(*CPickups::aPickUps[actualIndex].m_pObject->m_matrix, scale);
+			}
+		});
 	if (!IS_PLAYING) {
 		spawn();
 	} else {
@@ -246,6 +258,8 @@ void components::Pickup::spawn() {
 		this->handle = CPickups::GenerateNewOne(pos, modelId, pickupType, this->ammo, 0, false, nullptr);
 		CStreaming::SetMissionDoesntRequireModel(modelId);
 	}
+
+	this->entity->updateSetTransformCallbacks();
 
 	onSpawned();
 }

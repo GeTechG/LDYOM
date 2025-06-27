@@ -5,6 +5,7 @@
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <lua_define_type.h>
+#include <matrix_utils.h>
 #include <project_player.h>
 #include <scenes_manager.h>
 #include <string_utils.h>
@@ -195,21 +196,34 @@ void components::Actor::onStart() {
 			}
 			return {0.0f, 0.0f, 0.0f};
 		},
-		[this]() -> std::array<float, 3> {
+		[this]() -> CQuaternion {
 			if (this->ped) {
-				auto heading = this->ped->GetHeading() * static_cast<float>(M_PI) / 180.0f;
-				return {cos(heading), sin(heading), 0.0f};
+				CQuaternion q;
+				q.Set(*(RwMatrix*)this->ped->m_matrix);
+				return q;
 			}
-			return {1.0f, 0.0f, 0.0f};
+			return {};
 		},
 		[this]() -> std::array<float, 3> { return {1.0f, 1.0f, 1.0f}; });
 	this->entity->setSetTransformCallbacks(
-		[this](std::array<float, 3> position) {
+		[this](const std::array<float, 3>& position) {
 			if (this->ped) {
 				this->ped->SetPosn(position[0], position[1], position[2]);
 			}
 		},
-		[](std::array<float, 3>) {}, [](std::array<float, 3>) {});
+		[this](const CQuaternion rotation) {
+			if (this->ped) {
+				this->ped->m_matrix->SetRotate(rotation);
+			}
+		},
+		[this](const std::array<float, 3>& scale) {
+			if (this->ped) {
+				scaleMatrix(*this->ped->m_matrix, scale);
+				this->ped->m_matrix->UpdateRW();
+				this->ped->UpdateRwMatrix();
+				this->ped->UpdateRwFrame();
+			}
+		});
 	if (!IS_PLAYING) {
 		spawn();
 	} else {
@@ -314,6 +328,7 @@ void components::Actor::spawn() {
 	});
 	updatePosition();
 	updateDirection();
+	this->entity->updateSetTransformCallbacks();
 	ped->m_fMaxHealth = std::max(ped->m_fMaxHealth, this->health);
 	ped->m_fHealth = this->health;
 

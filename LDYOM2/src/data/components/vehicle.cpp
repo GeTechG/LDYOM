@@ -6,6 +6,7 @@
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <lua_define_type.h>
+#include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
 #include <project_player.h>
 #include <scenes_manager.h>
@@ -455,11 +456,11 @@ void components::Vehicle::onStart() {
 			}
 			return {0.0f, 0.0f, 0.0f};
 		},
-		[this]() -> std::array<float, 3> {
+		[this]() -> CQuaternion {
 			// if (this->vehicle) {
 		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->rot;
 		    // }
-			return {0.0f, 0.0f, 0.0f};
+			return {};
 		},
 		[this]() -> std::array<float, 3> {
 			// if (this->vehicle) {
@@ -473,7 +474,19 @@ void components::Vehicle::onStart() {
 				this->handle->SetPosn(position[0], position[1], position[2]);
 			}
 		},
-		[this](const std::array<float, 3>& rotation) {}, [this](const std::array<float, 3>& scale) {});
+		[this](const CQuaternion rotation) {
+			if (this->handle) {
+				this->handle->m_matrix->SetRotate(rotation);
+			}
+		},
+		[this](const std::array<float, 3>& scale) {
+			if (this->handle) {
+				scaleMatrix(*this->handle->m_matrix, scale);
+				this->handle->m_matrix->UpdateRW();
+				this->handle->UpdateRwMatrix();
+				this->handle->UpdateRwFrame();
+			}
+		});
 	if (!IS_PLAYING) {
 		spawn();
 	} else {
@@ -544,8 +557,7 @@ void components::Vehicle::spawn() {
 			plugin::Command<plugin::Commands::DELETE_CAR>(ref);
 		}
 	});
-	updatePosition();
-	updateDirection();
+	this->entity->updateSetTransformCallbacks();
 	vehicle->m_fHealth = this->health;
 	vehicle->m_nPrimaryColor = this->primaryColorId;
 	vehicle->m_nSecondaryColor = this->secondaryColorId;

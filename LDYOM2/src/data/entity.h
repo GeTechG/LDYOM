@@ -1,4 +1,5 @@
 #pragma once
+#include <CQuaternion.h>
 #include <array>
 #include <lua_define_type.h>
 #include <nlohmann/json.hpp>
@@ -12,14 +13,19 @@ class Component;
 class Entity {
   private:
 	std::vector<std::shared_ptr<Component>> components;
-	std::array<std::function<std::array<float, 3>()>, 3> getTransformCallbacks;
-	std::array<std::function<void(std::array<float, 3>)>, 3> setTransformCallbacks;
+	std::function<std::array<float, 3>()> getPositionCallback;
+	std::function<CQuaternion()> getRotationCallback;
+	std::function<std::array<float, 3>()> getScaleCallback;
+
+	std::function<void(std::array<float, 3>)> setPositionCallback;
+	std::function<void(CQuaternion)> setRotationCallback;
+	std::function<void(std::array<float, 3>)> setScaleCallback;
 
   public:
 	std::string name;
 	uuids::uuid id = uuids::uuid_system_generator{}();
 	std::array<float, 3> position = {0.0f, 0.0f, 0.0f};
-	std::array<float, 3> rotation = {0.0f, 0.0f, 0.0f};
+	CQuaternion rotation;
 	std::array<float, 3> scale = {1.0f, 1.0f, 1.0f};
 	int areaId = 0;
 	void addComponent(std::shared_ptr<Component> component);
@@ -27,13 +33,21 @@ class Entity {
 	std::shared_ptr<Component> getComponent(const std::string_view type);
 	bool hasComponent(const std::string_view type) { return getComponent(type) != nullptr; }
 	void setGetTransformCallbacks(std::function<std::array<float, 3>()> positionCallback,
-	                              std::function<std::array<float, 3>()> rotationCallback,
+	                              std::function<CQuaternion()> rotationCallback,
 	                              std::function<std::array<float, 3>()> scaleCallback);
 	void setSetTransformCallbacks(std::function<void(std::array<float, 3>)> positionCallback,
-	                              std::function<void(std::array<float, 3>)> rotationCallback,
+	                              std::function<void(CQuaternion)> rotationCallback,
 	                              std::function<void(std::array<float, 3>)> scaleCallback);
-	void clearGetTransformCallbacks() { getTransformCallbacks.fill(nullptr); }
-	void clearSetTransformCallbacks() { setTransformCallbacks.fill(nullptr); }
+	void clearGetTransformCallbacks() {
+		getPositionCallback = nullptr;
+		getRotationCallback = nullptr;
+		getScaleCallback = nullptr;
+	}
+	void clearSetTransformCallbacks() {
+		setPositionCallback = nullptr;
+		setRotationCallback = nullptr;
+		setScaleCallback = nullptr;
+	}
 	void updateSetTransformCallbacks();
 
 	// Component management operations

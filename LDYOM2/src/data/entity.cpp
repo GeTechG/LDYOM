@@ -1,5 +1,6 @@
 #include "entity.h"
 #include <components_manager.h>
+#include <cquat_json.h>
 
 void Entity::addComponent(std::shared_ptr<Component> component) {
 	component->entity = this;
@@ -15,29 +16,30 @@ std::shared_ptr<Component> Entity::getComponent(const std::string_view type) {
 	return nullptr;
 }
 
-void Entity::setGetTransformCallbacks(std::function<std::array<float,3>()> positionCallback,
-                                      std::function<std::array<float,3>()> rotationCallback, std::function<std::array<float,3>()> scaleCallback) {
-	getTransformCallbacks[0] = positionCallback;
-	getTransformCallbacks[1] = rotationCallback;
-	getTransformCallbacks[2] = scaleCallback;
+void Entity::setGetTransformCallbacks(std::function<std::array<float, 3>()> positionCallback,
+                                      std::function<CQuaternion()> rotationCallback,
+                                      std::function<std::array<float, 3>()> scaleCallback) {
+	getPositionCallback = positionCallback;
+	getRotationCallback = rotationCallback;
+	getScaleCallback = scaleCallback;
 }
-void Entity::setSetTransformCallbacks(std::function<void(std::array<float,3>)> positionCallback,
-                                      std::function<void(std::array<float,3>)> rotationCallback,
-                                      std::function<void(std::array<float,3>)> scaleCallback) {
-	setTransformCallbacks[0] = positionCallback;
-	setTransformCallbacks[1] = rotationCallback;
-	setTransformCallbacks[2] = scaleCallback;
+void Entity::setSetTransformCallbacks(std::function<void(std::array<float, 3>)> positionCallback,
+                                      std::function<void(CQuaternion)> rotationCallback,
+                                      std::function<void(std::array<float, 3>)> scaleCallback) {
+	setPositionCallback = positionCallback;
+	setRotationCallback = rotationCallback;
+	setScaleCallback = scaleCallback;
 }
 
 void Entity::updateSetTransformCallbacks() {
-	if (setTransformCallbacks[0]) {
-		setTransformCallbacks[0](this->position);
+	if (setPositionCallback) {
+		setPositionCallback(this->position);
 	}
-	if (setTransformCallbacks[1]) {
-		setTransformCallbacks[1](this->rotation);
+	if (setRotationCallback) {
+		setRotationCallback(this->rotation);
 	}
-	if (setTransformCallbacks[2]) {
-		setTransformCallbacks[2](this->scale);
+	if (setScaleCallback) {
+		setScaleCallback(this->scale);
 	}
 }
 
