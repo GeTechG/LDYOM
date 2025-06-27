@@ -32,6 +32,7 @@ class ldyomRecipe(ConanFile):
         self.requires("spdlog/1.15.1")
         self.requires("stduuid/1.2.3")
         self.requires("watcher/0.12.0")
+        self.requires("glm/1.0.1")
 
     def config_options(self):
         pass

@@ -33,8 +33,9 @@ find_package(imgui REQUIRED)
 find_package(i18ncpp REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
-find_package(stduuid)
-find_package(watcher)
+find_package(stduuid REQUIRED)
+find_package(watcher REQUIRED)
+find_package(glm REQUIRED)
 
 if(NOT DEFINED ENV{DIRECTX9_SDK_DIR})
     message(FATAL_ERROR "DIRECTX9_SDK_DIR environment variable is not set. Please set it to your DirectX SDK installation path.")
@@ -64,6 +65,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     watcher::watcher
     sol2::sol2
     libluajit
+    glm::glm
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
