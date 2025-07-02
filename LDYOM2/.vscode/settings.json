@@ -94,7 +94,8 @@
         "shared_mutex": "cpp",
         "variant": "cpp",
         "resumable": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "cstdarg": "cpp"
     },
     "editor.formatOnSave": true,
 }

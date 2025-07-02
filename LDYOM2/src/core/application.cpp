@@ -94,7 +94,8 @@ void Application::shutdown() {
 
 void Application::process() {
 	rocket::dispatch_queued_calls();
-	ScenesManager::instance().onUpdate(CTimer::ms_fTimeStep * 1000.0f);
+	ScenesManager::instance().onUpdate((CTimer::m_snTimeInMilliseconds - CTimer::m_snPreviousTimeInMilliseconds) /
+	                                   1000.f);
 	TaskManager::instance().processAll();
 }
 
