@@ -10,9 +10,11 @@
 #include <components/actor/weapons.h>
 #include <components/health_bar.h>
 #include <components/object.h>
+#include <components/object/object_trigger_move.h>
 #include <components/objective_specific.h>
 #include <components/pickup.h>
 #include <components/vehicle.h>
+
 
 ComponentsManager& ComponentsManager::instance() {
 	static ComponentsManager instance;
@@ -43,4 +45,5 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::Vehicle>();
 	registerComponentBuilder<components::Pickup>();
 	registerComponentBuilder<components::Object>();
+	registerComponentBuilder<components::ObjectTriggerMove>();
 }
