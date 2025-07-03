@@ -24,6 +24,13 @@ void components::ObjectTriggerMove::sol_lua_register(sol::state_view lua_state) 
 components::ObjectTriggerMove::ObjectTriggerMove()
 	: Component(TYPE) {}
 
+components::ObjectTriggerMove::~ObjectTriggerMove() {
+	if (this->sphereHandle) {
+		plugin::Command<plugin::Commands::REMOVE_SPHERE>(this->sphereHandle.value());
+		this->sphereHandle.reset();
+	}
+}
+
 nlohmann::json components::ObjectTriggerMove::to_json() const {
 	auto j = this->Component::to_json();
 	j["radius"] = radius;

@@ -33,6 +33,7 @@ class ObjectTriggerMove : public Component {
 	CQuaternion endRotation = {{0.f, 0.f, 0.f}, 0.f};
 
 	ObjectTriggerMove();
+	~ObjectTriggerMove();
 
 	[[nodiscard]] nlohmann::json to_json() const override;
 
