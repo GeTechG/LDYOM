@@ -11,6 +11,7 @@
 #include "settings.h"
 #include "textures_manager.h"
 #include <components_manager.h>
+#include <fires_remover.h>
 #include <plugin.h>
 #include <projects_manager.h>
 #include <scenes_manager.h>
@@ -97,6 +98,9 @@ void Application::process() {
 	ScenesManager::instance().onUpdate((CTimer::m_snTimeInMilliseconds - CTimer::m_snPreviousTimeInMilliseconds) /
 	                                   1000.f);
 	TaskManager::instance().processAll();
+
+	// Remove game fires that are not associated with any pyrotechnic
+	checkEditorFires();
 }
 
 void Application::renderFrames() {
