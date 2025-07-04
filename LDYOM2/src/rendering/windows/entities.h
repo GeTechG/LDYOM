@@ -7,7 +7,8 @@ enum EntitiesWindowType {
 	EntitiesWindowType_Actor,
 	EntitiesWindowType_Vehicle,
 	EntitiesWindowType_Object,
-	EntitiesWindowType_Pickup
+	EntitiesWindowType_Pickup,
+	EntitiesWindowType_Firework
 };
 
 class EntitiesWindow : public Window {

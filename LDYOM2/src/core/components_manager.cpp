@@ -8,6 +8,7 @@
 #include <components/actor/actor_random_spawn.h>
 #include <components/actor/actor_simple_task.h>
 #include <components/actor/weapons.h>
+#include <components/firework.h>
 #include <components/health_bar.h>
 #include <components/object.h>
 #include <components/object/object_trigger_move.h>
@@ -46,4 +47,5 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::Pickup>();
 	registerComponentBuilder<components::Object>();
 	registerComponentBuilder<components::ObjectTriggerMove>();
+	registerComponentBuilder<components::Firework>();
 }
