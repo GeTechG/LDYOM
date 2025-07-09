@@ -9,6 +9,7 @@ class ModelsManager {
 	static std::vector<std::string> m_pedSpecialModels;
 	static std::vector<int> m_weaponIds;
 	static std::unordered_map<std::string, std::vector<std::string>> m_pedAnimations;
+	static std::vector<std::string> m_particlesNames;
 
   public:
 	static void loadData();
@@ -16,6 +17,7 @@ class ModelsManager {
 	static const std::vector<int>& getVehicleModels() { return m_vehicleModels; }
 	static const std::vector<std::string>& getPedSpecialModels() { return m_pedSpecialModels; }
 	static const std::vector<int>& getWeaponIds() { return m_weaponIds; }
+	static const std::vector<std::string>& getParticlesNames() { return m_particlesNames; }
 
 	static const std::unordered_map<std::string, std::vector<std::string>>& getPedAnimations();
 
@@ -23,6 +25,7 @@ class ModelsManager {
 	static void addVehicleModel(const int modelId) { m_vehicleModels.push_back(modelId); }
 	static void addPedSpecialModel(const std::string& modelName) { m_pedSpecialModels.push_back(modelName); }
 	static void addWeaponId(const int weaponId) { m_weaponIds.push_back(weaponId); }
+	static void addParticleName(const std::string& particleName) { m_particlesNames.push_back(particleName); }
 
 	static void addPedAnimation(const std::string& packName, const std::string& animName);
 
@@ -33,4 +36,5 @@ class ModelsManager {
 	static bool validObjectModel(int modelId);
 
 	static bool validatePedAnimation(const std::string& packName, const std::string& animName);
+	static bool validateParticleName(const std::string& particleName);
 };
