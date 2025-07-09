@@ -102,4 +102,5 @@ void EntitiesManager::registerCoreEntityTemplates() {
 	registerEntityTemplate("object", {"object", "objective_specific"});
 	registerEntityTemplate("pickup", {"pickup", "objective_specific"});
 	registerEntityTemplate("firework", {"firework", "objective_specific"});
+	registerEntityTemplate("particle", {"particle", "objective_specific"});
 }

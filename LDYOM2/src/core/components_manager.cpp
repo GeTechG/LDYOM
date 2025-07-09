@@ -13,9 +13,9 @@
 #include <components/object.h>
 #include <components/object/object_trigger_move.h>
 #include <components/objective_specific.h>
+#include <components/particle.h>
 #include <components/pickup.h>
 #include <components/vehicle.h>
-
 
 ComponentsManager& ComponentsManager::instance() {
 	static ComponentsManager instance;
@@ -48,4 +48,5 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::Object>();
 	registerComponentBuilder<components::ObjectTriggerMove>();
 	registerComponentBuilder<components::Firework>();
+	registerComponentBuilder<components::Particle>();
 }
