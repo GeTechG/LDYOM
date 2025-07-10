@@ -3,6 +3,7 @@
 #include "i18ncpp.h"
 #include "wtr/watcher.hpp"
 #include <filesystem>
+#include <fmt/format.h>
 #include <memory>
 #include <string>
 #include <string_view>
