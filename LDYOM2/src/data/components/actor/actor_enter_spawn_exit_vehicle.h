@@ -22,7 +22,6 @@ class ActorEnterSpawnExitVehicle : public Component {
 	std::shared_ptr<components::Vehicle> findNearestVehicle(std::shared_ptr<components::Actor> actor);
 	std::shared_ptr<components::Vehicle> findVehicleById();
 	void applyVehicleTask(std::shared_ptr<components::Actor> actor, std::shared_ptr<components::Vehicle> vehicle);
-	void renderVehicleSelection(float availableWidth, float labelWidth);
 
   public:
 	static constexpr auto TYPE = "actor_enter_spawn_exit_vehicle";

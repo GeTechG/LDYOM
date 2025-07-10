@@ -3,6 +3,7 @@
 #include "components/vehicle.h"
 #include "entity.h"
 #include "extensions/ScriptCommands.h"
+#include "utils_entities_selections.h"
 #include <entities_manager.h>
 #include <in_game/actor_paths_editing.h>
 #include <project_player.h>
@@ -154,7 +155,7 @@ void components::ActorEnterSpawnExitVehicle::editorRender() {
 
 	// Vehicle ID selection (only when not using nearest vehicle)
 	if (!nearestVehicle) {
-		renderVehicleSelection(availableWidth, labelWidth);
+		renderEntityByComponentSelection<components::Vehicle>(vehicleId, availableWidth, labelWidth);
 	}
 
 	// Seat index slider
@@ -176,31 +177,6 @@ void components::ActorEnterSpawnExitVehicle::editorRender() {
 			}
 			if (isSelected) {
 				ImGui::SetItemDefaultFocus();
-			}
-		}
-		ImGui::EndCombo();
-	}
-}
-
-void components::ActorEnterSpawnExitVehicle::renderVehicleSelection(float availableWidth, float labelWidth) {
-	ImGui::Text(tr("vehicle_id").c_str());
-	ImGui::SameLine(availableWidth * labelWidth);
-	ImGui::SetNextItemWidth(-1.f);
-
-	const auto vehicles = EntitiesManager::instance().getEntitiesWithComponent(Vehicle::TYPE);
-	const auto vehicleUuid = uuids::uuid::from_string(vehicleId);
-	const auto currentVehicle =
-		std::ranges::find_if(vehicles, [vehicleUuid](Entity* entity) { return entity->id == vehicleUuid; });
-
-	const char* previewText = (currentVehicle != vehicles.end()) ? (*currentVehicle)->name.c_str() : "";
-
-	if (ImGui::BeginCombo("##vehicleId", previewText)) {
-		for (size_t i = 0; i < vehicles.size(); ++i) {
-			const auto& vehicle = vehicles[i];
-			const bool isSelected = (vehicle->id == vehicleUuid);
-
-			if (ImGui::Selectable(fmt::format("{}##{}", vehicle->name, i).c_str(), isSelected)) {
-				vehicleId = to_string(vehicle->id);
 			}
 		}
 		ImGui::EndCombo();
