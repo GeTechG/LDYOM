@@ -21,7 +21,6 @@
 #include <timer_service.h>
 #include <utils/string_utils.h>
 
-
 ProjectPlayer::~ProjectPlayer() { this->projectTasklist->clear_all_tasks(); }
 
 ktwait ProjectPlayer::run() {
@@ -96,6 +95,8 @@ ktwait ProjectPlayer::run() {
 		instance().onObjectiveCompleted(i);
 	}
 
+	co_await ProjectPlayer::playerLeaveAnyVehicle();
+
 	instance().m_state.isPlaying = false;
 	instance().transitionPlayingState(false);
 	LDYOM_INFO("Project player finished");
@@ -106,6 +107,27 @@ ktwait ProjectPlayer::processStopCheat() {
 		co_await 1;
 	}
 	instance().stopCurrentProject();
+}
+
+ktwait ProjectPlayer::playerLeaveAnyVehicle() {
+	using namespace plugin;
+
+	CPed* playerPed = FindPlayerPed();
+	auto playerInVehicle =
+		Command<Commands::IS_CHAR_IN_ANY_CAR>(playerPed) || Command<Commands::IS_CHAR_IN_ANY_BOAT>(playerPed) ||
+		Command<Commands::IS_CHAR_IN_ANY_HELI>(playerPed) || Command<Commands::IS_CHAR_IN_ANY_PLANE>(playerPed) ||
+		Command<Commands::IS_CHAR_IN_ANY_TRAIN>(playerPed);
+	if (playerInVehicle) {
+		Command<Commands::TASK_LEAVE_ANY_CAR>(playerPed);
+		while (playerInVehicle) {
+			co_await 1;
+			playerInVehicle = Command<Commands::IS_CHAR_IN_ANY_CAR>(playerPed) ||
+			                  Command<Commands::IS_CHAR_IN_ANY_BOAT>(playerPed) ||
+			                  Command<Commands::IS_CHAR_IN_ANY_HELI>(playerPed) ||
+			                  Command<Commands::IS_CHAR_IN_ANY_PLANE>(playerPed) ||
+			                  Command<Commands::IS_CHAR_IN_ANY_TRAIN>(playerPed);
+		}
+	}
 }
 
 ProjectPlayer& ProjectPlayer::instance() {
@@ -133,9 +155,12 @@ void ProjectPlayer::stopCurrentProject() {
 	}
 	TaskManager::instance().removeTask("run_project_player");
 
-	this->m_state.isPlaying = false;
-	transitionPlayingState(false);
-	LDYOM_INFO("Project player stopped");
+	TaskManager::instance().addTask("stopping_project_player", []() -> ktwait {
+		co_await ProjectPlayer::playerLeaveAnyVehicle();
+		ProjectPlayer::instance().m_state.isPlaying = false;
+		ProjectPlayer::instance().transitionPlayingState(false);
+		LDYOM_INFO("Project player stopped");
+	});
 }
 
 void ProjectPlayer::failCurrentProject() { this->stopCurrentProject(); }

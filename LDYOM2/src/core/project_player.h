@@ -23,6 +23,7 @@ class ProjectPlayer {
 
 	static ktwait run();
 	static ktwait processStopCheat();
+	static ktwait playerLeaveAnyVehicle();
 
   public:
 	std::unique_ptr<ktcoro_tasklist> projectTasklist = std::make_unique<ktcoro_tasklist>();
