@@ -13,3 +13,14 @@ inline int addBlipToPed(int ped, int colorBlip) {
 	}
 	return handle;
 }
+
+inline int addBlipToVehicle(int vehicle, int colorBlip) {
+	int handle;
+	plugin::Command<plugin::Commands::ADD_BLIP_FOR_CAR>(vehicle, &handle);
+	if (colorBlip != 6) {
+		CRadar::ChangeBlipColour(handle, colorBlip - 1);
+	} else {
+		CRadar::SetBlipFriendly(handle, 1);
+	}
+	return handle;
+}
