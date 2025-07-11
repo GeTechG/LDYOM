@@ -15,7 +15,19 @@ components::ObjectiveSpecific::ObjectiveSpecific()
 	if (!ScenesManager::instance().getCurrentScene().objectives.data.empty()) {
 		this->spawnObjective = to_string(ScenesManager::instance().getCurrentScene().objectives.data.back().id);
 	}
+	this->objectiveRemovedConnection = ObjectivesManager::instance().onObjectivesRemoved.connect(
+		[this](std::string oldId, std::string newId) {
+			if (this->spawnObjective == oldId) {
+				this->spawnObjective = newId;
+			}
+			if (this->despawnObjective == oldId) {
+				this->despawnObjective = newId;
+			}
+		},
+		rocket::queued_connection);
 }
+
+components::ObjectiveSpecific::~ObjectiveSpecific() { this->objectiveRemovedConnection.reset(); }
 
 nlohmann::json components::ObjectiveSpecific::to_json() const {
 	auto j = this->Component::to_json();

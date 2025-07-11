@@ -2,9 +2,9 @@
 #include <functional>
 #include <lua_manager.h>
 #include <objective.h>
+#include <rocket.hpp>
 #include <string>
 #include <unordered_map>
-
 
 struct ObjectiveBuilderData {
 	std::string type;
@@ -19,6 +19,8 @@ class ObjectivesManager {
 	ObjectivesManager() = default;
 
   public:
+	rocket::thread_safe_signal<void(std::string, std::string)> onObjectivesRemoved;
+
 	static ObjectivesManager& instance();
 
 	ObjectivesManager(const ObjectivesManager&) = delete;

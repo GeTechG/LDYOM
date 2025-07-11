@@ -15,6 +15,8 @@ class ObjectiveSpecific : public Component {
 	std::optional<rocket::scoped_connection> spawnObjectiveConnection;
 	std::optional<rocket::scoped_connection> despawnObjectiveConnection;
 
+	std::optional<rocket::scoped_connection> objectiveRemovedConnection;
+
   public:
 	static constexpr auto TYPE = "objective_specific";
 	static constexpr auto CATEGORY = "entities";
@@ -32,6 +34,7 @@ class ObjectiveSpecific : public Component {
 	rocket::thread_safe_signal<void()> onDespawned;
 
 	ObjectiveSpecific();
+	~ObjectiveSpecific();
 
 	[[nodiscard]] nlohmann::json to_json() const override;
 
