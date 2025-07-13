@@ -1,11 +1,13 @@
 #include "objectives_manager.h"
 #include "scenes_manager.h"
+#include <objectives/destroy_vehicle.h>
 #include <objectives/enter_to_vehicle.h>
 #include <objectives/kill_actor_gang.h>
 #include <objectives/test.h>
 #include <objectives/wait_signal.h>
 #include <stdexcept>
 #include <vector_utils.h>
+
 
 ObjectivesManager& ObjectivesManager::instance() {
 	static ObjectivesManager instance;
@@ -71,4 +73,5 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<wait_signal::Data>(wait_signal::builder());
 	this->registerObjectiveBuilder<kill_actor_gang::Data>(kill_actor_gang::builder());
 	this->registerObjectiveBuilder<enter_to_vehicle::Data>(enter_to_vehicle::builder());
+	this->registerObjectiveBuilder<destroy_vehicle::Data>(destroy_vehicle::builder());
 }
