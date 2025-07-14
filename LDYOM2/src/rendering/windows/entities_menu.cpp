@@ -39,6 +39,9 @@ void EntitiesMenu::renderContent(Window* window) {
 	if (ImGui::Button(_("entities_menu.particles", ICON_FA_DROPLET).c_str(), buttonSize)) {
 		openEntitiesWindow(EntitiesWindowType_Particle);
 	}
+	if (ImGui::Button(_("entities_menu.checkpoints", ICON_FA_FLAG).c_str(), buttonSize)) {
+		openEntitiesWindow(EntitiesWindowType_Checkpoint);
+	}
 }
 
 EntitiesMenu::EntitiesMenu()

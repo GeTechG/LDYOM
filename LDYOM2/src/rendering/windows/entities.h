@@ -9,7 +9,8 @@ enum EntitiesWindowType {
 	EntitiesWindowType_Object,
 	EntitiesWindowType_Pickup,
 	EntitiesWindowType_Firework,
-	EntitiesWindowType_Particle
+	EntitiesWindowType_Particle,
+	EntitiesWindowType_Checkpoint
 };
 
 class EntitiesWindow : public Window {

@@ -8,6 +8,7 @@
 #include <components/actor/actor_random_spawn.h>
 #include <components/actor/actor_simple_task.h>
 #include <components/actor/weapons.h>
+#include <components/checkpoint.h>
 #include <components/firework.h>
 #include <components/health_bar.h>
 #include <components/object.h>
@@ -49,4 +50,5 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::ObjectTriggerMove>();
 	registerComponentBuilder<components::Firework>();
 	registerComponentBuilder<components::Particle>();
+	registerComponentBuilder<components::Checkpoint>();
 }

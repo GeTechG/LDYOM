@@ -24,6 +24,7 @@ bool EntitiesWindow::filterByType(Entity& entity) {
 		case EntitiesWindowType_Pickup: return entity.hasComponent("pickup");
 		case EntitiesWindowType_Firework: return entity.hasComponent("firework");
 		case EntitiesWindowType_Particle: return entity.hasComponent("particle");
+		case EntitiesWindowType_Checkpoint: return entity.hasComponent("checkpoint");
 		default: return false;
 	}
 }
@@ -75,6 +76,11 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 				case EntitiesWindowType_Particle:
 					{
 						EntitiesManager::instance().addNewEntityFromTemplate("particle");
+						break;
+					}
+				case EntitiesWindowType_Checkpoint:
+					{
+						EntitiesManager::instance().addNewEntityFromTemplate("checkpoint");
 						break;
 					}
 			}
