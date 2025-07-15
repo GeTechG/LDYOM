@@ -24,3 +24,14 @@ inline int addBlipToVehicle(int vehicle, int colorBlip) {
 	}
 	return handle;
 }
+
+inline int addBlipToCoord(float x, float y, float z, int colorBlip) {
+	int handle;
+	plugin::Command<plugin::Commands::ADD_BLIP_FOR_COORD>(x, y, z, &handle);
+	if (colorBlip != 6) {
+		CRadar::ChangeBlipColour(handle, colorBlip - 1);
+	} else {
+		CRadar::SetBlipFriendly(handle, 1);
+	}
+	return handle;
+}
