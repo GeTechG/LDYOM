@@ -121,6 +121,10 @@ ktwait execute(Data& data) {
 		if (!plugin::Command<plugin::Commands::DOES_CHAR_EXIST>(actor) ||
 		    plugin::Command<plugin::Commands::IS_CHAR_DEAD>(actor)) {
 			actorsToKill.erase(actorsToKill.begin());
+			if (!blips.empty()) {
+				plugin::Command<plugin::Commands::REMOVE_BLIP>(blips.front());
+				blips.erase(blips.begin());
+			}
 			continue;
 		}
 		co_await 10;

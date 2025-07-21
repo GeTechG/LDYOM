@@ -52,8 +52,8 @@ void ObjectivesManager::removeObjective(int index) {
 	if (index >= 0 && index < static_cast<int>(objectives.size())) {
 		auto removedObjectiveID = uuids::to_string(objectives[index].id);
 		objectives.erase(objectives.begin() + index);
-		auto newIndex = std::clamp(index, 0, static_cast<int>(objectives.size()) - 1);
 		if (!objectives.empty()) {
+			auto newIndex = std::clamp(index, 0, static_cast<int>(objectives.size()) - 1);
 			this->onObjectivesRemoved(removedObjectiveID, uuids::to_string(objectives[newIndex].id));
 		}
 	}
