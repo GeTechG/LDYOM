@@ -95,7 +95,8 @@
         "variant": "cpp",
         "resumable": "cpp",
         "queue": "cpp",
-        "cstdarg": "cpp"
+        "cstdarg": "cpp",
+        "source_location": "cpp"
     },
     "editor.formatOnSave": true,
 }
