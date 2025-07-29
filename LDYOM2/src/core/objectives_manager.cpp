@@ -8,10 +8,12 @@
 #include <objectives/enter_to_vehicle.h>
 #include <objectives/kill_actor_gang.h>
 #include <objectives/money_add.h>
+#include <objectives/money_substract.h>
 #include <objectives/test.h>
 #include <objectives/wait_signal.h>
 #include <stdexcept>
 #include <vector_utils.h>
+
 
 ObjectivesManager& ObjectivesManager::instance() {
 	static ObjectivesManager instance;
@@ -83,4 +85,5 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<cutscene::Data>(cutscene::builder());
 	this->registerObjectiveBuilder<clock::Data>(clock::builder());
 	this->registerObjectiveBuilder<money_add::Data>(money_add::builder());
+	this->registerObjectiveBuilder<money_subtract::Data>(money_subtract::builder());
 }
