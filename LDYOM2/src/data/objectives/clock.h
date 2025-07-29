@@ -17,7 +17,6 @@
 #include <utils/imgui_configurate.h>
 #include <utils_entities_selections.h>
 
-
 namespace objectives::clock {
 constexpr const char* TYPE = "core.clock";
 
@@ -30,7 +29,7 @@ struct Data {
 	std::string gameText;
 
 	static void sol_lua_register(sol::state_view lua_state) {
-		auto ut = lua_state.new_usertype<Data>("ObjectiveKillActorGangData");
+		auto ut = lua_state.new_usertype<Data>("ObjectiveClockData");
 		SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Data, hour, minute, text, textTime);
 	}
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Data, hour, minute, text, textTime);

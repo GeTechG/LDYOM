@@ -41,7 +41,7 @@ struct Data {
 	std::string gameText;
 
 	static void sol_lua_register(sol::state_view lua_state) {
-		auto ut = lua_state.new_usertype<Data>("ObjectiveKillActorGangData");
+		auto ut = lua_state.new_usertype<Data>("ObjectiveCutsceneData");
 		SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Data, behaviour, cameraPosition, targetPosition, actorUuid,
 		                 slowMotion, fadeInOut, shaking, wideScreen, text, textTime);
 	}

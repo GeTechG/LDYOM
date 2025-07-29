@@ -28,7 +28,7 @@ struct Data {
 	std::string gameText;
 
 	static void sol_lua_register(sol::state_view lua_state) {
-		auto ut = lua_state.new_usertype<Data>("ObjectiveKillActorGangData");
+		auto ut = lua_state.new_usertype<Data>("ObjectiveDestroyVehicleData");
 		SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Data, vehicleUuid, text, textTime, colorBlip);
 	}
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Data, vehicleUuid, text, textTime, colorBlip);
