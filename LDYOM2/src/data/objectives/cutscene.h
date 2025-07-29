@@ -54,6 +54,9 @@ inline std::string tr(const std::string& key) { return _(fmt::format("objectives
 void renderEditor(Data& data);
 
 inline ktwait execute(Data& data) {
+	static auto duration = 0;
+	static auto isSkipped = false;
+
 	auto currentObjectiveIndex = ProjectPlayer::instance().getCurrentObjectiveIndex();
 	auto& objectives = ScenesManager::instance().getUnsafeCurrentScene().objectives.data;
 
@@ -94,15 +97,6 @@ inline ktwait execute(Data& data) {
 
 	if (fadeIn) {
 		plugin::Command<plugin::Commands::DO_FADE>(500, 1);
-	}
-
-	if (!data.text.empty()) {
-		auto cp1251Text = utf8_to_cp1251(data.text);
-		gxt_encode(cp1251Text);
-		data.gameText = cp1251Text;
-
-		CMessages::AddMessage(const_cast<char*>(data.gameText.c_str()), static_cast<unsigned>(data.textTime * 1000.0f),
-		                      0, false);
 	}
 
 	TheCamera.m_bWideScreenOn = data.wideScreen;
@@ -204,12 +198,35 @@ inline ktwait execute(Data& data) {
 		default: break;
 	}
 
+	duration = isSkipped ? 0 : time;
+
 	if (fadeOut) {
-		co_await std::max(time - 500, 0);
-		plugin::Command<plugin::Commands::DO_FADE>(500, 0);
-		co_await 500;
-	} else {
-		co_await time;
+		duration = std::min(500, duration);
+	}
+
+	if (!data.text.empty()) {
+		auto cp1251Text = utf8_to_cp1251(data.text);
+		gxt_encode(cp1251Text);
+		data.gameText = cp1251Text;
+
+		CMessages::AddMessage(const_cast<char*>(data.gameText.c_str()), duration, 0, false);
+	}
+
+	auto isFadeOutRunning = false;
+	auto lastTime = CTimer::m_snTimeInMilliseconds;
+	while (duration > 0) {
+		auto currentTime = CTimer::m_snTimeInMilliseconds;
+		duration -= currentTime - lastTime;
+		if (duration <= 500 && fadeOut && !isFadeOutRunning) {
+			isFadeOutRunning = true;
+			plugin::Command<plugin::Commands::DO_FADE>(500, 0);
+		}
+		if (plugin::Command<plugin::Commands::IS_BUTTON_PRESSED>(0, 16)) {
+			duration = 0;
+			isSkipped = true;
+		}
+		lastTime = currentTime;
+		co_await 1;
 	}
 
 	{
@@ -226,6 +243,7 @@ inline ktwait execute(Data& data) {
 	plugin::Command<plugin::Commands::CAMERA_PERSIST_TRACK>(false);
 	plugin::Command<plugin::Commands::CAMERA_RESET_NEW_SCRIPTABLES>();
 	if (jumpcut) {
+		isSkipped = false;
 		plugin::Command<plugin::Commands::RESTORE_CAMERA_JUMPCUT>();
 		TheCamera.m_bWideScreenOn = false;
 		CTheScripts::bDisplayHud = true;
