@@ -1,6 +1,7 @@
 #include "objectives_manager.h"
 #include "scenes_manager.h"
 #include <objectives/checkpoint.h>
+#include <objectives/clock.h>
 #include <objectives/countdown.h>
 #include <objectives/cutscene.h>
 #include <objectives/destroy_vehicle.h>
@@ -10,6 +11,7 @@
 #include <objectives/wait_signal.h>
 #include <stdexcept>
 #include <vector_utils.h>
+
 
 ObjectivesManager& ObjectivesManager::instance() {
 	static ObjectivesManager instance;
@@ -79,4 +81,5 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<checkpoint::Data>(checkpoint::builder());
 	this->registerObjectiveBuilder<countdown::Data>(countdown::builder());
 	this->registerObjectiveBuilder<cutscene::Data>(cutscene::builder());
+	this->registerObjectiveBuilder<clock::Data>(clock::builder());
 }
