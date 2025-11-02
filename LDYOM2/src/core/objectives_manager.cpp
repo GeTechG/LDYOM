@@ -13,6 +13,11 @@
 #include <objectives/ped_behaviour.h>
 #include <objectives/phone_call.h>
 #include <objectives/pickup.h>
+#include <objectives/player_animation.h>
+#include <objectives/player_move_by_points.h>
+#include <objectives/player_random_spawn.h>
+#include <objectives/player_simple_task.h>
+#include <objectives/player_vehicle_task.h>
 #include <objectives/test.h>
 #include <objectives/wait_signal.h>
 #include <stdexcept>
@@ -93,4 +98,9 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<ped_behaviour::Data>(ped_behaviour::builder());
 	this->registerObjectiveBuilder<phone_call::Data>(phone_call::builder());
 	this->registerObjectiveBuilder<pickup::Data>(pickup::builder());
+	this->registerObjectiveBuilder<player_animation::Data>(player_animation::builder());
+	this->registerObjectiveBuilder<player_move_by_points::Data>(player_move_by_points::builder());
+	this->registerObjectiveBuilder<player_random_spawn::Data>(player_random_spawn::builder());
+	this->registerObjectiveBuilder<player_simple_task::Data>(player_simple_task::builder());
+	this->registerObjectiveBuilder<player_vehicle_task::Data>(player_vehicle_task::builder());
 }
