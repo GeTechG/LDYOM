@@ -20,6 +20,7 @@
 #include <scenes_manager.h>
 #include <string_utils.h>
 #include <utils/imgui_configurate.h>
+#include <utils/objective_utils.h>
 #include <utils_entities_selections.h>
 #include <window_manager.h>
 
@@ -64,18 +65,22 @@ inline ktwait execute(Data& data) {
 	auto fadeOut = data.fadeInOut;
 	auto jumpcut = true;
 
-	if (currentObjectiveIndex > 0) {
-		auto& previousObjective = objectives[currentObjectiveIndex - 1];
-		if (previousObjective.type == TYPE) {
+	// Check if last interrupting objective was also a cutscene
+	int lastInterruptingIdx = objective_utils::findLastInterruptingObjective(objectives, currentObjectiveIndex);
+	if (lastInterruptingIdx >= 0) {
+		auto& lastInterruptingObjective = objectives[lastInterruptingIdx];
+		if (lastInterruptingObjective.type == TYPE) {
 			fadeIn = false;
 		}
 	} else {
 		fadeIn = false;
 	}
 
-	if (currentObjectiveIndex < objectives.size() - 1) {
-		auto& nextObjective = objectives[currentObjectiveIndex + 1];
-		if (nextObjective.type == TYPE) {
+	// Check if next interrupting objective is also a cutscene
+	int nextInterruptingIdx = objective_utils::findNextInterruptingObjective(objectives, currentObjectiveIndex);
+	if (nextInterruptingIdx >= 0) {
+		auto& nextInterruptingObjective = objectives[nextInterruptingIdx];
+		if (nextInterruptingObjective.type == TYPE) {
 			fadeOut = false;
 			jumpcut = false;
 		}

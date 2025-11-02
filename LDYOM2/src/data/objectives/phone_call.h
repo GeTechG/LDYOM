@@ -12,6 +12,7 @@
 #include <scenes_manager.h>
 #include <string_utils.h>
 #include <utils/imgui_configurate.h>
+#include <utils/objective_utils.h>
 
 namespace objectives::phone_call {
 constexpr const char* TYPE = "core.phone_call";
@@ -49,20 +50,22 @@ ktwait execute(Data& data) {
 	auto currentObjectiveIndex = ProjectPlayer::instance().getCurrentObjectiveIndex();
 	auto& objectives = ScenesManager::instance().getUnsafeCurrentScene().objectives.data;
 
-	// Check if previous objective was also a phone call
+	// Check if last interrupting objective was also a phone call
 	bool shouldStartCall = true;
-	if (currentObjectiveIndex > 0) {
-		auto& previousObjective = objectives[currentObjectiveIndex - 1];
-		if (previousObjective.type == TYPE) {
+	int lastInterruptingIdx = objective_utils::findLastInterruptingObjective(objectives, currentObjectiveIndex);
+	if (lastInterruptingIdx >= 0) {
+		auto& lastInterruptingObjective = objectives[lastInterruptingIdx];
+		if (lastInterruptingObjective.type == TYPE) {
 			shouldStartCall = false; // Phone is already active
 		}
 	}
 
-	// Check if next objective is also a phone call
+	// Check if next interrupting objective is also a phone call
 	bool shouldEndCall = true;
-	if (currentObjectiveIndex < objectives.size() - 1) {
-		auto& nextObjective = objectives[currentObjectiveIndex + 1];
-		if (nextObjective.type == TYPE) {
+	int nextInterruptingIdx = objective_utils::findNextInterruptingObjective(objectives, currentObjectiveIndex);
+	if (nextInterruptingIdx >= 0) {
+		auto& nextInterruptingObjective = objectives[nextInterruptingIdx];
+		if (nextInterruptingObjective.type == TYPE) {
 			shouldEndCall = false; // Keep phone active for next objective
 		}
 	}
