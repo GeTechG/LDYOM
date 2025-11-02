@@ -10,6 +10,7 @@
 #include <objectives/kill_actor_gang.h>
 #include <objectives/money_add.h>
 #include <objectives/money_substract.h>
+#include <objectives/ped_behaviour.h>
 #include <objectives/test.h>
 #include <objectives/wait_signal.h>
 #include <stdexcept>
@@ -87,4 +88,5 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<money_add::Data>(money_add::builder());
 	this->registerObjectiveBuilder<money_subtract::Data>(money_subtract::builder());
 	this->registerObjectiveBuilder<interact_with_object::Data>(interact_with_object::builder());
+	this->registerObjectiveBuilder<ped_behaviour::Data>(ped_behaviour::builder());
 }
