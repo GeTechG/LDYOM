@@ -36,9 +36,9 @@ void renderEditor(Data& data) {
 	ImGui::Dummy(ImVec2((SCL_PX).x * 300.f, 0.f)); // Add some space at the top
 
 	ImGui::Text(_("text").c_str());
-	ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
-	ImGui::InputText("##text", &data.text);
+	ImGui::InputTextMultiline("##text", &data.text, ImVec2(-1.f, ImGui::GetTextLineHeight() * 4),
+	                          ImGuiInputTextFlags_None);
 
 	ImGui::Text(tr("duration").c_str());
 	ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);
