@@ -70,4 +70,24 @@ int findNextInterruptingObjective(const ObjectiveList& objectives, int currentIn
 	return -1;
 }
 
+/**
+ * Checks if the last interrupting objective matches the given type.
+ * Returns true if found and matches, false otherwise.
+ */
+template <typename ObjectiveList>
+bool isLastInterruptingObjectiveOfType(const ObjectiveList& objectives, int currentIndex, std::string_view type) {
+	int lastIdx = findLastInterruptingObjective(objectives, currentIndex);
+	return lastIdx >= 0 && objectives[lastIdx].type == type;
+}
+
+/**
+ * Checks if the next interrupting objective matches the given type.
+ * Returns true if found and matches, false otherwise.
+ */
+template <typename ObjectiveList>
+bool isNextInterruptingObjectiveOfType(const ObjectiveList& objectives, int currentIndex, std::string_view type) {
+	int nextIdx = findNextInterruptingObjective(objectives, currentIndex);
+	return nextIdx >= 0 && objectives[nextIdx].type == type;
+}
+
 } // namespace objective_utils

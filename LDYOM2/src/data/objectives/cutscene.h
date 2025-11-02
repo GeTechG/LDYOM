@@ -65,25 +65,18 @@ inline ktwait execute(Data& data) {
 	auto fadeOut = data.fadeInOut;
 	auto jumpcut = true;
 
-	// Check if last interrupting objective was also a cutscene
-	int lastInterruptingIdx = objective_utils::findLastInterruptingObjective(objectives, currentObjectiveIndex);
-	if (lastInterruptingIdx >= 0) {
-		auto& lastInterruptingObjective = objectives[lastInterruptingIdx];
-		if (lastInterruptingObjective.type == TYPE) {
-			fadeIn = false;
-		}
-	} else {
+	// Skip fade in if last interrupting objective was also a cutscene (or if this is the first objective)
+	if (objective_utils::isLastInterruptingObjectiveOfType(objectives, currentObjectiveIndex, TYPE)) {
+		fadeIn = false;
+	} else if (currentObjectiveIndex == 0 ||
+	           objective_utils::findLastInterruptingObjective(objectives, currentObjectiveIndex) < 0) {
 		fadeIn = false;
 	}
 
-	// Check if next interrupting objective is also a cutscene
-	int nextInterruptingIdx = objective_utils::findNextInterruptingObjective(objectives, currentObjectiveIndex);
-	if (nextInterruptingIdx >= 0) {
-		auto& nextInterruptingObjective = objectives[nextInterruptingIdx];
-		if (nextInterruptingObjective.type == TYPE) {
-			fadeOut = false;
-			jumpcut = false;
-		}
+	// Skip fade out and jumpcut if next interrupting objective is also a cutscene
+	if (objective_utils::isNextInterruptingObjectiveOfType(objectives, currentObjectiveIndex, TYPE)) {
+		fadeOut = false;
+		jumpcut = false;
 	}
 
 	std::shared_ptr<components::Actor> targetActor;

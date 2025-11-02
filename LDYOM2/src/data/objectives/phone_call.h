@@ -51,24 +51,10 @@ ktwait execute(Data& data) {
 	auto& objectives = ScenesManager::instance().getUnsafeCurrentScene().objectives.data;
 
 	// Check if last interrupting objective was also a phone call
-	bool shouldStartCall = true;
-	int lastInterruptingIdx = objective_utils::findLastInterruptingObjective(objectives, currentObjectiveIndex);
-	if (lastInterruptingIdx >= 0) {
-		auto& lastInterruptingObjective = objectives[lastInterruptingIdx];
-		if (lastInterruptingObjective.type == TYPE) {
-			shouldStartCall = false; // Phone is already active
-		}
-	}
+	bool shouldStartCall = !objective_utils::isLastInterruptingObjectiveOfType(objectives, currentObjectiveIndex, TYPE);
 
 	// Check if next interrupting objective is also a phone call
-	bool shouldEndCall = true;
-	int nextInterruptingIdx = objective_utils::findNextInterruptingObjective(objectives, currentObjectiveIndex);
-	if (nextInterruptingIdx >= 0) {
-		auto& nextInterruptingObjective = objectives[nextInterruptingIdx];
-		if (nextInterruptingObjective.type == TYPE) {
-			shouldEndCall = false; // Keep phone active for next objective
-		}
-	}
+	bool shouldEndCall = !objective_utils::isNextInterruptingObjectiveOfType(objectives, currentObjectiveIndex, TYPE);
 
 	constexpr int CELLPHONE_MODEL = 330; // Model ID for cellphone
 
