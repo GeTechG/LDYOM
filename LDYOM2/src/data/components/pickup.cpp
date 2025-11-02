@@ -232,8 +232,8 @@ void components::Pickup::spawn() {
 				CStreaming::LoadAllRequestedModels(false);
 			}
 			CVector pos(this->entity->position[0], this->entity->position[1], this->entity->position[2]);
-			this->handle = CPickups::GenerateNewOne_WeaponType(pos, static_cast<eWeaponType>(this->weaponType),
-			                                                   pickupType, ammo, false, nullptr);
+			plugin::Command<plugin::Commands::CREATE_PICKUP_WITH_AMMO>(weaponModel, pickupType, this->ammo, pos.x,
+			                                                           pos.y, pos.z, &this->handle);
 			CStreaming::SetMissionDoesntRequireModel(weaponModel);
 		}
 	} else {
@@ -255,7 +255,7 @@ void components::Pickup::spawn() {
 		CStreaming::LoadAllRequestedModels(false);
 
 		CVector pos(this->entity->position[0], this->entity->position[1], this->entity->position[2]);
-		this->handle = CPickups::GenerateNewOne(pos, modelId, pickupType, this->ammo, 0, false, nullptr);
+		plugin::Command<plugin::Commands::CREATE_PICKUP>(modelId, pickupType, pos.x, pos.y, pos.z, &this->handle);
 		CStreaming::SetMissionDoesntRequireModel(modelId);
 	}
 
