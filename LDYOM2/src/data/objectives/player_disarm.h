@@ -13,11 +13,14 @@ namespace objectives::player_disarm {
 constexpr const char* TYPE = "core.player_disarm";
 
 struct Data {
-	int v;
 	static void sol_lua_register(sol::state_view lua_state) {
 		auto ut = lua_state.new_usertype<Data>("ObjectivePlayerDisarmData");
 	}
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Data, v);
+	friend void to_json(nlohmann::json& j, const Data& data) { j = nlohmann::json::object(); }
+
+	friend void from_json(const nlohmann::json& j, Data& data) {
+		// No properties to deserialize
+	}
 };
 
 inline std::string tr(const std::string& key) { return _(fmt::format("objectives.{}.{}", std::string(TYPE), key)); }
