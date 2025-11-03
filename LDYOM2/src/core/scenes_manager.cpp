@@ -202,12 +202,22 @@ void ScenesManager::onUpdate(float deltaTime) {
 	for (auto& entity : currentScene.entities) {
 		entity->onUpdate(deltaTime);
 	}
+	// Lazily initialize objectives (similar to components in entities)
+	for (auto& objective : currentScene.objectives.data) {
+		if (!objective.isInitialized) {
+			objective.onStart();
+		}
+	}
 }
 
 void ScenesManager::resetCurrentScene() {
 	auto& currentScene = getUnsafeCurrentScene();
 	for (auto& entity : currentScene.entities) {
 		entity->reset();
+	}
+	// Call onReset for all objectives
+	for (auto& objective : currentScene.objectives.data) {
+		objective.onReset();
 	}
 }
 

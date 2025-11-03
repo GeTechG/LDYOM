@@ -13,6 +13,8 @@ class ObjectiveDataContainer {
 	virtual ~ObjectiveDataContainer() = default;
 	virtual void callRenderer() = 0;
 	virtual ktwait callExecutor() = 0;
+	virtual void callOnStart() = 0;
+	virtual void callOnReset() = 0;
 	virtual nlohmann::json toJson() const = 0;
 	virtual void fromJson(const nlohmann::json& j) = 0;
 };
@@ -22,12 +24,18 @@ template <typename T> class TypedObjectiveDataContainer : public ObjectiveDataCo
 	T value;
 	std::function<void(T&)> editorCallback;
 	std::function<ktwait(T&)> executorCallback;
+	std::function<void(T&)> onStartCallback;
+	std::function<void(T&)> onResetCallback;
 
 	TypedObjectiveDataContainer(T initialValue, std::function<void(T&)> editorCallback,
-	                            std::function<ktwait(T&)> executorCallback)
+	                            std::function<ktwait(T&)> executorCallback,
+	                            std::function<void(T&)> onStartCallback = nullptr,
+	                            std::function<void(T&)> onResetCallback = nullptr)
 		: value(initialValue),
 		  editorCallback(editorCallback),
-		  executorCallback(executorCallback) {}
+		  executorCallback(executorCallback),
+		  onStartCallback(onStartCallback),
+		  onResetCallback(onResetCallback) {}
 
 	nlohmann::json toJson() const override { return nlohmann::json(value); }
 
@@ -36,6 +44,18 @@ template <typename T> class TypedObjectiveDataContainer : public ObjectiveDataCo
 	void callRenderer() override { editorCallback(value); }
 
 	ktwait callExecutor() override { return executorCallback(value); }
+
+	void callOnStart() override {
+		if (onStartCallback) {
+			onStartCallback(value);
+		}
+	}
+
+	void callOnReset() override {
+		if (onResetCallback) {
+			onResetCallback(value);
+		}
+	}
 };
 
 class Objective {
@@ -44,14 +64,17 @@ class Objective {
 	std::type_index contentType;
 
   public:
+	bool isInitialized = false;
 	std::string type;
 	std::string name;
 	uuids::uuid id = uuids::uuid_system_generator{}();
 
 	template <typename T>
 	Objective(std::string_view type, std::string_view name, T initialValue, std::function<void(T&)> editorCallback,
-	          std::function<ktwait(T&)> executorCallback = nullptr)
-		: content(std::make_shared<TypedObjectiveDataContainer<T>>(initialValue, editorCallback, executorCallback)),
+	          std::function<ktwait(T&)> executorCallback = nullptr, std::function<void(T&)> onStartCallback = nullptr,
+	          std::function<void(T&)> onResetCallback = nullptr)
+		: content(std::make_shared<TypedObjectiveDataContainer<T>>(initialValue, editorCallback, executorCallback,
+		                                                           onStartCallback, onResetCallback)),
 		  contentType(typeid(T)),
 		  type(std::string(type)),
 		  name(std::string(name)) {}
@@ -82,6 +105,20 @@ class Objective {
 			throw std::runtime_error("Content is not initialized");
 		}
 		return content->callExecutor();
+	}
+
+	void onStart() {
+		if (content) {
+			content->callOnStart();
+		}
+		isInitialized = true;
+	}
+
+	void onReset() {
+		if (content) {
+			content->callOnReset();
+		}
+		isInitialized = false;
 	}
 
 	friend void to_json(nlohmann::json& j, const Objective& p) {
