@@ -196,6 +196,7 @@ void components::Pickup::onUpdate(float deltaTime) {
 	Component::onUpdate(deltaTime);
 	if (this->dirty) {
 		spawn();
+		this->dirty = false;
 	}
 }
 
