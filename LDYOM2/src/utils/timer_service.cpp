@@ -63,3 +63,13 @@ int TimerService::getTimerTime() const noexcept {
 	const auto timerAddress = getTimerAddress();
 	return *reinterpret_cast<const int*>(timerAddress);
 }
+
+void TimerService::setTimerTime(int value) noexcept {
+	if (!timerActive_) {
+		return;
+	}
+
+	const auto timerAddress = getTimerAddress();
+	auto& timerValue = *reinterpret_cast<int*>(timerAddress);
+	timerValue = value;
+}

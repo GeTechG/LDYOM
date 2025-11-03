@@ -48,4 +48,5 @@ class TimerService {
 	void addTimer(std::string_view text, bool isDown, int value);
 	void removeTimer() noexcept;
 	[[nodiscard]] int getTimerTime() const noexcept;
+	void setTimerTime(int value) noexcept;
 };
