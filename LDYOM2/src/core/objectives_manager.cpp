@@ -27,6 +27,7 @@
 #include <objectives/timeout.h>
 #include <objectives/wait_signal.h>
 #include <objectives/wanted_level.h>
+#include <objectives/weather.h>
 #include <stdexcept>
 #include <vector_utils.h>
 
@@ -119,4 +120,5 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<timer_start::Data>(timer_start::builder());
 	this->registerObjectiveBuilder<timeout_obj::Data>(timeout_obj::builder());
 	this->registerObjectiveBuilder<wanted_level::Data>(wanted_level::builder());
+	this->registerObjectiveBuilder<weather::Data>(weather::builder());
 }
