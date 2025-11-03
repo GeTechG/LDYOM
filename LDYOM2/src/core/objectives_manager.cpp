@@ -19,6 +19,7 @@
 #include <objectives/player_random_spawn.h>
 #include <objectives/player_simple_task.h>
 #include <objectives/player_teleport.h>
+#include <objectives/player_teleport_to_car.h>
 #include <objectives/player_vehicle_task.h>
 #include <objectives/test.h>
 #include <objectives/wait_signal.h>
@@ -108,5 +109,6 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<player_random_spawn::Data>(player_random_spawn::builder());
 	this->registerObjectiveBuilder<player_simple_task::Data>(player_simple_task::builder());
 	this->registerObjectiveBuilder<player_teleport::Data>(player_teleport::builder());
+	this->registerObjectiveBuilder<player_teleport_to_car::Data>(player_teleport_to_car::builder());
 	this->registerObjectiveBuilder<player_vehicle_task::Data>(player_vehicle_task::builder());
 }
