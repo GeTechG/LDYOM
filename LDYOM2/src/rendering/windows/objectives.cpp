@@ -10,7 +10,6 @@
 #include <utils/imgui_configurate.h>
 #include <window_manager.h>
 
-
 void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 	const ImVec2 screenScale = ImGuiConfigurate::getScreenScale();
 	const float spacing = ImGui::GetStyle().ItemSpacing.x;
@@ -75,11 +74,11 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 
 			bool openRenamePopupIndex = false;
 			if (ImGui::BeginPopupContextItem("objective_context_menu")) {
-				if (ImGui::MenuItem(_("objectives.rename", ICON_FA_I_CURSOR).c_str())) {
+				if (ImGui::MenuItem(_("item_popup.rename", ICON_FA_I_CURSOR).c_str())) {
 					openRenamePopupIndex = true;
 				}
 
-				if (ImGui::MenuItem(_("objectives.delete", ICON_FA_TRASH).c_str())) {
+				if (ImGui::MenuItem(_("item_popup.remove", ICON_FA_TRASH).c_str())) {
 					window->m_indexToRemove = i;
 				}
 

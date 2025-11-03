@@ -38,9 +38,11 @@ Objective ObjectivesManager::createObjective(std::string_view type) {
 	throw std::runtime_error("Objective type not registered: " + std::string(type));
 }
 
-void ObjectivesManager::addNewObjective(std::string_view type) {
+int ObjectivesManager::addNewObjective(std::string_view type) {
 	Objective objective = this->createObjective(type);
-	ScenesManager::instance().getUnsafeCurrentScene().objectives.data.push_back(objective);
+	auto& objectives = ScenesManager::instance().getUnsafeCurrentScene().objectives.data;
+	objectives.push_back(objective);
+	return static_cast<int>(objectives.size() - 1);
 }
 
 const Objective& ObjectivesManager::getObjective(int index) const {

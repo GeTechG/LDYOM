@@ -14,4 +14,5 @@ class ObjectivesWindow : public Window {
 	~ObjectivesWindow() override = default;
 
 	int getSelectedObjectiveIndex() const { return m_selectedObjectiveIndex; }
+	void setSelectedObjectiveIndex(int index) { m_selectedObjectiveIndex = index; }
 };

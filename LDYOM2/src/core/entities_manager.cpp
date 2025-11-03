@@ -49,14 +49,18 @@ std::unique_ptr<Entity> EntitiesManager::createEmptyEntity() {
 	return entity;
 }
 
-void EntitiesManager::addNewEntityFromTemplate(const std::string& templateType) {
+int EntitiesManager::addNewEntityFromTemplate(const std::string& templateType) {
 	std::unique_ptr<Entity> entity = createEntityFromTemplate(templateType);
-	ScenesManager::instance().getUnsafeCurrentScene().entities.emplace_back(std::move(entity));
+	auto& entities = ScenesManager::instance().getUnsafeCurrentScene().entities;
+	entities.emplace_back(std::move(entity));
+	return static_cast<int>(entities.size() - 1);
 }
 
-void EntitiesManager::addNewEmptyEntity() {
+int EntitiesManager::addNewEmptyEntity() {
 	std::unique_ptr<Entity> entity = createEmptyEntity();
-	ScenesManager::instance().getUnsafeCurrentScene().entities.emplace_back(std::move(entity));
+	auto& entities = ScenesManager::instance().getUnsafeCurrentScene().entities;
+	entities.emplace_back(std::move(entity));
+	return static_cast<int>(entities.size() - 1);
 }
 
 Entity& EntitiesManager::getUnsafeEntity(int index) {

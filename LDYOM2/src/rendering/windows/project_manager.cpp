@@ -221,8 +221,8 @@ void ProjectManager::renderSidebar(ProjectManager* window, float sidebarWidth, f
 
 		const auto editText = _("project_manager.edit", ICON_FA_PEN);
 		const auto runText = _("project_manager.run", ICON_FA_PLAY);
-		const auto renameText = _("project_manager.rename", ICON_FA_I_CURSOR);
-		const auto removeText = _("project_manager.remove", ICON_FA_TRASH);
+		const auto renameText = _("item_popup.rename", ICON_FA_I_CURSOR);
+		const auto removeText = _("item_popup.remove", ICON_FA_TRASH);
 
 		// Calculate each text width plus padding
 		const float editWidth = ImGui::CalcTextSize(editText.c_str()).x + framePaddingX * 2;

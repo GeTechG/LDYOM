@@ -25,8 +25,8 @@ class EntitiesManager {
 	// Entity creation and manipulation
 	std::unique_ptr<Entity> createEntityFromTemplate(const std::string& templateType);
 	std::unique_ptr<Entity> createEmptyEntity();
-	void addNewEntityFromTemplate(const std::string& templateType);
-	void addNewEmptyEntity();
+	int addNewEntityFromTemplate(const std::string& templateType);
+	int addNewEmptyEntity();
 
 	// Entity management within the current scene
 	Entity& getUnsafeEntity(int index);

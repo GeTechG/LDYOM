@@ -28,7 +28,7 @@ class ObjectivesManager {
 
 	template <typename T> void registerObjectiveBuilder(ObjectiveBuilderData data);
 	Objective createObjective(std::string_view type);
-	void addNewObjective(std::string_view type);
+	int addNewObjective(std::string_view type);
 
 	const Objective& getObjective(int index) const;
 	Objective& getUnsafeObjective(int index);

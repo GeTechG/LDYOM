@@ -47,42 +47,48 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 		ImGui::SameLine();
 
 		if (ImGui::Button(ICON_FA_PLUS_LARGE, squareButtonSize)) {
+			int newEntityIndex = -1;
 			switch (window->m_windowType) {
 				case EntitiesWindowType_Actor:
 					{
-						EntitiesManager::instance().addNewEntityFromTemplate("actor");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("actor");
 						break;
 					}
 				case EntitiesWindowType_Vehicle:
 					{
-						EntitiesManager::instance().addNewEntityFromTemplate("vehicle");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("vehicle");
 						break;
 					}
 				case EntitiesWindowType_Object:
 					{
-						EntitiesManager::instance().addNewEntityFromTemplate("object");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("object");
 						break;
 					}
 				case EntitiesWindowType_Pickup:
 					{
-						EntitiesManager::instance().addNewEntityFromTemplate("pickup");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("pickup");
 						break;
 					}
 				case EntitiesWindowType_Firework:
 					{
-						EntitiesManager::instance().addNewEntityFromTemplate("firework");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("firework");
 						break;
 					}
 				case EntitiesWindowType_Particle:
 					{
-						EntitiesManager::instance().addNewEntityFromTemplate("particle");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("particle");
 						break;
 					}
 				case EntitiesWindowType_Checkpoint:
 					{
-						EntitiesManager::instance().addNewEntityFromTemplate("checkpoint");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("checkpoint");
 						break;
 					}
+			}
+
+			// Select the newly created entity
+			if (newEntityIndex != -1) {
+				window->m_selectedEntityIndex = newEntityIndex;
 			}
 		}
 	}
@@ -134,11 +140,11 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 
 			bool openRenamePopupIndex = false;
 			if (ImGui::BeginPopupContextItem("entity_context_menu")) {
-				if (ImGui::MenuItem(_("entities.rename", ICON_FA_I_CURSOR).c_str())) {
+				if (ImGui::MenuItem(_("item_popup.rename", ICON_FA_I_CURSOR).c_str())) {
 					openRenamePopupIndex = true;
 				}
 
-				if (ImGui::MenuItem(_("entities.delete", ICON_FA_TRASH).c_str())) {
+				if (ImGui::MenuItem(_("item_popup.delete", ICON_FA_TRASH).c_str())) {
 					window->m_indexToRemove = i;
 				}
 

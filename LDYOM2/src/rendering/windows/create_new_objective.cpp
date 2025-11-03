@@ -1,5 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "create_new_objective.h"
+#include "objectives.h"
 #include <algorithm>
 #include <fa_icons.h>
 #include <fmt/format.h>
@@ -10,6 +11,7 @@
 #include <ranges>
 #include <sstream>
 #include <utils/imgui_configurate.h>
+#include <window_manager.h>
 
 void CreateNewObjective::renderSearchBox() {
 	ImGui::Text(_("create_new_objective.search").c_str());
@@ -176,7 +178,14 @@ void CreateNewObjective::renderContent(CreateNewObjective* window) {
 	                     (availableRegion.x - buttonsWidth) * 0.1f);
 	if (ImGui::Button(createText.c_str())) {
 		if (!window->m_selectedType.empty()) {
-			ObjectivesManager::instance().addNewObjective(window->m_selectedType);
+			int newObjectiveIndex = ObjectivesManager::instance().addNewObjective(window->m_selectedType);
+
+			// Select the newly created objective in the ObjectivesWindow
+			auto objectivesWindow = WindowManager::instance().getWindowAs<ObjectivesWindow>("objectives");
+			if (objectivesWindow.has_value()) {
+				objectivesWindow.value()->setSelectedObjectiveIndex(newObjectiveIndex);
+			}
+
 			window->close();
 		}
 	}
