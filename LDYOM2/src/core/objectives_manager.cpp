@@ -23,6 +23,7 @@
 #include <objectives/player_vehicle_task.h>
 #include <objectives/test.h>
 #include <objectives/timelimit.h>
+#include <objectives/timer_start.h>
 #include <objectives/timeout.h>
 #include <objectives/wait_signal.h>
 #include <stdexcept>
@@ -114,5 +115,6 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<player_teleport_to_car::Data>(player_teleport_to_car::builder());
 	this->registerObjectiveBuilder<player_vehicle_task::Data>(player_vehicle_task::builder());
 	this->registerObjectiveBuilder<timelimit::Data>(timelimit::builder());
+	this->registerObjectiveBuilder<timer_start::Data>(timer_start::builder());
 	this->registerObjectiveBuilder<timeout_obj::Data>(timeout_obj::builder());
 }
