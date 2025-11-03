@@ -102,7 +102,7 @@ Dependencies: plugin, minhook, imgui, i18ncpp, spdlog, stduuid, watcher, glm, so
 Build: conan install, cmake configure, cmake build
 
 ## Documentation Resources
-- @sa.json - docs for opcodes
+- sa.json - docs for opcodes
 
 Use this when working with low-level GTA scripting operations or implementing game-specific functionality.
 
