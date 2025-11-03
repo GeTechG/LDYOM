@@ -101,6 +101,11 @@ Dependencies: plugin, minhook, imgui, i18ncpp, spdlog, stduuid, watcher, glm, so
 
 Build: conan install, cmake configure, cmake build
 
+## Documentation Resources
+- @sa.json - docs for opcodes
+
+Use this when working with low-level GTA scripting operations or implementing game-specific functionality.
+
 ## File Organization
 
 src/ldyom.cpp | core/ (managers) | data/ (structures, components, objectives) | rendering/ (UI) | imgui_hook/ (DirectX) | lua/ | utils/ | gta_data/
@@ -117,3 +122,4 @@ src/ldyom.cpp | core/ (managers) | data/ (structures, components, objectives) | 
 ## Summary
 
 LDYOM2 is a well-architected mission editor combining user-friendly UI editing with low-level GTA script execution through modularity, composability, extensibility, type safety, and asynchronous coroutine execution.
+- always build Debug
