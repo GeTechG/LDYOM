@@ -33,6 +33,7 @@ void components::ObjectMoveByPath::start() {
 	this->currentPointIndex = 0;
 	this->currentProgress = 0.f;
 	this->isMoving = !points.empty(); // Only move if we have points
+	this->initialPointPassed = false;
 
 	// Save initial object position as point 0
 	initialPoint.position = this->entity->position;
@@ -42,21 +43,20 @@ void components::ObjectMoveByPath::start() {
 	this->currentPosition = initialPoint.position;
 	this->currentRotation = initialPoint.rotation;
 
-	// Update segment points
+	// Update segment points - start from initial point to first path point
 	if (!points.empty()) {
 		startPoint = initialPoint;
 		endPoint = points[0];
 	}
 }
 
-void components::ObjectMoveByPath::stop() {
-	this->isMoving = false;
-}
+void components::ObjectMoveByPath::stop() { this->isMoving = false; }
 
 void components::ObjectMoveByPath::reset() {
 	this->currentPointIndex = 0;
 	this->currentProgress = 0.f;
 	this->isMoving = false;
+	this->initialPointPassed = false;
 
 	// Reset to initial position
 	this->currentPosition = initialPoint.position;
@@ -126,8 +126,7 @@ void components::ObjectMoveByPath::editorRender() {
 
 	ImGui::Text(tr("points_count").c_str());
 	ImGui::SameLine(availableWidth * 0.45f);
-	// Total points = initial position + user-defined points
-	ImGui::Text("%zu", points.empty() ? 0 : points.size() + 1);
+	ImGui::Text("%zu", points.empty() ? 0 : points.size());
 
 	if (ImGui::Button(tr("edit_path").c_str())) {
 		WindowManager::instance().disableWindowRendering(true);
@@ -165,18 +164,28 @@ void components::ObjectMoveByPath::onUpdate(float deltaTime) {
 		return;
 	}
 
-	// Update current segment points based on currentPointIndex
-	// Point 0 is initialPoint (spawn position), points 1+ are from the points array
-	if (currentPointIndex == 0) {
+	// Update current segment points based on initialPointPassed flag
+	if (!initialPointPassed) {
+		// First segment: from initial position to first path point
 		startPoint = initialPoint;
 		endPoint = points[0];
-	} else if (currentPointIndex <= static_cast<int>(points.size()) - 1) {
-		startPoint = points[currentPointIndex - 1];
-		endPoint = points[currentPointIndex];
-	} else if (loop && currentPointIndex == static_cast<int>(points.size())) {
-		// Closing segment: from last point back to initial point
-		startPoint = points[points.size() - 1];
-		endPoint = initialPoint;
+	} else {
+		// Moving through path points
+		startPoint = points[currentPointIndex];
+
+		// Determine next point based on loop mode
+		if (loop) {
+			const size_t nextIndex = (currentPointIndex + 1) % points.size();
+			endPoint = points[nextIndex];
+		} else {
+			// Non-loop: check if there's a next point
+			if (currentPointIndex + 1 < points.size()) {
+				endPoint = points[currentPointIndex + 1];
+			} else {
+				// We're at the last point, stay there
+				endPoint = points[currentPointIndex];
+			}
+		}
 	}
 
 	// Calculate distance between current and next point
@@ -186,17 +195,37 @@ void components::ObjectMoveByPath::onUpdate(float deltaTime) {
 
 	if (distance < 0.001f) {
 		// Points are too close, skip to next
-		currentPointIndex++;
-		if (loop) {
-			// For loop mode: after closing segment (points.size()), go back to 0
-			if (currentPointIndex > static_cast<int>(points.size())) {
-				currentPointIndex = 0;
-			}
-		} else {
-			// For non-loop mode: stop at the end
-			if (currentPointIndex >= static_cast<int>(points.size())) {
+		if (!initialPointPassed) {
+			// Finished initial segment, now loop only through path points
+			initialPointPassed = true;
+			currentPointIndex = 0;
+			// If only 1 point and no loop, stop
+			if (points.size() == 1 && !loop) {
 				isMoving = false;
 				return;
+			}
+		} else {
+			// Moving through path points
+			if (points.size() == 1) {
+				// Only 1 point - stay in place if looping
+				if (!loop) {
+					isMoving = false;
+				}
+				return;
+			}
+
+			// Check if we're at the last point
+			if (!loop && currentPointIndex == static_cast<int>(points.size()) - 1) {
+				// We've reached the last point, stop
+				isMoving = false;
+				return;
+			}
+
+			// Move to next point
+			currentPointIndex++;
+			if (currentPointIndex >= static_cast<int>(points.size())) {
+				// Loop back to start
+				currentPointIndex = 0;
 			}
 		}
 		currentProgress = 0.f;
@@ -212,25 +241,18 @@ void components::ObjectMoveByPath::onUpdate(float deltaTime) {
 	currentProgress += deltaTime / segmentTime;
 
 	if (currentProgress >= 1.0f) {
-		// Move to next point
-		currentPointIndex++;
 		currentProgress = 0.f;
 
-		// Check if we reached the end
-		if (loop) {
-			// For loop mode: after closing segment (points.size()), go back to 0
-			if (currentPointIndex > static_cast<int>(points.size())) {
-				currentPointIndex = 0;
-			}
-		} else {
-			// For non-loop mode: stop at the end
-			if (currentPointIndex >= static_cast<int>(points.size())) {
-				// Stay at last point and stop moving
+		if (!initialPointPassed) {
+			// Finished initial segment, now loop only through path points
+			initialPointPassed = true;
+			currentPointIndex = 0;
+			// If only 1 point and no loop, stop at that point
+			if (points.size() == 1 && !loop) {
 				currentPosition = endPoint.position;
 				currentRotation = endPoint.rotation;
-				isMoving = false; // Stop movement
+				isMoving = false;
 
-				// Apply final position and return to stop movement
 				object->handle->SetPosn(currentPosition[0], currentPosition[1], currentPosition[2]);
 				object->handle->m_matrix->SetRotate(currentRotation);
 				scaleMatrix(*object->handle->m_matrix, this->entity->scale);
@@ -238,6 +260,38 @@ void components::ObjectMoveByPath::onUpdate(float deltaTime) {
 				object->handle->UpdateRwMatrix();
 				object->handle->UpdateRwFrame();
 				return;
+			}
+		} else {
+			// Moving through path points
+			if (points.size() == 1) {
+				// Only 1 point - stay in place if looping
+				if (!loop) {
+					isMoving = false;
+				}
+				return;
+			}
+
+			// Check if we're at the last point
+			if (!loop && currentPointIndex == static_cast<int>(points.size()) - 1) {
+				// We just finished the last segment, stop here
+				currentPosition = endPoint.position;
+				currentRotation = endPoint.rotation;
+				isMoving = false;
+
+				object->handle->SetPosn(currentPosition[0], currentPosition[1], currentPosition[2]);
+				object->handle->m_matrix->SetRotate(currentRotation);
+				scaleMatrix(*object->handle->m_matrix, this->entity->scale);
+				object->handle->m_matrix->UpdateRW();
+				object->handle->UpdateRwMatrix();
+				object->handle->UpdateRwFrame();
+				return;
+			}
+
+			// Move to next point
+			currentPointIndex++;
+			if (currentPointIndex >= static_cast<int>(points.size())) {
+				// Loop back to start
+				currentPointIndex = 0;
 			}
 		}
 	} else {
@@ -265,6 +319,7 @@ void components::ObjectMoveByPath::onReset() {
 	this->currentPointIndex = 0;
 	this->currentProgress = 0.f;
 	this->isMoving = false;
+	this->initialPointPassed = false;
 }
 
 Dependencies components::ObjectMoveByPath::getDependencies() { return Dependencies{{Object::TYPE}, true}; }

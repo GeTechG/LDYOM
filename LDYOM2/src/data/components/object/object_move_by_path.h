@@ -33,10 +33,11 @@ class ObjectMoveByPath : public Component {
 	CQuaternion currentRotation = {{0.f, 0.f, 0.f}, 1.f};
 
 	// Runtime variables
-	PathPoint initialPoint; // Initial object spawn position (used as point 0)
-	PathPoint startPoint;   // Current segment start point
-	PathPoint endPoint;     // Current segment end point
-	bool isMoving = false;  // Flag to track if movement is active
+	PathPoint initialPoint;        // Initial object spawn position (used as point 0)
+	PathPoint startPoint;          // Current segment start point
+	PathPoint endPoint;            // Current segment end point
+	bool isMoving = false;         // Flag to track if movement is active
+	bool initialPointPassed = false; // Flag to track if initial point was already used
 
   public:
 	static constexpr auto TYPE = "object_move_by_path";
