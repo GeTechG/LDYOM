@@ -123,3 +123,4 @@ src/ldyom.cpp | core/ (managers) | data/ (structures, components, objectives) | 
 
 LDYOM2 is a well-architected mission editor combining user-friendly UI editing with low-level GTA script execution through modularity, composability, extensibility, type safety, and asynchronous coroutine execution.
 - always build Debug
+- for learn dyom source use dyom.txt, DO NOT READ file full only grep
