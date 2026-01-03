@@ -131,6 +131,8 @@ void components::Object::updatePosition() {
 	if (this->handle) {
 		auto& position = this->entity->position;
 		this->handle->SetPosn(position[0], position[1], position[2]);
+		this->handle->UpdateRwMatrix();
+		this->handle->UpdateRwFrame();
 	}
 }
 

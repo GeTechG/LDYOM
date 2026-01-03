@@ -12,6 +12,7 @@
 #include <components/firework.h>
 #include <components/health_bar.h>
 #include <components/object.h>
+#include <components/object/object_move_by_path.h>
 #include <components/object/object_trigger_move.h>
 #include <components/objective_specific.h>
 #include <components/particle.h>
@@ -47,6 +48,7 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::Vehicle>();
 	registerComponentBuilder<components::Pickup>();
 	registerComponentBuilder<components::Object>();
+	registerComponentBuilder<components::ObjectMoveByPath>();
 	registerComponentBuilder<components::ObjectTriggerMove>();
 	registerComponentBuilder<components::Firework>();
 	registerComponentBuilder<components::Particle>();
