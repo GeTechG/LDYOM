@@ -43,6 +43,7 @@ inline nlohmann::json components::Vehicle::to_json() const {
 	j["meleeproof"] = meleeproof;
 	j["tiresVulnerability"] = tiresVulnerability;
 	j["mustSurvive"] = mustSurvive;
+	j["locked"] = locked;
 	return j;
 }
 
@@ -62,6 +63,7 @@ void components::Vehicle::from_json(const nlohmann::json& j) {
 	j.at("meleeproof").get_to(meleeproof);
 	j.at("tiresVulnerability").get_to(tiresVulnerability);
 	j.at("mustSurvive").get_to(mustSurvive);
+	j.at("locked").get_to(locked);
 }
 
 struct VehicleColorData {
@@ -564,6 +566,7 @@ void components::Vehicle::spawn() {
 	vehicle->m_nTertiaryColor = this->tertiaryColorId;
 	vehicle->m_nQuaternaryColor = this->quaternaryColorId;
 	vehicle->m_eDoorLock = this->locked ? DOORLOCK_LOCKED : DOORLOCK_UNLOCKED;
+	this->updateDirection();
 
 	if (this->mustSurvive) {
 		ProjectPlayer::instance().projectTasklist->add_task(
