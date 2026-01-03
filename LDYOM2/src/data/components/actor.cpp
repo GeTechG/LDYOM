@@ -326,8 +326,6 @@ void components::Actor::spawn() {
 			plugin::Command<plugin::Commands::DELETE_CHAR>(ref);
 		}
 	});
-	updatePosition();
-	updateDirection();
 	this->entity->updateSetTransformCallbacks();
 	ped->m_fMaxHealth = std::max(ped->m_fMaxHealth, this->health);
 	ped->m_fHealth = this->health;
@@ -358,6 +356,9 @@ void components::Actor::spawn() {
 		this->ped->m_nPhysicalFlags.bMeleeProof = 1;
 		plugin::Command<plugin::Commands::FREEZE_CHAR_POSITION_AND_DONT_LOAD_COLLISION>(newPed, 1);
 	}
+
+	updatePosition();
+	updateDirection();
 
 	onSpawned();
 }
