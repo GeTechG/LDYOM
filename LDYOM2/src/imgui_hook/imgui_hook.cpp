@@ -4,12 +4,14 @@
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
+#include "injector/injector.hpp"
 #include "kiero.h"
 #include "pad.h"
 #include "plugin.h"
-#include "injector/injector.hpp"
 #include "utils/imgui_configurate.h"
 #include <CMenuManager.h>
+#include <logger.h>
+
 
 auto gRenderer = eRenderer::Unknown;
 void* gD3DDevice = nullptr;
@@ -92,7 +94,7 @@ void ImguiHook::ProcessFrame(void* ptr) {
 
 #ifndef _WIN64
 		RsGlobal = 0xC17040;
-		width = injector::ReadMemory<int>(RsGlobal + 4, false); // width
+		width = injector::ReadMemory<int>(RsGlobal + 4, false);  // width
 		height = injector::ReadMemory<int>(RsGlobal + 8, false); // height
 #else
 		RECT rect;
@@ -149,14 +151,34 @@ void ImguiHook::ProcessFrame(void* ptr) {
 		injector::MakeNOP(0x531155, 5); // shift trigger fix
 
 		if (gRenderer == eRenderer::Dx9) {
-			hwnd = GetForegroundWindow();
+			// Получаем HWND из DirectX device вместо GetForegroundWindow()
+			// GetForegroundWindow() может вернуть неправильное окно если игра свернута
+			auto pDevice = reinterpret_cast<IDirect3DDevice9*>(ptr);
+			IDirect3DSwapChain9* pSwapChain = nullptr;
+
+			if (SUCCEEDED(pDevice->GetSwapChain(0, &pSwapChain))) {
+				D3DPRESENT_PARAMETERS presentParams;
+				if (SUCCEEDED(pSwapChain->GetPresentParameters(&presentParams))) {
+					hwnd = presentParams.hDeviceWindow;
+				}
+				pSwapChain->Release();
+			}
+
+			// Fallback к GetForegroundWindow если не удалось получить из device
+			if (hwnd == nullptr) {
+				hwnd = GetForegroundWindow();
+			}
+
 			if (!ImGui_ImplWin32_Init(hwnd)) {
+				LDYOM_ERROR("ImGui_ImplWin32_Init failed!");
 				return;
 			}
 
 			if (!ImGui_ImplDX9_Init(reinterpret_cast<IDirect3DDevice9*>(ptr))) {
+				LDYOM_ERROR("ImGui_ImplDX9_Init failed!");
 				return;
 			}
+
 			gD3DDevice = ptr;
 		} else if (gRenderer == eRenderer::Dx11) {
 			auto pSwapChain = reinterpret_cast<IDXGISwapChain*>(ptr);
@@ -202,7 +224,9 @@ void ImguiHook::ProcessFrame(void* ptr) {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad | ImGuiConfigFlags_NavEnableKeyboard;
 
 		oWndProc = (WNDPROC)SetWindowLongPtr(hwnd, -4, (LRESULT)hkWndProc); // GWL_WNDPROC = -4
+
 		m_bInitialized = true;
+		LDYOM_INFO("ImGui initialized successfully");
 	}
 }
 
@@ -295,55 +319,78 @@ BOOL CALLBACK ImguiHook::hkShowCursor(bool flag) {
 }
 
 bool ImguiHook::Inject() {
-	static bool injected;
+	static bool injected = false;
+	static bool initAttempted = false;
+
+	// Если уже инжектили, возвращаем true (успех)
 	if (injected) {
-		return false;
+		return true;
 	}
 
-	ImGui::CreateContext();
-	MH_Initialize();
-	PVOID pSetCursorPos = GetProcAddress(GetModuleHandle("user32.dll"), "SetCursorPos");
-	PVOID pShowCursor = GetProcAddress(GetModuleHandle("user32.dll"), "ShowCursor");
-	MH_CreateHook(pSetCursorPos, hkSetCursorPos, reinterpret_cast<LPVOID*>(&oSetCursorPos));
-	MH_CreateHook(pShowCursor, hkShowCursor, reinterpret_cast<LPVOID*>(&oShowCursor));
-	MH_EnableHook(pSetCursorPos);
-	MH_EnableHook(pShowCursor);
-
-	/*
-	    Must check for d3d9 first!
-	    Seems to crash with nvidia geforce experience overlay
-	    if anything else is checked before d3d9
-	*/
-	if (GetModuleHandle("_gtaRenderHook.asi")) {
-		goto dx11;
-	}
-
-	if (init(kiero::RenderType::D3D9) == kiero::Status::Success) {
-		gRenderer = eRenderer::Dx9;
+	// Проверяем gRenderer - если уже установлен, значит hooks работают
+	// (kiero::init() не идемпотентен и вернет AlreadyInitializedError при повторном вызове)
+	if (gRenderer != eRenderer::Unknown) {
 		injected = true;
-		kiero::bind(16, reinterpret_cast<LPVOID*>(&oReset), hkReset);
-		kiero::bind(42, reinterpret_cast<LPVOID*>(&oEndScene), hkEndScene);
+		return true;
 	}
 
-	if (init(kiero::RenderType::OpenGL) == kiero::Status::Success) {
-		gRenderer = eRenderer::OpenGL;
-		injected = true;
-
-		HMODULE hMod = GetModuleHandle("OPENGL32.dll");
-		if (!hMod) {
-			return false;
+	// Инициализация выполняется только один раз
+	if (!initAttempted) {
+		// ВАЖНО: Создаем контекст СРАЗУ, потому что Application может начать
+		// использовать ImGui API до первого вызова EndScene
+		if (!ImGui::GetCurrentContext()) {
+			ImGui::CreateContext();
 		}
-		FARPROC addr = GetProcAddress(hMod, "wglSwapBuffers");
-		MH_CreateHook(addr, hkGlSwapBuffer, reinterpret_cast<LPVOID*>(&oGlSwapBuffer));
-		MH_EnableHook(addr);
+
+		MH_Initialize();
+		PVOID pSetCursorPos = GetProcAddress(GetModuleHandle("user32.dll"), "SetCursorPos");
+		PVOID pShowCursor = GetProcAddress(GetModuleHandle("user32.dll"), "ShowCursor");
+		MH_CreateHook(pSetCursorPos, hkSetCursorPos, reinterpret_cast<LPVOID*>(&oSetCursorPos));
+		MH_CreateHook(pShowCursor, hkShowCursor, reinterpret_cast<LPVOID*>(&oShowCursor));
+		MH_EnableHook(pSetCursorPos);
+		MH_EnableHook(pShowCursor);
+
+		initAttempted = true;
 	}
 
-dx11:
-	if (init(kiero::RenderType::D3D11) == kiero::Status::Success) {
-		gRenderer = eRenderer::Dx11;
-		kiero::bind(8, reinterpret_cast<LPVOID*>(&oPresent), hkPresent);
-		kiero::bind(13, reinterpret_cast<LPVOID*>(&oResizeBuffers), hkResizeBuffers);
-		injected = true;
+	// Попытка установки hooks для рендера (можно вызывать повторно)
+	if (!injected) {
+		/*
+		    Must check for d3d9 first!
+		    Seems to crash with nvidia geforce experience overlay
+		    if anything else is checked before d3d9
+		*/
+		if (GetModuleHandle("_gtaRenderHook.asi")) {
+			goto dx11;
+		}
+
+		if (init(kiero::RenderType::D3D9) == kiero::Status::Success) {
+			gRenderer = eRenderer::Dx9;
+			injected = true;
+			kiero::bind(16, reinterpret_cast<LPVOID*>(&oReset), hkReset);
+			kiero::bind(42, reinterpret_cast<LPVOID*>(&oEndScene), hkEndScene);
+		}
+
+		if (!injected && init(kiero::RenderType::OpenGL) == kiero::Status::Success) {
+			gRenderer = eRenderer::OpenGL;
+			injected = true;
+
+			HMODULE hMod = GetModuleHandle("OPENGL32.dll");
+			if (!hMod) {
+				return false;
+			}
+			FARPROC addr = GetProcAddress(hMod, "wglSwapBuffers");
+			MH_CreateHook(addr, hkGlSwapBuffer, reinterpret_cast<LPVOID*>(&oGlSwapBuffer));
+			MH_EnableHook(addr);
+		}
+
+	dx11:
+		if (!injected && init(kiero::RenderType::D3D11) == kiero::Status::Success) {
+			gRenderer = eRenderer::Dx11;
+			kiero::bind(8, reinterpret_cast<LPVOID*>(&oPresent), hkPresent);
+			kiero::bind(13, reinterpret_cast<LPVOID*>(&oResizeBuffers), hkResizeBuffers);
+			injected = true;
+		}
 	}
 
 	return injected;

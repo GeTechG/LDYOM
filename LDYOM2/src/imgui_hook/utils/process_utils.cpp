@@ -1,7 +1,9 @@
 #include "process_utils.h"
+#include <logger.h>
 #include <psapi.h>
 #include <string>
 #include <windows.h>
+
 
 BOOL CALLBACK EnumWindowsSearchProc(HWND hwnd, LPARAM lParam) {
 	WindowSearchData* data = reinterpret_cast<WindowSearchData*>(lParam);
@@ -62,15 +64,9 @@ bool HasGameLaunched(HMODULE hModule, int maxRetries, int sleepDuration) {
 		WindowSearchData searchData = {processId, false, false};
 		EnumWindows(EnumWindowsSearchProc, reinterpret_cast<LPARAM>(&searchData));
 
-		if (searchData.foundVisible) {
-			return true; // Найдено видимое, не свернутое окно
-		}
-
-		// Если найдено только свернутое окно, продолжаем ожидание
-		if (searchData.foundMinimized && retries == maxRetries - 1) {
-			MessageBox(nullptr, "Game window is minimized. Please restore the game window and try again.", "LDYOM",
-			           MB_ICONWARNING);
-			return false;
+		// Принимаем ЛЮБОЕ окно - видимое или свернутое
+		if (searchData.foundVisible || searchData.foundMinimized) {
+			return true;
 		}
 
 		Sleep(sleepDuration);
@@ -78,8 +74,8 @@ bool HasGameLaunched(HMODULE hModule, int maxRetries, int sleepDuration) {
 		retries++;
 	}
 
-	MessageBox(nullptr, "Failed to detect visible game window. Game may not be launched properly.", "LDYOM",
-	           MB_ICONERROR);
+	// Логируем вместо MessageBox - не прерываем работу плагина
+	LDYOM_ERROR("Failed to detect game window after {} retries", maxRetries);
 	return false;
 }
 

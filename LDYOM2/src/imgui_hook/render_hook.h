@@ -4,6 +4,7 @@
 #include <functional>
 
 void ImGuiHook();
+bool TryImGuiHook();
 void ImGuiHookRemove();
 
 #endif // IMGUI_HOOK_H
