@@ -171,13 +171,17 @@ void components::Pickup::onStart() {
 		[this](const CQuaternion rotation) {
 			if (this->handle != -1) {
 				auto actualIndex = CPickups::GetActualPickupIndex(handle);
-				CPickups::aPickUps[actualIndex].m_pObject->m_matrix->SetRotate(rotation);
+				if (CPickups::aPickUps[actualIndex].m_pObject != NULL) {
+					CPickups::aPickUps[actualIndex].m_pObject->m_matrix->SetRotate(rotation);
+				}
 			}
 		},
 		[this](const std::array<float, 3> scale) {
 			if (this->handle != -1) {
 				auto actualIndex = CPickups::GetActualPickupIndex(handle);
-				scaleMatrix(*CPickups::aPickUps[actualIndex].m_pObject->m_matrix, scale);
+				if (CPickups::aPickUps[actualIndex].m_pObject != NULL) {
+					scaleMatrix(*CPickups::aPickUps[actualIndex].m_pObject->m_matrix, scale);
+				}
 			}
 		});
 	if (!IS_PLAYING) {
@@ -239,7 +243,7 @@ void components::Pickup::spawn() {
 		}
 	} else {
 		int modelId = this->model;
-		switch (pickupType) {
+		switch (this->pickupType) {
 			case 1: // health
 				modelId = 1240;
 				break;
