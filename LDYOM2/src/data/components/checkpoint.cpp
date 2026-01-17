@@ -18,6 +18,7 @@
 #include <scenes_manager.h>
 #include <string_utils.h>
 #include <utils/imgui_configurate.h>
+#include <utils/rotation_utils.h>
 
 void components::Checkpoint::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<Checkpoint>("CheckpointComponent");
@@ -138,7 +139,7 @@ void components::Checkpoint::updateRotation() {
 			const auto q = entity->rotation;
 			const glm::quat quaternion(q.real, q.imag.x, q.imag.y, q.imag.z);
 			const glm::vec3 eulerAngles = glm::eulerAngles(quaternion);
-			plugin::Command<plugin::Commands::SET_CHECKPOINT_HEADING>(this->handle.value(), eulerAngles.z);
+			plugin::Command<plugin::Commands::SET_CHECKPOINT_HEADING>(this->handle.value(), DEG(eulerAngles.z));
 		}
 	}
 }
@@ -154,9 +155,23 @@ void components::Checkpoint::spawn() {
 		                                              this->entity->position[2], radius, &handle);
 	} else { // Tube Arrow, Tube End, Tube, Torus
 		auto type = typeCheckpoint != 4 ? this->typeCheckpoint - 1 : 4;
+
+		// Calculate direction point from rotation
+		const auto eulerAngles = quaternionToEuler(this->entity->rotation);
+		const float headingRad = glm::radians(eulerAngles[2]); // Z component (heading)
+
+		// Direction vector from heading angle (same formula as CCheckpoints::SetHeading)
+		const float dirX = std::cos(headingRad);
+		const float dirY = std::sin(headingRad);
+
+		// Second point = position + direction * radius
+		const float pointToX = this->entity->position[0] + dirX * radius;
+		const float pointToY = this->entity->position[1] + dirY * radius;
+		const float pointToZ = this->entity->position[2];
+
 		plugin::Command<plugin::Commands::CREATE_CHECKPOINT>(
 			type, this->entity->position[0], this->entity->position[1], this->entity->position[2],
-			this->entity->position[0], this->entity->position[1], this->entity->position[2], radius, &handle);
+			pointToX, pointToY, pointToZ, radius, &handle);
 	}
 	updateRotation();
 
