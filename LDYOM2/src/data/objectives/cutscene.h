@@ -4,6 +4,7 @@
 #include <CCamera.h>
 #include <CHud.h>
 #include <CMessages.h>
+#include <CPools.h>
 #include <CStreaming.h>
 #include <CTheScripts.h>
 #include <blip_color_utils.h>
@@ -104,8 +105,7 @@ inline ktwait execute(Data& data) {
 
 	auto time = int(data.textTime * 1000.0f / (data.slowMotion ? 0.2f : 1.0f));
 	CPed* targetPed = nullptr;
-	std::shared_ptr<CObject> attachedObject;
-	CVector attachedCamOffset(0.0, 0.0, 0.0);
+	std::shared_ptr<CPed> cameraPed;
 
 	if (data.behaviour > 2 && data.behaviour < 6) {
 		if (targetActor && targetActor->ped) {
@@ -156,21 +156,33 @@ inline ktwait execute(Data& data) {
 		case 6:
 			{
 				if (targetPed) {
-					CStreaming::RequestModel(3074, GAME_REQUIRED);
+					// Create invisible ped at camera position (as in original DYOM)
+					CStreaming::RequestModel(0, GAME_REQUIRED);
 					CStreaming::LoadAllRequestedModels(false);
 
-					int newObject;
-					plugin::Command<plugin::Commands::CREATE_OBJECT_NO_OFFSET>(
-						3074, data.cameraPosition[0], data.cameraPosition[1], data.cameraPosition[2], &newObject);
-					attachedObject = std::shared_ptr<CObject>(CPools::GetObject(newObject), [](CObject* obj) {
-						auto ref = CPools::GetObjectRef(obj);
-						plugin::Command<plugin::Commands::DELETE_OBJECT>(ref);
+					int newPed;
+					plugin::Command<plugin::Commands::CREATE_CHAR>(
+						4, 0, data.cameraPosition[0], data.cameraPosition[1], data.cameraPosition[2], &newPed);
+
+					CPed* ped = CPools::GetPed(newPed);
+					cameraPed = std::shared_ptr<CPed>(ped, [](CPed* ped) {
+						if (ped) {
+							auto ref = CPools::GetPedRef(ped);
+							plugin::Command<plugin::Commands::DELETE_CHAR>(ref);
+						}
 					});
 
-					CStreaming::SetMissionDoesntRequireModel(3074);
+					CStreaming::SetMissionDoesntRequireModel(0);
 
-					TheCamera.TakeControlAttachToEntity(targetPed, &*attachedObject, &attachedCamOffset, nullptr, 0.0f,
-					                                    2, 1);
+					// Setup invisible camera ped
+					plugin::Command<plugin::Commands::FREEZE_CHAR_POSITION_AND_DONT_LOAD_COLLISION>(&*cameraPed, true);
+					plugin::Command<plugin::Commands::SET_CHAR_PROOFS>(&*cameraPed, true, true, true, true, true);
+					plugin::Command<plugin::Commands::SET_CHAR_COLLISION>(&*cameraPed, false);
+					plugin::Command<plugin::Commands::SET_CHAR_VISIBLE>(&*cameraPed, false);
+
+					// Attach camera to invisible ped looking at target actor
+					plugin::Command<plugin::Commands::ATTACH_CAMERA_TO_CHAR_LOOK_AT_CHAR>(
+						&*cameraPed, 0.0f, 0.0f, -1.0f, targetPed, 0.0f, 2);
 				}
 				break;
 			}
@@ -199,7 +211,7 @@ inline ktwait execute(Data& data) {
 	duration = isSkipped ? 0 : time;
 
 	if (fadeOut) {
-		duration = std::min(500, duration);
+		duration = std::max(500, duration);
 	}
 
 	if (!data.text.empty()) {
@@ -228,7 +240,7 @@ inline ktwait execute(Data& data) {
 	}
 
 	{
-		attachedObject.reset();
+		cameraPed.reset();
 		float activeX, activeY, activeZ;
 		plugin::Command<plugin::Commands::GET_ACTIVE_CAMERA_COORDINATES>(&activeX, &activeY, &activeZ);
 		plugin::Command<plugin::Commands::SET_FIXED_CAMERA_POSITION>(activeX, activeY, activeZ, 0.f, 0.f, 0.f);
