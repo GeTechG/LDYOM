@@ -161,8 +161,8 @@ inline ktwait execute(Data& data) {
 					CStreaming::LoadAllRequestedModels(false);
 
 					int newPed;
-					plugin::Command<plugin::Commands::CREATE_CHAR>(
-						4, 0, data.cameraPosition[0], data.cameraPosition[1], data.cameraPosition[2], &newPed);
+					plugin::Command<plugin::Commands::CREATE_CHAR>(4, 0, data.cameraPosition[0], data.cameraPosition[1],
+					                                               data.cameraPosition[2], &newPed);
 
 					CPed* ped = CPools::GetPed(newPed);
 					cameraPed = std::shared_ptr<CPed>(ped, [](CPed* ped) {
@@ -181,8 +181,8 @@ inline ktwait execute(Data& data) {
 					plugin::Command<plugin::Commands::SET_CHAR_VISIBLE>(&*cameraPed, false);
 
 					// Attach camera to invisible ped looking at target actor
-					plugin::Command<plugin::Commands::ATTACH_CAMERA_TO_CHAR_LOOK_AT_CHAR>(
-						&*cameraPed, 0.0f, 0.0f, -1.0f, targetPed, 0.0f, 2);
+					plugin::Command<plugin::Commands::ATTACH_CAMERA_TO_CHAR_LOOK_AT_CHAR>(&*cameraPed, 0.0f, 0.0f,
+					                                                                      -1.0f, targetPed, 0.0f, 2);
 				}
 				break;
 			}
@@ -237,6 +237,10 @@ inline ktwait execute(Data& data) {
 		}
 		lastTime = currentTime;
 		co_await 1;
+	}
+
+	if (fadeOut) {
+		plugin::Command<plugin::Commands::DO_FADE>(500, 1);
 	}
 
 	{
