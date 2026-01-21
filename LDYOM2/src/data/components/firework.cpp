@@ -205,15 +205,18 @@ void components::Firework::spawn() {
 			CStreaming::RequestModel(1654, 0);
 			CStreaming::LoadAllRequestedModels(false);
 
-			this->m_editorExplosionObject = std::shared_ptr<CObject>(CObject::Create(1654), [](CObject* obj) {
-				if (obj) {
-					plugin::Command<plugin::Commands::DELETE_OBJECT>(obj);
+			int newObject;
+			plugin::Command<plugin::Commands::CREATE_OBJECT_NO_OFFSET>(
+				1654, this->entity->position[0], this->entity->position[1], this->entity->position[2], &newObject);
+
+			CObject* object = CPools::GetObject(newObject);
+			this->m_editorExplosionObject = std::shared_ptr<CObject>(object, [](CObject* obj) {
+				if (obj && !ScenesManager::instance().isRestartGame()) {
+					auto ref = CPools::GetObjectRef(obj);
+					plugin::Command<plugin::Commands::DELETE_OBJECT>(ref);
 				}
 			});
-			this->m_editorExplosionObject->SetPosn(this->entity->position[0], this->entity->position[1],
-			                                       this->entity->position[2]);
 			this->m_editorExplosionObject->m_bUsesCollision = false;
-			CWorld::Add(&*this->m_editorExplosionObject);
 
 			CStreaming::SetMissionDoesntRequireModel(1654);
 		}
