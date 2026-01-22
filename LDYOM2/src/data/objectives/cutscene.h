@@ -62,21 +62,32 @@ inline ktwait execute(Data& data) {
 	auto currentObjectiveIndex = ProjectPlayer::instance().getCurrentObjectiveIndex();
 	auto& objectives = ScenesManager::instance().getUnsafeCurrentScene().objectives.data;
 
-	auto fadeIn = data.fadeInOut;
-	auto fadeOut = data.fadeInOut;
 	auto jumpcut = true;
+	auto doFadeOutAfter = false;
 
-	// Skip fade in if last interrupting objective was also a cutscene (or if this is the first objective)
-	if (objective_utils::isLastInterruptingObjectiveOfType(objectives, currentObjectiveIndex, TYPE)) {
-		fadeIn = false;
-	} else if (currentObjectiveIndex == 0 ||
-	           objective_utils::findLastInterruptingObjective(objectives, currentObjectiveIndex) < 0) {
-		fadeIn = false;
+	// Do fade out then fade in if this is NOT continuing from previous cutscene
+	// (as in DYOM: fade out at lines 19983-19987, then fade in at 20537-20541)
+	if (data.fadeInOut &&
+	    !objective_utils::isLastInterruptingObjectiveOfType(objectives, currentObjectiveIndex, TYPE)) {
+		// First: Fade OUT to black
+		plugin::Command<plugin::Commands::DO_FADE>(500, 0);
+		co_await 600; // Wait 600ms for fade to complete
+		ProjectPlayer::instance().setFaded(true);
+
+		// Then immediately: Fade IN from black (so cutscene is visible!)
+		plugin::Command<plugin::Commands::DO_FADE>(500, 1);
+		ProjectPlayer::instance().setFaded(false);
 	}
 
-	// Skip fade out and jumpcut if next interrupting objective is also a cutscene
+	// Determine if we need fade out AFTER cutscene (as in DYOM lines 19917-19927)
+	// If next objective is NOT a cutscene, fade out at end
+	if (data.fadeInOut &&
+	    !objective_utils::isNextInterruptingObjectiveOfType(objectives, currentObjectiveIndex, TYPE)) {
+		doFadeOutAfter = true;
+	}
+
+	// Skip jumpcut if next interrupting objective is also a cutscene
 	if (objective_utils::isNextInterruptingObjectiveOfType(objectives, currentObjectiveIndex, TYPE)) {
-		fadeOut = false;
 		jumpcut = false;
 	}
 
@@ -94,18 +105,15 @@ inline ktwait execute(Data& data) {
 		}
 	}
 
-	if (fadeIn) {
-		plugin::Command<plugin::Commands::DO_FADE>(500, 1);
-	}
-
 	TheCamera.m_bWideScreenOn = data.wideScreen;
 	CTheScripts::bDisplayHud = false;
 	CHud::bScriptDontDisplayRadar = true;
 	plugin::Command<plugin::Commands::SET_TIME_SCALE>(data.slowMotion ? 0.2f : 1.0f);
 
-	auto time = int(data.textTime * 1000.0f / (data.slowMotion ? 0.2f : 1.0f));
+	auto time = int(data.textTime * 1000.0f);
 	CPed* targetPed = nullptr;
 	std::shared_ptr<CPed> cameraPed;
+	LDYOM_INFO("{}", time);
 
 	if (data.behaviour > 2 && data.behaviour < 6) {
 		if (targetActor && targetActor->ped) {
@@ -210,10 +218,6 @@ inline ktwait execute(Data& data) {
 
 	duration = isSkipped ? 0 : time;
 
-	if (fadeOut) {
-		duration = std::max(500, duration);
-	}
-
 	if (!data.text.empty()) {
 		auto cp1251Text = utf8_to_cp1251(data.text);
 		gxt_encode(cp1251Text);
@@ -222,15 +226,10 @@ inline ktwait execute(Data& data) {
 		CMessages::AddMessage(const_cast<char*>(data.gameText.c_str()), duration, 0, false);
 	}
 
-	auto isFadeOutRunning = false;
 	auto lastTime = CTimer::m_snTimeInMilliseconds;
 	while (duration > 0) {
 		auto currentTime = CTimer::m_snTimeInMilliseconds;
 		duration -= currentTime - lastTime;
-		if (duration <= 500 && fadeOut && !isFadeOutRunning) {
-			isFadeOutRunning = true;
-			plugin::Command<plugin::Commands::DO_FADE>(500, 0);
-		}
 		if (plugin::Command<plugin::Commands::IS_BUTTON_PRESSED>(0, 16)) {
 			duration = 0;
 			isSkipped = true;
@@ -239,8 +238,11 @@ inline ktwait execute(Data& data) {
 		co_await 1;
 	}
 
-	if (fadeOut) {
-		plugin::Command<plugin::Commands::DO_FADE>(500, 1);
+	// Fade out at END of cutscene if next objective is not a cutscene (DYOM lines 19917-19927)
+	if (doFadeOutAfter && !ProjectPlayer::instance().isFaded()) {
+		plugin::Command<plugin::Commands::DO_FADE>(500, 0); // Fade OUT to black
+		co_await 600;                                       // Wait 600ms for fade to complete
+		ProjectPlayer::instance().setFaded(true);           // Mark screen as black ($DYOM_faded = 1)
 	}
 
 	{
@@ -263,6 +265,25 @@ inline ktwait execute(Data& data) {
 		CTheScripts::bDisplayHud = true;
 		CHud::bScriptDontDisplayRadar = false;
 		plugin::Command<plugin::Commands::SET_TIME_SCALE>(1.0f);
+
+		// In DYOM, player.CanMove(true) is called when exiting cutscene sequence (lines 19943).
+		// Clear player tasks to restore control if we're exiting cutscene/animation sequence.
+		// Check if next objective is NOT cutscene AND NOT player_animation
+		bool shouldRestorePlayerControl = true;
+		int nextIndex = currentObjectiveIndex + 1;
+		if (nextIndex < static_cast<int>(objectives.size())) {
+			const auto& nextType = objectives[nextIndex].type;
+			if (nextType == TYPE || nextType == "core.player_animation") {
+				shouldRestorePlayerControl = false;
+			}
+		}
+
+		if (shouldRestorePlayerControl) {
+			auto player = FindPlayerPed();
+			if (player) {
+				plugin::Command<plugin::Commands::CLEAR_CHAR_TASKS>(player);
+			}
+		}
 	}
 }
 

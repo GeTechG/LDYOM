@@ -15,6 +15,7 @@
 #include <scenes_manager.h>
 #include <string_utils.h>
 #include <utils/imgui_configurate.h>
+#include <utils/objective_utils.h>
 #include <utils_entities_selections.h>
 
 namespace objectives::checkpoint {
@@ -89,8 +90,10 @@ ktwait execute(Data& data) {
 	auto currentObjectiveIndex = ProjectPlayer::instance().getCurrentObjectiveIndex();
 	auto& objectives = ScenesManager::instance().getUnsafeCurrentScene().objectives.data;
 
-	for (int i = currentObjectiveIndex - 1; i >= 0; --i) {
-		auto& objective = objectives[i];
+	auto lastInterruptingCheckpointIndex =
+		objective_utils::findLastInterruptingObjective(objectives, currentObjectiveIndex);
+	if (lastInterruptingCheckpointIndex != -1) {
+		auto& objective = objectives[lastInterruptingCheckpointIndex];
 		if (objective.type == objectives::enter_to_vehicle::TYPE) {
 			enterToVehicleData = &objective.getValue<objectives::enter_to_vehicle::Data>();
 			auto entities = ProjectPlayer::instance().getEntities();
@@ -103,9 +106,6 @@ ktwait execute(Data& data) {
 					targetVehicle = vehicle;
 				}
 			}
-			break;
-		} else if (objective.type != objectives::checkpoint::TYPE) {
-			break;
 		}
 	}
 
@@ -173,14 +173,14 @@ ktwait execute(Data& data) {
 			}
 		} else {
 			if (targetCheckpoint->typeCheckpoint == 0 || targetCheckpoint->typeCheckpoint == 5) { // Sphere
-				if (plugin::Command<plugin::Commands::LOCATE_CHAR_ON_FOOT_3D>(
+				if (plugin::Command<plugin::Commands::LOCATE_CHAR_ANY_MEANS_3D>(
 						playerHandle, targetCheckpoint->entity->position[0], targetCheckpoint->entity->position[1],
 						targetCheckpoint->entity->position[2], targetCheckpoint->radius, targetCheckpoint->radius,
 						targetCheckpoint->radius, false)) {
 					break;
 				}
 			} else {
-				if (plugin::Command<plugin::Commands::LOCATE_CHAR_ON_FOOT_2D>(
+				if (plugin::Command<plugin::Commands::LOCATE_CHAR_ANY_MEANS_2D>(
 						playerHandle, targetCheckpoint->entity->position[0], targetCheckpoint->entity->position[1],
 						targetCheckpoint->radius, targetCheckpoint->radius, false)) {
 					break;
