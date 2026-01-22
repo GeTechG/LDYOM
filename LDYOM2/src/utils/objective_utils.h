@@ -37,6 +37,14 @@ inline bool isInterruptingObjective(std::string_view objectiveType) {
 		return false; // Money addition
 	if (objectiveType == "core.money_subtract")
 		return false; // Money subtraction
+	if (objectiveType == "core.player_animation")
+		return false;
+	if (objectiveType == "core.player_disarm")
+		return false;
+	if (objectiveType == "core.wanted_level")
+		return false;
+	if (objectiveType == "core.weather")
+		return false;
 
 	// All other objectives are considered interrupting
 	return true;
@@ -46,8 +54,7 @@ inline bool isInterruptingObjective(std::string_view objectiveType) {
  * Finds the last interrupting objective before the given index.
  * Returns -1 if no interrupting objective is found.
  */
-template <typename ObjectiveList>
-int findLastInterruptingObjective(const ObjectiveList& objectives, int currentIndex) {
+template <typename ObjectiveList> int findLastInterruptingObjective(const ObjectiveList& objectives, int currentIndex) {
 	for (int i = currentIndex - 1; i >= 0; --i) {
 		if (isInterruptingObjective(objectives[i].type)) {
 			return i;
@@ -60,8 +67,7 @@ int findLastInterruptingObjective(const ObjectiveList& objectives, int currentIn
  * Finds the next interrupting objective after the given index.
  * Returns -1 if no interrupting objective is found.
  */
-template <typename ObjectiveList>
-int findNextInterruptingObjective(const ObjectiveList& objectives, int currentIndex) {
+template <typename ObjectiveList> int findNextInterruptingObjective(const ObjectiveList& objectives, int currentIndex) {
 	for (int i = currentIndex + 1; i < static_cast<int>(objectives.size()); ++i) {
 		if (isInterruptingObjective(objectives[i].type)) {
 			return i;
