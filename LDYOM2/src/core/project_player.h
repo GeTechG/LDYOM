@@ -12,6 +12,7 @@ struct ProjectPlayerState {
 	bool isPlaying = false;
 	int currentObjectiveIndex = 0;
 	std::string currentSceneId;
+	bool isFaded = false; // Tracks fade state: true = screen is black, false = screen is visible (analog of $DYOM_faded)
 };
 
 class ProjectPlayer {
@@ -47,6 +48,8 @@ class ProjectPlayer {
 	bool isPlaying() const { return m_state.isPlaying; }
 	std::string getCurrentSceneId() const { return m_state.currentSceneId; }
 	int getCurrentObjectiveIndex() const { return m_state.currentObjectiveIndex; }
+	bool isFaded() const { return m_state.isFaded; }
+	void setFaded(bool faded) { m_state.isFaded = faded; }
 	std::vector<Entity*> getEntities();
 };
 

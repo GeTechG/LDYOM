@@ -24,13 +24,16 @@
 ProjectPlayer::~ProjectPlayer() { this->projectTasklist->clear_all_tasks(); }
 
 ktwait ProjectPlayer::run() {
+	// Mission start: fade in briefly, then fade out (original LDYOM2 behavior for smooth transition)
 	TheCamera.Fade(0.5f, FADE_IN);
 	co_await 500;
 
 	instance().m_state.isPlaying = true;
 	instance().transitionPlayingState(true);
 	LDYOM_INFO("Project player started");
+
 	TheCamera.Fade(0.5f, FADE_OUT);
+	instance().m_state.isFaded = true; // Mark as faded for first objective
 
 	const auto& settings = ScenesManager::instance().getCurrentScene().settings;
 
@@ -89,6 +92,14 @@ ktwait ProjectPlayer::run() {
 
 	for (int i = 0; i < static_cast<int>(objectives.size()); i++) {
 		instance().m_state.currentObjectiveIndex = i;
+
+		// Centralized fade in before each objective (as in DYOM lines 20537-20541)
+		// Only fade in if screen is currently black ($DYOM_faded == 1)
+		if (instance().m_state.isFaded) {
+			plugin::Command<plugin::Commands::DO_FADE>(500, 1); // Fade IN from black
+			instance().m_state.isFaded = false;
+		}
+
 		instance().onObjectiveStarted(i);
 		auto& objective = ObjectivesManager::instance().getUnsafeObjective(i);
 		co_await objective.execute();
@@ -96,6 +107,12 @@ ktwait ProjectPlayer::run() {
 	}
 
 	co_await ProjectPlayer::playerLeaveAnyVehicle();
+
+	// Final fade in at mission end (as in DYOM lines 22199-22203)
+	if (instance().m_state.isFaded) {
+		plugin::Command<plugin::Commands::DO_FADE>(500, 1); // Fade IN from black
+		instance().m_state.isFaded = false;
+	}
 
 	instance().m_state.isPlaying = false;
 	instance().transitionPlayingState(false);
@@ -211,6 +228,9 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 		TheCamera.RestoreWithJumpCut();
 		TheCamera.Fade(0, 1);
 		plugin::Command<plugin::Commands::CLEAR_AREA>(0.0f, 0.0f, 0.0f, 10000.f, 1);
+
+		// Reset fade state for next mission
+		instance().m_state.isFaded = false;
 	}
 	ScenesManager::instance().resetCurrentScene();
 }
