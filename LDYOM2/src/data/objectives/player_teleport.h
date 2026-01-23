@@ -561,6 +561,15 @@ inline ktwait execute(Data& data) {
 		co_return;
 	}
 
+	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
+
+	if (!ProjectPlayer::instance().isFaded()) {
+		// First: Fade OUT to black
+		plugin::Command<plugin::Commands::DO_FADE>(500, 0);
+		co_await 600; // Wait 600ms for fade to complete
+		ProjectPlayer::instance().setFaded(true);
+	}
+
 	// Based on DYOM teleport objective logic (lines 21532-21597)
 
 	// Add 1.0 to Z coordinate (DYOM does this to avoid falling through floor)
@@ -682,6 +691,10 @@ inline ktwait execute(Data& data) {
 
 	// Enable player control (opcode player.CanMove)
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+
+	// Then immediately: Fade IN from black (so cutscene is visible!)
+	plugin::Command<plugin::Commands::DO_FADE>(500, 1);
+	ProjectPlayer::instance().setFaded(false);
 
 	co_return;
 }

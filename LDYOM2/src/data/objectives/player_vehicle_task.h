@@ -44,8 +44,11 @@ std::shared_ptr<components::Vehicle> findNearestVehicle(CPlayerPed* player) {
 		auto aVehicle = components::Vehicle::cast(a->getComponent(components::Vehicle::TYPE));
 		auto bVehicle = components::Vehicle::cast(b->getComponent(components::Vehicle::TYPE));
 
-		if (!aVehicle || !bVehicle || !aVehicle->handle || !bVehicle->handle) {
+		if (!aVehicle || !aVehicle->handle) {
 			return false;
+		}
+		if (!bVehicle || !bVehicle->handle) {
+			return true;
 		}
 		return DistanceBetweenPoints(aVehicle->handle->GetPosition(), player->GetPosition()) <
 		       DistanceBetweenPoints(bVehicle->handle->GetPosition(), player->GetPosition());

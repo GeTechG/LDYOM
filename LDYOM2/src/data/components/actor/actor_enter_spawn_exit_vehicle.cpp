@@ -56,8 +56,11 @@ components::ActorEnterSpawnExitVehicle::findNearestVehicle(std::shared_ptr<compo
 	auto nearestVehicleIt = std::ranges::min_element(vehicles, [actor](Entity* a, Entity* b) {
 		const auto aVehicle = Vehicle::cast(a->getComponent(Vehicle::TYPE));
 		const auto bVehicle = Vehicle::cast(b->getComponent(Vehicle::TYPE));
-		if (!aVehicle->handle || !bVehicle->handle) {
+		if (!aVehicle->handle) {
 			return false;
+		}
+		if (!bVehicle->handle) {
+			return true;
 		}
 		return DistanceBetweenPoints(aVehicle->handle->GetPosition(), actor->ped->GetPosition()) <
 		       DistanceBetweenPoints(bVehicle->handle->GetPosition(), actor->ped->GetPosition());

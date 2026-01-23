@@ -113,7 +113,6 @@ inline ktwait execute(Data& data) {
 	auto time = int(data.textTime * 1000.0f);
 	CPed* targetPed = nullptr;
 	std::shared_ptr<CPed> cameraPed;
-	LDYOM_INFO("{}", time);
 
 	if (data.behaviour > 2 && data.behaviour < 6) {
 		if (targetActor && targetActor->ped) {
