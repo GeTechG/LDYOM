@@ -18,6 +18,7 @@
 #include <scenes_manager.h>
 #include <sol/sol.hpp>
 #include <task_manager.h>
+#include <utils/teleport_utils.h>
 #include <utils/theme_loader.h>
 #include <window_manager.h>
 #include <windows/init.h>
@@ -56,6 +57,12 @@ void Application::initialize() {
 		});
 
 		Hotkeys::instance().addHotkeyCallback("toggleDebugInfo", []() { DebugInfo::toggle(); });
+
+		Hotkeys::instance().addHotkeyCallback("teleportToMarker", []() {
+			if (!WindowManager::instance().isAnyWindowOpen()) {
+				teleportPlayerToMarker();
+			}
+		});
 
 		initWindows();
 

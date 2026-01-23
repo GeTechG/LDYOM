@@ -19,6 +19,11 @@ void Hotkeys::initialize() {
 		.functionKeys = 0xFFFFFF3E, // F4
 	});
 
+	this->m_hotkeys.emplace_back(ImHotKey::HotKey{
+		.functionName = "teleportToMarker",
+		.functionKeys = 0xFFFFFF3F, // F5
+	});
+
 	const auto hotkeysConfig =
 		Settings::instance().getSetting<std::unordered_map<std::string, std::string>>("hotkeys", {});
 
@@ -70,11 +75,18 @@ void Hotkeys::addHotkeyCallback(std::string_view name, std::function<void()> cal
 void Hotkeys::update() {
 	auto hotkey = this->getHotKey(false);
 	if (hotkey != nullptr) {
-		const auto& hotkeyName = hotkey->functionName;
-		auto it = this->m_hotkeyCallbacks.find(hotkeyName);
-		if (it != this->m_hotkeyCallbacks.end()) {
-			(*it->second)();
+		// Only process if this is a new key combination (not the same as last frame)
+		if (hotkey->functionKeys != m_lastProcessedKeys) {
+			m_lastProcessedKeys = hotkey->functionKeys;
+			const auto& hotkeyName = hotkey->functionName;
+			auto it = this->m_hotkeyCallbacks.find(hotkeyName);
+			if (it != this->m_hotkeyCallbacks.end()) {
+				(*it->second)();
+			}
 		}
+	} else {
+		// No keys pressed, reset state
+		m_lastProcessedKeys = 0;
 	}
 }
 

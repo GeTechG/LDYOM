@@ -30,6 +30,7 @@ class Hotkeys {
   private:
 	std::vector<ImHotKey::HotKey> m_hotkeys;
 	std::unordered_map<std::string, std::unique_ptr<rocket::thread_safe_signal<void()>>> m_hotkeyCallbacks;
+	unsigned int m_lastProcessedKeys = 0;
 
 	Hotkeys() = default;
 
