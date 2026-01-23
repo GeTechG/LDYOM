@@ -14,6 +14,11 @@ void Hotkeys::initialize() {
 		.functionKeys = 0xFFFFFF17, // I
 	});
 
+	this->m_hotkeys.emplace_back(ImHotKey::HotKey{
+		.functionName = "toggleDebugInfo",
+		.functionKeys = 0xFFFFFF3E, // F4
+	});
+
 	const auto hotkeysConfig =
 		Settings::instance().getSetting<std::unordered_map<std::string, std::string>>("hotkeys", {});
 

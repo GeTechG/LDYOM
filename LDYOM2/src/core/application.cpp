@@ -12,6 +12,7 @@
 #include "textures_manager.h"
 #include <components_manager.h>
 #include <fires_remover.h>
+#include <in_game/debug_info.h>
 #include <plugin.h>
 #include <projects_manager.h>
 #include <scenes_manager.h>
@@ -53,6 +54,8 @@ void Application::initialize() {
 				}
 			}
 		});
+
+		Hotkeys::instance().addHotkeyCallback("toggleDebugInfo", []() { DebugInfo::toggle(); });
 
 		initWindows();
 
