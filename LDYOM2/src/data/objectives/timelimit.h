@@ -107,6 +107,20 @@ ktwait execute(Data& data) {
 					// Update timer value directly without recreating the display
 					timerService.setTimerTime(newTime);
 					// Monitor task should already be running and will continue
+				} else {
+					// Set new time limit (convert seconds to milliseconds)
+					int timeMs = data.timeSeconds * 1000;
+					timerService.addTimer(TheText.Get("RTIME"), true, timeMs);
+					projectTasklist->add_task([]() -> ktwait {
+						while (TimerService::instance().isTimerActive() &&
+						       TimerService::instance().getTimerTime() > 0) {
+							co_await 100; // Check every 100ms
+						}
+						// Timer expired - fail the mission
+						if (TimerService::instance().isTimerActive() && TimerService::instance().getTimerTime() <= 0) {
+							ProjectPlayer::instance().failCurrentProject();
+						}
+					});
 				}
 				break;
 			}
