@@ -108,4 +108,5 @@ void EntitiesManager::registerCoreEntityTemplates() {
 	registerEntityTemplate("firework", {"firework", "objective_specific"});
 	registerEntityTemplate("particle", {"particle", "objective_specific"});
 	registerEntityTemplate("checkpoint", {"checkpoint", "objective_specific"});
+	registerEntityTemplate("audio", {"audio", "objective_specific"});
 }

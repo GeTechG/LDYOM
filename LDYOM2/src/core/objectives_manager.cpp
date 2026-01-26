@@ -14,6 +14,7 @@
 #include <objectives/phone_call.h>
 #include <objectives/pickup.h>
 #include <objectives/player_animation.h>
+#include <objectives/stop_all_audio.h>
 #include <objectives/player_disarm.h>
 #include <objectives/player_move_by_points.h>
 #include <objectives/player_random_spawn.h>
@@ -108,6 +109,7 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<ped_behaviour::Data>(ped_behaviour::builder());
 	this->registerObjectiveBuilder<phone_call::Data>(phone_call::builder());
 	this->registerObjectiveBuilder<pickup::Data>(pickup::builder());
+	this->registerObjectiveBuilder<stop_all_audio::Data>(stop_all_audio::builder());
 	this->registerObjectiveBuilder<player_animation::Data>(player_animation::builder());
 	this->registerObjectiveBuilder<player_disarm::Data>(player_disarm::builder());
 	this->registerObjectiveBuilder<player_move_by_points::Data>(player_move_by_points::builder());

@@ -42,6 +42,9 @@ void EntitiesMenu::renderContent(Window* window) {
 	if (ImGui::Button(_("entities_menu.checkpoints", ICON_FA_FLAG).c_str(), buttonSize)) {
 		openEntitiesWindow(EntitiesWindowType_Checkpoint);
 	}
+	if (ImGui::Button(_("entities_menu.audio", ICON_FA_VOLUME_HIGH).c_str(), buttonSize)) {
+		openEntitiesWindow(EntitiesWindowType_Audio);
+	}
 }
 
 EntitiesMenu::EntitiesMenu()

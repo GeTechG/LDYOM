@@ -26,6 +26,7 @@ bool EntitiesWindow::filterByType(Entity& entity) {
 		case EntitiesWindowType_Firework: return entity.hasComponent("firework");
 		case EntitiesWindowType_Particle: return entity.hasComponent("particle");
 		case EntitiesWindowType_Checkpoint: return entity.hasComponent("checkpoint");
+		case EntitiesWindowType_Audio: return entity.hasComponent("audio");
 		default: return false;
 	}
 }
@@ -83,6 +84,11 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 				case EntitiesWindowType_Checkpoint:
 					{
 						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("checkpoint");
+						break;
+					}
+				case EntitiesWindowType_Audio:
+					{
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("audio");
 						break;
 					}
 			}
