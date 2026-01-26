@@ -264,25 +264,6 @@ inline ktwait execute(Data& data) {
 		CTheScripts::bDisplayHud = true;
 		CHud::bScriptDontDisplayRadar = false;
 		plugin::Command<plugin::Commands::SET_TIME_SCALE>(1.0f);
-
-		// In DYOM, player.CanMove(true) is called when exiting cutscene sequence (lines 19943).
-		// Clear player tasks to restore control if we're exiting cutscene/animation sequence.
-		// Check if next objective is NOT cutscene AND NOT player_animation
-		bool shouldRestorePlayerControl = true;
-		int nextIndex = currentObjectiveIndex + 1;
-		if (nextIndex < static_cast<int>(objectives.size())) {
-			const auto& nextType = objectives[nextIndex].type;
-			if (nextType == TYPE || nextType == "core.player_animation") {
-				shouldRestorePlayerControl = false;
-			}
-		}
-
-		if (shouldRestorePlayerControl) {
-			auto player = FindPlayerPed();
-			if (player) {
-				plugin::Command<plugin::Commands::CLEAR_CHAR_TASKS>(player);
-			}
-		}
 	}
 }
 

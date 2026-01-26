@@ -19,6 +19,7 @@
 #include <logger.h>
 #include <task_manager.h>
 #include <timer_service.h>
+#include <utils/objective_utils.h>
 #include <utils/string_utils.h>
 
 ProjectPlayer::~ProjectPlayer() { this->projectTasklist->clear_all_tasks(); }
@@ -92,16 +93,35 @@ ktwait ProjectPlayer::run() {
 
 	for (int i = 0; i < static_cast<int>(objectives.size()); i++) {
 		instance().m_state.currentObjectiveIndex = i;
+		auto& objective = ObjectivesManager::instance().getUnsafeObjective(i);
+		auto objectiveType = objective.type;
 
-		// Centralized fade in before each objective (as in DYOM lines 20537-20541)
-		// Only fade in if screen is currently black ($DYOM_faded == 1)
-		if (instance().m_state.isFaded) {
-			plugin::Command<plugin::Commands::DO_FADE>(500, 1); // Fade IN from black
-			instance().m_state.isFaded = false;
+		auto shouldClearTasks =
+			objective_utils::isLastInterruptingObjectiveOfType(objectives, i, "core.cutscene") ||
+			objective_utils::isLastInterruptingObjectiveOfType(objectives, i, "core.player_animation");
+
+		if (shouldClearTasks && objectiveType != "core.cutscene" && objectiveType != "core.player_animation") {
+			auto player = FindPlayerPed();
+			if (player) {
+				plugin::Command<plugin::Commands::CLEAR_CHAR_TASKS>(player);
+			}
+		}
+
+		if (!objective_utils::isLastInterruptingObjectiveOfType(objectives, i, "core.cutscene") &&
+		    objectiveType == "core.cutscene") {
+			plugin::Command<plugin::Commands::DO_FADE>(500, 0);
+			co_await 600; // Wait 600ms for fade to complete
+			ProjectPlayer::instance().setFaded(true);
+		} else {
+			// Centralized fade in before each objective (as in DYOM lines 20537-20541)
+			// Only fade in if screen is currently black ($DYOM_faded == 1)
+			if (instance().m_state.isFaded) {
+				plugin::Command<plugin::Commands::DO_FADE>(500, 1); // Fade IN from black
+				instance().m_state.isFaded = false;
+			}
 		}
 
 		instance().onObjectiveStarted(i);
-		auto& objective = ObjectivesManager::instance().getUnsafeObjective(i);
 		co_await objective.execute();
 		instance().onObjectiveCompleted(i);
 	}
