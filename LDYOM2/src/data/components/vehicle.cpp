@@ -605,7 +605,7 @@ void components::Vehicle::spawn() {
 
 void components::Vehicle::despawn() {
 	if (handle) {
-		handle = nullptr;
+		handle.reset();
 	}
 	onDespawned();
 }

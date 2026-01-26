@@ -1,4 +1,5 @@
 #pragma once
+#include <localization.h>
 #include <lua_define_type.h>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -14,6 +15,11 @@ struct Dependencies {
 class Component {
   protected:
 	std::string tr(std::string_view key);
+
+	template<typename... Args>
+	std::string tr(std::string_view key, Args&&... args) {
+		return _("components." + std::string(this->getType()) + "." + std::string(key), std::forward<Args>(args)...);
+	}
 
   public:
 	virtual ~Component() = default;
