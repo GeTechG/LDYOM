@@ -24,6 +24,11 @@ void Hotkeys::initialize() {
 		.functionKeys = 0xFFFFFF3F, // F5
 	});
 
+	this->m_hotkeys.emplace_back(ImHotKey::HotKey{
+		.functionName = "unlockPlayer",
+		.functionKeys = 0xFFFFFF40, // F6
+	});
+
 	const auto hotkeysConfig =
 		Settings::instance().getSetting<std::unordered_map<std::string, std::string>>("hotkeys", {});
 

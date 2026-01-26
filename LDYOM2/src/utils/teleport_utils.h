@@ -62,3 +62,32 @@ inline void teleportPlayerToMarker() {
 	plugin::Command<plugin::Commands::SET_CAMERA_BEHIND_PLAYER>();
 	plugin::Command<plugin::Commands::RESTORE_CAMERA_JUMPCUT>();
 }
+
+inline void unlockPlayer() {
+	auto player = FindPlayerPed();
+	if (!player)
+		return;
+
+	// Check if player is playing
+	int playerId = 0;
+	if (!plugin::Command<plugin::Commands::IS_PLAYER_PLAYING>(playerId))
+		return;
+
+	// Get player reference
+	int playerRef = CPools::GetPedRef(player);
+
+	// Enable player control if disabled
+	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(playerId, true);
+
+	// Get current position
+	CVector currentPos = player->GetPosition();
+
+	// Lift player up slightly (0.5 units)
+	currentPos.z += 0.5f;
+
+	// Set new position
+	plugin::Command<plugin::Commands::SET_CHAR_COORDINATES>(playerRef, currentPos.x, currentPos.y, currentPos.z);
+
+	// Ensure player is not frozen
+	plugin::Command<plugin::Commands::FREEZE_CHAR_POSITION>(playerRef, false);
+}

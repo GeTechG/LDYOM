@@ -64,6 +64,12 @@ void Application::initialize() {
 			}
 		});
 
+		Hotkeys::instance().addHotkeyCallback("unlockPlayer", []() {
+			if (!WindowManager::instance().isAnyWindowOpen()) {
+				unlockPlayer();
+			}
+		});
+
 		initWindows();
 
 		ObjectivesManager::instance().registerCoreObjectives();
