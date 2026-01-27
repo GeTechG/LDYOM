@@ -17,35 +17,21 @@ ProjectsManager& ProjectsManager::instance() {
 }
 
 void ProjectsManager::initialize() {
-	m_projects.clear();
 	const std::filesystem::path projectsDir(LDYOM_PATH(PROJECTS_DIR_PATH));
 	if (!exists(projectsDir)) {
 		create_directories(projectsDir);
 		LDYOM_INFO("Created projects directory: {}", projectsDir.string());
 	}
-	for (const auto& entry : std::filesystem::directory_iterator(projectsDir)) {
-		if (entry.is_directory()) {
-			const std::filesystem::path projectPath = entry.path();
-			const std::filesystem::path infoFilePath = projectPath / (PROJECT_INFO_FILE_NAME + ".json");
-			if (exists(infoFilePath)) {
-				try {
-					std::ifstream file(infoFilePath);
-					nlohmann::json jsonData;
-					file >> jsonData;
-					ProjectInfo projectInfo = jsonData;
-					projectInfo.path = std::filesystem::path(projectPath.string()).make_preferred().string();
-					m_projects.push_back(projectInfo);
-				} catch (const std::exception& e) {
-					LDYOM_ERROR("Failed to load project info from {}: {}", infoFilePath.string(), e.what());
-				}
-			}
-		}
-	}
+
+	loadProjectsFromDirectory();
+
+	LDYOM_INFO("ProjectsManager initialized with {} projects", m_projects.size());
 }
 
 void ProjectsManager::shutdown() {
 	closeProject();
 	m_projects.clear();
+	LDYOM_INFO("ProjectsManager shutdown");
 }
 
 std::vector<ProjectInfo>& ProjectsManager::getProjects() { return m_projects; }
@@ -95,11 +81,23 @@ bool ProjectsManager::loadProject(int index) {
 		return false;
 	}
 	auto sceneToLoad = currentProject.value()->startSceneId;
-	if (!std::ranges::any_of(ScenesManager::instance().getScenesInfo(),
-	                         [sceneToLoad](const SceneInfo& info) { return info.id == sceneToLoad; })) {
-		sceneToLoad = ScenesManager::instance().getScenesInfo()[0].id;
-		LDYOM_INFO("Scene {} not found, loading first scene instead", currentProject.value()->startSceneId);
+	auto& scenesInfo = ScenesManager::instance().getScenesInfo();
+
+	// Check if start scene exists
+	if (!std::ranges::any_of(scenesInfo, [sceneToLoad](const SceneInfo& info) { return info.id == sceneToLoad; })) {
+		// If no scenes exist at all, create and save a default scene
+		if (scenesInfo.empty()) {
+			LDYOM_INFO("No scenes found in project, creating default scene");
+			ScenesManager::instance().saveCurrentScene();
+			ScenesManager::instance().loadScenesInfo();
+			sceneToLoad = ScenesManager::instance().getScenesInfo()[0].id;
+		} else {
+			// If scenes exist but start scene not found, use first available scene
+			sceneToLoad = scenesInfo[0].id;
+			LDYOM_INFO("Scene {} not found, loading first scene instead", currentProject.value()->startSceneId);
+		}
 		currentProject.value()->startSceneId = sceneToLoad;
+		saveCurrentProject();
 	}
 	ScenesManager::instance().loadScene(sceneToLoad);
 	LDYOM_INFO("Loaded project: {}", currentProject.value()->name);
@@ -131,3 +129,33 @@ void ProjectsManager::saveCurrentProject() {
 	file.close();
 	LDYOM_INFO("Saved project info: {}", currentProject.value()->name);
 }
+
+void ProjectsManager::refreshProjects() {
+	loadProjectsFromDirectory();
+	LDYOM_INFO("Projects list refreshed: {} projects", m_projects.size());
+}
+
+void ProjectsManager::loadProjectsFromDirectory() {
+	m_projects.clear();
+	const std::filesystem::path projectsDir(LDYOM_PATH(PROJECTS_DIR_PATH));
+
+	for (const auto& entry : std::filesystem::directory_iterator(projectsDir)) {
+		if (entry.is_directory()) {
+			const std::filesystem::path projectPath = entry.path();
+			const std::filesystem::path infoFilePath = projectPath / (PROJECT_INFO_FILE_NAME + ".json");
+			if (exists(infoFilePath)) {
+				try {
+					std::ifstream file(infoFilePath);
+					nlohmann::json jsonData;
+					file >> jsonData;
+					ProjectInfo projectInfo = jsonData;
+					projectInfo.path = std::filesystem::path(projectPath.string()).make_preferred().string();
+					m_projects.push_back(projectInfo);
+				} catch (const std::exception& e) {
+					LDYOM_ERROR("Failed to load project info from {}: {}", infoFilePath.string(), e.what());
+				}
+			}
+		}
+	}
+}
+

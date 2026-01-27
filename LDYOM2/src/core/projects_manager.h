@@ -13,6 +13,7 @@ class ProjectsManager {
 
 	void initialize();
 	void shutdown();
+	void refreshProjects();
 	std::vector<ProjectInfo>& getProjects();
 	std::optional<ProjectInfo*> getCurrentProject();
 	int getCurrentProjectIndex() const noexcept;
@@ -28,6 +29,8 @@ class ProjectsManager {
 	int m_currentProjectIndex = -1;
 
 	ProjectsManager() = default;
+
+	void loadProjectsFromDirectory();
 
 	static const std::string PROJECTS_DIR_PATH;
 	static const std::string PROJECT_INFO_FILE_NAME;

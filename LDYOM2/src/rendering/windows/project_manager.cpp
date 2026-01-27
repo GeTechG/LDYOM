@@ -292,4 +292,5 @@ ProjectManager::ProjectManager()
 void ProjectManager::open() {
 	Window::open();
 	m_selectedProjectIndex = -1;
+	ProjectsManager::instance().refreshProjects();
 }
