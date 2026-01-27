@@ -1,5 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "entities.h"
+#include "entity_info_panel.h"
 #include "logger.h"
 #include <algorithm>
 #include <angles.h>
@@ -410,6 +411,12 @@ void EntitiesWindow::setSelectedEntityIndex(int index) {
 	if (index != -1 && index < static_cast<int>(entities.size())) {
 		auto& entity = EntitiesManager::instance().getUnsafeEntity(index);
 		EntityOrbitCamera::activate(&entity, index);
+
+		// Show info panel when entity is selected
+		EntityInfoPanel::show(&entity);
+	} else {
+		// Hide info panel when no entity is selected
+		EntityInfoPanel::hide();
 	}
 }
 
@@ -418,6 +425,10 @@ void EntitiesWindow::close() {
 	if (EntityOrbitCamera::isActive()) {
 		EntityOrbitCamera::deactivate(true);
 	}
+
+	// Hide info panel when entities window closes
+	EntityInfoPanel::hide();
+
 	Window::close();
 }
 
