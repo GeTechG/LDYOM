@@ -23,6 +23,8 @@ class ProjectsManager {
 	void closeProject();
 
 	void saveCurrentProject();
+	bool removeProject(int index);
+	bool renameProject(int index, std::string_view newName);
 
   private:
 	std::vector<ProjectInfo> m_projects;

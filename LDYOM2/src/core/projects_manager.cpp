@@ -159,3 +159,85 @@ void ProjectsManager::loadProjectsFromDirectory() {
 	}
 }
 
+bool ProjectsManager::removeProject(int index) {
+	if (index < 0 || index >= static_cast<int>(m_projects.size())) {
+		LDYOM_ERROR("Invalid project index: {}", index);
+		return false;
+	}
+
+	try {
+		const auto& project = m_projects[index];
+		std::filesystem::path projectPath(project.path);
+
+		if (std::filesystem::exists(projectPath)) {
+			std::filesystem::remove_all(projectPath);
+			LDYOM_INFO("Removed project directory: {}", projectPath.string());
+		}
+
+		if (m_currentProjectIndex == index) {
+			closeProject();
+		} else if (m_currentProjectIndex > index) {
+			m_currentProjectIndex--;
+		}
+
+		m_projects.erase(m_projects.begin() + index);
+		LDYOM_INFO("Removed project at index: {}", index);
+		return true;
+	} catch (const std::exception& e) {
+		LDYOM_ERROR("Failed to remove project at index {}: {}", index, e.what());
+		return false;
+	}
+}
+
+bool ProjectsManager::renameProject(int index, std::string_view newName) {
+	if (index < 0 || index >= static_cast<int>(m_projects.size())) {
+		LDYOM_ERROR("Invalid project index: {}", index);
+		return false;
+	}
+
+	if (newName.empty()) {
+		LDYOM_ERROR("New project name cannot be empty");
+		return false;
+	}
+
+	try {
+		auto& project = m_projects[index];
+		std::filesystem::path oldPath(project.path);
+		std::filesystem::path parentPath = oldPath.parent_path();
+		std::filesystem::path newPath = parentPath / to_snake_case(newName);
+
+		if (std::filesystem::exists(newPath) && oldPath != newPath) {
+			LDYOM_ERROR("Project with name '{}' already exists", newName);
+			return false;
+		}
+
+		if (oldPath != newPath) {
+			std::filesystem::rename(oldPath, newPath);
+			project.path = newPath.string();
+		}
+
+		project.name = std::string(newName);
+		project.timestamp = std::time(nullptr);
+
+		if (m_currentProjectIndex == index) {
+			saveCurrentProject();
+		} else {
+			std::filesystem::path infoFilePath = newPath / (PROJECT_INFO_FILE_NAME + ".json");
+			std::ofstream file(infoFilePath);
+			if (!file) {
+				LDYOM_ERROR("Failed to open project info file for writing: {}", infoFilePath.string());
+				return false;
+			}
+			nlohmann::json jsonData = project;
+			file << jsonData.dump(4);
+			file.close();
+		}
+
+		LDYOM_INFO("Renamed project at index {} to '{}'", index, newName);
+		return true;
+	} catch (const std::exception& e) {
+		LDYOM_ERROR("Failed to rename project at index {}: {}", index, e.what());
+		return false;
+	}
+}
+

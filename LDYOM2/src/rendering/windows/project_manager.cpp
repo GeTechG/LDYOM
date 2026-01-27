@@ -2,13 +2,29 @@
 #include "fa_icons.h"
 #include "localization.h"
 #include "project_info.h"
+#include <algorithm>
+#include <cctype>
 #include <fmt/format.h>
 #include <format>
 #include <imgui_widgets/imgui_widgets.h>
+#include <project_player.h>
 #include <projects_manager.h>
 #include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
 #include <window_manager.h>
+
+namespace {
+bool containsCaseInsensitive(const std::string& text, const std::string& search) {
+	if (search.empty()) {
+		return true;
+	}
+
+	auto it = std::search(text.begin(), text.end(), search.begin(), search.end(),
+	                      [](char ch1, char ch2) { return std::tolower(ch1) == std::tolower(ch2); });
+
+	return it != text.end();
+}
+} // namespace
 
 void ProjectManager::renderHeaderBar() {
 	const ImVec2 availContentSize = ImGui::GetContentRegionAvail();
@@ -17,14 +33,13 @@ void ProjectManager::renderHeaderBar() {
 
 	if (ImGui::BeginChild("HeaderBar", ImVec2(-1.0f, topBarHeight), false)) {
 		const auto projectsText = _("project_manager.projects");
-		const auto settingsText = _("project_manager.settings");
+		const auto settingsText = ICON_FA_GEAR;
 
 		ImGui::PushFont(ImGuiConfigurate::getHeaderFont());
 		const float projectButtonWidth =
 			ImGui::CalcTextSize(projectsText.c_str()).x + ImGui::GetStyle().FramePadding.x * 4;
 		ImGui::PopFont();
-		const float settingsButtonWidth =
-			ImGui::CalcTextSize(settingsText.c_str()).x + ImGui::GetStyle().FramePadding.x * 4;
+		const float settingsButtonWidth = ImGui::CalcTextSize(settingsText).x + ImGui::GetStyle().FramePadding.x * 4;
 
 		const float totalCentralButtonsWidth = projectButtonWidth;
 		const float centerPosX = (availContentSize.x - totalCentralButtonsWidth) * 0.5f - settingsButtonWidth;
@@ -40,14 +55,14 @@ void ProjectManager::renderHeaderBar() {
 
 		const float rightTabPosX = availContentSize.x - settingsButtonWidth;
 		ImGui::SetCursorPosX(rightTabPosX);
-		if (ImGui::TextButton(settingsText.c_str(), ImVec2(settingsButtonWidth, buttonHeight))) {
+		if (ImGui::TextButton(settingsText, ImVec2(settingsButtonWidth, buttonHeight))) {
 			WindowManager::instance().openWindow("quick_settings");
 		}
 	}
 	ImGui::EndChild();
 }
 
-void ProjectManager::renderTopButtons(float spacing) {
+void ProjectManager::renderTopButtons(ProjectManager* window, float spacing) {
 	const float childHeight = ImGui::GetFrameHeight();
 	if (ImGui::BeginChild("TopButtons", ImVec2(-1.0f, childHeight), false)) {
 		if (ImGui::Button(_("project_manager.create", ICON_FA_PLUS_LARGE).c_str())) {
@@ -56,51 +71,23 @@ void ProjectManager::renderTopButtons(float spacing) {
 
 		ImGui::SameLine();
 
-		// Import button
-		if (ImGui::Button(_("project_manager.import", ICON_FA_FOLDER).c_str())) {
-			// Import action
-		}
-
-		ImGui::SameLine();
-
-		// Scan button
-		if (ImGui::Button(_("project_manager.scan", ICON_FA_MAGNIFYING_GLASS).c_str())) {
-			// Scan action
+		if (ImGui::Button(_("project_manager.refresh", ICON_FA_MAGNIFYING_GLASS_ARROWS_ROTATE).c_str())) {
+			ProjectsManager::instance().refreshProjects();
 		}
 
 		ImGui::SameLine();
 
 		const float remainingWidth = ImGui::GetContentRegionAvail().x;
-		// const float sortWidth = remainingWidth * 0.25f;
 		const float filterWidth = remainingWidth - spacing * 2;
 
-		static char filterBuffer[256] = "";
 		ImGui::PushItemWidth(filterWidth);
-		ImGui::InputTextWithHint("##filter", _("project_manager.filter_projects").c_str(), filterBuffer,
-		                         IM_ARRAYSIZE(filterBuffer));
+		ImGui::InputTextWithHint("##filter", _("project_manager.filter_projects").c_str(), window->m_filterBuffer,
+		                         IM_ARRAYSIZE(window->m_filterBuffer));
 		ImGui::SameLine();
 		const float inputX = ImGui::GetCursorPosX();
 		const auto iconSearchSize = ImGui::CalcTextSize(ICON_FA_MAGNIFYING_GLASS);
 		ImGui::SetCursorPosX(inputX - iconSearchSize.x - spacing * 2);
 		ImGui::TextDisabled(ICON_FA_MAGNIFYING_GLASS);
-		// ImGui::SameLine(0, 1);
-		// ImGui::SetCursorPosX(inputX);
-		// ImGui::AlignTextToFramePadding();
-		// ImGui::Text("Sort:");
-		// ImGui::SameLine();
-		// ImGui::PushItemWidth(sortWidth);
-		// if (ImGui::BeginCombo("##sort", sortOptions[currentSortOption])) {
-		// 	for (int i = 0; i < IM_ARRAYSIZE(sortOptions); i++) {
-		// 		const bool isSelected = (currentSortOption == i);
-		// 		if (ImGui::Selectable(sortOptions[i], isSelected)) {
-		// 			currentSortOption = i;
-		// 		}
-		// 		if (isSelected) {
-		// 			ImGui::SetItemDefaultFocus();
-		// 		}
-		// 	}
-		// 	ImGui::EndCombo();
-		// }
 	}
 	ImGui::EndChild();
 }
@@ -114,8 +101,16 @@ void ProjectManager::renderProjectList(ProjectManager* window, float spacing, fl
 		const float availableWidth = ImGui::GetContentRegionAvail().x;
 
 		const auto& projects = ProjectsManager::instance().getProjects();
+		const std::string filterText(window->m_filterBuffer);
+
 		for (int i = 0; i < static_cast<int>(projects.size()); i++) {
 			const auto& project = projects[i];
+
+			// Фильтрация: проверка вхождения в название или автора
+			if (!containsCaseInsensitive(project.name, filterText) &&
+			    !containsCaseInsensitive(project.author, filterText)) {
+				continue;
+			}
 
 			ImGui::PushID(i);
 
@@ -132,17 +127,6 @@ void ProjectManager::renderProjectList(ProjectManager* window, float spacing, fl
 			                  ImGuiChildFlags_NavFlattened);
 
 			ImGui::SetCursorPosX(spacing);
-			// ImGui::SetCursorPos(ImVec2(spacing, (itemHeight - starSize) * 0.5f));
-			// ImVec2 starPos = ImGui::GetCursorScreenPos();
-			// ImDrawList* draw_list = ImGui::GetWindowDrawList();
-			// ImU32 starColor =
-			// 	projects[i].favorite ? ImGui::GetColorU32(ImGuiCol_Text) : ImGui::GetColorU32(ImGuiCol_TextDisabled);
-			// draw_list->AddText(starPos, starColor, ICON_FA_STAR);
-			// if (ImGui::InvisibleButton("##star", ImVec2(starSize, starSize))) {
-			// 	projects[i].favorite = !projects[i].favorite;
-			// }
-
-			// ImGui::SameLine();
 
 			const float fullIconSize = itemHeight - spacing * 2;
 			const float iconVerticalPadding = (itemHeight - fullIconSize) * 0.5f;
@@ -245,15 +229,23 @@ void ProjectManager::renderSidebar(ProjectManager* window, float sidebarWidth, f
 		}
 
 		if (ImGui::Button(runText.c_str(), ImVec2(-1.0f, buttonHeight))) {
-			// Run action
+			if (ProjectsManager::instance().loadProject(window->m_selectedProjectIndex)) {
+				window->close();
+				WindowManager::instance().closeWindow("project_manager");
+				ProjectPlayer::instance().startCurrentProject();
+			}
 		}
 
 		if (ImGui::Button(renameText.c_str(), ImVec2(-1.0f, buttonHeight))) {
-			// Rename action
+			const auto& projects = ProjectsManager::instance().getProjects();
+			if (window->m_selectedProjectIndex >= 0 && window->m_selectedProjectIndex < static_cast<int>(projects.size())) {
+				window->m_renameBuffer = projects[window->m_selectedProjectIndex].name;
+				window->m_openRenamePopup = true;
+			}
 		}
 
 		if (ImGui::Button(removeText.c_str(), ImVec2(-1.0f, buttonHeight))) {
-			// Remove action
+			window->m_indexToRemove = window->m_selectedProjectIndex;
 		}
 	}
 	ImGui::EndChild();
@@ -263,7 +255,7 @@ void ProjectManager::renderContent(ProjectManager* window) {
 	const float spacing = ImGui::GetStyle().ItemSpacing.x;
 
 	renderHeaderBar();
-	renderTopButtons(spacing);
+	renderTopButtons(window, spacing);
 
 	static float maxButtonWidth = 0.0f;
 
@@ -277,6 +269,35 @@ void ProjectManager::renderContent(ProjectManager* window) {
 	ImGui::BeginDisabled(window->m_selectedProjectIndex < 0);
 	renderSidebar(window, sidebarWidth, &maxButtonWidth);
 	ImGui::EndDisabled();
+
+	// Открываем popup на уровне главного окна
+	if (window->m_openRenamePopup) {
+		ImGui::OpenPopup("rename_project_popup");
+		window->m_openRenamePopup = false;
+	}
+
+	// Rename popup (обрабатывается вне disabled блока)
+	if (ImGui::RenamePopup("rename_project_popup", &window->m_renameBuffer)) {
+		if (!window->m_renameBuffer.empty()) {
+			if (ProjectsManager::instance().renameProject(window->m_selectedProjectIndex, window->m_renameBuffer)) {
+				ProjectsManager::instance().refreshProjects();
+			}
+		}
+	}
+
+	// Remove confirmation dialog
+	if (window->m_indexToRemove != -1) {
+		auto state = ImGui::ConfirmDialog(_("project_manager.remove_title").c_str(), _("project_manager.remove_message").c_str());
+		if (state == 1) {
+			if (ProjectsManager::instance().removeProject(window->m_indexToRemove)) {
+				ProjectsManager::instance().refreshProjects();
+				window->m_selectedProjectIndex = std::min(window->m_selectedProjectIndex, static_cast<int>(ProjectsManager::instance().getProjects().size()) - 1);
+			}
+			window->m_indexToRemove = -1;
+		} else if (state == 0) {
+			window->m_indexToRemove = -1;
+		}
+	}
 }
 
 ProjectManager::ProjectManager()
@@ -292,5 +313,7 @@ ProjectManager::ProjectManager()
 void ProjectManager::open() {
 	Window::open();
 	m_selectedProjectIndex = -1;
+	m_filterBuffer[0] = '\0';
+	m_openRenamePopup = false;
 	ProjectsManager::instance().refreshProjects();
 }
