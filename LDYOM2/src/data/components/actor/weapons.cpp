@@ -20,12 +20,13 @@ void components::Weapons::sol_lua_register(sol::state_view lua_state) {
 components::Weapons::Weapons()
 	: Component(TYPE) {}
 
-components::Weapons::~Weapons() {
-	if (m_pedSpawnedConnection) {
-		const auto actor = Actor::cast(this->entity->getComponent(Actor::TYPE));
-		if (actor && actor->ped) {
-			actor->dirty |= Actor::DirtyFlags::Model;
-		}
+components::Weapons::~Weapons() = default;
+
+void components::Weapons::onDestroy() {
+	// When component is explicitly removed, respawn actor to clear weapons
+	const auto actor = Actor::cast(this->entity->getComponent(Actor::TYPE));
+	if (actor && actor->ped) {
+		actor->dirty |= Actor::DirtyFlags::Model;
 	}
 }
 

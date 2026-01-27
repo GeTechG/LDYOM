@@ -30,7 +30,7 @@ class Component {
 	Component(const std::string_view type)
 		: type(std::string(type)) {}
 
-	[[nodiscard]] std::string getType() const { return type; }
+	[[nodiscard]] const std::string& getType() const { return type; }
 
 	[[nodiscard]] virtual nlohmann::json to_json() const { return nlohmann::json{{"type", type}}; }
 
@@ -42,6 +42,7 @@ class Component {
 	virtual void onStart() { isInitialized = true; }
 	virtual void onUpdate(float deltaTime) {}
 	virtual void onReset() { isInitialized = false; }
+	virtual void onDestroy() {} // Called when component is explicitly removed from entity
 
 	static bool isSpecialComponent() { return false; }
 	static void sol_lua_register(sol::state_view lua_state);

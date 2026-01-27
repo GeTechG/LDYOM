@@ -63,6 +63,7 @@ void Entity::reset() {
 
 void Entity::removeComponent(size_t index) {
 	if (index < components.size()) {
+		components[index]->onDestroy();
 		components.erase(components.begin() + index);
 	}
 }
