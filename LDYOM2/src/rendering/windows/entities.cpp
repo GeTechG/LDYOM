@@ -7,6 +7,7 @@
 #include <component.h>
 #include <components_manager.h>
 #include <entities_manager.h>
+#include <extensions/ScriptCommands.h>
 #include <fa_icons.h>
 #include <in_game/entity_orbit_camera.h>
 #include <glm/ext/quaternion_float.hpp>
@@ -14,6 +15,7 @@
 #include <imgui_internal.h>
 #include <imgui_widgets/imgui_widgets.h>
 #include <localization.h>
+#include <plugin.h>
 #include <rotation_utils.h>
 #include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
@@ -244,6 +246,28 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 					auto availableWidth = ImGui::GetContentRegionAvail().x;
 					// Position
 					ImGui::Text("Position");
+
+					// Button to copy player position
+					ImGui::SameLine();
+					const float buttonHeight = ImGui::GetFrameHeight();
+					const float buttonWidth = buttonHeight * 1.2f;
+					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f));
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0)); // Transparent background
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
+					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_HeaderActive));
+					if (ImGui::Button(ICON_FA_LOCATION_CROSSHAIRS "##copyPlayerPos", ImVec2(buttonWidth, buttonHeight))) {
+						auto& entity = EntitiesManager::instance().getUnsafeEntity(i);
+						auto playerPos = FindPlayerPed()->GetPosition();
+						entity.position = {playerPos.x, playerPos.y, playerPos.z};
+						plugin::Command<plugin::Commands::GET_AREA_VISIBLE>(&entity.areaId);
+						entity.updateSetTransformCallbacks();
+					}
+					ImGui::PopStyleColor(3);
+					ImGui::PopStyleVar();
+					if (ImGui::IsItemHovered()) {
+						ImGui::SetTooltip(_("entities.copy_player_position").c_str());
+					}
+
 					ImGui::SameLine(availableWidth * 0.45f);
 					std::array<float, 3> position(entity.position);
 					ImGui::SetNextItemWidth(-1.f);

@@ -53,6 +53,25 @@ void components::Actor::from_json(const nlohmann::json& j) {
 void components::Actor::editorRender() {
 	const auto availableWidth = ImGui::GetContentRegionAvail().x;
 	ImGui::Text("%s", tr("direction").c_str());
+
+	// Button to copy player heading
+	ImGui::SameLine();
+	const float buttonHeight = ImGui::GetFrameHeight();
+	const float buttonWidth = buttonHeight * 1.2f;
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f));
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0)); // Transparent background
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_HeaderActive));
+	if (ImGui::Button(ICON_FA_LOCATION_CROSSHAIRS "##copyPlayerHeading", ImVec2(buttonWidth, buttonHeight))) {
+		this->initialDirection = FindPlayerPed()->GetHeading();
+		dirty |= Direction;
+	}
+	ImGui::PopStyleColor(3);
+	ImGui::PopStyleVar();
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetTooltip("%s", tr("copy_player_heading").c_str());
+	}
+
 	ImGui::SameLine(availableWidth * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
 	if (ImGui::SliderAngle("##direction", &initialDirection, -180.0f, 180.0f, "%.0f°")) {
