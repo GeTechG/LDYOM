@@ -7,6 +7,7 @@
 #include <components_manager.h>
 #include <entities_manager.h>
 #include <fa_icons.h>
+#include <in_game/entity_orbit_camera.h>
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <imgui_internal.h>
@@ -95,7 +96,7 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 
 			// Select the newly created entity
 			if (newEntityIndex != -1) {
-				window->m_selectedEntityIndex = newEntityIndex;
+				window->setSelectedEntityIndex(newEntityIndex);
 			}
 		}
 	}
@@ -135,7 +136,7 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 			}
 
 			if (ImGui::Selectable(entities[i]->name.c_str(), isSelected, ImGuiSelectableFlags_AllowItemOverlap)) {
-				window->m_selectedEntityIndex = i;
+				window->setSelectedEntityIndex(i);
 			}
 
 			if (isSelected) {
@@ -190,12 +191,20 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 					if (draggedIdx != i) {
 						EntitiesManager::instance().moveEntity(draggedIdx, i);
 
+						// Update selected index without changing entity selection
+						int newSelectedIndex = window->m_selectedEntityIndex;
 						if (window->m_selectedEntityIndex == draggedIdx) {
-							window->m_selectedEntityIndex = i;
+							newSelectedIndex = i;
 						} else if (window->m_selectedEntityIndex > draggedIdx && window->m_selectedEntityIndex <= i) {
-							window->m_selectedEntityIndex--;
+							newSelectedIndex = window->m_selectedEntityIndex - 1;
 						} else if (window->m_selectedEntityIndex >= i && window->m_selectedEntityIndex < draggedIdx) {
-							window->m_selectedEntityIndex++;
+							newSelectedIndex = window->m_selectedEntityIndex + 1;
+						}
+
+						// Update index in both window and orbit camera (if active)
+						window->m_selectedEntityIndex = newSelectedIndex;
+						if (EntityOrbitCamera::isActive()) {
+							EntityOrbitCamera::updateEntityIndex(newSelectedIndex);
 						}
 					}
 				}
@@ -215,8 +224,8 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 		auto state = ImGui::ConfirmDialog(_("entities.remove_title").c_str(), _("entities.remove_message").c_str());
 		if (state == 1) {
 			EntitiesManager::instance().removeEntity(window->m_indexToRemove);
-			window->m_selectedEntityIndex =
-				std::min(window->m_selectedEntityIndex, static_cast<int>(entities.size() - 1));
+			int newIndex = std::min(window->m_selectedEntityIndex, static_cast<int>(entities.size() - 1));
+			window->setSelectedEntityIndex(newIndex);
 			window->m_indexToRemove = -1;
 		} else if (state == 0) {
 			window->m_indexToRemove = -1;
@@ -386,6 +395,30 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 		}
 		ImGui::End();
 	}
+}
+
+void EntitiesWindow::setSelectedEntityIndex(int index) {
+	// Deactivate previous entity orbit camera if active
+	if (m_selectedEntityIndex != -1 && EntityOrbitCamera::isActive()) {
+		EntityOrbitCamera::deactivate(true);
+	}
+
+	m_selectedEntityIndex = index;
+
+	// Activate orbit camera for newly selected entity
+	auto& entities = ScenesManager::instance().getCurrentScene().entities;
+	if (index != -1 && index < static_cast<int>(entities.size())) {
+		auto& entity = EntitiesManager::instance().getUnsafeEntity(index);
+		EntityOrbitCamera::activate(&entity, index);
+	}
+}
+
+void EntitiesWindow::close() {
+	// Deactivate orbit camera when closing window
+	if (EntityOrbitCamera::isActive()) {
+		EntityOrbitCamera::deactivate(true);
+	}
+	Window::close();
 }
 
 EntitiesWindow::EntitiesWindow()

@@ -40,10 +40,12 @@ class EntitiesWindow : public Window {
 
 	void open() override {
 		Window::open();
-		m_selectedEntityIndex = -1;
+		setSelectedEntityIndex(-1);
 	}
 
+	void close() override;
+
 	int getSelectedEntityIndex() const { return m_selectedEntityIndex; }
-	void setSelectedEntityIndex(int index) { m_selectedEntityIndex = index; }
+	void setSelectedEntityIndex(int index);
 	void setWindowType(EntitiesWindowType type) { m_windowType = type; }
 };
