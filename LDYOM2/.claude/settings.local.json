@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\\\Users\\\\User\\\\Documents\\\\LDYOM-Beta_0.8\" /b)"
+    ]
+  }
+}

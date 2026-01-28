@@ -3,43 +3,128 @@
 #include "extensions/ScriptCommands.h"
 #include "objective_specific.h"
 #include <CStreaming.h>
+#include <CVehicleModelInfo.h>
+#include <algorithm>
 #include <corecrt_math_defines.h>
 #include <entity.h>
+#include <extensions/ScriptCommands.h>
+#include <imgui_stdlib.h>
 #include <in_game/entity_orbit_camera.h>
+#include <in_game/vehicle_manual_editing.h>
+#include <iomanip>
 #include <lua_define_type.h>
 #include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
 #include <project_player.h>
-#include <in_game/vehicle_manual_editing.h>
 #include <scenes_manager.h>
+#include <sstream>
 #include <string_utils.h>
+#include <task_manager.h>
 #include <utils/imgui_configurate.h>
+#include <utils/vehicle_renderer.h>
 #include <window_manager.h>
 #include <windows/entities.h>
 #include <windows/entity_info_panel.h>
+
+namespace {
+// Color conversion utilities
+
+inline CRGBA floatColorToCRGBA(const std::array<float, 4>& color) {
+	return CRGBA{static_cast<unsigned char>(color[0] * 255.0f), static_cast<unsigned char>(color[1] * 255.0f),
+	             static_cast<unsigned char>(color[2] * 255.0f), static_cast<unsigned char>(color[3] * 255.0f)};
+}
+
+std::string floatArrayColorToHex(const std::array<float, 4>& color) {
+	int r = static_cast<int>(color[0] * 255);
+	int g = static_cast<int>(color[1] * 255);
+	int b = static_cast<int>(color[2] * 255);
+	int a = static_cast<int>(color[3] * 255);
+
+	r = std::clamp(r, 0, 255);
+	g = std::clamp(g, 0, 255);
+	b = std::clamp(b, 0, 255);
+	a = std::clamp(a, 0, 255);
+
+	std::stringstream stream;
+	stream << std::hex << std::setw(2) << std::setfill('0') << r << std::hex << std::setw(2) << std::setfill('0') << g
+		   << std::hex << std::setw(2) << std::setfill('0') << b << std::hex << std::setw(2) << std::setfill('0') << a;
+
+	return "#" + stream.str();
+}
+
+std::array<float, 4> hexToFloatArrayColor(const std::string& hexColor) {
+	const std::string hexValue = (hexColor[0] == '#') ? hexColor.substr(1) : hexColor;
+
+	if (hexValue.size() != 8) {
+		// Return white if invalid
+		return {1.0f, 1.0f, 1.0f, 1.0f};
+	}
+
+	const float r = static_cast<float>(std::stoul(hexValue.substr(0, 2), nullptr, 16)) / 255.0f;
+	const float g = static_cast<float>(std::stoul(hexValue.substr(2, 2), nullptr, 16)) / 255.0f;
+	const float b = static_cast<float>(std::stoul(hexValue.substr(4, 2), nullptr, 16)) / 255.0f;
+	const float a = static_cast<float>(std::stoul(hexValue.substr(6, 2), nullptr, 16)) / 255.0f;
+
+	return {r, g, b, a};
+}
+
+CRGBA getCarColorRgba(unsigned char id) {
+	if (id < 127 && CVehicleModelInfo::ms_vehicleColourTable) {
+		return CVehicleModelInfo::ms_vehicleColourTable[id];
+	}
+	return CRGBA{255, 255, 255, 255};
+}
+
+} // namespace
 
 void components::Vehicle::sol_lua_register(sol::state_view lua_state) {
 	sol_lua_register_enum_DirtyFlags(lua_state);
 	auto ut = lua_state.new_usertype<Vehicle>("VehicleComponent");
 	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Vehicle, cast, initialDirection, model, primaryColorId,
-	                 secondaryColorId, tertiaryColorId, quaternaryColorId, health, bulletproof, fireproof,
+	                 secondaryColorId, tertiaryColorId, quaternaryColorId, paintjob, health, bulletproof, fireproof,
 	                 explosionproof, collisionproof, meleeproof, tiresVulnerability, mustSurvive, locked, despawn,
 	                 getVehicleRef);
+	ut["componentTypeA"] = &Vehicle::componentTypeA;
+	ut["componentTypeB"] = &Vehicle::componentTypeB;
+	ut["numberplate"] = &Vehicle::numberplate;
+	ut["numberplateCity"] = &Vehicle::numberplateCity;
 }
 
 components::Vehicle::Vehicle()
 	: Component(TYPE) {
 	this->initialDirection = FindPlayerPed()->GetHeading();
+	this->upgrades.fill(-1);
 }
 
 inline nlohmann::json components::Vehicle::to_json() const {
 	auto j = this->Component::to_json();
 	j["initialDirection"] = initialDirection;
 	j["model"] = model;
+
+	// Game colors
 	j["primaryColorId"] = primaryColorId;
 	j["secondaryColorId"] = secondaryColorId;
 	j["tertiaryColorId"] = tertiaryColorId;
 	j["quaternaryColorId"] = quaternaryColorId;
+
+	// Custom colors
+	j["isGameColorsMode"] = isGameColorsMode;
+	j["primaryColor"] = floatArrayColorToHex(primaryColor);
+	j["secondaryColor"] = floatArrayColorToHex(secondaryColor);
+	j["extendedColor"] = extendedColor;
+
+	// Material colors
+	j["colors"] = nlohmann::json::array();
+	for (const auto& [type, color] : colors) {
+		j["colors"].push_back({{"type", type}, {"color", floatArrayColorToHex(color)}});
+	}
+
+	j["upgrades"] = upgrades;
+	j["paintjob"] = paintjob;
+	j["componentTypeA"] = componentTypeA;
+	j["componentTypeB"] = componentTypeB;
+	j["numberplate"] = numberplate;
+	j["numberplateCity"] = numberplateCity;
 	j["health"] = health;
 	j["bulletproof"] = bulletproof;
 	j["fireproof"] = fireproof;
@@ -60,6 +145,29 @@ void components::Vehicle::from_json(const nlohmann::json& j) {
 	j.at("secondaryColorId").get_to(secondaryColorId);
 	j.at("tertiaryColorId").get_to(tertiaryColorId);
 	j.at("quaternaryColorId").get_to(quaternaryColorId);
+
+	// Custom colors
+	if (j.contains("isGameColorsMode")) {
+		j.at("isGameColorsMode").get_to(isGameColorsMode);
+	}
+	if (j.contains("primaryColor")) {
+		primaryColor = hexToFloatArrayColor(j.at("primaryColor").get<std::string>());
+	}
+	if (j.contains("secondaryColor")) {
+		secondaryColor = hexToFloatArrayColor(j.at("secondaryColor").get<std::string>());
+	}
+	if (j.contains("extendedColor")) {
+		j.at("extendedColor").get_to(extendedColor);
+	}
+	if (j.contains("colors")) {
+		colors.clear();
+		for (const auto& item : j.at("colors")) {
+			unsigned char type = item.at("type").get<unsigned char>();
+			auto color = hexToFloatArrayColor(item.at("color").get<std::string>());
+			colors.emplace_back(type, color);
+		}
+	}
+
 	j.at("health").get_to(health);
 	j.at("bulletproof").get_to(bulletproof);
 	j.at("fireproof").get_to(fireproof);
@@ -69,6 +177,24 @@ void components::Vehicle::from_json(const nlohmann::json& j) {
 	j.at("tiresVulnerability").get_to(tiresVulnerability);
 	j.at("mustSurvive").get_to(mustSurvive);
 	j.at("locked").get_to(locked);
+	if (j.contains("upgrades")) {
+		j.at("upgrades").get_to(upgrades);
+	}
+	if (j.contains("paintjob")) {
+		j.at("paintjob").get_to(paintjob);
+	}
+	if (j.contains("componentTypeA")) {
+		j.at("componentTypeA").get_to(componentTypeA);
+	}
+	if (j.contains("componentTypeB")) {
+		j.at("componentTypeB").get_to(componentTypeB);
+	}
+	if (j.contains("numberplate")) {
+		j.at("numberplate").get_to(numberplate);
+	}
+	if (j.contains("numberplateCity")) {
+		j.at("numberplateCity").get_to(numberplateCity);
+	}
 }
 
 struct VehicleColorData {
@@ -235,6 +361,9 @@ void components::Vehicle::editorRender() {
 		for (auto& item : vehiclesModels) {
 			if (ImGui::Selectable(std::to_string(item).c_str(), item == model)) {
 				model = item;
+				this->upgrades.fill(-1);
+				this->paintjob = -1;
+				this->needToRecolor = true;
 				dirty |= Model;
 			}
 		}
@@ -246,6 +375,9 @@ void components::Vehicle::editorRender() {
 	}
 	std::function<void(int)> vehicleSelectorCallback = [this](int model) {
 		this->model = model;
+		this->upgrades.fill(-1);
+		this->paintjob = -1;
+		this->needToRecolor = true;
 		dirty |= Model;
 	};
 	PopupVehicleSelector::renderPopup(vehicleSelectorCallback);
@@ -253,153 +385,270 @@ void components::Vehicle::editorRender() {
 
 	ImGui::Separator();
 
-	ImGui::Text(tr("primary_color").c_str());
-	ImGui::SameLine(availableWidth * 0.45f);
-	ImGui::SetNextItemWidth(-1.f);
-	const auto& selectedPrimaryColor = vehicleColorsData[primaryColorId];
-	if (ImGui::BeginCombo("##primaryColorCombo", "")) {
-		for (size_t i = 0; i < vehicleColorsData.size(); ++i) {
-			const auto& colorData = vehicleColorsData[i];
+	// Color mode toggle (only if model can use custom colors)
+	if (!isRecolorBanned()) {
+		ImGui::Text(tr("game_colors").c_str());
+		ImGui::SameLine(availableWidth * 0.45f);
+		bool prevGameColorsMode = isGameColorsMode;
+		if (ImGui::Checkbox("##gameColorsModeCheckbox", &isGameColorsMode)) {
+			// If switching from game colors to custom colors, initialize custom colors with current game colors
+			if (prevGameColorsMode && !isGameColorsMode && this->handle) {
+				auto gamePrimaryColor = getCarColorRgba(this->handle->m_nPrimaryColor);
+				auto gameSecondaryColor = getCarColorRgba(this->handle->m_nSecondaryColor);
+				this->primaryColor = {gamePrimaryColor.r / 255.0f, gamePrimaryColor.g / 255.0f,
+				                      gamePrimaryColor.b / 255.0f, gamePrimaryColor.a / 255.0f};
+				this->secondaryColor = {gameSecondaryColor.r / 255.0f, gameSecondaryColor.g / 255.0f,
+				                        gameSecondaryColor.b / 255.0f, gameSecondaryColor.a / 255.0f};
+			}
+			// Respawn vehicle to apply color mode change
+			dirty |= Model;
+		}
+		ImGui::Separator();
+	}
 
-			ImGui::PushID(static_cast<int>(i));
+	// Game Colors Mode UI
+	if (isGameColorsMode || isRecolorBanned()) {
+		ImGui::Text(tr("primary_color").c_str());
+		ImGui::SameLine(availableWidth * 0.45f);
+		ImGui::SetNextItemWidth(-1.f);
+		const auto& selectedPrimaryColor = vehicleColorsData[primaryColorId];
+		if (ImGui::BeginCombo("##primaryColorCombo", "")) {
+			for (size_t i = 0; i < vehicleColorsData.size(); ++i) {
+				const auto& colorData = vehicleColorsData[i];
 
-			// Color preview button (small square)
-			ImGui::ColorButton("##colorPreview",
-			                   ImVec4(colorData.r / 255.0f, colorData.g / 255.0f, colorData.b / 255.0f, 1.0f),
-			                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder,
-			                   ImVec2(ImGui::GetFontSize(), ImGui::GetFontSize()));
+				ImGui::PushID(static_cast<int>(i));
 
-			ImGui::SameLine();
+				// Color preview button (small square)
+				ImGui::ColorButton("##colorPreview",
+				                   ImVec4(colorData.r / 255.0f, colorData.g / 255.0f, colorData.b / 255.0f, 1.0f),
+				                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder,
+				                   ImVec2(ImGui::GetFontSize(), ImGui::GetFontSize()));
 
-			// Color name selectable
-			if (ImGui::Selectable(colorData.name, i == primaryColorId, 0, ImVec2(0, 20))) {
-				primaryColorId = static_cast<int>(i);
-				dirty |= Model;
+				ImGui::SameLine();
+
+				// Color name selectable
+				if (ImGui::Selectable(colorData.name, i == primaryColorId, 0, ImVec2(0, 20))) {
+					primaryColorId = static_cast<int>(i);
+					dirty |= Model;
+				}
+
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::GetItemRectSize().x -
+		                     ImGui::GetStyle().ItemInnerSpacing.x);
+		ImGui::ColorButton("##selectedPrimaryColor",
+		                   ImVec4(selectedPrimaryColor.r / 255.0f, selectedPrimaryColor.g / 255.0f,
+		                          selectedPrimaryColor.b / 255.0f, 1.0f),
+		                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder, ImVec2(20, 20) * SCL_PX);
+		ImGui::SameLine();
+		ImGui::Text("%s", selectedPrimaryColor.name);
+
+		ImGui::Text(tr("secondary_color").c_str());
+		ImGui::SameLine(availableWidth * 0.45f);
+		ImGui::SetNextItemWidth(-1.f);
+		const auto& selectedSecondaryColor = vehicleColorsData[secondaryColorId];
+		if (ImGui::BeginCombo("##secondaryColorCombo", "")) {
+			for (size_t i = 0; i < vehicleColorsData.size(); ++i) {
+				const auto& colorData = vehicleColorsData[i];
+
+				ImGui::PushID(static_cast<int>(i));
+
+				// Color preview button (small square)
+				ImGui::ColorButton("##colorPreview",
+				                   ImVec4(colorData.r / 255.0f, colorData.g / 255.0f, colorData.b / 255.0f, 1.0f),
+				                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder,
+				                   ImVec2(ImGui::GetFontSize(), ImGui::GetFontSize()));
+
+				ImGui::SameLine();
+
+				// Color name selectable
+				if (ImGui::Selectable(colorData.name, i == secondaryColorId, 0, ImVec2(0, 20))) {
+					secondaryColorId = static_cast<int>(i);
+					dirty |= Model;
+				}
+
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::GetItemRectSize().x -
+		                     ImGui::GetStyle().ItemInnerSpacing.x);
+		ImGui::ColorButton("##selectedSecondaryColor",
+		                   ImVec4(selectedSecondaryColor.r / 255.0f, selectedSecondaryColor.g / 255.0f,
+		                          selectedSecondaryColor.b / 255.0f, 1.0f),
+		                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder, ImVec2(20, 20) * SCL_PX);
+		ImGui::SameLine();
+		ImGui::Text("%s", selectedSecondaryColor.name);
+
+		ImGui::Text(tr("tertiary_color").c_str());
+		ImGui::SameLine(availableWidth * 0.45f);
+		ImGui::SetNextItemWidth(-1.f);
+		const auto& selectedTertiaryColor = vehicleColorsData[tertiaryColorId];
+		if (ImGui::BeginCombo("##tertiaryColorCombo", "")) {
+			for (size_t i = 0; i < vehicleColorsData.size(); ++i) {
+				const auto& colorData = vehicleColorsData[i];
+
+				ImGui::PushID(static_cast<int>(i));
+
+				// Color preview button (small square)
+				ImGui::ColorButton("##colorPreview",
+				                   ImVec4(colorData.r / 255.0f, colorData.g / 255.0f, colorData.b / 255.0f, 1.0f),
+				                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder,
+				                   ImVec2(ImGui::GetFontSize(), ImGui::GetFontSize()));
+
+				ImGui::SameLine();
+
+				// Color name selectable
+				if (ImGui::Selectable(colorData.name, i == tertiaryColorId, 0, ImVec2(0, 20))) {
+					tertiaryColorId = static_cast<int>(i);
+					dirty |= Model;
+				}
+
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::GetItemRectSize().x -
+		                     ImGui::GetStyle().ItemInnerSpacing.x);
+		ImGui::ColorButton("##selectedTertiaryColor",
+		                   ImVec4(selectedTertiaryColor.r / 255.0f, selectedTertiaryColor.g / 255.0f,
+		                          selectedTertiaryColor.b / 255.0f, 1.0f),
+		                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder, ImVec2(20, 20) * SCL_PX);
+		ImGui::SameLine();
+		ImGui::Text("%s", selectedTertiaryColor.name);
+
+		ImGui::Text(tr("quaternary_color").c_str());
+		ImGui::SameLine(availableWidth * 0.45f);
+		ImGui::SetNextItemWidth(-1.f);
+		const auto& selectedQuaternaryColor = vehicleColorsData[quaternaryColorId];
+		if (ImGui::BeginCombo("##quaternaryColorCombo", "")) {
+			for (size_t i = 0; i < vehicleColorsData.size(); ++i) {
+				const auto& colorData = vehicleColorsData[i];
+
+				ImGui::PushID(static_cast<int>(i));
+
+				// Color preview button (small square)
+				ImGui::ColorButton("##colorPreview",
+				                   ImVec4(colorData.r / 255.0f, colorData.g / 255.0f, colorData.b / 255.0f, 1.0f),
+				                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder,
+				                   ImVec2(ImGui::GetFontSize(), ImGui::GetFontSize()));
+
+				ImGui::SameLine();
+
+				// Color name selectable
+				if (ImGui::Selectable(colorData.name, i == quaternaryColorId, 0, ImVec2(0, 20))) {
+					quaternaryColorId = static_cast<int>(i);
+					dirty |= Model;
+				}
+
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+		}
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::GetItemRectSize().x -
+		                     ImGui::GetStyle().ItemInnerSpacing.x);
+		ImGui::ColorButton("##selectedQuaternaryColor",
+		                   ImVec4(selectedQuaternaryColor.r / 255.0f, selectedQuaternaryColor.g / 255.0f,
+		                          selectedQuaternaryColor.b / 255.0f, 1.0f),
+		                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder, ImVec2(20, 20) * SCL_PX);
+		ImGui::SameLine();
+		ImGui::Text("%s", selectedQuaternaryColor.name);
+	}
+	// Custom Colors Mode UI
+	else {
+		ImGui::Text(tr("extended_colors").c_str());
+		ImGui::SameLine(availableWidth * 0.45f);
+		if (ImGui::Checkbox("##extendedColorsCheckbox", &extendedColor)) {
+			this->dirty |= Model;
+		}
+		ImGui::Separator();
+
+		if (extendedColor) {
+			// Per-material color editing
+			ImGui::Text(tr("material_colors").c_str());
+			ImGui::Separator();
+
+			if (this->handle) {
+				VehicleModel vehicleModel(this->handle.get());
+				auto materials = vehicleModel.getAllMaterials();
+
+				for (size_t i = 0; i < colors.size() && i < materials.size(); ++i) {
+					auto& [type, color] = colors[i];
+
+					ImGui::PushID(static_cast<int>(i));
+
+					// Show material type
+					const char* typeLabel = type == 0 ? "Primary" : (type == 1 ? "Secondary" : "Other");
+					ImGui::Text("[%zu] %s", i, typeLabel);
+					ImGui::SameLine(availableWidth * 0.45f);
+
+					// Color editor
+					if (ImGui::ColorEdit4("##color", color.data(),
+					                      ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar)) {
+						// Apply color change to material
+						auto rgba = floatColorToCRGBA(color);
+						materials[i].setColor(rgba.r, rgba.g, rgba.b, rgba.a);
+					}
+
+					ImGui::PopID();
+				}
+			}
+		} else {
+			// Simple primary + secondary color editing
+			ImGui::Text(tr("primary_color").c_str());
+			ImGui::SameLine(availableWidth * 0.45f);
+			if (ImGui::ColorEdit4("##primaryColorCustom", primaryColor.data(),
+			                      ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar)) {
+				setEditorPrimaryColor();
 			}
 
-			ImGui::PopID();
+			ImGui::Text(tr("secondary_color").c_str());
+			ImGui::SameLine(availableWidth * 0.45f);
+			if (ImGui::ColorEdit4("##secondaryColorCustom", secondaryColor.data(),
+			                      ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar)) {
+				setEditorSecondaryColor();
+			}
 		}
-		ImGui::EndCombo();
 	}
-	ImGui::SameLine();
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::GetItemRectSize().x - ImGui::GetStyle().ItemInnerSpacing.x);
-	ImGui::ColorButton(
-		"##selectedPrimaryColor",
-		ImVec4(selectedPrimaryColor.r / 255.0f, selectedPrimaryColor.g / 255.0f, selectedPrimaryColor.b / 255.0f, 1.0f),
-		ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder, ImVec2(20, 20) * SCL_PX);
-	ImGui::SameLine();
-	ImGui::Text("%s", selectedPrimaryColor.name);
 
-	ImGui::Text(tr("secondary_color").c_str());
+	ImGui::Separator();
+
+	// Component Types Section
+	ImGui::Text(tr("component_type_a").c_str());
 	ImGui::SameLine(availableWidth * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
-	const auto& selectedSecondaryColor = vehicleColorsData[secondaryColorId];
-	if (ImGui::BeginCombo("##secondaryColorCombo", "")) {
-		for (size_t i = 0; i < vehicleColorsData.size(); ++i) {
-			const auto& colorData = vehicleColorsData[i];
-
-			ImGui::PushID(static_cast<int>(i));
-
-			// Color preview button (small square)
-			ImGui::ColorButton("##colorPreview",
-			                   ImVec4(colorData.r / 255.0f, colorData.g / 255.0f, colorData.b / 255.0f, 1.0f),
-			                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder,
-			                   ImVec2(ImGui::GetFontSize(), ImGui::GetFontSize()));
-
-			ImGui::SameLine();
-
-			// Color name selectable
-			if (ImGui::Selectable(colorData.name, i == secondaryColorId, 0, ImVec2(0, 20))) {
-				secondaryColorId = static_cast<int>(i);
-				dirty |= Model;
-			}
-
-			ImGui::PopID();
-		}
-		ImGui::EndCombo();
+	if (ImGui::SliderInt("##componentTypeA", &componentTypeA, -1, 5)) {
+		dirty |= Model;
 	}
-	ImGui::SameLine();
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::GetItemRectSize().x - ImGui::GetStyle().ItemInnerSpacing.x);
-	ImGui::ColorButton("##selectedSecondaryColor",
-	                   ImVec4(selectedSecondaryColor.r / 255.0f, selectedSecondaryColor.g / 255.0f,
-	                          selectedSecondaryColor.b / 255.0f, 1.0f),
-	                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder, ImVec2(20, 20) * SCL_PX);
-	ImGui::SameLine();
-	ImGui::Text("%s", selectedSecondaryColor.name);
 
-	ImGui::Text(tr("tertiary_color").c_str());
+	ImGui::Text(tr("component_type_b").c_str());
 	ImGui::SameLine(availableWidth * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
-	const auto& selectedTertiaryColor = vehicleColorsData[tertiaryColorId];
-	if (ImGui::BeginCombo("##tertiaryColorCombo", "")) {
-		for (size_t i = 0; i < vehicleColorsData.size(); ++i) {
-			const auto& colorData = vehicleColorsData[i];
-
-			ImGui::PushID(static_cast<int>(i));
-
-			// Color preview button (small square)
-			ImGui::ColorButton("##colorPreview",
-			                   ImVec4(colorData.r / 255.0f, colorData.g / 255.0f, colorData.b / 255.0f, 1.0f),
-			                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder,
-			                   ImVec2(ImGui::GetFontSize(), ImGui::GetFontSize()));
-
-			ImGui::SameLine();
-
-			// Color name selectable
-			if (ImGui::Selectable(colorData.name, i == tertiaryColorId, 0, ImVec2(0, 20))) {
-				tertiaryColorId = static_cast<int>(i);
-				dirty |= Model;
-			}
-
-			ImGui::PopID();
-		}
-		ImGui::EndCombo();
+	if (ImGui::SliderInt("##componentTypeB", &componentTypeB, -1, 5)) {
+		dirty |= Model;
 	}
-	ImGui::SameLine();
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::GetItemRectSize().x - ImGui::GetStyle().ItemInnerSpacing.x);
-	ImGui::ColorButton("##selectedTertiaryColor",
-	                   ImVec4(selectedTertiaryColor.r / 255.0f, selectedTertiaryColor.g / 255.0f,
-	                          selectedTertiaryColor.b / 255.0f, 1.0f),
-	                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder, ImVec2(20, 20) * SCL_PX);
-	ImGui::SameLine();
-	ImGui::Text("%s", selectedTertiaryColor.name);
 
-	ImGui::Text(tr("quaternary_color").c_str());
+	// Numberplate Section
+	ImGui::Text(tr("numberplate").c_str());
 	ImGui::SameLine(availableWidth * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
-	const auto& selectedQuaternaryColor = vehicleColorsData[quaternaryColorId];
-	if (ImGui::BeginCombo("##quaternaryColorCombo", "")) {
-		for (size_t i = 0; i < vehicleColorsData.size(); ++i) {
-			const auto& colorData = vehicleColorsData[i];
-
-			ImGui::PushID(static_cast<int>(i));
-
-			// Color preview button (small square)
-			ImGui::ColorButton("##colorPreview",
-			                   ImVec4(colorData.r / 255.0f, colorData.g / 255.0f, colorData.b / 255.0f, 1.0f),
-			                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder,
-			                   ImVec2(ImGui::GetFontSize(), ImGui::GetFontSize()));
-
-			ImGui::SameLine();
-
-			// Color name selectable
-			if (ImGui::Selectable(colorData.name, i == quaternaryColorId, 0, ImVec2(0, 20))) {
-				quaternaryColorId = static_cast<int>(i);
-				dirty |= Model;
-			}
-
-			ImGui::PopID();
-		}
-		ImGui::EndCombo();
+	if (ImGui::InputText("##numberplate", &numberplate)) {
+		dirty |= Model;
 	}
-	ImGui::SameLine();
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::GetItemRectSize().x - ImGui::GetStyle().ItemInnerSpacing.x);
-	ImGui::ColorButton("##selectedQuaternaryColor",
-	                   ImVec4(selectedQuaternaryColor.r / 255.0f, selectedQuaternaryColor.g / 255.0f,
-	                          selectedQuaternaryColor.b / 255.0f, 1.0f),
-	                   ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoBorder, ImVec2(20, 20) * SCL_PX);
-	ImGui::SameLine();
-	ImGui::Text("%s", selectedQuaternaryColor.name);
+
+	ImGui::Text(tr("numberplate_city").c_str());
+	ImGui::SameLine(availableWidth * 0.45f);
+	ImGui::SetNextItemWidth(-1.f);
+	const std::string cityLabel = tr("numberplate_cities." + std::to_string(numberplateCity + 1));
+	if (ImGui::SliderInt("##numberplateCity", &numberplateCity, -1, 1, cityLabel.c_str())) {
+		dirty |= Model;
+	}
 
 	ImGui::Separator();
 
@@ -560,6 +809,15 @@ void components::Vehicle::spawn() {
 	}
 	CStreaming::LoadAllRequestedModels(false);
 
+	// Set vehicle model components before creating the vehicle
+	plugin::Command<plugin::Commands::SET_CAR_MODEL_COMPONENTS>(model, componentTypeA, componentTypeB);
+
+	// Set custom numberplate if specified
+	if (!numberplate.empty()) {
+		plugin::Command<plugin::Commands::CUSTOM_PLATE_FOR_NEXT_CAR>(model, numberplate.c_str());
+	}
+	plugin::Command<plugin::Commands::CUSTOM_PLATE_DESIGN_FOR_NEXT_CAR>(model, numberplateCity);
+
 	int newVehicle;
 	auto& position = this->entity->position;
 	plugin::Command<plugin::Commands::CREATE_CAR>(model, position[0], position[1], position[2], &newVehicle);
@@ -579,7 +837,36 @@ void components::Vehicle::spawn() {
 	vehicle->m_nTertiaryColor = this->tertiaryColorId;
 	vehicle->m_nQuaternaryColor = this->quaternaryColorId;
 	vehicle->m_eDoorLock = this->locked ? DOORLOCK_LOCKED : DOORLOCK_UNLOCKED;
+
+	// Apply paintjob if set
+	if (this->paintjob != -1) {
+		vehicle->SetRemap(this->paintjob);
+	}
+
 	this->updateDirection();
+
+	auto restoreUpgrade = [](Vehicle* this_, int newVehicle) -> ktwait {
+		for (size_t i = 0; i < this_->upgrades.size(); ++i) {
+			if (const auto upgrade = this_->upgrades[i]; upgrade != -1) {
+				if (!CStreaming::HasVehicleUpgradeLoaded(upgrade)) {
+					CStreaming::RequestVehicleUpgrade(upgrade, GAME_REQUIRED);
+					CStreaming::LoadAllRequestedModels(false);
+					while (!CStreaming::HasVehicleUpgradeLoaded(upgrade)) {
+						co_await 1;
+					}
+				}
+				int handle;
+				plugin::Command<plugin::Commands::ADD_VEHICLE_MOD>(newVehicle, upgrade, &handle);
+			}
+		}
+		this_->recolorVehicle(this_->needToRecolor);
+	};
+
+	if (IS_PLAYING) {
+		ProjectPlayer::instance().projectTasklist->add_task(restoreUpgrade, this, newVehicle);
+	} else {
+		TaskManager::instance().addTask("restoreUpgrade", restoreUpgrade, this, newVehicle);
+	}
 
 	if (this->mustSurvive) {
 		ProjectPlayer::instance().projectTasklist->add_task(
@@ -621,4 +908,154 @@ void components::Vehicle::despawn() {
 		handle.reset();
 	}
 	onDespawned();
+}
+
+bool components::Vehicle::isRecolorBanned() const { return isModelRecolorBanned(this->model); }
+
+bool components::Vehicle::isModelRecolorBanned(int model) {
+	return std::find(recolorBanList.begin(), recolorBanList.end(), model) != recolorBanList.end();
+}
+
+void components::Vehicle::recolorVehicle(bool recolor) {
+	if (!this->handle) {
+		return;
+	}
+
+	VehicleModel vehicleModel(this->handle.get());
+	auto materials = vehicleModel.getAllMaterials();
+
+	// If recolor flag is set, extract material structure and update color IDs
+	if (recolor) {
+		colors.clear();
+
+		// Extract colors from vehicle materials
+		for (size_t i = 0; i < materials.size(); ++i) {
+			auto& mat = materials[i];
+			auto color = mat.getColor();
+
+			// Classify material by marker colors
+			unsigned char type = 2; // Default: other material
+
+			// Primary color marker: RGB(0x3C, 0xFF, 0x00) - bright green
+			if (color.red == 0x3C && color.green == 0xFF && color.blue == 0x00) {
+				type = 0; // Primary
+			}
+			// Secondary color marker: RGB(0xFF, 0x00, 0xAF) - magenta/pink
+			else if (color.red == 0xFF && color.green == 0x00 && color.blue == 0xAF) {
+				type = 1; // Secondary
+			}
+
+			// Get color from GTA palette or current material color
+			std::array<float, 4> colorFloat;
+			if (type == 0) {
+				auto gameColor = getCarColorRgba(this->handle->m_nPrimaryColor);
+				colorFloat = {gameColor.r / 255.0f, gameColor.g / 255.0f, gameColor.b / 255.0f, gameColor.a / 255.0f};
+			} else if (type == 1) {
+				auto gameColor = getCarColorRgba(this->handle->m_nSecondaryColor);
+				colorFloat = {gameColor.r / 255.0f, gameColor.g / 255.0f, gameColor.b / 255.0f, gameColor.a / 255.0f};
+			} else {
+				colorFloat = {color.red / 255.0f, color.green / 255.0f, color.blue / 255.0f, color.alpha / 255.0f};
+			}
+
+			colors.emplace_back(type, colorFloat);
+		}
+
+		// Update color IDs
+		this->primaryColorId = this->handle->m_nPrimaryColor;
+		this->secondaryColorId = this->handle->m_nSecondaryColor;
+		this->tertiaryColorId = this->handle->m_nTertiaryColor;
+		this->quaternaryColorId = this->handle->m_nQuaternaryColor;
+
+		// Update primaryColor and secondaryColor from game colors
+		auto gamePrimaryColor = getCarColorRgba(this->handle->m_nPrimaryColor);
+		auto gameSecondaryColor = getCarColorRgba(this->handle->m_nSecondaryColor);
+		this->primaryColor = {gamePrimaryColor.r / 255.0f, gamePrimaryColor.g / 255.0f, gamePrimaryColor.b / 255.0f,
+		                      gamePrimaryColor.a / 255.0f};
+		this->secondaryColor = {gameSecondaryColor.r / 255.0f, gameSecondaryColor.g / 255.0f,
+		                        gameSecondaryColor.b / 255.0f, gameSecondaryColor.a / 255.0f};
+
+		// Apply colors in custom mode after extraction
+		if (!isGameColorsMode && !isRecolorBanned()) {
+			setEditorPrimaryColor();
+			setEditorSecondaryColor();
+		}
+		this->needToRecolor = false;
+	} else {
+		// Restore previously saved colors without re-extracting
+		if (isGameColorsMode || isRecolorBanned()) {
+			// In game colors mode, just set the color IDs
+			this->handle->m_nPrimaryColor = this->primaryColorId;
+			this->handle->m_nSecondaryColor = this->secondaryColorId;
+			this->handle->m_nTertiaryColor = this->tertiaryColorId;
+			this->handle->m_nQuaternaryColor = this->quaternaryColorId;
+			return;
+		}
+
+		if (this->extendedColor) {
+			// Apply previously saved colors from the colors vector
+			for (size_t i = 0; i < colors.size() && i < materials.size(); ++i) {
+				auto& [type, color] = colors[i];
+				auto rgba = floatColorToCRGBA(color);
+				auto oldColor = materials[i].getColor();
+
+				// Only update if color is different (optimization)
+				if (oldColor.red != rgba.r || oldColor.green != rgba.g || oldColor.blue != rgba.b ||
+				    oldColor.alpha != rgba.a) {
+					materials[i].setColor(rgba.r, rgba.g, rgba.b, rgba.a);
+				}
+			}
+		} else {
+			// Apply primary and secondary colors to relevant materials
+			for (size_t i = 0; i < colors.size() && i < materials.size(); ++i) {
+				auto& [type, color] = colors[i];
+				if (type == 0) { // Primary material
+					auto rgba = floatColorToCRGBA(this->primaryColor);
+					materials[i].setColor(rgba.r, rgba.g, rgba.b, rgba.a);
+				} else if (type == 1) { // Secondary material
+					auto rgba = floatColorToCRGBA(this->secondaryColor);
+					materials[i].setColor(rgba.r, rgba.g, rgba.b, rgba.a);
+				}
+			}
+		}
+	}
+}
+
+void components::Vehicle::setEditorPrimaryColor() {
+	if (!this->handle || isGameColorsMode || isRecolorBanned()) {
+		return;
+	}
+
+	VehicleModel vehicleModel(this->handle.get());
+	auto materials = vehicleModel.getAllMaterials();
+
+	for (size_t i = 0; i < colors.size() && i < materials.size(); ++i) {
+		auto& [type, color] = colors[i];
+		if (type == 0) { // Primary material
+			// Update color in vector
+			color = primaryColor;
+			// Apply to material
+			auto rgba = floatColorToCRGBA(primaryColor);
+			materials[i].setColor(rgba.r, rgba.g, rgba.b, rgba.a);
+		}
+	}
+}
+
+void components::Vehicle::setEditorSecondaryColor() {
+	if (!this->handle || isGameColorsMode || isRecolorBanned()) {
+		return;
+	}
+
+	VehicleModel vehicleModel(this->handle.get());
+	auto materials = vehicleModel.getAllMaterials();
+
+	for (size_t i = 0; i < colors.size() && i < materials.size(); ++i) {
+		auto& [type, color] = colors[i];
+		if (type == 1) { // Secondary material
+			// Update color in vector
+			color = secondaryColor;
+			// Apply to material
+			auto rgba = floatColorToCRGBA(secondaryColor);
+			materials[i].setColor(rgba.r, rgba.g, rgba.b, rgba.a);
+		}
+	}
 }

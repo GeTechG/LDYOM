@@ -9,6 +9,7 @@
 #include <fa_icons.h>
 #include <imgui.h>
 #include <localization.h>
+#include <ranges>
 #include <utils/manual_editing_session.h>
 #include <window_manager.h>
 
@@ -22,8 +23,8 @@ std::unique_ptr<ManualEditingSession> VehicleManualEditing::m_session = nullptr;
 void VehicleManualEditing::render() noexcept {
 	// Draw overlay instructions
 	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-	                                         ImGuiWindowFlags_NoSavedSettings |
-	                                         ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	                                         ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+	                                         ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 	if (ImGui::Begin("##VehicleManualEditor", nullptr, windowFlags)) {
 		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 16.5f);
@@ -94,6 +95,8 @@ void VehicleManualEditing::closeVehicleEditor(bool saveChanges) noexcept {
 		const auto position = m_vehicleHandle->GetPosition();
 		m_vehicle->entity->position = {position.x, position.y, position.z};
 		m_vehicle->initialDirection = m_vehicleHandle->GetHeading();
+		std::ranges::copy(m_vehicleHandle->m_anUpgrades, std::begin(m_vehicle->upgrades));
+		m_vehicle->paintjob = m_vehicleHandle->GetRemapIndex();
 
 		// Mark as dirty to update
 		m_vehicle->dirty |= components::Vehicle::DirtyFlags::Position | components::Vehicle::DirtyFlags::Direction;

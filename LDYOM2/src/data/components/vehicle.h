@@ -12,6 +12,7 @@
 #include <optional>
 #include <rocket.hpp>
 #include <string>
+#include <utils/vehicle_materials.h>
 
 namespace components {
 
@@ -43,10 +44,26 @@ class Vehicle : public Component {
 
 	float initialDirection = 0.0f;
 	int model = 400;
+
+	// Game Colors Mode (uses GTA color palette)
 	int primaryColorId = 0;
 	int secondaryColorId = 0;
 	int tertiaryColorId = 0;
 	int quaternaryColorId = 0;
+
+	// Custom Colors Mode
+	bool isGameColorsMode = true;
+	std::array<float, 4> primaryColor = {1.0f, 1.0f, 1.0f, 1.0f};
+	std::array<float, 4> secondaryColor = {1.0f, 1.0f, 1.0f, 1.0f};
+	bool extendedColor = false;
+	std::vector<std::pair<unsigned char, std::array<float, 4>>> colors;
+
+	std::array<int, 15> upgrades = {-1};
+	int paintjob = -1;
+	int componentTypeA = -1;
+	int componentTypeB = -1;
+	std::string numberplate = "";
+	int numberplateCity = -1;
 	float health = 1000.0f;
 	bool bulletproof = false;
 	bool fireproof = false;
@@ -79,9 +96,36 @@ class Vehicle : public Component {
 	void despawn();
 	int getVehicleRef() const { return this->handle ? CPools::GetVehicleRef(this->handle.get()) : -1; }
 
+	// Color methods
+	void recolorVehicle(bool recolor);
+	void setEditorPrimaryColor();
+	void setEditorSecondaryColor();
+	bool isRecolorBanned() const;
+
+	// Helper to check if model is in recolor ban list
+	static bool isModelRecolorBanned(int model);
+
 	static bool isSpecialComponent() { return true; }
 	static void sol_lua_register(sol::state_view lua_state);
 
 	static std::shared_ptr<Component> make() { return std::make_shared<Vehicle>(); }
+
+  private:
+	bool needToRecolor = false;
+	// Helicopter models that cannot use custom colors
+	static inline const std::vector<int> recolorBanList = {
+		417, // MODEL_LEVIATHN
+		425, // MODEL_HUNTER
+		447, // MODEL_SEASPAR
+		464, // MODEL_RCBARON
+		465, // MODEL_RCRAIDER
+		469, // MODEL_SPARROW
+		487, // MODEL_MAVERICK
+		488, // MODEL_VCNMAV
+		497, // MODEL_POLMAV
+		501, // MODEL_RCGOBLIN
+		548, // MODEL_CARGOBOB
+		563  // MODEL_RAINDANC
+	};
 };
 } // namespace components

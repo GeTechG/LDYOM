@@ -5,6 +5,7 @@
 #include "imgui_hook/imgui_hook.h"
 #include "imgui_hook/render_hook.h"
 #include "logger.h"
+#include "utils/vehicle_render_events.h"
 
 // Глобальные переменные для retry механизма DirectX hook
 static int g_hookRetryAttempts = 0;
@@ -51,6 +52,7 @@ class LDYOM {
 		plugin::Events::initGameEvent += []() {
 			Logger::Initialize();
 			TryImGuiHook();
+			VehicleRenderEvents::initializeEvents();
 
 			if (CGame::bMissionPackGame == 7) {
 				Application::instance().initialize();
