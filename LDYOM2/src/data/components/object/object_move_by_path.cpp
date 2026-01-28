@@ -144,16 +144,14 @@ void components::ObjectMoveByPath::editorRender() {
 	ImGui::Text("%zu", points.empty() ? 0 : points.size());
 
 	if (ImGui::Button(tr("edit_path").c_str())) {
-		WindowManager::instance().disableWindowRendering(true);
 		auto object = Object::cast(this->entity->getComponent(Object::TYPE));
 		CObject* objectHandle = object && object->handle ? object->handle.get() : nullptr;
 		ObjectPathsEditing::openPathEditor(
-			objectHandle, points, [this, object](bool saveChanges, const std::vector<PathPoint>& newPoints) {
+			this->entity, objectHandle, points, [this, object](bool saveChanges, const std::vector<PathPoint>& newPoints) {
 				if (saveChanges) {
 					this->points = newPoints;
 				}
 				object->dirty = Object::DirtyFlags::Position | Object::DirtyFlags::Rotation;
-				WindowManager::instance().disableWindowRendering(false);
 			});
 	}
 }

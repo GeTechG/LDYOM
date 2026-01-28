@@ -14,6 +14,8 @@
 #include <scenes_manager.h>
 #include <utils/pad.h>
 #include <window_manager.h>
+#include <windows/entities.h>
+#include <windows/entity_info_panel.h>
 
 // Static member initialization
 Entity* EntityOrbitCamera::m_targetEntity = nullptr;
@@ -54,11 +56,11 @@ void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
 		m_originalArea = m_playerPed->m_nAreaCode;
 		m_savedPlayerPosition = m_playerPed->GetPosition(); // Save current position
 
+		// Teleport player to entity position (needed for GTA rendering LOD)
+		m_playerPed->SetPosn(m_targetPosition);
+
 		// Remove player from world (hide from rendering)
 		CWorld::Remove(m_playerPed);
-
-		// Teleport player to entity position (needed for GTA rendering LOD)
-		m_playerPed->Teleport(m_targetPosition, false);
 	}
 
 	// Initialize orbit state from saved values
@@ -82,6 +84,14 @@ void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
 	LDYOM_INFO("EntityOrbitCamera activated for entity: {}", entity->name);
 }
 
+void EntityOrbitCamera::activateWithInfo(Entity* entity) noexcept {
+	auto entitiesWindow = WindowManager::instance().getWindowAs<EntitiesWindow>("entities");
+	if (entitiesWindow.has_value()) {
+		activate(entity, entitiesWindow.value()->getSelectedEntityIndex());
+	}
+	EntityInfoPanel::show(entity);
+}
+
 void EntityOrbitCamera::deactivate(bool restorePlayer) noexcept {
 	if (!m_targetEntity) {
 		return;
@@ -99,7 +109,7 @@ void EntityOrbitCamera::deactivate(bool restorePlayer) noexcept {
 		}
 
 		// Restore saved position
-		m_playerPed->Teleport(m_savedPlayerPosition, false);
+		m_playerPed->SetPosn(m_savedPlayerPosition);
 	}
 
 	// Unlock controls
@@ -125,6 +135,11 @@ void EntityOrbitCamera::deactivate(bool restorePlayer) noexcept {
 	m_isRotating = false;
 
 	LDYOM_INFO("EntityOrbitCamera deactivated");
+}
+
+void EntityOrbitCamera::deactivateWithInfo(bool restorePlayer) noexcept {
+	deactivate(restorePlayer);
+	EntityInfoPanel::hide();
 }
 
 void EntityOrbitCamera::render() noexcept {
@@ -154,7 +169,7 @@ void EntityOrbitCamera::updateCamera() noexcept {
 
 	// Move player to entity position for proper LOD rendering
 	if (m_playerPed) {
-		m_playerPed->Teleport(m_targetPosition, false);
+		m_playerPed->SetPosn(m_targetPosition);
 	}
 
 	// Calculate frame-independent delta time

@@ -72,10 +72,23 @@ class EntityOrbitCamera {
 	static void activate(Entity* entity, int entityIndex) noexcept;
 
 	/**
+	 * @brief Activate orbit camera with info panel (common operation after manual editing)
+	 * Gets entity index automatically from EntitiesWindow
+	 * @param entity Target entity to orbit around
+	 */
+	static void activateWithInfo(Entity* entity) noexcept;
+
+	/**
 	 * @brief Deactivate orbit camera and restore normal state
 	 * @param restorePlayer Whether to restore player visibility and controls
 	 */
 	static void deactivate(bool restorePlayer) noexcept;
+
+	/**
+	 * @brief Deactivate orbit camera with info panel (common operation for manual editing)
+	 * @param restorePlayer Whether to restore player visibility and controls
+	 */
+	static void deactivateWithInfo(bool restorePlayer) noexcept;
 
 	/**
 	 * @brief Check if orbit camera is currently active

@@ -10,10 +10,10 @@
 #include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
 #include <project_player.h>
+#include <in_game/vehicle_manual_editing.h>
 #include <scenes_manager.h>
 #include <string_utils.h>
 #include <utils/imgui_configurate.h>
-#include <utils/manual_editing.h>
 #include <window_manager.h>
 #include <windows/entities.h>
 #include <windows/entity_info_panel.h>
@@ -456,15 +456,7 @@ void components::Vehicle::editorRender() {
 
 	// Manual editing button
 	if (ImGui::Button(tr("edit_manually").c_str(), ImVec2(-1, 0))) {
-		EntityOrbitCamera::deactivate(true);
-		EntityInfoPanel::hide();
-		manual_editing::editVehicleManually(this, [this]() {
-			auto entitiesWindow = WindowManager::instance().getWindowAs<EntitiesWindow>("entities");
-			if (entitiesWindow.has_value()) {
-				EntityOrbitCamera::activate(this->entity, entitiesWindow.value()->getSelectedEntityIndex());
-			}
-			EntityInfoPanel::show(this->entity);
-		});
+		VehicleManualEditing::openVehicleEditor(this->entity, this, nullptr);
 	}
 }
 

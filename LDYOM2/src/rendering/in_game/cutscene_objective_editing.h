@@ -3,8 +3,11 @@
 #include <CVector.h>
 #include <array>
 #include <functional>
+#include <memory>
 #include <objectives/cutscene.h>
 #include <vector>
+
+class ManualEditingSession;
 
 class CutsceneObjectiveEditing {
   private:
@@ -12,6 +15,7 @@ class CutsceneObjectiveEditing {
 	static CObject* m_object;
 	static std::function<void(bool, objectives::cutscene::Data)> m_onCloseCallback;
 	static CPlayerPed* playerPed;
+	static std::unique_ptr<ManualEditingSession> m_session;
 
 	static void render() noexcept;
 	static void updateCutsceneObject() noexcept;

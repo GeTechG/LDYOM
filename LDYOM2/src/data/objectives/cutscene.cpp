@@ -65,12 +65,10 @@ void renderEditor(Data& data) {
 	ImGui::Checkbox("##wide_screen", &data.wideScreen);
 
 	if (ImGui::Button(_("edit").c_str())) {
-		WindowManager::instance().disableWindowRendering(true);
 		CutsceneObjectiveEditing::openCutsceneEditor(data, [&data](bool saveChanges, Data newData) {
 			if (saveChanges) {
 				data = newData;
 			}
-			WindowManager::instance().disableWindowRendering(false);
 		});
 	}
 }

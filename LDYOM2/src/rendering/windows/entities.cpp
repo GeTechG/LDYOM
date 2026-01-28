@@ -445,13 +445,12 @@ void EntitiesWindow::setSelectedEntityIndex(int index) {
 }
 
 void EntitiesWindow::close() {
-	// Deactivate orbit camera when closing window
+	// Deactivate orbit camera and hide info panel when closing window
 	if (EntityOrbitCamera::isActive()) {
-		EntityOrbitCamera::deactivate(true);
+		EntityOrbitCamera::deactivateWithInfo(true);
+	} else {
+		EntityInfoPanel::hide();
 	}
-
-	// Hide info panel when entities window closes
-	EntityInfoPanel::hide();
 
 	Window::close();
 }

@@ -4,10 +4,12 @@
 #include <CSprite.h>
 #include <CStreaming.h>
 #include <common.h>
+#include <entity.h>
 #include <extensions/ScriptCommands.h>
 #include <imgui_hook/utils/imgui_configurate.h>
 #include <localization.h>
 #include <models_manager.h>
+#include <utils/manual_editing_session.h>
 #include <utils/task_manager.h>
 #include <window_manager.h>
 
@@ -15,6 +17,7 @@ PointsArray ActorPathsEditing::m_points;
 std::function<void(bool, const PointsArray&)> ActorPathsEditing::m_onCloseCallback;
 size_t ActorPathsEditing::m_currentPointIndex = 0;
 bool ActorPathsEditing::giveJetpack = false;
+std::unique_ptr<ManualEditingSession> ActorPathsEditing::m_session = nullptr;
 
 void ActorPathsEditing::render() noexcept {
 	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
@@ -101,8 +104,17 @@ void ActorPathsEditing::render() noexcept {
 	ImGui::End();
 }
 
-void ActorPathsEditing::openPathEditor(const PointsArray& points,
+void ActorPathsEditing::openPathEditor(Entity* entity, const PointsArray& points,
                                        std::function<void(bool, const PointsArray&)> onClose) noexcept {
+	// Create RAII session that handles UI/camera automatically
+	m_session = std::make_unique<ManualEditingSession>(ManualEditingSession::Options{
+		.entity = entity,
+		.disableUI = true,
+		.disableCamera = true,
+		.showInfoPanel = true,
+		.onComplete = nullptr // We'll call it manually in closePathEditor
+	});
+
 	m_points = points;
 	m_onCloseCallback = std::move(onClose);
 	if (giveJetpack) {
@@ -112,13 +124,19 @@ void ActorPathsEditing::openPathEditor(const PointsArray& points,
 }
 
 void ActorPathsEditing::closePathEditor(bool saveChanges) noexcept {
+	// Call user callback before session cleanup
 	if (m_onCloseCallback) {
 		m_onCloseCallback(saveChanges, m_points);
 		m_onCloseCallback = nullptr;
 	}
+
 	if (giveJetpack) {
 		plugin::Command<plugin::Commands::REMOVE_ALL_CHAR_WEAPONS>(CPools::GetPedRef(FindPlayerPed()));
 		giveJetpack = false;
 	}
+
 	WindowManager::instance().removeBackgroundRenderCallback("ActorPathsEditor");
+
+	// Destroy session (triggers RAII cleanup: UI/camera restoration)
+	m_session.reset();
 }

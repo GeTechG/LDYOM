@@ -80,12 +80,10 @@ void components::ActorMoveByPoints::editorRender() {
 	ImGui::Checkbox("##loop", &loop);
 
 	if (ImGui::Button(tr("edit_path").c_str())) {
-		WindowManager::instance().disableWindowRendering(true);
-		ActorPathsEditing::openPathEditor(points, [this](bool saveChanges, const PointsArray& points) {
+		ActorPathsEditing::openPathEditor(this->entity, points, [this](bool saveChanges, const PointsArray& points) {
 			if (saveChanges) {
 				this->points = points;
 			}
-			WindowManager::instance().disableWindowRendering(false);
 		});
 	}
 }

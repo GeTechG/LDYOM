@@ -50,12 +50,10 @@ void renderEditor(Data& data) {
 	ImGui::Checkbox("##loop", &data.loop);
 
 	if (ImGui::Button(tr("edit_path").c_str())) {
-		WindowManager::instance().disableWindowRendering(true);
-		ActorPathsEditing::openPathEditor(data.points, [&data](bool saveChanges, const PointsArray& points) {
+		ActorPathsEditing::openPathEditor(nullptr, data.points, [&data](bool saveChanges, const PointsArray& points) {
 			if (saveChanges) {
 				data.points = points;
 			}
-			WindowManager::instance().disableWindowRendering(false);
 		});
 	}
 }

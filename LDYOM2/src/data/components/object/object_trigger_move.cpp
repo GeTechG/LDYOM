@@ -10,10 +10,14 @@
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/trigonometric.hpp>
+#include <in_game/entity_orbit_camera.h>
 #include <in_game/object_transform_editing.h>
 #include <matrix_utils.h>
 #include <project_player.h>
 #include <window_manager.h>
+#include <windows/entities.h>
+#include <windows/entity_info_panel.h>
+
 
 void components::ObjectTriggerMove::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<ObjectTriggerMove>("ObjectTriggerMoveComponent");
@@ -90,19 +94,17 @@ void components::ObjectTriggerMove::editorRender() {
 	}
 
 	if (ImGui::Button(tr("edit").c_str())) {
-		WindowManager::instance().disableWindowRendering(true);
 		auto object = Object::cast(this->entity->getComponent(Object::TYPE));
 		if (object && object->handle) {
-			ObjectTransformEditing::openTransformEditing(&*object->handle, this->endPosition, this->endRotation,
-			                                             this->entity->scale,
-			                                             [this](ObjectTransformEditingCallbackData data) {
-															 if (data.saveChanges) {
-																 this->endPosition = data.position;
-																 this->endRotation = data.rotation;
-															 }
-															 this->entity->reset();
-															 WindowManager::instance().disableWindowRendering(false);
-														 });
+			ObjectTransformEditing::openTransformEditing(
+				this->entity, &*object->handle, this->endPosition, this->endRotation, this->entity->scale,
+				[this](ObjectTransformEditingCallbackData data) {
+					if (data.saveChanges) {
+						this->endPosition = data.position;
+						this->endRotation = data.rotation;
+					}
+					this->entity->reset();
+				});
 		}
 	}
 }

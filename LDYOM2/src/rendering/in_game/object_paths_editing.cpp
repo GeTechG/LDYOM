@@ -6,12 +6,14 @@
 #include <CWorld.h>
 #include <angles.h>
 #include <common.h>
+#include <entity.h>
 #include <extensions/ScriptCommands.h>
 #include <glm/gtc/quaternion.hpp>
 #include <imgui_hook/utils/imgui_configurate.h>
 #include <localization.h>
 #include <matrix_utils.h>
 #include <models_manager.h>
+#include <utils/manual_editing_session.h>
 #include <utils/task_manager.h>
 #include <window_manager.h>
 
@@ -22,6 +24,7 @@ std::array<float, 3> ObjectPathsEditing::m_tempPosition = {0.f, 0.f, 0.f};
 CQuaternion ObjectPathsEditing::m_tempRotation = {{{0.f, 0.f, 0.f}}, 1.f};
 CObject* ObjectPathsEditing::m_object = nullptr;
 CPlayerPed* ObjectPathsEditing::playerPed = nullptr;
+std::unique_ptr<ManualEditingSession> ObjectPathsEditing::m_session = nullptr;
 
 void ObjectPathsEditing::render() noexcept {
 	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
@@ -271,8 +274,18 @@ void ObjectPathsEditing::render() noexcept {
 }
 
 void ObjectPathsEditing::openPathEditor(
-	CObject* object, const std::vector<components::PathPoint>& points,
+	Entity* entity, CObject* object, const std::vector<components::PathPoint>& points,
 	std::function<void(bool, const std::vector<components::PathPoint>&)> onClose) noexcept {
+
+	// Create RAII session that handles UI/camera automatically
+	m_session = std::make_unique<ManualEditingSession>(ManualEditingSession::Options{
+		.entity = entity,
+		.disableUI = true,
+		.disableCamera = true,
+		.showInfoPanel = true,
+		.onComplete = nullptr // We'll call it manually in closePathEditor
+	});
+
 	m_object = object;
 	m_points = points;
 	m_onCloseCallback = std::move(onClose);
@@ -302,9 +315,15 @@ void ObjectPathsEditing::openPathEditor(
 
 void ObjectPathsEditing::closePathEditor(bool saveChanges) noexcept {
 	CWorld::Add(playerPed);
+
+	// Call user callback before session cleanup
 	if (m_onCloseCallback) {
 		m_onCloseCallback(saveChanges, m_points);
 		m_onCloseCallback = nullptr;
 	}
+
 	WindowManager::instance().removeBackgroundRenderCallback("ObjectPathsEditor");
+
+	// Destroy session (triggers RAII cleanup: UI/camera restoration)
+	m_session.reset();
 }

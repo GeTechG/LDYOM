@@ -15,6 +15,7 @@
 #include <localization.h>
 #include <matrix_utils.h>
 #include <models_manager.h>
+#include <utils/manual_editing_session.h>
 #include <utils/task_manager.h>
 #include <window_manager.h>
 
@@ -22,6 +23,7 @@ objectives::cutscene::Data CutsceneObjectiveEditing::m_data;
 CObject* CutsceneObjectiveEditing::m_object = nullptr;
 std::function<void(bool, objectives::cutscene::Data)> CutsceneObjectiveEditing::m_onCloseCallback = nullptr;
 CPlayerPed* CutsceneObjectiveEditing::playerPed = nullptr;
+std::unique_ptr<ManualEditingSession> CutsceneObjectiveEditing::m_session = nullptr;
 
 struct CutsceneObjectiveEditingOptions {
 	bool renderObject = true;
@@ -307,6 +309,16 @@ void CutsceneObjectiveEditing::updateCutsceneObject() noexcept {
 
 void CutsceneObjectiveEditing::openCutsceneEditor(
 	objectives::cutscene::Data& data, std::function<void(bool, objectives::cutscene::Data)> onClose) noexcept {
+
+	// Create RAII session that handles UI automatically (no entity/camera for cutscene)
+	m_session = std::make_unique<ManualEditingSession>(ManualEditingSession::Options{
+		.entity = nullptr,
+		.disableUI = true,
+		.disableCamera = false, // Cutscene manages its own camera
+		.showInfoPanel = false,
+		.onComplete = nullptr // We'll call it manually in closeCutsceneEditor
+	});
+
 	m_data = data;
 	m_onCloseCallback = std::move(onClose);
 	playerPed = FindPlayerPed();
@@ -341,6 +353,8 @@ void CutsceneObjectiveEditing::openCutsceneEditor(
 
 void CutsceneObjectiveEditing::closeCutsceneEditor(bool saveChanges) noexcept {
 	CWorld::Add(playerPed);
+
+	// Call user callback before session cleanup
 	if (m_onCloseCallback) {
 		m_onCloseCallback(saveChanges, m_data);
 		m_onCloseCallback = nullptr;
@@ -358,4 +372,7 @@ void CutsceneObjectiveEditing::closeCutsceneEditor(bool saveChanges) noexcept {
 	}
 
 	WindowManager::instance().removeBackgroundRenderCallback("ObjectTransformEditor");
+
+	// Destroy session (triggers RAII cleanup: UI restoration)
+	m_session.reset();
 }

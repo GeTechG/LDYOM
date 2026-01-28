@@ -29,12 +29,10 @@ inline std::string tr(const std::string& key) { return _(fmt::format("objectives
 void renderEditor(Data& data) {
 	ImGui::Dummy(ImVec2((SCL_PX).x * 300.f, 0.f)); // Add some space at the top
 	if (ImGui::Button(tr("edit_points").c_str())) {
-		WindowManager::instance().disableWindowRendering(true);
-		ActorPathsEditing::openPathEditor(data.points, [&data](bool saveChanges, const PointsArray& points) {
+		ActorPathsEditing::openPathEditor(nullptr, data.points, [&data](bool saveChanges, const PointsArray& points) {
 			if (saveChanges) {
 				data.points = points;
 			}
-			WindowManager::instance().disableWindowRendering(false);
 		});
 	}
 }
