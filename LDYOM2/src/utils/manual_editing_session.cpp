@@ -12,7 +12,6 @@ ManualEditingSession::ManualEditingSession(const Options& options) noexcept
 	// Disable UI rendering if requested
 	if (m_options.disableUI) {
 		WindowManager::instance().disableWindowRendering(true);
-		LDYOM_DEBUG("ManualEditingSession: UI rendering disabled");
 	}
 
 	// Deactivate orbit camera if requested
@@ -22,7 +21,6 @@ ManualEditingSession::ManualEditingSession(const Options& options) noexcept
 		} else {
 			EntityOrbitCamera::deactivate(true);
 		}
-		LDYOM_DEBUG("ManualEditingSession: Orbit camera deactivated");
 	}
 
 	LDYOM_INFO("ManualEditingSession: Started");
@@ -31,7 +29,7 @@ ManualEditingSession::ManualEditingSession(const Options& options) noexcept
 ManualEditingSession::~ManualEditingSession() noexcept {
 	// Auto-complete if not already completed
 	if (!m_completed) {
-		LDYOM_DEBUG("ManualEditingSession: Auto-completing in destructor");
+
 		complete();
 	}
 }
@@ -46,7 +44,6 @@ void ManualEditingSession::complete() noexcept {
 	// Re-enable UI rendering if we disabled it
 	if (m_options.disableUI) {
 		WindowManager::instance().disableWindowRendering(false);
-		LDYOM_DEBUG("ManualEditingSession: UI rendering re-enabled");
 	}
 
 	// Reactivate orbit camera if we deactivated it and entity exists
@@ -60,12 +57,10 @@ void ManualEditingSession::complete() noexcept {
 				EntityOrbitCamera::activate(m_options.entity, entitiesWindow.value()->getSelectedEntityIndex());
 			}
 		}
-		LDYOM_DEBUG("ManualEditingSession: Orbit camera reactivated");
 	}
 
 	// Invoke completion callback
 	if (m_options.onComplete) {
-		LDYOM_DEBUG("ManualEditingSession: Invoking onComplete callback");
 		m_options.onComplete();
 	}
 

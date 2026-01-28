@@ -3,6 +3,9 @@
 
 namespace objectives::cutscene {
 void renderEditor(Data& data) {
+	// Track if camera positions changed for preview update
+	bool positionsChanged = false;
+
 	ImGui::Dummy(ImVec2((SCL_PX).x * 300.f, 0.f)); // Add some space at the top
 	ImGui::Text(_("text").c_str());
 	ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);
@@ -17,7 +20,9 @@ void renderEditor(Data& data) {
 	ImGui::Text(tr("camera_position").c_str());
 	ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
-	ImGui::DragFloat3("##camera_position", data.cameraPosition.data(), 0.1f, -10000.0f, 10000.0f);
+	if (ImGui::DragFloat3("##camera_position", data.cameraPosition.data(), 0.1f, -10000.0f, 10000.0f)) {
+		positionsChanged = true;
+	}
 
 	ImGui::Text(tr("behaviour").c_str());
 	ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);
@@ -39,7 +44,9 @@ void renderEditor(Data& data) {
 		ImGui::Text(tr("target_position").c_str());
 		ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);
 		ImGui::SetNextItemWidth(-1.f);
-		ImGui::DragFloat3("##target_position", data.targetPosition.data(), 0.1f, -10000.0f, 10000.0f);
+		if (ImGui::DragFloat3("##target_position", data.targetPosition.data(), 0.1f, -10000.0f, 10000.0f)) {
+			positionsChanged = true;
+		}
 	} else if (data.behaviour <= 5) {
 		renderEntityByComponentSelection<components::Actor>(data.actorUuid, ImGui::GetContentRegionAvail().x, 0.45f);
 	}
@@ -65,11 +72,18 @@ void renderEditor(Data& data) {
 	ImGui::Checkbox("##wide_screen", &data.wideScreen);
 
 	if (ImGui::Button(_("edit").c_str())) {
+		CutscenePreviewCamera::deactivate();
 		CutsceneObjectiveEditing::openCutsceneEditor(data, [&data](bool saveChanges, Data newData) {
 			if (saveChanges) {
 				data = newData;
 			}
+			CutscenePreviewCamera::activate(data.cameraPosition, data.targetPosition);
 		});
+	}
+
+	// Update preview camera if positions changed and preview is active
+	if (positionsChanged && CutscenePreviewCamera::isActive()) {
+		CutscenePreviewCamera::activate(data.cameraPosition, data.targetPosition);
 	}
 }
 } // namespace objectives::cutscene

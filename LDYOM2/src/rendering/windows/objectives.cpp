@@ -158,6 +158,37 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 			window->m_indexToRemove = -1;
 		}
 	}
+
+	// Update objective selection callbacks
+	window->updateObjectiveSelection();
+}
+
+void ObjectivesWindow::updateObjectiveSelection() {
+	// Check if selection changed
+	if (m_selectedObjectiveIndex == m_previousSelectedObjectiveIndex) {
+		return;
+	}
+
+	// Deselect previous objective if any
+	if (m_previousSelectedObjectiveIndex >= 0) {
+		auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
+		if (m_previousSelectedObjectiveIndex < static_cast<int>(objectives.size())) {
+			auto& prevObjective = ObjectivesManager::instance().getUnsafeObjective(m_previousSelectedObjectiveIndex);
+			prevObjective.onDeselected();
+		}
+	}
+
+	// Update previous index
+	m_previousSelectedObjectiveIndex = m_selectedObjectiveIndex;
+
+	// Select new objective if any
+	if (m_selectedObjectiveIndex >= 0) {
+		auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
+		if (m_selectedObjectiveIndex < static_cast<int>(objectives.size())) {
+			auto& objective = ObjectivesManager::instance().getUnsafeObjective(m_selectedObjectiveIndex);
+			objective.onSelected();
+		}
+	}
 }
 
 ObjectivesWindow::ObjectivesWindow()
@@ -168,4 +199,27 @@ ObjectivesWindow::ObjectivesWindow()
 	setFlags(ImGuiWindowFlags_NoTitleBar);
 	setRenderCallback<ObjectivesWindow>(renderContent);
 	m_renameBuffer = "";
+}
+
+ObjectivesWindow::~ObjectivesWindow() {
+	// Deselect current objective on window destruction
+	if (m_selectedObjectiveIndex >= 0) {
+		auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
+		if (m_selectedObjectiveIndex < static_cast<int>(objectives.size())) {
+			auto& objective = ObjectivesManager::instance().getUnsafeObjective(m_selectedObjectiveIndex);
+			objective.onDeselected();
+		}
+	}
+}
+
+void ObjectivesWindow::close() {
+	// Deselect current objective when window is closed
+	if (m_selectedObjectiveIndex >= 0) {
+		auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
+		if (m_selectedObjectiveIndex < static_cast<int>(objectives.size())) {
+			auto& objective = ObjectivesManager::instance().getUnsafeObjective(m_selectedObjectiveIndex);
+			objective.onDeselected();
+		}
+	}
+	Window::close();
 }

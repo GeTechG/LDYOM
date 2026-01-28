@@ -15,6 +15,8 @@ class ObjectiveDataContainer {
 	virtual ktwait callExecutor() = 0;
 	virtual void callOnStart() = 0;
 	virtual void callOnReset() = 0;
+	virtual void callOnSelected() = 0;
+	virtual void callOnDeselected() = 0;
 	virtual nlohmann::json toJson() const = 0;
 	virtual void fromJson(const nlohmann::json& j) = 0;
 };
@@ -26,16 +28,22 @@ template <typename T> class TypedObjectiveDataContainer : public ObjectiveDataCo
 	std::function<ktwait(T&)> executorCallback;
 	std::function<void(T&)> onStartCallback;
 	std::function<void(T&)> onResetCallback;
+	std::function<void(T&)> onSelectedCallback;
+	std::function<void(T&)> onDeselectedCallback;
 
 	TypedObjectiveDataContainer(T initialValue, std::function<void(T&)> editorCallback,
 	                            std::function<ktwait(T&)> executorCallback,
 	                            std::function<void(T&)> onStartCallback = nullptr,
-	                            std::function<void(T&)> onResetCallback = nullptr)
+	                            std::function<void(T&)> onResetCallback = nullptr,
+	                            std::function<void(T&)> onSelectedCallback = nullptr,
+	                            std::function<void(T&)> onDeselectedCallback = nullptr)
 		: value(initialValue),
 		  editorCallback(editorCallback),
 		  executorCallback(executorCallback),
 		  onStartCallback(onStartCallback),
-		  onResetCallback(onResetCallback) {}
+		  onResetCallback(onResetCallback),
+		  onSelectedCallback(onSelectedCallback),
+		  onDeselectedCallback(onDeselectedCallback) {}
 
 	nlohmann::json toJson() const override { return nlohmann::json(value); }
 
@@ -56,6 +64,18 @@ template <typename T> class TypedObjectiveDataContainer : public ObjectiveDataCo
 			onResetCallback(value);
 		}
 	}
+
+	void callOnSelected() override {
+		if (onSelectedCallback) {
+			onSelectedCallback(value);
+		}
+	}
+
+	void callOnDeselected() override {
+		if (onDeselectedCallback) {
+			onDeselectedCallback(value);
+		}
+	}
 };
 
 class Objective {
@@ -72,9 +92,11 @@ class Objective {
 	template <typename T>
 	Objective(std::string_view type, std::string_view name, T initialValue, std::function<void(T&)> editorCallback,
 	          std::function<ktwait(T&)> executorCallback = nullptr, std::function<void(T&)> onStartCallback = nullptr,
-	          std::function<void(T&)> onResetCallback = nullptr)
+	          std::function<void(T&)> onResetCallback = nullptr, std::function<void(T&)> onSelectedCallback = nullptr,
+	          std::function<void(T&)> onDeselectedCallback = nullptr)
 		: content(std::make_shared<TypedObjectiveDataContainer<T>>(initialValue, editorCallback, executorCallback,
-		                                                           onStartCallback, onResetCallback)),
+		                                                           onStartCallback, onResetCallback, onSelectedCallback,
+		                                                           onDeselectedCallback)),
 		  contentType(typeid(T)),
 		  type(std::string(type)),
 		  name(std::string(name)) {}
@@ -119,6 +141,18 @@ class Objective {
 			content->callOnReset();
 		}
 		isInitialized = false;
+	}
+
+	void onSelected() {
+		if (content) {
+			content->callOnSelected();
+		}
+	}
+
+	void onDeselected() {
+		if (content) {
+			content->callOnDeselected();
+		}
 	}
 
 	friend void to_json(nlohmann::json& j, const Objective& p) {

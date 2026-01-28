@@ -6,12 +6,17 @@ class ObjectivesWindow : public Window {
   private:
 	static void renderContent(ObjectivesWindow* window);
 	int m_selectedObjectiveIndex = -1;
+	int m_previousSelectedObjectiveIndex = -1;
 	int m_indexToRemove = -1;
 	std::string m_renameBuffer = "";
 
+	void updateObjectiveSelection();
+
   public:
 	ObjectivesWindow();
-	~ObjectivesWindow() override = default;
+	~ObjectivesWindow() override;
+
+	void close() override;
 
 	int getSelectedObjectiveIndex() const { return m_selectedObjectiveIndex; }
 	void setSelectedObjectiveIndex(int index) { m_selectedObjectiveIndex = index; }

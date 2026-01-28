@@ -13,6 +13,7 @@
 #include <extensions/ScriptCommands.h>
 #include <imgui.h>
 #include <imgui_stdlib.h>
+#include <in_game/cutscene_preview_camera.h>
 #include <ktcoro_wait.hpp>
 #include <localization.h>
 #include <memory>
@@ -54,6 +55,16 @@ struct Data {
 inline std::string tr(const std::string& key) { return _(fmt::format("objectives.{}.{}", std::string(TYPE), key)); }
 
 void renderEditor(Data& data);
+
+inline void onSelected(Data& data) {
+	// Activate camera preview when cutscene objective is selected
+	CutscenePreviewCamera::activate(data.cameraPosition, data.targetPosition);
+}
+
+inline void onDeselected(Data& data) {
+	// Deactivate camera preview when cutscene objective is deselected
+	CutscenePreviewCamera::deactivate();
+}
 
 inline ktwait execute(Data& data) {
 	static auto duration = 0;
@@ -271,12 +282,20 @@ inline Objective make() {
 	auto cameraPosition = TheCamera.GetPosition();
 	auto targetPosition = TheCamera.GetPosition() + TheCamera.GetForward() * 10.f;
 
-	return Objective(TYPE, _("objectives." + std::string(TYPE) + ".name"),
-	                 Data{
-						 .cameraPosition = {cameraPosition.x, cameraPosition.y, cameraPosition.z},
-						 .targetPosition = {targetPosition.x, targetPosition.y, targetPosition.z},
-					 },
-	                 std::function<void(Data&)>(renderEditor), std::function<ktwait(Data&)>(execute));
+	return Objective(
+		TYPE,
+		_("objectives." + std::string(TYPE) + ".name"),
+		Data{
+			.cameraPosition = {cameraPosition.x, cameraPosition.y, cameraPosition.z},
+			.targetPosition = {targetPosition.x, targetPosition.y, targetPosition.z},
+		},
+		std::function<void(Data&)>(renderEditor),
+		std::function<ktwait(Data&)>(execute),
+		std::function<void(Data&)>(),  // onStartCallback
+		std::function<void(Data&)>(),  // onResetCallback
+		std::function<void(Data&)>(onSelected),
+		std::function<void(Data&)>(onDeselected)
+	);
 }
 
 inline ObjectiveBuilderData builder() { return ObjectiveBuilderData{.type = TYPE, .category = "", .builder = make}; }
