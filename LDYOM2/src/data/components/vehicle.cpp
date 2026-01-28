@@ -239,7 +239,7 @@ void components::Vehicle::editorRender() {
 	if (ImGui::Button(ICON_FA_CAR, ImVec2(buttonWidth, 0))) {
 		PopupVehicleSelector::showPopup();
 	}
-	static std::function<void(int)> vehicleSelectorCallback = [this](int model) {
+	std::function<void(int)> vehicleSelectorCallback = [this](int model) {
 		this->model = model;
 		dirty |= Model;
 	};

@@ -319,7 +319,7 @@ void renderEditor(Data& data) {
 			PopupSkinSelector::showPopup();
 		}
 
-		static std::function<void(Skin)> skinSelectorCallback = [&data](Skin selected) {
+		std::function<void(Skin)> skinSelectorCallback = [&data](Skin selected) {
 			if (selected.model != -1) {
 				data.modelId = selected.model;
 				data.isSpecialModel = false;

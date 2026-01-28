@@ -139,7 +139,7 @@ void components::Actor::editorRender() {
 			PopupSkinSelector::showPopup();
 		}
 
-		static std::function<void(Skin)> skinSelectorCallback = [this](Skin selected) {
+		std::function<void(Skin)> skinSelectorCallback = [this](Skin selected) {
 			if (selected.model != -1) {
 				this->model = selected.model;
 			} else {
