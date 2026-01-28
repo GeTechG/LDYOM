@@ -54,7 +54,7 @@ class EntityOrbitCamera {
 	static constexpr float MIN_PITCH = -89.0f;
 	static constexpr float MAX_PITCH = 89.0f;
 	static constexpr int ORBIT_CAMERA_ID = 3;
-	static constexpr float MOVEMENT_SPEED = 0.1f;
+	static constexpr float MOVEMENT_SPEED = 0.2f;
 
 	// Internal methods
 	static void render() noexcept;

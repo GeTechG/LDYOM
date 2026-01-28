@@ -21,17 +21,17 @@ int EntityOrbitCamera::m_entityIndex = -1;
 CPlayerPed* EntityOrbitCamera::m_playerPed = nullptr;
 int EntityOrbitCamera::m_originalArea = -1;
 float EntityOrbitCamera::m_distance = 10.0f;
-float EntityOrbitCamera::m_pitch = -30.0f;
+float EntityOrbitCamera::m_pitch = 30.0f;
 float EntityOrbitCamera::m_yaw = 0.0f;
 CVector EntityOrbitCamera::m_targetPosition = {0.0f, 0.0f, 0.0f};
 float EntityOrbitCamera::m_targetDistance = 10.0f;
-float EntityOrbitCamera::m_targetPitch = -30.0f;
+float EntityOrbitCamera::m_targetPitch = 30.0f;
 float EntityOrbitCamera::m_targetYaw = 0.0f;
 bool EntityOrbitCamera::m_isRotating = false;
 float EntityOrbitCamera::m_lastMouseX = 0.0f;
 float EntityOrbitCamera::m_lastMouseY = 0.0f;
 float EntityOrbitCamera::m_savedDistance = 10.0f;
-float EntityOrbitCamera::m_savedPitch = -30.0f;
+float EntityOrbitCamera::m_savedPitch = 30.0f;
 float EntityOrbitCamera::m_savedYaw = 0.0f;
 
 void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
@@ -237,7 +237,7 @@ void EntityOrbitCamera::handleInput() noexcept {
 
 		// Calculate movement speed based on camera distance (zoom level)
 		// Closer camera = smaller steps for precision, farther = larger steps for speed
-		float dynamicSpeed = MOVEMENT_SPEED * m_distance * 0.5f;
+		float dynamicSpeed = MOVEMENT_SPEED * m_distance * ImGui::GetIO().DeltaTime;
 
 		// Calculate camera direction vectors on XY plane (ignore pitch for horizontal movement)
 		float yawRad = m_yaw * static_cast<float>(std::numbers::pi) / 180.0f;
