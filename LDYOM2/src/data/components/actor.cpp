@@ -227,7 +227,7 @@ void components::Actor::onStart() {
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) {
 			if (this->ped) {
-				this->ped->SetPosn(position[0], position[1], position[2]);
+				this->ped->Teleport(CVector(position[0], position[1], position[2]), false);
 			}
 		},
 		[this](const CQuaternion rotation) {
@@ -289,7 +289,7 @@ void components::Actor::updateDirection() {
 void components::Actor::updatePosition() {
 	if (this->ped) {
 		auto& position = this->entity->position;
-		this->ped->SetPosn(position[0], position[1], position[2]);
+		this->ped->Teleport(CVector(position[0], position[1], position[2]), false);
 		this->ped->m_nPhysicalFlags.bSubmergedInWater = 0;
 		this->ped->m_nPhysicalFlags.bOnSolidSurface = 0;
 	}

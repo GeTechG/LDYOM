@@ -62,15 +62,30 @@ void components::ObjectMoveByPath::reset() {
 	this->currentPosition = initialPoint.position;
 	this->currentRotation = initialPoint.rotation;
 
-	// Update object position
+	// Update object position following CObject::Teleport pattern
 	auto object = Object::cast(this->entity->getComponent(Object::TYPE));
 	if (object && object->handle) {
-		object->handle->SetPosn(currentPosition[0], currentPosition[1], currentPosition[2]);
-		object->handle->m_matrix->SetRotate(currentRotation);
-		scaleMatrix(*object->handle->m_matrix, this->entity->scale);
-		object->handle->m_matrix->UpdateRW();
-		object->handle->UpdateRwMatrix();
+		object->handle->Remove();
+
+		CMatrixLink* matrix = object->handle->GetMatrix();
+		if (matrix) {
+			matrix->GetPosition().x = currentPosition[0];
+			matrix->GetPosition().y = currentPosition[1];
+			matrix->GetPosition().z = currentPosition[2];
+			matrix->SetRotate(currentRotation);
+			scaleMatrix(*matrix, this->entity->scale);
+			matrix->UpdateRW();
+		} else {
+			object->handle->m_placement.m_vPosn.x = currentPosition[0];
+			object->handle->m_placement.m_vPosn.y = currentPosition[1];
+			object->handle->m_placement.m_vPosn.z = currentPosition[2];
+		}
+
+		if (object->handle->m_pRwObject) {
+			object->handle->UpdateRwMatrix();
+		}
 		object->handle->UpdateRwFrame();
+		object->handle->Add();
 	}
 }
 
@@ -253,12 +268,28 @@ void components::ObjectMoveByPath::onUpdate(float deltaTime) {
 				currentRotation = endPoint.rotation;
 				isMoving = false;
 
-				object->handle->SetPosn(currentPosition[0], currentPosition[1], currentPosition[2]);
-				object->handle->m_matrix->SetRotate(currentRotation);
-				scaleMatrix(*object->handle->m_matrix, this->entity->scale);
-				object->handle->m_matrix->UpdateRW();
-				object->handle->UpdateRwMatrix();
+				// Proper matrix update following CObject::Teleport pattern
+				object->handle->Remove();
+
+				CMatrixLink* matrix = object->handle->GetMatrix();
+				if (matrix) {
+					matrix->GetPosition().x = currentPosition[0];
+					matrix->GetPosition().y = currentPosition[1];
+					matrix->GetPosition().z = currentPosition[2];
+					matrix->SetRotate(currentRotation);
+					scaleMatrix(*matrix, this->entity->scale);
+					matrix->UpdateRW();
+				} else {
+					object->handle->m_placement.m_vPosn.x = currentPosition[0];
+					object->handle->m_placement.m_vPosn.y = currentPosition[1];
+					object->handle->m_placement.m_vPosn.z = currentPosition[2];
+				}
+
+				if (object->handle->m_pRwObject) {
+					object->handle->UpdateRwMatrix();
+				}
 				object->handle->UpdateRwFrame();
+				object->handle->Add();
 				return;
 			}
 		} else {
@@ -278,12 +309,28 @@ void components::ObjectMoveByPath::onUpdate(float deltaTime) {
 				currentRotation = endPoint.rotation;
 				isMoving = false;
 
-				object->handle->SetPosn(currentPosition[0], currentPosition[1], currentPosition[2]);
-				object->handle->m_matrix->SetRotate(currentRotation);
-				scaleMatrix(*object->handle->m_matrix, this->entity->scale);
-				object->handle->m_matrix->UpdateRW();
-				object->handle->UpdateRwMatrix();
+				// Proper matrix update following CObject::Teleport pattern
+				object->handle->Remove();
+
+				CMatrixLink* matrix = object->handle->GetMatrix();
+				if (matrix) {
+					matrix->GetPosition().x = currentPosition[0];
+					matrix->GetPosition().y = currentPosition[1];
+					matrix->GetPosition().z = currentPosition[2];
+					matrix->SetRotate(currentRotation);
+					scaleMatrix(*matrix, this->entity->scale);
+					matrix->UpdateRW();
+				} else {
+					object->handle->m_placement.m_vPosn.x = currentPosition[0];
+					object->handle->m_placement.m_vPosn.y = currentPosition[1];
+					object->handle->m_placement.m_vPosn.z = currentPosition[2];
+				}
+
+				if (object->handle->m_pRwObject) {
+					object->handle->UpdateRwMatrix();
+				}
 				object->handle->UpdateRwFrame();
+				object->handle->Add();
 				return;
 			}
 
@@ -305,13 +352,28 @@ void components::ObjectMoveByPath::onUpdate(float deltaTime) {
 		currentRotation.Slerp(startPoint.rotation, endPoint.rotation, t);
 	}
 
-	// Apply position and rotation to object
-	object->handle->SetPosn(currentPosition[0], currentPosition[1], currentPosition[2]);
-	object->handle->m_matrix->SetRotate(currentRotation);
-	scaleMatrix(*object->handle->m_matrix, this->entity->scale);
-	object->handle->m_matrix->UpdateRW();
-	object->handle->UpdateRwMatrix();
+	// Apply position and rotation to object following CObject::Teleport pattern
+	object->handle->Remove();
+
+	CMatrixLink* matrix = object->handle->GetMatrix();
+	if (matrix) {
+		matrix->GetPosition().x = currentPosition[0];
+		matrix->GetPosition().y = currentPosition[1];
+		matrix->GetPosition().z = currentPosition[2];
+		matrix->SetRotate(currentRotation);
+		scaleMatrix(*matrix, this->entity->scale);
+		matrix->UpdateRW();
+	} else {
+		object->handle->m_placement.m_vPosn.x = currentPosition[0];
+		object->handle->m_placement.m_vPosn.y = currentPosition[1];
+		object->handle->m_placement.m_vPosn.z = currentPosition[2];
+	}
+
+	if (object->handle->m_pRwObject) {
+		object->handle->UpdateRwMatrix();
+	}
 	object->handle->UpdateRwFrame();
+	object->handle->Add();
 }
 
 void components::ObjectMoveByPath::onReset() {

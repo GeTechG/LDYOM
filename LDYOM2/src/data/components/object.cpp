@@ -3,6 +3,7 @@
 #include "extensions/ScriptCommands.h"
 #include "objective_specific.h"
 #include <CStreaming.h>
+#include <CTheScripts.h>
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <lua_define_type.h>
@@ -69,20 +70,66 @@ void components::Object::onStart() {
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) {
 			if (this->handle) {
-				this->handle->SetPosn(position[0], position[1], position[2]);
+				// Proper matrix update following CObject::Teleport implementation
+				this->handle->Remove();
+
+				// Update position in matrix or simple transform
+				CMatrixLink* matrix = this->handle->GetMatrix();
+				if (matrix) {
+					matrix->GetPosition().x = position[0];
+					matrix->GetPosition().y = position[1];
+					matrix->GetPosition().z = position[2];
+				} else {
+					this->handle->m_placement.m_vPosn.x = position[0];
+					this->handle->m_placement.m_vPosn.y = position[1];
+					this->handle->m_placement.m_vPosn.z = position[2];
+				}
+
+				// Update RenderWare
+				if (this->handle->m_pRwObject) {
+					if (matrix) {
+						matrix->UpdateRW();
+					}
+					this->handle->UpdateRwMatrix();
+				}
+				this->handle->UpdateRwFrame();
+				this->handle->Add();
 			}
 		},
 		[this](const CQuaternion rotation) {
 			if (this->handle) {
-				this->handle->m_matrix->SetRotate(rotation);
+				// Proper rotation update with Remove/Add
+				this->handle->Remove();
+
+				CMatrixLink* matrix = this->handle->GetMatrix();
+				if (matrix) {
+					matrix->SetRotate(rotation);
+					matrix->UpdateRW();
+				}
+
+				if (this->handle->m_pRwObject) {
+					this->handle->UpdateRwMatrix();
+				}
+				this->handle->UpdateRwFrame();
+				this->handle->Add();
 			}
 		},
 		[this](const std::array<float, 3>& scale) {
 			if (this->handle) {
-				scaleMatrix(*this->handle->m_matrix, scale);
-				this->handle->m_matrix->UpdateRW();
-				this->handle->UpdateRwMatrix();
+				// Scale update with Remove/Add
+				this->handle->Remove();
+
+				CMatrixLink* matrix = this->handle->GetMatrix();
+				if (matrix) {
+					scaleMatrix(*matrix, scale);
+					matrix->UpdateRW();
+				}
+
+				if (this->handle->m_pRwObject) {
+					this->handle->UpdateRwMatrix();
+				}
 				this->handle->UpdateRwFrame();
+				this->handle->Add();
 			}
 		});
 	if (!IS_PLAYING) {
@@ -120,19 +167,51 @@ void components::Object::onReset() {
 
 void components::Object::updateRotation() {
 	if (this->handle) {
-		auto rotation = this->entity->rotation;
-		this->handle->m_matrix->SetRotate(this->entity->rotation);
-		this->handle->UpdateRwMatrix();
+		// Proper rotation update following CObject::Teleport pattern
+		this->handle->Remove();
+
+		CMatrixLink* matrix = this->handle->GetMatrix();
+		if (matrix) {
+			matrix->SetRotate(this->entity->rotation);
+			matrix->UpdateRW();
+		}
+
+		if (this->handle->m_pRwObject) {
+			this->handle->UpdateRwMatrix();
+		}
 		this->handle->UpdateRwFrame();
+		this->handle->Add();
 	}
 }
 
 void components::Object::updatePosition() {
 	if (this->handle) {
+		// Proper position update following CObject::Teleport pattern
+		this->handle->Remove();
+
 		auto& position = this->entity->position;
-		this->handle->SetPosn(position[0], position[1], position[2]);
-		this->handle->UpdateRwMatrix();
+
+		// Update position in matrix or simple transform
+		CMatrixLink* matrix = this->handle->GetMatrix();
+		if (matrix) {
+			matrix->GetPosition().x = position[0];
+			matrix->GetPosition().y = position[1];
+			matrix->GetPosition().z = position[2];
+		} else {
+			this->handle->m_placement.m_vPosn.x = position[0];
+			this->handle->m_placement.m_vPosn.y = position[1];
+			this->handle->m_placement.m_vPosn.z = position[2];
+		}
+
+		// Update RenderWare
+		if (this->handle->m_pRwObject) {
+			if (matrix) {
+				matrix->UpdateRW();
+			}
+			this->handle->UpdateRwMatrix();
+		}
 		this->handle->UpdateRwFrame();
+		this->handle->Add();
 	}
 }
 

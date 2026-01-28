@@ -159,7 +159,7 @@ void ObjectPathsEditing::render() noexcept {
 	// Update object transform if changed
 	if (isRotating || isMoving) {
 		if (m_object) {
-			m_object->SetPosn(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]);
+			m_object->Teleport(CVector(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]), false);
 			m_object->m_matrix->SetRotate(m_tempRotation);
 			m_object->m_matrix->UpdateRW();
 			m_object->UpdateRwMatrix();
@@ -188,7 +188,7 @@ void ObjectPathsEditing::render() noexcept {
 				m_tempPosition = m_points[m_currentPointIndex].position;
 				m_tempRotation = m_points[m_currentPointIndex].rotation;
 				if (m_object) {
-					m_object->SetPosn(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]);
+					m_object->Teleport(CVector(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]), false);
 					m_object->m_matrix->SetRotate(m_tempRotation);
 					m_object->m_matrix->UpdateRW();
 					m_object->UpdateRwMatrix();
@@ -211,7 +211,7 @@ void ObjectPathsEditing::render() noexcept {
 			m_tempPosition = m_points[m_currentPointIndex].position;
 			m_tempRotation = m_points[m_currentPointIndex].rotation;
 			if (m_object) {
-				m_object->SetPosn(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]);
+				m_object->Teleport(CVector(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]), false);
 				m_object->m_matrix->SetRotate(m_tempRotation);
 				m_object->m_matrix->UpdateRW();
 				m_object->UpdateRwMatrix();
@@ -227,7 +227,7 @@ void ObjectPathsEditing::render() noexcept {
 			m_tempPosition = m_points[m_currentPointIndex].position;
 			m_tempRotation = m_points[m_currentPointIndex].rotation;
 			if (m_object) {
-				m_object->SetPosn(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]);
+				m_object->Teleport(CVector(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]), false);
 				m_object->m_matrix->SetRotate(m_tempRotation);
 				m_object->m_matrix->UpdateRW();
 				m_object->UpdateRwMatrix();
@@ -250,7 +250,7 @@ void ObjectPathsEditing::render() noexcept {
 			m_tempPosition = m_points[m_currentPointIndex].position;
 			m_tempRotation = m_points[m_currentPointIndex].rotation;
 			if (m_object) {
-				m_object->SetPosn(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]);
+				m_object->Teleport(CVector(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]), false);
 				m_object->m_matrix->SetRotate(m_tempRotation);
 				m_object->m_matrix->UpdateRW();
 				m_object->UpdateRwMatrix();
@@ -290,7 +290,7 @@ void ObjectPathsEditing::openPathEditor(
 	}
 
 	if (object) {
-		object->SetPosn(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]);
+		object->Teleport(CVector(m_tempPosition[0], m_tempPosition[1], m_tempPosition[2]), false);
 		object->m_matrix->SetRotate(m_tempRotation);
 		object->m_matrix->UpdateRW();
 		object->UpdateRwMatrix();

@@ -493,7 +493,7 @@ void components::Vehicle::onStart() {
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) {
 			if (this->handle) {
-				this->handle->SetPosn(position[0], position[1], position[2]);
+				this->handle->Teleport(CVector(position[0], position[1], position[2]), false);
 			}
 		},
 		[this](const CQuaternion rotation) {
@@ -553,7 +553,7 @@ void components::Vehicle::updateDirection() {
 void components::Vehicle::updatePosition() {
 	if (this->handle) {
 		auto& position = this->entity->position;
-		this->handle->SetPosn(position[0], position[1], position[2]);
+		this->handle->Teleport(CVector(position[0], position[1], position[2]), false);
 		this->handle->m_nPhysicalFlags.bSubmergedInWater = 0;
 		this->handle->m_nPhysicalFlags.bOnSolidSurface = 0;
 	}

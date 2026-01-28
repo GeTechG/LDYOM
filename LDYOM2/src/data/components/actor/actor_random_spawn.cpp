@@ -24,7 +24,7 @@ void components::ActorRandomSpawn::apply() {
 		playerPos.y -= point[1];
 		float heading;
 		plugin::Command<plugin::Commands::GET_HEADING_FROM_VECTOR_2D>(playerPos.x, playerPos.y, &heading);
-		actor->ped->SetPosn(point[0], point[1], point[2]);
+		actor->ped->Teleport(CVector(point[0], point[1], point[2]), false);
 		plugin::Command<plugin::Commands::SET_CHAR_HEADING>(actor->getPedRef(), heading);
 	}
 }

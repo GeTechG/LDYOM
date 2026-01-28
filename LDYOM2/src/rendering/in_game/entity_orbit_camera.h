@@ -24,6 +24,7 @@ class EntityOrbitCamera {
 	// Player management
 	static CPlayerPed* m_playerPed;
 	static int m_originalArea;
+	static CVector m_savedPlayerPosition; // Saved player position to restore on deactivate
 
 	// Orbit state (spherical coordinates)
 	static float m_distance;         // 1.0 - 100.0 (zoom level)

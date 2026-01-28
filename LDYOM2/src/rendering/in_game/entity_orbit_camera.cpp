@@ -20,6 +20,7 @@ Entity* EntityOrbitCamera::m_targetEntity = nullptr;
 int EntityOrbitCamera::m_entityIndex = -1;
 CPlayerPed* EntityOrbitCamera::m_playerPed = nullptr;
 int EntityOrbitCamera::m_originalArea = -1;
+CVector EntityOrbitCamera::m_savedPlayerPosition = {0.0f, 0.0f, 0.0f};
 float EntityOrbitCamera::m_distance = 10.0f;
 float EntityOrbitCamera::m_pitch = 30.0f;
 float EntityOrbitCamera::m_yaw = 0.0f;
@@ -47,11 +48,17 @@ void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
 	// Get initial target position from entity
 	m_targetPosition = CVector(entity->position[0], entity->position[1], entity->position[2]);
 
-	// Save player and hide
+	// Save player position and area
 	m_playerPed = FindPlayerPed();
 	if (m_playerPed) {
 		m_originalArea = m_playerPed->m_nAreaCode;
+		m_savedPlayerPosition = m_playerPed->GetPosition(); // Save current position
+
+		// Remove player from world (hide from rendering)
 		CWorld::Remove(m_playerPed);
+
+		// Teleport player to entity position (needed for GTA rendering LOD)
+		m_playerPed->Teleport(m_targetPosition, false);
 	}
 
 	// Initialize orbit state from saved values
@@ -90,6 +97,9 @@ void EntityOrbitCamera::deactivate(bool restorePlayer) noexcept {
 			plugin::Command<plugin::Commands::SET_AREA_VISIBLE>(m_originalArea);
 			plugin::Command<plugin::Commands::SET_CHAR_AREA_VISIBLE>(playerRef, m_originalArea);
 		}
+
+		// Restore saved position
+		m_playerPed->Teleport(m_savedPlayerPosition, false);
 	}
 
 	// Unlock controls
@@ -111,6 +121,7 @@ void EntityOrbitCamera::deactivate(bool restorePlayer) noexcept {
 	m_entityIndex = -1;
 	m_playerPed = nullptr;
 	m_originalArea = -1;
+	m_savedPlayerPosition = {0.0f, 0.0f, 0.0f};
 	m_isRotating = false;
 
 	LDYOM_INFO("EntityOrbitCamera deactivated");
@@ -140,6 +151,11 @@ void EntityOrbitCamera::updateCamera() noexcept {
 
 	// Update target position from entity (always use entity.position as source of truth)
 	m_targetPosition = CVector(m_targetEntity->position[0], m_targetEntity->position[1], m_targetEntity->position[2]);
+
+	// Move player to entity position for proper LOD rendering
+	if (m_playerPed) {
+		m_playerPed->Teleport(m_targetPosition, false);
+	}
 
 	// Calculate frame-independent delta time
 	float deltaTime = ImGui::GetIO().DeltaTime;

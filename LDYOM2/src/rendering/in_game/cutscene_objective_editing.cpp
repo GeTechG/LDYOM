@@ -237,7 +237,7 @@ void CutsceneObjectiveEditing::render() noexcept {
 			CVector(m_data.cameraPosition[0], m_data.cameraPosition[1], m_data.cameraPosition[2]);
 		TheCamera.m_vecMoveLinearPosnStart = TheCamera.m_vecMoveLinearPosnEnd;
 		TheCamera.m_vecMoveLinear = TheCamera.m_vecMoveLinearPosnEnd;
-		playerPed->SetPosn(TheCamera.m_vecMoveLinearPosnEnd);
+		playerPed->Teleport(TheCamera.m_vecMoveLinearPosnEnd, false);
 		m_data.targetPosition[0] = TheCamera.m_vecMoveLinearPosnEnd.x + forward.x;
 		m_data.targetPosition[1] = TheCamera.m_vecMoveLinearPosnEnd.y + forward.y;
 		m_data.targetPosition[2] = TheCamera.m_vecMoveLinearPosnEnd.z + forward.z;
@@ -248,7 +248,8 @@ void CutsceneObjectiveEditing::render() noexcept {
 		                                                         m_data.targetPosition[2], 2);
 	}
 	if (m_object) {
-		m_object->SetPosn(CVector(m_data.targetPosition[0], m_data.targetPosition[1], m_data.targetPosition[2]));
+		m_object->Teleport(CVector(m_data.targetPosition[0], m_data.targetPosition[1], m_data.targetPosition[2]),
+		                   false);
 		m_object->UpdateRwMatrix();
 		m_object->UpdateRwFrame();
 	}

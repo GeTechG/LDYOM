@@ -200,7 +200,7 @@ void renderEditor(Data& data) {
 	if (ImGui::DragFloat3("##position", data.position.data(), 0.1f, -10000.0f, 10000.0f)) {
 		// Update editor ped position
 		if (!IS_PLAYING && data.editorPed) {
-			data.editorPed->SetPosn(data.position[0], data.position[1], data.position[2]);
+			data.editorPed->Teleport(CVector(data.position[0], data.position[1], data.position[2]), false);
 		}
 	}
 
@@ -216,7 +216,7 @@ void renderEditor(Data& data) {
 			plugin::Command<plugin::Commands::GET_AREA_VISIBLE>(&data.interior);
 			// Update editor ped position
 			if (!IS_PLAYING && data.editorPed) {
-				data.editorPed->SetPosn(data.position[0], data.position[1], data.position[2]);
+				data.editorPed->Teleport(CVector(data.position[0], data.position[1], data.position[2]), false);
 				plugin::Command<plugin::Commands::SET_CHAR_AREA_VISIBLE>(CPools::GetPedRef(data.editorPed.get()),
 				                                                         data.interior);
 			}

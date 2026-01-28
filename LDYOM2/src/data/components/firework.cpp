@@ -118,7 +118,7 @@ void components::Firework::onStart() {
 					newMatrix.UpdateRW(&fire.m_pFxSystem->m_localMatrix);
 				}
 			} else if (this->m_editorExplosionObject) {
-				this->m_editorExplosionObject->SetPosn(position[0], position[1], position[2]);
+				this->m_editorExplosionObject->Teleport(CVector(position[0], position[1], position[2]), false);
 			}
 		},
 		[this](const CQuaternion rotation) {

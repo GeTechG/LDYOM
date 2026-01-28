@@ -115,7 +115,7 @@ void ObjectTransformEditing::render() noexcept {
 	}
 
 	if (isRotating || isMoving) {
-		m_object->SetPosn(m_position[0], m_position[1], m_position[2]);
+		m_object->Teleport(CVector(m_position[0], m_position[1], m_position[2]), false);
 		m_object->m_matrix->SetRotate(m_rotation);
 		scaleMatrix(*m_object->m_matrix, m_scale);
 		m_object->m_matrix->UpdateRW();
@@ -144,7 +144,7 @@ void ObjectTransformEditing::openTransformEditing(
 	playerPed = FindPlayerPed();
 	CWorld::Remove(playerPed);
 	if (object) {
-		object->SetPosn(m_position[0], m_position[1], m_position[2]);
+		object->Teleport(CVector(m_position[0], m_position[1], m_position[2]), false);
 		object->m_matrix->SetRotate(m_rotation);
 		scaleMatrix(*object->m_matrix, m_scale);
 		object->m_matrix->UpdateRW();

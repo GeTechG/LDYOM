@@ -150,12 +150,31 @@ void components::ObjectTriggerMove::onUpdate(float deltaTime) {
 				const auto newPosition = objectPosition + (endPosition - objectPosition) * t;
 				CQuaternion newRotation;
 				newRotation.Slerp(this->entity->rotation, this->endRotation, t);
-				object->handle->SetPosn(newPosition.x, newPosition.y, newPosition.z);
-				object->handle->m_matrix->SetRotate(newRotation);
-				scaleMatrix(*object->handle->m_matrix, this->entity->scale);
-				object->handle->m_matrix->UpdateRW();
-				object->handle->UpdateRwMatrix();
+
+				// Proper matrix update following CObject::Teleport pattern
+				object->handle->Remove();
+
+				// Update position
+				CMatrixLink* matrix = object->handle->GetMatrix();
+				if (matrix) {
+					matrix->GetPosition() = newPosition;
+				} else {
+					object->handle->m_placement.m_vPosn = newPosition;
+				}
+
+				// Update rotation and scale
+				if (matrix) {
+					matrix->SetRotate(newRotation);
+					scaleMatrix(*matrix, this->entity->scale);
+					matrix->UpdateRW();
+				}
+
+				// Update RenderWare
+				if (object->handle->m_pRwObject) {
+					object->handle->UpdateRwMatrix();
+				}
 				object->handle->UpdateRwFrame();
+				object->handle->Add();
 			}
 		}
 	} else {
