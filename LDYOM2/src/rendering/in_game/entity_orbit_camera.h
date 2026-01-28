@@ -26,10 +26,15 @@ class EntityOrbitCamera {
 	static int m_originalArea;
 
 	// Orbit state (spherical coordinates)
-	static float m_distance;    // 1.0 - 100.0 (zoom level)
-	static float m_pitch;       // -89° to 89° (up/down angle)
-	static float m_yaw;         // 0° to 360° (rotation around Z-axis)
-	static CVector m_targetPosition;  // Entity position (from entity.position)
+	static float m_distance;         // 1.0 - 100.0 (zoom level)
+	static float m_pitch;            // -89° to 89° (up/down angle)
+	static float m_yaw;              // 0° to 360° (rotation around Z-axis)
+	static CVector m_targetPosition; // Entity position (from entity.position)
+
+	// Smooth interpolation targets
+	static float m_targetDistance;
+	static float m_targetPitch;
+	static float m_targetYaw;
 
 	// Input tracking
 	static bool m_isRotating;
@@ -38,12 +43,13 @@ class EntityOrbitCamera {
 
 	// Constants
 	static constexpr float ROTATION_SENSITIVITY = 0.2f;
-	static constexpr float ZOOM_SENSITIVITY = 0.5f;
-	static constexpr float MIN_DISTANCE = 1.0f;
+	static constexpr float SMOOTHING_FACTOR = 0.15f; // 0.1 = very smooth, 0.5 = responsive, 1.0 = instant
+	static constexpr float MIN_DISTANCE = 0.1f;
 	static constexpr float MAX_DISTANCE = 100.0f;
 	static constexpr float MIN_PITCH = -89.0f;
 	static constexpr float MAX_PITCH = 89.0f;
 	static constexpr int ORBIT_CAMERA_ID = 3;
+	static constexpr float MOVEMENT_SPEED = 0.1f;
 
 	// Internal methods
 	static void render() noexcept;

@@ -2,10 +2,12 @@
 #include "entity_orbit_camera.h"
 #include <CCamera.h>
 #include <CPools.h>
+#include <CTimer.h>
 #include <CWorld.h>
 #include <cmath>
 #include <common.h>
 #include <entities_manager.h>
+#include <entity.h>
 #include <extensions/ScriptCommands.h>
 #include <imgui.h>
 #include <logger.h>
@@ -22,6 +24,9 @@ float EntityOrbitCamera::m_distance = 10.0f;
 float EntityOrbitCamera::m_pitch = -30.0f;
 float EntityOrbitCamera::m_yaw = 0.0f;
 CVector EntityOrbitCamera::m_targetPosition = {0.0f, 0.0f, 0.0f};
+float EntityOrbitCamera::m_targetDistance = 10.0f;
+float EntityOrbitCamera::m_targetPitch = -30.0f;
+float EntityOrbitCamera::m_targetYaw = 0.0f;
 bool EntityOrbitCamera::m_isRotating = false;
 float EntityOrbitCamera::m_lastMouseX = 0.0f;
 float EntityOrbitCamera::m_lastMouseY = 0.0f;
@@ -50,6 +55,9 @@ void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
 	m_distance = 10.0f;
 	m_pitch = -30.0f;
 	m_yaw = 0.0f;
+	m_targetDistance = 10.0f;
+	m_targetPitch = -30.0f;
+	m_targetYaw = 0.0f;
 	m_isRotating = false;
 
 	// Teleport to entity area if needed
@@ -125,6 +133,31 @@ void EntityOrbitCamera::updateCamera() noexcept {
 	// Update target position from entity (always use entity.position as source of truth)
 	m_targetPosition = CVector(m_targetEntity->position[0], m_targetEntity->position[1], m_targetEntity->position[2]);
 
+	// Calculate frame-independent delta time
+	float deltaTime = ImGui::GetIO().DeltaTime;
+
+	// Frame-independent exponential smoothing (consistent at any FPS)
+	// SMOOTHING_FACTOR is calibrated for 60 FPS, scale by deltaTime * 60
+	float smoothing = 1.0f - std::pow(1.0f - SMOOTHING_FACTOR, deltaTime * 60.0f);
+
+	// Smooth interpolation for camera parameters
+	m_distance += (m_targetDistance - m_distance) * smoothing;
+	m_pitch += (m_targetPitch - m_pitch) * smoothing;
+
+	// Handle yaw wrap-around (shortest path interpolation)
+	float yawDiff = m_targetYaw - m_yaw;
+	if (yawDiff > 180.0f)
+		yawDiff -= 360.0f;
+	else if (yawDiff < -180.0f)
+		yawDiff += 360.0f;
+	m_yaw += yawDiff * smoothing;
+
+	// Normalize yaw to [0, 360)
+	while (m_yaw < 0.0f)
+		m_yaw += 360.0f;
+	while (m_yaw >= 360.0f)
+		m_yaw -= 360.0f;
+
 	// Convert spherical to cartesian coordinates
 	float pitchRad = m_pitch * static_cast<float>(std::numbers::pi) / 180.0f;
 	float yawRad = m_yaw * static_cast<float>(std::numbers::pi) / 180.0f;
@@ -154,8 +187,8 @@ void EntityOrbitCamera::handleInput() noexcept {
 	if (!io.WantCaptureMouse) {
 		// Mouse wheel zoom
 		if (io.MouseWheel != 0.0f) {
-			m_distance -= io.MouseWheel * ZOOM_SENSITIVITY;
-			m_distance = std::clamp(m_distance, MIN_DISTANCE, MAX_DISTANCE);
+			m_targetDistance -= io.MouseWheel * (m_targetDistance * 0.1f);
+			m_targetDistance = std::clamp(m_targetDistance, MIN_DISTANCE, MAX_DISTANCE);
 		}
 		if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
 			if (!m_isRotating) {
@@ -168,17 +201,17 @@ void EntityOrbitCamera::handleInput() noexcept {
 				float deltaX = io.MousePos.x - m_lastMouseX;
 				float deltaY = io.MousePos.y - m_lastMouseY;
 
-				m_yaw -= deltaX * ROTATION_SENSITIVITY;
-				m_pitch += deltaY * ROTATION_SENSITIVITY;
+				m_targetYaw -= deltaX * ROTATION_SENSITIVITY;
+				m_targetPitch += deltaY * ROTATION_SENSITIVITY;
 
 				// Clamp pitch to avoid gimbal lock
-				m_pitch = std::clamp(m_pitch, MIN_PITCH, MAX_PITCH);
+				m_targetPitch = std::clamp(m_targetPitch, MIN_PITCH, MAX_PITCH);
 
 				// Normalize yaw to [0, 360)
-				while (m_yaw < 0.0f)
-					m_yaw += 360.0f;
-				while (m_yaw >= 360.0f)
-					m_yaw -= 360.0f;
+				while (m_targetYaw < 0.0f)
+					m_targetYaw += 360.0f;
+				while (m_targetYaw >= 360.0f)
+					m_targetYaw -= 360.0f;
 
 				m_lastMouseX = io.MousePos.x;
 				m_lastMouseY = io.MousePos.y;
@@ -188,6 +221,71 @@ void EntityOrbitCamera::handleInput() noexcept {
 		}
 	} else {
 		m_isRotating = false;
+	}
+
+	// WASD + QE for entity position control (only when not typing in UI)
+	if (!io.WantTextInput && m_targetEntity) {
+		bool isMoving = false;
+
+		// Calculate movement speed based on camera distance (zoom level)
+		// Closer camera = smaller steps for precision, farther = larger steps for speed
+		float dynamicSpeed = MOVEMENT_SPEED * m_distance * 0.5f;
+
+		// Calculate camera direction vectors on XY plane (ignore pitch for horizontal movement)
+		float yawRad = m_yaw * static_cast<float>(std::numbers::pi) / 180.0f;
+
+		// Forward vector (from camera to target, projected on XY plane)
+		float forwardX = -std::cos(yawRad);
+		float forwardY = -std::sin(yawRad);
+
+		// Right vector (perpendicular to forward on XY plane)
+		float rightX = -std::sin(yawRad);
+		float rightY = std::cos(yawRad);
+
+		// W - move away from camera (along forward direction)
+		if (ImGui::IsKeyDown(ImGuiKey_W)) {
+			m_targetEntity->position[0] += forwardX * dynamicSpeed;
+			m_targetEntity->position[1] += forwardY * dynamicSpeed;
+			isMoving = true;
+		}
+
+		// S - move toward camera (opposite to forward direction)
+		if (ImGui::IsKeyDown(ImGuiKey_S)) {
+			m_targetEntity->position[0] -= forwardX * dynamicSpeed;
+			m_targetEntity->position[1] -= forwardY * dynamicSpeed;
+			isMoving = true;
+		}
+
+		// A - move left relative to camera (opposite to right direction)
+		if (ImGui::IsKeyDown(ImGuiKey_A)) {
+			m_targetEntity->position[0] -= rightX * dynamicSpeed;
+			m_targetEntity->position[1] -= rightY * dynamicSpeed;
+			isMoving = true;
+		}
+
+		// D - move right relative to camera (along right direction)
+		if (ImGui::IsKeyDown(ImGuiKey_D)) {
+			m_targetEntity->position[0] += rightX * dynamicSpeed;
+			m_targetEntity->position[1] += rightY * dynamicSpeed;
+			isMoving = true;
+		}
+
+		// Q - move along Z axis (up)
+		if (ImGui::IsKeyDown(ImGuiKey_Q)) {
+			m_targetEntity->position[2] += dynamicSpeed;
+			isMoving = true;
+		}
+
+		// E - move along Z axis (down)
+		if (ImGui::IsKeyDown(ImGuiKey_E)) {
+			m_targetEntity->position[2] -= dynamicSpeed;
+			isMoving = true;
+		}
+
+		// Update entity transform callbacks if position changed
+		if (isMoving) {
+			m_targetEntity->updateSetTransformCallbacks();
+		}
 	}
 }
 

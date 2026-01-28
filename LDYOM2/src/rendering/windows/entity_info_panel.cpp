@@ -111,6 +111,28 @@ void EntityInfoPanel::renderCameraControls() noexcept {
 	ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
 	ImGui::Text(_("entity_info.rmb_rotate").c_str());
 	ImGui::PopTextWrapPos();
+
+	ImGui::Spacing();
+
+	// WASD movement
+	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+	ImGui::Text(ICON_FA_KEYBOARD);
+	ImGui::PopStyleColor();
+	ImGui::SameLine(textOffset);
+	ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+	ImGui::Text(_("entity_info.wasd_move").c_str());
+	ImGui::PopTextWrapPos();
+
+	ImGui::Spacing();
+
+	// QE vertical movement
+	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+	ImGui::Text(ICON_FA_KEYBOARD);
+	ImGui::PopStyleColor();
+	ImGui::SameLine(textOffset);
+	ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+	ImGui::Text(_("entity_info.qe_vertical").c_str());
+	ImGui::PopTextWrapPos();
 }
 
 void EntityInfoPanel::renderEntitySpecificInfo(Entity* entity) noexcept {
