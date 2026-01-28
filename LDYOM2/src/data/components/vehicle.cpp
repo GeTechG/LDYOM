@@ -5,6 +5,7 @@
 #include <CStreaming.h>
 #include <corecrt_math_defines.h>
 #include <entity.h>
+#include <in_game/entity_orbit_camera.h>
 #include <lua_define_type.h>
 #include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
@@ -12,6 +13,10 @@
 #include <scenes_manager.h>
 #include <string_utils.h>
 #include <utils/imgui_configurate.h>
+#include <utils/manual_editing.h>
+#include <window_manager.h>
+#include <windows/entities.h>
+#include <windows/entity_info_panel.h>
 
 void components::Vehicle::sol_lua_register(sol::state_view lua_state) {
 	sol_lua_register_enum_DirtyFlags(lua_state);
@@ -446,6 +451,21 @@ void components::Vehicle::editorRender() {
 	ImGui::SameLine(availableWidth * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
 	ImGui::Checkbox("##tiresVulnerability", &tiresVulnerability);
+
+	ImGui::Separator();
+
+	// Manual editing button
+	if (ImGui::Button(tr("edit_manually").c_str(), ImVec2(-1, 0))) {
+		EntityOrbitCamera::deactivate(true);
+		EntityInfoPanel::hide();
+		manual_editing::editVehicleManually(this, [this]() {
+			auto entitiesWindow = WindowManager::instance().getWindowAs<EntitiesWindow>("entities");
+			if (entitiesWindow.has_value()) {
+				EntityOrbitCamera::activate(this->entity, entitiesWindow.value()->getSelectedEntityIndex());
+			}
+			EntityInfoPanel::show(this->entity);
+		});
+	}
 }
 
 void components::Vehicle::onStart() {
@@ -479,6 +499,7 @@ void components::Vehicle::onStart() {
 		[this](const CQuaternion rotation) {
 			if (this->handle) {
 				this->handle->m_matrix->SetRotate(rotation);
+				this->updateDirection();
 			}
 		},
 		[this](const std::array<float, 3>& scale) {

@@ -233,6 +233,7 @@ void components::Actor::onStart() {
 		[this](const CQuaternion rotation) {
 			if (this->ped) {
 				this->ped->m_matrix->SetRotate(rotation);
+				this->updateDirection();
 			}
 		},
 		[this](const std::array<float, 3>& scale) {
