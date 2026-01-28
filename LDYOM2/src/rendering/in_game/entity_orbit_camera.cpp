@@ -30,6 +30,9 @@ float EntityOrbitCamera::m_targetYaw = 0.0f;
 bool EntityOrbitCamera::m_isRotating = false;
 float EntityOrbitCamera::m_lastMouseX = 0.0f;
 float EntityOrbitCamera::m_lastMouseY = 0.0f;
+float EntityOrbitCamera::m_savedDistance = 10.0f;
+float EntityOrbitCamera::m_savedPitch = -30.0f;
+float EntityOrbitCamera::m_savedYaw = 0.0f;
 
 void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
 	if (!entity) {
@@ -51,13 +54,13 @@ void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
 		CWorld::Remove(m_playerPed);
 	}
 
-	// Initialize orbit state
-	m_distance = 10.0f;
-	m_pitch = -30.0f;
-	m_yaw = 0.0f;
-	m_targetDistance = 10.0f;
-	m_targetPitch = -30.0f;
-	m_targetYaw = 0.0f;
+	// Initialize orbit state from saved values
+	m_distance = m_savedDistance;
+	m_pitch = m_savedPitch;
+	m_yaw = m_savedYaw;
+	m_targetDistance = m_savedDistance;
+	m_targetPitch = m_savedPitch;
+	m_targetYaw = m_savedYaw;
 	m_isRotating = false;
 
 	// Teleport to entity area if needed
@@ -97,6 +100,11 @@ void EntityOrbitCamera::deactivate(bool restorePlayer) noexcept {
 
 	// Remove callback
 	WindowManager::instance().removeBackgroundRenderCallback("EntityOrbitCamera");
+
+	// Save current camera state for next activation
+	m_savedDistance = m_distance;
+	m_savedPitch = m_pitch;
+	m_savedYaw = m_yaw;
 
 	// Reset state
 	m_targetEntity = nullptr;

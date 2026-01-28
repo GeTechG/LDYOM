@@ -41,6 +41,11 @@ class EntityOrbitCamera {
 	static float m_lastMouseX;
 	static float m_lastMouseY;
 
+	// Saved camera state (persistent between activations)
+	static float m_savedDistance;
+	static float m_savedPitch;
+	static float m_savedYaw;
+
 	// Constants
 	static constexpr float ROTATION_SENSITIVITY = 0.2f;
 	static constexpr float SMOOTHING_FACTOR = 0.15f; // 0.1 = very smooth, 0.5 = responsive, 1.0 = instant
