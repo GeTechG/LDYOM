@@ -1,11 +1,13 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "quick_settings.h"
 #include "hotkeys.h"
+#include <fa_icons.h>
 #include <fmt/format.h>
 #include <imHotKey.h>
 #include <localization.h>
 #include <utils/imgui_configurate.h>
 #include <utils/theme_loader.h>
+
 
 // Setup options for dropdowns
 const float displayScales[] = {1.f, 1.1f, 1.25f, 1.5f, 1.75f, 2.f};
@@ -104,7 +106,7 @@ void QuickSettings::renderContent(Window* window) {
 }
 
 QuickSettings::QuickSettings()
-	: ModalPopupWindow("quick_settings.title") {
+	: ModalPopupWindow(_("quick_settings.title", ICON_FA_GEAR)) {
 	setSize(450, 250);
 	setSizeMin(300, 210);
 	setPosition(640, 360);
