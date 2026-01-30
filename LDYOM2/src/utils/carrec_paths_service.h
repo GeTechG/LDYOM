@@ -29,7 +29,10 @@ class CarrecPathsService {
 	bool pathNameExists(const std::string& name) const;
 	void deletePath(const uuids::uuid& id);
 
+	CarrecPath* getPathByUuidString(const std::string& uuidStr);
+
 	static void startPlaybackRecordedCar(CVehicle* vehicle, std::vector<CVehicleStateEachFrame>& frames, bool useCarAI,
 	                                     bool looped);
 	static void stopPlaybackRecordedCar(CVehicle* vehicle);
+	static bool isPlaybackActive(CVehicle* vehicle);
 };

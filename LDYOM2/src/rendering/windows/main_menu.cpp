@@ -22,7 +22,7 @@ void MainMenu::renderContent(Window* window) {
 		WindowManager::instance().openWindow("objectives");
 		window->close();
 	}
-	if (ImGui::Button(_("main_menu.vehicle_paths", ICON_FA_VIDEO).c_str(), buttonSize)) {
+	if (ImGui::Button(_("main_menu.carrec_paths", ICON_FA_ARROW_PROGRESS).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("carrec_paths");
 		window->close();
 	}

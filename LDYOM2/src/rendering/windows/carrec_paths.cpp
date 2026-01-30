@@ -473,7 +473,7 @@ void CarrecPathsWindow::selectVehiclePopup(const char* namePopup, bool* open,
 }
 
 CarrecPathsWindow::CarrecPathsWindow()
-	: Window(_("carrec_paths.window_title", ICON_FA_VIDEO)) {
+	: Window(_("carrec_paths.window_title", ICON_FA_ARROW_PROGRESS)) {
 	setPosition(640, 360);
 	setPivot(0.5, 0.5);
 	setSize(800, 500);

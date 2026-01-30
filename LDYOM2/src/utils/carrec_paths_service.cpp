@@ -121,6 +121,20 @@ void CarrecPathsService::deletePath(const uuids::uuid& id) {
 	paths.erase(it);
 }
 
+CarrecPath* CarrecPathsService::getPathByUuidString(const std::string& uuidStr) {
+	auto uuidOpt = uuids::uuid::from_string(uuidStr);
+	if (!uuidOpt.has_value()) {
+		return nullptr;
+	}
+	const auto& uuid = uuidOpt.value();
+	auto it =
+		std::find_if(paths.begin(), paths.end(), [&uuid](const CarrecPath& path) { return path.getId() == uuid; });
+	if (it != paths.end()) {
+		return &(*it);
+	}
+	return nullptr;
+}
+
 void CarrecPathsService::startPlaybackRecordedCar(CVehicle* vehicle, std::vector<CVehicleStateEachFrame>& frames,
                                                   const bool useCarAI, const bool looped) {
 	const auto getInactivePlaybackIndices = [] {
@@ -165,4 +179,9 @@ void CarrecPathsService::stopPlaybackRecordedCar(CVehicle* vehicle) {
 		CVehicleRecording::PlaybackBufferSize[playbackId] = 0;
 		CVehicleRecording::bPlaybackGoingOn[playbackId] = false;
 	}
+}
+
+bool CarrecPathsService::isPlaybackActive(CVehicle* vehicle) {
+	const auto playbackId = CVehicleRecording::FindVehicleRecordingIndex(vehicle);
+	return playbackId != -1 && CVehicleRecording::bPlaybackGoingOn[playbackId];
 }
