@@ -12,6 +12,7 @@
 #include <localization.h>
 #include <logger.h>
 #include <models_manager.h>
+#include <popups/vehicle_selector.h>
 #include <rendering/in_game/carrec_path_editor.h>
 #include <scenes_manager.h>
 #include <settings.h>
@@ -45,17 +46,10 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 	// Select Vehicle popup for new recording
 	if (window->m_showSelectVehiclePopup) {
 		window->selectVehiclePopup(
-			"SelectVehicleForNewRecording", &window->m_showSelectVehiclePopup, [window, &paths](Entity* entity) {
-				auto vehicleComp = components::Vehicle::cast(entity->getComponent(components::Vehicle::TYPE));
-				if (!vehicleComp) {
-					LDYOM_ERROR("Selected entity does not have Vehicle component");
-					return;
-				}
-
+			"SelectVehicleForNewRecording", &window->m_showSelectVehiclePopup, [window, &paths](int model) {
 				// Create new path
 				auto* newPath = CarrecPathsService::instance().createNewPath();
-				newPath->setVehicleModel(vehicleComp->model);
-
+				newPath->setVehicleModel(model);
 				// Gather preview paths
 				std::vector<CarrecPath*> previewPaths;
 				std::vector<bool> aiRerecord;
@@ -205,6 +199,7 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 				// Кнопка с иконкой автомобиля
 				if (ImGui::SmallButton(fmt::format("{} {}##{}", ICON_FA_CAR, vehicleName, i).c_str())) {
 					window->m_editPathIndex = static_cast<int>(i);
+					window->m_selectedVehicleModel = path.getVehicleModel();
 					window->m_showExistingSelectVehiclePopup = true;
 				}
 				if (ImGui::IsItemHovered()) {
@@ -363,14 +358,11 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 			ImGui::OpenPopup("ExistingSelectVehicle");
 		}
 		window->selectVehiclePopup(
-			"ExistingSelectVehicle", &window->m_showExistingSelectVehiclePopup, [window, &paths](Entity* entity) {
+			"ExistingSelectVehicle", &window->m_showExistingSelectVehiclePopup, [window, &paths](int model) {
 				if (window->m_editPathIndex >= 0 && window->m_editPathIndex < static_cast<int>(paths.size())) {
-					auto vehicleComp = components::Vehicle::cast(entity->getComponent(components::Vehicle::TYPE));
-					if (vehicleComp) {
-						paths[window->m_editPathIndex].setVehicleModel(vehicleComp->model);
-						LDYOM_INFO("Changed path '{}' vehicle to model {}", paths[window->m_editPathIndex].getName(),
-					               vehicleComp->model);
-					}
+					paths[window->m_editPathIndex].setVehicleModel(model);
+					LDYOM_INFO("Changed path '{}' vehicle to model {}", paths[window->m_editPathIndex].getName(),
+				               model);
 				}
 				window->m_editPathIndex = -1;
 			});
@@ -403,60 +395,37 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 }
 
 void CarrecPathsWindow::selectVehiclePopup(const char* namePopup, bool* open,
-                                           const std::function<void(Entity*)>& callback) {
+                                           const std::function<void(int)>& callback) {
+	const float spacing = ImGui::GetStyle().ItemSpacing.x;
+	const float buttonWidth = ImGui::GetFrameHeight();
+
 	if (ImGui::BeginPopupModal(namePopup, open, ImGuiWindowFlags_AlwaysAutoResize)) {
 		ImGui::Text("%s", _("carrec_paths.select_vehicle").c_str());
 		ImGui::Spacing();
 
-		// Get all entities with Vehicle component
-		const auto vehicleEntities = EntitiesManager::instance().getEntitiesWithComponent(components::Vehicle::TYPE);
-
-		int selectedVehicleIndex = -1;
-		for (size_t i = 0; i < vehicleEntities.size(); i++) {
-			if (vehicleEntities[i]->id == m_selectedVehicleUuid) {
-				selectedVehicleIndex = static_cast<int>(i);
-				break;
-			}
-		}
-
-		// Vehicle combo
-		const char* previewValue =
-			selectedVehicleIndex == -1 && !vehicleEntities.empty()
-				? vehicleEntities[0]->name.c_str()
-				: (selectedVehicleIndex >= 0 ? vehicleEntities[selectedVehicleIndex]->name.c_str() : "");
-
-		if (selectedVehicleIndex == -1 && !vehicleEntities.empty()) {
-			m_selectedVehicleUuid = vehicleEntities[0]->id;
-			selectedVehicleIndex = 0;
-		}
-
-		bool hasVehicles = !vehicleEntities.empty();
-
-		if (!hasVehicles) {
-			ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "%s", _("carrec_paths.no_vehicles_in_scene").c_str());
-			ImGui::TextWrapped("%s", _("carrec_paths.add_vehicle_first").c_str());
-		}
-
-		if (ImGui::BeginCombo(_("components.vehicle.name").c_str(), previewValue)) {
-			for (size_t i = 0; i < vehicleEntities.size(); i++) {
-				bool isSelected = (m_selectedVehicleUuid == vehicleEntities[i]->id);
-				if (ImGui::Selectable(vehicleEntities[i]->name.c_str(), isSelected)) {
-					m_selectedVehicleUuid = vehicleEntities[i]->id;
-					selectedVehicleIndex = static_cast<int>(i);
+		auto& vehiclesModels = ModelsManager::getVehicleModels();
+		if (ImGui::BeginCombo("##regularModelCombo", std::to_string(m_selectedVehicleModel).c_str())) {
+			for (auto& item : vehiclesModels) {
+				if (ImGui::Selectable(std::to_string(item).c_str(), item == m_selectedVehicleModel)) {
+					m_selectedVehicleModel = item;
 				}
 			}
 			ImGui::EndCombo();
 		}
+		ImGui::SameLine(0.0f, spacing);
+		if (ImGui::Button(ICON_FA_CAR, ImVec2(buttonWidth, 0))) {
+			PopupVehicleSelector::showPopup();
+		}
+		std::function<void(int)> vehicleSelectorCallback = [this](int model) { this->m_selectedVehicleModel = model; };
+		PopupVehicleSelector::renderPopup(vehicleSelectorCallback);
 
 		ImGui::Spacing();
 		ImGui::Separator();
 		ImGui::Spacing();
 
-		ImGui::BeginDisabled(!hasVehicles);
+		ImGui::BeginDisabled(m_selectedVehicleModel == -1);
 		if (ImGui::Button(_("ok").c_str(), ImVec2(120 * (SCL_PX).x, 0))) {
-			if (selectedVehicleIndex != -1) {
-				callback(vehicleEntities[selectedVehicleIndex]);
-			}
+			callback(m_selectedVehicleModel);
 			ImGui::CloseCurrentPopup();
 			*open = false;
 		}
