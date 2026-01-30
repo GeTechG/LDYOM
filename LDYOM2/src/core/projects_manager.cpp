@@ -7,6 +7,7 @@
 #include <nlohmann/json.hpp>
 #include <paths.h>
 #include <string_utils.h>
+#include <utils/carrec_paths_service.h>
 
 const std::string ProjectsManager::PROJECTS_DIR_PATH = "projects";
 const std::string ProjectsManager::PROJECT_INFO_FILE_NAME = "project_info";
@@ -100,6 +101,10 @@ bool ProjectsManager::loadProject(int index) {
 		saveCurrentProject();
 	}
 	ScenesManager::instance().loadScene(sceneToLoad);
+
+	// Load CarRec paths for this project
+	CarrecPathsService::instance().loadPaths();
+
 	LDYOM_INFO("Loaded project: {}", currentProject.value()->name);
 	return true;
 }
@@ -240,4 +245,3 @@ bool ProjectsManager::renameProject(int index, std::string_view newName) {
 		return false;
 	}
 }
-

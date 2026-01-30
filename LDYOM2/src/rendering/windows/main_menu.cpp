@@ -22,6 +22,10 @@ void MainMenu::renderContent(Window* window) {
 		WindowManager::instance().openWindow("objectives");
 		window->close();
 	}
+	if (ImGui::Button(_("main_menu.vehicle_paths", ICON_FA_VIDEO).c_str(), buttonSize)) {
+		WindowManager::instance().openWindow("carrec_paths");
+		window->close();
+	}
 	if (ImGui::Button(_("main_menu.run_project", ICON_FA_PLAY).c_str(), buttonSize)) {
 		ProjectPlayer::instance().startCurrentProject();
 		WindowManager::instance().closeAllWindows();

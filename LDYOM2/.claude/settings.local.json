@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dir \"C:\\\\Users\\\\User\\\\Documents\\\\LDYOM-Beta_0.8\" /b)"
+      "Bash(dir \"C:\\\\Users\\\\User\\\\Documents\\\\LDYOM-Beta_0.8\" /b)",
+      "Bash(ls -la \"C:\\\\Users\\\\User\\\\Documents\\\\LDYOM\\\\LDYOM2\\\\src\\\\core\"\" | grep -E \"manager)",
+      "Bash(entities \")"
     ]
   }
 }

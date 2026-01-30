@@ -7,6 +7,7 @@
 #include <logger.h>
 #include <project_info.h>
 #include <scene.h>
+#include <utils/carrec_paths_service.h>
 
 const std::string ScenesManager::SCENE_FOLDER_NAME = "scenes";
 
@@ -195,6 +196,9 @@ void ScenesManager::saveCurrentScene() {
 	} else {
 		LDYOM_ERROR("Failed to open file for saving scene: {}", sceneFilePath.string());
 	}
+
+	// Save CarRec paths for this project
+	CarrecPathsService::instance().savePaths();
 }
 
 void ScenesManager::onUpdate(float deltaTime) {

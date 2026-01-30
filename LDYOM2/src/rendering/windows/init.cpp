@@ -1,6 +1,7 @@
 #include "init.h"
 #include "window_manager.h"
 #include "windows/addons_settings.h"
+#include "windows/carrec_paths.h"
 #include "windows/create_new_component.h"
 #include "windows/create_new_objective.h"
 #include "windows/create_new_project.h"
@@ -13,7 +14,6 @@
 #include "windows/scene_settings.h"
 #include "windows/scenes.h"
 #include <logger.h>
-
 
 void initWindows() {
 	WindowManager::instance().addWindow("project_manager", std::make_unique<ProjectManager>());
@@ -28,6 +28,7 @@ void initWindows() {
 	WindowManager::instance().addWindow("entities_menu", std::make_unique<EntitiesMenu>());
 	WindowManager::instance().addWindow("entities", std::make_unique<EntitiesWindow>());
 	WindowManager::instance().addWindow("scene_settings", std::make_unique<SceneSettingsPopup>());
+	WindowManager::instance().addWindow("carrec_paths", std::make_unique<CarrecPathsWindow>());
 
 	LDYOM_INFO("Windows initialized");
 }
