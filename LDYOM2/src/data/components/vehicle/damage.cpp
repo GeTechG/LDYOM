@@ -179,4 +179,11 @@ void components::VehicleDamage::onReset() {
 	this->m_vehicleSpawnedConnection.reset();
 }
 
+void components::VehicleDamage::onDestroy() {
+	const auto vehicle = Vehicle::cast(this->entity->getComponent(Vehicle::TYPE));
+	if (vehicle) {
+		vehicle->dirty |= Vehicle::DirtyFlags::Model;
+	}
+}
+
 Dependencies components::VehicleDamage::getDependencies() { return {{Vehicle::TYPE}, true}; }

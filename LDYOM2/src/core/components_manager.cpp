@@ -19,6 +19,7 @@
 #include <components/particle.h>
 #include <components/pickup.h>
 #include <components/vehicle.h>
+#include <components/vehicle/appearance.h>
 #include <components/vehicle/damage.h>
 #include <components/vehicle/vehicle_play_carrec_path.h>
 
@@ -49,6 +50,7 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::ActorSimpleTask>();
 	registerComponentBuilder<components::ActorRandomSpawn>();
 	registerComponentBuilder<components::Vehicle>();
+	registerComponentBuilder<components::VehicleAppearance>();
 	registerComponentBuilder<components::VehicleDamage>();
 	registerComponentBuilder<components::VehiclePlayCarrecPath>();
 	registerComponentBuilder<components::Pickup>();

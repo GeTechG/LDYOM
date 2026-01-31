@@ -10,7 +10,6 @@
 #include <optional>
 #include <rocket.hpp>
 
-
 namespace components {
 
 class Vehicle;
@@ -61,6 +60,7 @@ class VehicleDamage : public Component {
 	void onStart() override;
 	void onUpdate(float deltaTime) override;
 	void onReset() override;
+	void onDestroy() override;
 
 	static void sol_lua_register(sol::state_view lua_state);
 	static std::shared_ptr<Component> make() { return std::make_shared<VehicleDamage>(); }
