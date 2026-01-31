@@ -27,6 +27,7 @@ class ActorBehaviour : public Component {
 	bool holdPosition = false;
 	bool directAttack = false;
 	bool followPlayer = false;
+	bool dropWeapons = false;
 
 	ActorBehaviour();
 

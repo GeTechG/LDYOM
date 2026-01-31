@@ -28,6 +28,9 @@ void components::ActorBehaviour::applyBehaviour() {
 			plugin::Command<plugin::Commands::GET_PLAYER_GROUP>(0, &g);
 			plugin::Command<plugin::Commands::SET_GROUP_MEMBER>(g, actor->getPedRef());
 		}
+		if (dropWeapons) {
+			actor->ped->m_nPedFlags.bDoesntDropWeaponsWhenDead = static_cast<unsigned>(!this->dropWeapons);
+		}
 	}
 }
 
@@ -36,6 +39,7 @@ nlohmann::json components::ActorBehaviour::to_json() const {
 	j["holdPosition"] = holdPosition;
 	j["directAttack"] = directAttack;
 	j["followPlayer"] = followPlayer;
+	j["dropWeapons"] = dropWeapons;
 	return j;
 }
 
@@ -44,6 +48,9 @@ void components::ActorBehaviour::from_json(const nlohmann::json& j) {
 	j.at("holdPosition").get_to(holdPosition);
 	j.at("directAttack").get_to(directAttack);
 	j.at("followPlayer").get_to(followPlayer);
+	if (j.contains("dropWeapons")) {
+		j.at("dropWeapons").get_to(dropWeapons);
+	}
 }
 
 void components::ActorBehaviour::editorRender() {
@@ -63,6 +70,11 @@ void components::ActorBehaviour::editorRender() {
 	ImGui::SameLine(availableWidth * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
 	ImGui::Checkbox("##followPlayer", &followPlayer);
+
+	ImGui::Text(tr("drop_weapons").c_str());
+	ImGui::SameLine(availableWidth * 0.45f);
+	ImGui::SetNextItemWidth(-1.f);
+	ImGui::Checkbox("##dropWeapons", &dropWeapons);
 }
 
 void components::ActorBehaviour::onStart() {
