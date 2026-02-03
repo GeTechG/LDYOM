@@ -27,6 +27,9 @@ void EntitiesMenu::renderContent(Window* window) {
 	if (ImGui::Button(_("entities_menu.vehicles", ICON_FA_STEERING_WHEEL).c_str(), buttonSize)) {
 		openEntitiesWindow(EntitiesWindowType_Vehicle);
 	}
+	if (ImGui::Button(_("entities_menu.trains", ICON_FA_TRAIN_SUBWAY).c_str(), buttonSize)) {
+		openEntitiesWindow(EntitiesWindowType_Train);
+	}
 	if (ImGui::Button(_("entities_menu.objects", ICON_FA_CUBES).c_str(), buttonSize)) {
 		openEntitiesWindow(EntitiesWindowType_Object);
 	}

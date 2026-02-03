@@ -6,6 +6,7 @@
 enum EntitiesWindowType {
 	EntitiesWindowType_Actor,
 	EntitiesWindowType_Vehicle,
+	EntitiesWindowType_Train,
 	EntitiesWindowType_Object,
 	EntitiesWindowType_Pickup,
 	EntitiesWindowType_Firework,

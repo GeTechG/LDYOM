@@ -103,6 +103,7 @@ std::vector<Entity*> EntitiesManager::getEntitiesWithComponent(const std::string
 void EntitiesManager::registerCoreEntityTemplates() {
 	registerEntityTemplate("actor", {"actor", "objective_specific"});
 	registerEntityTemplate("vehicle", {"vehicle", "objective_specific"});
+	registerEntityTemplate("train", {"train", "objective_specific"});
 	registerEntityTemplate("object", {"object", "objective_specific"});
 	registerEntityTemplate("pickup", {"pickup", "objective_specific"});
 	registerEntityTemplate("firework", {"firework", "objective_specific"});

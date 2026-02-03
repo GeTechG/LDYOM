@@ -22,6 +22,7 @@
 #include <components/vehicle/appearance.h>
 #include <components/vehicle/damage.h>
 #include <components/vehicle/vehicle_play_carrec_path.h>
+#include <components/train.h>
 
 ComponentsManager& ComponentsManager::instance() {
 	static ComponentsManager instance;
@@ -53,6 +54,7 @@ void ComponentsManager::registerCoreComponents() {
 	registerComponentBuilder<components::VehicleAppearance>();
 	registerComponentBuilder<components::VehicleDamage>();
 	registerComponentBuilder<components::VehiclePlayCarrecPath>();
+	registerComponentBuilder<components::Train>();
 	registerComponentBuilder<components::Pickup>();
 	registerComponentBuilder<components::Object>();
 	registerComponentBuilder<components::ObjectMoveByPath>();

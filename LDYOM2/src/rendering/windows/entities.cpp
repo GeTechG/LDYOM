@@ -25,6 +25,7 @@ bool EntitiesWindow::filterByType(Entity& entity) {
 	switch (m_windowType) {
 		case EntitiesWindowType_Actor: return entity.hasComponent("actor");
 		case EntitiesWindowType_Vehicle: return entity.hasComponent("vehicle");
+		case EntitiesWindowType_Train: return entity.hasComponent("train");
 		case EntitiesWindowType_Object: return entity.hasComponent("object");
 		case EntitiesWindowType_Pickup: return entity.hasComponent("pickup");
 		case EntitiesWindowType_Firework: return entity.hasComponent("firework");
@@ -63,6 +64,11 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 				case EntitiesWindowType_Vehicle:
 					{
 						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("vehicle");
+						break;
+					}
+				case EntitiesWindowType_Train:
+					{
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("train");
 						break;
 					}
 				case EntitiesWindowType_Object:
