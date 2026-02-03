@@ -17,6 +17,7 @@ class EntityInfoPanel {
 
 	static void render() noexcept;
 	static void renderCameraControls() noexcept;
+	static void renderGizmoControls() noexcept;
 	static void renderEntitySpecificInfo(Entity* entity) noexcept;
 
   public:

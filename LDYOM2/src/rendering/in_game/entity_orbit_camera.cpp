@@ -14,6 +14,7 @@
 #include <scenes_manager.h>
 #include <utils/pad.h>
 #include <window_manager.h>
+#include <in_game/entity_gizmo.h>
 #include <windows/entities.h>
 #include <windows/entity_info_panel.h>
 
@@ -27,6 +28,7 @@ float EntityOrbitCamera::m_distance = 10.0f;
 float EntityOrbitCamera::m_pitch = 30.0f;
 float EntityOrbitCamera::m_yaw = 0.0f;
 CVector EntityOrbitCamera::m_targetPosition = {0.0f, 0.0f, 0.0f};
+CVector EntityOrbitCamera::m_cameraPos = {0.0f, 0.0f, 0.0f};
 float EntityOrbitCamera::m_targetDistance = 10.0f;
 float EntityOrbitCamera::m_targetPitch = 30.0f;
 float EntityOrbitCamera::m_targetYaw = 0.0f;
@@ -81,6 +83,9 @@ void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
 	// Register render callback
 	WindowManager::instance().addBackgroundRenderCallback("EntityOrbitCamera", render);
 
+	// Activate gizmo for the selected entity
+	EntityGizmo::activate(entity);
+
 	LDYOM_INFO("EntityOrbitCamera activated for entity: {}", entity->name);
 }
 
@@ -111,6 +116,9 @@ void EntityOrbitCamera::deactivate(bool restorePlayer) noexcept {
 		// Restore saved position
 		m_playerPed->SetPosn(m_savedPlayerPosition);
 	}
+
+	// Deactivate gizmo before cleanup
+	EntityGizmo::deactivate();
 
 	// Unlock controls
 	removeLockControl(ORBIT_CAMERA_ID);
@@ -211,6 +219,10 @@ void EntityOrbitCamera::updateCamera() noexcept {
 	cameraPos.x = m_targetPosition.x + m_distance * cosPitch * cosYaw;
 	cameraPos.y = m_targetPosition.y + m_distance * cosPitch * sinYaw;
 	cameraPos.z = m_targetPosition.z + m_distance * sinPitch;
+	m_cameraPos = cameraPos;
+
+	// Render gizmo overlay (uses the camera position computed above)
+	EntityGizmo::render();
 
 	// Apply to GTA camera
 	plugin::Command<plugin::Commands::SET_FIXED_CAMERA_POSITION>(cameraPos.x, cameraPos.y, cameraPos.z, 0.0f, 0.0f,

@@ -4,6 +4,7 @@
 #include <entity.h>
 #include <fa_icons.h>
 #include <imgui.h>
+#include <in_game/entity_gizmo.h>
 #include <in_game/entity_orbit_camera.h>
 #include <localization.h>
 #include <utils/imgui_configurate.h>
@@ -62,6 +63,11 @@ void EntityInfoPanel::render() noexcept {
 		// Render camera controls if orbit camera is active
 		if (EntityOrbitCamera::isActive()) {
 			renderCameraControls();
+		}
+
+		// Render gizmo controls if gizmo is active
+		if (EntityGizmo::isActive()) {
+			renderGizmoControls();
 		}
 
 		// Render entity-specific info if available
@@ -132,6 +138,67 @@ void EntityInfoPanel::renderCameraControls() noexcept {
 	ImGui::SameLine(textOffset);
 	ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
 	ImGui::Text(_("entity_info.qe_vertical").c_str());
+	ImGui::PopTextWrapPos();
+}
+
+void EntityInfoPanel::renderGizmoControls() noexcept {
+	const ImVec2 screenScale = ImGuiConfigurate::getScreenScale();
+	const float availWidth = ImGui::GetContentRegionAvail().x;
+
+	ImGui::Spacing();
+
+	// Header
+	auto headerColor = ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered);
+	headerColor.w = 1.0f;
+	ImGui::PushStyleColor(ImGuiCol_Text, headerColor);
+	ImGui::Text(ICON_FA_CROSSHAIRS " %s", _("entity_info.gizmo_controls").c_str());
+	ImGui::PopStyleColor();
+
+	ImGui::Separator();
+	ImGui::Spacing();
+
+	const float iconWidth = 30.0f * screenScale.x;
+	const float textOffset = iconWidth + 5.0f * screenScale.x;
+
+	// Current mode indicator
+	bool isLocal = (EntityGizmo::getCurrentMode() == GizmoMode::LOCAL);
+	ImVec4 modeColor = isLocal ? ImVec4(0.45f, 0.85f, 0.45f, 1.0f) : ImVec4(0.85f, 0.75f, 0.35f, 1.0f);
+	ImGui::PushStyleColor(ImGuiCol_Text, modeColor);
+	ImGui::Text("%s: %s", _("entity_info.gizmo_mode").c_str(),
+	            (isLocal ? _("entity_info.gizmo_mode_local") : _("entity_info.gizmo_mode_global")).c_str());
+	ImGui::PopStyleColor();
+
+	ImGui::Spacing();
+
+	// T / R / S operation hints — highlight the active one
+	GizmoOperation activeOp = EntityGizmo::getCurrentOperation();
+
+	auto renderOpHint = [&](ImGuiKey key, GizmoOperation op, const char* locKey) {
+		bool active = (activeOp == op);
+		if (active) {
+			ImGui::PushStyleColor(ImGuiCol_Text, modeColor);
+		}
+		ImGui::Text("[%c]", key == ImGuiKey_T ? 'T' : (key == ImGuiKey_R ? 'R' : 'S'));
+		if (active) {
+			ImGui::PopStyleColor();
+		}
+		ImGui::SameLine();
+		ImGui::Text("%s", _(locKey).c_str());
+	};
+
+	renderOpHint(ImGuiKey_T, GizmoOperation::TRANSLATE, "entity_info.gizmo_translate");
+	renderOpHint(ImGuiKey_R, GizmoOperation::ROTATE, "entity_info.gizmo_rotate");
+	renderOpHint(ImGuiKey_S, GizmoOperation::SCALE, "entity_info.gizmo_scale");
+
+	ImGui::Spacing();
+
+	// G — mode toggle hint
+	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+	ImGui::Text(ICON_FA_KEYBOARD);
+	ImGui::PopStyleColor();
+	ImGui::SameLine(textOffset);
+	ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+	ImGui::Text(_("entity_info.gizmo_mode_toggle").c_str());
 	ImGui::PopTextWrapPos();
 }
 

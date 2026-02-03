@@ -31,6 +31,7 @@ class EntityOrbitCamera {
 	static float m_pitch;            // -89° to 89° (up/down angle)
 	static float m_yaw;              // 0° to 360° (rotation around Z-axis)
 	static CVector m_targetPosition; // Entity position (from entity.position)
+	static CVector m_cameraPos;      // Current computed camera position (updated each frame)
 
 	// Smooth interpolation targets
 	static float m_targetDistance;
@@ -100,4 +101,8 @@ class EntityOrbitCamera {
 	 * @param newIndex New index of the entity in the list
 	 */
 	static void updateEntityIndex(int newIndex) noexcept { m_entityIndex = newIndex; }
+
+	static CVector getCameraPosition() noexcept { return m_cameraPos; }
+	static CVector getTargetPosition() noexcept { return m_targetPosition; }
+	static Entity* getTargetEntity() noexcept { return m_targetEntity; }
 };

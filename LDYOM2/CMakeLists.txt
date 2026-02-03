@@ -48,7 +48,10 @@ else()
 endif()
 
 file(GLOB_RECURSE SRC_FILES "src/*")
-add_library(${PROJECT_NAME} MODULE ${SRC_FILES})
+set(IMGUIZMO_FILES
+    thirdparty/ImGuizmo/ImGuizmo.cpp
+)
+add_library(${PROJECT_NAME} MODULE ${SRC_FILES} ${IMGUIZMO_FILES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     d3d9.lib
@@ -79,6 +82,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/rendering
     ${CMAKE_CURRENT_SOURCE_DIR}/src/fonts
     ${CMAKE_CURRENT_SOURCE_DIR}/src/lua
+    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImGuizmo
 )
 
 set(GTA_SA_DIR "C:/Games/GTA San Andreas")

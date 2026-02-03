@@ -4,3 +4,6 @@
 [submodule "luajit"]
 	path = LDYOM2/thirdparty/LuaJIT
 	url = https://github.com/WohlSoft/LuaJIT.git
+[submodule "ImGuizmo"]
+	path = LDYOM2/thirdparty/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo
