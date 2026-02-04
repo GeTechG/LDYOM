@@ -97,7 +97,7 @@ void EntityInfoPanel::renderCameraControls() noexcept {
 		EntityOrbitCamera::toggleFreeMode();
 	}
 	ImGui::SameLine();
-	ImGui::TextDisabled("(Tab)");
+	ImGui::TextDisabled("(F)");
 
 	ImGui::Separator();
 	ImGui::Spacing();
@@ -115,6 +115,9 @@ void EntityInfoPanel::renderCameraControls() noexcept {
 		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
 		ImGui::Text(_("entity_info.free_camera_scroll_speed").c_str());
 		ImGui::PopTextWrapPos();
+
+		ImGui::SameLine();
+		ImGui::TextDisabled("[%.1f]", EntityOrbitCamera::getFreeSpeed());
 
 		ImGui::Spacing();
 
@@ -219,12 +222,12 @@ void EntityInfoPanel::renderGizmoControls() noexcept {
 	// T / R / S operation hints — highlight the active one
 	GizmoOperation activeOp = EntityGizmo::getCurrentOperation();
 
-	auto renderOpHint = [&](ImGuiKey key, GizmoOperation op, const char* locKey) {
+	auto renderOpHint = [&](char label, GizmoOperation op, const char* locKey) {
 		bool active = (activeOp == op);
 		if (active) {
 			ImGui::PushStyleColor(ImGuiCol_Text, modeColor);
 		}
-		ImGui::Text("[%c]", key == ImGuiKey_T ? 'T' : (key == ImGuiKey_R ? 'R' : 'S'));
+		ImGui::Text("[%c]", label);
 		if (active) {
 			ImGui::PopStyleColor();
 		}
@@ -232,9 +235,9 @@ void EntityInfoPanel::renderGizmoControls() noexcept {
 		ImGui::Text("%s", _(locKey).c_str());
 	};
 
-	renderOpHint(ImGuiKey_T, GizmoOperation::TRANSLATE, "entity_info.gizmo_translate");
-	renderOpHint(ImGuiKey_R, GizmoOperation::ROTATE, "entity_info.gizmo_rotate");
-	renderOpHint(ImGuiKey_S, GizmoOperation::SCALE, "entity_info.gizmo_scale");
+	renderOpHint('1', GizmoOperation::TRANSLATE, "entity_info.gizmo_translate");
+	renderOpHint('2', GizmoOperation::ROTATE, "entity_info.gizmo_rotate");
+	renderOpHint('3', GizmoOperation::SCALE, "entity_info.gizmo_scale");
 
 	ImGui::Spacing();
 

@@ -10,13 +10,14 @@
 #include <entity.h>
 #include <extensions/ScriptCommands.h>
 #include <imgui.h>
+#include <in_game/entity_gizmo.h>
 #include <logger.h>
 #include <scenes_manager.h>
 #include <utils/pad.h>
 #include <window_manager.h>
-#include <in_game/entity_gizmo.h>
 #include <windows/entities.h>
 #include <windows/entity_info_panel.h>
+
 
 // Static member initialization
 Entity* EntityOrbitCamera::m_targetEntity = nullptr;
@@ -38,11 +39,14 @@ float EntityOrbitCamera::m_lastMouseY = 0.0f;
 float EntityOrbitCamera::m_savedDistance = 10.0f;
 float EntityOrbitCamera::m_savedPitch = 30.0f;
 float EntityOrbitCamera::m_savedYaw = 0.0f;
+CVector EntityOrbitCamera::m_prevGizmoEye = {0.0f, 0.0f, 0.0f};
+CVector EntityOrbitCamera::m_prevGizmoLookTarget = {0.0f, 0.0f, 0.0f};
+bool EntityOrbitCamera::m_hasPrevGizmoFrame = false;
 bool EntityOrbitCamera::m_freeMode = false;
 CVector EntityOrbitCamera::m_freeCameraPos = {0.0f, 0.0f, 0.0f};
 float EntityOrbitCamera::m_freeYaw = 0.0f;
 float EntityOrbitCamera::m_freePitch = 0.0f;
-float EntityOrbitCamera::m_freeSpeed = 5.0f;
+float EntityOrbitCamera::m_freeSpeed = 10.0f;
 
 void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
 	if (!entity) {
@@ -78,6 +82,7 @@ void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
 	m_targetPitch = m_savedPitch;
 	m_targetYaw = m_savedYaw;
 	m_isRotating = false;
+	m_hasPrevGizmoFrame = false;
 
 	// Teleport to entity area if needed
 	teleportToEntityArea();
@@ -175,18 +180,18 @@ void EntityOrbitCamera::toggleFreeMode() noexcept {
 			dy /= len;
 			dz /= len;
 		}
-		m_freeYaw   = std::atan2(dy, dx) * 180.0f / static_cast<float>(std::numbers::pi);
+		m_freeYaw = std::atan2(dy, dx) * 180.0f / static_cast<float>(std::numbers::pi);
 		m_freePitch = std::asin(std::clamp(dz, -1.0f, 1.0f)) * 180.0f / static_cast<float>(std::numbers::pi);
-
 		// Initialize speed from current orbit distance for smooth transition
 		m_freeSpeed = std::clamp(MOVEMENT_SPEED * m_distance, FREE_SPEED_MIN, FREE_SPEED_MAX);
 
 		m_freeMode = true;
+		m_hasPrevGizmoFrame = false;
 		LDYOM_INFO("EntityOrbitCamera: switched to free camera mode");
 	} else {
 		// Free → Orbit: derive orbit parameters from current free camera position
 		m_targetPosition =
-		    CVector(m_targetEntity->position[0], m_targetEntity->position[1], m_targetEntity->position[2]);
+			CVector(m_targetEntity->position[0], m_targetEntity->position[1], m_targetEntity->position[2]);
 
 		float dx = m_freeCameraPos.x - m_targetPosition.x;
 		float dy = m_freeCameraPos.y - m_targetPosition.y;
@@ -196,12 +201,12 @@ void EntityOrbitCamera::toggleFreeMode() noexcept {
 			dist = MIN_DISTANCE;
 		}
 
-		m_distance       = dist;
-		m_targetDistance  = dist;
-		m_yaw            = std::atan2(dy, dx) * 180.0f / static_cast<float>(std::numbers::pi);
-		m_pitch          = std::asin(std::clamp(dz / dist, -1.0f, 1.0f)) * 180.0f / static_cast<float>(std::numbers::pi);
-		m_targetYaw      = m_yaw;
-		m_targetPitch    = m_pitch;
+		m_distance = dist;
+		m_targetDistance = dist;
+		m_yaw = std::atan2(dy, dx) * 180.0f / static_cast<float>(std::numbers::pi);
+		m_pitch = std::asin(std::clamp(dz / dist, -1.0f, 1.0f)) * 180.0f / static_cast<float>(std::numbers::pi);
+		m_targetYaw = m_yaw;
+		m_targetPitch = m_pitch;
 
 		// Normalize yaw to [0, 360)
 		while (m_yaw < 0.0f)
@@ -211,6 +216,7 @@ void EntityOrbitCamera::toggleFreeMode() noexcept {
 		m_targetYaw = m_yaw;
 
 		m_freeMode = false;
+		m_hasPrevGizmoFrame = false;
 		LDYOM_INFO("EntityOrbitCamera: switched back to orbit mode");
 	}
 }
@@ -246,13 +252,18 @@ void EntityOrbitCamera::updateCamera() noexcept {
 
 		// Compute look target from free camera angles
 		float pitchRad = m_freePitch * static_cast<float>(std::numbers::pi) / 180.0f;
-		float yawRad   = m_freeYaw * static_cast<float>(std::numbers::pi) / 180.0f;
+		float yawRad = m_freeYaw * static_cast<float>(std::numbers::pi) / 180.0f;
 		CVector lookTarget;
 		lookTarget.x = m_freeCameraPos.x + std::cos(pitchRad) * std::cos(yawRad) * 10.0f;
 		lookTarget.y = m_freeCameraPos.y + std::cos(pitchRad) * std::sin(yawRad) * 10.0f;
 		lookTarget.z = m_freeCameraPos.z + std::sin(pitchRad) * 10.0f;
 
-		EntityGizmo::render(m_freeCameraPos, lookTarget);
+		// Gizmo uses previous frame's camera to match what GTA actually rendered
+		EntityGizmo::render(m_hasPrevGizmoFrame ? m_prevGizmoEye : m_freeCameraPos,
+		                    m_hasPrevGizmoFrame ? m_prevGizmoLookTarget : lookTarget);
+		m_prevGizmoEye = m_freeCameraPos;
+		m_prevGizmoLookTarget = lookTarget;
+		m_hasPrevGizmoFrame = true;
 
 		plugin::Command<plugin::Commands::SET_FIXED_CAMERA_POSITION>(m_freeCameraPos.x, m_freeCameraPos.y,
 		                                                             m_freeCameraPos.z, 0.0f, 0.0f, 0.0f);
@@ -309,8 +320,12 @@ void EntityOrbitCamera::updateCamera() noexcept {
 	cameraPos.z = m_targetPosition.z + m_distance * sinPitch;
 	m_cameraPos = cameraPos;
 
-	// Render gizmo overlay using the camera state that will be applied this frame
-	EntityGizmo::render(cameraPos, m_targetPosition);
+	// Gizmo uses previous frame's camera to match what GTA actually rendered
+	EntityGizmo::render(m_hasPrevGizmoFrame ? m_prevGizmoEye : cameraPos,
+	                    m_hasPrevGizmoFrame ? m_prevGizmoLookTarget : m_targetPosition);
+	m_prevGizmoEye = cameraPos;
+	m_prevGizmoLookTarget = m_targetPosition;
+	m_hasPrevGizmoFrame = true;
 
 	// Apply to GTA camera
 	plugin::Command<plugin::Commands::SET_FIXED_CAMERA_POSITION>(cameraPos.x, cameraPos.y, cameraPos.z, 0.0f, 0.0f,
@@ -376,7 +391,7 @@ void EntityOrbitCamera::handleInput() noexcept {
 	}
 
 	// Toggle free camera mode
-	if (!io.WantTextInput && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+	if (!io.WantTextInput && ImGui::IsKeyPressed(ImGuiKey_F)) {
 		toggleFreeMode();
 	}
 
@@ -385,10 +400,10 @@ void EntityOrbitCamera::handleInput() noexcept {
 		if (m_freeMode) {
 			// Free camera: WASD moves camera along view direction, QE moves up/down
 			float deltaTime = io.DeltaTime;
-			float speed     = m_freeSpeed * deltaTime;
+			float speed = m_freeSpeed * deltaTime;
 
 			float pitchRad = m_freePitch * static_cast<float>(std::numbers::pi) / 180.0f;
-			float yawRad   = m_freeYaw * static_cast<float>(std::numbers::pi) / 180.0f;
+			float yawRad = m_freeYaw * static_cast<float>(std::numbers::pi) / 180.0f;
 
 			// Forward vector (3D, follows pitch)
 			float forwardX = std::cos(pitchRad) * std::cos(yawRad);

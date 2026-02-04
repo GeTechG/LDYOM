@@ -48,6 +48,12 @@ class EntityOrbitCamera {
 	static float m_savedPitch;
 	static float m_savedYaw;
 
+	// Cached previous-frame camera for gizmo (EndScene hook fires AFTER GTA's 3D render,
+	// so the 3D world was rendered with last frame's camera — gizmo must match that)
+	static CVector m_prevGizmoEye;
+	static CVector m_prevGizmoLookTarget;
+	static bool m_hasPrevGizmoFrame;
+
 	// Free camera mode
 	static bool m_freeMode;
 	static CVector m_freeCameraPos; // Camera position in free mode
@@ -122,6 +128,7 @@ class EntityOrbitCamera {
 	 */
 	static void updateEntityIndex(int newIndex) noexcept { m_entityIndex = newIndex; }
 
+	static float getFreeSpeed() noexcept { return m_freeSpeed; }
 	static CVector getCameraPosition() noexcept { return m_cameraPos; }
 	static CVector getTargetPosition() noexcept { return m_targetPosition; }
 	static Entity* getTargetEntity() noexcept { return m_targetEntity; }
