@@ -38,6 +38,11 @@ float EntityOrbitCamera::m_lastMouseY = 0.0f;
 float EntityOrbitCamera::m_savedDistance = 10.0f;
 float EntityOrbitCamera::m_savedPitch = 30.0f;
 float EntityOrbitCamera::m_savedYaw = 0.0f;
+bool EntityOrbitCamera::m_freeMode = false;
+CVector EntityOrbitCamera::m_freeCameraPos = {0.0f, 0.0f, 0.0f};
+float EntityOrbitCamera::m_freeYaw = 0.0f;
+float EntityOrbitCamera::m_freePitch = 0.0f;
+float EntityOrbitCamera::m_freeSpeed = 5.0f;
 
 void EntityOrbitCamera::activate(Entity* entity, int entityIndex) noexcept {
 	if (!entity) {
@@ -141,6 +146,7 @@ void EntityOrbitCamera::deactivate(bool restorePlayer) noexcept {
 	m_originalArea = -1;
 	m_savedPlayerPosition = {0.0f, 0.0f, 0.0f};
 	m_isRotating = false;
+	m_freeMode = false;
 
 	LDYOM_INFO("EntityOrbitCamera deactivated");
 }
@@ -148,6 +154,65 @@ void EntityOrbitCamera::deactivate(bool restorePlayer) noexcept {
 void EntityOrbitCamera::deactivateWithInfo(bool restorePlayer) noexcept {
 	deactivate(restorePlayer);
 	EntityInfoPanel::hide();
+}
+
+void EntityOrbitCamera::toggleFreeMode() noexcept {
+	if (!m_targetEntity) {
+		return;
+	}
+
+	if (!m_freeMode) {
+		// Orbit → Free: capture current camera position and derive look direction
+		m_freeCameraPos = m_cameraPos;
+
+		// Look direction = normalize(target - camera)
+		float dx = m_targetPosition.x - m_cameraPos.x;
+		float dy = m_targetPosition.y - m_cameraPos.y;
+		float dz = m_targetPosition.z - m_cameraPos.z;
+		float len = std::sqrt(dx * dx + dy * dy + dz * dz);
+		if (len > 0.001f) {
+			dx /= len;
+			dy /= len;
+			dz /= len;
+		}
+		m_freeYaw   = std::atan2(dy, dx) * 180.0f / static_cast<float>(std::numbers::pi);
+		m_freePitch = std::asin(std::clamp(dz, -1.0f, 1.0f)) * 180.0f / static_cast<float>(std::numbers::pi);
+
+		// Initialize speed from current orbit distance for smooth transition
+		m_freeSpeed = std::clamp(MOVEMENT_SPEED * m_distance, FREE_SPEED_MIN, FREE_SPEED_MAX);
+
+		m_freeMode = true;
+		LDYOM_INFO("EntityOrbitCamera: switched to free camera mode");
+	} else {
+		// Free → Orbit: derive orbit parameters from current free camera position
+		m_targetPosition =
+		    CVector(m_targetEntity->position[0], m_targetEntity->position[1], m_targetEntity->position[2]);
+
+		float dx = m_freeCameraPos.x - m_targetPosition.x;
+		float dy = m_freeCameraPos.y - m_targetPosition.y;
+		float dz = m_freeCameraPos.z - m_targetPosition.z;
+		float dist = std::sqrt(dx * dx + dy * dy + dz * dz);
+		if (dist < MIN_DISTANCE) {
+			dist = MIN_DISTANCE;
+		}
+
+		m_distance       = dist;
+		m_targetDistance  = dist;
+		m_yaw            = std::atan2(dy, dx) * 180.0f / static_cast<float>(std::numbers::pi);
+		m_pitch          = std::asin(std::clamp(dz / dist, -1.0f, 1.0f)) * 180.0f / static_cast<float>(std::numbers::pi);
+		m_targetYaw      = m_yaw;
+		m_targetPitch    = m_pitch;
+
+		// Normalize yaw to [0, 360)
+		while (m_yaw < 0.0f)
+			m_yaw += 360.0f;
+		while (m_yaw >= 360.0f)
+			m_yaw -= 360.0f;
+		m_targetYaw = m_yaw;
+
+		m_freeMode = false;
+		LDYOM_INFO("EntityOrbitCamera: switched back to orbit mode");
+	}
 }
 
 void EntityOrbitCamera::render() noexcept {
@@ -169,6 +234,29 @@ void EntityOrbitCamera::render() noexcept {
 
 void EntityOrbitCamera::updateCamera() noexcept {
 	if (!m_targetEntity) {
+		return;
+	}
+
+	if (m_freeMode) {
+		// Free camera: position is updated directly via input
+		if (m_playerPed) {
+			m_playerPed->SetPosn(m_freeCameraPos);
+		}
+		m_cameraPos = m_freeCameraPos;
+
+		// Compute look target from free camera angles
+		float pitchRad = m_freePitch * static_cast<float>(std::numbers::pi) / 180.0f;
+		float yawRad   = m_freeYaw * static_cast<float>(std::numbers::pi) / 180.0f;
+		CVector lookTarget;
+		lookTarget.x = m_freeCameraPos.x + std::cos(pitchRad) * std::cos(yawRad) * 10.0f;
+		lookTarget.y = m_freeCameraPos.y + std::cos(pitchRad) * std::sin(yawRad) * 10.0f;
+		lookTarget.z = m_freeCameraPos.z + std::sin(pitchRad) * 10.0f;
+
+		EntityGizmo::render(m_freeCameraPos, lookTarget);
+
+		plugin::Command<plugin::Commands::SET_FIXED_CAMERA_POSITION>(m_freeCameraPos.x, m_freeCameraPos.y,
+		                                                             m_freeCameraPos.z, 0.0f, 0.0f, 0.0f);
+		plugin::Command<plugin::Commands::POINT_CAMERA_AT_POINT>(lookTarget.x, lookTarget.y, lookTarget.z, 2);
 		return;
 	}
 
@@ -221,8 +309,8 @@ void EntityOrbitCamera::updateCamera() noexcept {
 	cameraPos.z = m_targetPosition.z + m_distance * sinPitch;
 	m_cameraPos = cameraPos;
 
-	// Render gizmo overlay (uses the camera position computed above)
-	EntityGizmo::render();
+	// Render gizmo overlay using the camera state that will be applied this frame
+	EntityGizmo::render(cameraPos, m_targetPosition);
 
 	// Apply to GTA camera
 	plugin::Command<plugin::Commands::SET_FIXED_CAMERA_POSITION>(cameraPos.x, cameraPos.y, cameraPos.z, 0.0f, 0.0f,
@@ -236,10 +324,15 @@ void EntityOrbitCamera::handleInput() noexcept {
 
 	// RMB + drag for rotation (only when cursor is not over UI)
 	if (!io.WantCaptureMouse) {
-		// Mouse wheel zoom
+		// Mouse wheel: zoom in orbit mode, adjust speed in free mode
 		if (io.MouseWheel != 0.0f) {
-			m_targetDistance -= io.MouseWheel * (m_targetDistance * 0.1f);
-			m_targetDistance = std::clamp(m_targetDistance, MIN_DISTANCE, MAX_DISTANCE);
+			if (m_freeMode) {
+				m_freeSpeed *= (1.0f + io.MouseWheel * FREE_SPEED_SCROLL_FACTOR);
+				m_freeSpeed = std::clamp(m_freeSpeed, FREE_SPEED_MIN, FREE_SPEED_MAX);
+			} else {
+				m_targetDistance -= io.MouseWheel * (m_targetDistance * 0.1f);
+				m_targetDistance = std::clamp(m_targetDistance, MIN_DISTANCE, MAX_DISTANCE);
+			}
 		}
 		if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
 			if (!m_isRotating) {
@@ -252,17 +345,25 @@ void EntityOrbitCamera::handleInput() noexcept {
 				float deltaX = io.MousePos.x - m_lastMouseX;
 				float deltaY = io.MousePos.y - m_lastMouseY;
 
-				m_targetYaw -= deltaX * ROTATION_SENSITIVITY;
-				m_targetPitch += deltaY * ROTATION_SENSITIVITY;
-
-				// Clamp pitch to avoid gimbal lock
-				m_targetPitch = std::clamp(m_targetPitch, MIN_PITCH, MAX_PITCH);
-
-				// Normalize yaw to [0, 360)
-				while (m_targetYaw < 0.0f)
-					m_targetYaw += 360.0f;
-				while (m_targetYaw >= 360.0f)
-					m_targetYaw -= 360.0f;
+				if (m_freeMode) {
+					// Free mode: RMB rotates the look direction (FPS-style)
+					m_freeYaw -= deltaX * ROTATION_SENSITIVITY;
+					m_freePitch -= deltaY * ROTATION_SENSITIVITY;
+					m_freePitch = std::clamp(m_freePitch, MIN_PITCH, MAX_PITCH);
+					while (m_freeYaw < 0.0f)
+						m_freeYaw += 360.0f;
+					while (m_freeYaw >= 360.0f)
+						m_freeYaw -= 360.0f;
+				} else {
+					// Orbit mode: RMB orbits around target
+					m_targetYaw -= deltaX * ROTATION_SENSITIVITY;
+					m_targetPitch += deltaY * ROTATION_SENSITIVITY;
+					m_targetPitch = std::clamp(m_targetPitch, MIN_PITCH, MAX_PITCH);
+					while (m_targetYaw < 0.0f)
+						m_targetYaw += 360.0f;
+					while (m_targetYaw >= 360.0f)
+						m_targetYaw -= 360.0f;
+				}
 
 				m_lastMouseX = io.MousePos.x;
 				m_lastMouseY = io.MousePos.y;
@@ -274,68 +375,102 @@ void EntityOrbitCamera::handleInput() noexcept {
 		m_isRotating = false;
 	}
 
-	// WASD + QE for entity position control (only when not typing in UI)
+	// Toggle free camera mode
+	if (!io.WantTextInput && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+		toggleFreeMode();
+	}
+
+	// WASD + QE: camera movement in free mode, entity movement in orbit mode
 	if (!io.WantTextInput && m_targetEntity) {
-		bool isMoving = false;
+		if (m_freeMode) {
+			// Free camera: WASD moves camera along view direction, QE moves up/down
+			float deltaTime = io.DeltaTime;
+			float speed     = m_freeSpeed * deltaTime;
 
-		// Calculate movement speed based on camera distance (zoom level)
-		// Closer camera = smaller steps for precision, farther = larger steps for speed
-		float dynamicSpeed = MOVEMENT_SPEED * m_distance * ImGui::GetIO().DeltaTime;
+			float pitchRad = m_freePitch * static_cast<float>(std::numbers::pi) / 180.0f;
+			float yawRad   = m_freeYaw * static_cast<float>(std::numbers::pi) / 180.0f;
 
-		// Calculate camera direction vectors on XY plane (ignore pitch for horizontal movement)
-		float yawRad = m_yaw * static_cast<float>(std::numbers::pi) / 180.0f;
+			// Forward vector (3D, follows pitch)
+			float forwardX = std::cos(pitchRad) * std::cos(yawRad);
+			float forwardY = std::cos(pitchRad) * std::sin(yawRad);
+			float forwardZ = std::sin(pitchRad);
 
-		// Forward vector (from camera to target, projected on XY plane)
-		float forwardX = -std::cos(yawRad);
-		float forwardY = -std::sin(yawRad);
+			// Right vector (horizontal)
+			float rightX = std::sin(yawRad);
+			float rightY = -std::cos(yawRad);
 
-		// Right vector (perpendicular to forward on XY plane)
-		float rightX = -std::sin(yawRad);
-		float rightY = std::cos(yawRad);
+			if (ImGui::IsKeyDown(ImGuiKey_W)) {
+				m_freeCameraPos.x += forwardX * speed;
+				m_freeCameraPos.y += forwardY * speed;
+				m_freeCameraPos.z += forwardZ * speed;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_S)) {
+				m_freeCameraPos.x -= forwardX * speed;
+				m_freeCameraPos.y -= forwardY * speed;
+				m_freeCameraPos.z -= forwardZ * speed;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_A)) {
+				m_freeCameraPos.x -= rightX * speed;
+				m_freeCameraPos.y -= rightY * speed;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_D)) {
+				m_freeCameraPos.x += rightX * speed;
+				m_freeCameraPos.y += rightY * speed;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_Q)) {
+				m_freeCameraPos.z += speed;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_E)) {
+				m_freeCameraPos.z -= speed;
+			}
+		} else {
+			// Orbit mode: WASD moves the entity relative to camera view
+			bool isMoving = false;
 
-		// W - move away from camera (along forward direction)
-		if (ImGui::IsKeyDown(ImGuiKey_W)) {
-			m_targetEntity->position[0] += forwardX * dynamicSpeed;
-			m_targetEntity->position[1] += forwardY * dynamicSpeed;
-			isMoving = true;
-		}
+			float dynamicSpeed = MOVEMENT_SPEED * m_distance * io.DeltaTime;
 
-		// S - move toward camera (opposite to forward direction)
-		if (ImGui::IsKeyDown(ImGuiKey_S)) {
-			m_targetEntity->position[0] -= forwardX * dynamicSpeed;
-			m_targetEntity->position[1] -= forwardY * dynamicSpeed;
-			isMoving = true;
-		}
+			float yawRad = m_yaw * static_cast<float>(std::numbers::pi) / 180.0f;
 
-		// A - move left relative to camera (opposite to right direction)
-		if (ImGui::IsKeyDown(ImGuiKey_A)) {
-			m_targetEntity->position[0] -= rightX * dynamicSpeed;
-			m_targetEntity->position[1] -= rightY * dynamicSpeed;
-			isMoving = true;
-		}
+			// Forward vector (from camera to target, projected on XY plane)
+			float forwardX = -std::cos(yawRad);
+			float forwardY = -std::sin(yawRad);
 
-		// D - move right relative to camera (along right direction)
-		if (ImGui::IsKeyDown(ImGuiKey_D)) {
-			m_targetEntity->position[0] += rightX * dynamicSpeed;
-			m_targetEntity->position[1] += rightY * dynamicSpeed;
-			isMoving = true;
-		}
+			// Right vector (perpendicular to forward on XY plane)
+			float rightX = -std::sin(yawRad);
+			float rightY = std::cos(yawRad);
 
-		// Q - move along Z axis (up)
-		if (ImGui::IsKeyDown(ImGuiKey_Q)) {
-			m_targetEntity->position[2] += dynamicSpeed;
-			isMoving = true;
-		}
+			if (ImGui::IsKeyDown(ImGuiKey_W)) {
+				m_targetEntity->position[0] += forwardX * dynamicSpeed;
+				m_targetEntity->position[1] += forwardY * dynamicSpeed;
+				isMoving = true;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_S)) {
+				m_targetEntity->position[0] -= forwardX * dynamicSpeed;
+				m_targetEntity->position[1] -= forwardY * dynamicSpeed;
+				isMoving = true;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_A)) {
+				m_targetEntity->position[0] -= rightX * dynamicSpeed;
+				m_targetEntity->position[1] -= rightY * dynamicSpeed;
+				isMoving = true;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_D)) {
+				m_targetEntity->position[0] += rightX * dynamicSpeed;
+				m_targetEntity->position[1] += rightY * dynamicSpeed;
+				isMoving = true;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_Q)) {
+				m_targetEntity->position[2] += dynamicSpeed;
+				isMoving = true;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_E)) {
+				m_targetEntity->position[2] -= dynamicSpeed;
+				isMoving = true;
+			}
 
-		// E - move along Z axis (down)
-		if (ImGui::IsKeyDown(ImGuiKey_E)) {
-			m_targetEntity->position[2] -= dynamicSpeed;
-			isMoving = true;
-		}
-
-		// Update entity transform callbacks if position changed
-		if (isMoving) {
-			m_targetEntity->updateSetTransformCallbacks();
+			if (isMoving) {
+				m_targetEntity->updateSetTransformCallbacks();
+			}
 		}
 	}
 }

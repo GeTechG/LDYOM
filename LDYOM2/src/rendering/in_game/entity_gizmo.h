@@ -1,5 +1,7 @@
 #pragma once
 
+#include <CVector.h>
+
 class Entity;
 
 enum class GizmoOperation {
@@ -25,5 +27,5 @@ class EntityGizmo {
 	static bool isActive() noexcept { return m_entity != nullptr; }
 	static GizmoOperation getCurrentOperation() noexcept { return m_currentOperation; }
 	static GizmoMode getCurrentMode() noexcept { return m_currentMode; }
-	static void render() noexcept;
+	static void render(CVector eye, CVector center) noexcept;
 };

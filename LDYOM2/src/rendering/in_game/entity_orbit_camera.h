@@ -48,6 +48,13 @@ class EntityOrbitCamera {
 	static float m_savedPitch;
 	static float m_savedYaw;
 
+	// Free camera mode
+	static bool m_freeMode;
+	static CVector m_freeCameraPos; // Camera position in free mode
+	static float m_freeYaw;         // Horizontal look angle (degrees)
+	static float m_freePitch;       // Vertical look angle (degrees)
+	static float m_freeSpeed;       // Movement speed in free mode
+
 	// Constants
 	static constexpr float ROTATION_SENSITIVITY = 0.2f;
 	static constexpr float SMOOTHING_FACTOR = 0.15f; // 0.1 = very smooth, 0.5 = responsive, 1.0 = instant
@@ -57,6 +64,9 @@ class EntityOrbitCamera {
 	static constexpr float MAX_PITCH = 89.0f;
 	static constexpr int ORBIT_CAMERA_ID = 3;
 	static constexpr float MOVEMENT_SPEED = 0.2f;
+	static constexpr float FREE_SPEED_MIN = 0.1f;
+	static constexpr float FREE_SPEED_MAX = 100.0f;
+	static constexpr float FREE_SPEED_SCROLL_FACTOR = 0.1f;
 
 	// Internal methods
 	static void render() noexcept;
@@ -95,6 +105,16 @@ class EntityOrbitCamera {
 	 * @brief Check if orbit camera is currently active
 	 */
 	static bool isActive() noexcept { return m_targetEntity != nullptr; }
+
+	/**
+	 * @brief Toggle between orbit and free camera modes
+	 */
+	static void toggleFreeMode() noexcept;
+
+	/**
+	 * @brief Check if free camera mode is active
+	 */
+	static bool isFreeMode() noexcept { return m_freeMode; }
 
 	/**
 	 * @brief Update entity index without deactivating camera (for drag and drop)

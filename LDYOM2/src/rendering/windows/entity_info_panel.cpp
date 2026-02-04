@@ -91,6 +91,14 @@ void EntityInfoPanel::renderCameraControls() noexcept {
 	ImGui::Text(ICON_FA_CAMERA " %s", _("entity_info.camera_controls").c_str());
 	ImGui::PopStyleColor();
 
+	// Free camera toggle
+	bool freeMode = EntityOrbitCamera::isFreeMode();
+	if (ImGui::Checkbox(_("entity_info.free_camera").c_str(), &freeMode)) {
+		EntityOrbitCamera::toggleFreeMode();
+	}
+	ImGui::SameLine();
+	ImGui::TextDisabled("(Tab)");
+
 	ImGui::Separator();
 	ImGui::Spacing();
 
@@ -98,47 +106,85 @@ void EntityInfoPanel::renderCameraControls() noexcept {
 	const float iconWidth = 30.0f * screenScale.x;
 	const float textOffset = iconWidth + 5.0f * screenScale.x;
 
-	// Mouse wheel zoom
-	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
-	ImGui::Text(ICON_FA_COMPUTER_MOUSE);
-	ImGui::PopStyleColor();
-	ImGui::SameLine(textOffset);
-	ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
-	ImGui::Text(_("entity_info.mouse_wheel_zoom").c_str());
-	ImGui::PopTextWrapPos();
+	if (freeMode) {
+		// Free camera controls
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::Text(ICON_FA_COMPUTER_MOUSE);
+		ImGui::PopStyleColor();
+		ImGui::SameLine(textOffset);
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+		ImGui::Text(_("entity_info.free_camera_scroll_speed").c_str());
+		ImGui::PopTextWrapPos();
 
-	ImGui::Spacing();
+		ImGui::Spacing();
 
-	// RMB rotation
-	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
-	ImGui::Text(ICON_FA_ARROW_POINTER);
-	ImGui::PopStyleColor();
-	ImGui::SameLine(textOffset);
-	ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
-	ImGui::Text(_("entity_info.rmb_rotate").c_str());
-	ImGui::PopTextWrapPos();
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::Text(ICON_FA_ARROW_POINTER);
+		ImGui::PopStyleColor();
+		ImGui::SameLine(textOffset);
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+		ImGui::Text(_("entity_info.free_camera_rmb_rotate").c_str());
+		ImGui::PopTextWrapPos();
 
-	ImGui::Spacing();
+		ImGui::Spacing();
 
-	// WASD movement
-	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
-	ImGui::Text(ICON_FA_KEYBOARD);
-	ImGui::PopStyleColor();
-	ImGui::SameLine(textOffset);
-	ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
-	ImGui::Text(_("entity_info.wasd_move").c_str());
-	ImGui::PopTextWrapPos();
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::Text(ICON_FA_KEYBOARD);
+		ImGui::PopStyleColor();
+		ImGui::SameLine(textOffset);
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+		ImGui::Text(_("entity_info.free_camera_wasd_move").c_str());
+		ImGui::PopTextWrapPos();
 
-	ImGui::Spacing();
+		ImGui::Spacing();
 
-	// QE vertical movement
-	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
-	ImGui::Text(ICON_FA_KEYBOARD);
-	ImGui::PopStyleColor();
-	ImGui::SameLine(textOffset);
-	ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
-	ImGui::Text(_("entity_info.qe_vertical").c_str());
-	ImGui::PopTextWrapPos();
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::Text(ICON_FA_KEYBOARD);
+		ImGui::PopStyleColor();
+		ImGui::SameLine(textOffset);
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+		ImGui::Text(_("entity_info.free_camera_qe_vertical").c_str());
+		ImGui::PopTextWrapPos();
+	} else {
+		// Orbit camera controls
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::Text(ICON_FA_COMPUTER_MOUSE);
+		ImGui::PopStyleColor();
+		ImGui::SameLine(textOffset);
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+		ImGui::Text(_("entity_info.mouse_wheel_zoom").c_str());
+		ImGui::PopTextWrapPos();
+
+		ImGui::Spacing();
+
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::Text(ICON_FA_ARROW_POINTER);
+		ImGui::PopStyleColor();
+		ImGui::SameLine(textOffset);
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+		ImGui::Text(_("entity_info.rmb_rotate").c_str());
+		ImGui::PopTextWrapPos();
+
+		ImGui::Spacing();
+
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::Text(ICON_FA_KEYBOARD);
+		ImGui::PopStyleColor();
+		ImGui::SameLine(textOffset);
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+		ImGui::Text(_("entity_info.wasd_move").c_str());
+		ImGui::PopTextWrapPos();
+
+		ImGui::Spacing();
+
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+		ImGui::Text(ICON_FA_KEYBOARD);
+		ImGui::PopStyleColor();
+		ImGui::SameLine(textOffset);
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + availWidth - textOffset);
+		ImGui::Text(_("entity_info.qe_vertical").c_str());
+		ImGui::PopTextWrapPos();
+	}
 }
 
 void EntityInfoPanel::renderGizmoControls() noexcept {
