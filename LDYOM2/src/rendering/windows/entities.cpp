@@ -9,17 +9,18 @@
 #include <entities_manager.h>
 #include <extensions/ScriptCommands.h>
 #include <fa_icons.h>
-#include <in_game/entity_orbit_camera.h>
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <imgui_internal.h>
 #include <imgui_widgets/imgui_widgets.h>
+#include <in_game/entity_orbit_camera.h>
 #include <localization.h>
 #include <plugin.h>
 #include <rotation_utils.h>
 #include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
 #include <window_manager.h>
+
 
 bool EntitiesWindow::filterByType(Entity& entity) {
 	switch (m_windowType) {
@@ -261,7 +262,8 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0)); // Transparent background
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
 					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_HeaderActive));
-					if (ImGui::Button(ICON_FA_LOCATION_CROSSHAIRS "##copyPlayerPos", ImVec2(buttonWidth, buttonHeight))) {
+					if (ImGui::Button(ICON_FA_LOCATION_CROSSHAIRS "##copyPlayerPos",
+					                  ImVec2(buttonWidth, buttonHeight))) {
 						auto& entity = EntitiesManager::instance().getUnsafeEntity(i);
 						auto playerPos = FindPlayerPed()->GetPosition();
 						entity.position = {playerPos.x, playerPos.y, playerPos.z};
@@ -290,7 +292,7 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 					const auto q = entity.rotation;
 
 					// rotations
-					static std::array<float, 3> eularRot = quaternionToEuler(q);
+					std::array<float, 3> eularRot = quaternionToEuler(q);
 					ImGui::SetNextItemWidth(-1.f);
 					if (ImGui::DragFloat3("##rot", eularRot.data(), 0.1f, -180.0f, 180.0f)) {
 						auto& entity = EntitiesManager::instance().getUnsafeEntity(i);
