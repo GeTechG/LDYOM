@@ -417,6 +417,5 @@ FodyWeavers.xsd
 
 build/
 src/imgui/
-thirdparty/
 dyom.txt
 sa.json
