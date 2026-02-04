@@ -186,7 +186,6 @@ void EntityOrbitCamera::toggleFreeMode() noexcept {
 		m_freeSpeed = std::clamp(MOVEMENT_SPEED * m_distance, FREE_SPEED_MIN, FREE_SPEED_MAX);
 
 		m_freeMode = true;
-		m_hasPrevGizmoFrame = false;
 		LDYOM_INFO("EntityOrbitCamera: switched to free camera mode");
 	} else {
 		// Free → Orbit: derive orbit parameters from current free camera position
@@ -216,7 +215,6 @@ void EntityOrbitCamera::toggleFreeMode() noexcept {
 		m_targetYaw = m_yaw;
 
 		m_freeMode = false;
-		m_hasPrevGizmoFrame = false;
 		LDYOM_INFO("EntityOrbitCamera: switched back to orbit mode");
 	}
 }
@@ -320,9 +318,10 @@ void EntityOrbitCamera::updateCamera() noexcept {
 	cameraPos.z = m_targetPosition.z + m_distance * sinPitch;
 	m_cameraPos = cameraPos;
 
-	// Gizmo uses previous frame's camera to match what GTA actually rendered
-	EntityGizmo::render(m_hasPrevGizmoFrame ? m_prevGizmoEye : cameraPos,
-	                    m_hasPrevGizmoFrame ? m_prevGizmoLookTarget : m_targetPosition);
+	// Orbit mode: entity position is updated in handleInput() before gizmo draws,
+	// so view and model must use the same frame's values to keep gizmo centred on entity.
+	// Save current values as prev for a potential Orbit→Free switch next frame.
+	EntityGizmo::render(cameraPos, m_targetPosition);
 	m_prevGizmoEye = cameraPos;
 	m_prevGizmoLookTarget = m_targetPosition;
 	m_hasPrevGizmoFrame = true;
