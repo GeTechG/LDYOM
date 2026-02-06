@@ -8,7 +8,7 @@
 #include <entity.h>
 #include <lua_define_type.h>
 #include <matrix_utils.h>
-#include <popups/vehicle_selector.h>
+#include <popups/object_selector.h>
 #include <project_player.h>
 #include <scenes_manager.h>
 #include <string_utils.h>
@@ -36,13 +36,22 @@ void components::Object::from_json(const nlohmann::json& j) {
 
 void components::Object::editorRender() {
 	const auto availableWidth = ImGui::GetContentRegionAvail().x;
+	const float btnW = ImGui::GetFontSize() * 2.f;
 
 	ImGui::Text(_("model").c_str());
 	ImGui::SameLine(availableWidth * 0.45f);
-	ImGui::SetNextItemWidth(-1.f);
+	ImGui::SetNextItemWidth(-btnW - ImGui::GetStyle().ItemSpacing.x);
 	if (ImGui::InputInt("##model", &model, 0, 0)) {
 		this->dirty |= Model;
 	}
+	ImGui::SameLine();
+	if (ImGui::Button(ICON_FA_CUBE "##objSelect", ImVec2(btnW, 0.f))) {
+		PopupObjectSelector::showPopup();
+	}
+	PopupObjectSelector::renderPopup([this](int selectedModel) {
+		this->model = selectedModel;
+		this->dirty |= Model;
+	});
 }
 
 void components::Object::onStart() {

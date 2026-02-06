@@ -6,6 +6,7 @@
 #include "localization.h"
 #include "lua_manager.h"
 #include "models_manager.h"
+#include "object_tags_manager.h"
 #include "objectives_manager.h"
 #include "project_player.h"
 #include "settings.h"
@@ -30,6 +31,7 @@ void Application::initialize() {
 		Settings::instance().initialize();
 		Localization::instance().initialize();
 		ModelsManager::loadData();
+		ObjectTagsManager::instance().initialize();
 		Hotkeys::instance().initialize();
 		TexturesManager::instance().initialize();
 		WindowManager::instance().initialize();
