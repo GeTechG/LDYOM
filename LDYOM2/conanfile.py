@@ -33,6 +33,7 @@ class ldyomRecipe(ConanFile):
         self.requires("stduuid/1.2.3")
         self.requires("watcher/0.12.0")
         self.requires("glm/1.0.1")
+        self.requires("sqlitecpp/3.3.3")
 
     def config_options(self):
         pass
