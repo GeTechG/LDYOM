@@ -68,6 +68,26 @@ bool TexturesManager::loadTexture(const std::string_view path, const std::string
 	return true;
 }
 
+bool TexturesManager::loadTextureFromMemory(const std::vector<unsigned char>& data, const std::string_view name) {
+	if (data.empty())
+		return false;
+
+	PDIRECT3DTEXTURE9 texture;
+	const HRESULT hr = D3DXCreateTextureFromFileInMemoryEx(
+		(IDirect3DDevice9*)GetD3DDevice(), data.data(), static_cast<UINT>(data.size()), D3DX_DEFAULT_NONPOW2,
+		D3DX_DEFAULT_NONPOW2, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, nullptr,
+		nullptr, &texture);
+	if (hr != S_OK)
+		return false;
+
+	D3DSURFACE_DESC my_image_desc;
+	texture->GetLevelDesc(0, &my_image_desc);
+	auto dx9texture = std::make_unique<DirectX9Texture>();
+	dx9texture->setTexture(texture, my_image_desc.Width, my_image_desc.Height);
+	m_textures.emplace(name, std::move(dx9texture));
+	return true;
+}
+
 bool TexturesManager::addTexture(const std::string_view name, std::unique_ptr<Texture> texture) {
 	if (!texture)
 		return false;
@@ -78,6 +98,8 @@ bool TexturesManager::addTexture(const std::string_view name, std::unique_ptr<Te
 bool TexturesManager::hasTexture(const std::string_view name) {
 	return m_textures.find(std::string(name)) != m_textures.end();
 }
+
+bool TexturesManager::removeTexture(const std::string_view name) { return m_textures.erase(std::string(name)) > 0; }
 
 std::optional<Texture*> TexturesManager::getTexture(const std::string_view name) {
 	auto it = m_textures.find(std::string(name));

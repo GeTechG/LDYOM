@@ -5,6 +5,7 @@
 
 class Texture {
   public:
+	virtual ~Texture() = default;
 	virtual void* getTexture() = 0;
 	virtual int getWidth() = 0;
 	virtual int getHeight() = 0;
@@ -17,6 +18,7 @@ class DirectX9Texture : public Texture {
 	int height_;
 
   public:
+	~DirectX9Texture() override = default;
 	void setTexture(PDIRECT3DTEXTURE9 texture, int width, int height);
 	virtual void* getTexture() override;
 	virtual int getWidth() override;
@@ -30,6 +32,7 @@ class RenderwareTexture : public Texture {
 	int height_;
 
   public:
+	~RenderwareTexture() override = default;
 	void setTexture(RwTexture* texture, int width, int height);
 	virtual void* getTexture() override;
 	virtual int getWidth() override;

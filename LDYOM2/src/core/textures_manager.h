@@ -4,6 +4,7 @@
 #include <string>
 #include <texture.h>
 #include <unordered_map>
+#include <vector>
 
 class TexturesManager {
   private:
@@ -21,7 +22,9 @@ class TexturesManager {
 	void shutdown();
 
 	bool loadTexture(const std::string_view path, const std::string_view name);
+	bool loadTextureFromMemory(const std::vector<unsigned char>& data, const std::string_view name);
 	bool addTexture(const std::string_view name, std::unique_ptr<Texture> texture);
 	bool hasTexture(const std::string_view name);
+	bool removeTexture(const std::string_view name);
 	std::optional<Texture*> getTexture(const std::string_view name);
 };
