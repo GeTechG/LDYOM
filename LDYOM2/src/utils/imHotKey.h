@@ -267,7 +267,7 @@ static void Edit(HotKey* hotkey, size_t hotkeyCount, const char* popupModal, std
 	float rightPanelWidth = contentWidth * 0.85f; // 75% for the keyboard layout
 
 	// Left panel with hotkeys list
-	ImGui::BeginChildFrame(127, ImVec2(leftPanelWidth, contentHeight));
+	ImGui::BeginChild(127, ImVec2(leftPanelWidth, contentHeight));
 	for (size_t i = 0; i < hotkeyCount; i++) {
 		char hotKeyLib[128];
 		GetHotKeyLib(hotkey[i].functionKeys, hotKeyLib, sizeof(hotKeyLib),
@@ -283,7 +283,7 @@ static void Edit(HotKey* hotkey, size_t hotkeyCount, const char* popupModal, std
 			}
 		}
 	}
-	ImGui::EndChildFrame();
+	ImGui::EndChild();
 	ImGui::SameLine();
 
 	ImGui::BeginGroup();
@@ -363,12 +363,12 @@ static void Edit(HotKey* hotkey, size_t hotkeyCount, const char* popupModal, std
 	}
 
 	// Bottom section
-	ImGui::BeginChildFrame(18, ImVec2(rightPanelWidth * 0.7f, bottomHeight));
+	ImGui::BeginChild(18, ImVec2(rightPanelWidth * 0.7f, bottomHeight));
 	ImGui::Text("%s :", _(fmt::format("hotkey_editor.hk_{}", hotkey[editingHotkey].functionName)).c_str());
 	ImGui::SameLine();
 	ImGui::TextWrapped("%s",
 	                   _(fmt::format("hotkey_editor.hk_{}_desc", hotkey[editingHotkey].functionName, "")).c_str());
-	ImGui::EndChildFrame();
+	ImGui::EndChild();
 	ImGui::SameLine();
 
 	ImGui::BeginGroup();

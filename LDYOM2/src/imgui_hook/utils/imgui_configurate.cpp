@@ -57,13 +57,14 @@ void ImGuiConfigurate::update(int width, int height) {
 	float headerFontSize = fontSize * 1.2f * getGlobalScale();
 
 	static constexpr ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
-	io.FontDefault = io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data, FA_compressed_size, fontSize, nullptr,
-	                                                          icon_ranges);
-
 	ImFontConfig config;
-	config.MergeMode = true;
+	config.GlyphExcludeRanges = icon_ranges;
 	io.Fonts->AddFontFromMemoryCompressedTTF(roboto_compressed_data, roboto_compressed_size, fontSize, &config,
 	                                         GetGlyphRanges());
+
+	ImFontConfig config2;
+	config2.MergeMode = true;
+	io.Fonts->AddFontFromMemoryCompressedTTF(FA_compressed_data, FA_compressed_size, fontSize, &config2, icon_ranges);
 
 	headerFont = io.Fonts->AddFontFromMemoryCompressedTTF(roboto_compressed_data, roboto_compressed_size,
 	                                                      headerFontSize, nullptr, GetGlyphRanges());

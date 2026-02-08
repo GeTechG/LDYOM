@@ -61,7 +61,7 @@ void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			}
 
-			if (ImGui::Selectable(objectives[i].name.c_str(), isSelected, ImGuiSelectableFlags_AllowItemOverlap)) {
+			if (ImGui::Selectable(objectives[i].name.c_str(), isSelected, ImGuiSelectableFlags_AllowOverlap)) {
 				window->m_selectedObjectiveIndex = i;
 			}
 

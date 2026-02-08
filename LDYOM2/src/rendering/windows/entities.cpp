@@ -144,7 +144,7 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
 			}
 
-			if (ImGui::Selectable(entities[i]->name.c_str(), isSelected, ImGuiSelectableFlags_AllowItemOverlap)) {
+			if (ImGui::Selectable(entities[i]->name.c_str(), isSelected, ImGuiSelectableFlags_AllowOverlap)) {
 				window->setSelectedEntityIndex(i);
 			}
 
@@ -248,7 +248,7 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 		if (ImGui::BeginChild("EntityContentScroll", ImVec2(300.0f, 500.0f) * SCL_PX, ImGuiChildFlags_AutoResizeX)) {
 			if (ImGui::CollapsingHeader("Entity", ImGuiTreeNodeFlags_DefaultOpen)) {
 				if (ImGui::BeginChild("EntityContent", ImVec2(),
-				                      ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Border)) {
+				                      ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Borders)) {
 					auto availableWidth = ImGui::GetContentRegionAvail().x;
 					// Position
 					ImGui::Text("Position");
