@@ -21,7 +21,6 @@
 #include <utils/imgui_configurate.h>
 #include <window_manager.h>
 
-
 bool EntitiesWindow::filterByType(Entity& entity) {
 	switch (m_windowType) {
 		case EntitiesWindowType_Actor: return entity.hasComponent("actor");
@@ -265,9 +264,9 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 					if (ImGui::Button(ICON_FA_LOCATION_CROSSHAIRS "##copyPlayerPos",
 					                  ImVec2(buttonWidth, buttonHeight))) {
 						auto& entity = EntitiesManager::instance().getUnsafeEntity(i);
-						auto playerPos = FindPlayerPed()->GetPosition();
+						auto playerPos = EntityOrbitCamera::getSavedPlayerPosition();
 						entity.position = {playerPos.x, playerPos.y, playerPos.z};
-						plugin::Command<plugin::Commands::GET_AREA_VISIBLE>(&entity.areaId);
+						entity.areaId = EntityOrbitCamera::getOriginalArea();
 						entity.updateSetTransformCallbacks();
 					}
 					ImGui::PopStyleColor(3);

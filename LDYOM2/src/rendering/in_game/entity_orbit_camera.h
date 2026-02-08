@@ -132,4 +132,7 @@ class EntityOrbitCamera {
 	static CVector getCameraPosition() noexcept { return m_cameraPos; }
 	static CVector getTargetPosition() noexcept { return m_targetPosition; }
 	static Entity* getTargetEntity() noexcept { return m_targetEntity; }
+
+	static CVector getSavedPlayerPosition() noexcept { return m_savedPlayerPosition; }
+	static int getOriginalArea() noexcept { return m_originalArea; }
 };
