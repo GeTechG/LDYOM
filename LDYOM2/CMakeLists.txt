@@ -52,7 +52,10 @@ file(GLOB_RECURSE SRC_FILES "src/*")
 set(IMGUIZMO_FILES
     thirdparty/ImGuizmo/ImGuizmo.cpp
 )
-add_library(${PROJECT_NAME} MODULE ${SRC_FILES} ${IMGUIZMO_FILES})
+set(IMNODEFLOW_FILES
+    thirdparty/ImNodeFlow/src/ImNodeFlow.cpp
+)
+add_library(${PROJECT_NAME} MODULE ${SRC_FILES} ${IMGUIZMO_FILES} ${IMNODEFLOW_FILES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     d3d9.lib
@@ -85,6 +88,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/fonts
     ${CMAKE_CURRENT_SOURCE_DIR}/src/lua
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImGuizmo
+    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImNodeFlow/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImNodeFlow/src
 )
 
 set(GTA_SA_DIR "C:/Games/GTA San Andreas")

@@ -7,3 +7,6 @@
 [submodule "LuaJIT"]
 	path = LDYOM2/thirdparty/LuaJIT
 	url = https://github.com/GeTechG/LuaJIT
+[submodule "ImNodeFlow"]
+	path = LDYOM2/thirdparty/ImNodeFlow
+	url = https://github.com/Fattorino/ImNodeFlow.git
