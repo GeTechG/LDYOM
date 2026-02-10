@@ -1,3 +1,4 @@
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "init.h"
 #include "window_manager.h"
 #include "windows/addons_settings.h"
@@ -8,6 +9,7 @@
 #include "windows/entities.h"
 #include "windows/entities_menu.h"
 #include "windows/main_menu.h"
+#include "windows/node_editor.h"
 #include "windows/objectives.h"
 #include "windows/project_manager.h"
 #include "windows/quick_settings.h"
@@ -29,6 +31,7 @@ void initWindows() {
 	WindowManager::instance().addWindow("entities", std::make_unique<EntitiesWindow>());
 	WindowManager::instance().addWindow("scene_settings", std::make_unique<SceneSettingsPopup>());
 	WindowManager::instance().addWindow("carrec_paths", std::make_unique<CarrecPathsWindow>());
+	WindowManager::instance().addWindow("node_editor", std::make_unique<NodeEditorWindow>());
 
 	LDYOM_INFO("Windows initialized");
 }

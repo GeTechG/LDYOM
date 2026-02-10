@@ -4,6 +4,8 @@
 #include "logger.h"
 #include "paths.h"
 #include "utils/imgui_configurate.h"
+#include "rendering/window_manager.h"
+#include "rendering/windows/node_editor.h"
 
 #include <filesystem>
 #include <fstream>
@@ -207,6 +209,12 @@ bool ThemeLoader::loadThemeFromJson(std::string_view themeName) {
 
 		applyTheme(theme);
 		Settings::instance().setSetting<std::string>("theme", std::string(themeName));
+
+		// Update node editor theme if window exists
+		auto nodeEditorWindow = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor");
+		if (nodeEditorWindow.has_value() && nodeEditorWindow.value()) {
+			nodeEditorWindow.value()->refreshTheme();
+		}
 
 		return true;
 	} catch (const std::exception& e) {

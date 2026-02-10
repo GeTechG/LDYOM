@@ -37,6 +37,10 @@ void MainMenu::renderContent(Window* window) {
 	if (ImGui::Button(_("scene_settings.title", ICON_FA_SLIDERS).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("scene_settings");
 	}
+	if (ImGui::Button(_("main_menu.node_editor", ICON_FA_DIAGRAM_PROJECT).c_str(), buttonSize)) {
+		WindowManager::instance().openWindow("node_editor");
+		window->close();
+	}
 	if (ImGui::Button(_("addons_settings.title", ICON_FA_PUZZLE_PIECE).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("addons_settings");
 	}

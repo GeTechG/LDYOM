@@ -44,7 +44,7 @@ void EntityGizmo::render(CVector eye, CVector center) noexcept {
 	}
 
 	// Draw on top of everything
-	ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
+	ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
 	// Use the camera position and look target that will be applied THIS frame,
