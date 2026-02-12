@@ -38,6 +38,8 @@ find_package(watcher REQUIRED)
 find_package(glm REQUIRED)
 find_package(SQLiteCpp REQUIRED)
 
+add_subdirectory(modules/ImGuiLuaWrapper)
+
 if(NOT DEFINED ENV{DIRECTX9_SDK_DIR})
     message(FATAL_ERROR "DIRECTX9_SDK_DIR environment variable is not set. Please set it to your DirectX SDK installation path.")
 else()
@@ -74,6 +76,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     libluajit
     glm::glm
     SQLiteCpp
+    ImGuiLuaWrapper
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

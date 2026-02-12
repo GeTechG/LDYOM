@@ -10,3 +10,6 @@
 [submodule "ImNodeFlow"]
 	path = LDYOM2/thirdparty/ImNodeFlow
 	url = https://github.com/Fattorino/ImNodeFlow.git
+[submodule "LDYOM2/modules/ImGuiLuaWrapper/cimgui"]
+	path = LDYOM2/modules/ImGuiLuaWrapper/cimgui
+	url = https://github.com/cimgui/cimgui

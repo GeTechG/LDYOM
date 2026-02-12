@@ -1,5 +1,6 @@
 #include "lua_manager.h"
 #include "lua/log_bindings.h"
+#include "ImGuiLuaWrapper.h"
 #include <filesystem>
 #include <logger.h>
 
@@ -22,6 +23,7 @@ void LuaManager::initialize() {
 		});
 
 	register_log_bindings(lua);
+	imguiLuaWrapper(lua);
 
 	LDYOM_INFO("Lua environment initialized");
 }
