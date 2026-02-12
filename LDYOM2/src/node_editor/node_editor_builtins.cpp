@@ -25,41 +25,41 @@ void registerBuiltinNodes() {
 	};
 
 	// ── Number ────────────────────────────────────────────────────────────
-	{
-		sol::table desc = lua.create_table();
-		desc["type"] = "builtin.number";
-		desc["title"] = "Number";
-		desc["category"] = "Math";
-		desc["style"] = "cyan";
+	// {
+	// 	sol::table desc = lua.create_table();
+	// 	desc["type"] = "builtin.number";
+	// 	desc["title"] = "Number";
+	// 	desc["category"] = "Math";
+	// 	desc["style"] = "cyan";
 
-		sol::table pins = lua.create_table();
-		sol::table outPin = lua.create_table();
-		outPin["title"] = "Value";
-		outPin["type"] = "float";
-		outPin["dir"] = "out";
-		outPin["default"] = 0.0;
-		outPin["behaviour"] = [](std::shared_ptr<LuaNodeHandle> handle) -> sol::object {
-			if (!handle)
-				return sol::lua_nil;
-			auto valObj = handle->getData("value");
-			return valObj;
-		};
-		pins[1] = outPin;
-		desc["pins"] = pins;
-		desc["on_draw"] = [](std::shared_ptr<LuaNodeHandle> handle, sol::this_state s) {
-			if (!handle)
-				return;
-			sol::state_view lua(s);
-			sol::object valObj = handle->getData("value");
-			double val = 0.0;
-			if (valObj.is<double>()) {
-				val = valObj.as<double>();
-			}
-			ImGui::PushItemWidth(80.f * (SCL_PX).x);
-			if (ImGui::InputDouble("##Value", &val)) {
-				handle->setData("value", sol::make_object(lua, val));
-			}
-		};
-		NodeRegistry::instance().registerNode(desc);
-	}
+	// 	sol::table pins = lua.create_table();
+	// 	sol::table outPin = lua.create_table();
+	// 	outPin["title"] = "Value";
+	// 	outPin["type"] = "float";
+	// 	outPin["dir"] = "out";
+	// 	outPin["default"] = 0.0;
+	// 	outPin["behaviour"] = [](std::shared_ptr<LuaNodeHandle> handle) -> sol::object {
+	// 		if (!handle)
+	// 			return sol::lua_nil;
+	// 		auto valObj = handle->getData("value");
+	// 		return valObj;
+	// 	};
+	// 	pins[1] = outPin;
+	// 	desc["pins"] = pins;
+	// 	desc["on_draw"] = [](std::shared_ptr<LuaNodeHandle> handle, sol::this_state s) {
+	// 		if (!handle)
+	// 			return;
+	// 		sol::state_view lua(s);
+	// 		sol::object valObj = handle->getData("value");
+	// 		double val = 0.0;
+	// 		if (valObj.is<double>()) {
+	// 			val = valObj.as<double>();
+	// 		}
+	// 		ImGui::PushItemWidth(80.f * (SCL_PX).x);
+	// 		if (ImGui::InputDouble("##Value", &val)) {
+	// 			handle->setData("value", sol::make_object(lua, val));
+	// 		}
+	// 	};
+	// 	NodeRegistry::instance().registerNode(desc);
+	// }
 }

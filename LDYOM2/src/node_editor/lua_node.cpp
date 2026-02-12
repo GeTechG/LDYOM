@@ -112,6 +112,12 @@ LuaNode::LuaNode(const std::string& type)
 		auto guard = LuaManager::instance().getState();
 		m_handle->nodeData = guard.get().create_table();
 		m_handle->runtimeData = guard.get().create_table();
+
+		if (desc->defaultData.valid()) {
+			for (auto& kv : desc->defaultData) {
+				m_handle->nodeData[kv.first] = kv.second;
+			}
+		}
 	}
 	m_handle->typeKey = type;
 

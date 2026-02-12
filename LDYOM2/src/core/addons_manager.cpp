@@ -5,7 +5,6 @@
 #include <paths.h>
 #include <unordered_set>
 
-
 const std::string AddonsManager::ADDONS_DIR_PATH = "addons";
 
 AddonsManager& AddonsManager::instance() {
@@ -27,6 +26,26 @@ void AddonsManager::initialize() {
 	}
 
 	this->activeAddons = Settings::instance().getSetting<std::unordered_set<std::string>>("active_addons", {});
+
+	auto lua = LuaManager::instance().getState();
+	auto addonsTable = lua.get()["__addons"];
+	if (addonsTable.valid()) {
+		sol::table table = addonsTable.get<sol::table>();
+		for (const auto& addonId : this->activeAddons) {
+			if (!table[addonId].valid()) {
+				LDYOM_WARN("Active addon '{}' not found, skipping on_load", addonId);
+				continue;
+			}
+			sol::table addonTable = table[addonId].get<sol::table>();
+			if (addonTable["on_load"].valid()) {
+				auto result = addonTable["on_load"]();
+				if (!result.valid()) {
+					sol::error err = result;
+					LDYOM_ERROR("Failed to load addon {}: {}", addonId, err.what());
+				}
+			}
+		}
+	}
 }
 
 void AddonsManager::shutdown() {

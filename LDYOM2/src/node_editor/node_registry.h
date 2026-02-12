@@ -20,6 +20,7 @@ struct NodeDescriptor {
     std::string category;
     std::string styleKey;   // "cyan", "green", "red", "brown"
     std::vector<NodePinDescriptor> pins;
+    sol::table defaultData; // optional: initial key/value pairs for nodeData
     sol::protected_function on_init;
     sol::protected_function on_draw;
     sol::protected_function on_execute;

@@ -55,6 +55,10 @@ bool NodeRegistry::registerNode(const sol::table& descriptor) {
         }
     }
 
+    // Parse default node data
+    auto defaultDataOpt = descriptor.get<sol::optional<sol::table>>("default_data");
+    if (defaultDataOpt) desc.defaultData = *defaultDataOpt;
+
     // Parse callbacks
     auto onInit = descriptor.get<sol::optional<sol::protected_function>>("on_init");
     if (onInit) desc.on_init = *onInit;
