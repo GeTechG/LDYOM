@@ -87,6 +87,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/rendering
     ${CMAKE_CURRENT_SOURCE_DIR}/src/fonts
     ${CMAKE_CURRENT_SOURCE_DIR}/src/lua
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/node_editor
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImGuizmo
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImNodeFlow/include
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImNodeFlow/src
