@@ -3,6 +3,7 @@
 #include <optional>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 struct AddonsMetadata {
 	std::string id;
@@ -14,7 +15,7 @@ struct AddonsMetadata {
 
 class AddonsManager {
   private:
-	static const std::string ADDONS_DIR_PATH;
+	static constexpr const char* ADDONS_DIR = "addons";
 
 	std::unordered_set<std::string> activeAddons;
 
@@ -25,7 +26,7 @@ class AddonsManager {
 	static AddonsManager& instance();
 
 	AddonsManager(const AddonsManager&) = delete;
-	void operator=(const AddonsManager&) = delete;
+	AddonsManager& operator=(const AddonsManager&) = delete;
 
 	void initialize();
 	void shutdown();
@@ -35,5 +36,5 @@ class AddonsManager {
 	bool isAddonActive(const std::string& addonId) const;
 
 	std::vector<AddonsMetadata> getAddons() const;
-	std::unordered_set<std::string>& getActiveAddons() { return activeAddons; }
+	const std::unordered_set<std::string>& getActiveAddons() const { return activeAddons; }
 };

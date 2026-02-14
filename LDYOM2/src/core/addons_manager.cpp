@@ -3,9 +3,6 @@
 #include "settings.h"
 #include <logger.h>
 #include <paths.h>
-#include <unordered_set>
-
-const std::string AddonsManager::ADDONS_DIR_PATH = "addons";
 
 AddonsManager& AddonsManager::instance() {
 	static AddonsManager instance;
@@ -13,7 +10,20 @@ AddonsManager& AddonsManager::instance() {
 }
 
 void AddonsManager::initialize() {
-	const std::filesystem::path addonsDir(LDYOM_PATH(ADDONS_DIR_PATH));
+	// Register once — available to all addon init scripts
+	LuaManager::instance().registerFunction("register_addon", [](sol::table metadata, sol::this_state s) {
+		sol::state_view lua(s);
+		sol::table addons = lua["__addons"].get_or_create<sol::table>();
+		std::string id = metadata["id"].get<std::string>();
+		if (addons[id].valid()) {
+			LDYOM_ERROR("Addon '{}' is already registered", id);
+			return;
+		}
+		addons[id] = metadata;
+		LDYOM_INFO("Addon registered: {} ({})", metadata["name"].get<std::string>(), id);
+	});
+
+	const std::filesystem::path addonsDir(LDYOM_PATH(ADDONS_DIR));
 	if (!std::filesystem::exists(addonsDir)) {
 		std::filesystem::create_directories(addonsDir);
 		LDYOM_INFO("Created addons directory: {}", addonsDir.string());
@@ -25,23 +35,27 @@ void AddonsManager::initialize() {
 		}
 	}
 
-	this->activeAddons = Settings::instance().getSetting<std::unordered_set<std::string>>("active_addons", {});
+	activeAddons = Settings::instance().getSetting<std::unordered_set<std::string>>("active_addons", {});
 
-	auto lua = LuaManager::instance().getState();
-	auto addonsTable = lua.get()["__addons"];
-	if (addonsTable.valid()) {
-		sol::table table = addonsTable.get<sol::table>();
-		for (const auto& addonId : this->activeAddons) {
-			if (!table[addonId].valid()) {
+	{
+		auto lua = LuaManager::instance().getState();
+		sol::object addonsObj = lua.get()["__addons"];
+		if (!addonsObj.valid()) return;
+
+		sol::table addons = addonsObj.as<sol::table>();
+		for (const auto& addonId : activeAddons) {
+			sol::object addonObj = addons[addonId];
+			if (!addonObj.valid()) {
 				LDYOM_WARN("Active addon '{}' not found, skipping on_load", addonId);
 				continue;
 			}
-			sol::table addonTable = table[addonId].get<sol::table>();
-			if (addonTable["on_load"].valid()) {
-				auto result = addonTable["on_load"]();
+			sol::table addonTable = addonObj.as<sol::table>();
+			auto hookFn = addonTable["on_load"];
+			if (hookFn.valid()) {
+				auto result = hookFn();
 				if (!result.valid()) {
 					sol::error err = result;
-					LDYOM_ERROR("Failed to load addon {}: {}", addonId, err.what());
+					LDYOM_ERROR("Addon '{}' on_load failed: {}", addonId, err.what());
 				}
 			}
 		}
@@ -49,156 +63,135 @@ void AddonsManager::initialize() {
 }
 
 void AddonsManager::shutdown() {
-	try {
-		auto lua = LuaManager::instance().getState();
+	auto lua = LuaManager::instance().getState();
+	auto& state = lua.get();
 
-		// Check if __addons exists in the Lua state
-		if (!lua.get()["__addons"].valid()) {
-			LDYOM_WARN("No addons table found during shutdown");
-			return;
+	sol::object addonsObj = state["__addons"];
+	if (!addonsObj.valid()) return;
+
+	sol::table addons = addonsObj.as<sol::table>();
+	for (const auto& addonId : activeAddons) {
+		sol::object addonObj = addons[addonId];
+		if (!addonObj.is<sol::table>()) continue;
+
+		sol::table addonTable = addonObj.as<sol::table>();
+		auto hookFn = addonTable["on_unload"];
+		if (!hookFn.valid()) continue;
+
+		auto result = hookFn();
+		if (!result.valid()) {
+			sol::error err = result;
+			LDYOM_ERROR("Addon '{}' on_unload failed: {}", addonId, err.what());
+		} else {
+			LDYOM_INFO("Addon '{}' unloaded", addonId);
 		}
-
-		auto addonsTable = lua.get()["__addons"].get<sol::table>();
-		if (addonsTable.empty()) {
-			LDYOM_INFO("No addons to deinitialize");
-			return;
-		}
-
-		for (auto [id, addon] : addonsTable) {
-			if (!addon.is<sol::table>()) {
-				LDYOM_WARN("Invalid addon entry (not a table)");
-				continue;
-			}
-
-			sol::table addonTable = addon.as<sol::table>();
-			std::string addonId;
-
-			try {
-				addonId = id.as<std::string>();
-			} catch (const std::exception&) {
-				LDYOM_WARN("Addon with invalid ID encountered");
-				continue;
-			}
-
-			if (addonTable["deinit"].valid()) {
-				try {
-					addonTable["deinit"]();
-					LDYOM_INFO("Addon {} deinitialized successfully", addonId);
-				} catch (const std::exception& e) {
-					LDYOM_ERROR("Failed to deinitialize addon {}: {}", addonId, e.what());
-				}
-			} else {
-				LDYOM_WARN("Addon {} does not have a deinit function", addonId);
-			}
-		}
-	} catch (const std::exception& e) {
-		LDYOM_ERROR("Error during addons shutdown: {}", e.what());
 	}
 }
 
 bool AddonsManager::loadAddonMetadata(const std::filesystem::path& addonPath) {
-	auto initScript = addonPath / "init.lua";
+	const auto initScript = addonPath / "init.lua";
 	if (!std::filesystem::exists(initScript)) {
 		return false;
 	}
 
 	try {
 		auto lua = LuaManager::instance().getState();
-
 		sol::environment env(lua.get(), sol::create, lua.get().globals());
-
-		// Предоставляем функцию регистрации аддона
-		lua.get()["register_addon"] = [](const sol::table metadata, sol::this_state s) {
-			sol::state_view lua(s);
-			auto addons = lua["__addons"].get_or_create<sol::table>();
-			std::string id = metadata["id"].get<std::string>();
-			if (addons[id].valid()) {
-				LDYOM_ERROR("Addon with ID '{}' is already registered", id);
-				return;
-			}
-			addons[id] = metadata;
-			LDYOM_INFO("Addon registered: {} ({})", metadata["name"].get<std::string>(), id);
-		};
-
 		return LuaManager::instance().executeFileRaw(initScript.string(), env);
 	} catch (const std::exception& e) {
-		LDYOM_ERROR("Failed to load addon metadata from {}: {}", initScript.string(), e.what());
+		LDYOM_ERROR("Failed to load addon from {}: {}", initScript.string(), e.what());
 		return false;
 	}
 }
 
 bool AddonsManager::enableAddon(const std::string& addonId) {
-	auto lua = LuaManager::instance().getState();
-	auto addonsTable = lua.get()["__addons"].get<sol::table>();
+	{
+		auto lua = LuaManager::instance().getState();
+		auto& state = lua.get();
 
-	try {
-		if (!addonsTable[addonId].valid()) {
-			LDYOM_ERROR("Addon {} not found in Lua environment", addonId);
+		sol::object addonsObj = state["__addons"];
+		if (!addonsObj.valid()) {
+			LDYOM_ERROR("No addons table in Lua state");
 			return false;
 		}
 
-		// Вызываем функцию инициализации аддона если она есть
-		if (addonsTable[addonId]["on_load"].valid()) {
-			addonsTable[addonId]["on_load"]();
-		} else {
-			LDYOM_WARN("Addon {} does not have an 'on_load' function", addonId);
+		sol::table addons = addonsObj.as<sol::table>();
+		if (!addons[addonId].valid()) {
+			LDYOM_ERROR("Addon '{}' not found", addonId);
+			return false;
 		}
 
-		this->activeAddons.insert(addonId);
-		Settings::instance().setSetting("active_addons", this->activeAddons);
+		sol::table addonTable = addons[addonId];
+		auto hookFn = addonTable["on_load"];
+		if (hookFn.valid()) {
+			auto result = hookFn();
+			if (!result.valid()) {
+				sol::error err = result;
+				LDYOM_ERROR("Addon '{}' on_load failed: {}", addonId, err.what());
+				return false;
+			}
+		}
+	} // release Lua lock before writing settings
 
-		return true;
-	} catch (const std::exception& e) {
-		LDYOM_ERROR("Failed to enable addon {}: {}", addonId, e.what());
-		return false;
-	}
+	activeAddons.insert(addonId);
+	Settings::instance().setSetting("active_addons", activeAddons);
+	return true;
 }
 
 bool AddonsManager::disableAddon(const std::string& addonId) {
-	try {
+	{
 		auto lua = LuaManager::instance().getState();
-		auto addonsTable = lua.get()["__addons"].get<sol::table>();
-		if (!addonsTable[addonId].valid()) {
-			LDYOM_ERROR("Addon {} not found in Lua environment", addonId);
+		auto& state = lua.get();
+
+		sol::object addonsObj = state["__addons"];
+		if (!addonsObj.valid()) {
+			LDYOM_ERROR("No addons table in Lua state");
 			return false;
 		}
 
-		// Вызываем функцию деинициализации аддона если она есть
-		if (addonsTable[addonId]["on_unload"].valid()) {
-			addonsTable[addonId]["on_unload"]();
-		} else {
-			LDYOM_WARN("Addon {} does not have a 'on_unload' function", addonId);
+		sol::table addons = addonsObj.as<sol::table>();
+		if (!addons[addonId].valid()) {
+			LDYOM_ERROR("Addon '{}' not found", addonId);
+			return false;
 		}
 
-		this->activeAddons.erase(addonId);
-		Settings::instance().setSetting("active_addons", this->activeAddons);
+		sol::table addonTable = addons[addonId];
+		auto hookFn = addonTable["on_unload"];
+		if (hookFn.valid()) {
+			auto result = hookFn();
+			if (!result.valid()) {
+				sol::error err = result;
+				LDYOM_ERROR("Addon '{}' on_unload failed: {}", addonId, err.what());
+				return false;
+			}
+		}
+	} // release Lua lock before writing settings
 
-		return true;
-	} catch (const std::exception& e) {
-		LDYOM_ERROR("Failed to disable addon {}: {}", addonId, e.what());
-		return false;
-	}
+	activeAddons.erase(addonId);
+	Settings::instance().setSetting("active_addons", activeAddons);
+	return true;
 }
 
 bool AddonsManager::isAddonActive(const std::string& addonId) const {
-	return activeAddons.find(addonId) != activeAddons.end();
+	return activeAddons.contains(addonId);
 }
 
 std::vector<AddonsMetadata> AddonsManager::getAddons() const {
 	std::vector<AddonsMetadata> addonsList;
 	auto lua = LuaManager::instance().getState();
-	auto addonsTable = lua.get()["__addons"].get<sol::table>();
+	auto& state = lua.get();
 
-	for (const auto& [id, addon] : addonsTable) {
-		if (!addon.is<sol::table>()) {
-			LDYOM_WARN("Invalid addon entry (not a table) for ID: {}", id.as<std::string>());
-			continue;
-		}
+	sol::object addonsObj = state["__addons"];
+	if (!addonsObj.valid()) return addonsList;
 
-		sol::table addonTable = addon.as<sol::table>();
-		AddonsMetadata metadata;
+	sol::table addons = addonsObj.as<sol::table>();
+	for (const auto& [key, val] : addons) {
+		if (!val.is<sol::table>()) continue;
+
+		sol::table addonTable = val.as<sol::table>();
 		try {
-			metadata.id = id.as<std::string>();
+			AddonsMetadata metadata;
+			metadata.id = key.as<std::string>();
 			metadata.name = addonTable["name"].get<std::string>();
 			metadata.description = addonTable["description"].get<std::string>();
 			metadata.version = addonTable["version"].get<std::string>();
@@ -207,7 +200,7 @@ std::vector<AddonsMetadata> AddonsManager::getAddons() const {
 			}
 			addonsList.emplace_back(std::move(metadata));
 		} catch (const std::exception& e) {
-			LDYOM_ERROR("Error reading metadata for addon {}: {}", id.as<std::string>(), e.what());
+			LDYOM_ERROR("Error reading metadata for addon '{}': {}", key.as<std::string>(), e.what());
 		}
 	}
 
