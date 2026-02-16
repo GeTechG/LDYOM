@@ -2,6 +2,7 @@
 #include "pin_semantic_registry.h"
 #include <functional>
 #include <imgui.h>
+#include <localization.h>
 #include <logger.h>
 #include <lua_manager.h>
 
@@ -24,13 +25,7 @@ std::shared_ptr<ImFlow::PinStyle> pinStyleForType(const std::string& type) {
 }
 
 std::shared_ptr<ImFlow::NodeStyle> nodeStyleForKey(const std::string& key) {
-	if (key == "green")
-		return ImFlow::NodeStyle::green();
-	if (key == "red")
-		return ImFlow::NodeStyle::red();
-	if (key == "brown")
-		return ImFlow::NodeStyle::brown();
-	return ImFlow::NodeStyle::cyan(); // default / "cyan"
+	return NodeStyleRegistry::instance().getStyle(key);
 }
 
 // A nil sol::object (default-constructed)
@@ -83,12 +78,10 @@ void LuaNodeHandle::setRuntimeData(const std::string& key, sol::object value) {
 }
 
 void LuaNodeHandle::sol_lua_register(sol::state_view lua) {
-	lua.new_usertype<LuaNodeHandle>("LuaNodeHandle", sol::no_constructor,
-	                                "getInput", &LuaNodeHandle::getInput,
-	                                "getData", &LuaNodeHandle::getData,
-	                                "setData", &LuaNodeHandle::setData,
-	                                "getRuntimeData", &LuaNodeHandle::getRuntimeData,
-	                                "setRuntimeData", &LuaNodeHandle::setRuntimeData);
+	lua.new_usertype<LuaNodeHandle>("LuaNodeHandle", sol::no_constructor, "getInput", &LuaNodeHandle::getInput,
+	                                "getData", &LuaNodeHandle::getData, "setData", &LuaNodeHandle::setData,
+	                                "getRuntimeData", &LuaNodeHandle::getRuntimeData, "setRuntimeData",
+	                                &LuaNodeHandle::setRuntimeData);
 }
 
 // ─── LuaNode ─────────────────────────────────────────────────────────────────
@@ -102,7 +95,9 @@ LuaNode::LuaNode(const std::string& type)
 		return;
 	}
 
-	setTitle(desc->title);
+	const std::string& icon = NodeStyleRegistry::instance().getIcon(desc->styleKey);
+	auto label = icon.empty() ? _(desc->type) : icon + " " + _(desc->type);
+	setTitle(label);
 	setStyle(nodeStyleForKey(desc->styleKey));
 
 	// Create handle
@@ -150,8 +145,7 @@ LuaNode::~LuaNode() {
 
 // Returns a C++ renderer lambda that calls the Lua on_render function with the handle.
 // Used by setupPins for both IN and OUT pins.
-auto LuaNode::makePinRenderer(sol::protected_function luaRenderer)
-	-> std::function<void(ImFlow::Pin*)> {
+auto LuaNode::makePinRenderer(sol::protected_function luaRenderer) -> std::function<void(ImFlow::Pin*)> {
 	return [this, luaRenderer = std::move(luaRenderer)](ImFlow::Pin*) {
 		if (!m_handle)
 			return;
@@ -170,7 +164,8 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 			if (pin.type == "flow") {
 				auto p = addIN<FlowToken>(pin.title, FlowToken{}, ImFlow::ConnectionFilter::SameType(),
 				                          ImFlow::PinStyle::white());
-				if (pin.on_render.valid()) p->renderer(makePinRenderer(pin.on_render));
+				if (pin.on_render.valid())
+					p->renderer(makePinRenderer(pin.on_render));
 				PinSemanticRegistry::instance().registerPin(p->getUid(), "flow");
 			} else {
 				sol::object defVal = pin.defaultValue;
@@ -180,14 +175,16 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 						return PinSemanticRegistry::sameType(out, in);
 					},
 					pinStyleForType(pin.type));
-				if (pin.on_render.valid()) p->renderer(makePinRenderer(pin.on_render));
+				if (pin.on_render.valid())
+					p->renderer(makePinRenderer(pin.on_render));
 				PinSemanticRegistry::instance().registerPin(p->getUid(), pin.type);
 			}
 		} else { // "out"
 			if (pin.type == "flow") {
 				auto p = addOUT<FlowToken>(pin.title, ImFlow::PinStyle::white());
 				p->behaviour([] { return FlowToken{}; });
-				if (pin.on_render.valid()) p->renderer(makePinRenderer(pin.on_render));
+				if (pin.on_render.valid())
+					p->renderer(makePinRenderer(pin.on_render));
 				PinSemanticRegistry::instance().registerPin(p->getUid(), "flow");
 			} else {
 				auto p = addOUT<sol::object>(pin.title, pinStyleForType(pin.type));
@@ -212,7 +209,8 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 						return m_handle->getData(pinTitle);
 					});
 				}
-				if (pin.on_render.valid()) p->renderer(makePinRenderer(pin.on_render));
+				if (pin.on_render.valid())
+					p->renderer(makePinRenderer(pin.on_render));
 				PinSemanticRegistry::instance().registerPin(p->getUid(), pin.type);
 			}
 		}

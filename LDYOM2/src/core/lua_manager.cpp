@@ -2,8 +2,10 @@
 #include "ImGuiLuaWrapper.h"
 #include "lua/log_bindings.h"
 #include <filesystem>
+#include <filesystem_binding.h>
 #include <logger.h>
-
+#include <lua_node.h>
+#include <node_registry.h>
 
 LuaManager& LuaManager::instance() {
 	static LuaManager instance;
@@ -24,7 +26,10 @@ void LuaManager::initialize() {
 		});
 
 	register_log_bindings(lua);
+	register_filesystem_bindings(lua);
 	imguiLuaWrapper(lua);
+	NodeRegistry::sol_lua_register(lua);
+	LuaNodeHandle::sol_lua_register(lua);
 
 	LDYOM_INFO("Lua environment initialized");
 }

@@ -14,9 +14,6 @@
 #include <components_manager.h>
 #include <fires_remover.h>
 #include <in_game/debug_info.h>
-#include <lua_node.h>
-#include <node_editor_builtins.h>
-#include <node_registry.h>
 #include <plugin.h>
 #include <projects_manager.h>
 #include <scenes_manager.h>
@@ -41,12 +38,6 @@ void Application::initialize() {
 		ThemeLoader::initialize();
 		ProjectsManager::instance().initialize();
 		LuaManager::instance().initialize();
-		{
-			auto luaState = LuaManager::instance().getState();
-			NodeRegistry::sol_lua_register(luaState.get());
-			LuaNodeHandle::sol_lua_register(luaState.get());
-		}
-		registerBuiltinNodes();
 		AddonsManager::instance().initialize();
 
 		ImguiHook::setRenderFunc(renderFrames);

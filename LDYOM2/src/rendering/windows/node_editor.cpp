@@ -82,10 +82,19 @@ void NodeEditorWindow::renderContextMenu() {
 
 	for (const auto& category : categories) {
 		if (ImGui::BeginMenu(category.c_str())) {
-			auto descs = registry.getDescriptorsByCategory(category);
-			for (const auto* desc : descs) {
-				if (ImGui::MenuItem(desc->title.c_str())) {
-					m_nodeFlow->placeNode<LuaNode>(desc->type);
+			auto types = registry.getTypesForCategory(category);
+			for (const auto& type : types) {
+				const auto* desc = registry.find(type);
+				std::string label;
+				if (desc) {
+					const std::string& icon = NodeStyleRegistry::instance().getIcon(desc->styleKey);
+					label = icon.empty() ? _(type) : icon + " " + _(type);
+				} else {
+					label = _(type);
+				}
+				if (ImGui::MenuItem(label.c_str())) {
+					registry.ensureLoaded(type);
+					m_nodeFlow->placeNode<LuaNode>(type);
 				}
 			}
 			ImGui::EndMenu();
