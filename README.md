@@ -38,7 +38,7 @@ cd LDYOM
 2. Install dependencies using Conan:
 ```bash
 cd LDYOM2
-conan install . --build=missing
+conan install . --build=missing -pr="conanprofile.txt"
 ```
 
 3. Configure and build using CMake:
