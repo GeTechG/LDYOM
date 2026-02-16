@@ -11,6 +11,25 @@ AddonsManager& AddonsManager::instance() {
 }
 
 void AddonsManager::initialize() {
+	LuaManager::instance().registerFunction("addon_global_set", [this](const std::string& key, sol::object value) {
+		sharedData[key] = value;
+	});
+
+	LuaManager::instance().registerFunction("addon_global_get", [this](const std::string& key, sol::this_state s) -> sol::object {
+		auto it = sharedData.find(key);
+		if (it == sharedData.end())
+			return sol::make_object(s, sol::lua_nil);
+		return it->second;
+	});
+
+	LuaManager::instance().registerFunction("addon_global_has", [this](const std::string& key) -> bool {
+		return sharedData.contains(key);
+	});
+
+	LuaManager::instance().registerFunction("addon_global_remove", [this](const std::string& key) {
+		sharedData.erase(key);
+	});
+
 	LuaManager::instance().registerFunction("register_addon", [this](sol::table metadata, sol::this_state s) {
 		std::string id = metadata["id"].get<std::string>();
 
@@ -163,5 +182,18 @@ bool AddonsManager::disableAddon(const std::string& addonId) {
 }
 
 bool AddonsManager::isAddonActive(const std::string& addonId) const { return activeAddons.contains(addonId); }
+
+void AddonsManager::setSharedValue(const std::string& key, sol::object value) { sharedData[key] = value; }
+
+sol::object AddonsManager::getSharedValue(const std::string& key) const {
+	auto it = sharedData.find(key);
+	if (it == sharedData.end())
+		return sol::object{};
+	return it->second;
+}
+
+bool AddonsManager::hasSharedValue(const std::string& key) const { return sharedData.contains(key); }
+
+void AddonsManager::removeSharedValue(const std::string& key) { sharedData.erase(key); }
 
 const std::vector<AddonMetadata>& AddonsManager::getAddons() const { return addonsList; }

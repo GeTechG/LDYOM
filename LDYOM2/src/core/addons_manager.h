@@ -3,6 +3,7 @@
 #include <optional>
 #include <sol/sol.hpp>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -23,6 +24,7 @@ class AddonsManager {
 
 	std::vector<AddonMetadata> addonsList;
 	std::unordered_set<std::string> activeAddons;
+	std::unordered_map<std::string, sol::object> sharedData;
 
 	AddonsManager() = default;
 	bool loadAddonMetadata(const std::filesystem::path& addonPath);
@@ -39,6 +41,11 @@ class AddonsManager {
 	bool enableAddon(const std::string& addonId);
 	bool disableAddon(const std::string& addonId);
 	bool isAddonActive(const std::string& addonId) const;
+
+	void setSharedValue(const std::string& key, sol::object value);
+	sol::object getSharedValue(const std::string& key) const;
+	bool hasSharedValue(const std::string& key) const;
+	void removeSharedValue(const std::string& key);
 
 	const std::vector<AddonMetadata>& getAddons() const;
 	const std::unordered_set<std::string>& getActiveAddons() const { return activeAddons; }
