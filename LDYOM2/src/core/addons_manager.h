@@ -16,6 +16,7 @@ struct AddonMetadata {
 	sol::protected_function on_load;
 	sol::protected_function on_unload;
 	int priority = 0;
+	std::filesystem::path path;
 };
 
 class AddonsManager {
@@ -25,9 +26,11 @@ class AddonsManager {
 	std::vector<AddonMetadata> addonsList;
 	std::unordered_set<std::string> activeAddons;
 	std::unordered_map<std::string, sol::object> sharedData;
+	std::filesystem::path m_currentLoadingPath;
 
 	AddonsManager() = default;
 	bool loadAddonMetadata(const std::filesystem::path& addonPath);
+	void loadAddonLocale(const AddonMetadata& addon);
 
   public:
 	static AddonsManager& instance();

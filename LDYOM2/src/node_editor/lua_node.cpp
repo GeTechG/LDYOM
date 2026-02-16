@@ -96,7 +96,8 @@ LuaNode::LuaNode(const std::string& type)
 	}
 
 	const std::string& icon = NodeStyleRegistry::instance().getIcon(desc->styleKey);
-	auto label = icon.empty() ? _(desc->type) : icon + " " + _(desc->type);
+	auto title = _(fmt::format("nodes_titles.{}", desc->type));
+	auto label = icon.empty() ? title : icon + " " + title;
 	setTitle(label);
 	setStyle(nodeStyleForKey(desc->styleKey));
 
@@ -162,7 +163,7 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 	for (const auto& pin : desc.pins) {
 		if (pin.dir == "in") {
 			if (pin.type == "flow") {
-				auto p = addIN<FlowToken>(pin.title, FlowToken{}, ImFlow::ConnectionFilter::SameType(),
+				auto p = addIN<FlowToken>(_(pin.title), FlowToken{}, ImFlow::ConnectionFilter::SameType(),
 				                          ImFlow::PinStyle::white());
 				if (pin.on_render.valid())
 					p->renderer(makePinRenderer(pin.on_render));
@@ -170,7 +171,7 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 			} else {
 				sol::object defVal = pin.defaultValue;
 				auto p = addIN<sol::object>(
-					pin.title, defVal,
+					_(pin.title), defVal,
 					[sType = pin.type](ImFlow::Pin* out, ImFlow::Pin* in) {
 						return PinSemanticRegistry::sameType(out, in);
 					},
@@ -181,13 +182,13 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 			}
 		} else { // "out"
 			if (pin.type == "flow") {
-				auto p = addOUT<FlowToken>(pin.title, ImFlow::PinStyle::white());
+				auto p = addOUT<FlowToken>(_(pin.title), ImFlow::PinStyle::white());
 				p->behaviour([] { return FlowToken{}; });
 				if (pin.on_render.valid())
 					p->renderer(makePinRenderer(pin.on_render));
 				PinSemanticRegistry::instance().registerPin(p->getUid(), "flow");
 			} else {
-				auto p = addOUT<sol::object>(pin.title, pinStyleForType(pin.type));
+				auto p = addOUT<sol::object>(_(pin.title), pinStyleForType(pin.type));
 				if (pin.behaviour.valid()) {
 					p->behaviour([this, luaBehaviour = pin.behaviour]() -> sol::object {
 						if (!m_handle)

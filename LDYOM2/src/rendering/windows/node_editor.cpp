@@ -85,12 +85,14 @@ void NodeEditorWindow::renderContextMenu() {
 			auto types = registry.getTypesForCategory(category);
 			for (const auto& type : types) {
 				const auto* desc = registry.find(type);
+
+				auto title = _(fmt::format("nodes_titles.{}", type));
 				std::string label;
 				if (desc) {
 					const std::string& icon = NodeStyleRegistry::instance().getIcon(desc->styleKey);
-					label = icon.empty() ? _(type) : icon + " " + _(type);
+					label = icon.empty() ? title : icon + " " + title;
 				} else {
-					label = _(type);
+					label = title;
 				}
 				if (ImGui::MenuItem(label.c_str())) {
 					registry.ensureLoaded(type);

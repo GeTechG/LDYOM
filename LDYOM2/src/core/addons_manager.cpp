@@ -1,4 +1,5 @@
 #include "addons_manager.h"
+#include "localization.h"
 #include "lua_manager.h"
 #include "settings.h"
 #include <algorithm>
@@ -11,24 +12,22 @@ AddonsManager& AddonsManager::instance() {
 }
 
 void AddonsManager::initialize() {
-	LuaManager::instance().registerFunction("addon_global_set", [this](const std::string& key, sol::object value) {
-		sharedData[key] = value;
-	});
+	LuaManager::instance().registerFunction(
+		"addon_global_set", [this](const std::string& key, sol::object value) { sharedData[key] = value; });
 
-	LuaManager::instance().registerFunction("addon_global_get", [this](const std::string& key, sol::this_state s) -> sol::object {
-		auto it = sharedData.find(key);
-		if (it == sharedData.end())
-			return sol::make_object(s, sol::lua_nil);
-		return it->second;
-	});
+	LuaManager::instance().registerFunction("addon_global_get",
+	                                        [this](const std::string& key, sol::this_state s) -> sol::object {
+												auto it = sharedData.find(key);
+												if (it == sharedData.end())
+													return sol::make_object(s, sol::lua_nil);
+												return it->second;
+											});
 
-	LuaManager::instance().registerFunction("addon_global_has", [this](const std::string& key) -> bool {
-		return sharedData.contains(key);
-	});
+	LuaManager::instance().registerFunction(
+		"addon_global_has", [this](const std::string& key) -> bool { return sharedData.contains(key); });
 
-	LuaManager::instance().registerFunction("addon_global_remove", [this](const std::string& key) {
-		sharedData.erase(key);
-	});
+	LuaManager::instance().registerFunction("addon_global_remove",
+	                                        [this](const std::string& key) { sharedData.erase(key); });
 
 	LuaManager::instance().registerFunction("register_addon", [this](sol::table metadata, sol::this_state s) {
 		std::string id = metadata["id"].get<std::string>();
@@ -56,6 +55,7 @@ void AddonsManager::initialize() {
 			addon.on_unload = metadata["on_unload"];
 		}
 
+		addon.path = m_currentLoadingPath;
 		LDYOM_INFO("Addon registered: {} ({})", addon.name, id);
 		addonsList.emplace_back(std::move(addon));
 	});
@@ -92,6 +92,7 @@ void AddonsManager::initialize() {
 					LDYOM_ERROR("Addon '{}' on_load failed: {}", addon->id, err.what());
 				}
 			}
+			loadAddonLocale(*addon);
 		}
 	}
 }
@@ -123,6 +124,8 @@ bool AddonsManager::loadAddonMetadata(const std::filesystem::path& addonPath) {
 		return false;
 	}
 
+	m_currentLoadingPath = addonPath;
+
 	try {
 		auto lua = LuaManager::instance().getState();
 		sol::environment env(lua.get(), sol::create, lua.get().globals());
@@ -152,6 +155,7 @@ bool AddonsManager::enableAddon(const std::string& addonId) {
 		}
 	}
 
+	loadAddonLocale(*it);
 	activeAddons.insert(addonId);
 	Settings::instance().setSetting("active_addons", activeAddons);
 	return true;
@@ -197,3 +201,35 @@ bool AddonsManager::hasSharedValue(const std::string& key) const { return shared
 void AddonsManager::removeSharedValue(const std::string& key) { sharedData.erase(key); }
 
 const std::vector<AddonMetadata>& AddonsManager::getAddons() const { return addonsList; }
+
+void AddonsManager::loadAddonLocale(const AddonMetadata& addon) {
+	if (addon.path.empty()) {
+		return;
+	}
+
+	const auto langDir = addon.path / "languages";
+	if (!std::filesystem::exists(langDir) || !std::filesystem::is_directory(langDir)) {
+		return;
+	}
+
+	auto& i18n = Localization::instance().getI18N();
+	const std::string currentLocale = Localization::instance().getCurrentLocale();
+
+	const auto tryLoad = [&](const std::string& locale) {
+		const auto filePath = langDir / (locale + ".json");
+		if (!std::filesystem::exists(filePath)) {
+			return;
+		}
+		try {
+			i18n.mergeLocaleFromFile(filePath.string());
+			LDYOM_INFO("Addon '{}': loaded locale file '{}'", addon.id, filePath.string());
+		} catch (const std::exception& e) {
+			LDYOM_ERROR("Addon '{}': failed to load locale '{}': {}", addon.id, filePath.string(), e.what());
+		}
+	};
+
+	tryLoad("en");
+	if (currentLocale != "en") {
+		tryLoad(currentLocale);
+	}
+}
