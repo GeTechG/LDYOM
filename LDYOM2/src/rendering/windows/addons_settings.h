@@ -6,7 +6,7 @@
 class AddonsSettings : public Window {
   private:
 	static void renderContent(AddonsSettings* window);
-	std::vector<AddonsMetadata> addons;
+	std::vector<AddonMetadata> addons;
 
   public:
 	AddonsSettings();

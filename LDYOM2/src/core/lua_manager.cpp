@@ -1,8 +1,9 @@
 #include "lua_manager.h"
-#include "lua/log_bindings.h"
 #include "ImGuiLuaWrapper.h"
+#include "lua/log_bindings.h"
 #include <filesystem>
 #include <logger.h>
+
 
 LuaManager& LuaManager::instance() {
 	static LuaManager instance;
