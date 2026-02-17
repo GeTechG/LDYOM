@@ -17,6 +17,7 @@ class ScenesManager {
 	ScenesManager();
 
 	static const std::string SCENE_FOLDER_NAME;
+	static const std::string NODE_FOLDER_NAME;
 
   public:
 	static ScenesManager& instance();

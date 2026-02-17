@@ -33,14 +33,18 @@ void InitializeNodeFlowTheme() {
 // NodeEditorWindow implementation
 NodeEditorWindow::NodeEditorWindow()
 	: Window("Node Editor") {
-	m_nodeFlow = std::make_unique<ImFlow::ImNodeFlow>("LDYOM_NodeEditor");
-
 	setSize(1000, 600);
 	setSizeMin(400, 300);
 	setPosition(100, 100);
 	setNeedLockPlayerControl(true);
 
 	setRenderCallback<NodeEditorWindow>(renderContent);
+
+	initNodeFlow();
+}
+
+void NodeEditorWindow::initNodeFlow() {
+	m_nodeFlow = std::make_unique<ImFlow::ImNodeFlow>("LDYOM_NodeEditor");
 
 	m_nodeFlow->rightClickPopUpContent([this](ImFlow::BaseNode* node) {
 		if (node) {
@@ -109,3 +113,5 @@ void NodeEditorWindow::refreshTheme() { InitializeNodeFlowTheme(); }
 void NodeEditorWindow::saveGraph(const std::string& filePath) { NodeGraphSerializer::save(m_nodeFlow.get(), filePath); }
 
 void NodeEditorWindow::loadGraph(const std::string& filePath) { NodeGraphSerializer::load(m_nodeFlow.get(), filePath); }
+
+void NodeEditorWindow::clearGraph() { initNodeFlow(); }

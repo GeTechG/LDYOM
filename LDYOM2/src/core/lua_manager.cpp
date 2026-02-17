@@ -1,5 +1,6 @@
 #include "lua_manager.h"
 #include "ImGuiLuaWrapper.h"
+#include "lua/localization_binding.h"
 #include "lua/log_bindings.h"
 #include <filesystem>
 #include <filesystem_binding.h>
@@ -27,6 +28,7 @@ void LuaManager::initialize() {
 
 	register_log_bindings(lua);
 	register_filesystem_bindings(lua);
+	register_localization_bindings(lua);
 	imguiLuaWrapper(lua);
 	NodeRegistry::sol_lua_register(lua);
 	LuaNodeHandle::sol_lua_register(lua);

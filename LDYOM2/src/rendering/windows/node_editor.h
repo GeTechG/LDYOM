@@ -10,6 +10,7 @@ class NodeEditorWindow : public Window {
     std::unique_ptr<ImFlow::ImNodeFlow> m_nodeFlow;
 
     void renderContextMenu();
+    void initNodeFlow();
 
     static void renderContent(NodeEditorWindow* window);
 
@@ -25,4 +26,5 @@ class NodeEditorWindow : public Window {
 
     void saveGraph(const std::string& filePath);
     void loadGraph(const std::string& filePath);
+    void clearGraph();
 };

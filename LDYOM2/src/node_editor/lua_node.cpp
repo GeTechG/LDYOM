@@ -137,10 +137,10 @@ LuaNode::LuaNode(const std::string& type)
 LuaNode::~LuaNode() {
 	// Unregister all pin UIDs from the semantic registry
 	for (auto& pin : getIns()) {
-		PinSemanticRegistry::instance().unregisterPin(pin->getUid());
+		PinSemanticRegistry::instance().unregisterPin(pin.get());
 	}
 	for (auto& pin : getOuts()) {
-		PinSemanticRegistry::instance().unregisterPin(pin->getUid());
+		PinSemanticRegistry::instance().unregisterPin(pin.get());
 	}
 }
 
@@ -167,7 +167,7 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 				                          ImFlow::PinStyle::white());
 				if (pin.on_render.valid())
 					p->renderer(makePinRenderer(pin.on_render));
-				PinSemanticRegistry::instance().registerPin(p->getUid(), "flow");
+				PinSemanticRegistry::instance().registerPin(p.get(), "flow");
 			} else {
 				sol::object defVal = pin.defaultValue;
 				auto p = addIN<sol::object>(
@@ -178,7 +178,7 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 					pinStyleForType(pin.type));
 				if (pin.on_render.valid())
 					p->renderer(makePinRenderer(pin.on_render));
-				PinSemanticRegistry::instance().registerPin(p->getUid(), pin.type);
+				PinSemanticRegistry::instance().registerPin(p.get(), pin.type);
 			}
 		} else { // "out"
 			if (pin.type == "flow") {
@@ -186,7 +186,7 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 				p->behaviour([] { return FlowToken{}; });
 				if (pin.on_render.valid())
 					p->renderer(makePinRenderer(pin.on_render));
-				PinSemanticRegistry::instance().registerPin(p->getUid(), "flow");
+				PinSemanticRegistry::instance().registerPin(p.get(), "flow");
 			} else {
 				auto p = addOUT<sol::object>(_(pin.title), pinStyleForType(pin.type));
 				if (pin.behaviour.valid()) {
@@ -212,7 +212,7 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 				}
 				if (pin.on_render.valid())
 					p->renderer(makePinRenderer(pin.on_render));
-				PinSemanticRegistry::instance().registerPin(p->getUid(), pin.type);
+				PinSemanticRegistry::instance().registerPin(p.get(), pin.type);
 			}
 		}
 	}

@@ -1,3 +1,4 @@
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "scenes_manager.h"
 #include "localization.h"
 #include "projects_manager.h"
@@ -8,8 +9,11 @@
 #include <project_info.h>
 #include <scene.h>
 #include <utils/carrec_paths_service.h>
+#include <window_manager.h>
+#include <windows/node_editor.h>
 
 const std::string ScenesManager::SCENE_FOLDER_NAME = "scenes";
+const std::string ScenesManager::NODE_FOLDER_NAME  = "scene_nodes";
 
 ScenesManager::ScenesManager() {
 	this->m_currentScene = std::make_unique<Scene>(Scene{.info = SceneInfo{.name = _("scenes.default_scene_name")}});
@@ -106,6 +110,12 @@ void ScenesManager::loadSceneInternal(std::string_view sceneId) {
 			}
 			m_currentScene = std::make_unique<Scene>(std::move(newScene));
 			LDYOM_INFO("Loaded scene: {}", m_currentScene->info.name);
+
+			if (auto nodeEditor = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor")) {
+				// (*nodeEditor)->clearGraph();
+				(*nodeEditor)
+					->loadGraph(projectPath(NODE_FOLDER_NAME) + "/" + std::string(sceneId) + ".json");
+			}
 		} else {
 			LDYOM_ERROR("Failed to open scene file: {}", it->name);
 			return;
@@ -197,6 +207,15 @@ void ScenesManager::saveCurrentScene() {
 		LDYOM_ERROR("Failed to open file for saving scene: {}", sceneFilePath.string());
 	}
 
+	// Save node graph for this scene
+	if (auto nodeEditor = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor")) {
+		std::filesystem::path nodesDir(projectPath(NODE_FOLDER_NAME));
+		if (!std::filesystem::exists(nodesDir)) {
+			std::filesystem::create_directories(nodesDir);
+		}
+		(*nodeEditor)->saveGraph(projectPath(NODE_FOLDER_NAME) + "/" + m_currentScene->info.id + ".json");
+	}
+
 	// Save CarRec paths for this project
 	CarrecPathsService::instance().savePaths();
 }
@@ -227,4 +246,7 @@ void ScenesManager::resetCurrentScene() {
 
 void ScenesManager::unloadCurrentScene() {
 	m_currentScene = std::make_unique<Scene>(Scene{.info = SceneInfo{.name = _("scenes.default_scene_name")}});
+	if (auto nodeEditor = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor")) {
+		(*nodeEditor)->clearGraph();
+	}
 }

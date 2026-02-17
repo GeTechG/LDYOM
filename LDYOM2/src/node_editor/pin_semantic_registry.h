@@ -5,9 +5,9 @@
 #include <string>
 #include <unordered_map>
 
-// Maps PinUID -> semantic type string ("flow", "float", "int", "bool", "string")
-// Used by the custom ConnectionFilter to enforce type safety at the semantic level
-// rather than at the C++ type level (since all data pins use sol::object).
+// Maps Pin* -> semantic type string ("flow", "float", "int", "bool", "string")
+// Uses Pin pointer as key (not PinUID) to avoid hash collisions when multiple
+// nodes share pins with the same name.
 class PinSemanticRegistry {
   public:
     static PinSemanticRegistry& instance();
@@ -15,9 +15,9 @@ class PinSemanticRegistry {
     PinSemanticRegistry(const PinSemanticRegistry&) = delete;
     PinSemanticRegistry& operator=(const PinSemanticRegistry&) = delete;
 
-    void registerPin(ImFlow::PinUID uid, const std::string& semanticType);
-    std::string getType(ImFlow::PinUID uid) const;
-    void unregisterPin(ImFlow::PinUID uid);
+    void registerPin(ImFlow::Pin* pin, const std::string& semanticType);
+    std::string getType(ImFlow::Pin* pin) const;
+    void unregisterPin(ImFlow::Pin* pin);
 
     // ConnectionFilter: returns true if out and in pins have the same semantic type
     static bool sameType(ImFlow::Pin* out, ImFlow::Pin* in);
@@ -26,5 +26,5 @@ class PinSemanticRegistry {
     PinSemanticRegistry() = default;
 
     mutable std::mutex m_mutex;
-    std::unordered_map<ImFlow::PinUID, std::string> m_map;
+    std::unordered_map<ImFlow::Pin*, std::string> m_map;
 };

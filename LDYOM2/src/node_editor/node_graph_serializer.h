@@ -5,7 +5,7 @@
 #include <string>
 
 // Saves and loads the node graph (positions, connections, per-instance data)
-// to/from a JSON file at {project_path}/scene_{sceneId}_nodes.json
+// to/from a JSON file at {project_path}/scene_nodes/{sceneId}.json
 class NodeGraphSerializer {
   public:
     // Save current graph state to file
