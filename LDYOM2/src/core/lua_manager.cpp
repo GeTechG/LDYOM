@@ -3,6 +3,7 @@
 #include "lua/localization_binding.h"
 #include "lua/log_bindings.h"
 #include "lua/lua_task_manager.h"
+#include "lua/node_editor_binding.h"
 #include "lua/project_player_binding.h"
 #include <filesystem>
 #include <filesystem_binding.h>
@@ -36,6 +37,7 @@ void LuaManager::initialize() {
 	LuaNodeHandle::sol_lua_register(lua);
 	LuaTaskManager::registerBindings(lua);
 	register_project_player_bindings(lua);
+	register_node_editor_bindings(lua);
 
 	LDYOM_INFO("Lua environment initialized");
 }

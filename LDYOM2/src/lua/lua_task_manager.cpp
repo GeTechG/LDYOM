@@ -46,29 +46,26 @@ void LuaTaskManager::processAll() {
 
 		bool shouldResume = false;
 		switch (task.waitReason) {
-		case Reason::NextFrame:
-			shouldResume = true;
-			break;
-		case Reason::Sleep:
-			shouldResume = (now >= task.wakeTime);
-			break;
-		case Reason::WaitFor: {
-			auto it = m_tasks.find(task.waitForKey);
-			if (it == m_tasks.end()) {
-				// Key is not in active tasks — check if it was just submitted (pending)
-				bool inPending = false;
-				for (const auto& p : m_pending) {
-					if (p.first == task.waitForKey) {
-						inPending = true;
-						break;
+			case Reason::NextFrame: shouldResume = true; break;
+			case Reason::Sleep: shouldResume = (now >= task.wakeTime); break;
+			case Reason::WaitFor:
+				{
+					auto it = m_tasks.find(task.waitForKey);
+					if (it == m_tasks.end()) {
+						// Key is not in active tasks — check if it was just submitted (pending)
+						bool inPending = false;
+						for (const auto& p : m_pending) {
+							if (p.first == task.waitForKey) {
+								inPending = true;
+								break;
+							}
+						}
+						shouldResume = !inPending; // not pending → already gone → done
+					} else {
+						shouldResume = it->second.completed;
 					}
+					break;
 				}
-				shouldResume = !inPending; // not pending → already gone → done
-			} else {
-				shouldResume = it->second.completed;
-			}
-			break;
-		}
 		}
 
 		if (!shouldResume)
@@ -80,6 +77,10 @@ void LuaTaskManager::processAll() {
 		auto result = task.coro();
 
 		if (!task.coro.runnable()) {
+			if (!result.valid()) {
+				sol::error err = result;
+				LDYOM_ERROR("LuaTask error [{}]: {}", key, err.what());
+			}
 			task.completed = true;
 		} else {
 			processResult(task, result, now);
@@ -117,17 +118,6 @@ bool LuaTaskManager::run(std::string key, sol::function func) {
 
 	Task task;
 	task.coro = sol::coroutine(func);
-
-	auto now = std::chrono::steady_clock::now();
-
-	// First resume — the Lua wrapper closure captures any caller-supplied args
-	auto result = task.coro();
-
-	if (!task.coro.runnable()) {
-		task.completed = true;
-	} else {
-		processResult(task, result, now);
-	}
 
 	if (m_inProcess) {
 		m_pending.push_back({std::move(key), std::move(task)});
@@ -171,12 +161,8 @@ void LuaTaskManager::registerBindings(sol::state_view lua) {
 	raw["_run"] = [](std::string key, sol::function func) -> bool {
 		return LuaTaskManager::instance().run(std::move(key), func);
 	};
-	raw["_is_running"] = [](const std::string& key) -> bool {
-		return LuaTaskManager::instance().isRunning(key);
-	};
-	raw["_cancel"] = [](const std::string& key) -> bool {
-		return LuaTaskManager::instance().cancel(key);
-	};
+	raw["_is_running"] = [](const std::string& key) -> bool { return LuaTaskManager::instance().isRunning(key); };
+	raw["_cancel"] = [](const std::string& key) -> bool { return LuaTaskManager::instance().cancel(key); };
 
 	// Build the public `tasks` table.
 	// The wrapper captures variadic args in a closure so that `_run` always
@@ -187,7 +173,7 @@ void LuaTaskManager::registerBindings(sol::state_view lua) {
 
 		tasks.run = function(k, f, ...)
 			local args = {...}
-			return _r._run(k, function() return f(table.unpack(args)) end)
+			return _r._run(k, function() return f(unpack(args)) end)
 		end
 
 		tasks.is_running = _r._is_running

@@ -50,6 +50,7 @@ class LuaNode : public ImFlow::BaseNode {
 	void deserializeData(const nlohmann::json& j);
 
 	const std::string& getNodeType() const { return m_typeKey; }
+	std::shared_ptr<LuaNodeHandle> getHandle() const { return m_handle; }
 
   private:
 	std::string m_typeKey;
