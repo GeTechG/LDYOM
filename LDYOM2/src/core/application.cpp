@@ -5,6 +5,7 @@
 #include "imgui_hook.h"
 #include "localization.h"
 #include "lua_manager.h"
+#include "lua/lua_task_manager.h"
 #include "models_manager.h"
 #include "object_tags_manager.h"
 #include "objectives_manager.h"
@@ -104,6 +105,7 @@ void Application::shutdown() {
 
 	Localization::instance().shutdown();
 	Hotkeys::instance().shutdown();
+	LuaTaskManager::instance().shutdown();
 	LuaManager::instance().shutdown();
 	TaskManager::instance().shutdown();
 	ScenesManager::instance().setRestartGame(true);
@@ -116,6 +118,7 @@ void Application::process() {
 	ScenesManager::instance().onUpdate((CTimer::m_snTimeInMilliseconds - CTimer::m_snPreviousTimeInMilliseconds) /
 	                                   1000.f);
 	TaskManager::instance().processAll();
+	LuaTaskManager::instance().processAll();
 
 	// Remove game fires that are not associated with any pyrotechnic
 	checkEditorFires();

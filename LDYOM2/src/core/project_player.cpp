@@ -89,6 +89,8 @@ ktwait ProjectPlayer::run() {
 		}
 	}
 
+	instance().onSceneStarted(instance().m_state.currentSceneId);
+
 	auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
 
 	for (int i = 0; i < static_cast<int>(objectives.size()); i++) {

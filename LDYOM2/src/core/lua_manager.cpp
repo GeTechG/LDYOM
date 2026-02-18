@@ -2,6 +2,8 @@
 #include "ImGuiLuaWrapper.h"
 #include "lua/localization_binding.h"
 #include "lua/log_bindings.h"
+#include "lua/lua_task_manager.h"
+#include "lua/project_player_binding.h"
 #include <filesystem>
 #include <filesystem_binding.h>
 #include <logger.h>
@@ -32,12 +34,17 @@ void LuaManager::initialize() {
 	imguiLuaWrapper(lua);
 	NodeRegistry::sol_lua_register(lua);
 	LuaNodeHandle::sol_lua_register(lua);
+	LuaTaskManager::registerBindings(lua);
+	register_project_player_bindings(lua);
 
 	LDYOM_INFO("Lua environment initialized");
 }
 
 void LuaManager::shutdown() {
 	std::unique_lock lock(stateMutex);
+
+	// Clear Lua event callbacks before destroying the state
+	clear_project_player_lua_callbacks();
 
 	// Force garbage collection
 	lua.collect_garbage();
