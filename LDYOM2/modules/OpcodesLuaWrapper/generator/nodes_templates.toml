@@ -1,0 +1,69 @@
+file = '''local TYPE = "opcode.{category_snake}.{node_name_l}"
+
+local desc = {{
+    type = TYPE,
+    category = "opcode.{category_snake}",
+    style = "function",
+    pins = {{{pins}
+    }},
+    default_data = {{{default_data}
+    }},
+    on_draw = function(handle)
+        if not handle then return end{draw}
+    end,
+    on_execute = function(handle)
+{run}        return 0
+    end
+}}
+
+node_editor.register(desc)
+'''
+
+pin_flow_in  = "\n        {{ title = \"\", type = \"flow\", dir = \"in\" }},"
+pin_flow_out = "\n        {{ title = \"\", type = \"flow\", dir = \"out\" }},"
+pin_bool_out = "\n        {{ title = \"\", type = \"bool\", dir = \"out\" }},"
+
+pin_data_in = '''
+        {{ title = "{title}", type = "{pin_type}", dir = "in", default = {default} }},'''
+
+pin_data_out = '''
+        {{ title = "{title}", type = "{pin_type}", dir = "out" }},'''
+
+default_data_entry = "\n        {field} = {default},"
+
+draw_float = '''
+        do
+            local v = handle:getData("{field}") or {default}
+            ImGui.SetNextItemWidth(80)
+            local ok, nv = ImGui.InputFloat("##oe_{field}", v, 0, 0, "%.3f", 0)
+            if ok then handle:setData("{field}", nv) end
+        end'''
+
+draw_int = '''
+        do
+            local v = handle:getData("{field}") or {default}
+            ImGui.SetNextItemWidth(80)
+            local ok, nv = ImGui.InputInt("##oe_{field}", v, 0)
+            if ok then handle:setData("{field}", nv) end
+        end'''
+
+draw_bool = '''
+        do
+            local v = handle:getData("{field}") or false
+            local ok, nv = ImGui.Checkbox("##oe_{field}", v)
+            if ok then handle:setData("{field}", nv) end
+        end'''
+
+draw_string = '''
+        do
+            local v = handle:getData("{field}") or ""
+            ImGui.SetNextItemWidth(80)
+            local ok, nv = ImGui.InputText("##oe_{field}", v, 0, nil, nil)
+            if ok then handle:setData("{field}", nv) end
+        end'''
+
+run_get_input = "        local {field} = handle:getInput({idx}) or handle:getData(\"{field}\") or {default}"
+run_get_int   = "        local {field} = math.floor(handle:getInput({idx}) or handle:getData(\"{field}\") or {default})"
+run_check_nil = "        if not {field} or {field} == 0 then error(\"Input '{name}' is not set\") end"
+run_call      = "        {clazz}Op.{method}({args})"
+run_call_ret  = "        local {outs} = {clazz}Op.{method}({args})"

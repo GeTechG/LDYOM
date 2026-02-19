@@ -1,0 +1,7 @@
+import parse_for_cpp_wrap
+import parse_lua_opcodes_annotation
+import parse_nodes_opcodes
+
+parse_for_cpp_wrap.generate()
+parse_lua_opcodes_annotation.generate()
+parse_nodes_opcodes.generate()
