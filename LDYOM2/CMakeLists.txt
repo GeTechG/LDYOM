@@ -101,13 +101,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 set(GTA_SA_DIR "C:/Games/GTA San Andreas")
 set(GTA_SA_CORE_ADDON_DIR "${GTA_SA_DIR}/LDYOM/addons/core")
 set(OPCODE_NODES_SRC "${CMAKE_CURRENT_SOURCE_DIR}/modules/OpcodesLuaWrapper/generator/output/nodes/opcode")
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND}
-        -DSRC=${OPCODE_NODES_SRC}
-        -DDST=${GTA_SA_CORE_ADDON_DIR}/nodes/opcode
-        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_if_exists.cmake"
-    COMMENT "Deploying opcode nodes to skic.core addon"
-)
+# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#     COMMAND ${CMAKE_COMMAND}
+#         -DSRC=${OPCODE_NODES_SRC}
+#         -DDST=${GTA_SA_CORE_ADDON_DIR}/nodes/opcode
+#         -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_if_exists.cmake"
+#     COMMENT "Deploying opcode nodes to skic.core addon"
+# )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     INTERPROCEDURAL_OPTIMIZATION_RELEASE "TRUE"

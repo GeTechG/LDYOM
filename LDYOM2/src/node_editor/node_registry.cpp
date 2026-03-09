@@ -25,23 +25,23 @@ NodeStyleRegistry& NodeStyleRegistry::instance() {
 
 NodeStyleRegistry::NodeStyleRegistry() {
 	// Built-in semantic styles
-	registerStyle("event",    ICON_FA_BOLT,          IM_COL32(191, 120,  40, 255), IM_COL32(255, 255, 255, 255), 6.5f);
-	registerStyle("function", ICON_FA_CUBE,          IM_COL32( 71, 142, 173, 255), IM_COL32(233, 241, 244, 255), 6.5f);
-	registerStyle("loop",     ICON_FA_ARROWS_ROTATE, IM_COL32(130,  80, 191, 255), IM_COL32(233, 241, 244, 255), 6.5f);
-	registerStyle("variable", ICON_FA_BOX,           IM_COL32( 90, 191,  93, 255), IM_COL32(233, 241, 244, 255), 3.5f);
-	registerStyle("branch",   ICON_FA_CODE_BRANCH,   IM_COL32(191,  90,  90, 255), IM_COL32(233, 241, 244, 255), 11.f);
+	registerStyle("event", ICON_FA_BOLT, IM_COL32(191, 120, 40, 255), IM_COL32(255, 255, 255, 255), 6.5f);
+	registerStyle("function", ICON_FA_CUBE, IM_COL32(71, 142, 173, 255), IM_COL32(233, 241, 244, 255), 6.5f);
+	registerStyle("loop", ICON_FA_ARROWS_ROTATE, IM_COL32(130, 80, 191, 255), IM_COL32(233, 241, 244, 255), 6.5f);
+	registerStyle("variable", ICON_FA_BOX, IM_COL32(90, 191, 93, 255), IM_COL32(233, 241, 244, 255), 3.5f);
+	registerStyle("branch", ICON_FA_CODE_BRANCH, IM_COL32(191, 90, 90, 255), IM_COL32(233, 241, 244, 255), 11.f);
 
 	// Legacy color-name aliases for backwards compatibility
-	registerStyle("cyan",  ICON_FA_CUBE,        IM_COL32( 71, 142, 173, 255), IM_COL32(233, 241, 244, 255), 6.5f);
-	registerStyle("green", ICON_FA_BOX,         IM_COL32( 90, 191,  93, 255), IM_COL32(233, 241, 244, 255), 3.5f);
-	registerStyle("red",   ICON_FA_CODE_BRANCH, IM_COL32(191,  90,  90, 255), IM_COL32(233, 241, 244, 255), 11.f);
-	registerStyle("brown", ICON_FA_CUBE,        IM_COL32(191, 134,  90, 255), IM_COL32(233, 241, 244, 255), 6.5f);
+	registerStyle("cyan", ICON_FA_CUBE, IM_COL32(71, 142, 173, 255), IM_COL32(233, 241, 244, 255), 6.5f);
+	registerStyle("green", ICON_FA_BOX, IM_COL32(90, 191, 93, 255), IM_COL32(233, 241, 244, 255), 3.5f);
+	registerStyle("red", ICON_FA_CODE_BRANCH, IM_COL32(191, 90, 90, 255), IM_COL32(233, 241, 244, 255), 11.f);
+	registerStyle("brown", ICON_FA_CUBE, IM_COL32(191, 134, 90, 255), IM_COL32(233, 241, 244, 255), 6.5f);
 }
 
 void NodeStyleRegistry::registerStyle(const std::string& key, const std::string& icon, uint32_t headerBg,
                                       uint32_t titleColor, float radius) {
 	m_styles[key] = std::make_shared<ImFlow::NodeStyle>(headerBg, ImColor(titleColor), radius);
-	m_icons[key]  = icon;
+	m_icons[key] = icon;
 }
 
 const std::string& NodeStyleRegistry::getIcon(const std::string& key) const {
@@ -71,9 +71,9 @@ void NodeStyleRegistry::sol_lua_register(sol::state_view lua) {
 			return;
 		}
 
-		auto bgTable    = desc.get<sol::optional<sol::table>>("header_bg");
+		auto bgTable = desc.get<sol::optional<sol::table>>("header_bg");
 		auto titleTable = desc.get<sol::optional<sol::table>>("title_color");
-		float radius    = desc.get_or("radius", 6.5f);
+		float radius = desc.get_or("radius", 6.5f);
 		std::string icon = desc.get_or<std::string>("icon", "");
 
 		if (!bgTable) {
@@ -81,7 +81,7 @@ void NodeStyleRegistry::sol_lua_register(sol::state_view lua) {
 			return;
 		}
 
-		uint32_t headerBg   = tableToU32(bgTable,    IM_COL32(71, 142, 173, 255));
+		uint32_t headerBg = tableToU32(bgTable, IM_COL32(71, 142, 173, 255));
 		uint32_t titleColor = tableToU32(titleTable, IM_COL32(233, 241, 244, 255));
 
 		NodeStyleRegistry::instance().registerStyle(*keyOpt, icon, headerBg, titleColor, radius);
@@ -203,7 +203,6 @@ bool NodeRegistry::registerLazy(const sol::table& descriptor) {
 		m_categoryOrder.push_back(entry.category);
 	}
 
-	LDYOM_INFO("NodeRegistry: lazy-registered node '{}' from '{}'", entry.type, entry.path);
 	m_lazyEntries[entry.type] = std::move(entry);
 	return true;
 }

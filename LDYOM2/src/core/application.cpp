@@ -24,6 +24,7 @@
 #include <utils/theme_loader.h>
 #include <window_manager.h>
 #include <windows/init.h>
+#include <windows/node_editor.h>
 
 void Application::initialize() {
 	LDYOM_INFO("LDYOM Application starting...");
@@ -115,6 +116,15 @@ void Application::shutdown() {
 
 void Application::process() {
 	rocket::dispatch_queued_calls();
+
+	// Clear pin recursion blacklist once per game frame so node execution outside UI works correctly
+	if (auto nodeEditor = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor")) {
+		if (*nodeEditor) {
+			if (auto* graph = (*nodeEditor)->getNodeFlow())
+				graph->clear_recursion_blacklist();
+		}
+	}
+
 	ScenesManager::instance().onUpdate((CTimer::m_snTimeInMilliseconds - CTimer::m_snPreviousTimeInMilliseconds) /
 	                                   1000.f);
 	TaskManager::instance().processAll();

@@ -4,7 +4,10 @@ import stringcase
 from parse_json_opcodes import parseOpcodes
 
 # ---------------------------------------------------------------------------
-# Templates (mirrors nodes_templates.toml — canonical reference)
+# Templates — new pin structure:
+#   - no default_data, no on_draw
+#   - each data-in pin has inline on_render using getInputDefault/setInputDefault
+#   - on_execute uses handle:getInput(absolute_pin_idx)
 # ---------------------------------------------------------------------------
 
 TEMPLATES = {
@@ -17,12 +20,7 @@ TEMPLATES = {
         '    style = "function",\n'
         "    pins = {{{pins}\n"
         "    }},\n"
-        "    default_data = {{{default_data}\n"
-        "    }},\n"
-        "    on_draw = function(handle)\n"
-        "        if not handle then return end{draw}\n"
-        "    end,\n"
-        "    on_execute = function(handle)\n"
+        "    on_execute = function(_node)\n"
         "{run}        return 0\n"
         "    end\n"
         "}}\n"
@@ -30,66 +28,97 @@ TEMPLATES = {
         "node_editor.register(desc)\n"
     ),
 
-    "pin_flow_in":  '\n        {{ title = "", type = "flow", dir = "in" }},',
-    "pin_flow_out": '\n        {{ title = "", type = "flow", dir = "out" }},',
-    "pin_bool_out": '\n        {{ title = "", type = "bool", dir = "out" }},',
+    # Simple flow/bool pins — no format variables, no {{ }} escaping needed
+    "pin_flow_in":  '\n        { title = "", type = "flow", dir = "in" },',
+    "pin_flow_out": '\n        { title = "", type = "flow", dir = "out" },',
+    "pin_bool_out": '\n        { title = "", type = "bool", dir = "out" },',
 
-    "pin_data_in": (
-        '\n        {{ title = "{title}", type = "{pin_type}", dir = "in",'
-        " default = {default} }},"
-    ),
-
+    # Output data pin
     "pin_data_out": (
         '\n        {{ title = "{title}", type = "{pin_type}", dir = "out" }},'
     ),
 
-    "default_data_entry": "\n        {field} = {default},",
-
-    "draw_float": (
-        "\n        do"
-        '\n            local v = handle:getData("{field}") or {default}'
-        "\n            ImGui.SetNextItemWidth(80)"
-        '\n            local ok, nv = ImGui.InputFloat("##oe_{field}", v, 0, 0, "%.3f", 0)'
-        '\n            if ok then handle:setData("{field}", nv) end'
-        "\n        end"
+    # Input data pins with inline on_render per type
+    "pin_data_in_float": (
+        '\n        {{\n'
+        '            title = "{title}",\n'
+        '            type = "float",\n'
+        '            dir = "in",\n'
+        '            default = {default},\n'
+        '            on_render = function(handle)\n'
+        '                if not handle then return end\n'
+        '                if not handle:isInputConnected({pin_idx}) then\n'
+        '                    local v = handle:getInputDefault({pin_idx})\n'
+        '                    ImGui.SetNextItemWidth(80)\n'
+        '                    local ok, nv = ImGui.InputFloat("##oe_{field}", v, 0, 0, "%.3f", 0)\n'
+        '                    if ok then handle:setInputDefault({pin_idx}, nv) end\n'
+        '                end\n'
+        '            end\n'
+        '        }},'
     ),
 
-    "draw_int": (
-        "\n        do"
-        '\n            local v = handle:getData("{field}") or {default}'
-        "\n            ImGui.SetNextItemWidth(80)"
-        '\n            local ok, nv = ImGui.InputInt("##oe_{field}", v, 0)'
-        '\n            if ok then handle:setData("{field}", nv) end'
-        "\n        end"
+    "pin_data_in_int": (
+        '\n        {{\n'
+        '            title = "{title}",\n'
+        '            type = "float",\n'
+        '            dir = "in",\n'
+        '            default = {default},\n'
+        '            on_render = function(handle)\n'
+        '                if not handle then return end\n'
+        '                if not handle:isInputConnected({pin_idx}) then\n'
+        '                    local v = handle:getInputDefault({pin_idx})\n'
+        '                    ImGui.SetNextItemWidth(80)\n'
+        '                    local ok, nv = ImGui.InputInt("##oe_{field}", v, 0)\n'
+        '                    if ok then handle:setInputDefault({pin_idx}, nv) end\n'
+        '                end\n'
+        '            end\n'
+        '        }},'
     ),
 
-    "draw_bool": (
-        "\n        do"
-        '\n            local v = handle:getData("{field}") or false'
-        '\n            local ok, nv = ImGui.Checkbox("##oe_{field}", v)'
-        '\n            if ok then handle:setData("{field}", nv) end'
-        "\n        end"
+    "pin_data_in_string": (
+        '\n        {{\n'
+        '            title = "{title}",\n'
+        '            type = "string",\n'
+        '            dir = "in",\n'
+        '            default = {default},\n'
+        '            on_render = function(handle)\n'
+        '                if not handle then return end\n'
+        '                if not handle:isInputConnected({pin_idx}) then\n'
+        '                    local v = handle:getInputDefault({pin_idx})\n'
+        '                    ImGui.SetNextItemWidth(80)\n'
+        '                    local ok, nv = ImGui.InputText("##oe_{field}", v, 0, nil, nil)\n'
+        '                    if ok then handle:setInputDefault({pin_idx}, nv) end\n'
+        '                end\n'
+        '            end\n'
+        '        }},'
     ),
 
-    "draw_string": (
-        "\n        do"
-        '\n            local v = handle:getData("{field}") or ""'
-        "\n            ImGui.SetNextItemWidth(80)"
-        '\n            local ok, nv = ImGui.InputText("##oe_{field}", v, 0, nil, nil)'
-        '\n            if ok then handle:setData("{field}", nv) end'
-        "\n        end"
+    "pin_data_in_bool": (
+        '\n        {{\n'
+        '            title = "{title}",\n'
+        '            type = "bool",\n'
+        '            dir = "in",\n'
+        '            default = {default},\n'
+        '            on_render = function(handle)\n'
+        '                if not handle then return end\n'
+        '                if not handle:isInputConnected({pin_idx}) then\n'
+        '                    local v = handle:getInputDefault({pin_idx})\n'
+        '                    local ok, nv = ImGui.Checkbox("##oe_{field}", v)\n'
+        '                    if ok then handle:setInputDefault({pin_idx}, nv) end\n'
+        '                end\n'
+        '            end\n'
+        '        }},'
     ),
 
+    # on_execute read lines (_node is the node handle, avoids shadowing by opcode param names)
     "run_get_input": (
-        '        local {field} = handle:getInput({idx})'
-        ' or handle:getData("{field}") or {default}'
+        "        local {field} = _node:getInput({pin_idx}) or {default}"
     ),
-
     "run_get_int": (
-        "        local {field} = math.floor("
-        'handle:getInput({idx}) or handle:getData("{field}") or {default})'
+        "        local {field} = math.floor(_node:getInput({pin_idx}) or {default})"
     ),
 
+    # opcode call lines
     "run_call":     "        {clazz}Op.{method}({args})",
     "run_call_ret": "        local {outs} = {clazz}Op.{method}({args})",
 }
@@ -134,9 +163,20 @@ def to_snake(name: str) -> str:
     return stringcase.snakecase(name).lower()
 
 
+def param_field(param: dict) -> str:
+    """Derive a Lua-safe field name from a parameter dict."""
+    raw = param["name"] if param["name"] else param["type"]
+    return to_snake(raw)
+
+
 # ---------------------------------------------------------------------------
 # Generator
 # ---------------------------------------------------------------------------
+
+
+def class_to_display(name: str) -> str:
+    import re
+    return re.sub(r'(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])', ' ', name)
 
 
 def generate():
@@ -146,16 +186,19 @@ def generate():
     os.makedirs(out_nodes_dir, exist_ok=True)
 
     lang_patch: dict[str, dict[str, str]] = {}
+    categories_lang: dict[str, str] = {}
+    descriptions_patch: dict[str, dict[str, str]] = {}
     generated = 0
 
     for class_name, commands in classes.items():
         category_snake = to_snake(class_name)
+        categories_lang[category_snake] = class_to_display(class_name)
         class_dir = os.path.join(out_nodes_dir, category_snake)
         os.makedirs(class_dir, exist_ok=True)
 
         for cmd in commands:
             is_condition = cmd.get("attrs", {}).get("is_condition", False)
-            method = cmd.get("member", "")
+            method = stringcase.camelcase(cmd.get("member", ""))
             if not method:
                 continue
 
@@ -163,80 +206,78 @@ def generate():
             inputs  = cmd.get("input",  [])
             outputs = cmd.get("output", [])
 
-            pins_str         = ""
-            draw_str         = ""
-            run_str          = ""
-            default_data_str = ""
-            args_list        = []
+            pins_str  = ""
+            run_str   = ""
+            args_list = []
 
-            # Flow in (non-condition only)
+            # Track absolute 1-based pin index (matches handle:getInput / getInputDefault)
+            pin_idx = 1
+
+            # -- Flow in (non-condition only) ---------------------------------
             if not is_condition:
-                pins_str += T["pin_flow_in"].format()
+                pins_str += T["pin_flow_in"]
+                pin_idx += 1          # data pins start at 2
 
-            # Data input pins
-            data_idx = 1
+            # -- Data input pins ----------------------------------------------
             for param in inputs:
-                field    = to_snake(param["name"])
-                ptype    = param["type"]
-                pin_type = get_pin_type(ptype)
-                default  = get_lua_default(ptype)
-                title    = param["name"]
+                field   = param_field(param)
+                ptype   = param["type"]
+                default = get_lua_default(ptype)
+                title   = param["name"]
 
-                pins_str += T["pin_data_in"].format(
-                    title=title, pin_type=pin_type, default=default
-                )
-                default_data_str += T["default_data_entry"].format(
-                    field=field, default=default
-                )
-
-                # Draw widget
-                if pin_type == "bool":
-                    draw_str += T["draw_bool"].format(field=field, default=default)
-                elif pin_type == "string":
-                    draw_str += T["draw_string"].format(field=field, default=default)
+                if ptype in BOOL_TYPES:
+                    pins_str += T["pin_data_in_bool"].format(
+                        title=title, default=default, field=field, pin_idx=pin_idx
+                    )
+                elif ptype in STRING_TYPES:
+                    pins_str += T["pin_data_in_string"].format(
+                        title=title, default=default, field=field, pin_idx=pin_idx
+                    )
                 elif needs_floor(ptype):
-                    draw_str += T["draw_int"].format(field=field, default=default)
+                    pins_str += T["pin_data_in_int"].format(
+                        title=title, default=default, field=field, pin_idx=pin_idx
+                    )
                 else:
-                    draw_str += T["draw_float"].format(field=field, default=default)
+                    pins_str += T["pin_data_in_float"].format(
+                        title=title, default=default, field=field, pin_idx=pin_idx
+                    )
 
-                # Run: read input value
                 if needs_floor(ptype):
                     run_str += T["run_get_int"].format(
-                        field=field, idx=data_idx, default=default
+                        field=field, pin_idx=pin_idx, default=default
                     ) + "\n"
                 else:
                     run_str += T["run_get_input"].format(
-                        field=field, idx=data_idx, default=default
+                        field=field, pin_idx=pin_idx, default=default
                     ) + "\n"
 
                 args_list.append(field)
-                data_idx += 1
+                pin_idx += 1
 
-            # Flow out or bool out
+            # -- Flow out / bool out ------------------------------------------
             if not is_condition:
-                pins_str += T["pin_flow_out"].format()
+                pins_str += T["pin_flow_out"]
+                pin_idx += 1
             else:
-                pins_str += T["pin_bool_out"].format()
+                pins_str += T["pin_bool_out"]
+                pin_idx += 1
 
-            # Output data pins (non-condition only)
+            # -- Output data pins (non-condition only) ------------------------
             out_vars = []
             if not is_condition:
                 for param in outputs:
-                    field    = to_snake(param["name"])
+                    field    = param_field(param)
                     ptype    = param["type"]
                     pin_type = get_pin_type(ptype)
-                    default  = get_lua_default(ptype)
                     title    = param["name"]
 
                     pins_str += T["pin_data_out"].format(
                         title=title, pin_type=pin_type
                     )
-                    default_data_str += T["default_data_entry"].format(
-                        field=field, default=default
-                    )
-                    out_vars.append((field, default))
+                    out_vars.append(field)
+                    pin_idx += 1
 
-            # Build opcode call
+            # -- Build opcode call -------------------------------------------
             args_str = ", ".join(args_list)
 
             if is_condition:
@@ -246,17 +287,17 @@ def generate():
                     method=method,
                     args=args_str,
                 ) + "\n"
-                run_str += '        handle:setData("_result", result)\n'
+                run_str += '        _node:setData("_result", result)\n'
             elif out_vars:
-                outs_str = ", ".join(f for f, _ in out_vars)
+                outs_str = ", ".join(out_vars)
                 run_str += T["run_call_ret"].format(
                     outs=outs_str,
                     clazz=class_name,
                     method=method,
                     args=args_str,
                 ) + "\n"
-                for field, _ in out_vars:
-                    run_str += f'        handle:setData("{field}", {field})\n'
+                for field in out_vars:
+                    run_str += f'        _node:setData("{field}", {field})\n'
             else:
                 run_str += T["run_call"].format(
                     clazz=class_name,
@@ -264,13 +305,11 @@ def generate():
                     args=args_str,
                 ) + "\n"
 
-            # Render file content
+            # -- Render file content -----------------------------------------
             content = T["file"].format(
                 category_snake=category_snake,
                 node_name_l=node_name_l,
                 pins=pins_str,
-                default_data=default_data_str,
-                draw=draw_str,
                 run=run_str,
             )
 
@@ -283,12 +322,22 @@ def generate():
             # Accumulate lang patch
             if category_snake not in lang_patch:
                 lang_patch[category_snake] = {}
-            lang_patch[category_snake][node_name_l] = f"{class_name}.{method}"
+            lang_patch[category_snake][node_name_l] = cmd.get("member", method)
+
+            short_desc = cmd.get("short_desc", "")
+            if short_desc:
+                if category_snake not in descriptions_patch:
+                    descriptions_patch[category_snake] = {}
+                descriptions_patch[category_snake][node_name_l] = short_desc
 
             generated += 1
 
     # Write lang patch JSON
-    lang_output = {"nodes_titles": {"opcode": lang_patch}}
+    lang_output = {
+        "nodes_titles": {"opcode": lang_patch},
+        "nodes_categories": {"opcode": categories_lang},
+        "nodes_descriptions": {"opcode": descriptions_patch},
+    }
     os.makedirs("output/nodes", exist_ok=True)
     with open("output/nodes/lang_en_patch.json", "w", encoding="utf-8") as f:
         json.dump(lang_output, f, indent=2, ensure_ascii=False)

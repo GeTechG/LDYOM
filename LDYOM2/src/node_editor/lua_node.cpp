@@ -53,6 +53,58 @@ sol::object LuaNodeHandle::getInput(int index) {
 	return typedPin->val();
 }
 
+sol::object LuaNodeHandle::getInputDefault(int index) {
+	if (!nodePtr)
+		return nilObject();
+
+	const auto& ins = nodePtr->getIns();
+	int i = index - 1;
+	if (i < 0 || i >= static_cast<int>(ins.size()))
+		return nilObject();
+
+	const auto& pin = ins[i];
+	if (pin->getDataType() == typeid(FlowToken))
+		return nilObject();
+	auto* typedPin = static_cast<ImFlow::InPin<sol::object>*>(pin.get());
+	return typedPin->getDefault();
+}
+
+void LuaNodeHandle::setInputDefault(int index, sol::object value) {
+	if (!nodePtr)
+		return;
+
+	const auto& ins = nodePtr->getIns();
+	int i = index - 1;
+	if (i < 0 || i >= static_cast<int>(ins.size()))
+		return;
+
+	const auto& pin = ins[i];
+	if (pin->getDataType() == typeid(FlowToken))
+		return;
+	auto* typedPin = static_cast<ImFlow::InPin<sol::object>*>(pin.get());
+	typedPin->setDefault(value);
+}
+
+bool LuaNodeHandle::isInputConnected(int index) {
+	if (!nodePtr)
+		return false;
+	const auto& ins = nodePtr->getIns();
+	int i = index - 1;
+	if (i < 0 || i >= static_cast<int>(ins.size()))
+		return false;
+	return ins[i]->isConnected();
+}
+
+bool LuaNodeHandle::isOutputConnected(int index) {
+	if (!nodePtr)
+		return false;
+	const auto& outs = nodePtr->getOuts();
+	int i = index - 1;
+	if (i < 0 || i >= static_cast<int>(outs.size()))
+		return false;
+	return outs[i]->isConnected();
+}
+
 sol::object LuaNodeHandle::getData(const std::string& key) const {
 	if (!nodeData.valid())
 		return nilObject();
@@ -79,9 +131,11 @@ void LuaNodeHandle::setRuntimeData(const std::string& key, sol::object value) {
 
 void LuaNodeHandle::sol_lua_register(sol::state_view lua) {
 	lua.new_usertype<LuaNodeHandle>("LuaNodeHandle", sol::no_constructor, "getInput", &LuaNodeHandle::getInput,
-	                                "getData", &LuaNodeHandle::getData, "setData", &LuaNodeHandle::setData,
-	                                "getRuntimeData", &LuaNodeHandle::getRuntimeData, "setRuntimeData",
-	                                &LuaNodeHandle::setRuntimeData);
+	                                "getInputDefault", &LuaNodeHandle::getInputDefault, "setInputDefault",
+	                                &LuaNodeHandle::setInputDefault, "isInputConnected", &LuaNodeHandle::isInputConnected,
+	                                "isOutputConnected", &LuaNodeHandle::isOutputConnected, "getData",
+	                                &LuaNodeHandle::getData, "setData", &LuaNodeHandle::setData, "getRuntimeData",
+	                                &LuaNodeHandle::getRuntimeData, "setRuntimeData", &LuaNodeHandle::setRuntimeData);
 }
 
 // ─── LuaNode ─────────────────────────────────────────────────────────────────
@@ -296,6 +350,60 @@ nlohmann::json LuaNode::serializeData() const {
 			j[key] = val.as<std::string>();
 	}
 	return j;
+}
+
+nlohmann::json LuaNode::serializePinDefaults() {
+	nlohmann::json arr = nlohmann::json::array();
+	auto guard = LuaManager::instance().getState();
+
+	for (const auto& pin : getIns()) {
+		if (pin->getDataType() == typeid(FlowToken)) {
+			arr.push_back(nullptr);
+			continue;
+		}
+		auto* typedPin = static_cast<ImFlow::InPin<sol::object>*>(pin.get());
+		sol::object val = typedPin->getDefault();
+		if (!val.valid() || val.get_type() == sol::type::lua_nil) {
+			arr.push_back(nullptr);
+		} else if (val.is<bool>()) {
+			arr.push_back(val.as<bool>());
+		} else if (val.is<int>()) {
+			arr.push_back(val.as<int>());
+		} else if (val.is<double>()) {
+			arr.push_back(val.as<double>());
+		} else if (val.is<std::string>()) {
+			arr.push_back(val.as<std::string>());
+		} else {
+			arr.push_back(nullptr);
+		}
+	}
+	return arr;
+}
+
+void LuaNode::deserializePinDefaults(const nlohmann::json& j) {
+	if (!j.is_array())
+		return;
+	auto guard = LuaManager::instance().getState();
+	auto& lua = guard.get();
+
+	const auto& ins = getIns();
+	const int count = std::min(static_cast<int>(j.size()), static_cast<int>(ins.size()));
+	for (int i = 0; i < count; ++i) {
+		if (ins[i]->getDataType() == typeid(FlowToken))
+			continue;
+		const auto& val = j[i];
+		if (val.is_null())
+			continue;
+		auto* typedPin = static_cast<ImFlow::InPin<sol::object>*>(ins[i].get());
+		if (val.is_boolean())
+			typedPin->setDefault(sol::make_object(lua, val.get<bool>()));
+		else if (val.is_number_integer())
+			typedPin->setDefault(sol::make_object(lua, val.get<int>()));
+		else if (val.is_number_float())
+			typedPin->setDefault(sol::make_object(lua, val.get<double>()));
+		else if (val.is_string())
+			typedPin->setDefault(sol::make_object(lua, val.get<std::string>()));
+	}
 }
 
 void LuaNode::deserializeData(const nlohmann::json& j) {

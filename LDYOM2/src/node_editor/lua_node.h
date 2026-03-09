@@ -24,6 +24,14 @@ struct LuaNodeHandle {
 	// Read value from an input pin by 1-based index (returns sol::nil if out of range or flow pin)
 	sol::object getInput(int index);
 
+	// Get/set the default value of an unconnected input pin by 1-based index
+	sol::object getInputDefault(int index);
+	void setInputDefault(int index, sol::object value);
+
+	// Check connection status of a pin by 1-based index
+	bool isInputConnected(int index);
+	bool isOutputConnected(int index);
+
 	// Persistent data accessors (serialized)
 	sol::object getData(const std::string& key) const;
 	void setData(const std::string& key, sol::object value);
@@ -48,6 +56,10 @@ class LuaNode : public ImFlow::BaseNode {
 
 	nlohmann::json serializeData() const;
 	void deserializeData(const nlohmann::json& j);
+
+	// Serialize/deserialize default values of unconnected input pins (array indexed by pin position)
+	nlohmann::json serializePinDefaults();
+	void deserializePinDefaults(const nlohmann::json& j);
 
 	const std::string& getNodeType() const { return m_typeKey; }
 	std::shared_ptr<LuaNodeHandle> getHandle() const { return m_handle; }

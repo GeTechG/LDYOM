@@ -53,7 +53,8 @@ nlohmann::json NodeGraphSerializer::toJson(ImFlow::ImNodeFlow* graph) {
         nodeJ["type"]   = luaNode->getNodeType();
         nodeJ["pos_x"]  = luaNode->getPos().x;
         nodeJ["pos_y"]  = luaNode->getPos().y;
-        nodeJ["data"]   = luaNode->serializeData();
+        nodeJ["data"]         = luaNode->serializeData();
+        nodeJ["pin_defaults"] = luaNode->serializePinDefaults();
         j["nodes"].push_back(nodeJ);
     }
 
@@ -117,6 +118,9 @@ void NodeGraphSerializer::fromJson(ImFlow::ImNodeFlow* graph, const nlohmann::js
 
         if (nodeJ.contains("data") && !nodeJ["data"].is_null()) {
             node->deserializeData(nodeJ["data"]);
+        }
+        if (nodeJ.contains("pin_defaults") && nodeJ["pin_defaults"].is_array()) {
+            node->deserializePinDefaults(nodeJ["pin_defaults"]);
         }
 
         // Use the serialized uid for link reconnection
