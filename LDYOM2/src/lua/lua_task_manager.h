@@ -6,7 +6,7 @@
 #include <vector>
 
 class LuaTaskManager {
-public:
+  public:
 	static LuaTaskManager& instance();
 
 	void processAll();
@@ -16,10 +16,11 @@ public:
 	bool run(std::string key, sol::function func);
 	bool isRunning(const std::string& key);
 	bool cancel(const std::string& key);
+	bool cancelAll();
 
 	static void registerBindings(sol::state_view lua);
 
-private:
+  private:
 	LuaTaskManager() = default;
 
 	enum class Reason { NextFrame, Sleep, WaitFor };
@@ -32,8 +33,7 @@ private:
 		bool completed = false;
 	};
 
-	void processResult(Task& task, sol::protected_function_result& result,
-	                   std::chrono::steady_clock::time_point now);
+	void processResult(Task& task, sol::protected_function_result& result, std::chrono::steady_clock::time_point now);
 
 	std::unordered_map<std::string, Task> m_tasks;
 	std::vector<std::pair<std::string, Task>> m_pending;

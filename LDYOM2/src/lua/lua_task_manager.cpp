@@ -143,15 +143,29 @@ bool LuaTaskManager::cancel(const std::string& key) {
 	auto it = m_tasks.find(key);
 	if (it != m_tasks.end()) {
 		it->second.completed = true;
+		LDYOM_INFO("Cancelled LuaTask [{}]", key);
 		return true;
 	}
 	for (auto& p : m_pending) {
 		if (p.first == key) {
 			p.second.completed = true;
+			LDYOM_INFO("Cancelled pending LuaTask [{}]", key);
 			return true;
 		}
 	}
 	return false;
+}
+
+bool LuaTaskManager::cancelAll() {
+	for (auto& [_, task] : m_tasks) {
+		LDYOM_INFO("Cancelled LuaTask [{}]", _);
+		task.completed = true;
+	}
+	for (auto& [_, task] : m_pending) {
+		LDYOM_INFO("Cancelled pending LuaTask [{}]", _);
+		task.completed = true;
+	}
+	return true;
 }
 
 void LuaTaskManager::registerBindings(sol::state_view lua) {

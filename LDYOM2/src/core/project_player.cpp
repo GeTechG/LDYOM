@@ -17,6 +17,7 @@
 #include <eFadeFlag.h>
 #include <extensions/ScriptCommands.h>
 #include <logger.h>
+#include <lua_task_manager.h>
 #include <task_manager.h>
 #include <timer_service.h>
 #include <utils/objective_utils.h>
@@ -145,6 +146,7 @@ ktwait ProjectPlayer::run() {
 				instance().m_state.isFaded = true;
 			}
 
+			LuaTaskManager::instance().cancelAll();
 			instance().projectTasklist->clear_all_tasks();
 			ScenesManager::instance().resetCurrentScene();
 			ScenesManager::instance().loadScene(newSceneId);
@@ -250,6 +252,7 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 		TaskManager::instance().removeTask("stop_cheat");
 		TaskManager::instance().removeTask("project_tasks");
 		TaskManager::instance().removeTask("scene_completion_timer");
+		LuaTaskManager::instance().cancelAll();
 		for (size_t i = PED_TYPE_PLAYER1; i <= PED_TYPE_MISSION8; i++) {
 			for (size_t j = PED_TYPE_PLAYER1; j <= PED_TYPE_MISSION8; j++) {
 				plugin::Command<plugin::Commands::SET_RELATIONSHIP>(TYPE_IGNORE, i, j);
