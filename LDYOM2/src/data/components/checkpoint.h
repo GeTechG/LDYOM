@@ -31,6 +31,8 @@ class Checkpoint : public Component {
 	static constexpr auto TYPE = "checkpoint";
 	static constexpr auto CATEGORY = "entities";
 
+	~Checkpoint();
+
 	static std::shared_ptr<Checkpoint> cast(std::shared_ptr<Component> component) {
 		return std::dynamic_pointer_cast<Checkpoint>(component);
 	}

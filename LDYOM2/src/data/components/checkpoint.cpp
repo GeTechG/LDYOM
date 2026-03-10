@@ -146,6 +146,8 @@ void components::Checkpoint::updateRotation() {
 
 void components::Checkpoint::updatePosition() {}
 
+components::Checkpoint::~Checkpoint() { despawn(); }
+
 void components::Checkpoint::spawn() {
 	despawn();
 
@@ -169,9 +171,9 @@ void components::Checkpoint::spawn() {
 		const float pointToY = this->entity->position[1] + dirY * radius;
 		const float pointToZ = this->entity->position[2];
 
-		plugin::Command<plugin::Commands::CREATE_CHECKPOINT>(
-			type, this->entity->position[0], this->entity->position[1], this->entity->position[2],
-			pointToX, pointToY, pointToZ, radius, &handle);
+		plugin::Command<plugin::Commands::CREATE_CHECKPOINT>(type, this->entity->position[0], this->entity->position[1],
+		                                                     this->entity->position[2], pointToX, pointToY, pointToZ,
+		                                                     radius, &handle);
 	}
 	updateRotation();
 
