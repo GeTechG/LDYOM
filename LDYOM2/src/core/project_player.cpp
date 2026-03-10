@@ -36,96 +36,124 @@ ktwait ProjectPlayer::run() {
 	TheCamera.Fade(0.5f, FADE_OUT);
 	instance().m_state.isFaded = true; // Mark as faded for first objective
 
-	const auto& settings = ScenesManager::instance().getCurrentScene().settings;
+	bool continueRunning = true;
+	while (continueRunning) {
+		const auto& settings = ScenesManager::instance().getCurrentScene().settings;
 
-	if (settings.isPrintSceneName) {
-		// PRINT SCENE NAME
-		static std::string sceneName;
-		sceneName = utf8_to_cp1251(ScenesManager::instance().getCurrentScene().info.name);
-		gxt_encode(sceneName);
-		CMessages::AddBigMessage((char*)sceneName.c_str(), 1000, STYLE_BOTTOM_RIGHT);
-	}
-
-	if (settings.isSceneSettingsEnabled) {
-		// SET RELATIONS
-		for (const auto& relation : settings.groupRelations) {
-			plugin::Command<plugin::Commands::SET_RELATIONSHIP>(relation.relationType, relation.ofPedType,
-			                                                    relation.toPedType);
+		if (settings.isPrintSceneName) {
+			// PRINT SCENE NAME
+			static std::string sceneName;
+			sceneName = utf8_to_cp1251(ScenesManager::instance().getCurrentScene().info.name);
+			gxt_encode(sceneName);
+			CMessages::AddBigMessage((char*)sceneName.c_str(), 1000, STYLE_BOTTOM_RIGHT);
 		}
-		// SET TIME
-		CClock::SetGameClock(settings.time[0], settings.time[1], 0);
 
-		if (settings.limitCompletionTime && settings.completionTime > 0) {
-			// SET COMPLETION TIME
-			auto completionTime = settings.completionTime * 1000; // Convert to milliseconds
-			TimerService::instance().addTimer(TheText.Get("RTIME"), true, completionTime);
-			TaskManager::instance().addTask("scene_completion_timer", [completionTime]() -> ktwait {
-				while (TimerService::instance().getTimerTime() > 0) {
-					co_await 1000;
+		if (settings.isSceneSettingsEnabled) {
+			// SET RELATIONS
+			for (const auto& relation : settings.groupRelations) {
+				plugin::Command<plugin::Commands::SET_RELATIONSHIP>(relation.relationType, relation.ofPedType,
+				                                                    relation.toPedType);
+			}
+			// SET TIME
+			CClock::SetGameClock(settings.time[0], settings.time[1], 0);
+
+			if (settings.limitCompletionTime && settings.completionTime > 0) {
+				// SET COMPLETION TIME
+				auto completionTime = settings.completionTime * 1000; // Convert to milliseconds
+				TimerService::instance().addTimer(TheText.Get("RTIME"), true, completionTime);
+				TaskManager::instance().addTask("scene_completion_timer", [completionTime]() -> ktwait {
+					while (TimerService::instance().getTimerTime() > 0) {
+						co_await 1000;
+					}
+					instance().failCurrentProject();
+				});
+
+			} else if (settings.isShowMissionTime) {
+				TimerService::instance().addTimer(TheText.Get("BB_19"), false, 0);
+			}
+
+			// SET TRAFFIC
+			plugin::Command<plugin::Commands::SET_PED_DENSITY_MULTIPLIER>(settings.trafficPed);
+			plugin::Command<plugin::Commands::SET_CAR_DENSITY_MULTIPLIER>(settings.trafficCar);
+
+			// SET WANTED
+			CWorld::Players[0].m_PlayerData.m_pWanted->SetWantedLevelNoDrop(settings.wantedMin);
+			CWanted::SetMaximumWantedLevel(settings.wantedMax);
+
+			// SET WEATHER
+			CWeather::ForceWeatherNow(static_cast<short>(settings.weather));
+
+			// SET RIOT
+			if (settings.riot) {
+				plugin::Command<plugin::Commands::SET_LA_RIOTS>(true);
+			} else {
+				plugin::Command<plugin::Commands::SET_LA_RIOTS>(false);
+			}
+		}
+
+		instance().onSceneStarted(instance().m_state.currentSceneId);
+
+		auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
+
+		for (int i = 0; i < static_cast<int>(objectives.size()); i++) {
+			instance().m_state.currentObjectiveIndex = i;
+			auto& objective = ObjectivesManager::instance().getUnsafeObjective(i);
+			auto objectiveType = objective.type;
+
+			auto shouldClearTasks =
+				objective_utils::isLastInterruptingObjectiveOfType(objectives, i, "core.cutscene") ||
+				objective_utils::isLastInterruptingObjectiveOfType(objectives, i, "core.player_animation");
+
+			if (shouldClearTasks && objectiveType != "core.cutscene" && objectiveType != "core.player_animation") {
+				auto player = FindPlayerPed();
+				if (player) {
+					plugin::Command<plugin::Commands::CLEAR_CHAR_TASKS>(player);
 				}
-				instance().failCurrentProject();
-			});
+			}
 
-		} else if (settings.isShowMissionTime) {
-			TimerService::instance().addTimer(TheText.Get("BB_19"), false, 0);
-		}
+			if (!objective_utils::isLastInterruptingObjectiveOfType(objectives, i, "core.cutscene") &&
+			    objectiveType == "core.cutscene") {
+				plugin::Command<plugin::Commands::DO_FADE>(500, 0);
+				co_await 600; // Wait 600ms for fade to complete
+				ProjectPlayer::instance().setFaded(true);
+			} else {
+				// Centralized fade in before each objective (as in DYOM lines 20537-20541)
+				// Only fade in if screen is currently black ($DYOM_faded == 1)
+				if (instance().m_state.isFaded) {
+					plugin::Command<plugin::Commands::DO_FADE>(500, 1); // Fade IN from black
+					instance().m_state.isFaded = false;
+				}
+			}
 
-		// SET TRAFFIC
-		plugin::Command<plugin::Commands::SET_PED_DENSITY_MULTIPLIER>(settings.trafficPed);
-		plugin::Command<plugin::Commands::SET_CAR_DENSITY_MULTIPLIER>(settings.trafficCar);
+			instance().onObjectiveStarted(i);
+			co_await objective.execute();
+			instance().onObjectiveCompleted(i);
 
-		// SET WANTED
-		CWorld::Players[0].m_PlayerData.m_pWanted->SetWantedLevelNoDrop(settings.wantedMin);
-		CWanted::SetMaximumWantedLevel(settings.wantedMax);
-
-		// SET WEATHER
-		CWeather::ForceWeatherNow(static_cast<short>(settings.weather));
-
-		// SET RIOT
-		if (settings.riot) {
-			plugin::Command<plugin::Commands::SET_LA_RIOTS>(true);
-		} else {
-			plugin::Command<plugin::Commands::SET_LA_RIOTS>(false);
-		}
-	}
-
-	instance().onSceneStarted(instance().m_state.currentSceneId);
-
-	auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
-
-	for (int i = 0; i < static_cast<int>(objectives.size()); i++) {
-		instance().m_state.currentObjectiveIndex = i;
-		auto& objective = ObjectivesManager::instance().getUnsafeObjective(i);
-		auto objectiveType = objective.type;
-
-		auto shouldClearTasks =
-			objective_utils::isLastInterruptingObjectiveOfType(objectives, i, "core.cutscene") ||
-			objective_utils::isLastInterruptingObjectiveOfType(objectives, i, "core.player_animation");
-
-		if (shouldClearTasks && objectiveType != "core.cutscene" && objectiveType != "core.player_animation") {
-			auto player = FindPlayerPed();
-			if (player) {
-				plugin::Command<plugin::Commands::CLEAR_CHAR_TASKS>(player);
+			if (instance().m_state.pendingSceneTransition.has_value()) {
+				break;
 			}
 		}
 
-		if (!objective_utils::isLastInterruptingObjectiveOfType(objectives, i, "core.cutscene") &&
-		    objectiveType == "core.cutscene") {
-			plugin::Command<plugin::Commands::DO_FADE>(500, 0);
-			co_await 600; // Wait 600ms for fade to complete
-			ProjectPlayer::instance().setFaded(true);
-		} else {
-			// Centralized fade in before each objective (as in DYOM lines 20537-20541)
-			// Only fade in if screen is currently black ($DYOM_faded == 1)
-			if (instance().m_state.isFaded) {
-				plugin::Command<plugin::Commands::DO_FADE>(500, 1); // Fade IN from black
-				instance().m_state.isFaded = false;
-			}
-		}
+		if (instance().m_state.pendingSceneTransition.has_value()) {
+			std::string newSceneId = instance().m_state.pendingSceneTransition.value();
+			instance().m_state.pendingSceneTransition.reset();
+			instance().m_state.currentSceneId = newSceneId;
 
-		instance().onObjectiveStarted(i);
-		co_await objective.execute();
-		instance().onObjectiveCompleted(i);
+			if (!instance().m_state.isFaded) {
+				plugin::Command<plugin::Commands::DO_FADE>(500, 0);
+				co_await 600;
+				instance().m_state.isFaded = true;
+			}
+
+			instance().projectTasklist->clear_all_tasks();
+			ScenesManager::instance().resetCurrentScene();
+			ScenesManager::instance().loadScene(newSceneId);
+			LDYOM_INFO("Scene transition to: {}", newSceneId);
+			co_await 1;
+			// continueRunning stays true — loop repeats with new scene
+		} else {
+			continueRunning = false;
+		}
 	}
 
 	co_await ProjectPlayer::playerLeaveAnyVehicle();
@@ -203,6 +231,10 @@ void ProjectPlayer::stopCurrentProject() {
 }
 
 void ProjectPlayer::failCurrentProject() { this->stopCurrentProject(); }
+
+void ProjectPlayer::requestSceneTransition(std::string_view sceneId) {
+	m_state.pendingSceneTransition = std::string(sceneId);
+}
 
 void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 	if (toPlayMode) {

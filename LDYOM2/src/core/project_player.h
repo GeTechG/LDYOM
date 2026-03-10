@@ -13,6 +13,7 @@ struct ProjectPlayerState {
 	int currentObjectiveIndex = 0;
 	std::string currentSceneId;
 	bool isFaded = false; // Tracks fade state: true = screen is black, false = screen is visible (analog of $DYOM_faded)
+	std::optional<std::string> pendingSceneTransition;
 };
 
 class ProjectPlayer {
@@ -45,6 +46,7 @@ class ProjectPlayer {
 	void stopCurrentProject();
 	void failCurrentProject();
 	void transitionPlayingState(bool toPlayMode);
+	void requestSceneTransition(std::string_view sceneId);
 
 	bool isPlaying() const { return m_state.isPlaying; }
 	std::string getCurrentSceneId() const { return m_state.currentSceneId; }

@@ -1,6 +1,7 @@
 #include "objectives_manager.h"
 #include "scenes_manager.h"
 #include <objectives/checkpoint.h>
+#include <objectives/goto_scene.h>
 #include <objectives/clock.h>
 #include <objectives/countdown.h>
 #include <objectives/cutscene.h>
@@ -123,4 +124,5 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<timeout_obj::Data>(timeout_obj::builder());
 	this->registerObjectiveBuilder<wanted_level::Data>(wanted_level::builder());
 	this->registerObjectiveBuilder<weather::Data>(weather::builder());
+	this->registerObjectiveBuilder<goto_scene::Data>(goto_scene::builder());
 }
