@@ -6,6 +6,7 @@
 #include <CWorld.h>
 #include <extensions/ScriptCommands.h>
 #include <optional>
+#include <utils/ktcoro_wait.hpp>
 
 inline std::optional<CVector> getTargetBlipCoordinates() {
 	// Get target blip index from menu manager (same as CLEO opcode 0AB6)
@@ -28,37 +29,61 @@ inline std::optional<CVector> getTargetBlipCoordinates() {
 	return coords;
 }
 
-inline void teleportPlayerToMarker() {
+inline ktwait teleportPlayerToMarker() {
 	auto player = FindPlayerPed();
 	if (!player)
-		return;
+		co_return;
 
-	// Check if player is playing
 	int playerId = 0;
 	if (!plugin::Command<plugin::Commands::IS_PLAYER_PLAYING>(playerId))
-		return;
+		co_return;
 
-	// Get target blip coordinates
 	auto targetCoords = getTargetBlipCoordinates();
 	if (!targetCoords.has_value())
-		return;
+		co_return;
 
-	// Get player heading to preserve it
 	float heading = player->m_fCurrentRotation * (180.0f / 3.14159265f);
-
-	// Get player reference
 	int playerRef = CPools::GetPedRef(player);
 
-	// Request collision and teleport directly
+	// Fade out to black
+	plugin::Command<plugin::Commands::SET_FADING_COLOUR>(0, 0, 0);
+	plugin::Command<plugin::Commands::DO_FADE>(500, 0);
+	co_await 500;
+
+	// Disable player control and prepare world state
+	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(playerId, false);
+	plugin::Command<plugin::Commands::SET_AREA_VISIBLE>(0);
+	plugin::Command<plugin::Commands::CLEAR_EXTRA_COLOURS>(false);
+	plugin::Command<plugin::Commands::SET_PLAYER_IS_IN_STADIUM>(false);
+
+	// Load scene at target location
 	plugin::Command<plugin::Commands::REQUEST_COLLISION>(targetCoords->x, targetCoords->y);
 	plugin::Command<plugin::Commands::LOAD_SCENE>(targetCoords->x, targetCoords->y, targetCoords->z);
 
-	// Teleport player
-	plugin::Command<plugin::Commands::SET_CHAR_AREA_VISIBLE>(playerRef, 0);
-	plugin::Command<plugin::Commands::SET_CHAR_COORDINATES>(playerRef, targetCoords->x, targetCoords->y, targetCoords->z);
-	plugin::Command<plugin::Commands::SET_CHAR_HEADING>(playerRef, heading);
+	// Teleport player (Z=-100.0 lets the game find the actual ground Z)
+	if (plugin::Command<plugin::Commands::IS_PLAYER_PLAYING>(playerId)) {
+		plugin::Command<plugin::Commands::SET_CHAR_AREA_VISIBLE>(playerRef, 0);
+		plugin::Command<plugin::Commands::SET_CHAR_COORDINATES>(playerRef, targetCoords->x, targetCoords->y, -100.0f);
+		plugin::Command<plugin::Commands::SET_CHAR_HEADING>(playerRef, heading);
+	}
 
-	// Reset camera
+	// Wait 1 frame, then until player is stable
+	co_await 1;
+	while (!plugin::Command<plugin::Commands::IS_PLAYER_PLAYING>(playerId))
+		co_await 1;
+	co_await 1500;
+
+	// Fade in
+	plugin::Command<plugin::Commands::DO_FADE>(1000, 1);
+	while (plugin::Command<plugin::Commands::GET_FADING_STATUS>())
+		co_await 1;
+
+	co_await 1;
+	while (!plugin::Command<plugin::Commands::IS_PLAYER_PLAYING>(playerId))
+		co_await 1;
+
+	// Re-enable player control and reset camera
+	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(playerId, true);
 	plugin::Command<plugin::Commands::SET_CAMERA_BEHIND_PLAYER>();
 	plugin::Command<plugin::Commands::RESTORE_CAMERA_JUMPCUT>();
 }

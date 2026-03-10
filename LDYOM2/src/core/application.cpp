@@ -64,7 +64,7 @@ void Application::initialize() {
 
 		Hotkeys::instance().addHotkeyCallback("teleportToMarker", []() {
 			if (!WindowManager::instance().isAnyWindowOpen()) {
-				teleportPlayerToMarker();
+				TaskManager::instance().addTask("teleportToMarker", teleportPlayerToMarker);
 			}
 		});
 
