@@ -35,6 +35,7 @@ class ScenesManager {
 	void unloadCurrentScene();
 
 	void loadScene(std::string_view sceneId);
+	void createScene();
 	void removeScene(std::string_view sceneId);
 	void saveCurrentScene();
 

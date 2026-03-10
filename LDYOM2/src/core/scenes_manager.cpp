@@ -125,6 +125,14 @@ void ScenesManager::loadSceneInternal(std::string_view sceneId) {
 	}
 }
 
+void ScenesManager::createScene() {
+	m_currentScene = std::make_unique<Scene>(Scene{.info = SceneInfo{.name = _("scenes.default_scene_name")}});
+	if (auto nodeEditor = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor")) {
+		(*nodeEditor)->clearGraph();
+	}
+	LDYOM_INFO("Created new scene");
+}
+
 void ScenesManager::removeScene(std::string_view sceneId) {
 	auto it = std::ranges::find_if(m_scenesInfo, [&sceneId](const SceneInfo& info) { return info.id == sceneId; });
 	if (it != m_scenesInfo.end()) {

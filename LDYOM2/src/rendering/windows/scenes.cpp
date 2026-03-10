@@ -58,6 +58,13 @@ void ScenesWindow::renderContent(ScenesWindow* window) {
 	if (ImGui::Button(_("scenes.save").c_str())) {
 		ScenesManager::instance().saveCurrentScene();
 	}
+	ImGui::SameLine();
+	if (ImGui::Button(_("scenes.create").c_str())) {
+		ScenesManager::instance().saveCurrentScene();
+		ScenesManager::instance().createScene();
+		ScenesManager::instance().saveCurrentScene();
+		window->m_selectedSceneIndex = -1;
+	}
 	if (!scenesInfo.empty()) {
 		ImGui::BeginDisabled(window->m_selectedSceneIndex < 0 ||
 		                     window->m_selectedSceneIndex >= static_cast<int>(scenesInfo.size()));
