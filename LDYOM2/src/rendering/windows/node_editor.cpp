@@ -569,8 +569,7 @@ void NodeEditorWindow::loadGraph(const std::string& filePath) {
 }
 
 void NodeEditorWindow::clearGraph() {
-	if (m_workspaces.empty())
-		return;
-	auto& ws = activeWorkspace();
-	initNodeFlowForWorkspace(ws);
+	m_workspaces.clear();
+	m_activeIdx = 0;
+	addWorkspace("Workspace 1");
 }
