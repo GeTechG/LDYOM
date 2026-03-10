@@ -41,6 +41,9 @@ void MainMenu::renderContent(Window* window) {
 		WindowManager::instance().openWindow("node_editor");
 		window->close();
 	}
+	if (ImGui::Button(_("tools.title", ICON_FA_SCREWDRIVER_WRENCH).c_str(), buttonSize)) {
+		WindowManager::instance().openWindow("tools_window");
+	}
 	if (ImGui::Button(_("addons_settings.title", ICON_FA_PUZZLE_PIECE).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("addons_settings");
 	}
