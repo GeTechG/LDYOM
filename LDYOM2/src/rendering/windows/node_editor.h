@@ -3,6 +3,7 @@
 #include "window.h"
 #include <ImNodeFlow.h>
 #include <lua_node.h>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -22,16 +23,27 @@ class NodeEditorWindow : public Window {
     int m_renamingIdx = -1;
     char m_renameBuffer[128]{};
 
-    // Context-menu search
-    char m_searchBuf[128]{};
+    // Context-menu / node picker state
+    char m_searchBuf[256]{};
+    std::string m_selectedNodeType;
 
     struct FilteredEntry {
         std::string type;
-        std::string label;
+        std::string label; // category / icon title
         std::string desc;
     };
     std::string m_lastSearch;
     std::vector<FilteredEntry> m_filteredResults;
+
+    // Category tree for the node picker
+    struct CategoryNode {
+        std::string name;
+        std::string fullPath;
+        std::string fullCategory; // non-empty when this level maps to a real registry category
+        std::map<std::string, CategoryNode> children; // ordered by segment name
+        std::vector<std::string> nodeTypes;
+    };
+    CategoryNode m_rootCategory;
 
     Workspace& activeWorkspace();
     void addWorkspace(const std::string& name);
@@ -39,6 +51,9 @@ class NodeEditorWindow : public Window {
 
     void renderSidebar();
     void rebuildFilteredResults(const std::string& searchLower);
+    void rebuildNodeTree();
+    void renderNodeTreeNode(const CategoryNode& node, Workspace& ws);
+    void renderNodeDescription();
     void renderContextMenu();
 
     static void renderContent(NodeEditorWindow* window);

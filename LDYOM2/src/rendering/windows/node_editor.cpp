@@ -279,27 +279,121 @@ void NodeEditorWindow::rebuildFilteredResults(const std::string& searchLower) {
 			std::string icon;
 			if (descReg)
 				icon = NodeStyleRegistry::instance().getIcon(descReg->styleKey);
-			std::string label = categoryDisplay + " / " + (icon.empty() ? title : icon + " " + title);
+			// label shown in search list: "icon title  [category]"
+			std::string label = (icon.empty() ? title : icon + " " + title);
 			m_filteredResults.push_back({type, std::move(label), std::move(desc)});
 		}
 	}
 }
 
-namespace {
-void showNodeDescriptionTooltip(const std::string& desc) {
-	if (!desc.empty()) {
-		ImGui::BeginTooltip();
-		ImGui::TextUnformatted(desc.c_str());
-		ImGui::EndTooltip();
+void NodeEditorWindow::rebuildNodeTree() {
+	m_rootCategory = CategoryNode{};
+	auto& registry = NodeRegistry::instance();
+
+	for (const auto& category : registry.getCategories()) {
+		CategoryNode* cur = &m_rootCategory;
+		std::string path;
+		std::string remaining = category;
+		while (true) {
+			auto dotPos = remaining.find('.');
+			std::string seg = (dotPos == std::string::npos) ? remaining : remaining.substr(0, dotPos);
+			if (!path.empty())
+				path += '.';
+			path += seg;
+			auto& child = cur->children[seg];
+			child.name = seg;
+			child.fullPath = path;
+			if (dotPos == std::string::npos) {
+				child.fullCategory = category;
+				child.nodeTypes = registry.getTypesForCategory(category);
+				break;
+			}
+			remaining = remaining.substr(dotPos + 1);
+			cur = &child;
+		}
 	}
 }
-} // namespace
+
+void NodeEditorWindow::renderNodeTreeNode(const CategoryNode& node, Workspace& ws) {
+	auto& registry = NodeRegistry::instance();
+	auto& loc = Localization::instance().getI18N();
+
+	// Nodes directly in this category
+	for (const auto& type : node.nodeTypes) {
+		const auto* desc = registry.find(type);
+		std::string icon;
+		if (desc)
+			icon = NodeStyleRegistry::instance().getIcon(desc->styleKey);
+		std::string title = _(fmt::format("nodes_titles.{}", type));
+		std::string label = (icon.empty() ? title : icon + " " + title) + "##nd_" + type;
+
+		bool selected = (m_selectedNodeType == type);
+		if (ImGui::Selectable(label.c_str(), selected, ImGuiSelectableFlags_AllowDoubleClick)) {
+			m_selectedNodeType = type;
+			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+				registry.ensureLoaded(type);
+				ws.nodeFlow->placeNode<LuaNode>(type);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+	}
+
+	// Subcategories as tree nodes
+	for (const auto& [seg, child] : node.children) {
+		std::string locKey = fmt::format("nodes_categories.{}", child.fullPath);
+		std::string titleLocKey = locKey + ".title";
+		std::string menuLabel = loc.keyExists(titleLocKey) ? _(titleLocKey) : _(locKey);
+		std::string treeId = menuLabel + "##cat_" + child.fullPath;
+
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
+		bool open = ImGui::TreeNodeEx(treeId.c_str(), flags, "%s %s", ICON_FA_FOLDER, menuLabel.c_str());
+		if (open) {
+			renderNodeTreeNode(child, ws);
+			ImGui::TreePop();
+		}
+	}
+}
+
+void NodeEditorWindow::renderNodeDescription() {
+	auto& registry = NodeRegistry::instance();
+	auto& loc = Localization::instance().getI18N();
+
+	if (m_selectedNodeType.empty()) {
+		ImGui::TextDisabled(_("create_new_objective.no_selection").c_str());
+		return;
+	}
+
+	const auto* desc = registry.find(m_selectedNodeType);
+	std::string icon;
+	if (desc)
+		icon = NodeStyleRegistry::instance().getIcon(desc->styleKey);
+	std::string title = _(fmt::format("nodes_titles.{}", m_selectedNodeType));
+
+	if (icon.empty())
+		ImGui::TextUnformatted(title.c_str());
+	else
+		ImGui::Text("%s %s", icon.c_str(), title.c_str());
+
+	ImGui::Separator();
+
+	std::string descKey = fmt::format("nodes_descriptions.{}", m_selectedNodeType);
+	if (loc.keyExists(descKey)) {
+		ImGui::TextWrapped("%s", _(descKey).c_str());
+	} else {
+		ImGui::TextDisabled(_("create_new_objective.no_description").c_str());
+	}
+
+	if (desc && !desc->category.empty()) {
+		ImGui::Spacing();
+		ImGui::TextDisabled("%s: %s", _("create_new_component.category").c_str(),
+		                    buildCategoryDisplayName(desc->category).c_str());
+	}
+}
 
 void NodeEditorWindow::renderContextMenu() {
 	auto& registry = NodeRegistry::instance();
-	auto categories = registry.getCategories();
 
-	if (categories.empty()) {
+	if (registry.getCategories().empty()) {
 		ImGui::TextDisabled("(no nodes registered)");
 		return;
 	}
@@ -309,109 +403,78 @@ void NodeEditorWindow::renderContextMenu() {
 		memset(m_searchBuf, 0, sizeof(m_searchBuf));
 		m_lastSearch.clear();
 		m_filteredResults.clear();
+		m_selectedNodeType.clear();
+		rebuildNodeTree();
 	}
 
-	ImGui::SetNextItemWidth(260.0f);
-	ImGui::InputTextWithHint("##node_search", ICON_FA_MAGNIFYING_GLASS " Search...", m_searchBuf, sizeof(m_searchBuf));
+	constexpr float kTreeW = 320.0f;
+	constexpr float kDescW = 360.0f;
+	constexpr float kPanelH = 420.0f;
+	constexpr float kTotalW = kTreeW + kDescW + 8.0f; // 8 = item spacing
+
+	// ── Search bar ──────────────────────────────────────────────────────────
+	ImGui::SetNextItemWidth(kTotalW);
+	ImGui::InputTextWithHint("##node_search", ICON_FA_MAGNIFYING_GLASS " Search...", m_searchBuf,
+	                         sizeof(m_searchBuf));
 
 	std::string searchLower(m_searchBuf);
 	std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
 	bool isSearching = !searchLower.empty();
 
+	if (isSearching && searchLower != m_lastSearch) {
+		m_lastSearch = searchLower;
+		rebuildFilteredResults(searchLower);
+	}
+
 	auto& ws = activeWorkspace();
 
+	// ── Left panel: tree / search results ───────────────────────────────────
+	ImGui::BeginChild("##node_tree_panel", ImVec2(kTreeW, kPanelH), ImGuiChildFlags_FrameStyle);
+
 	if (isSearching) {
-		if (searchLower != m_lastSearch) {
-			m_lastSearch = searchLower;
-			rebuildFilteredResults(searchLower);
-		}
-
-		ImGui::BeginChild("##node_search_list", ImVec2(260.0f, 320.0f), false);
-		for (const auto& entry : m_filteredResults) {
-			if (ImGui::Selectable(entry.label.c_str())) {
-				registry.ensureLoaded(entry.type);
-				ws.nodeFlow->placeNode<LuaNode>(entry.type);
-				ImGui::CloseCurrentPopup();
-			}
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
-				showNodeDescriptionTooltip(entry.desc);
-		}
-		ImGui::EndChild();
-	} else {
-		// Build multi-level category tree from dot-separated category strings.
-		struct TreeNode {
-			std::map<std::string, TreeNode> children; // segment -> child (ordered)
-			std::string fullCategory;                 // non-empty when this level is an actual registry category
-			std::string fullPath;                     // full dot-separated path
-		};
-
-		TreeNode root;
-		for (const auto& category : categories) {
-			TreeNode* cur = &root;
-			std::string path;
-			std::string remaining = category;
-			while (true) {
-				auto dotPos = remaining.find('.');
-				std::string seg = (dotPos == std::string::npos) ? remaining : remaining.substr(0, dotPos);
-				if (!path.empty())
-					path += '.';
-				path += seg;
-				auto& child = cur->children[seg];
-				child.fullPath = path;
-				if (dotPos == std::string::npos) {
-					child.fullCategory = category;
-					break;
-				}
-				remaining = remaining.substr(dotPos + 1);
-				cur = &child;
-			}
-		}
-
-		auto& loc = Localization::instance().getI18N();
-
-		std::function<void(const TreeNode&)> renderTree = [&](const TreeNode& node) {
-			for (const auto& [seg, child] : node.children) {
-				std::string locKey = fmt::format("nodes_categories.{}", child.fullPath);
-				std::string titleLocKey = fmt::format("{}.title", locKey);
-				std::string menuLabel = loc.keyExists(titleLocKey) ? _(titleLocKey) : _(locKey);
-
-				if (ImGui::BeginMenu(menuLabel.c_str())) {
-					// Render nodes directly in this category
-					if (!child.fullCategory.empty()) {
-						auto types = registry.getTypesForCategory(child.fullCategory);
-						for (const auto& type : types) {
-							const auto* desc = registry.find(type);
-							auto title = _(fmt::format("nodes_titles.{}", type));
-							std::string itemLabel;
-							if (desc) {
-								const std::string& icon = NodeStyleRegistry::instance().getIcon(desc->styleKey);
-								itemLabel = icon.empty() ? title : icon + " " + title;
-							} else {
-								itemLabel = title;
-							}
-							if (ImGui::MenuItem(itemLabel.c_str())) {
-								registry.ensureLoaded(type);
-								ws.nodeFlow->placeNode<LuaNode>(type);
-							}
-							if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
-								std::string descKey = fmt::format("nodes_descriptions.{}", type);
-								if (loc.keyExists(descKey))
-									showNodeDescriptionTooltip(_(descKey));
-							}
-						}
-						if (!child.children.empty())
-							ImGui::Separator();
+		ImGuiListClipper clipper;
+		clipper.Begin(static_cast<int>(m_filteredResults.size()));
+		while (clipper.Step()) {
+			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i) {
+				const auto& entry = m_filteredResults[i];
+				bool selected = (m_selectedNodeType == entry.type);
+				std::string selLabel = entry.label + "##srch_" + entry.type;
+				if (ImGui::Selectable(selLabel.c_str(), selected, ImGuiSelectableFlags_AllowDoubleClick)) {
+					m_selectedNodeType = entry.type;
+					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+						registry.ensureLoaded(entry.type);
+						ws.nodeFlow->placeNode<LuaNode>(entry.type);
+						ImGui::CloseCurrentPopup();
 					}
-					renderTree(child);
-					ImGui::EndMenu();
 				}
 			}
-		};
-
-		ImGui::BeginChild("##cat_scroll", ImVec2(ImGui::GetContentRegionAvail().x, 320.0f), false);
-		renderTree(root);
-		ImGui::EndChild();
+		}
+		clipper.End();
+	} else {
+		renderNodeTreeNode(m_rootCategory, ws);
 	}
+
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+
+	// ── Right panel: description ─────────────────────────────────────────────
+	ImGui::BeginChild("##node_desc_panel", ImVec2(kDescW, kPanelH), ImGuiChildFlags_FrameStyle);
+	renderNodeDescription();
+	ImGui::EndChild();
+
+	// ── Place button ─────────────────────────────────────────────────────────
+	ImGui::Separator();
+	bool canPlace = !m_selectedNodeType.empty();
+	if (!canPlace)
+		ImGui::BeginDisabled();
+	if (ImGui::Button(_("create").c_str(), ImVec2(kTotalW, 0))) {
+		registry.ensureLoaded(m_selectedNodeType);
+		ws.nodeFlow->placeNode<LuaNode>(m_selectedNodeType);
+		ImGui::CloseCurrentPopup();
+	}
+	if (!canPlace)
+		ImGui::EndDisabled();
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
