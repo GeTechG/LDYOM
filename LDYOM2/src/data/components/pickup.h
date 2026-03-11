@@ -57,8 +57,8 @@ class Pickup : public Component {
 	void onUpdate(float deltaTime) override;
 	void onReset() override;
 
-	void spawn();
-	void despawn();
+	void spawn() override;
+	void despawn() override;
 
 	static bool isSpecialComponent() { return true; }
 	static void sol_lua_register(sol::state_view lua_state);

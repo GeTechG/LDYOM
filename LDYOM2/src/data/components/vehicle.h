@@ -92,8 +92,8 @@ class Vehicle : public Component {
 	void onUpdate(float deltaTime) override;
 	void onReset() override;
 
-	void spawn();
-	void despawn();
+	void spawn() override;
+	void despawn() override;
 	int getVehicleRef() const { return this->handle ? CPools::GetVehicleRef(this->handle.get()) : -1; }
 
 	// Color methods

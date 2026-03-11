@@ -13,7 +13,7 @@
 #include <windows/node_editor.h>
 
 const std::string ScenesManager::SCENE_FOLDER_NAME = "scenes";
-const std::string ScenesManager::NODE_FOLDER_NAME  = "scene_nodes";
+const std::string ScenesManager::NODE_FOLDER_NAME = "scene_nodes";
 
 ScenesManager::ScenesManager() {
 	this->m_currentScene = std::make_unique<Scene>(Scene{.info = SceneInfo{.name = _("scenes.default_scene_name")}});
@@ -112,9 +112,8 @@ void ScenesManager::loadSceneInternal(std::string_view sceneId) {
 			LDYOM_INFO("Loaded scene: {}", m_currentScene->info.name);
 
 			if (auto nodeEditor = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor")) {
-				// (*nodeEditor)->clearGraph();
-				(*nodeEditor)
-					->loadGraph(projectPath(NODE_FOLDER_NAME) + "/" + std::string(sceneId) + ".json");
+				(*nodeEditor)->clearGraph();
+				(*nodeEditor)->loadGraph(projectPath(NODE_FOLDER_NAME) + "/" + std::string(sceneId) + ".json");
 			}
 		} else {
 			LDYOM_ERROR("Failed to open scene file: {}", it->name);
@@ -139,6 +138,8 @@ void ScenesManager::removeScene(std::string_view sceneId) {
 		std::filesystem::path scenePath(projectPath(SCENE_FOLDER_NAME) + "/" + it->id + ".json");
 		if (std::filesystem::remove(scenePath)) {
 			std::string sceneIdStr(sceneId);
+			std::filesystem::path nodePath(projectPath(NODE_FOLDER_NAME) + "/" + sceneIdStr + ".json");
+			std::filesystem::remove(nodePath);
 			m_scenesInfo.erase(it);
 			LDYOM_INFO("Removed scene: {}", sceneIdStr);
 		} else {

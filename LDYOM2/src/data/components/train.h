@@ -76,8 +76,8 @@ class Train : public Component {
 	void onUpdate(float deltaTime) override;
 	void onReset() override;
 
-	void spawn();
-	void despawn();
+	void spawn() override;
+	void despawn() override;
 	int getTrainRef() const { return this->handle ? CPools::GetVehicleRef(this->handle.get()) : -1; }
 
 	static bool isSpecialComponent() { return true; }

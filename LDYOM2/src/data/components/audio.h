@@ -81,8 +81,8 @@ class Audio : public Component {
 	void onUpdate(float deltaTime) override;
 	void onReset() override;
 
-	void spawn();
-	void despawn();
+	void spawn() override;
+	void despawn() override;
 
 	static void loadAudioFilesList();
 	static bool isSpecialComponent() { return true; }

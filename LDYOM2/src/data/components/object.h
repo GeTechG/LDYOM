@@ -61,8 +61,8 @@ class Object : public Component {
 	void onUpdate(float deltaTime) override;
 	void onReset() override;
 
-	void spawn();
-	void despawn();
+	void spawn() override;
+	void despawn() override;
 	int getObjectRef() const { return this->handle ? CPools::GetObjectRef(this->handle.get()) : -1; }
 
 	static bool isSpecialComponent() { return true; }

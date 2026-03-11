@@ -43,6 +43,8 @@ class Component {
 	virtual void onUpdate(float deltaTime) {}
 	virtual void onReset() { isInitialized = false; }
 	virtual void onDestroy() {} // Called when component is explicitly removed from entity
+	virtual void spawn() {}
+	virtual void despawn() {}
 
 	static bool isSpecialComponent() { return false; }
 	static void sol_lua_register(sol::state_view lua_state);
