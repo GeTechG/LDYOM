@@ -93,7 +93,7 @@ void Entity::moveComponentDown(size_t index) {
 
 void Entity::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<Entity>("Entity");
-	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Entity, name, id, position, rotation, scale, areaId, getComponents)
+	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Entity, name, id, position, rotation, scale, areaId, getComponents, getComponent, hasComponent)
 }
 
 void to_json(nlohmann::json& j, const Entity& p) {
