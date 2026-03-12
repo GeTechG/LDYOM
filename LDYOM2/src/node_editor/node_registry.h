@@ -63,6 +63,7 @@ struct NodeDescriptor {
 	std::string type; // e.g. "my_addon.delay"
 	std::string category;
 	std::string styleKey; // semantic key registered via NodeStyleRegistry, e.g. "event", "function"
+	bool is_pure = false; // pure (value) node: no flow pins, pull-based evaluation with per-step caching
 	std::vector<NodePinDescriptor> pins;
 	sol::table defaultData; // optional: initial key/value pairs for nodeData
 	sol::protected_function on_init;

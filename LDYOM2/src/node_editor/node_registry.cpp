@@ -110,6 +110,8 @@ bool NodeRegistry::registerNode(const sol::table& descriptor) {
 	auto styleOpt = descriptor.get<sol::optional<std::string>>("style");
 	desc.styleKey = styleOpt.value_or("cyan");
 
+	desc.is_pure = descriptor.get_or("is_pure", false);
+
 	// Parse pins
 	auto pinsTable = descriptor.get<sol::optional<sol::table>>("pins");
 	if (pinsTable) {

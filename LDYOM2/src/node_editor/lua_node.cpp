@@ -117,25 +117,26 @@ void LuaNodeHandle::setData(const std::string& key, sol::object value) {
 	}
 }
 
-sol::object LuaNodeHandle::getRuntimeData(const std::string& key) const {
-	if (!runtimeData.valid())
+sol::object LuaNodeHandle::getOutput(int index) {
+	if (!outputData.valid())
 		return nilObject();
-	return runtimeData.get<sol::object>(key);
+
+	return outputData.get<sol::object>(index);
 }
 
-void LuaNodeHandle::setRuntimeData(const std::string& key, sol::object value) {
-	if (runtimeData.valid()) {
-		runtimeData[key] = value;
+void LuaNodeHandle::setOutput(int index, sol::object value) {
+	if (outputData.valid()) {
+		outputData[index] = value;
 	}
 }
 
 void LuaNodeHandle::sol_lua_register(sol::state_view lua) {
-	lua.new_usertype<LuaNodeHandle>("LuaNodeHandle", sol::no_constructor, "getInput", &LuaNodeHandle::getInput,
-	                                "getInputDefault", &LuaNodeHandle::getInputDefault, "setInputDefault",
-	                                &LuaNodeHandle::setInputDefault, "isInputConnected", &LuaNodeHandle::isInputConnected,
-	                                "isOutputConnected", &LuaNodeHandle::isOutputConnected, "getData",
-	                                &LuaNodeHandle::getData, "setData", &LuaNodeHandle::setData, "getRuntimeData",
-	                                &LuaNodeHandle::getRuntimeData, "setRuntimeData", &LuaNodeHandle::setRuntimeData);
+	lua.new_usertype<LuaNodeHandle>(
+		"LuaNodeHandle", sol::no_constructor, "getInput", &LuaNodeHandle::getInput, "getInputDefault",
+		&LuaNodeHandle::getInputDefault, "setInputDefault", &LuaNodeHandle::setInputDefault, "isInputConnected",
+		&LuaNodeHandle::isInputConnected, "isOutputConnected", &LuaNodeHandle::isOutputConnected, "getData",
+		&LuaNodeHandle::getData, "setData", &LuaNodeHandle::setData, "getOutput", &LuaNodeHandle::getOutput,
+		"setOutput", &LuaNodeHandle::setOutput);
 }
 
 // ─── LuaNode ─────────────────────────────────────────────────────────────────
@@ -161,7 +162,7 @@ LuaNode::LuaNode(const std::string& type)
 	{
 		auto guard = LuaManager::instance().getState();
 		m_handle->nodeData = guard.get().create_table();
-		m_handle->runtimeData = guard.get().create_table();
+		m_handle->outputData = guard.get().create_table();
 
 		if (desc->defaultData.valid()) {
 			for (auto& kv : desc->defaultData) {
@@ -214,7 +215,8 @@ auto LuaNode::makePinRenderer(sol::protected_function luaRenderer) -> std::funct
 }
 
 void LuaNode::setupPins(const NodeDescriptor& desc) {
-	for (const auto& pin : desc.pins) {
+	for (size_t i = 0; i < desc.pins.size(); ++i) {
+		const auto& pin = desc.pins[i];
 		if (pin.dir == "in") {
 			if (pin.type == "flow") {
 				auto p = addIN<FlowToken>(_(pin.title), FlowToken{}, ImFlow::ConnectionFilter::SameType(),
@@ -236,14 +238,23 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 			}
 		} else { // "out"
 			if (pin.type == "flow") {
-				auto p = addOUT<FlowToken>(_(pin.title), ImFlow::PinStyle::white());
+				auto p = addOUT<FlowToken>(_(pin.title.starts_with("##") ? "" : pin.title), ImFlow::PinStyle::white());
 				p->behaviour([] { return FlowToken{}; });
 				if (pin.on_render.valid())
 					p->renderer(makePinRenderer(pin.on_render));
 				PinSemanticRegistry::instance().registerPin(p.get(), "flow");
 			} else {
-				auto p = addOUT<sol::object>(_(pin.title), pinStyleForType(pin.type));
-				if (pin.behaviour.valid()) {
+				auto p =
+					addOUT<sol::object>(_(pin.title.starts_with("##") ? "" : pin.title), pinStyleForType(pin.type));
+				if (desc.is_pure) {
+					// Pure node: evaluate on_execute once per generation, then return cached data.
+					p->behaviour([this, pinTitle = pin.title, i]() -> sol::object {
+						if (!m_handle)
+							return nilObject();
+						evaluatePure();
+						return m_handle->getOutput(i + 1);
+					});
+				} else if (pin.behaviour.valid()) {
 					p->behaviour([this, luaBehaviour = pin.behaviour]() -> sol::object {
 						if (!m_handle)
 							return nilObject();
@@ -258,10 +269,10 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 					});
 				} else {
 					// Fallback: read from nodeData by pin title (set via handle:setData)
-					p->behaviour([this, pinTitle = pin.title]() -> sol::object {
+					p->behaviour([this, pinTitle = pin.title, i]() -> sol::object {
 						if (!m_handle)
 							return nilObject();
-						return m_handle->getData(pinTitle);
+						return m_handle->getOutput(i + 1);
 					});
 				}
 				if (pin.on_render.valid())
@@ -269,6 +280,24 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 				PinSemanticRegistry::instance().registerPin(p.get(), pin.type);
 			}
 		}
+	}
+}
+
+void LuaNode::evaluatePure() {
+	const uint64_t current = s_evalGeneration.load(std::memory_order_relaxed);
+	if (m_pureGeneration == current)
+		return; // already computed this generation
+	m_pureGeneration = current;
+
+	const NodeDescriptor* desc = NodeRegistry::instance().find(m_typeKey);
+	if (!desc || !desc->on_execute.valid())
+		return;
+
+	auto guard = LuaManager::instance().getState();
+	auto result = desc->on_execute(m_handle);
+	if (!result.valid()) {
+		sol::error err = result;
+		LDYOM_ERROR("LuaNode pure on_execute error for '{}': {}", m_typeKey, err.what());
 	}
 }
 

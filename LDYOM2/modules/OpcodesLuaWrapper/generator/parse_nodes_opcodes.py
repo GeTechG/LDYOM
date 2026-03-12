@@ -18,6 +18,7 @@ TEMPLATES = {
         "    type = TYPE,\n"
         '    category = "opcode.{category_snake}",\n'
         '    style = "function",\n'
+        "{is_pure_line}"
         "    pins = {{{pins}\n"
         "    }},\n"
         "    on_execute = function(_node)\n"
@@ -259,11 +260,12 @@ def generate():
                 pins_str += T["pin_flow_out"]
                 pin_idx += 1
             else:
+                bool_out_pin_idx = pin_idx
                 pins_str += T["pin_bool_out"]
                 pin_idx += 1
 
             # -- Output data pins (non-condition only) ------------------------
-            out_vars = []
+            out_vars = []  # list of (field, pin_idx)
             if not is_condition:
                 for param in outputs:
                     field    = param_field(param)
@@ -274,7 +276,7 @@ def generate():
                     pins_str += T["pin_data_out"].format(
                         title=title, pin_type=pin_type
                     )
-                    out_vars.append(field)
+                    out_vars.append((field, pin_idx))
                     pin_idx += 1
 
             # -- Build opcode call -------------------------------------------
@@ -287,17 +289,17 @@ def generate():
                     method=method,
                     args=args_str,
                 ) + "\n"
-                run_str += '        _node:setData("_result", result)\n'
+                run_str += f'        _node:setOutput({bool_out_pin_idx}, result)\n'
             elif out_vars:
-                outs_str = ", ".join(out_vars)
+                outs_str = ", ".join(f for f, _ in out_vars)
                 run_str += T["run_call_ret"].format(
                     outs=outs_str,
                     clazz=class_name,
                     method=method,
                     args=args_str,
                 ) + "\n"
-                for field in out_vars:
-                    run_str += f'        _node:setData("{field}", {field})\n'
+                for field, out_pin_idx in out_vars:
+                    run_str += f'        _node:setOutput({out_pin_idx}, {field})\n'
             else:
                 run_str += T["run_call"].format(
                     clazz=class_name,
@@ -306,11 +308,13 @@ def generate():
                 ) + "\n"
 
             # -- Render file content -----------------------------------------
+            is_pure_line = "    is_pure = true,\n" if is_condition else ""
             content = T["file"].format(
                 category_snake=category_snake,
                 node_name_l=node_name_l,
                 pins=pins_str,
                 run=run_str,
+                is_pure_line=is_pure_line,
             )
 
             filepath = os.path.join(

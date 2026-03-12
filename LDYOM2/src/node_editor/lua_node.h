@@ -2,6 +2,7 @@
 
 #include "node_registry.h"
 #include <ImNodeFlow.h>
+#include <atomic>
 #include <functional>
 #include <ktcoro_wait.hpp>
 #include <memory>
@@ -16,8 +17,8 @@ struct FlowToken {};
 // Lua-facing proxy object passed to on_init / on_draw / on_execute callbacks.
 // Holds per-instance key/value storage and a back-pointer to the owning node.
 struct LuaNodeHandle {
-	sol::table nodeData;       // per-instance key/value store (serialized)
-	sol::table runtimeData;    // temporary key/value store (not serialized, runtime-only)
+	sol::table nodeData; // per-instance key/value store
+	sol::table outputData;
 	ImFlow::BaseNode* nodePtr; // back-pointer (raw, non-owning)
 	std::string typeKey;
 
@@ -36,9 +37,8 @@ struct LuaNodeHandle {
 	sol::object getData(const std::string& key) const;
 	void setData(const std::string& key, sol::object value);
 
-	// Temporary runtime data accessors (not serialized)
-	sol::object getRuntimeData(const std::string& key) const;
-	void setRuntimeData(const std::string& key, sol::object value);
+	sol::object getOutput(int index);
+	void setOutput(int index, sol::object value);
 
 	static void sol_lua_register(sol::state_view lua);
 };
@@ -57,6 +57,14 @@ class LuaNode : public ImFlow::BaseNode {
 	nlohmann::json serializeData() const;
 	void deserializeData(const nlohmann::json& j);
 
+	// For pure nodes: evaluates on_execute synchronously if the generation is stale.
+	// Called automatically by output pin behaviours of pure nodes.
+	void evaluatePure();
+
+	// Increments the global evaluation generation so all pure node caches become stale.
+	// Call this at the start of each flow-node execution step.
+	static void bumpEvalGeneration() { ++s_evalGeneration; }
+
 	// Serialize/deserialize default values of unconnected input pins (array indexed by pin position)
 	nlohmann::json serializePinDefaults();
 	void deserializePinDefaults(const nlohmann::json& j);
@@ -67,6 +75,12 @@ class LuaNode : public ImFlow::BaseNode {
   private:
 	std::string m_typeKey;
 	std::shared_ptr<LuaNodeHandle> m_handle;
+
+	// Per-node generation stamp; compared against s_evalGeneration to detect stale cache.
+	uint64_t m_pureGeneration = 0;
+
+	// Global generation counter; bumped before each flow-node execution step.
+	static inline std::atomic<uint64_t> s_evalGeneration{1};
 
 	void setupPins(const NodeDescriptor& desc);
 	std::function<void(ImFlow::Pin*)> makePinRenderer(sol::protected_function luaRenderer);

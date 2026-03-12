@@ -73,6 +73,12 @@ void register_node_editor_bindings(sol::state_view lua) {
 		return sol::make_object(l, desc->on_execute);
 	});
 
+	// node_editor.bump_pure_generation()
+	// Invalidates the cached results of all pure nodes.
+	// Call this at the start of each flow-node execution step so pure nodes
+	// are re-evaluated at most once per step even if multiple value pins feed from them.
+	table.set_function("bump_pure_generation", []() { LuaNode::bumpEvalGeneration(); });
+
 	// node_editor.get_next_flow_node(uid, pinIndex) -> NodeUID or nil
 	// Follows the output flow pin at pinIndex on the node identified by uid.
 	// Searches all workspaces.
