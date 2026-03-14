@@ -4,7 +4,9 @@
 #include "windows/node_editor.h"
 #include <ImNodeFlow.h>
 #include <lua_node.h>
+#include <node_editor_lua.h>
 #include <node_registry.h>
+
 
 // Helper: get the NodeEditorWindow from WindowManager, returns nullptr on failure.
 static NodeEditorWindow* getNodeEditorWindow() {
@@ -127,19 +129,5 @@ void register_node_editor_bindings(sol::state_view lua) {
 	// node_editor.run_flow_from(startUID)
 	// Executes the node flow chain starting from startUID.
 	// Must be called from within a node_tasks coroutine; supports yielding execute functions.
-	lua.script(R"(
-function node_editor.run_flow_from(startUID)
-    local currentUID = startUID
-    while currentUID do
-        node_editor.bump_pure_generation()
-        local executeFn = node_editor.get_node_execute_fn(currentUID)
-        local handle = node_editor.get_node_handle(currentUID)
-        local outPin = nil
-        if executeFn and handle then
-            outPin = executeFn(handle)
-        end
-        currentUID = node_editor.get_next_flow_node(currentUID, outPin or 0)
-    end
-end
-)");
+	lua.script(embedded::node_editor_lua);
 }

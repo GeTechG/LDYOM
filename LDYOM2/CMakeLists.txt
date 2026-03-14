@@ -60,6 +60,33 @@ set(IMNODEFLOW_FILES
 )
 add_library(${PROJECT_NAME} MODULE ${SRC_FILES} ${IMGUIZMO_FILES} ${IMNODEFLOW_FILES})
 
+# Auto-embed all .lua files from lua/ directory.
+# Each file becomes a header: lua/foo.lua -> generated/foo_lua.h -> embedded::foo_lua
+set(EMBED_LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lua")
+file(GLOB EMBED_LUA_FILES "${EMBED_LUA_DIR}/*.lua")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${EMBED_LUA_DIR}")
+
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+
+foreach(lua_file ${EMBED_LUA_FILES})
+    get_filename_component(name_we "${lua_file}" NAME_WE)
+    string(MAKE_C_IDENTIFIER "${name_we}" var_name)
+    set(var_name "${var_name}_lua")
+    set(output_header "${CMAKE_CURRENT_BINARY_DIR}/generated/${var_name}.h")
+    add_custom_command(
+        OUTPUT  "${output_header}"
+        COMMAND ${CMAKE_COMMAND}
+            -DINPUT_FILE=${lua_file}
+            -DOUTPUT_FILE=${output_header}
+            -DVAR_NAME=${var_name}
+            -P "${CMAKE_SOURCE_DIR}/cmake/EmbedFile.cmake"
+        DEPENDS "${lua_file}"
+        COMMENT "Embedding ${lua_file} -> generated/${var_name}.h"
+        VERBATIM
+    )
+    target_sources(${PROJECT_NAME} PRIVATE "${output_header}")
+endforeach()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
     d3d9.lib
     d3dx9.lib
