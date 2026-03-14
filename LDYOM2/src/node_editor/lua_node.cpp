@@ -258,7 +258,6 @@ void LuaNode::setupPins(const NodeDescriptor& desc) {
 					p->behaviour([this, luaBehaviour = pin.behaviour]() -> sol::object {
 						if (!m_handle)
 							return nilObject();
-						auto guard = LuaManager::instance().getState();
 						auto result = luaBehaviour(m_handle);
 						if (!result.valid()) {
 							sol::error err = result;
@@ -293,7 +292,6 @@ void LuaNode::evaluatePure() {
 	if (!desc || !desc->on_execute.valid())
 		return;
 
-	auto guard = LuaManager::instance().getState();
 	auto result = desc->on_execute(m_handle);
 	if (!result.valid()) {
 		sol::error err = result;
@@ -331,16 +329,14 @@ ktwait LuaNode::execute(std::string& outFlowPin) {
 	}
 
 	// First resume — pass the handle as argument
-	sol::protected_function_result result;
-	{
-		auto guard = LuaManager::instance().getState();
-		result = luaCoro(m_handle);
-	}
+	// NOTE: do NOT hold the LuaManager lock while resuming the coroutine.
+	// Lua code may call back into C++ (e.g. pin behaviours, evaluatePure) which
+	// also acquire the lock, causing a same-thread reentrant deadlock.
+	sol::protected_function_result result = luaCoro(m_handle);
 
 	// Keep resuming while the coroutine has yielded and can continue
 	while (luaCoro.runnable()) {
 		co_await 1; // yield one ms (allows current frame to complete)
-		auto guard = LuaManager::instance().getState();
 		result = luaCoro();
 	}
 
