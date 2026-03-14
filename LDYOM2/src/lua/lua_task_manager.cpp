@@ -1,11 +1,6 @@
 #include "lua_task_manager.h"
 #include "utils/logger.h"
 
-LuaTaskManager& LuaTaskManager::instance() {
-	static LuaTaskManager inst;
-	return inst;
-}
-
 void LuaTaskManager::processResult(Task& task, sol::protected_function_result& result,
                                    std::chrono::steady_clock::time_point now) {
 	if (!result.valid()) {
@@ -168,35 +163,39 @@ bool LuaTaskManager::cancelAll() {
 	return true;
 }
 
-void LuaTaskManager::registerBindings(sol::state_view lua) {
+void LuaTaskManager::registerBindings(sol::state_view lua, LuaTaskManager& manager, std::string_view tableName) {
 	// Raw internal table — not exposed directly to addon authors
-	sol::table raw = lua.create_table("_ltm_raw");
+	const std::string rawKey = std::string("_ltm_raw_") + std::string(tableName);
+	sol::table raw = lua.create_table(rawKey);
 
-	raw["_run"] = [](std::string key, sol::function func) -> bool {
-		return LuaTaskManager::instance().run(std::move(key), func);
+	raw["_run"] = [&manager](std::string key, sol::function func) -> bool {
+		return manager.run(std::move(key), func);
 	};
-	raw["_is_running"] = [](const std::string& key) -> bool { return LuaTaskManager::instance().isRunning(key); };
-	raw["_cancel"] = [](const std::string& key) -> bool { return LuaTaskManager::instance().cancel(key); };
+	raw["_is_running"] = [&manager](const std::string& key) -> bool { return manager.isRunning(key); };
+	raw["_cancel"] = [&manager](const std::string& key) -> bool { return manager.cancel(key); };
 
-	// Build the public `tasks` table.
+	// Build the public table under `tableName`.
 	// The wrapper captures variadic args in a closure so that `_run` always
 	// receives a zero-argument function and args are forwarded safely.
-	lua.script(R"(
-		local _r = _ltm_raw
-		tasks = {}
+	const std::string script = std::string(R"(
+		local _raw_key = ')") + std::string(tableName) + R"('
+		local _r = _G["_ltm_raw_" .. _raw_key]
+		local t = {}
 
-		tasks.run = function(k, f, ...)
+		t.run = function(k, f, ...)
 			local args = {...}
 			return _r._run(k, function() return f(unpack(args)) end)
 		end
 
-		tasks.is_running = _r._is_running
-		tasks.cancel     = _r._cancel
+		t.is_running = _r._is_running
+		t.cancel     = _r._cancel
 
-		tasks.sleep    = function(ms)  coroutine.yield("sleep", ms)  end
-		tasks.wait_for = function(key) coroutine.yield("wait",  key) end
-		tasks.yield    = function()    coroutine.yield()              end
+		t.sleep    = function(ms)  coroutine.yield("sleep", ms)  end
+		t.wait_for = function(key) coroutine.yield("wait",  key) end
+		t.yield    = function()    coroutine.yield()              end
 
-		_ltm_raw = nil
-	)");
+		_G[_raw_key] = t
+		_G["_ltm_raw_" .. _raw_key] = nil
+	)";
+	lua.script(script);
 }

@@ -112,6 +112,7 @@ void ScenesManager::loadSceneInternal(std::string_view sceneId) {
 			LDYOM_INFO("Loaded scene: {}", m_currentScene->info.name);
 
 			if (auto nodeEditor = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor")) {
+				(*nodeEditor)->taskManager().shutdown();
 				(*nodeEditor)->clearGraph();
 				(*nodeEditor)->loadGraph(projectPath(NODE_FOLDER_NAME) + "/" + std::string(sceneId) + ".json");
 			}

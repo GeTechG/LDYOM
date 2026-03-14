@@ -9,7 +9,8 @@
 // Helper: get the NodeEditorWindow from WindowManager, returns nullptr on failure.
 static NodeEditorWindow* getNodeEditorWindow() {
 	auto winOpt = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor");
-	if (!winOpt || !*winOpt) return nullptr;
+	if (!winOpt || !*winOpt)
+		return nullptr;
 	return *winOpt;
 }
 
@@ -22,19 +23,24 @@ void register_node_editor_bindings(sol::state_view lua) {
 	table.set_function("get_scene_nodes", [](sol::this_state s) -> sol::table {
 		sol::state_view l(s);
 		auto* win = getNodeEditorWindow();
-		if (!win) return l.create_table();
+		if (!win)
+			return l.create_table();
 
 		sol::table result = l.create_table();
 		int idx = 1;
 		int wsIdx = 1;
 		for (const auto& ws : win->getWorkspaces()) {
-			if (!ws.nodeFlow) { ++wsIdx; continue; }
+			if (!ws.nodeFlow) {
+				++wsIdx;
+				continue;
+			}
 			for (auto& [uid, nodePtr] : ws.nodeFlow->getNodes()) {
 				auto* luaNode = dynamic_cast<LuaNode*>(nodePtr.get());
-				if (!luaNode) continue;
+				if (!luaNode)
+					continue;
 				sol::table entry = l.create_table();
-				entry["uid"]       = uid;
-				entry["type"]      = luaNode->getNodeType();
+				entry["uid"] = uid;
+				entry["type"] = luaNode->getNodeType();
 				entry["workspace"] = wsIdx;
 				result[idx++] = entry;
 			}
@@ -48,13 +54,16 @@ void register_node_editor_bindings(sol::state_view lua) {
 	table.set_function("get_node_handle", [](sol::this_state s, ImFlow::NodeUID uid) -> sol::object {
 		sol::state_view l(s);
 		auto* win = getNodeEditorWindow();
-		if (!win) return sol::object{};
+		if (!win)
+			return sol::object{};
 
 		auto* luaNode = win->findNodeByUID(uid);
-		if (!luaNode) return sol::object{};
+		if (!luaNode)
+			return sol::object{};
 
 		auto handle = luaNode->getHandle();
-		if (!handle) return sol::object{};
+		if (!handle)
+			return sol::object{};
 		return sol::make_object(l, handle.get());
 	});
 
@@ -63,13 +72,16 @@ void register_node_editor_bindings(sol::state_view lua) {
 	table.set_function("get_node_execute_fn", [](sol::this_state s, ImFlow::NodeUID uid) -> sol::object {
 		sol::state_view l(s);
 		auto* win = getNodeEditorWindow();
-		if (!win) return sol::object{};
+		if (!win)
+			return sol::object{};
 
 		auto* luaNode = win->findNodeByUID(uid);
-		if (!luaNode) return sol::object{};
+		if (!luaNode)
+			return sol::object{};
 
 		const NodeDescriptor* desc = NodeRegistry::instance().find(luaNode->getNodeType());
-		if (!desc || !desc->on_execute.valid()) return sol::object{};
+		if (!desc || !desc->on_execute.valid())
+			return sol::object{};
 		return sol::make_object(l, desc->on_execute);
 	});
 
@@ -85,25 +97,49 @@ void register_node_editor_bindings(sol::state_view lua) {
 	table.set_function("get_next_flow_node", [](sol::this_state s, ImFlow::NodeUID uid, int pinIndex) -> sol::object {
 		sol::state_view l(s);
 		auto* win = getNodeEditorWindow();
-		if (!win) return sol::object{};
+		if (!win)
+			return sol::object{};
 
 		ImFlow::ImNodeFlow* graph = nullptr;
 		auto* luaNode = win->findNodeByUID(uid, &graph);
-		if (!luaNode || !graph) return sol::object{};
+		if (!luaNode || !graph)
+			return sol::object{};
 
 		const auto& outs = luaNode->getOuts();
-		if (pinIndex < 0 || pinIndex >= static_cast<int>(outs.size())) return sol::object{};
+		if (pinIndex < 0 || pinIndex >= static_cast<int>(outs.size()))
+			return sol::object{};
 
 		ImFlow::Pin* targetPin = outs[pinIndex].get();
 
 		for (auto& weakLink : graph->getLinks()) {
 			auto link = weakLink.lock();
-			if (!link) continue;
+			if (!link)
+				continue;
 			if (link->left() == targetPin) {
 				auto* nextNode = dynamic_cast<LuaNode*>(link->right()->getParent());
-				if (nextNode) return sol::make_object(l, nextNode->getUID());
+				if (nextNode)
+					return sol::make_object(l, nextNode->getUID());
 			}
 		}
 		return sol::object{};
 	});
+
+	// node_editor.run_flow_from(startUID)
+	// Executes the node flow chain starting from startUID.
+	// Must be called from within a node_tasks coroutine; supports yielding execute functions.
+	lua.script(R"(
+function node_editor.run_flow_from(startUID)
+    local currentUID = startUID
+    while currentUID do
+        node_editor.bump_pure_generation()
+        local executeFn = node_editor.get_node_execute_fn(currentUID)
+        local handle = node_editor.get_node_handle(currentUID)
+        local outPin = nil
+        if executeFn and handle then
+            outPin = executeFn(handle)
+        end
+        currentUID = node_editor.get_next_flow_node(currentUID, outPin or 0)
+    end
+end
+)");
 }

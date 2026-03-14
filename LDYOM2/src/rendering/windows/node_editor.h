@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lua/lua_task_manager.h"
 #include "window.h"
 #include <ImNodeFlow.h>
 #include <lua_node.h>
@@ -16,6 +17,8 @@ class NodeEditorWindow : public Window {
     };
 
   private:
+    LuaTaskManager m_taskManager;
+
     std::vector<Workspace> m_workspaces;
     int m_activeIdx = 0;
 
@@ -70,6 +73,8 @@ class NodeEditorWindow : public Window {
 
     // Access all workspaces (for Lua bindings)
     const std::vector<Workspace>& getWorkspaces() const { return m_workspaces; }
+
+    LuaTaskManager& taskManager() { return m_taskManager; }
 
     // Find a node by UID across all workspaces; optionally returns the owning graph
     LuaNode* findNodeByUID(ImFlow::NodeUID uid, ImFlow::ImNodeFlow** outGraph = nullptr) const;

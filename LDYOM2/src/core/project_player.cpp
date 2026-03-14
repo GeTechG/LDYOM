@@ -1,4 +1,6 @@
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "project_player.h"
+#include "application.h"
 #include "localization.h"
 #include "objectives_manager.h"
 #include "projects_manager.h"
@@ -17,11 +19,12 @@
 #include <eFadeFlag.h>
 #include <extensions/ScriptCommands.h>
 #include <logger.h>
-#include <lua_task_manager.h>
 #include <task_manager.h>
 #include <timer_service.h>
 #include <utils/objective_utils.h>
 #include <utils/string_utils.h>
+#include <window_manager.h>
+#include <windows/node_editor.h>
 
 ProjectPlayer::~ProjectPlayer() { this->projectTasklist->clear_all_tasks(); }
 
@@ -146,7 +149,7 @@ ktwait ProjectPlayer::run() {
 				instance().m_state.isFaded = true;
 			}
 
-			LuaTaskManager::instance().cancelAll();
+			Application::instance().luaTaskManager().cancelAll();
 			instance().projectTasklist->clear_all_tasks();
 			ScenesManager::instance().resetCurrentScene();
 			ScenesManager::instance().loadScene(newSceneId);
@@ -252,7 +255,10 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 		TaskManager::instance().removeTask("stop_cheat");
 		TaskManager::instance().removeTask("project_tasks");
 		TaskManager::instance().removeTask("scene_completion_timer");
-		LuaTaskManager::instance().cancelAll();
+		if (auto nodeEditor = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor");
+		    nodeEditor && *nodeEditor) {
+			(*nodeEditor)->taskManager().cancelAll();
+		}
 		for (size_t i = PED_TYPE_PLAYER1; i <= PED_TYPE_MISSION8; i++) {
 			for (size_t j = PED_TYPE_PLAYER1; j <= PED_TYPE_MISSION8; j++) {
 				plugin::Command<plugin::Commands::SET_RELATIONSHIP>(TYPE_IGNORE, i, j);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lua/lua_task_manager.h"
 #include <string>
 #include <vector>
 
@@ -20,8 +21,13 @@ class Application {
 
 	static void renderFrames();
 
+	LuaTaskManager& luaTaskManager() { return m_luaTaskManager; }
+
 	static Application& instance() {
 		static Application instance;
 		return instance;
 	}
+
+  private:
+	LuaTaskManager m_luaTaskManager;
 };

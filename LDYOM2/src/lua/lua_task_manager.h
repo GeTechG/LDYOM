@@ -7,7 +7,7 @@
 
 class LuaTaskManager {
   public:
-	static LuaTaskManager& instance();
+	LuaTaskManager() = default;
 
 	void processAll();
 	void shutdown();
@@ -18,11 +18,11 @@ class LuaTaskManager {
 	bool cancel(const std::string& key);
 	bool cancelAll();
 
-	static void registerBindings(sol::state_view lua);
+	// Pass the manager instance to bind against.
+	// tableName controls the name of the Lua global created (default: "tasks").
+	static void registerBindings(sol::state_view lua, LuaTaskManager& manager, std::string_view tableName = "tasks");
 
   private:
-	LuaTaskManager() = default;
-
 	enum class Reason { NextFrame, Sleep, WaitFor };
 
 	struct Task {

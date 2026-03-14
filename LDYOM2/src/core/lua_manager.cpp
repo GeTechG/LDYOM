@@ -1,9 +1,9 @@
 #include "lua_manager.h"
+#include "application.h"
 #include "ImGuiLuaWrapper.h"
 #include "OpcodesLuaWrapper.h"
 #include "lua/localization_binding.h"
 #include "lua/log_bindings.h"
-#include "lua/lua_task_manager.h"
 #include "lua/node_editor_binding.h"
 #include "lua/project_player_binding.h"
 #include "lua/scenes_binding.h"
@@ -38,7 +38,7 @@ void LuaManager::initialize() {
 	opcodesLuaWrapper(lua);
 	NodeRegistry::sol_lua_register(lua);
 	LuaNodeHandle::sol_lua_register(lua);
-	LuaTaskManager::registerBindings(lua);
+	LuaTaskManager::registerBindings(lua, Application::instance().luaTaskManager());
 	register_project_player_bindings(lua);
 	register_scenes_bindings(lua);
 	register_node_editor_bindings(lua);
