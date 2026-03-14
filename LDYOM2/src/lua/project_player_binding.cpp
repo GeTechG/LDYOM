@@ -1,16 +1,19 @@
 #include "project_player_binding.h"
 #include "core/project_player.h"
+#include <entity.h>
 #include <logger.h>
-#include <map>
 #include <rocket.hpp>
 #include <string>
+#include <unordered_map>
 
 // ── per-event subscriber maps ────────────────────────────────────────────────
 
 struct LuaProjectPlayerHandlers {
-	std::map<int, sol::protected_function> onSceneStarted;
-	std::map<int, sol::protected_function> onObjectiveStarted;
-	std::map<int, sol::protected_function> onObjectiveCompleted;
+	std::unordered_map<int, sol::protected_function> onProjectStarted;
+	std::unordered_map<int, sol::protected_function> onProjectStopped;
+	std::unordered_map<int, sol::protected_function> onSceneStarted;
+	std::unordered_map<int, sol::protected_function> onObjectiveStarted;
+	std::unordered_map<int, sol::protected_function> onObjectiveCompleted;
 
 	std::vector<rocket::scoped_connection> connections;
 	int nextId = 0;
@@ -24,7 +27,7 @@ static LuaProjectPlayerHandlers& getHandlers() {
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 template <typename... Args>
-static void fireHandlers(std::map<int, sol::protected_function>& handlers, const char* name, Args&&... args) {
+static void fireHandlers(std::unordered_map<int, sol::protected_function>& handlers, const char* name, Args&&... args) {
 	for (auto& [id, fn] : handlers) {
 		auto result = fn(std::forward<Args>(args)...);
 		if (!result.valid()) {
@@ -44,23 +47,29 @@ static void initConnections() {
 
 	auto& h = getHandlers();
 
+	h.connections.push_back(ProjectPlayer::instance().onProjectStarted.connect(
+		[]() { fireHandlers(getHandlers().onProjectStarted, "events.on_project_started"); }));
+
+	h.connections.push_back(ProjectPlayer::instance().onProjectStopped.connect(
+		[]() { fireHandlers(getHandlers().onProjectStopped, "events.on_project_stopped"); }));
+
 	h.connections.push_back(ProjectPlayer::instance().onSceneStarted.connect([](const std::string& sceneId) {
 		fireHandlers(getHandlers().onSceneStarted, "events.on_scene_started", sceneId);
 	}));
 
-	h.connections.push_back(ProjectPlayer::instance().onObjectiveStarted.connect([](int index) {
-		fireHandlers(getHandlers().onObjectiveStarted, "events.on_objective_started", index);
-	}));
+	h.connections.push_back(ProjectPlayer::instance().onObjectiveStarted.connect(
+		[](int index) { fireHandlers(getHandlers().onObjectiveStarted, "events.on_objective_started", index); }));
 
-	h.connections.push_back(ProjectPlayer::instance().onObjectiveCompleted.connect([](int index) {
-		fireHandlers(getHandlers().onObjectiveCompleted, "events.on_objective_completed", index);
-	}));
+	h.connections.push_back(ProjectPlayer::instance().onObjectiveCompleted.connect(
+		[](int index) { fireHandlers(getHandlers().onObjectiveCompleted, "events.on_objective_completed", index); }));
 }
 
 // ── public API ────────────────────────────────────────────────────────────────
 
 void clear_project_player_lua_callbacks() {
 	auto& h = getHandlers();
+	h.onProjectStarted.clear();
+	h.onProjectStopped.clear();
 	h.onSceneStarted.clear();
 	h.onObjectiveStarted.clear();
 	h.onObjectiveCompleted.clear();
@@ -69,13 +78,49 @@ void clear_project_player_lua_callbacks() {
 void register_project_player_bindings(sol::state_view lua) {
 	initConnections();
 
-	// Raw C++ functions (subscribe returns int id, unsubscribe takes event+id)
+	// ── ProjectPlayer usertype ────────────────────────────────────────────────
+
+	Entity::sol_lua_register(lua);
+
+	lua.new_usertype<ProjectPlayer>(
+		"ProjectPlayer", sol::no_constructor,
+
+		// Control
+		"start",
+		[](ProjectPlayer& pp, sol::optional<std::string> sceneId) { pp.startCurrentProject(sceneId.value_or("")); },
+		"stop", &ProjectPlayer::stopCurrentProject, "fail", &ProjectPlayer::failCurrentProject,
+		"request_scene_transition",
+		[](ProjectPlayer& pp, const std::string& sceneId) { pp.requestSceneTransition(sceneId); },
+
+		// State (read-only properties, except is_faded which is read-write)
+		"is_playing", sol::property(&ProjectPlayer::isPlaying), "current_scene_id",
+		sol::property(&ProjectPlayer::getCurrentSceneId), "current_objective_index",
+		sol::property(&ProjectPlayer::getCurrentObjectiveIndex), "is_faded",
+		sol::property(&ProjectPlayer::isFaded, &ProjectPlayer::setFaded),
+
+		// Entities
+		"get_entities",
+		[](ProjectPlayer& pp, sol::this_state s) {
+			sol::state_view l(s);
+			auto entities = pp.getEntities();
+			return sol::as_table(entities);
+		});
+
+	// Expose singleton as `project_player`
+	lua["project_player"] = &ProjectPlayer::instance();
+
+	// ── Events ────────────────────────────────────────────────────────────────
+
 	sol::table raw = lua.create_table("_ppe_raw");
 
 	raw["_subscribe"] = [](const std::string& event, sol::protected_function fn) -> int {
 		auto& h = getHandlers();
 		int id = h.nextId++;
-		if (event == "scene_started")
+		if (event == "project_started")
+			h.onProjectStarted[id] = std::move(fn);
+		else if (event == "project_stopped")
+			h.onProjectStopped[id] = std::move(fn);
+		else if (event == "scene_started")
 			h.onSceneStarted[id] = std::move(fn);
 		else if (event == "objective_started")
 			h.onObjectiveStarted[id] = std::move(fn);
@@ -88,7 +133,11 @@ void register_project_player_bindings(sol::state_view lua) {
 
 	raw["_unsubscribe"] = [](const std::string& event, int id) {
 		auto& h = getHandlers();
-		if (event == "scene_started")
+		if (event == "project_started")
+			h.onProjectStarted.erase(id);
+		else if (event == "project_stopped")
+			h.onProjectStopped.erase(id);
+		else if (event == "scene_started")
 			h.onSceneStarted.erase(id);
 		else if (event == "objective_started")
 			h.onObjectiveStarted.erase(id);
@@ -96,7 +145,7 @@ void register_project_player_bindings(sol::state_view lua) {
 			h.onObjectiveCompleted.erase(id);
 	};
 
-	// Public `events` table with convenient wrappers that return a disconnect fn
+	// Public `events` table – each subscriber returns a disconnect function
 	lua.script(R"(
 		local _r = _ppe_raw
 		events = events or {}
@@ -110,6 +159,8 @@ void register_project_player_bindings(sol::state_view lua) {
 			end
 		end
 
+		events.on_project_started     = make_subscriber("project_started")
+		events.on_project_stopped     = make_subscriber("project_stopped")
 		events.on_scene_started       = make_subscriber("scene_started")
 		events.on_objective_started   = make_subscriber("objective_started")
 		events.on_objective_completed = make_subscriber("objective_completed")

@@ -132,11 +132,17 @@ void LuaNodeHandle::setOutput(int index, sol::object value) {
 
 void LuaNodeHandle::sol_lua_register(sol::state_view lua) {
 	lua.new_usertype<LuaNodeHandle>(
-		"LuaNodeHandle", sol::no_constructor, "getInput", &LuaNodeHandle::getInput, "getInputDefault",
-		&LuaNodeHandle::getInputDefault, "setInputDefault", &LuaNodeHandle::setInputDefault, "isInputConnected",
-		&LuaNodeHandle::isInputConnected, "isOutputConnected", &LuaNodeHandle::isOutputConnected, "getData",
-		&LuaNodeHandle::getData, "setData", &LuaNodeHandle::setData, "getOutput", &LuaNodeHandle::getOutput,
-		"setOutput", &LuaNodeHandle::setOutput);
+		"LuaNodeHandle", sol::no_constructor,
+		"getInput", &LuaNodeHandle::getInput,
+		"getInputDefault", &LuaNodeHandle::getInputDefault,
+		"setInputDefault", &LuaNodeHandle::setInputDefault,
+		"isInputConnected", &LuaNodeHandle::isInputConnected,
+		"isOutputConnected", &LuaNodeHandle::isOutputConnected,
+		"getData", &LuaNodeHandle::getData,
+		"setData", &LuaNodeHandle::setData,
+		"getOutput", &LuaNodeHandle::getOutput,
+		"setOutput", &LuaNodeHandle::setOutput,
+		"typeKey", sol::readonly(&LuaNodeHandle::typeKey));
 }
 
 // ─── LuaNode ─────────────────────────────────────────────────────────────────
