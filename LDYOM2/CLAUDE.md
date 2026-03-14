@@ -124,4 +124,5 @@ src/ldyom.cpp | core/ (managers) | data/ (structures, components, objectives) | 
 LDYOM2 is a well-architected mission editor combining user-friendly UI editing with low-level GTA script execution through modularity, composability, extensibility, type safety, and asynchronous coroutine execution.
 - always build Debug
 - for learn dyom source use dyom.txt, DO NOT READ file full only grep
-- localization is located in C:\Games\GTA San Andreas\LDYOM\languages\en.json
+- localization is located in ../ingame/languages/en.json (relative to LDYOM2 project root)
+- declarative Lua files for LDYOM are stored in ../ingame/definitions/core (relative to LDYOM2 project root)
