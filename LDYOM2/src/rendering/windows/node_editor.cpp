@@ -414,8 +414,7 @@ void NodeEditorWindow::renderContextMenu() {
 
 	// ── Search bar ──────────────────────────────────────────────────────────
 	ImGui::SetNextItemWidth(kTotalW);
-	ImGui::InputTextWithHint("##node_search", ICON_FA_MAGNIFYING_GLASS " Search...", m_searchBuf,
-	                         sizeof(m_searchBuf));
+	ImGui::InputTextWithHint("##node_search", ICON_FA_MAGNIFYING_GLASS " Search...", m_searchBuf, sizeof(m_searchBuf));
 
 	std::string searchLower(m_searchBuf);
 	std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
