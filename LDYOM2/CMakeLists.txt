@@ -108,6 +108,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     OpcodesLuaWrapper
 )
 
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /bigobj /FS)
+endif()
+
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/core

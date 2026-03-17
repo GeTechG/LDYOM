@@ -44,6 +44,9 @@ void MainMenu::renderContent(Window* window) {
 	if (ImGui::Button(_("tools.title", ICON_FA_SCREWDRIVER_WRENCH).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("tools_window");
 	}
+	if (ImGui::Button(_("main_menu.global_vars", ICON_FA_DATABASE).c_str(), buttonSize)) {
+		WindowManager::instance().openWindow("global_vars");
+	}
 	if (ImGui::Button(_("addons_settings.title", ICON_FA_PUZZLE_PIECE).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("addons_settings");
 	}

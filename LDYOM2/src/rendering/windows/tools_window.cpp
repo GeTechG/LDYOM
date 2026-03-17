@@ -17,6 +17,7 @@
 
 static int s_selectedEntityIndex = -1;
 static CVehicle* s_spawnedVehicle = nullptr;
+static bool s_enexDisabled = false;
 
 static void destroySpawnedVehicle() {
 	if (!s_spawnedVehicle)
@@ -147,6 +148,17 @@ void ToolsWindow::renderContent(Window* window) {
 		TaskManager::instance().removeTask("tools_monitor_vehicle");
 		TaskManager::instance().addTask("tools_monitor_vehicle", monitorSpawnedVehicle);
 	});
+
+	// ── ENEX Markers ──────────────────────────────────────────────────────
+	ImGui::SeparatorText(_("tools.enex_markers").c_str());
+
+	auto enexLabel = s_enexDisabled
+		? fmt::format("{} {}", ICON_FA_EYE, _("tools.enex_enable"))
+		: fmt::format("{} {}", ICON_FA_EYE_SLASH, _("tools.enex_disable"));
+	if (ImGui::Button(enexLabel.c_str(), ImVec2(-1.f, 0.f))) {
+		s_enexDisabled = !s_enexDisabled;
+		plugin::Command<plugin::Commands::DISABLE_ALL_ENTRY_EXITS>(s_enexDisabled);
+	}
 
 	// ── Close ─────────────────────────────────────────────────────────────
 	ImGui::Dummy(ImVec2(0.0f, ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeight() -

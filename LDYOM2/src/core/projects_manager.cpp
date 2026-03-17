@@ -1,5 +1,6 @@
 #include "projects_manager.h"
 #include "data/project_info.h"
+#include "global_vars_service.h"
 #include "scenes_manager.h"
 #include <filesystem>
 #include <fstream>
@@ -104,6 +105,7 @@ bool ProjectsManager::loadProject(int index) {
 
 	// Load CarRec paths for this project
 	CarrecPathsService::instance().loadPaths();
+	GlobalVarsService::instance().reset();
 
 	LDYOM_INFO("Loaded project: {}", currentProject.value()->name);
 	return true;

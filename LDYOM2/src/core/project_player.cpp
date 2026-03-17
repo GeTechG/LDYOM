@@ -1,5 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "project_player.h"
+#include "global_vars_service.h"
 #include "application.h"
 #include "localization.h"
 #include "objectives_manager.h"
@@ -214,6 +215,7 @@ void ProjectPlayer::startCurrentProject(std::string_view sceneId) {
 		return;
 	}
 	this->m_state.currentSceneId = sceneId.empty() ? currentProject.value()->startSceneId : std::string(sceneId);
+	GlobalVarsService::instance().reset();
 
 	if (!TaskManager::instance().addTask("run_project_player", run)) {
 		LDYOM_ERROR("Failed to add task for project player");

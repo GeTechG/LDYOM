@@ -2,6 +2,8 @@
 #include "scenes_manager.h"
 #include <objectives/checkpoint.h>
 #include <objectives/goto_scene.h>
+#include <objectives/goto_scene_if_var.h>
+#include <objectives/set_global_var.h>
 #include <objectives/clock.h>
 #include <objectives/countdown.h>
 #include <objectives/cutscene.h>
@@ -125,4 +127,6 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<wanted_level::Data>(wanted_level::builder());
 	this->registerObjectiveBuilder<weather::Data>(weather::builder());
 	this->registerObjectiveBuilder<goto_scene::Data>(goto_scene::builder());
+	this->registerObjectiveBuilder<goto_scene_if_var::Data>(goto_scene_if_var::builder());
+	this->registerObjectiveBuilder<set_global_var::Data>(set_global_var::builder());
 }

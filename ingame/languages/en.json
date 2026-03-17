@@ -149,6 +149,9 @@
         "spawn_vehicle_btn": "Select Vehicle...",
         "spawn_vehicle_active": "Vehicle spawned (exit it to destroy)",
         "destroy_vehicle": "Destroy Vehicle",
+        "enex_markers": "ENEX Markers",
+        "enex_disable": "Disable ENEX Markers",
+        "enex_enable": "Enable ENEX Markers",
         "close": "Close"
     },
     "quick_settings": {
@@ -173,7 +176,20 @@
         "run_project": "{} Run Project",
         "close_project": "{} Close Project",
         "carrec_paths": "{} Carrec Paths",
-        "node_editor": "{} Node Editor"
+        "node_editor": "{} Node Editor",
+        "global_vars": "{} Global Variables"
+    },
+    "global_vars": {
+        "title": "{} Global Variables",
+        "add_variable": "{} Add Variable",
+        "name": "Name",
+        "type": "Type",
+        "value": "Default Value",
+        "delete": "Delete",
+        "type_number": "Number",
+        "type_string": "String",
+        "type_boolean": "Boolean",
+        "empty": "No variables defined."
     },
     "hotkey_editor": {
         "title": "Hotkey Editor",
@@ -438,6 +454,34 @@
                 "name": "Goto Scene",
                 "description": "Transition to another scene without ending the mission.",
                 "scene": "Scene"
+            },
+            "goto_scene_if_var": {
+                "name": "Goto Scene If Variable",
+                "description": "Transition to another scene if a global variable satisfies the given condition. Does nothing if the condition is false.",
+                "scene": "Scene",
+                "variable": "Variable",
+                "condition": "Condition",
+                "value": "Value",
+                "conditions": [
+                    "==",
+                    "!=",
+                    ">",
+                    ">=",
+                    "<",
+                    "<="
+                ]
+            },
+            "set_global_var": {
+                "name": "Set Global Variable",
+                "description": "Assign, add or subtract a value to a global variable.",
+                "variable": "Variable",
+                "operation": "Operation",
+                "value": "Value",
+                "operations": [
+                    "Assign",
+                    "Add",
+                    "Subtract"
+                ]
             }
         }
     },

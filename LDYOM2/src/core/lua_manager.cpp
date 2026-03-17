@@ -5,6 +5,7 @@
 #include "lua/localization_binding.h"
 #include "lua/log_bindings.h"
 #include "lua/node_editor_binding.h"
+#include "lua/global_vars_binding.h"
 #include "lua/project_player_binding.h"
 #include "lua/scenes_binding.h"
 #include <filesystem>
@@ -42,6 +43,7 @@ void LuaManager::initialize() {
 	register_project_player_bindings(lua);
 	register_scenes_bindings(lua);
 	register_node_editor_bindings(lua);
+	register_global_vars_bindings(lua);
 
 	LDYOM_INFO("Lua environment initialized");
 }
