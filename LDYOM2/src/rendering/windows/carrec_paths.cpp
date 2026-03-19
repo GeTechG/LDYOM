@@ -101,17 +101,17 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 	if (paths.empty()) {
 		// Centered empty state message
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 40 * (SCL_PX).y);
-		const char* emptyText = _("carrec_paths.no_recorded_paths").c_str();
-		const char* hintText = _("carrec_paths.no_recorded_paths_hint").c_str();
+		auto emptyText = _("carrec_paths.no_recorded_paths");
+		auto hintText = _("carrec_paths.no_recorded_paths_hint");
 
 		float windowWidth = ImGui::GetContentRegionAvail().x;
-		float textWidth = ImGui::CalcTextSize(emptyText).x;
+		float textWidth = ImGui::CalcTextSize(emptyText.c_str()).x;
 		ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-		ImGui::TextDisabled("%s", emptyText);
+		ImGui::TextDisabled("%s", emptyText.c_str());
 
 		ImGui::Spacing();
 		ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + windowWidth);
-		ImGui::TextWrapped("%s", hintText);
+		ImGui::TextWrapped("%s", hintText.c_str());
 		ImGui::PopTextWrapPos();
 	} else {
 		// Table с улучшенным spacing
