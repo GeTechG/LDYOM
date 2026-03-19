@@ -40,6 +40,16 @@ struct LuaNodeHandle {
 	sol::object getOutput(int index);
 	void setOutput(int index, sol::object value);
 
+	// Get the semantic type of a static input/output pin by 1-based index.
+	// Returns empty string for flow pins or out-of-range indices.
+	std::string getInputPinType(int index) const;
+	std::string getOutputPinType(int index) const;
+
+	// Change the semantic type of a static input/output pin by 1-based index.
+	// Disconnects incompatible existing links and updates pin style.
+	void setInputPinType(int index, const std::string& type);
+	void setOutputPinType(int index, const std::string& type);
+
 	static void sol_lua_register(sol::state_view lua);
 };
 

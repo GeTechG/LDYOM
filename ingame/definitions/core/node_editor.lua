@@ -53,6 +53,34 @@ function LuaNodeHandle:getOutput(index) end
 --- @param value any
 function LuaNodeHandle:setOutput(index, value) end
 
+--- Get the semantic type of a static input pin by 1-based index.
+--- Returns "" for flow pins or out-of-range indices.
+--- @param index integer 1-based pin index
+--- @return string
+function LuaNodeHandle:getInputPinType(index) end
+
+--- Get the semantic type of a static output pin by 1-based index.
+--- Returns "" for flow pins or out-of-range indices.
+--- @param index integer 1-based pin index
+--- @return string
+function LuaNodeHandle:getOutputPinType(index) end
+
+--- Change the semantic type of a static input pin by 1-based index.
+--- Drops the existing connection if the type changes. Updates pin style automatically.
+--- type must be one of: "float", "int", "bool", "string".
+--- Call from on_draw to apply a type stored in nodeData.
+--- @param index integer 1-based pin index
+--- @param type "float"|"int"|"bool"|"string"
+function LuaNodeHandle:setInputPinType(index, type) end
+
+--- Change the semantic type of a static output pin by 1-based index.
+--- Drops all connected input links if the type changes. Updates pin style automatically.
+--- type must be one of: "float", "int", "bool", "string".
+--- Call from on_draw to apply a type stored in nodeData.
+--- @param index integer 1-based pin index
+--- @param type "float"|"int"|"bool"|"string"
+function LuaNodeHandle:setOutputPinType(index, type) end
+
 -- ─── LuaNode ─────────────────────────────────────────────────────────────────
 
 --- Lightweight reference to a node in the graph.

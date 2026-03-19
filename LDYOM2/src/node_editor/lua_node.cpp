@@ -130,19 +130,90 @@ void LuaNodeHandle::setOutput(int index, sol::object value) {
 	}
 }
 
+std::string LuaNodeHandle::getInputPinType(int index) const {
+	if (!nodePtr)
+		return {};
+	const auto& ins = nodePtr->getIns();
+	int i = index - 1;
+	if (i < 0 || i >= static_cast<int>(ins.size()))
+		return {};
+	ImFlow::Pin* pin = ins[i].get();
+	if (pin->getDataType() == typeid(FlowToken))
+		return {};
+	return PinSemanticRegistry::instance().getType(pin);
+}
+
+std::string LuaNodeHandle::getOutputPinType(int index) const {
+	if (!nodePtr)
+		return {};
+	const auto& outs = nodePtr->getOuts();
+	int i = index - 1;
+	if (i < 0 || i >= static_cast<int>(outs.size()))
+		return {};
+	ImFlow::Pin* pin = outs[i].get();
+	if (pin->getDataType() == typeid(FlowToken))
+		return {};
+	return PinSemanticRegistry::instance().getType(pin);
+}
+
+void LuaNodeHandle::setInputPinType(int index, const std::string& type) {
+	if (!nodePtr)
+		return;
+	const auto& ins = nodePtr->getIns();
+	int i = index - 1;
+	if (i < 0 || i >= static_cast<int>(ins.size()))
+		return;
+	ImFlow::Pin* pin = ins[i].get();
+	if (pin->getDataType() == typeid(FlowToken))
+		return;
+	const std::string existing = PinSemanticRegistry::instance().getType(pin);
+	if (!existing.empty() && existing == type)
+		return;
+	// Disconnect if type changed
+	if (pin->isConnected())
+		pin->deleteLink();
+	PinSemanticRegistry::instance().registerPin(pin, type);
+	pin->getStyle() = pinStyleForType(type);
+}
+
+void LuaNodeHandle::setOutputPinType(int index, const std::string& type) {
+	if (!nodePtr)
+		return;
+	const auto& outs = nodePtr->getOuts();
+	int i = index - 1;
+	if (i < 0 || i >= static_cast<int>(outs.size()))
+		return;
+	ImFlow::Pin* pin = outs[i].get();
+	if (pin->getDataType() == typeid(FlowToken))
+		return;
+	const std::string existing = PinSemanticRegistry::instance().getType(pin);
+	if (!existing.empty() && existing == type)
+		return;
+	// Disconnect all connected input pins
+	auto* graph = nodePtr->getHandler();
+	if (graph) {
+		std::vector<ImFlow::Pin*> toDisconnect;
+		for (auto& weakLink : graph->getLinks()) {
+			auto link = weakLink.lock();
+			if (link && link->left() == pin)
+				toDisconnect.push_back(link->right());
+		}
+		for (auto* inPin : toDisconnect)
+			inPin->deleteLink();
+	}
+	PinSemanticRegistry::instance().registerPin(pin, type);
+	pin->getStyle() = pinStyleForType(type);
+}
+
 void LuaNodeHandle::sol_lua_register(sol::state_view lua) {
 	lua.new_usertype<LuaNodeHandle>(
-		"LuaNodeHandle", sol::no_constructor,
-		"getInput", &LuaNodeHandle::getInput,
-		"getInputDefault", &LuaNodeHandle::getInputDefault,
-		"setInputDefault", &LuaNodeHandle::setInputDefault,
-		"isInputConnected", &LuaNodeHandle::isInputConnected,
-		"isOutputConnected", &LuaNodeHandle::isOutputConnected,
-		"getData", &LuaNodeHandle::getData,
-		"setData", &LuaNodeHandle::setData,
-		"getOutput", &LuaNodeHandle::getOutput,
-		"setOutput", &LuaNodeHandle::setOutput,
-		"typeKey", sol::readonly(&LuaNodeHandle::typeKey));
+		"LuaNodeHandle", sol::no_constructor, "getInput", &LuaNodeHandle::getInput, "getInputDefault",
+		&LuaNodeHandle::getInputDefault, "setInputDefault", &LuaNodeHandle::setInputDefault, "isInputConnected",
+		&LuaNodeHandle::isInputConnected, "isOutputConnected", &LuaNodeHandle::isOutputConnected, "getData",
+		&LuaNodeHandle::getData, "setData", &LuaNodeHandle::setData, "getOutput", &LuaNodeHandle::getOutput,
+		"setOutput", &LuaNodeHandle::setOutput, "getInputPinType", &LuaNodeHandle::getInputPinType,
+		"getOutputPinType", &LuaNodeHandle::getOutputPinType, "setInputPinType", &LuaNodeHandle::setInputPinType,
+		"setOutputPinType", &LuaNodeHandle::setOutputPinType, "typeKey", sol::readonly(&LuaNodeHandle::typeKey));
 }
 
 // ─── LuaNode ─────────────────────────────────────────────────────────────────
@@ -307,19 +378,19 @@ void LuaNode::evaluatePure() {
 
 void LuaNode::draw() {
 	const NodeDescriptor* desc = NodeRegistry::instance().find(m_typeKey);
-	if (!desc || !desc->on_draw.valid())
-		return;
-
-	try {
-		auto guard = LuaManager::instance().getState();
-		auto result = desc->on_draw(m_handle);
-		if (!result.valid()) {
-			sol::error err = result;
-			LDYOM_ERROR("LuaNode on_draw error for '{}': {}", m_typeKey, err.what());
+	if (desc && desc->on_draw.valid()) {
+		try {
+			auto guard = LuaManager::instance().getState();
+			auto result = desc->on_draw(m_handle);
+			if (!result.valid()) {
+				sol::error err = result;
+				LDYOM_ERROR("LuaNode on_draw error for '{}': {}", m_typeKey, err.what());
+			}
+		} catch (const std::exception& e) {
+			LDYOM_ERROR("LuaNode on_draw exception for '{}': {}", m_typeKey, e.what());
 		}
-	} catch (const std::exception& e) {
-		LDYOM_ERROR("LuaNode on_draw exception for '{}': {}", m_typeKey, e.what());
 	}
+
 }
 
 ktwait LuaNode::execute(std::string& outFlowPin) {

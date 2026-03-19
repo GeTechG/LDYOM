@@ -17,3 +17,5 @@ function global_vars.getDefault(name) end
 ---@param name string
 ---@param value number|string|boolean
 function global_vars.setDefault(name, value) end
+---@return {name: string, type: "number"|"string"|"bool"}[]
+function global_vars.list() end

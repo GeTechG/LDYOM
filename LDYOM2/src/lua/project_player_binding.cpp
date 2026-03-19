@@ -80,8 +80,6 @@ void register_project_player_bindings(sol::state_view lua) {
 
 	// ── ProjectPlayer usertype ────────────────────────────────────────────────
 
-	Entity::sol_lua_register(lua);
-
 	lua.new_usertype<ProjectPlayer>(
 		"ProjectPlayer", sol::no_constructor,
 

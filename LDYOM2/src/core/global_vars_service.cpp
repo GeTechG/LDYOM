@@ -24,6 +24,25 @@ void GlobalVarsService::initialize(sol::state_view lua) {
 	m_gvTable.set_function("setDefault", [](const std::string& name, sol::object value) {
 		GlobalVarsService::instance().setDefault(name, value);
 	});
+	m_gvTable.set_function("list", [](sol::this_state s) -> sol::table {
+		sol::state_view lua(s);
+		sol::table result = lua.create_table();
+		auto proj = ProjectsManager::instance().getCurrentProject();
+		if (!proj.has_value())
+			return result;
+		int i = 1;
+		for (const auto& var : proj.value()->globalVars) {
+			sol::table entry = lua.create_table();
+			entry["name"] = var.name;
+			switch (var.type()) {
+				case GlobalVarType::Number: entry["type"] = "number"; break;
+				case GlobalVarType::String: entry["type"] = "string"; break;
+				case GlobalVarType::Boolean: entry["type"] = "bool"; break;
+			}
+			result[i++] = entry;
+		}
+		return result;
+	});
 }
 
 void GlobalVarsService::reset() {
