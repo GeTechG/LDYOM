@@ -9,6 +9,7 @@
             "string_concat": "String Concat",
             "wait": "Wait",
             "branch": "Branch",
+            "main_loop": "Main Loop",
             "entity": {
                 "spawn": "Spawn Entity",
                 "despawn": "Despawn Entity",

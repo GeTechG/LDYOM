@@ -46,6 +46,14 @@ register_addon({
                     node_tasks.run("scene_chain_" .. sceneId .. "_" .. tostring(uid), function()
                         node_editor.run_flow_from(uid)
                     end)
+                elseif nodeInfo.type == "core.main_loop" then
+                    local uid = nodeInfo.uid
+                    node_tasks.run("main_loop_" .. sceneId .. "_" .. tostring(uid), function()
+                        while true do
+                            node_editor.run_flow_from(uid)
+                            node_tasks.yield()
+                        end
+                    end)
                 end
             end
         end)
