@@ -49,6 +49,8 @@ int ProjectsManager::getCurrentProjectIndex() const noexcept { return m_currentP
 
 bool ProjectsManager::createNewProject(std::string_view name, std::string_view author) {
 	try {
+		closeProject();
+
 		std::filesystem::path projectDir(LDYOM_PATH(PROJECTS_DIR_PATH) + "/" + to_snake_case(name));
 
 		ProjectInfo newProjectInfo{.name = std::string(name),
@@ -67,7 +69,7 @@ bool ProjectsManager::createNewProject(std::string_view name, std::string_view a
 		LDYOM_ERROR("Failed to create new project '{}': {}", name, e.what());
 		return false;
 	}
-	return true;
+	return loadProject(m_currentProjectIndex);
 }
 
 bool ProjectsManager::loadProject(int index) {
