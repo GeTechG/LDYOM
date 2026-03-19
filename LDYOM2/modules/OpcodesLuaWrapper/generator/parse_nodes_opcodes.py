@@ -326,7 +326,7 @@ def generate():
             # Accumulate lang patch
             if category_snake not in lang_patch:
                 lang_patch[category_snake] = {}
-            lang_patch[category_snake][node_name_l] = cmd.get("member", method)
+            lang_patch[category_snake][node_name_l] = cmd.get("class") + cmd.get("member", method)
 
             short_desc = cmd.get("short_desc", "")
             if short_desc:
