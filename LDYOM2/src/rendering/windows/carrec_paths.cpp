@@ -165,11 +165,10 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 					ImGui::OpenPopup(contextMenuId);
 				}
 
+				bool openRenamePopup = false;
 				if (ImGui::BeginPopup(contextMenuId)) {
 					if (ImGui::MenuItem(fmt::format(ICON_FA_PEN " {}", _("general.rename")).c_str())) {
-						char renamePopupId[32];
-						sprintf(renamePopupId, "rename_popup_%d", static_cast<int>(i));
-						ImGui::OpenPopup(renamePopupId);
+						openRenamePopup = true;
 					}
 					if (ImGui::MenuItem(fmt::format(ICON_FA_TRASH " {}", _("general.delete")).c_str())) {
 						window->m_indexToRemove = static_cast<int>(i);
@@ -177,10 +176,11 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 					ImGui::EndPopup();
 				}
 
-				// Rename popup
-				char renamePopupId[32];
-				sprintf(renamePopupId, "rename_popup_%d", static_cast<int>(i));
-				if (ImGui::RenamePopup(renamePopupId, &window->m_renameBuffer)) {
+				if (openRenamePopup) {
+					ImGui::OpenPopup("##rename_popup");
+				}
+
+				if (ImGui::RenamePopup("##rename_popup", &window->m_renameBuffer)) {
 					if (!window->m_renameBuffer.empty() &&
 					    !CarrecPathsService::instance().pathNameExists(window->m_renameBuffer)) {
 						path.setName(window->m_renameBuffer);
