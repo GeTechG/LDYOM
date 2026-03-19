@@ -5,18 +5,16 @@
 
 namespace {
 
-const std::filesystem::path BASE_PATH = LDYOM_PATH("");
+const std::filesystem::path BASE_PATH = std::filesystem::path(LDYOM_PATH("")).lexically_normal();
 
 bool isSubPath(const std::filesystem::path& path, const std::filesystem::path& base) {
-	auto rel = std::filesystem::relative(path, base);
+	auto rel = path.lexically_relative(base);
 	return !rel.empty() && rel.native()[0] != '.';
 }
 
 std::optional<std::filesystem::path> resolveSafe(const char* luaPath) {
-	auto path = std::filesystem::path(PLUGIN_PATH((char*)"")) / luaPath;
-	std::error_code ec;
-	path = std::filesystem::weakly_canonical(path, ec);
-	if (ec || !isSubPath(path, BASE_PATH)) {
+	auto path = (std::filesystem::path(PLUGIN_PATH((char*)"")) / luaPath).lexically_normal();
+	if (!isSubPath(path, BASE_PATH)) {
 		return std::nullopt;
 	}
 	return path;
