@@ -18,6 +18,79 @@
 #include <vector>
 
 namespace {
+
+// Split a lowercase string into non-empty whitespace-separated tokens.
+static std::vector<std::string> splitTokens(const std::string& s) {
+	std::vector<std::string> tokens;
+	size_t i = 0;
+	while (i < s.size()) {
+		while (i < s.size() && s[i] == ' ')
+			++i;
+		size_t j = i;
+		while (j < s.size() && s[j] != ' ')
+			++j;
+		if (j > i)
+			tokens.push_back(s.substr(i, j - i));
+		i = j;
+	}
+	return tokens;
+}
+
+// Draw text with every occurrence of every token highlighted.
+// Overlapping/adjacent spans are merged before drawing.
+static void DrawTextHighlighted(ImDrawList* dl, ImVec2 pos, const std::string& text,
+                                const std::vector<std::string>& tokens, ImU32 normalColor, ImU32 highlightColor) {
+	if (text.empty())
+		return;
+	if (tokens.empty()) {
+		dl->AddText(pos, normalColor, text.c_str());
+		return;
+	}
+
+	std::string textLower = text;
+	std::transform(textLower.begin(), textLower.end(), textLower.begin(), ::tolower);
+
+	// Collect all [start, end) highlight spans from every token
+	std::vector<std::pair<size_t, size_t>> spans;
+	for (const auto& token : tokens) {
+		if (token.empty())
+			continue;
+		size_t p = 0;
+		while ((p = textLower.find(token, p)) != std::string::npos) {
+			spans.push_back({p, p + token.size()});
+			p += token.size();
+		}
+	}
+
+	// Sort then merge overlapping/adjacent spans
+	std::sort(spans.begin(), spans.end());
+	std::vector<std::pair<size_t, size_t>> merged;
+	for (auto& s : spans) {
+		if (!merged.empty() && s.first <= merged.back().second)
+			merged.back().second = std::max(merged.back().second, s.second);
+		else
+			merged.push_back(s);
+	}
+
+	float xOff = 0.0f;
+	size_t cur = 0;
+	for (auto& [start, end] : merged) {
+		if (start > cur) {
+			const char* b = text.c_str() + cur;
+			const char* e = text.c_str() + start;
+			dl->AddText(ImVec2(pos.x + xOff, pos.y), normalColor, b, e);
+			xOff += ImGui::CalcTextSize(b, e).x;
+		}
+		const char* b = text.c_str() + start;
+		const char* e = text.c_str() + end;
+		dl->AddText(ImVec2(pos.x + xOff, pos.y), highlightColor, b, e);
+		xOff += ImGui::CalcTextSize(b, e).x;
+		cur = end;
+	}
+	if (cur < text.size())
+		dl->AddText(ImVec2(pos.x + xOff, pos.y), normalColor, text.c_str() + cur);
+}
+
 void ApplyNodeFlowTheme() {
 	auto nodeBg = ImGui::GetStyleColorVec4(ImGuiCol_PopupBg);
 	ImFlow::NodeStyle::s_default_bg = ImGui::ColorConvertFloat4ToU32(nodeBg);
@@ -248,13 +321,15 @@ static std::string buildCategoryDisplayName(const std::string& category) {
 
 void NodeEditorWindow::rebuildFilteredResults(const std::string& searchLower) {
 	m_filteredResults.clear();
+	m_searchTokens = splitTokens(searchLower);
+	if (m_searchTokens.empty())
+		return;
+
 	auto& registry = NodeRegistry::instance();
 	auto& loc = Localization::instance().getI18N();
 
 	for (const auto& category : registry.getCategories()) {
 		std::string categoryDisplay = buildCategoryDisplayName(category);
-		std::string catLower = categoryDisplay;
-		std::transform(catLower.begin(), catLower.end(), catLower.begin(), ::tolower);
 
 		for (const auto& type : registry.getTypesForCategory(category)) {
 			auto title = _(fmt::format("nodes_titles.{}", type));
@@ -270,20 +345,34 @@ void NodeEditorWindow::rebuildFilteredResults(const std::string& searchLower) {
 				std::transform(descLower.begin(), descLower.end(), descLower.begin(), ::tolower);
 			}
 
-			if (titleLower.find(searchLower) == std::string::npos && catLower.find(searchLower) == std::string::npos &&
-			    descLower.find(searchLower) == std::string::npos) {
-				continue;
+			// Earlier tokens carry more weight: token[0] = n pts, token[1] = n-1, ..., token[n-1] = 1.
+			// Within each token: title match doubles the token's weight, description halves it.
+			// Include if at least one token matches; higher score = shown first.
+			int score = 0;
+			const int n = static_cast<int>(m_searchTokens.size());
+			for (int ti = 0; ti < n; ++ti) {
+				const int tokenWeight = n - ti;
+				const auto& token = m_searchTokens[ti];
+				if (titleLower.find(token) != std::string::npos)
+					score += tokenWeight * 2;
+				else if (descLower.find(token) != std::string::npos)
+					score += tokenWeight;
 			}
+			if (score == 0)
+				continue;
 
 			const auto* descReg = registry.find(type);
 			std::string icon;
 			if (descReg)
 				icon = NodeStyleRegistry::instance().getIcon(descReg->styleKey);
-			// label shown in search list: "icon title  [category]"
 			std::string label = (icon.empty() ? title : icon + " " + title);
-			m_filteredResults.push_back({type, std::move(label), std::move(desc)});
+			m_filteredResults.push_back({type, std::move(label), std::move(desc), category, score});
 		}
 	}
+
+	// Sort by score descending so best matches appear first
+	std::sort(m_filteredResults.begin(), m_filteredResults.end(),
+	          [](const FilteredEntry& a, const FilteredEntry& b) { return a.score > b.score; });
 }
 
 void NodeEditorWindow::rebuildNodeTree() {
@@ -336,9 +425,14 @@ void NodeEditorWindow::renderNodeTreeNode(const CategoryNode& node, Workspace& w
 				ImGui::CloseCurrentPopup();
 			}
 		}
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay)) {
+			std::string descKey = fmt::format("nodes_descriptions.{}", type);
+			if (loc.keyExists(descKey))
+				ImGui::SetTooltip("%s", _(descKey).c_str());
+		}
 	}
 
-	// Subcategories as tree nodes
+	// Subcategories as tree nodes (Unreal-style: plain arrow, no folder icon)
 	for (const auto& [seg, child] : node.children) {
 		std::string locKey = fmt::format("nodes_categories.{}", child.fullPath);
 		std::string titleLocKey = locKey + ".title";
@@ -346,7 +440,7 @@ void NodeEditorWindow::renderNodeTreeNode(const CategoryNode& node, Workspace& w
 		std::string treeId = menuLabel + "##cat_" + child.fullPath;
 
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
-		bool open = ImGui::TreeNodeEx(treeId.c_str(), flags, "%s %s", ICON_FA_FOLDER, menuLabel.c_str());
+		bool open = ImGui::TreeNodeEx(treeId.c_str(), flags, "%s", menuLabel.c_str());
 		if (open) {
 			renderNodeTreeNode(child, ws);
 			ImGui::TreePop();
@@ -407,13 +501,11 @@ void NodeEditorWindow::renderContextMenu() {
 		rebuildNodeTree();
 	}
 
-	constexpr float kTreeW = 320.0f;
-	constexpr float kDescW = 360.0f;
-	constexpr float kPanelH = 420.0f;
-	constexpr float kTotalW = kTreeW + kDescW + 8.0f; // 8 = item spacing
+	constexpr float kPopupW = 320.0f;
+	constexpr float kListH = 400.0f;
 
 	// ── Search bar ──────────────────────────────────────────────────────────
-	ImGui::SetNextItemWidth(kTotalW);
+	ImGui::SetNextItemWidth(kPopupW);
 	ImGui::InputTextWithHint("##node_search", ICON_FA_MAGNIFYING_GLASS " Search...", m_searchBuf, sizeof(m_searchBuf));
 
 	std::string searchLower(m_searchBuf);
@@ -427,39 +519,61 @@ void NodeEditorWindow::renderContextMenu() {
 
 	auto& ws = activeWorkspace();
 
-	// ── Left panel: tree / search results ───────────────────────────────────
-	ImGui::BeginChild("##node_tree_panel", ImVec2(kTreeW, kPanelH), ImGuiChildFlags_FrameStyle);
+	// ── Node list ────────────────────────────────────────────────────────────
+	ImGui::BeginChild("##node_list_panel", ImVec2(kPopupW, kListH), ImGuiChildFlags_FrameStyle);
 
 	if (isSearching) {
-		ImGuiListClipper clipper;
-		clipper.Begin(static_cast<int>(m_filteredResults.size()));
-		while (clipper.Step()) {
-			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i) {
-				const auto& entry = m_filteredResults[i];
-				bool selected = (m_selectedNodeType == entry.type);
-				std::string selLabel = entry.label + "##srch_" + entry.type;
-				if (ImGui::Selectable(selLabel.c_str(), selected, ImGuiSelectableFlags_AllowDoubleClick)) {
-					m_selectedNodeType = entry.type;
-					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-						registry.ensureLoaded(entry.type);
-						ws.nodeFlow->placeNode<LuaNode>(entry.type);
-						ImGui::CloseCurrentPopup();
+		// Group results by category, preserving registry insertion order
+		std::vector<std::string> catOrder;
+		std::map<std::string, std::vector<const FilteredEntry*>> grouped;
+		for (const auto& entry : m_filteredResults) {
+			if (grouped.find(entry.category) == grouped.end())
+				catOrder.push_back(entry.category);
+			grouped[entry.category].push_back(&entry);
+		}
+
+		const ImU32 highlightColor = ImGui::ColorConvertFloat4ToU32(ImVec4(0.40f, 0.85f, 0.20f, 1.0f));
+		const ImU32 normalColor = ImGui::GetColorU32(ImGuiCol_Text);
+		const float itemH = ImGui::GetTextLineHeightWithSpacing(); // used as explicit selectable height
+
+		for (const auto& catKey : catOrder) {
+			const auto& entries = grouped[catKey];
+			std::string catDisplay = catKey.empty() ? "" : buildCategoryDisplayName(catKey);
+
+			bool catOpen = true;
+			if (!catDisplay.empty()) {
+				ImGuiTreeNodeFlags catFlags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
+				catOpen = ImGui::TreeNodeEx(("##srchcat_" + catKey).c_str(), catFlags, "%s", catDisplay.c_str());
+			}
+
+			if (catOpen) {
+				for (const auto* entry : entries) {
+					bool selected = (m_selectedNodeType == entry->type);
+					ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+					float availW = ImGui::GetContentRegionAvail().x;
+					if (ImGui::Selectable(("##srch_" + entry->type).c_str(), selected,
+					                      ImGuiSelectableFlags_AllowDoubleClick,
+					                      ImVec2(availW, itemH))) {
+						m_selectedNodeType = entry->type;
+						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+							registry.ensureLoaded(entry->type);
+							ws.nodeFlow->placeNode<LuaNode>(entry->type);
+							ImGui::CloseCurrentPopup();
+						}
 					}
+					DrawTextHighlighted(ImGui::GetWindowDrawList(), cursorPos, entry->label, m_searchTokens,
+					                    normalColor, highlightColor);
+					if (!entry->desc.empty() && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay))
+						ImGui::SetTooltip("%s", entry->desc.c_str());
 				}
+				if (!catDisplay.empty())
+					ImGui::TreePop();
 			}
 		}
-		clipper.End();
 	} else {
 		renderNodeTreeNode(m_rootCategory, ws);
 	}
 
-	ImGui::EndChild();
-
-	ImGui::SameLine();
-
-	// ── Right panel: description ─────────────────────────────────────────────
-	ImGui::BeginChild("##node_desc_panel", ImVec2(kDescW, kPanelH), ImGuiChildFlags_FrameStyle);
-	renderNodeDescription();
 	ImGui::EndChild();
 
 	// ── Place button ─────────────────────────────────────────────────────────
@@ -467,7 +581,7 @@ void NodeEditorWindow::renderContextMenu() {
 	bool canPlace = !m_selectedNodeType.empty();
 	if (!canPlace)
 		ImGui::BeginDisabled();
-	if (ImGui::Button(_("create").c_str(), ImVec2(kTotalW, 0))) {
+	if (ImGui::Button(_("create").c_str(), ImVec2(kPopupW, 0))) {
 		registry.ensureLoaded(m_selectedNodeType);
 		ws.nodeFlow->placeNode<LuaNode>(m_selectedNodeType);
 		ImGui::CloseCurrentPopup();

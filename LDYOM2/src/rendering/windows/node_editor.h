@@ -32,10 +32,13 @@ class NodeEditorWindow : public Window {
 
     struct FilteredEntry {
         std::string type;
-        std::string label; // category / icon title
+        std::string label;    // icon + title
         std::string desc;
+        std::string category; // raw registry category path (e.g. "flow.core")
+        int score = 0;        // higher = better match, used for sorting
     };
     std::string m_lastSearch;
+    std::vector<std::string> m_searchTokens;
     std::vector<FilteredEntry> m_filteredResults;
 
     // Category tree for the node picker
