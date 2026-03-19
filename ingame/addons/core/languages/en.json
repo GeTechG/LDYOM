@@ -13,7 +13,8 @@
             "entity": {
                 "spawn": "Spawn Entity",
                 "despawn": "Despawn Entity",
-                "get_handle": "Get Entity Handle"
+                "get_handle": "Get Entity Handle",
+                "get_checkpoint_coords": "Get Checkpoint Coords & Radius"
             },
             "global_var": {
                 "get": "Get Global Variable",
