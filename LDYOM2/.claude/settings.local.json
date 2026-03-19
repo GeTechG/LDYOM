@@ -1,5 +1,11 @@
 {
   "permissions": {
-    "allow": []
+    "allow": [
+      "Read(../ingame/**)",
+      "Write(../ingame/**)",
+      "Edit(../ingame/**)",
+      "Glob(../ingame/**)",
+      "Grep(../ingame/**)"
+    ]
   }
 }
