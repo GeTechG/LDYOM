@@ -138,23 +138,24 @@ void register_node_editor_bindings(sol::state_view lua) {
 	// are re-evaluated at most once per step even if multiple value pins feed from them.
 	table.set_function("bump_pure_generation", []() { LuaNode::bumpEvalGeneration(); });
 
-	// node_editor.get_next_flow_node(uid, pinIndex) -> NodeUID or nil
+	// node_editor.get_next_flow_nodes(uid, pinIndex) -> { NodeUID, ... }
 	// Follows the output flow pin at pinIndex on the node identified by uid.
-	// Searches all workspaces.
-	table.set_function("get_next_flow_node", [](sol::this_state s, ImFlow::NodeUID uid, int pinIndex) -> sol::object {
+	// Returns a table with UIDs of ALL connected nodes. Searches all workspaces.
+	table.set_function("get_next_flow_nodes", [](sol::this_state s, ImFlow::NodeUID uid, int pinIndex) -> sol::table {
 		sol::state_view l(s);
+		sol::table result = l.create_table();
 		auto* win = getNodeEditorWindow();
 		if (!win)
-			return sol::object{};
+			return result;
 
 		ImFlow::ImNodeFlow* graph = nullptr;
 		auto* luaNode = win->findNodeByUID(uid, &graph);
 		if (!luaNode || !graph)
-			return sol::object{};
+			return result;
 
 		const auto& outs = luaNode->getOuts();
 		if (pinIndex < 0 || pinIndex >= static_cast<int>(outs.size()))
-			return sol::object{};
+			return result;
 
 		ImFlow::Pin* targetPin = outs[pinIndex].get();
 
@@ -165,10 +166,10 @@ void register_node_editor_bindings(sol::state_view lua) {
 			if (link->left() == targetPin) {
 				auto* nextNode = dynamic_cast<LuaNode*>(link->right()->getParent());
 				if (nextNode)
-					return sol::make_object(l, nextNode->getUID());
+					result.add(nextNode->getUID());
 			}
 		}
-		return sol::object{};
+		return result;
 	});
 
 	// ── Workspace management ─────────────────────────────────────────────────

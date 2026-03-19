@@ -43,9 +43,7 @@ register_addon({
             for _, nodeInfo in ipairs(nodes) do
                 if nodeInfo.type == "core.start_scene" then
                     local uid = nodeInfo.uid
-                    node_tasks.run("scene_chain_" .. sceneId .. "_" .. tostring(uid), function()
-                        node_editor.run_flow_from(uid)
-                    end)
+                    node_editor.run_flow_from(uid)
                 elseif nodeInfo.type == "core.main_loop" then
                     local uid = nodeInfo.uid
                     node_tasks.run("main_loop_" .. sceneId .. "_" .. tostring(uid), function()
@@ -72,9 +70,7 @@ register_addon({
                         end
                         handle:setOutput(2, index)
                     end
-                    node_tasks.run("objective_chain_" .. tostring(index) .. "_" .. tostring(uid), function()
-                        node_editor.run_flow_from(uid)
-                    end)
+                    node_editor.run_flow_from(uid)
                     ::continue::
                 end
             end

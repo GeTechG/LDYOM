@@ -60,14 +60,12 @@ local desc = {
                 return 1  -- follow "done" flow output
             end
 
-            -- spawn body as a separate task each frame (fixed key = at most one body at a time)
+            -- spawn each connected body node as a separate task
             if myUid then
-                local bodyUid = node_editor.get_next_flow_node(myUid, 0)
-                if bodyUid then
-                    local bodyKey = "while_body_" .. myUid
-                    node_tasks.run(bodyKey, function()
-                        node_editor.run_flow_from(bodyUid)
-                    end)
+                local bodyNodes = node_editor.get_next_flow_nodes(myUid, 0)
+                for i, bodyUid in ipairs(bodyNodes) do
+                    local bodyKey = "while_body_" .. myUid .. "_" .. i
+                    node_tasks.run(bodyKey, node_editor.run_flow_from, bodyUid)
                 end
             end
 

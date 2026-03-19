@@ -145,11 +145,11 @@ function node_editor.get_node_execute_fn(uid) end
 function node_editor.bump_pure_generation() end
 
 --- Follows the output flow pin at pinIndex (0-based) on the given node.
---- Returns the UID of the connected node, or nil if not connected.
+--- Returns a table with UIDs of ALL connected nodes (empty table if none).
 --- @param uid integer NodeUID
 --- @param pinIndex integer 0-based output pin index
---- @return integer|nil
-function node_editor.get_next_flow_node(uid, pinIndex) end
+--- @return integer[]
+function node_editor.get_next_flow_nodes(uid, pinIndex) end
 
 --- Executes the full node-flow chain starting from startUID.
 --- Must be called from a coroutine context (supports yielding execute functions).
