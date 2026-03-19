@@ -127,7 +127,7 @@ bool NodeRegistry::registerNode(const sol::table& descriptor) {
 			pin.title = *pinTitleOpt;
 
 			auto pinTypeOpt = pinTable.get<sol::optional<std::string>>("type");
-			pin.type = pinTypeOpt.value_or("float");
+			pin.type = pinTypeOpt.value_or("number");
 
 			auto pinDirOpt = pinTable.get<sol::optional<std::string>>("dir");
 			pin.dir = pinDirOpt.value_or("in");

@@ -52,7 +52,7 @@ struct LazyNodeEntry {
 
 struct NodePinDescriptor {
 	std::string title;
-	std::string type; // "flow", "float", "int", "bool", "string"
+	std::string type; // "flow", "number", "bool", "string"
 	std::string dir;  // "in" or "out"
 	sol::object defaultValue;
 	sol::protected_function behaviour; // optional: out-pin value producer (handle) -> value

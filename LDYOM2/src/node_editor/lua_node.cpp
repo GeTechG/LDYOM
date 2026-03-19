@@ -13,10 +13,8 @@ namespace {
 std::shared_ptr<ImFlow::PinStyle> pinStyleForType(const std::string& type) {
 	if (type == "flow")
 		return ImFlow::PinStyle::white();
-	if (type == "float")
+	if (type == "number")
 		return ImFlow::PinStyle::cyan();
-	if (type == "int")
-		return ImFlow::PinStyle::green();
 	if (type == "bool")
 		return ImFlow::PinStyle::red();
 	if (type == "string")

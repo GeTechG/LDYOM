@@ -5,7 +5,7 @@
 #include <string>
 #include <unordered_map>
 
-// Maps Pin* -> semantic type string ("flow", "float", "int", "bool", "string")
+// Maps Pin* -> semantic type string ("flow", "number", "bool", "string")
 // Uses Pin pointer as key (not PinUID) to avoid hash collisions when multiple
 // nodes share pins with the same name.
 class PinSemanticRegistry {

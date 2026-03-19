@@ -43,7 +43,7 @@ TEMPLATES = {
     "pin_data_in_float": (
         '\n        {{\n'
         '            title = "{title}",\n'
-        '            type = "float",\n'
+        '            type = "number",\n'
         '            dir = "in",\n'
         '            default = {default},\n'
         '            on_render = function(handle)\n'
@@ -61,7 +61,7 @@ TEMPLATES = {
     "pin_data_in_int": (
         '\n        {{\n'
         '            title = "{title}",\n'
-        '            type = "float",\n'
+        '            type = "number",\n'
         '            dir = "in",\n'
         '            default = {default},\n'
         '            on_render = function(handle)\n'
@@ -140,7 +140,7 @@ def get_pin_type(param_type: str) -> str:
         return "bool"
     if param_type in STRING_TYPES:
         return "string"
-    return "float"
+    return "number"
 
 
 def needs_floor(param_type: str) -> bool:
