@@ -24,6 +24,7 @@
 #include <timer_service.h>
 #include <utils/objective_utils.h>
 #include <utils/string_utils.h>
+#include <uuid_wrap.h>
 #include <window_manager.h>
 #include <windows/node_editor.h>
 
@@ -137,6 +138,21 @@ ktwait ProjectPlayer::run() {
 			if (instance().m_state.pendingSceneTransition.has_value()) {
 				break;
 			}
+
+			if (instance().m_state.pendingObjectiveJump.has_value()) {
+				std::string targetId = instance().m_state.pendingObjectiveJump.value();
+				instance().m_state.pendingObjectiveJump.reset();
+				int jumpIndex = -1;
+				for (int j = 0; j < static_cast<int>(objectives.size()); j++) {
+					if (uuids::to_string(objectives[j].id) == targetId) {
+						jumpIndex = j;
+						break;
+					}
+				}
+				if (jumpIndex >= 0) {
+					i = jumpIndex - 1; // -1 because loop will increment
+				}
+			}
 		}
 
 		if (instance().m_state.pendingSceneTransition.has_value()) {
@@ -241,6 +257,10 @@ void ProjectPlayer::failCurrentProject() { this->stopCurrentProject(); }
 
 void ProjectPlayer::requestSceneTransition(std::string_view sceneId) {
 	m_state.pendingSceneTransition = std::string(sceneId);
+}
+
+void ProjectPlayer::requestObjectiveJump(std::string_view objectiveId) {
+	m_state.pendingObjectiveJump = std::string(objectiveId);
 }
 
 void ProjectPlayer::transitionPlayingState(bool toPlayMode) {

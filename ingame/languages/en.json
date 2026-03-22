@@ -234,6 +234,14 @@
                 "name": "Wait for Signal",
                 "description": "Waiting for a signal from the node editor, scripts."
             },
+            "signal_switch": {
+                "name": "Signal Switch",
+                "description": "Waits for a signal and jumps to a specific objective based on which signal was received.",
+                "entries": "Entries",
+                "signal": "Signal",
+                "objective": "Objective",
+                "add_entry": "Add Entry"
+            },
             "kill_actor_gang": {
                 "name": "Kill Actor/Gang",
                 "description": "Kill an actor or a gang of actors.",

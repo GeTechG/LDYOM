@@ -14,6 +14,7 @@ struct ProjectPlayerState {
 	std::string currentSceneId;
 	bool isFaded = false; // Tracks fade state: true = screen is black, false = screen is visible (analog of $DYOM_faded)
 	std::optional<std::string> pendingSceneTransition;
+	std::optional<std::string> pendingObjectiveJump; // UUID of objective to jump to
 };
 
 class ProjectPlayer {
@@ -47,6 +48,7 @@ class ProjectPlayer {
 	void failCurrentProject();
 	void transitionPlayingState(bool toPlayMode);
 	void requestSceneTransition(std::string_view sceneId);
+	void requestObjectiveJump(std::string_view objectiveId);
 
 	bool isPlaying() const { return m_state.isPlaying; }
 	std::string getCurrentSceneId() const { return m_state.currentSceneId; }

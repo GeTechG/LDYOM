@@ -30,6 +30,7 @@
 #include <objectives/timer_start.h>
 #include <objectives/timeout.h>
 #include <objectives/wait_signal.h>
+#include <objectives/signal_switch.h>
 #include <objectives/wanted_level.h>
 #include <objectives/weather.h>
 #include <stdexcept>
@@ -99,6 +100,7 @@ void ObjectivesManager::registerCoreObjectives() {
 	using namespace objectives;
 	this->registerObjectiveBuilder<test::Data>(test::builder());
 	this->registerObjectiveBuilder<wait_signal::Data>(wait_signal::builder());
+	this->registerObjectiveBuilder<signal_switch::Data>(signal_switch::builder());
 	this->registerObjectiveBuilder<kill_actor_gang::Data>(kill_actor_gang::builder());
 	this->registerObjectiveBuilder<enter_to_vehicle::Data>(enter_to_vehicle::builder());
 	this->registerObjectiveBuilder<destroy_vehicle::Data>(destroy_vehicle::builder());
