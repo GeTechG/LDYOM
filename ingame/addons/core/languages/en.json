@@ -175,7 +175,11 @@
                 "set_bit": "MathSetBit",
                 "clear_bit": "MathClearBit",
                 "pow": "MathPow",
-                "log": "MathLog"
+                "log": "MathLog",
+                "toggle_bit": "MathToggleBit",
+                "is_truthy": "MathIsTruthy",
+                "random_pick": "MathRandomPick",
+                "random_chance": "MathRandomChance"
             },
             "char": {
                 "create": "CharCreate",
@@ -705,7 +709,16 @@
                 "get_label_string": "TextGetLabelString",
                 "add_label": "TextAddLabel",
                 "remove_label": "TextRemoveLabel",
-                "string_float_format": "TextStringFloatFormat"
+                "string_float_format": "TextStringFloatFormat",
+                "is_equal": "TextIsEqual",
+                "contains": "TextContains",
+                "starts_with": "TextStartsWith",
+                "ends_with": "TextEndsWith",
+                "display_formatted": "TextDisplayFormatted",
+                "load_fxt": "TextLoadFxt",
+                "unload_fxt": "TextUnloadFxt",
+                "get_length": "TextGetLength",
+                "add_label_formatted": "TextAddLabelFormatted"
             },
             "clock": {
                 "get_time_of_day": "ClockGetTimeOfDay",
@@ -722,7 +735,10 @@
             "debugger": {
                 "enable": "DebuggerEnable",
                 "disable": "DebuggerDisable",
-                "is_debug_camera_on": "DebuggerIsDebugCameraOn"
+                "is_debug_camera_on": "DebuggerIsDebugCameraOn",
+                "breakpoint": "DebuggerBreakpoint",
+                "trace": "DebuggerTrace",
+                "log_line": "DebuggerLogLine"
             },
             "mission": {
                 "finish": "MissionFinish",
@@ -744,7 +760,14 @@
                 "set_player_display_vital_stats_button": "PadSetPlayerDisplayVitalStatsButton",
                 "set_player_cycle_weapon_button": "PadSetPlayerCycleWeaponButton",
                 "is_key_pressed": "PadIsKeyPressed",
-                "test_cheat": "PadTestCheat"
+                "test_cheat": "PadTestCheat",
+                "is_key_just_pressed": "PadIsKeyJustPressed",
+                "get_key_pressed_in_range": "PadGetKeyPressedInRange",
+                "get_key_just_pressed_in_range": "PadGetKeyJustPressedInRange",
+                "emulate_key_press": "PadEmulateKeyPress",
+                "emulate_key_release": "PadEmulateKeyRelease",
+                "get_controller_key": "PadGetControllerKey",
+                "get_key_name": "PadGetKeyName"
             },
             "object": {
                 "create": "ObjectCreate",
@@ -1647,7 +1670,14 @@
                 "pop_float": "MemoryPopFloat",
                 "get_ped_ref": "MemoryGetPedRef",
                 "get_vehicle_ref": "MemoryGetVehicleRef",
-                "get_object_ref": "MemoryGetObjectRef"
+                "get_object_ref": "MemoryGetObjectRef",
+                "copy": "MemoryCopy",
+                "read_with_offset": "MemoryReadWithOffset",
+                "write_with_offset": "MemoryWriteWithOffset",
+                "forget": "MemoryForget",
+                "get_script_struct_just_created": "MemoryGetScriptStructJustCreated",
+                "is_script_running": "MemoryIsScriptRunning",
+                "is_equal": "MemoryIsEqual"
             },
             "fs": {
                 "set_current_directory": "FsSetCurrentDirectory",
@@ -1677,6 +1707,46 @@
                 "first": "FindFileFirst",
                 "next": "FindFileNext",
                 "close": "FindFileClose"
+            },
+            "audio_stream": {
+                "load": "AudioStreamLoad",
+                "set_state": "AudioStreamSetState",
+                "remove": "AudioStreamRemove",
+                "get_length": "AudioStreamGetLength",
+                "get_state": "AudioStreamGetState",
+                "get_volume": "AudioStreamGetVolume",
+                "set_volume": "AudioStreamSetVolume",
+                "set_looped": "AudioStreamSetLooped",
+                "is_playing": "AudioStreamIsPlaying",
+                "get_duration": "AudioStreamGetDuration",
+                "get_speed": "AudioStreamGetSpeed",
+                "set_speed": "AudioStreamSetSpeed",
+                "set_volume_with_transition": "AudioStreamSetVolumeWithTransition",
+                "set_speed_with_transition": "AudioStreamSetSpeedWithTransition",
+                "get_progress": "AudioStreamGetProgress",
+                "set_progress": "AudioStreamSetProgress",
+                "get_type": "AudioStreamGetType",
+                "set_type": "AudioStreamSetType",
+                "get_progress_seconds": "AudioStreamGetProgressSeconds",
+                "set_progress_seconds": "AudioStreamSetProgressSeconds"
+            },
+            "audio_stream3_d": {
+                "load": "AudioStream3DLoad",
+                "set_play_at_coords": "AudioStream3DSetPlayAtCoords",
+                "set_play_at_object": "AudioStream3DSetPlayAtObject",
+                "set_play_at_char": "AudioStream3DSetPlayAtChar",
+                "set_play_at_car": "AudioStream3DSetPlayAtCar",
+                "set_source_size": "AudioStream3DSetSourceSize"
+            },
+            "ini_file": {
+                "read_int": "IniFileReadInt",
+                "write_int": "IniFileWriteInt",
+                "read_float": "IniFileReadFloat",
+                "write_float": "IniFileWriteFloat",
+                "read_string": "IniFileReadString",
+                "write_string": "IniFileWriteString",
+                "delete_section": "IniFileDeleteSection",
+                "delete_key": "IniFileDeleteKey"
             }
         }
     },
@@ -1689,7 +1759,6 @@
         "flow": "Flow",
         "logic": "Logic",
         "opcode": {
-            "title": "Opcodes",
             "camera": "Camera",
             "player": "Player",
             "math": "Math",
@@ -1756,7 +1825,10 @@
             "fs": "Fs",
             "file": "File",
             "dynamic_library": "Dynamic Library",
-            "find_file": "Find File"
+            "find_file": "Find File",
+            "audio_stream": "Audio Stream",
+            "audio_stream3_d": "Audio Stream3D",
+            "ini_file": "Ini File"
         }
     },
     "nodes_descriptions": {
@@ -1891,11 +1963,15 @@
                 "get2_d_lines_intersect_point": "Returns the point of intersection of two lines. If they do not intersect, both returned values are -1000000.0 and the condition result is false",
                 "get_heading_from_vector2_d": "Gets the angle for the XY offset",
                 "limit_angle": "Gets the exact angle of an angle",
-                "is_bit_set": "Checks if the nth bit of the number is set",
-                "set_bit": "Sets the nth bit of the number",
-                "clear_bit": "Clears the nth bit of the number",
+                "is_bit_set": "Checks if n-th bit of the number is set",
+                "set_bit": "Sets n-th bit of the number",
+                "clear_bit": "Clears n-th bit of the number",
                 "pow": "Returns the specified number raised to the specified power",
-                "log": "Returns the logarithm of the specified number in the specified base"
+                "log": "Returns the logarithm of the specified number in the specified base",
+                "toggle_bit": "Sets state of n-th bit in the number",
+                "is_truthy": "Checks if value contains number different than 0 or not empty string",
+                "random_pick": "Selects one random text from provided values",
+                "random_chance": "Sets random condition result, with percent chance to be true"
             },
             "char": {
                 "create": "Creates a character at the specified location, with the specified model and pedtype",
@@ -2341,7 +2417,7 @@
                 "is_message_being_displayed": "Returns true if a priority GXT string is displayed on screen",
                 "display_with_float": "Converts the float to two separate numbers to use in a 2-numbered GXT entry, and draws the text",
                 "set_edge": "Adds an outline to the next text drawn using a text draw command",
-                "is_empty": "Returns true if the string is empty",
+                "is_empty": "Checks if string length is equal to zero",
                 "is_help_message_being_displayed": "Returns true if any help message is being displayed",
                 "set_message_formatting": "Overrides the position of the text on screen",
                 "set_help_message_box_size": "Sets the global width of text boxes displayed on screen",
@@ -2367,7 +2443,16 @@
                 "scan_string": "Extracts data from a string using sscanf",
                 "get_label_string": "Returns the text associated with the GXT key",
                 "add_label": "Adds or updates the text associated with the dynamic GXT key. It does nothing if the same key is defined in a FXT file",
-                "remove_label": "Deletes the key and associated text created with ADD_TEXT_LABEL or defined in a FXT file"
+                "remove_label": "Deletes the key and associated text created with ADD_TEXT_LABEL or defined in a FXT file",
+                "is_equal": "Compares two texts",
+                "contains": "Checks if text contains specified text",
+                "starts_with": "Checks if text starts with specified prefix text",
+                "ends_with": "Checks if text ends with specified suffix text",
+                "display_formatted": "Formats args according to the format string then draws text at the specified on-screen position. See 033E",
+                "load_fxt": "Loads GXT texts from selected FXT dictionary file",
+                "unload_fxt": "Unloads GXT labels defined in selected Fxt file",
+                "get_length": "Returns count of characters in the text",
+                "add_label_formatted": "Adds or updates the text associated with the dynamic GXT key. It does nothing if the same key is defined in a FXT file"
             },
             "clock": {
                 "get_time_of_day": "Returns the number of hours and minutes passed since midnight",
@@ -2383,7 +2468,10 @@
             },
             "debugger": {
                 "enable": "Activates debug features in this script",
-                "disable": "Deactivates debug features in this script"
+                "disable": "Deactivates debug features in this script",
+                "breakpoint": "Creates a debug breakpoint in script",
+                "trace": "Prints a debug message on screen and adds it to .cleo.log",
+                "log_line": "Appends new line to file. Timestamp parameter decides if datetime prefix in format 'DD/MM/YYYY hh:mm:ss.fraction' will be added. Command is not affected by debug mode status"
             },
             "mission": {
                 "finish": "Resets multiple settings that are usually set during missions and in some scripts",
@@ -2404,7 +2492,14 @@
                 "set_player_jump_button": "Sets whether the player can jump",
                 "set_player_display_vital_stats_button": "Sets whether a player can use the ACTION key to display their stats",
                 "is_key_pressed": "Returns true if the player is pressing a keyboard button with the specified code",
-                "test_cheat": "Returns true if the specified string of letters has been typed on the keyboard"
+                "test_cheat": "Returns true if the specified string of letters has been typed on the keyboard",
+                "is_key_just_pressed": "Returns true if the player has just started to press a specified key this frame",
+                "get_key_pressed_in_range": "Gets code of first currently hold down key in range between minKeyCode and maxKeyCode. If no key is pressed return value is unmodified and logical result is set to false",
+                "get_key_just_pressed_in_range": "Gets code of first just pressed key in range between minKeyCode and maxKeyCode. If no key was pressed return value is unmodified and logical result is set to false",
+                "emulate_key_press": "Simulates key press event",
+                "emulate_key_release": "Simulates key release event",
+                "get_controller_key": "Returns n-th alternate key assigned to pad's action. If no key is bound then return value is unchanged and logical result is false",
+                "get_key_name": "Returns keyboard/mouse key name text of specified keyCode. If key code has no name return value is unchanged and logical result is false"
             },
             "object": {
                 "create": "Creates an object at the specified location, with the specified model",
@@ -3179,7 +3274,14 @@
                 "pop_float": "Returns a floating-point number stored as the result of the function called (0AA5, 0AA6, 0AA7, 0AA8) immediately before this command",
                 "get_ped_ref": "Gets the corresponding handle of the char located at the given address in memory",
                 "get_vehicle_ref": "Gets the corresponding handle of the vehicle located at the given address in memory",
-                "get_object_ref": "Gets the corresponding handle of the object located at the given address in memory"
+                "get_object_ref": "Gets the corresponding handle of the object located at the given address in memory",
+                "copy": "Copies a block of memory from src address to dest address. src and dest regions may overlap (memmove behavior)",
+                "read_with_offset": "Reads a value from the given offset from the memory address (see: 2402)",
+                "write_with_offset": "Writes the value at the given offset from the memory address (see: 2401)",
+                "forget": "Makes the memory chunk allocated with 0AC8 persistent across load/start new game events. The memory is still released when game closes causing no leaks",
+                "get_script_struct_just_created": "Returns the address of a most recently (globally) created script (004F, 00D7, 0A92, 0A94)",
+                "is_script_running": "Checks if address points at valid and running script",
+                "is_equal": "Compares two memory blocks"
             },
             "fs": {
                 "set_current_directory": "Sets the current working directory (cwd) to a predefined location with a value of 0 or 1, or to an arbitrary path with a string value",
@@ -3209,6 +3311,46 @@
                 "first": "Searches a directory for a file or subdirectory with a name that matches a specific name (or partial name if wildcards are used)",
                 "next": "Continues a file search from a previous call to 0AE6",
                 "close": "Closes a file search handle opened by 0AE6"
+            },
+            "audio_stream": {
+                "load": "Loads an audio file and creates a new audio stream (see 0AC1)",
+                "set_state": "Sets the state of the audio stream",
+                "remove": "Unloads the audio stream and frees the memory",
+                "get_length": "Gets the audio stream length in seconds",
+                "get_state": "Returns the state of the audio stream",
+                "get_volume": "Returns the audio stream volume (from 0.0 to 1.0)",
+                "set_volume": "Sets the audio stream volume (default is 1.0). Pauses/Starts stream playback if neccesarry",
+                "set_looped": "Makes the audio stream repeat endlessly",
+                "is_playing": "Checks if audio stream is currently in 'play' state",
+                "get_duration": "Gets the audio stream total duration considering its speed (see 2505)",
+                "get_speed": "Gets audio stream playback speed multiplier",
+                "set_speed": "Sets audio stream playback speed multiplier",
+                "set_volume_with_transition": "Changes stream volume with smooth transition",
+                "set_speed_with_transition": "Changes stream speed with smooth transition. Pauses/Starts stream playback if neccesarry",
+                "get_progress": "Gets audio stream playback progress as value from 0.0 to 1.0",
+                "set_progress": "Sets audio stream playback position. Progress range is from 0.0 to 1.0",
+                "get_type": "Returns current volume settings type group of the stream",
+                "set_type": "Sets which game's master volume settings the stream should follow",
+                "get_progress_seconds": "Returns current playback progress in seconds. Does not take in consideration current stream's playback speed",
+                "set_progress_seconds": "Sets current playback progress in seconds. Does not take in consideration current stream's playback speed"
+            },
+            "audio_stream3_d": {
+                "load": "Loads an audio file and creates a new 3d audio stream (see 0AAC)",
+                "set_play_at_coords": "Sets sound source position to specific world location",
+                "set_play_at_object": "Attaches sound source to the object",
+                "set_play_at_char": "Attaches sound source to the character",
+                "set_play_at_car": "Attaches sound source to the vehicle",
+                "set_source_size": "Sets size of 3d audio stream sound source in the world. Volume will not decay within the specified distance"
+            },
+            "ini_file": {
+                "read_int": "Reads an integer value from the ini file",
+                "write_int": "Writes the integer value to the ini file",
+                "read_float": "Reads a floating-point value from the ini file",
+                "write_float": "Writes the floating-point value to the ini file",
+                "read_string": "Reads a string value from the ini file",
+                "write_string": "Writes the string value to the ini file",
+                "delete_section": "Deletes the section from the ini file",
+                "delete_key": "Deletes the key from the ini file"
             }
         }
     },
