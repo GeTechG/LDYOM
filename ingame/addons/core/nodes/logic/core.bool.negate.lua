@@ -10,13 +10,13 @@ local desc = {
     is_pure = true,
     pins = {
         {
-            title = loc.trv("value"),
+            title = "",
             type = "bool",
             dir = "in",
             default = false,
         },
         {
-            title = loc.trv("result"),
+            title = "",
             type = "bool",
             dir = "out"
         }
