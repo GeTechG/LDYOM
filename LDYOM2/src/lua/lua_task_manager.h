@@ -26,6 +26,7 @@ class LuaTaskManager {
 	enum class Reason { NextFrame, Sleep, WaitFor };
 
 	struct Task {
+		sol::thread thread; // keep the coroutine thread alive (prevents GC)
 		sol::coroutine coro;
 		Reason waitReason = Reason::NextFrame;
 		std::chrono::steady_clock::time_point wakeTime;
@@ -38,4 +39,5 @@ class LuaTaskManager {
 	std::unordered_map<std::string, Task> m_tasks;
 	std::vector<std::pair<std::string, Task>> m_pending;
 	bool m_inProcess = false;
+	lua_State* m_mainL = nullptr;
 };

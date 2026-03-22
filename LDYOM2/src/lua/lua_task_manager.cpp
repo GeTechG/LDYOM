@@ -111,8 +111,18 @@ bool LuaTaskManager::run(std::string key, sol::function func) {
 			return false;
 	}
 
+	if (!m_mainL)
+		return false;
+
 	Task task;
-	task.coro = sol::coroutine(func);
+	// Create an independent Lua thread so the coroutine runs on its own stack.
+	// sol::coroutine(func) copies lua_state() from func, which — when called
+	// from inside a running coroutine — is the *calling* coroutine's thread.
+	// lua_resume() would then resume the CALLER instead of a new coroutine.
+	// Fix: create a fresh sol::thread and build the coroutine from its state,
+	// so m_L points to the new thread and lua_resume targets the right stack.
+	task.thread = sol::thread::create(m_mainL);
+	task.coro   = sol::coroutine(task.thread.state().lua_state(), func);
 
 	if (m_inProcess) {
 		m_pending.push_back({std::move(key), std::move(task)});
@@ -164,6 +174,10 @@ bool LuaTaskManager::cancelAll() {
 }
 
 void LuaTaskManager::registerBindings(sol::state_view lua, LuaTaskManager& manager, std::string_view tableName) {
+	// Store the main Lua state so run() can create threads on it instead of
+	// on whatever coroutine thread happens to be calling run().
+	manager.m_mainL = lua.lua_state();
+
 	// Raw internal table — not exposed directly to addon authors
 	const std::string rawKey = std::string("_ltm_raw_") + std::string(tableName);
 	sol::table raw = lua.create_table(rawKey);
