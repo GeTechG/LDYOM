@@ -12,6 +12,9 @@
             "flow": {
                 "while": "While"
             },
+            "bool": {
+                "negate": "Negate"
+            },
             "main_loop": "Main Loop",
             "entity": {
                 "spawn": "Spawn Entity",
@@ -1684,6 +1687,7 @@
         "carrec_path": "CarRec Paths",
         "string": "String",
         "flow": "Flow",
+        "logic": "Logic",
         "opcode": {
             "title": "Opcodes",
             "camera": "Camera",
