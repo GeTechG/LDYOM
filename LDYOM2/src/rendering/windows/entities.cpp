@@ -19,6 +19,7 @@
 #include <rotation_utils.h>
 #include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
+#include <uuid_wrap.h>
 #include <window_manager.h>
 
 bool EntitiesWindow::filterByType(Entity& entity) {
@@ -250,6 +251,29 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 				if (ImGui::BeginChild("EntityContent", ImVec2(),
 				                      ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Borders)) {
 					auto availableWidth = ImGui::GetContentRegionAvail().x;
+
+					// UUID (subtle display with copy button)
+					{
+						auto uuidStr = uuids::to_string(entity.id);
+						auto uuidShort = uuidStr.substr(0, 8) + "...";
+						ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+						ImGui::TextUnformatted(uuidShort.c_str());
+						if (ImGui::IsItemHovered()) {
+							ImGui::SetTooltip("%s", uuidStr.c_str());
+						}
+						ImGui::PopStyleColor();
+						ImGui::SameLine();
+						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 1.0f));
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_HeaderActive));
+						if (ImGui::SmallButton(ICON_FA_COPY "##copyUuid")) {
+							ImGui::SetClipboardText(uuidStr.c_str());
+						}
+						ImGui::PopStyleColor(3);
+						ImGui::PopStyleVar();
+					}
+
 					// Position
 					ImGui::Text("Position");
 
