@@ -67,6 +67,7 @@ struct NodeDescriptor {
 	std::vector<NodePinDescriptor> pins;
 	sol::table defaultData; // optional: initial key/value pairs for nodeData
 	sol::protected_function on_init;
+	sol::protected_function on_load; // called after deserializeData, before links are reconnected
 	sol::protected_function on_draw;
 	sol::protected_function on_execute;
 };

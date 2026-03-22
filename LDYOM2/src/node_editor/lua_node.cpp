@@ -211,7 +211,10 @@ void LuaNodeHandle::sol_lua_register(sol::state_view lua) {
 		&LuaNodeHandle::getData, "setData", &LuaNodeHandle::setData, "getOutput", &LuaNodeHandle::getOutput,
 		"setOutput", &LuaNodeHandle::setOutput, "getInputPinType", &LuaNodeHandle::getInputPinType,
 		"getOutputPinType", &LuaNodeHandle::getOutputPinType, "setInputPinType", &LuaNodeHandle::setInputPinType,
-		"setOutputPinType", &LuaNodeHandle::setOutputPinType, "typeKey", sol::readonly(&LuaNodeHandle::typeKey));
+		"setOutputPinType", &LuaNodeHandle::setOutputPinType, "typeKey", sol::readonly(&LuaNodeHandle::typeKey),
+		"uid", sol::property([](const LuaNodeHandle& h) -> ImFlow::NodeUID {
+			return h.nodePtr ? h.nodePtr->getUID() : 0;
+		}));
 }
 
 // ─── LuaNode ─────────────────────────────────────────────────────────────────
@@ -503,6 +506,22 @@ void LuaNode::deserializePinDefaults(const nlohmann::json& j) {
 			typedPin->setDefault(sol::make_object(lua, val.get<double>()));
 		else if (val.is_string())
 			typedPin->setDefault(sol::make_object(lua, val.get<std::string>()));
+	}
+}
+
+void LuaNode::onLoad() {
+	const NodeDescriptor* desc = NodeRegistry::instance().find(m_typeKey);
+	if (!desc || !desc->on_load.valid())
+		return;
+	try {
+		auto guard = LuaManager::instance().getState();
+		auto result = desc->on_load(m_handle);
+		if (!result.valid()) {
+			sol::error err = result;
+			LDYOM_ERROR("LuaNode on_load error for '{}': {}", m_typeKey, err.what());
+		}
+	} catch (const std::exception& e) {
+		LDYOM_ERROR("LuaNode on_load exception for '{}': {}", m_typeKey, e.what());
 	}
 }
 

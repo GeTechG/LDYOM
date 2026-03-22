@@ -66,6 +66,8 @@ class LuaNode : public ImFlow::BaseNode {
 
 	nlohmann::json serializeData() const;
 	void deserializeData(const nlohmann::json& j);
+	// Called after deserializeData, before links are reconnected. Invokes on_load callback.
+	void onLoad();
 
 	// For pure nodes: evaluates on_execute synchronously if the generation is stale.
 	// Called automatically by output pin behaviours of pure nodes.

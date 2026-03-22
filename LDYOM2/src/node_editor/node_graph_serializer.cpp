@@ -139,6 +139,9 @@ void NodeGraphSerializer::fromJson(ImFlow::ImNodeFlow* graph, const nlohmann::js
 			node->deserializePinDefaults(nodeJ["pin_defaults"]);
 		}
 
+		// Allow node to update pin types based on loaded data, before links are reconnected
+		node->onLoad();
+
 		// Use the serialized uid for link reconnection
 		ImFlow::NodeUID storedUid = nodeJ.value("uid", static_cast<ImFlow::NodeUID>(0));
 		uidMap[storedUid] = node;

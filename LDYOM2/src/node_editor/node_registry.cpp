@@ -156,6 +156,10 @@ bool NodeRegistry::registerNode(const sol::table& descriptor) {
 	if (onInit)
 		desc.on_init = *onInit;
 
+	auto onLoad = descriptor.get<sol::optional<sol::protected_function>>("on_load");
+	if (onLoad)
+		desc.on_load = *onLoad;
+
 	auto onDraw = descriptor.get<sol::optional<sol::protected_function>>("on_draw");
 	if (onDraw)
 		desc.on_draw = *onDraw;
