@@ -2,6 +2,7 @@ local fa = require("fa");
 
 local TYPE = "core.bool.negate"
 
+---@type NodeDescriptor
 local desc = {
     type = TYPE,
     category = "logic",
