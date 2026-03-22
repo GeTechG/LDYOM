@@ -19,6 +19,20 @@ local desc = {
         -- output pin 1: value (type updated via setOutputPinType when variable selection changes)
         { title = "value", type = "number", dir = "out" },
     },
+    on_load = function(handle)
+        local selected = handle:getData("var_name") or ""
+        if selected == "" then return end
+        local vars = global_vars.list()
+        for _, v in ipairs(vars) do
+            if v.name == selected then
+                local pinType = varTypeToPin(v.type)
+                if handle:getOutputPinType(1) ~= pinType then
+                    handle:setOutputPinType(1, pinType)
+                end
+                break
+            end
+        end
+    end,
     on_draw = function(handle)
         local selected = handle:getData("var_name") or ""
         local vars = global_vars.list()

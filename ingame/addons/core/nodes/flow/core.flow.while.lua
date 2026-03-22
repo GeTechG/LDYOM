@@ -36,18 +36,7 @@ local desc = {
         }
     },
     on_execute = function(handle)
-        -- find our own uid by matching the handle reference
-        local myUid = nil
-        local nodes = node_editor.get_scene_nodes()
-        for _, nodeInfo in ipairs(nodes) do
-            if nodeInfo.type == TYPE then
-                local h = node_editor.get_node_handle(nodeInfo.uid)
-                if h == handle then
-                    myUid = nodeInfo.uid
-                    break
-                end
-            end
-        end
+        local myUid = handle.uid
 
         while true do
             node_editor.bump_pure_generation()
@@ -60,12 +49,11 @@ local desc = {
                 return 1  -- follow "done" flow output
             end
 
-            -- spawn each connected body node as a separate task
+            -- run body and wait for it to complete before next iteration
             if myUid then
                 local bodyNodes = node_editor.get_next_flow_nodes(myUid, 0)
-                for i, bodyUid in ipairs(bodyNodes) do
-                    local bodyKey = "while_body_" .. myUid .. "_" .. i
-                    node_tasks.run(bodyKey, node_editor.run_flow_from, bodyUid)
+                for _, bodyUid in ipairs(bodyNodes) do
+                    node_editor.run_flow_from(bodyUid)
                 end
             end
 
