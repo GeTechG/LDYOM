@@ -11,6 +11,7 @@
 #include "lua/scenes_binding.h"
 #include <filesystem>
 #include <filesystem_binding.h>
+#include <paths.h>
 #include <logger.h>
 #include <lua_node.h>
 #include <node_registry.h>
@@ -32,6 +33,10 @@ void LuaManager::initialize() {
 			LDYOM_ERROR("Lua error: {}", description);
 			return 0;
 		});
+
+	const auto libsPath = LDYOM_PATH("addons/libs");
+	lua["package"]["path"] =
+		fmt::format("{};{}/?.lua", lua["package"]["path"].get<std::string>(), libsPath);
 
 	register_log_bindings(lua);
 	register_filesystem_bindings(lua);
