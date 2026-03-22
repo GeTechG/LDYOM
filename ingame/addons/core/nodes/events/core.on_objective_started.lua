@@ -41,7 +41,7 @@ local desc = {
             if isAll then ImGui.SetItemDefaultFocus() end
 
             for i, obj in ipairs(objectives) do
-                local idx = obj.index
+                local idx = i - 1
                 local isSel = (selected == idx)
                 local itemLabel = string.format("[%d] %s", idx, obj.name)
                 if ImGui.Selectable(itemLabel, isSel,0, ImVec2.new(0, 0)) then
