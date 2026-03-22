@@ -1,5 +1,6 @@
 #include "application.h"
 #include "addons_manager.h"
+#include "project_script_manager.h"
 #include "entities_manager.h"
 #include "hotkeys.h"
 #include "imgui_hook.h"
@@ -39,6 +40,7 @@ void Application::initialize() {
 		ThemeLoader::initialize();
 		ProjectsManager::instance().initialize();
 		LuaManager::instance().initialize();
+		ProjectScriptManager::instance().initialize();
 		AddonsManager::instance().initialize();
 
 		ImguiHook::setRenderFunc(renderFrames);
@@ -114,6 +116,7 @@ void Application::shutdown() {
 	Localization::instance().shutdown();
 	Hotkeys::instance().shutdown();
 	m_luaTaskManager.shutdown();
+	ProjectScriptManager::instance().unloadProjectScript();
 	LuaManager::instance().shutdown();
 	TaskManager::instance().shutdown();
 	ScenesManager::instance().setRestartGame(true);

@@ -1,4 +1,5 @@
 #include "projects_manager.h"
+#include "project_script_manager.h"
 #include "data/project_info.h"
 #include "global_vars_service.h"
 #include "scenes_manager.h"
@@ -109,12 +110,19 @@ bool ProjectsManager::loadProject(int index) {
 	CarrecPathsService::instance().loadPaths();
 	GlobalVarsService::instance().reset();
 
+	{
+		const std::filesystem::path scriptPath =
+			std::filesystem::path(currentProject.value()->path) / "scripts" / "init.lua";
+		ProjectScriptManager::instance().loadProjectScript(scriptPath);
+	}
+
 	LDYOM_INFO("Loaded project: {}", currentProject.value()->name);
 	return true;
 }
 
 void ProjectsManager::closeProject() {
 	if (m_currentProjectIndex >= 0 && m_currentProjectIndex < static_cast<int>(m_projects.size())) {
+		ProjectScriptManager::instance().unloadProjectScript();
 		ScenesManager::instance().unloadCurrentScene();
 		m_currentProjectIndex = -1;
 	}
