@@ -1,6 +1,8 @@
 import json
 import stringcase
 
+required_extensions = ["default", "CLEO", "audio", "debug", "ini", "input", "math", "memory", "text"]
+
 def parseOpcodes(only_required: bool = False):
     classes: dict[str, list[object]] = {}
     data: any
@@ -8,7 +10,7 @@ def parseOpcodes(only_required: bool = False):
         data = json.load(read_file)
     for extension in data["extensions"]:
         if only_required:
-            if extension["name"] not in ["default", "CLEO"]:
+            if extension["name"] not in required_extensions:
                 continue
         for command in extension["commands"]:
             if "platforms" in command and not "pc" in command["platforms"]:

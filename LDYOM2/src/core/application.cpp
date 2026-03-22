@@ -1,6 +1,5 @@
 #include "application.h"
 #include "addons_manager.h"
-#include "project_script_manager.h"
 #include "entities_manager.h"
 #include "hotkeys.h"
 #include "imgui_hook.h"
@@ -10,6 +9,7 @@
 #include "object_tags_manager.h"
 #include "objectives_manager.h"
 #include "project_player.h"
+#include "project_script_manager.h"
 #include "settings.h"
 #include "textures_manager.h"
 #include <components_manager.h>

@@ -3,7 +3,7 @@ local _flow_branch_counter = 0
 function node_editor.run_flow_from(startUID)
     _flow_branch_counter = _flow_branch_counter + 1
     local key = "_flow_branch_" .. _flow_branch_counter
-    tasks.run(key, function()
+    node_tasks.run(key, function()
         local currentUID = startUID
         while currentUID do
             node_editor.bump_pure_generation()
@@ -28,4 +28,5 @@ function node_editor.run_flow_from(startUID)
             end
         end
     end)
+    return key
 end
