@@ -126,5 +126,6 @@ LDYOM2 is a well-architected mission editor combining user-friendly UI editing w
 - for learn dyom source use dyom.txt, DO NOT READ file full only grep
 - localization is located in ../ingame/languages/en.json (relative to LDYOM2 project root)
 - declarative Lua files for LDYOM are stored in ../ingame/definitions/core (relative to LDYOM2 project root)
+- When adding a new binding or updating one for Lua, don't forget to update the declaration
 - core ldyom addon stored in ../ingame/addons/core (relative to LDYOM2 project root)
 - Addons have their own localization files in the ./languages folder within the addon's root directory

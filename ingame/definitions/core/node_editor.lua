@@ -2,9 +2,10 @@
 
 -- ─── LuaNodeHandle ───────────────────────────────────────────────────────────
 
---- Per-node proxy object passed to on_init / on_draw / on_execute callbacks.
+--- Per-node proxy object passed to on_init / on_load / on_draw / on_execute callbacks.
 --- @class LuaNodeHandle
 --- @field typeKey string The node type key (read-only).
+--- @field uid integer The node's unique identifier (NodeUID, read-only). Returns 0 if the node has been removed.
 local LuaNodeHandle = {}
 
 --- Read the value from an input pin by 1-based index.
@@ -113,6 +114,7 @@ local LuaNode = {}
 --- @field pins? NodePinDescriptor[] Ordered list of pin descriptors (inputs first, then outputs).
 --- @field default_data? table Initial key/value pairs copied into nodeData when the node is first created.
 --- @field on_init? fun(handle: LuaNodeHandle) Called once after the node is spawned in the graph.
+--- @field on_load? fun(handle: LuaNodeHandle) Called after the node is deserialized (graph load), before links are reconnected. Use to restore pin types or other state from nodeData.
 --- @field on_draw? fun(handle: LuaNodeHandle) Called every frame to render custom ImGui content inside the node body.
 --- @field on_execute? fun(handle: LuaNodeHandle): any Called by the flow executor when the node's input flow pin fires.
 
