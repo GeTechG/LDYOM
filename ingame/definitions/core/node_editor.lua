@@ -91,25 +91,67 @@ function LuaNodeHandle:setOutputPinType(index, type) end
 --- @field handle LuaNodeHandle The node's Lua handle (shared ownership; safe to store).
 local LuaNode = {}
 
+-- ─── NodePinDescriptor ───────────────────────────────────────────────────────
+
+--- Describes a single pin on a node.
+--- @class NodePinDescriptor
+--- @field title string Display name of the pin. Required.
+--- @field type? "flow"|"number"|"bool"|"string" Semantic pin type. Defaults to "number".
+--- @field dir? "in"|"out" Pin direction. Defaults to "in".
+--- @field default? any Default value for unconnected input pins.
+--- @field behaviour? fun(handle: LuaNodeHandle): any Out-pin value producer. Called each time the pin value is pulled (pure/value nodes).
+--- @field on_render? fun(handle: LuaNodeHandle) Optional custom ImGui renderer drawn in place of the pin's default widget.
+
+-- ─── NodeDescriptor ──────────────────────────────────────────────────────────
+
+--- Full descriptor table passed to node_editor.register().
+--- @class NodeDescriptor
+--- @field type string Unique type key for this node, e.g. "my_addon.delay". Required.
+--- @field category? string Category shown in the Add-Node menu. Defaults to "Uncategorized".
+--- @field style? "event"|"function"|"loop"|"variable"|"branch"|string Semantic style key registered via node_editor.register_style(). Defaults to "function".
+--- @field is_pure? boolean If true, the node has no flow pins and is evaluated lazily (pull-based) with per-step caching. Defaults to false.
+--- @field pins? NodePinDescriptor[] Ordered list of pin descriptors (inputs first, then outputs).
+--- @field default_data? table Initial key/value pairs copied into nodeData when the node is first created.
+--- @field on_init? fun(handle: LuaNodeHandle) Called once after the node is spawned in the graph.
+--- @field on_draw? fun(handle: LuaNodeHandle) Called every frame to render custom ImGui content inside the node body.
+--- @field on_execute? fun(handle: LuaNodeHandle): any Called by the flow executor when the node's input flow pin fires.
+
+-- ─── NodeStyleDescriptor ─────────────────────────────────────────────────────
+
+--- Descriptor table passed to node_editor.register_style().
+--- @class NodeStyleDescriptor
+--- @field key string Unique style key used in NodeDescriptor.style. Required.
+--- @field header_bg integer[] RGBA color table {r, g, b, a} (0-255) for the node header background. Required.
+--- @field title_color? integer[] RGBA color table {r, g, b, a} for the title text. Defaults to white.
+--- @field icon? string UTF-8 FontAwesome glyph string (e.g. ICON_FA_BOLT). Optional.
+--- @field radius? number Corner radius of the node header in pixels. Defaults to 6.5.
+
+-- ─── LazyNodeDescriptor ──────────────────────────────────────────────────────
+
+--- Descriptor table passed to node_editor.register_lazy().
+--- @class LazyNodeDescriptor
+--- @field type string Unique type key for this node. Required.
+--- @field path string Absolute path to the Lua file that registers the full NodeDescriptor on first use. Required.
+--- @field category? string Category shown in the Add-Node menu. Defaults to "Uncategorized".
+
 -- ─── node_editor ─────────────────────────────────────────────────────────────
 
 --- @class node_editor
 node_editor = {}
 
---- Register a node type from a descriptor table.
---- @param descriptor table
---- @return boolean
+--- Register a node type from a full descriptor table.
+--- @param descriptor NodeDescriptor
+--- @return boolean success Returns false if the descriptor is missing required fields.
 function node_editor.register(descriptor) end
 
---- Register a node type lazily (loaded from a Lua file on first use).
---- @param descriptor table  Must contain `type`, `category`, `path` fields.
---- @return boolean
+--- Register a node type lazily.
+--- The Lua file at descriptor.path is executed only the first time the node type is needed.
+--- @param descriptor LazyNodeDescriptor
+--- @return boolean success Returns false if type or path fields are missing.
 function node_editor.register_lazy(descriptor) end
 
 --- Register a named visual style for node headers.
---- Descriptor fields: key (string), icon (string, optional), header_bg ({r,g,b,a}),
---- title_color ({r,g,b,a}, optional), radius (number, optional).
---- @param descriptor table
+--- @param descriptor NodeStyleDescriptor
 function node_editor.register_style(descriptor) end
 
 --- Returns a flat list of all LuaNode entries across all workspaces.

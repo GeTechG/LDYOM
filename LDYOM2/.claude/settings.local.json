@@ -6,6 +6,9 @@
       "Edit(../ingame/**)",
       "Glob(../ingame/**)",
       "Grep(../ingame/**)"
+    ],
+    "additionalDirectories": [
+      "../"
     ]
   }
 }
