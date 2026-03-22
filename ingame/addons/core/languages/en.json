@@ -3,17 +3,30 @@
         "core": {
             "start_scene": "Start Scene",
             "on_objective_started": "On Objective Started",
+            "on_signal": "On Signal",
             "print": "Print",
             "number_to_string": "Number to String",
             "boolean_to_string": "Boolean to String",
             "string_concat": "String Concat",
             "wait": "Wait",
+            "send_signal": "Send Signal",
             "branch": "Branch",
             "flow": {
                 "while": "While"
             },
             "bool": {
                 "negate": "Negate"
+            },
+            "logic": {
+                "and": "AND",
+                "or": "OR",
+                "xor": "XOR",
+                "is_current_objective": "Is Current Objective"
+            },
+            "compare": {
+                "number": "Compare Number",
+                "string": "Compare String",
+                "bool": "Compare Bool"
             },
             "main_loop": "Main Loop",
             "entity": {
@@ -1758,6 +1771,7 @@
         "string": "String",
         "flow": "Flow",
         "logic": "Logic",
+        "compare": "Compare",
         "opcode": {
             "camera": "Camera",
             "player": "Player",
