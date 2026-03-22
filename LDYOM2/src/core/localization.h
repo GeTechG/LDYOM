@@ -4,6 +4,7 @@
 #include "wtr/watcher.hpp"
 #include <filesystem>
 #include <fmt/format.h>
+#include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -33,6 +34,12 @@ class Localization {
 	 * @param locale Locale code (e.g., "en-US", "ru-RU")
 	 */
 	void setLocale(const std::string& locale);
+
+	/**
+	 * @brief Register a callback invoked after any locale is (re)loaded
+	 * @param callback Called with the locale code that was just loaded
+	 */
+	void setOnLocaleReloadCallback(std::function<void(const std::string&)> callback);
 
 	/**
 	 * @brief Get the current active locale
@@ -76,6 +83,7 @@ class Localization {
 
 	std::unique_ptr<i18n::I18N> m_i18n;
 	std::vector<std::string> m_availableLocales;
+	std::function<void(const std::string&)> m_onLocaleReload;
 };
 
 // Convenience macro for translation

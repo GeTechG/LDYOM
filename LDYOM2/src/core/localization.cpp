@@ -133,8 +133,15 @@ void Localization::loadLocale(std::string_view locale) {
 		try {
 			m_i18n->loadLocaleFromFile(localeFilePath.string());
 			LDYOM_INFO("Locale '{}' loaded successfully", localeFilePath.string());
+			if (m_onLocaleReload) {
+				m_onLocaleReload(std::string(locale));
+			}
 		} catch (const std::exception& e) {
 			LDYOM_ERROR("Failed to load locale '{}': {}", localeFilePath.string(), e.what());
 		}
 	}
+}
+
+void Localization::setOnLocaleReloadCallback(std::function<void(const std::string&)> callback) {
+	m_onLocaleReload = std::move(callback);
 }

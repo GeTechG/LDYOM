@@ -93,8 +93,11 @@ void AddonsManager::initialize() {
 				}
 			}
 			loadAddonLocale(*addon);
+			startWatchingAddonLocales(*addon);
 		}
 	}
+
+	Localization::instance().setOnLocaleReloadCallback([this](const std::string&) { reloadAddonLocales(); });
 }
 
 void AddonsManager::shutdown() {
@@ -156,6 +159,7 @@ bool AddonsManager::enableAddon(const std::string& addonId) {
 	}
 
 	loadAddonLocale(*it);
+	startWatchingAddonLocales(*it);
 	activeAddons.insert(addonId);
 	Settings::instance().setSetting("active_addons", activeAddons);
 	return true;
@@ -180,6 +184,7 @@ bool AddonsManager::disableAddon(const std::string& addonId) {
 		}
 	}
 
+	stopWatchingAddonLocales(addonId);
 	activeAddons.erase(addonId);
 	Settings::instance().setSetting("active_addons", activeAddons);
 	return true;
@@ -201,6 +206,47 @@ bool AddonsManager::hasSharedValue(const std::string& key) const { return shared
 void AddonsManager::removeSharedValue(const std::string& key) { sharedData.erase(key); }
 
 const std::vector<AddonMetadata>& AddonsManager::getAddons() const { return addonsList; }
+
+void AddonsManager::reloadAddonLocales() {
+	std::vector<AddonMetadata*> toReload;
+	for (auto& addon : addonsList) {
+		if (activeAddons.contains(addon.id)) {
+			toReload.push_back(&addon);
+		}
+	}
+	std::sort(toReload.begin(), toReload.end(), [](const auto* a, const auto* b) { return a->priority > b->priority; });
+	for (auto* addon : toReload) {
+		loadAddonLocale(*addon);
+	}
+}
+
+void AddonsManager::startWatchingAddonLocales(const AddonMetadata& addon) {
+	if (addon.path.empty()) {
+		return;
+	}
+	const auto langDir = addon.path / "languages";
+	if (!std::filesystem::exists(langDir) || !std::filesystem::is_directory(langDir)) {
+		return;
+	}
+	if (m_localeWatchers.contains(addon.id)) {
+		return;
+	}
+	m_localeWatchers[addon.id] = std::make_unique<wtr::watch>(langDir, [this](const wtr::event event) {
+		if (event.effect_type == wtr::event::effect_type::modify && event.path_name.extension() == ".json") {
+			LDYOM_INFO("Addon locale file modified: {}", event.path_name.string());
+			reloadAddonLocales();
+		}
+	});
+	LDYOM_INFO("Watching locale dir for addon '{}'", addon.id);
+}
+
+void AddonsManager::stopWatchingAddonLocales(const std::string& addonId) {
+	auto it = m_localeWatchers.find(addonId);
+	if (it != m_localeWatchers.end()) {
+		it->second->close();
+		m_localeWatchers.erase(it);
+	}
+}
 
 void AddonsManager::loadAddonLocale(const AddonMetadata& addon) {
 	if (addon.path.empty()) {

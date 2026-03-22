@@ -1,5 +1,8 @@
 #pragma once
+#define NOMINMAX
+#include "wtr/watcher.hpp"
 #include <filesystem>
+#include <memory>
 #include <optional>
 #include <sol/sol.hpp>
 #include <string>
@@ -28,9 +31,14 @@ class AddonsManager {
 	std::unordered_map<std::string, sol::object> sharedData;
 	std::filesystem::path m_currentLoadingPath;
 
+	std::unordered_map<std::string, std::unique_ptr<wtr::watch>> m_localeWatchers;
+
 	AddonsManager() = default;
 	bool loadAddonMetadata(const std::filesystem::path& addonPath);
 	void loadAddonLocale(const AddonMetadata& addon);
+	void reloadAddonLocales();
+	void startWatchingAddonLocales(const AddonMetadata& addon);
+	void stopWatchingAddonLocales(const std::string& addonId);
 
   public:
 	static AddonsManager& instance();
