@@ -78,6 +78,9 @@ void Hotkeys::addHotkeyCallback(std::string_view name, std::function<void()> cal
 }
 
 void Hotkeys::update() {
+	if (ImGui::GetIO().WantTextInput)
+		return;
+
 	auto hotkey = this->getHotKey(false);
 	if (hotkey != nullptr) {
 		// Only process if this is a new key combination (not the same as last frame)
