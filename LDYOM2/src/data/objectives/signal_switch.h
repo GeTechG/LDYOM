@@ -7,8 +7,8 @@
 #include <objectives_manager.h>
 #include <project_player.h>
 #include <scenes_manager.h>
-#include <uuid_wrap.h>
 #include <utils/imgui_configurate.h>
+#include <uuid_wrap.h>
 
 namespace objectives::signal_switch {
 constexpr const char* TYPE = "core.signal_switch";
@@ -47,8 +47,7 @@ void renderEditor(Data& data) {
 
 	float maxHeight = (SCL_PX).y * 160.f;
 	if (ImGui::BeginTable("##signal_switch_entries", 3,
-	                      ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp |
-	                          ImGuiTableFlags_ScrollY,
+	                      ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_ScrollY,
 	                      ImVec2(0.f, maxHeight))) {
 		ImGui::TableSetupScrollFreeze(0, 1);
 		ImGui::TableSetupColumn(_("objectives.core.signal_switch.signal").c_str(), ImGuiTableColumnFlags_WidthStretch,
@@ -71,14 +70,16 @@ void renderEditor(Data& data) {
 			ImGui::SetNextItemWidth(-1.f);
 			std::string preview = getObjectiveName(data.entries[i].objectiveId);
 			if (ImGui::BeginCombo("##obj", preview.c_str())) {
-				for (const auto& obj : objectives) {
+				for (size_t j = 0; j < objectives.size(); j++) {
+					const auto& obj = objectives[j];
 					std::string objIdStr = uuids::to_string(obj.id);
 					bool selected = data.entries[i].objectiveId == objIdStr;
-					if (ImGui::Selectable(obj.name.c_str(), selected))
+					if (ImGui::Selectable(fmt::format("{}##{}", obj.name, j).c_str(), selected))
 						data.entries[i].objectiveId = objIdStr;
 					if (selected)
 						ImGui::SetItemDefaultFocus();
 				}
+
 				ImGui::EndCombo();
 			}
 
