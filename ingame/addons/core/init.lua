@@ -28,6 +28,8 @@ local nodesPath = "LDYOM/addons/core/nodes";
 local on_scene_started_disconnect = nil;
 ---@type function | nil
 local on_objective_started_disconnect = nil;
+---@type function | nil
+local on_signal_disconnect = nil;
 
 register_addon({
     id = "skic.core",
@@ -76,6 +78,24 @@ register_addon({
             end
         end)
 
+        on_signal_disconnect = events.on_signal(function(signal)
+            local nodes = node_editor.get_scene_nodes();
+            for _, nodeInfo in ipairs(nodes) do
+                if nodeInfo.type == "core.on_signal" then
+                    local uid = nodeInfo.uid
+                    local handle = node_editor.get_node_handle(uid)
+                    if handle then
+                        local filter = handle:getData("signal_name") or ""
+                        if filter ~= "" and filter ~= signal then
+                            goto continue
+                        end
+                    end
+                    node_editor.run_flow_from(uid)
+                    ::continue::
+                end
+            end
+        end)
+
         local nodes_dirs = Dirs.entries(nodesPath, true)
         for _, node_file in ipairs(nodes_dirs) do
             if string.match(node_file, "%.lua$") then
@@ -97,6 +117,9 @@ register_addon({
         end
         if (on_objective_started_disconnect ~= nil) then
             on_objective_started_disconnect();
+        end
+        if (on_signal_disconnect ~= nil) then
+            on_signal_disconnect();
         end
     end
 });

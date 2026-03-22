@@ -29,6 +29,11 @@ function ProjectPlayer:request_scene_transition(sceneId) end
 ---@return Entity[]
 function ProjectPlayer:get_entities() end
 
+---Emits a signal by name. Any `wait_signal` objective or node listening for
+---this name will be unblocked immediately.
+---@param signal string The signal name to emit.
+function ProjectPlayer:send_signal(signal) end
+
 ---Global singleton for controlling mission playback.
 ---@type ProjectPlayer
 project_player = {}

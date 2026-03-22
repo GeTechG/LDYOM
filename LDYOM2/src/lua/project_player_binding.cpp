@@ -14,6 +14,7 @@ struct LuaProjectPlayerHandlers {
 	std::unordered_map<int, sol::protected_function> onSceneStarted;
 	std::unordered_map<int, sol::protected_function> onObjectiveStarted;
 	std::unordered_map<int, sol::protected_function> onObjectiveCompleted;
+	std::unordered_map<int, sol::protected_function> onSignal;
 
 	std::vector<rocket::scoped_connection> connections;
 	int nextId = 0;
@@ -62,6 +63,9 @@ static void initConnections() {
 
 	h.connections.push_back(ProjectPlayer::instance().onObjectiveCompleted.connect(
 		[](int index) { fireHandlers(getHandlers().onObjectiveCompleted, "events.on_objective_completed", index); }));
+
+	h.connections.push_back(ProjectPlayer::instance().signals.connect(
+		[](const std::string& signal) { fireHandlers(getHandlers().onSignal, "events.on_signal", signal); }));
 }
 
 // ── public API ────────────────────────────────────────────────────────────────
@@ -73,6 +77,7 @@ void clear_project_player_lua_callbacks() {
 	h.onSceneStarted.clear();
 	h.onObjectiveStarted.clear();
 	h.onObjectiveCompleted.clear();
+	h.onSignal.clear();
 }
 
 void register_project_player_bindings(sol::state_view lua) {
@@ -95,6 +100,10 @@ void register_project_player_bindings(sol::state_view lua) {
 		sol::property(&ProjectPlayer::getCurrentSceneId), "current_objective_index",
 		sol::property(&ProjectPlayer::getCurrentObjectiveIndex), "is_faded",
 		sol::property(&ProjectPlayer::isFaded, &ProjectPlayer::setFaded),
+
+		// Signals
+		"send_signal",
+		[](ProjectPlayer& pp, const std::string& signal) { pp.signals(signal); },
 
 		// Entities
 		"get_entities",
@@ -124,6 +133,8 @@ void register_project_player_bindings(sol::state_view lua) {
 			h.onObjectiveStarted[id] = std::move(fn);
 		else if (event == "objective_completed")
 			h.onObjectiveCompleted[id] = std::move(fn);
+		else if (event == "signal")
+			h.onSignal[id] = std::move(fn);
 		else
 			LDYOM_WARN("events: unknown event '{}'", event);
 		return id;
@@ -141,6 +152,8 @@ void register_project_player_bindings(sol::state_view lua) {
 			h.onObjectiveStarted.erase(id);
 		else if (event == "objective_completed")
 			h.onObjectiveCompleted.erase(id);
+		else if (event == "signal")
+			h.onSignal.erase(id);
 	};
 
 	// Public `events` table – each subscriber returns a disconnect function
@@ -162,6 +175,7 @@ void register_project_player_bindings(sol::state_view lua) {
 		events.on_scene_started       = make_subscriber("scene_started")
 		events.on_objective_started   = make_subscriber("objective_started")
 		events.on_objective_completed = make_subscriber("objective_completed")
+		events.on_signal              = make_subscriber("signal")
 
 		_ppe_raw = nil
 	)");
