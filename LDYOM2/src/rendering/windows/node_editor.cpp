@@ -375,6 +375,14 @@ void NodeEditorWindow::rebuildFilteredResults(const std::string& searchLower) {
 	          [](const FilteredEntry& a, const FilteredEntry& b) { return a.score > b.score; });
 }
 
+void NodeEditorWindow::addToRecent(const std::string& type) {
+	m_recentNodeTypes.erase(
+	    std::remove(m_recentNodeTypes.begin(), m_recentNodeTypes.end(), type), m_recentNodeTypes.end());
+	m_recentNodeTypes.push_front(type);
+	if (m_recentNodeTypes.size() > 10)
+		m_recentNodeTypes.pop_back();
+}
+
 void NodeEditorWindow::rebuildNodeTree() {
 	m_rootCategory = CategoryNode{};
 	auto& registry = NodeRegistry::instance();
@@ -422,6 +430,7 @@ void NodeEditorWindow::renderNodeTreeNode(const CategoryNode& node, Workspace& w
 			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 				registry.ensureLoaded(type);
 				ws.nodeFlow->placeNode<LuaNode>(type);
+				addToRecent(type);
 				ImGui::CloseCurrentPopup();
 			}
 		}
@@ -558,6 +567,7 @@ void NodeEditorWindow::renderContextMenu() {
 						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 							registry.ensureLoaded(entry->type);
 							ws.nodeFlow->placeNode<LuaNode>(entry->type);
+							addToRecent(entry->type);
 							ImGui::CloseCurrentPopup();
 						}
 					}
@@ -571,6 +581,34 @@ void NodeEditorWindow::renderContextMenu() {
 			}
 		}
 	} else {
+		// ── Recent nodes ────────────────────────────────────────────────────────
+		if (!m_recentNodeTypes.empty()) {
+			ImGuiTreeNodeFlags recentFlags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
+			if (ImGui::TreeNodeEx("##recent_nodes", recentFlags, "%s", _("node_editor.recent").c_str())) {
+				for (const auto& type : m_recentNodeTypes) {
+					if (registry.find(type) == nullptr)
+						continue;
+					const auto* desc = registry.find(type);
+					std::string icon;
+					if (desc)
+						icon = NodeStyleRegistry::instance().getIcon(desc->styleKey);
+					std::string title = _(fmt::format("nodes_titles.{}", type));
+					std::string label = (icon.empty() ? title : icon + " " + title) + "##rec_" + type;
+					bool selected = (m_selectedNodeType == type);
+					if (ImGui::Selectable(label.c_str(), selected, ImGuiSelectableFlags_AllowDoubleClick)) {
+						m_selectedNodeType = type;
+						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+							registry.ensureLoaded(type);
+							ws.nodeFlow->placeNode<LuaNode>(type);
+							addToRecent(type);
+							ImGui::CloseCurrentPopup();
+						}
+					}
+				}
+				ImGui::TreePop();
+			}
+			ImGui::Separator();
+		}
 		renderNodeTreeNode(m_rootCategory, ws);
 	}
 
@@ -584,6 +622,7 @@ void NodeEditorWindow::renderContextMenu() {
 	if (ImGui::Button(_("create").c_str(), ImVec2(kPopupW, 0))) {
 		registry.ensureLoaded(m_selectedNodeType);
 		ws.nodeFlow->placeNode<LuaNode>(m_selectedNodeType);
+		addToRecent(m_selectedNodeType);
 		ImGui::CloseCurrentPopup();
 	}
 	if (!canPlace)

@@ -179,6 +179,9 @@
         "node_editor": "{} Node Editor",
         "global_vars": "{} Global Variables"
     },
+    "node_editor": {
+        "recent": "Recent"
+    },
     "global_vars": {
         "title": "{} Global Variables",
         "add_variable": "{} Add Variable",

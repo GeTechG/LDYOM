@@ -3,6 +3,7 @@
 #include "lua/lua_task_manager.h"
 #include "window.h"
 #include <ImNodeFlow.h>
+#include <deque>
 #include <lua_node.h>
 #include <map>
 #include <memory>
@@ -50,6 +51,10 @@ class NodeEditorWindow : public Window {
         std::vector<std::string> nodeTypes;
     };
     CategoryNode m_rootCategory;
+
+    // Recently used nodes (up to 10)
+    std::deque<std::string> m_recentNodeTypes;
+    void addToRecent(const std::string& type);
 
     Workspace& activeWorkspace();
     void addWorkspace(const std::string& name);
