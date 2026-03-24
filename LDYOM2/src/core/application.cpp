@@ -15,6 +15,7 @@
 #include <components_manager.h>
 #include <fires_remover.h>
 #include <in_game/debug_info.h>
+#include <nothing.h>
 #include <plugin.h>
 #include <projects_manager.h>
 #include <scenes_manager.h>
@@ -25,6 +26,7 @@
 #include <window_manager.h>
 #include <windows/init.h>
 #include <windows/node_editor.h>
+
 
 void Application::initialize() {
 	LDYOM_INFO("LDYOM Application starting...");
@@ -135,6 +137,8 @@ void Application::process() {
 			(*nodeEditor)->taskManager().processAll();
 		}
 	}
+
+	nothing();
 
 	ScenesManager::instance().onUpdate((CTimer::m_snTimeInMilliseconds - CTimer::m_snPreviousTimeInMilliseconds) /
 	                                   1000.f);
