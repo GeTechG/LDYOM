@@ -1,0 +1,370 @@
+{
+    "entities": [
+        {
+            "areaId": 0,
+            "components": [
+                {
+                    "headshotImmune": false,
+                    "health": 100.0,
+                    "initialDirection": -0.13159577548503876,
+                    "isRandomModel": false,
+                    "isSimpleType": true,
+                    "model": -1,
+                    "mustSurvive": false,
+                    "pedType": 0,
+                    "specialModel": "sweet",
+                    "type": "actor"
+                },
+                {
+                    "despawnObjective": "",
+                    "spawnObjective": "fc92a6da-6d9a-4640-90d9-ec3844cba1b3",
+                    "type": "objective_specific"
+                },
+                {
+                    "animName": "Idle_Gang1",
+                    "isLooped": true,
+                    "packName": "PED",
+                    "type": "actor_animation"
+                }
+            ],
+            "id": "cf3cc73e-610b-4707-910d-20bc2f2d8144",
+            "name": "Sweet",
+            "position": [
+                2486.3935546875,
+                -1683.157470703125,
+                13.334528923034668
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        {
+            "areaId": 0,
+            "components": [
+                {
+                    "ammo": 0,
+                    "model": 1271,
+                    "pickupType": 4,
+                    "spawnType": 0,
+                    "type": "pickup",
+                    "weaponType": 1
+                },
+                {
+                    "despawnObjective": "",
+                    "spawnObjective": "7cb75a17-2ad7-4afa-8016-07555a91481c",
+                    "type": "objective_specific"
+                }
+            ],
+            "id": "843e82d5-1541-4447-aaff-bd58a68a0e08",
+            "name": "New Entity",
+            "position": [
+                2296.17138671875,
+                -1630.3526611328125,
+                14.711694717407227
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        }
+    ],
+    "info": {
+        "id": "1774178030",
+        "name": "Nodes"
+    },
+    "objectives": [
+        {
+            "content": {
+                "angle": 175.5271759033203,
+                "changeModel": true,
+                "defaultWeapon": 0,
+                "giveWeapon": false,
+                "health": 100,
+                "interior": 0,
+                "isRandomWeapon": false,
+                "isSpecialModel": false,
+                "modelId": 0,
+                "position": [
+                    2487.8759765625,
+                    -1669.6697998046875,
+                    12.335947036743164
+                ],
+                "specialModel": "",
+                "weapons": []
+            },
+            "id": "fc92a6da-6d9a-4640-90d9-ec3844cba1b3",
+            "name": "Player Teleport",
+            "type": "core.player_teleport"
+        },
+        {
+            "content": {
+                "signal": "default"
+            },
+            "id": "fc91cfd7-e70e-4cd9-8af7-b4f94ceb2523",
+            "name": "Wait for Signal",
+            "type": "core.wait_signal"
+        },
+        {
+            "content": {
+                "actorUuid": "",
+                "behaviour": 0,
+                "cameraPosition": [
+                    2482.220458984375,
+                    -1678.9361572265625,
+                    16.400285720825195
+                ],
+                "fadeInOut": true,
+                "shaking": false,
+                "slowMotion": false,
+                "targetPosition": [
+                    2485.882080078125,
+                    -1682.7156982421875,
+                    13.593722343444824
+                ],
+                "text": "Sweet: Yo, CJ! I need some help.",
+                "textTime": 3.0,
+                "wideScreen": true
+            },
+            "id": "850d400f-c160-4769-8590-bd6c74662e4e",
+            "name": "Cutscene",
+            "type": "core.cutscene"
+        },
+        {
+            "content": {
+                "entries": [
+                    {
+                        "objectiveId": "a2e7cf49-f4d9-4272-a1db-07f27d715908",
+                        "signal": "help"
+                    },
+                    {
+                        "objectiveId": "fc91cfd7-e70e-4cd9-8af7-b4f94ceb2523",
+                        "signal": "exit"
+                    }
+                ]
+            },
+            "id": "753f1682-0cb3-423c-a971-af9d371dcc25",
+            "name": "Signal Switch",
+            "type": "core.signal_switch"
+        },
+        {
+            "content": {
+                "actorUuid": "",
+                "behaviour": 0,
+                "cameraPosition": [
+                    2482.65771484375,
+                    -1676.46826171875,
+                    17.77756118774414
+                ],
+                "fadeInOut": true,
+                "shaking": false,
+                "slowMotion": false,
+                "targetPosition": [
+                    2485.85009765625,
+                    -1682.06787109375,
+                    13.810916900634766
+                ],
+                "text": "Sweet: Pick up the package from the parking lot and bring it to me.",
+                "textTime": 3.0,
+                "wideScreen": true
+            },
+            "id": "a2e7cf49-f4d9-4272-a1db-07f27d715908",
+            "name": "Cutscene",
+            "type": "core.cutscene"
+        },
+        {
+            "content": {
+                "collectAll": false,
+                "colorBlip": 3,
+                "pickupUuid": "843e82d5-1541-4447-aaff-bd58a68a0e08",
+                "showCounter": false,
+                "text": "Pick up  ~b~package",
+                "textTime": 1.0
+            },
+            "id": "7cb75a17-2ad7-4afa-8016-07555a91481c",
+            "name": "Pickup",
+            "type": "core.pickup"
+        },
+        {
+            "content": {
+                "signal": "default"
+            },
+            "id": "dfe417e2-4bc3-4f05-8a68-a397ef9c4abd",
+            "name": "Wait for Signal",
+            "type": "core.wait_signal"
+        },
+        {
+            "content": {
+                "actorUuid": "",
+                "behaviour": 0,
+                "cameraPosition": [
+                    2482.657958984375,
+                    -1678.6993408203125,
+                    14.935799598693848
+                ],
+                "fadeInOut": true,
+                "shaking": false,
+                "slowMotion": false,
+                "targetPosition": [
+                    2486.073974609375,
+                    -1682.328857421875,
+                    13.449213981628418
+                ],
+                "text": "Sweet: Great, bro. Here you go.",
+                "textTime": 3.0,
+                "wideScreen": false
+            },
+            "id": "ac6fb072-ec2e-4848-b683-323830a1c3b9",
+            "name": "Cutscene",
+            "type": "core.cutscene"
+        },
+        {
+            "content": {
+                "money": 15000,
+                "text": "",
+                "textTime": 1.0
+            },
+            "id": "27202be8-b23c-4b3a-807a-6ec7c1200a4b",
+            "name": "Money Add",
+            "type": "core.money_add"
+        },
+        {
+            "content": {
+                "showTimer": false,
+                "text": "",
+                "timeSeconds": 2
+            },
+            "id": "5861f5e5-472b-4b31-8abd-4cf1133169cf",
+            "name": "Timeout",
+            "type": "core.timeout"
+        }
+    ],
+    "settings": {
+        "completionTime": 0,
+        "groupRelations": [
+            {
+                "ofPedType": 24,
+                "relationType": 4,
+                "toPedType": 0
+            },
+            {
+                "ofPedType": 24,
+                "relationType": 4,
+                "toPedType": 25
+            },
+            {
+                "ofPedType": 24,
+                "relationType": 4,
+                "toPedType": 26
+            },
+            {
+                "ofPedType": 24,
+                "relationType": 1,
+                "toPedType": 4
+            },
+            {
+                "ofPedType": 25,
+                "relationType": 1,
+                "toPedType": 0
+            },
+            {
+                "ofPedType": 25,
+                "relationType": 4,
+                "toPedType": 24
+            },
+            {
+                "ofPedType": 25,
+                "relationType": 4,
+                "toPedType": 26
+            },
+            {
+                "ofPedType": 25,
+                "relationType": 1,
+                "toPedType": 4
+            },
+            {
+                "ofPedType": 26,
+                "relationType": 4,
+                "toPedType": 0
+            },
+            {
+                "ofPedType": 26,
+                "relationType": 4,
+                "toPedType": 24
+            },
+            {
+                "ofPedType": 26,
+                "relationType": 4,
+                "toPedType": 25
+            },
+            {
+                "ofPedType": 26,
+                "relationType": 1,
+                "toPedType": 4
+            },
+            {
+                "ofPedType": 4,
+                "relationType": 1,
+                "toPedType": 0
+            },
+            {
+                "ofPedType": 4,
+                "relationType": 1,
+                "toPedType": 24
+            },
+            {
+                "ofPedType": 4,
+                "relationType": 1,
+                "toPedType": 25
+            },
+            {
+                "ofPedType": 4,
+                "relationType": 1,
+                "toPedType": 26
+            },
+            {
+                "ofPedType": 7,
+                "relationType": 1,
+                "toPedType": 0
+            },
+            {
+                "ofPedType": 8,
+                "relationType": 1,
+                "toPedType": 0
+            },
+            {
+                "ofPedType": 9,
+                "relationType": 1,
+                "toPedType": 0
+            }
+        ],
+        "isPrintSceneName": true,
+        "isSceneSettingsEnabled": true,
+        "isShowMissionTime": false,
+        "limitCompletionTime": false,
+        "riot": false,
+        "time": [
+            8,
+            0
+        ],
+        "trafficCar": 1.0,
+        "trafficPed": 1.0,
+        "wantedMax": 6,
+        "wantedMin": 0,
+        "weather": 0
+    }
+}

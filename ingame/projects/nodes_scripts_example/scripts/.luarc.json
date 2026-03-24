@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "runtime.version": "LuaJIT",
+  "misc.parameters": [
+    "--loglevel=trace"
+  ],
+  "workspace.library": [
+    "../../../addons/definitions",
+    "../../../addonslibs"
+  ]
+}

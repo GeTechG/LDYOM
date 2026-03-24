@@ -1,0 +1,19 @@
+{
+    "author": "SKIC",
+    "globalVars": [
+        {
+            "defaultValue": false,
+            "name": "interact_sweet",
+            "type": "boolean"
+        },
+        {
+            "defaultValue": -1.0,
+            "name": "selected_choice",
+            "type": "number"
+        }
+    ],
+    "name": "Nodes/scripts example",
+    "startSceneId": "1774178030",
+    "timestamp": 1774178030,
+    "uuid": "916cb38d-a1a8-4222-a753-3d820d4ef7ab"
+}
