@@ -63,6 +63,12 @@ function events.on_project_stopped(callback) end
 ---@return fun() disconnect Call to unsubscribe.
 function events.on_scene_started(callback) end
 
+---Subscribe to the scene-ended event.
+---Called just before a scene ends — either before a transition to another scene or before the project finishes.
+---@param callback fun(sceneId: string) Callback receiving the UUID string of the scene that just ended.
+---@return fun() disconnect Call to unsubscribe.
+function events.on_scene_ended(callback) end
+
 ---Subscribe to the objective-started event.
 ---Called when each objective begins execution.
 ---@param callback fun(index: integer) Callback receiving the 0-based objective index.

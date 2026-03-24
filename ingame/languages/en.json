@@ -225,8 +225,12 @@
         "create": "Create",
         "default_scene_name": "New Scene",
         "current": " (Current)",
+        "duplicate": "Duplicate",
+        "copy_suffix": " (Copy)",
         "remove_title": "Remove Scene",
-        "remove_message": "Are you sure you want to remove the scene?"
+        "remove_message": "Are you sure you want to remove the scene?",
+        "copy_id": "Copy ID",
+        "rename": "Rename"
     },
     "objectives": {
         "title": "{} Objectives",

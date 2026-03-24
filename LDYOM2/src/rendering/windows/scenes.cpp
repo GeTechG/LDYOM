@@ -29,9 +29,21 @@ void ScenesWindow::renderContent(ScenesWindow* window) {
 
 			bool openRenamePopupIndex = false;
 			static std::string renameBuffer = "";
+			char contextMenuId[32];
+			sprintf(contextMenuId, "scene_context_%d", i);
 			if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
-				renameBuffer = sceneInfo.name;
-				openRenamePopupIndex = true;
+				ImGui::OpenPopup(contextMenuId);
+			}
+
+			if (ImGui::BeginPopup(contextMenuId)) {
+				if (ImGui::MenuItem(_("scenes.copy_id").c_str())) {
+					ImGui::SetClipboardText(sceneInfo.id.c_str());
+				}
+				if (ImGui::MenuItem(_("scenes.rename").c_str())) {
+					renameBuffer = sceneInfo.name;
+					openRenamePopupIndex = true;
+				}
+				ImGui::EndPopup();
 			}
 
 			if (openRenamePopupIndex) {
@@ -72,6 +84,11 @@ void ScenesWindow::renderContent(ScenesWindow* window) {
 		if (ImGui::Button(_("scenes.load").c_str())) {
 			ScenesManager::instance().saveCurrentScene();
 			ScenesManager::instance().loadScene(scenesInfo[window->m_selectedSceneIndex].id);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button(_("scenes.duplicate").c_str())) {
+			ScenesManager::instance().saveCurrentScene();
+			ScenesManager::instance().duplicateScene(scenesInfo[window->m_selectedSceneIndex].id);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button(_("scenes.remove").c_str())) {

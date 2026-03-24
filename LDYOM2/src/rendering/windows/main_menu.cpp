@@ -5,9 +5,11 @@
 #include <fmt/format.h>
 #include <localization.h>
 #include <project_player.h>
+#include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
 #include <utils/theme_loader.h>
 #include <window_manager.h>
+
 
 void MainMenu::renderContent(Window* window) {
 	// Calculate the maximum button width needed
@@ -27,7 +29,7 @@ void MainMenu::renderContent(Window* window) {
 		window->close();
 	}
 	if (ImGui::Button(_("main_menu.run_project", ICON_FA_PLAY).c_str(), buttonSize)) {
-		ProjectPlayer::instance().startCurrentProject();
+		ProjectPlayer::instance().startCurrentProject(ScenesManager::instance().getCurrentScene().info.id);
 		WindowManager::instance().closeAllWindows();
 	}
 	if (ImGui::Button(_("scenes.title", ICON_FA_FILM).c_str(), buttonSize)) {

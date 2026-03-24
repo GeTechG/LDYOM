@@ -12,6 +12,7 @@ struct LuaProjectPlayerHandlers {
 	std::unordered_map<int, sol::protected_function> onProjectStarted;
 	std::unordered_map<int, sol::protected_function> onProjectStopped;
 	std::unordered_map<int, sol::protected_function> onSceneStarted;
+	std::unordered_map<int, sol::protected_function> onSceneEnded;
 	std::unordered_map<int, sol::protected_function> onObjectiveStarted;
 	std::unordered_map<int, sol::protected_function> onObjectiveCompleted;
 	std::unordered_map<int, sol::protected_function> onSignal;
@@ -58,6 +59,10 @@ static void initConnections() {
 		fireHandlers(getHandlers().onSceneStarted, "events.on_scene_started", sceneId);
 	}));
 
+	h.connections.push_back(ProjectPlayer::instance().onSceneEnded.connect([](const std::string& sceneId) {
+		fireHandlers(getHandlers().onSceneEnded, "events.on_scene_ended", sceneId);
+	}));
+
 	h.connections.push_back(ProjectPlayer::instance().onObjectiveStarted.connect(
 		[](int index) { fireHandlers(getHandlers().onObjectiveStarted, "events.on_objective_started", index); }));
 
@@ -75,6 +80,7 @@ void clear_project_player_lua_callbacks() {
 	h.onProjectStarted.clear();
 	h.onProjectStopped.clear();
 	h.onSceneStarted.clear();
+	h.onSceneEnded.clear();
 	h.onObjectiveStarted.clear();
 	h.onObjectiveCompleted.clear();
 	h.onSignal.clear();
@@ -129,6 +135,8 @@ void register_project_player_bindings(sol::state_view lua) {
 			h.onProjectStopped[id] = std::move(fn);
 		else if (event == "scene_started")
 			h.onSceneStarted[id] = std::move(fn);
+		else if (event == "scene_ended")
+			h.onSceneEnded[id] = std::move(fn);
 		else if (event == "objective_started")
 			h.onObjectiveStarted[id] = std::move(fn);
 		else if (event == "objective_completed")
@@ -148,6 +156,8 @@ void register_project_player_bindings(sol::state_view lua) {
 			h.onProjectStopped.erase(id);
 		else if (event == "scene_started")
 			h.onSceneStarted.erase(id);
+		else if (event == "scene_ended")
+			h.onSceneEnded.erase(id);
 		else if (event == "objective_started")
 			h.onObjectiveStarted.erase(id);
 		else if (event == "objective_completed")
@@ -173,6 +183,7 @@ void register_project_player_bindings(sol::state_view lua) {
 		events.on_project_started     = make_subscriber("project_started")
 		events.on_project_stopped     = make_subscriber("project_stopped")
 		events.on_scene_started       = make_subscriber("scene_started")
+		events.on_scene_ended         = make_subscriber("scene_ended")
 		events.on_objective_started   = make_subscriber("objective_started")
 		events.on_objective_completed = make_subscriber("objective_completed")
 		events.on_signal              = make_subscriber("signal")

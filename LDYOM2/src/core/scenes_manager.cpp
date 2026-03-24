@@ -133,6 +133,50 @@ void ScenesManager::createScene() {
 	LDYOM_INFO("Created new scene");
 }
 
+void ScenesManager::duplicateScene(std::string_view sceneId) {
+	auto it = std::ranges::find_if(m_scenesInfo, [&sceneId](const SceneInfo& info) { return info.id == sceneId; });
+	if (it == m_scenesInfo.end()) {
+		LDYOM_ERROR("Scene with ID {} not found", sceneId);
+		return;
+	}
+
+	std::filesystem::path srcPath(projectPath(SCENE_FOLDER_NAME) + "/" + it->id + ".json");
+	std::ifstream file(srcPath);
+	if (!file.is_open()) {
+		LDYOM_ERROR("Failed to open scene file for duplication: {}", srcPath.string());
+		return;
+	}
+	nlohmann::json jsonData;
+	file >> jsonData;
+	file.close();
+
+	std::string newId = std::to_string(std::time(nullptr));
+	jsonData["info"]["id"] = newId;
+	jsonData["info"]["name"] = it->name + _("scenes.copy_suffix");
+
+	std::filesystem::path dstPath(projectPath(SCENE_FOLDER_NAME) + "/" + newId + ".json");
+	std::ofstream outFile(dstPath);
+	if (!outFile.is_open()) {
+		LDYOM_ERROR("Failed to create duplicate scene file: {}", dstPath.string());
+		return;
+	}
+	outFile << jsonData.dump(4);
+	outFile.close();
+
+	std::filesystem::path srcNodePath(projectPath(NODE_FOLDER_NAME) + "/" + it->id + ".json");
+	if (std::filesystem::exists(srcNodePath)) {
+		std::filesystem::path dstNodePath(projectPath(NODE_FOLDER_NAME) + "/" + newId + ".json");
+		std::filesystem::copy_file(srcNodePath, dstNodePath, std::filesystem::copy_options::overwrite_existing);
+	}
+
+	SceneInfo newInfo;
+	newInfo.id = newId;
+	newInfo.name = jsonData["info"]["name"].get<std::string>();
+	m_scenesInfo.push_back(newInfo);
+	std::ranges::sort(m_scenesInfo, [](const SceneInfo& a, const SceneInfo& b) { return a.name < b.name; });
+	LDYOM_INFO("Duplicated scene: {} -> {}", sceneId, newId);
+}
+
 void ScenesManager::removeScene(std::string_view sceneId) {
 	auto it = std::ranges::find_if(m_scenesInfo, [&sceneId](const SceneInfo& info) { return info.id == sceneId; });
 	if (it != m_scenesInfo.end()) {

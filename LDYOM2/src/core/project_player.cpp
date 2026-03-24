@@ -155,6 +155,8 @@ ktwait ProjectPlayer::run() {
 			}
 		}
 
+		instance().onSceneEnded(instance().m_state.currentSceneId);
+
 		if (instance().m_state.pendingSceneTransition.has_value()) {
 			std::string newSceneId = instance().m_state.pendingSceneTransition.value();
 			instance().m_state.pendingSceneTransition.reset();

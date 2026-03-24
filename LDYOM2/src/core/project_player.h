@@ -35,6 +35,7 @@ class ProjectPlayer {
 	rocket::thread_safe_signal<void()> onProjectStarted;
 	rocket::thread_safe_signal<void()> onProjectStopped;
 	rocket::thread_safe_signal<void(std::string)> onSceneStarted;
+	rocket::thread_safe_signal<void(std::string)> onSceneEnded;
 	rocket::thread_safe_signal<void(int)> onObjectiveStarted;
 	rocket::thread_safe_signal<void(int)> onObjectiveCompleted;
 
