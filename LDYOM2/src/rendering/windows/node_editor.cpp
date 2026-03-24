@@ -127,8 +127,23 @@ void NodeEditorWindow::initNodeFlowForWorkspace(Workspace& ws) {
 	// Each workspace gets a unique ImNodeFlow ID so their internal state is separate.
 	ws.nodeFlow = std::make_unique<ImFlow::ImNodeFlow>("LDYOM_NE_" + ws.name);
 
-	ws.nodeFlow->rightClickPopUpContent([this](ImFlow::BaseNode* node) {
+	auto* nodeFlowPtr = ws.nodeFlow.get();
+	ws.nodeFlow->rightClickPopUpContent([this, nodeFlowPtr](ImFlow::BaseNode* node) {
 		if (node) {
+			if (ImGui::MenuItem(ICON_FA_COPY " Duplicate Node")) {
+				auto* luaNode = dynamic_cast<LuaNode*>(node);
+				if (luaNode) {
+					constexpr float kOffset = 30.0f;
+					ImVec2 newPos = ImVec2(node->getPos().x + kOffset, node->getPos().y + kOffset);
+					NodeRegistry::instance().ensureLoaded(luaNode->getNodeType());
+					auto newNode = nodeFlowPtr->addNode<LuaNode>(newPos, luaNode->getNodeType());
+					if (newNode) {
+						newNode->deserializeData(luaNode->serializeData());
+						newNode->deserializePinDefaults(luaNode->serializePinDefaults());
+						newNode->onLoad();
+					}
+				}
+			}
 			if (ImGui::MenuItem(ICON_FA_TRASH " Delete Node")) {
 				node->destroy();
 			}
