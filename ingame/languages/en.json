@@ -1579,5 +1579,9 @@
         "mpack_author": "Mission Pack Author",
         "special_thanks": "Special Thanks",
         "close": "Close"
+    },
+    "welcome": {
+        "message": "Welcome to LDYOM {}!",
+        "open_hint": "Press ~y~{}~w~ to open the main menu"
     }
 }

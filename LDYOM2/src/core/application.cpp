@@ -12,8 +12,10 @@
 #include "project_script_manager.h"
 #include "settings.h"
 #include "textures_manager.h"
+#include <CHud.h>
 #include <components_manager.h>
 #include <fires_remover.h>
+#include <imHotKey.h>
 #include <in_game/debug_info.h>
 #include <nothing.h>
 #include <plugin.h>
@@ -26,7 +28,6 @@
 #include <window_manager.h>
 #include <windows/init.h>
 #include <windows/node_editor.h>
-
 
 void Application::initialize() {
 	LDYOM_INFO("LDYOM Application starting...");
@@ -99,6 +100,7 @@ void Application::initialize() {
 		exit(1);
 	}
 
+	m_welcomeMessageDelay = 30;
 	LDYOM_INFO("Application initialization completed");
 }
 
@@ -127,6 +129,18 @@ void Application::shutdown() {
 }
 
 void Application::process() {
+	if (m_welcomeMessageDelay > 0 && FindPlayerPed() != nullptr) {
+		--m_welcomeMessageDelay;
+	} else if (m_welcomeMessageDelay == 0) {
+		char keyLib[32] = "?";
+		if (auto hotkey = Hotkeys::instance().getHotKeyByName("openEditor")) {
+			ImHotKey::GetHotKeyLib(hotkey->get().functionKeys, keyLib, sizeof(keyLib));
+		}
+		auto msg = fmt::format("{}~n~{}", _("welcome.message", LDYOM_VERSION_STRING), _("welcome.open_hint", keyLib));
+		CHud::SetHelpMessage(msg.c_str(), false, false, false);
+		m_welcomeMessageDelay = -1;
+	}
+
 	rocket::dispatch_queued_calls();
 
 	// Clear pin recursion blacklist once per game frame so node execution outside UI works correctly

@@ -30,4 +30,5 @@ class Application {
 
   private:
 	LuaTaskManager m_luaTaskManager;
+	int m_welcomeMessageDelay = -1;
 };
