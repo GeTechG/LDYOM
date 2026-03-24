@@ -1773,6 +1773,7 @@
         "logic": "Logic",
         "compare": "Compare",
         "opcode": {
+            "title": "Opcode",
             "camera": "Camera",
             "player": "Player",
             "math": "Math",

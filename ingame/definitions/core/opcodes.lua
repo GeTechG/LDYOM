@@ -6,7 +6,7 @@
 ---@alias Fx integer
 ---@alias File integer
 ---@alias DecisionMakerGroup integer
----@alias gxt_key integer
+---@alias gxt_key string
 ---@alias DynamicLibrary integer
 ---@alias model_object integer
 ---@alias Particle integer
@@ -27,7 +27,6 @@
 ---@alias AudioStream3D integer
 ---@alias Interior integer
 ---@alias Player integer
----@alias string string
 ---@alias Sphere integer
 ---@alias FindFile integer
 ---@alias CarGenerator integer
