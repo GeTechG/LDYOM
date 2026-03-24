@@ -34,12 +34,14 @@ void ProjectManager::renderHeaderBar() {
 	if (ImGui::BeginChild("HeaderBar", ImVec2(-1.0f, topBarHeight), false)) {
 		const auto projectsText = _("project_manager.projects");
 		const auto settingsText = ICON_FA_GEAR;
+		const auto infoText = ICON_FA_INFO;
 
 		ImGui::PushFont(ImGuiConfigurate::getHeaderFont());
 		const float projectButtonWidth =
 			ImGui::CalcTextSize(projectsText.c_str()).x + ImGui::GetStyle().FramePadding.x * 4;
 		ImGui::PopFont();
 		const float settingsButtonWidth = ImGui::CalcTextSize(settingsText).x + ImGui::GetStyle().FramePadding.x * 4;
+		const float infoButtonWidth = ImGui::CalcTextSize(infoText).x + ImGui::GetStyle().FramePadding.x * 4;
 
 		const float totalCentralButtonsWidth = projectButtonWidth;
 		const float centerPosX = (availContentSize.x - totalCentralButtonsWidth) * 0.5f - settingsButtonWidth;
@@ -53,8 +55,13 @@ void ProjectManager::renderHeaderBar() {
 
 		ImGui::SameLine(0, 0);
 
-		const float rightTabPosX = availContentSize.x - settingsButtonWidth;
+		const float rightTabPosX = availContentSize.x - settingsButtonWidth - infoButtonWidth;
 		ImGui::SetCursorPosX(rightTabPosX);
+		if (ImGui::TextButton(infoText, ImVec2(infoButtonWidth, buttonHeight))) {
+			WindowManager::instance().openWindow("info_window");
+		}
+
+		ImGui::SameLine(0, 0);
 		if (ImGui::TextButton(settingsText, ImVec2(settingsButtonWidth, buttonHeight))) {
 			WindowManager::instance().openWindow("quick_settings");
 		}
@@ -253,22 +260,33 @@ void ProjectManager::renderSidebar(ProjectManager* window, float sidebarWidth, f
 
 void ProjectManager::renderContent(ProjectManager* window) {
 	const float spacing = ImGui::GetStyle().ItemSpacing.x;
+	const float footerHeight = ImGui::GetFrameHeight();
 
 	renderHeaderBar();
 	renderTopButtons(window, spacing);
 
 	static float maxButtonWidth = 0.0f;
 
-	const ImVec2 availContentSize = ImGui::GetContentRegionAvail();
-	const float sidebarWidth =
-		std::max(availContentSize.x * 0.15f, maxButtonWidth + ImGui::GetStyle().WindowPadding.x * 2);
-	const float projectListWidth = availContentSize.x - sidebarWidth - spacing;
+	const float separatorHeight = ImGui::GetStyle().ItemSpacing.y * 2 + 1.0f;
+	const float contentHeight = ImGui::GetContentRegionAvail().y - footerHeight - separatorHeight;
 
-	renderProjectList(window, spacing, projectListWidth);
-	ImGui::SameLine();
-	ImGui::BeginDisabled(window->m_selectedProjectIndex < 0);
-	renderSidebar(window, sidebarWidth, &maxButtonWidth);
-	ImGui::EndDisabled();
+	if (ImGui::BeginChild("ContentArea", ImVec2(-1.0f, contentHeight), false)) {
+		const ImVec2 innerAvail = ImGui::GetContentRegionAvail();
+		const float innerSidebarWidth =
+			std::max(innerAvail.x * 0.15f, maxButtonWidth + ImGui::GetStyle().WindowPadding.x * 2);
+		const float innerListWidth = innerAvail.x - innerSidebarWidth - spacing;
+
+		renderProjectList(window, spacing, innerListWidth);
+		ImGui::SameLine();
+		ImGui::BeginDisabled(window->m_selectedProjectIndex < 0);
+		renderSidebar(window, innerSidebarWidth, &maxButtonWidth);
+		ImGui::EndDisabled();
+	}
+	ImGui::EndChild();
+
+	// Footer: version info
+	ImGui::Separator();
+	ImGui::TextDisabled("LDYOM v%s", LDYOM_VERSION_STRING);
 
 	// Открываем popup на уровне главного окна
 	if (window->m_openRenamePopup) {

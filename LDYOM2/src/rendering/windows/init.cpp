@@ -13,6 +13,7 @@
 #include "windows/objectives.h"
 #include "windows/tools_window.h"
 #include "windows/global_vars_window.h"
+#include "windows/info_window.h"
 #include "windows/project_manager.h"
 #include "windows/quick_settings.h"
 #include "windows/scene_settings.h"
@@ -36,6 +37,7 @@ void initWindows() {
 	WindowManager::instance().addWindow("node_editor", std::make_unique<NodeEditorWindow>());
 	WindowManager::instance().addWindow("tools_window", std::make_unique<ToolsWindow>());
 	WindowManager::instance().addWindow("global_vars", std::make_unique<GlobalVarsWindow>());
+	WindowManager::instance().addWindow("info_window", std::make_unique<InfoWindow>());
 
 	LDYOM_INFO("Windows initialized");
 }

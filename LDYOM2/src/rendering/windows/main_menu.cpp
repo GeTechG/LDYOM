@@ -55,6 +55,9 @@ void MainMenu::renderContent(Window* window) {
 	if (ImGui::Button(_("quick_settings.title", ICON_FA_GEAR).c_str(), buttonSize)) {
 		WindowManager::instance().openWindow("quick_settings");
 	}
+	if (ImGui::Button(_("info.title", ICON_FA_INFO).c_str(), buttonSize)) {
+		WindowManager::instance().openWindow("info_window");
+	}
 	if (ImGui::Button(_("main_menu.close_project", ICON_FA_RIGHT_FROM_BRACKET).c_str(), buttonSize)) {
 		ProjectsManager::instance().closeProject();
 		window->close();

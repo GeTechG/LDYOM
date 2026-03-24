@@ -1571,5 +1571,13 @@
         "c_walls": "Walls",
         "c_modular_island": "Modular island",
         "c_samp_particles": "SA-MP particles"
+    },
+    "info": {
+        "title": "About",
+        "version": "Version",
+        "author_ldyom": "Author",
+        "mpack_author": "Mission Pack Author",
+        "special_thanks": "Special Thanks",
+        "close": "Close"
     }
 }
