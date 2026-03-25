@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkldyom_site=globalThis.webpackChunkldyom_site||[]).push([[5302],{3286(e){e.exports=JSON.parse('{"authors":[{"name":"SKIC (GeTechG)","title":"Developer","url":"https://github.com/GeTechG","imageURL":"https://avatars.githubusercontent.com/u/20752579?v=4","key":"skic","page":null,"count":5}]}')}}]);

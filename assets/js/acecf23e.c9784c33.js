@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkldyom_site=globalThis.webpackChunkldyom_site||[]).push([[1903],{1912(s){s.exports=JSON.parse('{"blogBasePath":"/LDYOM/blog","blogTitle":"Blog","authorsListPath":"/LDYOM/blog/authors"}')}}]);
