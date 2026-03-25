@@ -1,4 +1,4 @@
 export default {
-    "latest_version": "0.8.0",
-    "pre_version": "Preview 9",
+    "latest_version": "0.9.0",
+    "pre_version": "",
 }
