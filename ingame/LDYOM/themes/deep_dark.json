@@ -1,0 +1,333 @@
+{
+    "colors": {
+        "Text": [
+            1.00,
+            1.00,
+            1.00,
+            1.00
+        ],
+        "TextDisabled": [
+            0.60,
+            0.56,
+            0.56,
+            1.00
+        ],
+        "WindowBg": [
+            0.16,
+            0.16,
+            0.16,
+            1.00
+        ],
+        "ChildBg": [
+            0.00,
+            0.00,
+            0.00,
+            0.00
+        ],
+        "PopupBg": [
+            0.26,
+            0.26,
+            0.26,
+            1.00
+        ],
+        "Border": [
+            0.43,
+            0.43,
+            0.50,
+            0.50
+        ],
+        "BorderShadow": [
+            0.00,
+            0.00,
+            0.00,
+            0.00
+        ],
+        "FrameBg": [
+            0.20,
+            0.20,
+            0.20,
+            1.00
+        ],
+        "FrameBgHovered": [
+            0.33,
+            0.32,
+            0.32,
+            1.00
+        ],
+        "FrameBgActive": [
+            0.38,
+            0.38,
+            0.38,
+            1.00
+        ],
+        "TitleBg": [
+            0.22,
+            0.22,
+            0.22,
+            1.00
+        ],
+        "TitleBgActive": [
+            0.23,
+            0.23,
+            0.23,
+            1.00
+        ],
+        "TitleBgCollapsed": [
+            0.00,
+            0.00,
+            0.00,
+            0.51
+        ],
+        "MenuBarBg": [
+            0.14,
+            0.14,
+            0.14,
+            1.00
+        ],
+        "ScrollbarBg": [
+            0.19,
+            0.19,
+            0.19,
+            1.00
+        ],
+        "ScrollbarGrab": [
+            0.23,
+            0.23,
+            0.23,
+            1.00
+        ],
+        "ScrollbarGrabHovered": [
+            0.41,
+            0.41,
+            0.41,
+            1.00
+        ],
+        "ScrollbarGrabActive": [
+            0.51,
+            0.51,
+            0.51,
+            1.00
+        ],
+        "CheckMark": [
+            0.42,
+            0.43,
+            0.43,
+            1.00
+        ],
+        "SliderGrab": [
+            0.42,
+            0.43,
+            0.43,
+            1.00
+        ],
+        "SliderGrabActive": [
+            0.51,
+            0.51,
+            0.51,
+            1.00
+        ],
+        "Button": [
+            0.26,
+            0.26,
+            0.26,
+            1.00
+        ],
+        "ButtonHovered": [
+            0.32,
+            0.32,
+            0.32,
+            1.00
+        ],
+        "ButtonActive": [
+            0.38,
+            0.38,
+            0.38,
+            1.00
+        ],
+        "Header": [
+            0.26,
+            0.26,
+            0.26,
+            1.00
+        ],
+        "HeaderHovered": [
+            0.33,
+            0.32,
+            0.32,
+            1.00
+        ],
+        "HeaderActive": [
+            0.38,
+            0.38,
+            0.38,
+            1.00
+        ],
+        "Separator": [
+            0.38,
+            0.38,
+            0.38,
+            1.00
+        ],
+        "SeparatorHovered": [
+            0.38,
+            0.38,
+            0.38,
+            1.00
+        ],
+        "SeparatorActive": [
+            0.38,
+            0.38,
+            0.38,
+            1.00
+        ],
+        "ResizeGrip": [
+            0.22,
+            0.22,
+            0.22,
+            1.00
+        ],
+        "ResizeGripHovered": [
+            0.22,
+            0.22,
+            0.22,
+            1.00
+        ],
+        "ResizeGripActive": [
+            0.33,
+            0.32,
+            0.32,
+            1.00
+        ],
+        "Tab": [
+            0.26,
+            0.26,
+            0.26,
+            1.00
+        ],
+        "TabHovered": [
+            0.33,
+            0.32,
+            0.32,
+            1.00
+        ],
+        "TabActive": [
+            0.38,
+            0.38,
+            0.38,
+            1.00
+        ],
+        "TabUnfocused": [
+            0.26,
+            0.26,
+            0.26,
+            1.00
+        ],
+        "TabUnfocusedActive": [
+            0.38,
+            0.38,
+            0.38,
+            1.00
+        ],
+        "PlotLines": [
+            0.61,
+            0.61,
+            0.61,
+            1.00
+        ],
+        "PlotLinesHovered": [
+            1.00,
+            0.43,
+            0.35,
+            1.00
+        ],
+        "PlotHistogram": [
+            0.90,
+            0.70,
+            0.00,
+            1.00
+        ],
+        "PlotHistogramHovered": [
+            1.00,
+            0.60,
+            0.00,
+            1.00
+        ],
+        "TextSelectedBg": [
+            0.33,
+            0.33,
+            0.33,
+            0.50
+        ],
+        "DragDropTarget": [
+            1.00,
+            1.00,
+            0.00,
+            0.90
+        ],
+        "NavHighlight": [
+            0.26,
+            0.59,
+            0.98,
+            1.00
+        ],
+        "NavWindowingHighlight": [
+            1.00,
+            1.00,
+            1.00,
+            0.70
+        ],
+        "NavWindowingDimBg": [
+            0.80,
+            0.80,
+            0.80,
+            0.20
+        ],
+        "ModalWindowDimBg": [
+            0.80,
+            0.80,
+            0.80,
+            0.35
+        ]
+    },
+    "style": {
+        "Alpha": 1.00,
+        "WindowPadding": [
+            15.00,
+            15.00
+        ],
+        "WindowRounding": 0.00,
+        "WindowBorderSize": 1.00,
+        "WindowMinSize": [
+            32.00,
+            32.00
+        ],
+        "WindowTitleAlign": [
+            0.50,
+            0.50
+        ],
+        "ChildRounding": 0.00,
+        "ChildBorderSize": 1.00,
+        "PopupRounding": 0.00,
+        "PopupBorderSize": 1.00,
+        "FramePadding": [
+            8.00,
+            7.00
+        ],
+        "FrameRounding": 0.00,
+        "FrameBorderSize": 0.00,
+        "ItemSpacing": [
+            8.00,
+            8.00
+        ],
+        "ItemInnerSpacing": [
+            10.00,
+            6.00
+        ],
+        "IndentSpacing": 25.00,
+        "ScrollbarSize": 13.00,
+        "ScrollbarRounding": 0.00,
+        "GrabMinSize": 6.00,
+        "GrabRounding": 0.00,
+        "TabRounding": 0.00
+    }
+}
