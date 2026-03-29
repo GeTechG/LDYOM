@@ -1,6 +1,7 @@
 #pragma once
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "objective.h"
+#include <algorithm>
 #include <CPlayerPed.h>
 #include <extensions/ScriptCommands.h>
 #include <fa_icons.h>
@@ -77,30 +78,93 @@ void renderEditor(Data& data) {
 	ImGui::Dummy(ImVec2((SCL_PX).x * 300.f, 0.f)); // Add some space at the top
 	const auto availableWidth = ImGui::GetContentRegionAvail().x;
 
+	static char packFilter[64] = {};
+	static char animFilter[64] = {};
+
 	ImGui::Text(tr("pack_name").c_str());
 	ImGui::SameLine(availableWidth * 0.6f);
 	ImGui::SetNextItemWidth(-1.f);
-	if (ImGui::BeginCombo("##packName", data.packName.c_str())) {
-		for (const auto& key : ModelsManager::getPedAnimations() | std::views::keys) {
-			if (ImGui::Selectable(key.c_str(), key == data.packName)) {
-				data.packName = key;
-				data.animName = ModelsManager::getPedAnimations().at(key).front();
+	if (ImGui::BeginCombo("##packName", data.packName.c_str(), ImGuiComboFlags_HeightLargest)) {
+		const bool justOpened = ImGui::IsWindowAppearing();
+		if (justOpened) {
+			packFilter[0] = '\0';
+			ImGui::SetKeyboardFocusHere();
+		}
+		ImGui::SetNextItemWidth(-1.f);
+		ImGui::InputText("##packFilter", packFilter, sizeof(packFilter));
+		ImGui::Separator();
+		const float listHeight = ImGui::GetTextLineHeightWithSpacing() * 10;
+		if (ImGui::BeginChild("##packList", ImVec2(0, listHeight))) {
+			const std::string_view filterView = packFilter;
+			for (const auto& key : ModelsManager::getPedAnimations() | std::views::keys) {
+				if (!filterView.empty()) {
+					std::string keyLower = key;
+					std::string filterLower = packFilter;
+					std::transform(keyLower.begin(), keyLower.end(), keyLower.begin(), ::tolower);
+					std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), ::tolower);
+					if (keyLower.find(filterLower) == std::string::npos)
+						continue;
+				}
+				const bool isSelected = key == data.packName;
+				if (ImGui::Selectable(key.c_str(), isSelected)) {
+					const bool wasPlaying = isPlayingAnimation(data);
+					data.packName = key;
+					data.animName = ModelsManager::getPedAnimations().at(key).front();
+					if (data.isLooped && wasPlaying) {
+						stopAnimation();
+						playAnimation(data);
+					}
+				}
+				if (isSelected && justOpened) {
+					ImGui::SetScrollHereY(0.5f);
+				}
 			}
 		}
+		ImGui::EndChild();
 		ImGui::EndCombo();
 	}
 
 	ImGui::Text(tr("anim_name").c_str());
 	ImGui::SameLine(availableWidth * 0.6f);
 	ImGui::SetNextItemWidth(-1.f);
-	if (ImGui::BeginCombo("##animName", data.animName.c_str())) {
-		if (ModelsManager::getPedAnimations().contains(data.packName)) {
-			for (const auto& anim : ModelsManager::getPedAnimations().at(data.packName)) {
-				if (ImGui::Selectable(anim.c_str(), anim == data.animName)) {
-					data.animName = anim;
+	if (ImGui::BeginCombo("##animName", data.animName.c_str(), ImGuiComboFlags_HeightLargest)) {
+		const bool justOpened = ImGui::IsWindowAppearing();
+		if (justOpened) {
+			animFilter[0] = '\0';
+			ImGui::SetKeyboardFocusHere();
+		}
+		ImGui::SetNextItemWidth(-1.f);
+		ImGui::InputText("##animFilter", animFilter, sizeof(animFilter));
+		ImGui::Separator();
+		const float listHeight = ImGui::GetTextLineHeightWithSpacing() * 10;
+		if (ImGui::BeginChild("##animList", ImVec2(0, listHeight))) {
+			const std::string_view filterView = animFilter;
+			if (ModelsManager::getPedAnimations().contains(data.packName)) {
+				for (const auto& anim : ModelsManager::getPedAnimations().at(data.packName)) {
+					if (!filterView.empty()) {
+						std::string animLower = anim;
+						std::string filterLower = animFilter;
+						std::transform(animLower.begin(), animLower.end(), animLower.begin(), ::tolower);
+						std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), ::tolower);
+						if (animLower.find(filterLower) == std::string::npos)
+							continue;
+					}
+					const bool isSelected = anim == data.animName;
+					if (ImGui::Selectable(anim.c_str(), isSelected)) {
+						const bool wasPlaying = isPlayingAnimation(data);
+						data.animName = anim;
+						if (data.isLooped && wasPlaying) {
+							stopAnimation();
+							playAnimation(data);
+						}
+					}
+					if (isSelected && justOpened) {
+						ImGui::SetScrollHereY(0.5f);
+					}
 				}
 			}
 		}
+		ImGui::EndChild();
 		ImGui::EndCombo();
 	}
 
