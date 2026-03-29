@@ -31,6 +31,7 @@ class EntitiesManager {
 	// Entity management within the current scene
 	Entity& getUnsafeEntity(int index);
 	void removeEntity(int index);
+	int duplicateEntity(int index);
 	void moveEntity(int fromIndex, int toIndex);
 	std::vector<Entity*> getEntitiesWithComponent(const std::string_view type);
 

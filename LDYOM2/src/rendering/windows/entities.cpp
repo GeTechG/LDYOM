@@ -162,6 +162,11 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 					openRenamePopupIndex = true;
 				}
 
+				if (ImGui::MenuItem(_("item_popup.duplicate", ICON_FA_COPY).c_str())) {
+					int newIndex = EntitiesManager::instance().duplicateEntity(i);
+					window->setSelectedEntityIndex(newIndex);
+				}
+
 				if (ImGui::MenuItem(_("item_popup.remove", ICON_FA_TRASH).c_str())) {
 					window->m_indexToRemove = i;
 				}

@@ -33,6 +33,7 @@ class ObjectivesManager {
 	const Objective& getObjective(int index) const;
 	Objective& getUnsafeObjective(int index);
 	void removeObjective(int index);
+	int duplicateObjective(int index);
 	void moveObjective(int fromIndex, int toIndex);
 
 	std::unordered_map<std::string, ObjectiveBuilderData>& getObjectiveBuilders() { return m_objectivesBuilders; }

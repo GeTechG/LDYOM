@@ -1,5 +1,6 @@
 #include "objectives_manager.h"
 #include "scenes_manager.h"
+#include <uuid_wrap.h>
 #include <objectives/checkpoint.h>
 #include <objectives/goto_scene.h>
 #include <objectives/goto_scene_if_var.h>
@@ -86,6 +87,21 @@ void ObjectivesManager::removeObjective(int index) {
 			this->onObjectivesRemoved(removedObjectiveID, uuids::to_string(objectives[newIndex].id));
 		}
 	}
+}
+
+int ObjectivesManager::duplicateObjective(int index) {
+	auto& objectives = ScenesManager::instance().getUnsafeCurrentScene().objectives.data;
+	if (index < 0 || index >= static_cast<int>(objectives.size())) {
+		throw std::out_of_range("Objective index out of range: " + std::to_string(index));
+	}
+	Objective newObjective = this->createObjective(objectives[index].type);
+	nlohmann::json j;
+	to_json(j, objectives[index]);
+	j["id"] = uuids::uuid_system_generator{}();
+	from_json(j, newObjective);
+	int newIndex = index + 1;
+	objectives.insert(objectives.begin() + newIndex, std::move(newObjective));
+	return newIndex;
 }
 
 void ObjectivesManager::moveObjective(int fromIndex, int toIndex) {

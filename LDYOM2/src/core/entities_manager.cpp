@@ -6,6 +6,7 @@
 #include <extensions/ScriptCommands.h>
 #include <plugin.h>
 #include <stdexcept>
+#include <uuid_wrap.h>
 
 EntitiesManager& EntitiesManager::instance() {
 	static EntitiesManager instance;
@@ -78,6 +79,22 @@ void EntitiesManager::removeEntity(int index) {
 	if (index >= 0 && index < static_cast<int>(entities.size())) {
 		entities.erase(entities.begin() + index);
 	}
+}
+
+int EntitiesManager::duplicateEntity(int index) {
+	auto& entities = ScenesManager::instance().getUnsafeCurrentScene().entities;
+	if (index < 0 || index >= static_cast<int>(entities.size())) {
+		throw std::out_of_range("Entity index out of range: " + std::to_string(index));
+	}
+	nlohmann::json j;
+	to_json(j, *entities[index]);
+	auto newEntity = std::make_unique<Entity>();
+	from_json(j, *newEntity);
+	newEntity->id = uuids::uuid_system_generator{}();
+	newEntity->name = entities[index]->name;
+	int newIndex = index + 1;
+	entities.insert(entities.begin() + newIndex, std::move(newEntity));
+	return newIndex;
 }
 
 void EntitiesManager::moveEntity(int fromIndex, int toIndex) {

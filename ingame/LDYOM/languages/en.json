@@ -118,6 +118,7 @@
     ],
     "item_popup": {
         "rename": "{} Rename",
+        "duplicate": "{} Duplicate",
         "remove": "{} Remove"
     },
     "general": {
