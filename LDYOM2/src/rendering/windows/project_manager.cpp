@@ -288,6 +288,15 @@ void ProjectManager::renderContent(ProjectManager* window) {
 	ImGui::Separator();
 	ImGui::TextDisabled("LDYOM v%s", LDYOM_VERSION_STRING);
 
+	// F2 hotkey to rename selected project
+	if (window->m_selectedProjectIndex >= 0 && ImGui::IsKeyPressed(ImGuiKey_F2, false)) {
+		const auto& projects = ProjectsManager::instance().getProjects();
+		if (window->m_selectedProjectIndex < static_cast<int>(projects.size())) {
+			window->m_renameBuffer = projects[window->m_selectedProjectIndex].name;
+			window->m_openRenamePopup = true;
+		}
+	}
+
 	// Открываем popup на уровне главного окна
 	if (window->m_openRenamePopup) {
 		ImGui::OpenPopup("rename_project_popup");

@@ -174,6 +174,10 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 				ImGui::EndPopup();
 			}
 
+			if (isSelected && ImGui::IsKeyPressed(ImGuiKey_F2, false)) {
+				openRenamePopupIndex = true;
+			}
+
 			// TODO: MAYBE PROBLEM WITH POINTERS
 			static int lastPtr = 0;
 			if (&window->m_renameBuffer == NULL) {

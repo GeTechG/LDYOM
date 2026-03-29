@@ -176,6 +176,11 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 					ImGui::EndPopup();
 				}
 
+				if (isSelected && ImGui::IsKeyPressed(ImGuiKey_F2, false)) {
+					window->m_renameBuffer = path.getName();
+					openRenamePopup = true;
+				}
+
 				if (openRenamePopup) {
 					ImGui::OpenPopup("##rename_popup");
 				}
