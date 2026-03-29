@@ -53,8 +53,8 @@ static const ImWchar* GetGlyphRanges() {
 void ImGuiConfigurate::update(int width, int height) {
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->Clear();
-	float fontSize = height / 48.0f * getGlobalScale();
-	float headerFontSize = fontSize * 1.2f * getGlobalScale();
+	float fontSize = height / 48.0f;
+	float headerFontSize = fontSize * 1.2f;
 
 	static constexpr ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
 	ImFontConfig config;
@@ -69,8 +69,6 @@ void ImGuiConfigurate::update(int width, int height) {
 	headerFont = io.Fonts->AddFontFromMemoryCompressedTTF(roboto_compressed_data, roboto_compressed_size,
 	                                                      headerFontSize, nullptr, GetGlyphRanges());
 
-	io.Fonts->Build();
-
 	ImGuiStyle* style = &ImGui::GetStyle();
 	screenScale = ImVec2(width / 1280.0f, height / 720.0f);
 
@@ -78,12 +76,16 @@ void ImGuiConfigurate::update(int width, int height) {
 	if (!currentTheme.empty()) {
 		ThemeLoader::loadThemeFromJson(currentTheme);
 	}
+
+	style->FontScaleDpi = getGlobalScale();
 }
 
 float ImGuiConfigurate::getGlobalScale() { return Settings::instance().getSetting<float>("display_scale", 1.0f); }
 ImVec2 ImGuiConfigurate::getScreenScale() { return screenScale; }
 void ImGuiConfigurate::setGlobalScale(float scale) {
 	Settings::instance().setSetting<float>("display_scale", scale);
-	ImguiHook::dirtyObjectsFlag();
+	if (ImGui::GetCurrentContext()) {
+		ImGui::GetStyle().FontScaleDpi = scale;
+	}
 }
 ImFont* ImGuiConfigurate::getHeaderFont() { return headerFont; }

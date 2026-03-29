@@ -8,9 +8,8 @@
 #include <utils/imgui_configurate.h>
 #include <utils/theme_loader.h>
 
-
 // Setup options for dropdowns
-const float displayScales[] = {1.f, 1.1f, 1.25f, 1.5f, 1.75f, 2.f};
+const float displayScales[] = {0.25f, 0.5f, 1.f, 1.1f, 1.25f, 1.5f, 1.75f, 2.f};
 
 void QuickSettings::renderContent(Window* window) {
 	float windowWidth = ImGui::GetContentRegionAvail().x;
