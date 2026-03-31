@@ -161,8 +161,8 @@ void components::Weapons::editorRender() {
 				ImGui::PushID(static_cast<int>(i));
 
 				// Create tree node for each weapon
-				auto weaponTitle = fmt::format("{} {} ({})", ICON_FA_CROSSHAIRS,
-				                               CWeaponInfo::ms_aWeaponNames[weapon.weapon], weapon.ammo);
+				auto weaponTitle =
+					fmt::format("{} {}", ICON_FA_CROSSHAIRS, CWeaponInfo::ms_aWeaponNames[weapon.weapon]);
 				bool nodeOpen = ImGui::TreeNodeEx(weaponTitle.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
 
 				// Add delete button on the same line (right side)
