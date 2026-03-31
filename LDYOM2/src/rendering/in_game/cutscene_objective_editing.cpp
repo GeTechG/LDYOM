@@ -73,13 +73,17 @@ void CutsceneObjectiveEditing::render() noexcept {
 
 	if (ImGui::IsKeyReleased(ImGuiKey_C)) {
 		options.freeCamera = !options.freeCamera;
-		plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+		plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, options.freeCamera);
 		TheCamera.RestoreWithJumpCut();
 		TheCamera.m_bCameraPersistPosition = options.freeCamera;
 		TheCamera.m_vecMoveLinearPosnEnd =
 			CVector(m_data.cameraPosition[0], m_data.cameraPosition[1], m_data.cameraPosition[2]);
 		TheCamera.m_vecMoveLinearPosnStart = TheCamera.m_vecMoveLinearPosnEnd;
 		TheCamera.m_vecMoveLinear = TheCamera.m_vecMoveLinearPosnEnd;
+		if (!options.freeCamera) {
+			// Exiting free camera — hide the player again
+			CWorld::Remove(playerPed);
+		}
 	}
 
 	if (ImGui::IsKeyReleased(ImGuiKey_G)) {
@@ -239,7 +243,7 @@ void CutsceneObjectiveEditing::render() noexcept {
 			CVector(m_data.cameraPosition[0], m_data.cameraPosition[1], m_data.cameraPosition[2]);
 		TheCamera.m_vecMoveLinearPosnStart = TheCamera.m_vecMoveLinearPosnEnd;
 		TheCamera.m_vecMoveLinear = TheCamera.m_vecMoveLinearPosnEnd;
-		playerPed->Teleport(TheCamera.m_vecMoveLinearPosnEnd, false);
+		playerPed->Teleport(TheCamera.m_vecMoveLinearPosnEnd + CVector(0.0f, 0.0f, 10.0f), false);
 		m_data.targetPosition[0] = TheCamera.m_vecMoveLinearPosnEnd.x + forward.x;
 		m_data.targetPosition[1] = TheCamera.m_vecMoveLinearPosnEnd.y + forward.y;
 		m_data.targetPosition[2] = TheCamera.m_vecMoveLinearPosnEnd.z + forward.z;
@@ -310,6 +314,9 @@ void CutsceneObjectiveEditing::updateCutsceneObject() noexcept {
 void CutsceneObjectiveEditing::openCutsceneEditor(
 	objectives::cutscene::Data& data, std::function<void(bool, objectives::cutscene::Data)> onClose) noexcept {
 
+	// Reset options to a clean state each time the editor opens
+	options = {};
+
 	// Create RAII session that handles UI automatically (no entity/camera for cutscene)
 	m_session = std::make_unique<ManualEditingSession>(ManualEditingSession::Options{
 		.entity = nullptr,
@@ -352,6 +359,15 @@ void CutsceneObjectiveEditing::openCutsceneEditor(
 }
 
 void CutsceneObjectiveEditing::closeCutsceneEditor(bool saveChanges) noexcept {
+	// If free camera was active, restore player control and camera persist state
+	if (options.freeCamera) {
+		plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
+		TheCamera.m_bCameraPersistPosition = false;
+		options.freeCamera = false;
+	}
+
+	// Re-remove before add in case Teleport (used in free cam) re-added the ped
+	CWorld::Remove(playerPed);
 	CWorld::Add(playerPed);
 
 	// Call user callback before session cleanup
