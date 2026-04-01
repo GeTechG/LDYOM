@@ -5,6 +5,7 @@
 #include <extensions/ScriptCommands.h>
 #include <imgui.h>
 #include <imgui_stdlib.h>
+#include <imgui_widgets/imgui_widgets.h>
 #include <ktcoro_wait.hpp>
 #include <localization.h>
 #include <objectives_manager.h>
@@ -36,9 +37,9 @@ void renderEditor(Data& data) {
 	ImGui::Dummy(ImVec2((SCL_PX).x * 300.f, 0.f)); // Add some space at the top
 
 	ImGui::Text(_("text").c_str());
+	ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
-	ImGui::InputTextMultiline("##text", &data.text, ImVec2(-1.f, ImGui::GetTextLineHeight() * 4),
-	                          ImGuiInputTextFlags_None);
+	ImGui::InputTextWithPopup("##text", &data.text);
 
 	ImGui::Text(tr("duration").c_str());
 	ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);

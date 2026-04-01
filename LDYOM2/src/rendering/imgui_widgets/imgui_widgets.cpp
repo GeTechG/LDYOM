@@ -163,6 +163,30 @@ bool ImGui::RenamePopup(const char* popupId, std::string* buffer) {
 	return renamed;
 }
 
+bool ImGui::InputTextWithPopup(const char* label, std::string* str) {
+	bool changed = false;
+	PushID(label);
+
+	const float btnWidth = CalcTextSize("...").x + GetStyle().FramePadding.x * 2.0f;
+	SetNextItemWidth(GetContentRegionAvail().x - btnWidth - GetStyle().ItemSpacing.x);
+	if (InputText("##inline", str))
+		changed = true;
+
+	SameLine();
+	if (Button("..."))
+		OpenPopup("##popup");
+
+	SetNextWindowSize(ImVec2((SCL_PX).x * 400.0f, 0.0f), ImGuiCond_Always);
+	if (BeginPopup("##popup")) {
+		if (InputTextMultiline("##multiline", str, ImVec2(-1.0f, GetTextLineHeight() * 8.0f)))
+			changed = true;
+		EndPopup();
+	}
+
+	PopID();
+	return changed;
+}
+
 int ImGui::ConfirmDialog(const char* title, const char* message, const char* yesButtonText, const char* noButtonText) {
 	int result = -1;
 

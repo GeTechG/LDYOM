@@ -10,6 +10,7 @@ bool SelectableGTAColored(const char* label, bool selected, ImGuiSelectableFlags
                           const ImVec2& size = ImVec2(0, 0));
 bool RenamePopup(const char* popupId, char* buffer, size_t bufferSize);
 bool RenamePopup(const char* popupId, std::string* buffer);
+bool InputTextWithPopup(const char* label, std::string* str);
 
 /**
  * @brief Creates a modal confirmation dialog that asks user to confirm an action

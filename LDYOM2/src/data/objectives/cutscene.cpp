@@ -10,7 +10,7 @@ void renderEditor(Data& data) {
 	ImGui::Text(_("text").c_str());
 	ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);
 	ImGui::SetNextItemWidth(-1.f);
-	ImGui::InputText("##text", &data.text);
+	ImGui::InputTextWithPopup("##text", &data.text);
 
 	ImGui::Text(_("text_time").c_str());
 	ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);

@@ -13,6 +13,7 @@
 #include <extensions/ScriptCommands.h>
 #include <imgui.h>
 #include <imgui_stdlib.h>
+#include <imgui_widgets/imgui_widgets.h>
 #include <in_game/cutscene_preview_camera.h>
 #include <ktcoro_wait.hpp>
 #include <localization.h>
