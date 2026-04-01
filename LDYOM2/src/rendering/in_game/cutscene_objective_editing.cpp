@@ -31,9 +31,6 @@ struct CutsceneObjectiveEditingOptions {
 	bool grid = false;
 } options;
 
-// Статические переменные для отслеживания инверсии управления
-static bool isWSInverted = false;
-static glm::vec3 lastCameraUp(0.0f, 0.0f, 1.0f); // Последний up вектор камеры
 
 void CutsceneObjectiveEditing::render() noexcept {
 	constexpr ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
@@ -162,80 +159,55 @@ void CutsceneObjectiveEditing::render() noexcept {
 			m_data.cameraPosition[2] -= up.z * 0.1f;
 		}
 	} else {
-		auto direction = CVector(m_data.targetPosition[0] - m_data.cameraPosition[0],
-		                         m_data.targetPosition[1] - m_data.cameraPosition[1],
-		                         m_data.targetPosition[2] - m_data.cameraPosition[2]);
-		direction.Normalise();
+		glm::vec3 diff(m_data.targetPosition[0] - m_data.cameraPosition[0],
+		               m_data.targetPosition[1] - m_data.cameraPosition[1],
+		               m_data.targetPosition[2] - m_data.cameraPosition[2]);
 
-		float distance = sqrt(pow(m_data.targetPosition[0] - m_data.cameraPosition[0], 2) +
-		                      pow(m_data.targetPosition[1] - m_data.cameraPosition[1], 2) +
-		                      pow(m_data.targetPosition[2] - m_data.cameraPosition[2], 2));
+		float distance = glm::length(diff);
+		if (distance < 0.001f)
+			distance = 0.001f;
+
+		glm::vec3 dir = diff / distance;
+
+		// Сферические координаты: азимут и высота
+		float azimuth = atan2f(dir.y, dir.x);
+		float elevation = asinf(glm::clamp(dir.z, -1.0f, 1.0f));
+
 		const float rotationSpeed = distance * 0.002f;
-
-		glm::vec3 glmDirection(direction.x, direction.y, direction.z);
-		glm::vec3 rotatedDirection = glmDirection;
-
-		glm::vec3 worldUp(0.0f, 0.0f, 1.0f);
-		glm::vec3 rightAxis = glm::normalize(glm::cross(glmDirection, worldUp));
-		if (glm::length(rightAxis) < 0.001f) {
-			rightAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-		}
-		glm::vec3 currentCameraUp = glm::normalize(glm::cross(rightAxis, glmDirection));
-
-		float upDotProduct = glm::dot(currentCameraUp, lastCameraUp);
-		if (upDotProduct < 0.0f) {
-			isWSInverted = !isWSInverted;
-		}
-
-		float wsRotationMultiplier = isWSInverted ? -1.0f : 1.0f;
+		constexpr float maxElevation = glm::pi<float>() / 2.0f - 0.005f; // ~89.7°
 
 		if (ImGui::IsKeyDown(ImGuiKey_W)) {
-			glm::vec3 worldUp(0.0f, 0.0f, 1.0f);
-			glm::vec3 rightAxis = glm::normalize(glm::cross(glmDirection, worldUp));
-			if (glm::length(rightAxis) < 0.001f) {
-				rightAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-			}
-
-			glm::quat rotation = glm::angleAxis(rotationSpeed * wsRotationMultiplier, rightAxis);
-			rotatedDirection = rotation * glmDirection;
+			elevation += rotationSpeed;
 		}
 		if (ImGui::IsKeyDown(ImGuiKey_S)) {
-			glm::vec3 worldUp(0.0f, 0.0f, 1.0f);
-			glm::vec3 rightAxis = glm::normalize(glm::cross(glmDirection, worldUp));
-			if (glm::length(rightAxis) < 0.001f) {
-				rightAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-			}
-
-			glm::quat rotation = glm::angleAxis(-rotationSpeed * wsRotationMultiplier, rightAxis);
-			rotatedDirection = rotation * glmDirection;
+			elevation -= rotationSpeed;
 		}
 		if (ImGui::IsKeyDown(ImGuiKey_A)) {
-			glm::vec3 upAxis(0.0f, 0.0f, 1.0f);
-			glm::quat rotation = glm::angleAxis(rotationSpeed, upAxis);
-			rotatedDirection = rotation * glmDirection;
+			azimuth += rotationSpeed;
 		}
 		if (ImGui::IsKeyDown(ImGuiKey_D)) {
-			glm::vec3 upAxis(0.0f, 0.0f, 1.0f);
-			glm::quat rotation = glm::angleAxis(-rotationSpeed, upAxis);
-			rotatedDirection = rotation * glmDirection;
+			azimuth -= rotationSpeed;
 		}
 		if (ImGui::IsKeyDown(ImGuiKey_Q)) {
 			distance += 0.2f;
 		}
 		if (ImGui::IsKeyDown(ImGuiKey_E)) {
 			distance -= 0.2f;
-			if (distance < 0.1f) {
+			if (distance < 0.1f)
 				distance = 0.1f;
-			}
 		}
 
-		rotatedDirection = glm::normalize(rotatedDirection);
+		// Зажимаем высоту — камера не проходит через полюс
+		elevation = glm::clamp(elevation, -maxElevation, maxElevation);
 
-		lastCameraUp = currentCameraUp;
+		glm::vec3 newDir;
+		newDir.x = cosf(elevation) * cosf(azimuth);
+		newDir.y = cosf(elevation) * sinf(azimuth);
+		newDir.z = sinf(elevation);
 
-		m_data.targetPosition[0] = m_data.cameraPosition[0] + rotatedDirection.x * distance;
-		m_data.targetPosition[1] = m_data.cameraPosition[1] + rotatedDirection.y * distance;
-		m_data.targetPosition[2] = m_data.cameraPosition[2] + rotatedDirection.z * distance;
+		m_data.targetPosition[0] = m_data.cameraPosition[0] + newDir.x * distance;
+		m_data.targetPosition[1] = m_data.cameraPosition[1] + newDir.y * distance;
+		m_data.targetPosition[2] = m_data.cameraPosition[2] + newDir.z * distance;
 	}
 
 	if (options.freeCamera) {
@@ -330,20 +302,6 @@ void CutsceneObjectiveEditing::openCutsceneEditor(
 	m_onCloseCallback = std::move(onClose);
 	playerPed = FindPlayerPed();
 	CWorld::Remove(playerPed);
-
-	isWSInverted = false;
-	CVector initialDirection(data.targetPosition[0] - data.cameraPosition[0],
-	                         data.targetPosition[1] - data.cameraPosition[1],
-	                         data.targetPosition[2] - data.cameraPosition[2]);
-	initialDirection.Normalise();
-
-	glm::vec3 glmInitialDirection(initialDirection.x, initialDirection.y, initialDirection.z);
-	glm::vec3 worldUp(0.0f, 0.0f, 1.0f);
-	glm::vec3 initialRightAxis = glm::normalize(glm::cross(glmInitialDirection, worldUp));
-	if (glm::length(initialRightAxis) < 0.001f) {
-		initialRightAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-	}
-	lastCameraUp = glm::normalize(glm::cross(initialRightAxis, glmInitialDirection));
 
 	TheCamera.m_bWideScreenOn = data.wideScreen;
 	CTheScripts::bDisplayHud = false;
