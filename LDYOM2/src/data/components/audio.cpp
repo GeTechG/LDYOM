@@ -381,15 +381,14 @@ Entity* components::Audio::findEntityByUuid(const std::string& uuid) const {
 	if (uuid.empty())
 		return nullptr;
 
-	auto entities = IS_PLAYING ? ProjectPlayer::instance().getEntities() :
-		std::vector<Entity*>([&]() {
-			const auto& currentScene = ScenesManager::instance().getCurrentScene();
-			std::vector<Entity*> result;
-			for (const auto& ent : currentScene.entities) {
-				result.push_back(ent.get());
-			}
-			return result;
-		}());
+	auto entities = IS_PLAYING ? ProjectPlayer::instance().getEntities() : std::vector<Entity*>([&]() {
+		const auto& currentScene = ScenesManager::instance().getCurrentScene();
+		std::vector<Entity*> result;
+		for (const auto& ent : currentScene.entities) {
+			result.push_back(ent.get());
+		}
+		return result;
+	}());
 
 	for (auto* ent : entities) {
 		if (uuids::to_string(ent->id) == uuid) {
@@ -415,15 +414,30 @@ void components::Audio::updatePosition() {
 
 				// Update visual marker position
 				if (m_visualMarker && !IS_PLAYING) {
-					CMatrix* matrix = m_visualMarker->GetMatrix();
+					// Proper matrix update following CObject::Teleport implementation
+					m_visualMarker->Remove();
+
+					// Update position in matrix or simple transform
+					CMatrixLink* matrix = m_visualMarker->GetMatrix();
 					if (matrix) {
-						matrix->pos.x = pos[0];
-						matrix->pos.y = pos[1];
-						matrix->pos.z = pos[2];
-						matrix->UpdateRW();
-						m_visualMarker->UpdateRwMatrix();
-						m_visualMarker->UpdateRwFrame();
+						matrix->GetPosition().x = pos[0];
+						matrix->GetPosition().y = pos[1];
+						matrix->GetPosition().z = pos[2];
+					} else {
+						m_visualMarker->m_placement.m_vPosn.x = pos[0];
+						m_visualMarker->m_placement.m_vPosn.y = pos[1];
+						m_visualMarker->m_placement.m_vPosn.z = pos[2];
 					}
+
+					// Update RenderWare
+					if (m_visualMarker->m_pRwObject) {
+						if (matrix) {
+							matrix->UpdateRW();
+						}
+						m_visualMarker->UpdateRwMatrix();
+					}
+					m_visualMarker->UpdateRwFrame();
+					m_visualMarker->Add();
 				}
 				break;
 			}
