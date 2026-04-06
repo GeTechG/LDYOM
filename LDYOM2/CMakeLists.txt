@@ -170,9 +170,10 @@ set_target_properties(${PROJECT_NAME}
     COMPILE_PDB_NAME_RELEASE "${PROJECT_NAME}"
 )
 
-set(LDYOM_VERSION_STRING "0.9.0")
+set(LDYOM_VERSION_STRING "0.9.1")
+configure_file(src/version.h.in src/version.h @ONLY)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/src)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-    "LDYOM_VERSION_STRING=\"${LDYOM_VERSION_STRING}\""
     "_CRT_SECURE_NO_WARNINGS;"
     "_CRT_NON_CONFORMING_SWPRINTFS;"
     "_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;"

@@ -1,4 +1,5 @@
 #include "application.h"
+#include "version.h"
 #include "addons_manager.h"
 #include "entities_manager.h"
 #include "hotkeys.h"

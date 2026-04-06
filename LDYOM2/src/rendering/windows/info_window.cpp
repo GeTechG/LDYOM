@@ -1,5 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "info_window.h"
+#include "version.h"
 #include <fa_icons.h>
 #include <fmt/format.h>
 #include <localization.h>

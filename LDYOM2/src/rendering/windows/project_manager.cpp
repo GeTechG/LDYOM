@@ -1,4 +1,5 @@
 #include "project_manager.h"
+#include "version.h"
 #include "fa_icons.h"
 #include "localization.h"
 #include "project_info.h"

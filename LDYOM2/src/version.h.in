@@ -1,0 +1,2 @@
+#pragma once
+#define LDYOM_VERSION_STRING "@LDYOM_VERSION_STRING@"
