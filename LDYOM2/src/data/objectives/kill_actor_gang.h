@@ -100,7 +100,7 @@ ktwait execute(Data& data) {
 		}
 	}
 
-	std::vector<int> blips;
+	std::vector<BlipHandle> blips;
 	if (data.colorBlip > 0) {
 		blips.reserve(actorsToKill.size());
 		for (auto& actor : actorsToKill) {
@@ -123,17 +123,14 @@ ktwait execute(Data& data) {
 		    plugin::Command<plugin::Commands::IS_CHAR_DEAD>(actor)) {
 			actorsToKill.erase(actorsToKill.begin());
 			if (!blips.empty()) {
-				plugin::Command<plugin::Commands::REMOVE_BLIP>(blips.front());
 				blips.erase(blips.begin());
 			}
 			continue;
 		}
 		co_await 10;
 	}
-	for (auto& blip : blips) {
-		plugin::Command<plugin::Commands::REMOVE_BLIP>(blip);
-	}
 }
+
 
 Objective make() {
 	return Objective(TYPE, _("objectives." + std::string(TYPE) + ".name"), Data{},

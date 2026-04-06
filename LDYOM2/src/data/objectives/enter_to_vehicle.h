@@ -80,7 +80,7 @@ ktwait execute(Data& data) {
 		co_return;
 	}
 
-	int blip = -1;
+	BlipHandle blip;
 	if (data.colorBlip > 0) {
 		blip = addBlipToVehicle(targetVehicle->getVehicleRef(), data.colorBlip);
 	}
@@ -97,9 +97,6 @@ ktwait execute(Data& data) {
 	while (!plugin::Command<plugin::Commands::IS_CHAR_IN_CAR>(CPools::GetPedRef(FindPlayerPed()),
 	                                                          targetVehicle->getVehicleRef())) {
 		co_await 10;
-	}
-	if (blip != -1) {
-		plugin::Command<plugin::Commands::REMOVE_BLIP>(blip);
 	}
 }
 

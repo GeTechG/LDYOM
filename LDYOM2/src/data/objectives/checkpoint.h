@@ -119,7 +119,7 @@ ktwait execute(Data& data) {
 		                      0, false);
 	}
 
-	int blip = -1;
+	BlipHandle blip;
 	if (data.colorBlip > 0) {
 		blip = addBlipToCoord(targetCheckpoint->entity->position[0], targetCheckpoint->entity->position[1],
 		                      targetCheckpoint->entity->position[2], data.colorBlip);
@@ -131,12 +131,9 @@ ktwait execute(Data& data) {
 			if (!plugin::Command<plugin::Commands::IS_CHAR_IN_CAR>(playerHandle, targetVehicle->getVehicleRef())) {
 				plugin::Command<plugin::Commands::PRINT_NOW>("GOCAR", 2000, 1);
 
-				if (blip != -1) {
-					plugin::Command<plugin::Commands::REMOVE_BLIP>(blip);
-				}
-				blip = -1;
+				blip.reset();
 
-				int carBlip = -1;
+				BlipHandle carBlip;
 				if (enterToVehicleData) {
 					if (enterToVehicleData.value()->colorBlip > 0) {
 						carBlip =
@@ -148,9 +145,7 @@ ktwait execute(Data& data) {
 					co_await 10;
 				}
 
-				if (carBlip != -1) {
-					plugin::Command<plugin::Commands::REMOVE_BLIP>(carBlip);
-				}
+				carBlip.reset();
 
 				if (data.colorBlip > 0) {
 					blip = addBlipToCoord(targetCheckpoint->entity->position[0], targetCheckpoint->entity->position[1],
@@ -189,10 +184,6 @@ ktwait execute(Data& data) {
 			}
 		}
 		co_await 10;
-	}
-
-	if (blip != -1) {
-		plugin::Command<plugin::Commands::REMOVE_BLIP>(blip);
 	}
 }
 

@@ -4,6 +4,7 @@
 #include <CPlayerPed.h>
 #include <CPools.h>
 #include <CStreaming.h>
+#include <blip_color_utils.h>
 #include <common.h>
 #include <components/vehicle.h>
 #include <extensions/ScriptCommands.h>
@@ -117,7 +118,7 @@ inline ktwait execute(Data& data) {
 	auto vehiclePos = targetVehicle->handle->GetPosition();
 
 	// Add marker/blip to vehicle if specified (similar to enter_to_vehicle objective)
-	int blip = -1;
+	BlipHandle blip;
 	if (data.markerColor > 0) {
 		blip = addBlipToVehicle(vehicleRef, data.markerColor);
 	}

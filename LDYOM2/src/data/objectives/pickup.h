@@ -120,12 +120,11 @@ ktwait execute(Data& data) {
 	}
 
 	// Create blips for all pickups
-	std::vector<int> blips;
+	std::vector<BlipHandle> blips;
 	if (data.colorBlip > 0) {
 		blips.reserve(pickupsToCollect.size());
 		for (auto& pickup : pickupsToCollect) {
-			int blip = addBlipToPickup(pickup->handle, data.colorBlip);
-			blips.push_back(blip);
+			blips.push_back(addBlipToPickup(pickup->handle, data.colorBlip));
 		}
 	}
 
@@ -157,7 +156,6 @@ ktwait execute(Data& data) {
 				if (data.colorBlip > 0 && !blips.empty()) {
 					size_t index = std::distance(pickupsToCollect.begin(), it);
 					if (index < blips.size()) {
-						plugin::Command<plugin::Commands::REMOVE_BLIP>(blips[index]);
 						blips.erase(blips.begin() + index);
 					}
 				}
@@ -180,11 +178,8 @@ ktwait execute(Data& data) {
 		CounterService::instance().clearAllCounters();
 	}
 
-	// Clean up remaining blips
-	for (auto& blip : blips) {
-		plugin::Command<plugin::Commands::REMOVE_BLIP>(blip);
-	}
 }
+
 
 Objective make() {
 	return Objective(TYPE, _("objectives." + std::string(TYPE) + ".name"), Data{},

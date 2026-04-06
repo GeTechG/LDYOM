@@ -94,7 +94,7 @@ ktwait execute(Data& data) {
 		co_return;
 	}
 
-	int blip = -1;
+	BlipHandle blip;
 	if (data.colorBlip > 0) {
 		blip = addBlipToObject(targetObject->getObjectRef(), data.colorBlip);
 	}
@@ -134,9 +134,6 @@ ktwait execute(Data& data) {
 		co_await 1;
 	}
 
-	if (blip != -1) {
-		plugin::Command<plugin::Commands::REMOVE_BLIP>(blip);
-	}
 }
 
 Objective make() {
