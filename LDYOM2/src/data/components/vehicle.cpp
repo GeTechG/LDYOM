@@ -827,7 +827,9 @@ void components::Vehicle::spawn() {
 	this->handle = std::shared_ptr<CVehicle>(vehicle, [](CVehicle* vehicle) {
 		if (!ScenesManager::instance().isRestartGame()) {
 			auto ref = CPools::GetVehicleRef(vehicle);
-			plugin::Command<plugin::Commands::DELETE_CAR>(ref);
+			if (plugin::Command<plugin::Commands::DOES_VEHICLE_EXIST>(ref)) {
+				plugin::Command<plugin::Commands::DELETE_CAR>(ref);
+			}
 		}
 	});
 	this->entity->updateSetTransformCallbacks();
