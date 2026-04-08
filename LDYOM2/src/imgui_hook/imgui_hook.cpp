@@ -1,11 +1,18 @@
 #include "imgui_hook.h"
 #include "MinHook.h"
+#ifdef LDYOM_BACKEND_DX11
 #include "imgui_impl_dx11.h"
+#endif
 #include "imgui_impl_dx9.h"
+#ifdef LDYOM_BACKEND_OPENGL
 #include "imgui_impl_opengl3.h"
+#endif
 #include "imgui_impl_win32.h"
 #include "injector/injector.hpp"
-#include "kiero.h"
+#ifdef LDYOM_BACKEND_DX11
+#include <d3d11.h>
+#include <dxgi.h>
+#endif
 #include "pad.h"
 #include "plugin.h"
 #include "utils/imgui_configurate.h"
@@ -107,9 +114,12 @@ void ImguiHook::ProcessFrame(void* ptr) {
 		if ((fScreenSize.x != width && fScreenSize.y != height) || dirtyObjects) {
 			if (gRenderer == eRenderer::Dx9) {
 				ImGui_ImplDX9_InvalidateDeviceObjects();
-			} else if (gRenderer == eRenderer::Dx11) {
+			}
+#ifdef LDYOM_BACKEND_DX11
+			else if (gRenderer == eRenderer::Dx11) {
 				ImGui_ImplDX11_InvalidateDeviceObjects();
 			}
+#endif
 			ImGuiConfigurate::update(width, height);
 			fScreenSize = ImVec2(static_cast<float>(width), static_cast<float>(height));
 			dirtyObjects = false;
@@ -120,11 +130,17 @@ void ImguiHook::ProcessFrame(void* ptr) {
 		ImGui_ImplWin32_NewFrame();
 		if (gRenderer == eRenderer::Dx9) {
 			ImGui_ImplDX9_NewFrame();
-		} else if (gRenderer == eRenderer::Dx11) {
+		}
+#ifdef LDYOM_BACKEND_DX11
+		else if (gRenderer == eRenderer::Dx11) {
 			ImGui_ImplDX11_NewFrame();
-		} else {
+		}
+#endif
+#ifdef LDYOM_BACKEND_OPENGL
+		else if (gRenderer == eRenderer::OpenGL) {
 			ImGui_ImplOpenGL3_NewFrame();
 		}
+#endif
 
 		ImGui::NewFrame();
 
@@ -137,12 +153,18 @@ void ImguiHook::ProcessFrame(void* ptr) {
 
 		if (gRenderer == eRenderer::Dx9) {
 			ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-		} else if (gRenderer == eRenderer::Dx11) {
+		}
+#ifdef LDYOM_BACKEND_DX11
+		else if (gRenderer == eRenderer::Dx11) {
 			pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-		} else {
+		}
+#endif
+#ifdef LDYOM_BACKEND_OPENGL
+		else if (gRenderer == eRenderer::OpenGL) {
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
+#endif
 	} else {
 		if (!ImGui::GetCurrentContext()) {
 			ImGui::CreateContext();
@@ -180,7 +202,9 @@ void ImguiHook::ProcessFrame(void* ptr) {
 			}
 
 			gD3DDevice = ptr;
-		} else if (gRenderer == eRenderer::Dx11) {
+		}
+#ifdef LDYOM_BACKEND_DX11
+		else if (gRenderer == eRenderer::Dx11) {
 			auto pSwapChain = reinterpret_cast<IDXGISwapChain*>(ptr);
 			if (SUCCEEDED(pSwapChain->GetDevice(__uuidof(ID3D11Device), &ptr))) {
 				auto pDevice = reinterpret_cast<ID3D11Device*>(ptr);
@@ -204,7 +228,10 @@ void ImguiHook::ProcessFrame(void* ptr) {
 			}
 
 			gD3DDevice = ptr;
-		} else {
+		}
+#endif
+#ifdef LDYOM_BACKEND_OPENGL
+		else if (gRenderer == eRenderer::OpenGL) {
 			hwnd = GetForegroundWindow();
 			if (!ImGui_ImplWin32_Init(hwnd)) {
 				return;
@@ -214,6 +241,7 @@ void ImguiHook::ProcessFrame(void* ptr) {
 				return;
 			}
 		}
+#endif
 
 		ImGui_ImplWin32_EnableDpiAwareness();
 
@@ -235,6 +263,7 @@ HRESULT ImguiHook::hkEndScene(IDirect3DDevice9* pDevice) {
 	return oEndScene(pDevice);
 }
 
+#ifdef LDYOM_BACKEND_DX11
 HRESULT ImguiHook::hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) {
 	ProcessFrame(pSwapChain);
 	return oPresent(pSwapChain, SyncInterval, Flags);
@@ -254,11 +283,14 @@ HRESULT ImguiHook::hkResizeBuffers(IDXGISwapChain* pSwapChain, UINT a, UINT b, U
 	back_buffer->Release();
 	return hr;
 }
+#endif
 
+#ifdef LDYOM_BACKEND_OPENGL
 bool ImguiHook::hkGlSwapBuffer(HDC unnamedParam1, UINT unnamedParam2) {
 	ProcessFrame(nullptr);
 	return oGlSwapBuffer(unnamedParam1, unnamedParam2);
 }
+#endif
 
 void ImguiHook::ProcessMouse() {
 	static bool curState = false;
@@ -328,7 +360,6 @@ bool ImguiHook::Inject() {
 	}
 
 	// Проверяем gRenderer - если уже установлен, значит hooks работают
-	// (kiero::init() не идемпотентен и вернет AlreadyInitializedError при повторном вызове)
 	if (gRenderer != eRenderer::Unknown) {
 		injected = true;
 		return true;
@@ -360,9 +391,11 @@ bool ImguiHook::Inject() {
 		    Seems to crash with nvidia geforce experience overlay
 		    if anything else is checked before d3d9
 		*/
+#ifdef LDYOM_BACKEND_DX11
 		if (GetModuleHandle("_gtaRenderHook.asi")) {
 			goto dx11;
 		}
+#endif
 
 		// Get D3D9 device directly from GTA SA's RenderWare engine (RwD3D9Device at 0xC97C28)
 		// This avoids creating a temporary device (which conflicts with UAL's wndmode.dll)
@@ -380,26 +413,73 @@ bool ImguiHook::Inject() {
 			}
 		}
 
-		if (!injected && init(kiero::RenderType::OpenGL) == kiero::Status::Success) {
-			gRenderer = eRenderer::OpenGL;
-			injected = true;
-
+#ifdef LDYOM_BACKEND_OPENGL
+		if (!injected) {
 			HMODULE hMod = GetModuleHandle("OPENGL32.dll");
-			if (!hMod) {
-				return false;
+			if (hMod) {
+				FARPROC addr = GetProcAddress(hMod, "wglSwapBuffers");
+				if (addr) {
+					MH_CreateHook(reinterpret_cast<LPVOID>(addr), hkGlSwapBuffer, reinterpret_cast<LPVOID*>(&oGlSwapBuffer));
+					MH_EnableHook(reinterpret_cast<LPVOID>(addr));
+					gRenderer = eRenderer::OpenGL;
+					injected = true;
+				}
 			}
-			FARPROC addr = GetProcAddress(hMod, "wglSwapBuffers");
-			MH_CreateHook(addr, hkGlSwapBuffer, reinterpret_cast<LPVOID*>(&oGlSwapBuffer));
-			MH_EnableHook(addr);
 		}
+#endif
 
+#ifdef LDYOM_BACKEND_DX11
 	dx11:
-		if (!injected && init(kiero::RenderType::D3D11) == kiero::Status::Success) {
-			gRenderer = eRenderer::Dx11;
-			kiero::bind(8, reinterpret_cast<LPVOID*>(&oPresent), hkPresent);
-			kiero::bind(13, reinterpret_cast<LPVOID*>(&oResizeBuffers), hkResizeBuffers);
-			injected = true;
+		if (!injected && GetModuleHandle("d3d11.dll")) {
+			// Create temporary D3D11 device to get IDXGISwapChain vtable
+			WNDCLASSEX wc = {};
+			wc.cbSize = sizeof(WNDCLASSEX);
+			wc.style = CS_HREDRAW | CS_VREDRAW;
+			wc.lpfnWndProc = DefWindowProc;
+			wc.hInstance = GetModuleHandle(nullptr);
+			wc.lpszClassName = "LdyomTemp";
+			RegisterClassEx(&wc);
+			HWND tempWnd = CreateWindow(wc.lpszClassName, "Temp", WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, NULL, NULL, wc.hInstance, NULL);
+
+			DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+			swapChainDesc.BufferCount = 1;
+			swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			swapChainDesc.BufferDesc.Width = 100;
+			swapChainDesc.BufferDesc.Height = 100;
+			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+			swapChainDesc.OutputWindow = tempWnd;
+			swapChainDesc.SampleDesc.Count = 1;
+			swapChainDesc.Windowed = TRUE;
+			swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+
+			D3D_FEATURE_LEVEL featureLevel;
+			constexpr D3D_FEATURE_LEVEL featureLevels[] = {D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_11_0};
+			IDXGISwapChain* tempSwapChain = nullptr;
+			ID3D11Device* tempDevice = nullptr;
+			ID3D11DeviceContext* tempContext = nullptr;
+
+			HRESULT hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
+				featureLevels, 2, D3D11_SDK_VERSION, &swapChainDesc,
+				&tempSwapChain, &tempDevice, &featureLevel, &tempContext);
+
+			if (SUCCEEDED(hr)) {
+				// IDXGISwapChain vtable: index 8 = Present, index 13 = ResizeBuffers
+				auto* vtable = *reinterpret_cast<void***>(tempSwapChain);
+				MH_CreateHook(vtable[8], hkPresent, reinterpret_cast<LPVOID*>(&oPresent));
+				MH_CreateHook(vtable[13], hkResizeBuffers, reinterpret_cast<LPVOID*>(&oResizeBuffers));
+				MH_EnableHook(vtable[8]);
+				MH_EnableHook(vtable[13]);
+				gRenderer = eRenderer::Dx11;
+				injected = true;
+			}
+
+			if (tempContext) tempContext->Release();
+			if (tempDevice) tempDevice->Release();
+			if (tempSwapChain) tempSwapChain->Release();
+			DestroyWindow(tempWnd);
+			UnregisterClass(wc.lpszClassName, wc.hInstance);
 		}
+#endif
 	}
 
 	return injected;
@@ -413,13 +493,19 @@ void ImguiHook::Remove() {
 
 	if (gRenderer == eRenderer::Dx9) {
 		ImGui_ImplDX9_Shutdown();
-	} else if (gRenderer == eRenderer::Dx11) {
+	}
+#ifdef LDYOM_BACKEND_DX11
+	else if (gRenderer == eRenderer::Dx11) {
 		ImGui_ImplDX11_Shutdown();
-	} else {
+	}
+#endif
+#ifdef LDYOM_BACKEND_OPENGL
+	else if (gRenderer == eRenderer::OpenGL) {
 		ImGui_ImplOpenGL3_Shutdown();
 	}
+#endif
 
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
-	kiero::shutdown();
+	MH_DisableHook(MH_ALL_HOOKS);
 }

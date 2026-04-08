@@ -38,6 +38,9 @@ find_package(watcher REQUIRED)
 find_package(glm REQUIRED)
 find_package(SQLiteCpp REQUIRED)
 
+option(LDYOM_BACKEND_DX11 "Enable DirectX 11 rendering backend" OFF)
+option(LDYOM_BACKEND_OPENGL "Enable OpenGL rendering backend" OFF)
+
 add_subdirectory(modules/ImGuiLuaWrapper)
 add_subdirectory(modules/OpcodesLuaWrapper)
 
@@ -52,6 +55,13 @@ else()
 endif()
 
 file(GLOB_RECURSE SRC_FILES "src/*")
+
+if(NOT LDYOM_BACKEND_DX11)
+    list(FILTER SRC_FILES EXCLUDE REGEX "imgui_impl_dx11")
+endif()
+if(NOT LDYOM_BACKEND_OPENGL)
+    list(FILTER SRC_FILES EXCLUDE REGEX "imgui_impl_opengl")
+endif()
 set(IMGUIZMO_FILES
     thirdparty/ImGuizmo/ImGuizmo.cpp
 )
@@ -107,6 +117,15 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ImGuiLuaWrapper
     OpcodesLuaWrapper
 )
+
+if(LDYOM_BACKEND_DX11)
+    target_link_libraries(${PROJECT_NAME} PRIVATE d3d11.lib dxgi.lib)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LDYOM_BACKEND_DX11)
+endif()
+
+if(LDYOM_BACKEND_OPENGL)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LDYOM_BACKEND_OPENGL)
+endif()
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /bigobj /FS)
