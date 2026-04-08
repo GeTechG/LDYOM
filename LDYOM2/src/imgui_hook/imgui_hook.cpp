@@ -364,11 +364,20 @@ bool ImguiHook::Inject() {
 			goto dx11;
 		}
 
-		if (init(kiero::RenderType::D3D9) == kiero::Status::Success) {
-			gRenderer = eRenderer::Dx9;
-			injected = true;
-			kiero::bind(16, reinterpret_cast<LPVOID*>(&oReset), hkReset);
-			kiero::bind(42, reinterpret_cast<LPVOID*>(&oEndScene), hkEndScene);
+		// Get D3D9 device directly from GTA SA's RenderWare engine (RwD3D9Device at 0xC97C28)
+		// This avoids creating a temporary device (which conflicts with UAL's wndmode.dll)
+		{
+			auto* pDevice = *reinterpret_cast<IDirect3DDevice9**>(0xC97C28);
+			if (pDevice) {
+				auto* vtable = *reinterpret_cast<void***>(pDevice);
+				// IDirect3DDevice9 vtable: index 16 = Reset, index 42 = EndScene
+				MH_CreateHook(vtable[16], hkReset, reinterpret_cast<LPVOID*>(&oReset));
+				MH_CreateHook(vtable[42], hkEndScene, reinterpret_cast<LPVOID*>(&oEndScene));
+				MH_EnableHook(vtable[16]);
+				MH_EnableHook(vtable[42]);
+				gRenderer = eRenderer::Dx9;
+				injected = true;
+			}
 		}
 
 		if (!injected && init(kiero::RenderType::OpenGL) == kiero::Status::Success) {
