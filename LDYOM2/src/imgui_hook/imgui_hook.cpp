@@ -508,4 +508,5 @@ void ImguiHook::Remove() {
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 	MH_DisableHook(MH_ALL_HOOKS);
+	m_bInitialized = false;
 }

@@ -300,7 +300,9 @@ void ScenesManager::resetCurrentScene() {
 
 void ScenesManager::unloadCurrentScene() {
 	m_currentScene = std::make_unique<Scene>(Scene{.info = SceneInfo{.name = _("scenes.default_scene_name")}});
-	if (auto nodeEditor = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor")) {
-		(*nodeEditor)->clearGraph();
+	if (WindowManager::instance().isInitialized()) {
+		if (auto nodeEditor = WindowManager::instance().getWindowAs<NodeEditorWindow>("node_editor")) {
+			(*nodeEditor)->clearGraph();
+		}
 	}
 }

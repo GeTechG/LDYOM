@@ -58,6 +58,7 @@ class WindowManager {
 
 	void initialize();
 	void shutdown() noexcept;
+	bool isInitialized() const noexcept { return m_initialized; }
 
 	WindowManager(const WindowManager&) = delete;
 	WindowManager& operator=(const WindowManager&) = delete;

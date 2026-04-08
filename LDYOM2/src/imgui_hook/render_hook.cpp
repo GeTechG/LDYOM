@@ -35,6 +35,8 @@ void ImGuiHook() {
 }
 
 void ImGuiHookRemove() {
+	if (!ImguiHook::m_bInitialized)
+		return;
 	ImguiHook::Remove();
 	LDYOM_INFO("ImGui hook removed");
 }
