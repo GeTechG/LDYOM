@@ -87,7 +87,12 @@ class Localization {
 };
 
 // Convenience macro for translation
+#ifdef TRACY_ENABLE
+#include <tracy/Tracy.hpp>
+#define _(key, ...) [&]() -> std::string { ZoneScopedN("i18n::tr"); return ::Localization::instance().getI18N().trv(key, ##__VA_ARGS__); }()
+#else
 #define _(key, ...) ::Localization::instance().getI18N().trv(key, ##__VA_ARGS__)
+#endif
 
 // Convenience macro for plural translation
 #define _p(key, count, ...) ::Localization::instance().getI18N().trPluralv(key, count, ##__VA_ARGS__)

@@ -1,3 +1,4 @@
+#include <tracy/Tracy.hpp>
 #include "application.h"
 #include "version.h"
 #include "addons_manager.h"
@@ -130,6 +131,7 @@ void Application::shutdown() {
 }
 
 void Application::process() {
+	ZoneScoped;
 	if (m_welcomeMessageDelay > 0 && FindPlayerPed() != nullptr) {
 		--m_welcomeMessageDelay;
 	} else if (m_welcomeMessageDelay == 0) {
@@ -165,7 +167,9 @@ void Application::process() {
 }
 
 void Application::renderFrames() {
+	ZoneScoped;
 	Hotkeys::instance().update();
 	rocket::dispatch_queued_calls();
 	WindowManager::instance().render();
+	FrameMark;
 }

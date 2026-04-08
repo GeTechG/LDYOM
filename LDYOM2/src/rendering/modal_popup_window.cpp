@@ -1,9 +1,12 @@
+#include <tracy/Tracy.hpp>
 #include "modal_popup_window.h"
 
 ModalPopupWindow::ModalPopupWindow(const std::string& title)
 	: Window(title) {}
 
 void ModalPopupWindow::render() {
+	ZoneScopedN("ModalPopupWindow::render");
+	ZoneText(m_title.c_str(), m_title.size());
 	if (m_needOpen) {
 		this->m_open = true;
 		ImGui::OpenPopup(this->m_title.c_str());

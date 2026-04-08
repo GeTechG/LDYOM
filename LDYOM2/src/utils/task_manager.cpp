@@ -1,3 +1,4 @@
+#include <tracy/Tracy.hpp>
 #include "task_manager.h"
 #include <coroutine>
 
@@ -66,6 +67,7 @@ bool TaskManager::completeTask(const std::string& key) {
 std::shared_ptr<ktcoro_tasklist> TaskManager::getTaskList() const { return taskList; }
 
 void TaskManager::processAll() {
+	ZoneScoped;
 	taskList->process();
 
 	updateTaskStates();

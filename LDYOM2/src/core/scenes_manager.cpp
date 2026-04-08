@@ -1,4 +1,5 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include <tracy/Tracy.hpp>
 #include "scenes_manager.h"
 #include "localization.h"
 #include "projects_manager.h"
@@ -275,6 +276,7 @@ void ScenesManager::saveCurrentScene() {
 }
 
 void ScenesManager::onUpdate(float deltaTime) {
+	ZoneScoped;
 	auto& currentScene = getUnsafeCurrentScene();
 	for (auto& entity : currentScene.entities) {
 		entity->onUpdate(deltaTime);

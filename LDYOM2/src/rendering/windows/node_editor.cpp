@@ -1,4 +1,5 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include <tracy/Tracy.hpp>
 #include "node_editor.h"
 #include "node_graph_serializer.h"
 #include "node_registry.h"
@@ -194,6 +195,7 @@ void NodeEditorWindow::close() { Window::close(); }
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
 
 void NodeEditorWindow::renderSidebar() {
+	ZoneScopedN("NodeEditor::renderSidebar");
 	constexpr float kSidebarWidth = 160.0f;
 	const float fullHeight = ImGui::GetContentRegionAvail().y;
 
@@ -293,6 +295,7 @@ void NodeEditorWindow::renderSidebar() {
 // ─── Main render ─────────────────────────────────────────────────────────────
 
 void NodeEditorWindow::renderContent(NodeEditorWindow* window) {
+	ZoneScopedN("NodeEditor::renderContent");
 	if (!window || window->m_workspaces.empty())
 		return;
 
@@ -334,58 +337,66 @@ static std::string buildCategoryDisplayName(const std::string& category) {
 	return display;
 }
 
-void NodeEditorWindow::rebuildFilteredResults(const std::string& searchLower) {
-	m_filteredResults.clear();
-	m_searchTokens = splitTokens(searchLower);
-	if (m_searchTokens.empty())
-		return;
+void NodeEditorWindow::rebuildNodeCache() {
+	ZoneScopedN("NodeEditor::rebuildNodeCache");
+	m_nodeCache.clear();
 
 	auto& registry = NodeRegistry::instance();
 	auto& loc = Localization::instance().getI18N();
 
 	for (const auto& category : registry.getCategories()) {
-		std::string categoryDisplay = buildCategoryDisplayName(category);
-
 		for (const auto& type : registry.getTypesForCategory(category)) {
+			NodeCacheEntry entry;
+			entry.type = type;
+			entry.category = category;
+
 			auto title = _(fmt::format("nodes_titles.{}", type));
-			std::string titleLower = title;
-			std::transform(titleLower.begin(), titleLower.end(), titleLower.begin(), ::tolower);
-
-			std::string desc;
-			std::string descLower;
-			std::string descKey = fmt::format("nodes_descriptions.{}", type);
-			if (loc.keyExists(descKey)) {
-				desc = _(descKey);
-				descLower = desc;
-				std::transform(descLower.begin(), descLower.end(), descLower.begin(), ::tolower);
-			}
-
-			// Earlier tokens carry more weight: token[0] = n pts, token[1] = n-1, ..., token[n-1] = 1.
-			// Within each token: title match doubles the token's weight, description halves it.
-			// Include if at least one token matches; higher score = shown first.
-			int score = 0;
-			const int n = static_cast<int>(m_searchTokens.size());
-			for (int ti = 0; ti < n; ++ti) {
-				const int tokenWeight = n - ti;
-				const auto& token = m_searchTokens[ti];
-				if (titleLower.find(token) != std::string::npos)
-					score += tokenWeight * 2;
-				else if (descLower.find(token) != std::string::npos)
-					score += tokenWeight;
-			}
-			if (score == 0)
-				continue;
+			entry.titleLower = title;
+			std::transform(entry.titleLower.begin(), entry.titleLower.end(), entry.titleLower.begin(), ::tolower);
 
 			const auto* descReg = registry.find(type);
 			std::string icon;
 			if (descReg)
 				icon = NodeStyleRegistry::instance().getIcon(descReg->styleKey);
-			std::string label = (icon.empty() ? title : icon + " " + title);
-			m_filteredResults.push_back({type, std::move(label), std::move(desc), category, score});
+			entry.label = icon.empty() ? title : icon + " " + title;
+
+			std::string descKey = fmt::format("nodes_descriptions.{}", type);
+			if (loc.keyExists(descKey)) {
+				entry.desc = _(descKey);
+				entry.descLower = entry.desc;
+				std::transform(entry.descLower.begin(), entry.descLower.end(), entry.descLower.begin(), ::tolower);
+			}
+
+			m_nodeCache.push_back(std::move(entry));
 		}
 	}
+}
 
-	// Sort by score descending so best matches appear first
+void NodeEditorWindow::rebuildFilteredResults(const std::string& searchLower) {
+	ZoneScopedN("NodeEditor::rebuildFilteredResults");
+	m_filteredResults.clear();
+	m_searchTokens = splitTokens(searchLower);
+	if (m_searchTokens.empty())
+		return;
+
+	const int n = static_cast<int>(m_searchTokens.size());
+
+	for (const auto& entry : m_nodeCache) {
+		int score = 0;
+		for (int ti = 0; ti < n; ++ti) {
+			const int tokenWeight = n - ti;
+			const auto& token = m_searchTokens[ti];
+			if (entry.titleLower.find(token) != std::string::npos)
+				score += tokenWeight * 2;
+			else if (entry.descLower.find(token) != std::string::npos)
+				score += tokenWeight;
+		}
+		if (score == 0)
+			continue;
+
+		m_filteredResults.push_back({entry.type, entry.label, entry.desc, entry.category, score});
+	}
+
 	std::sort(m_filteredResults.begin(), m_filteredResults.end(),
 	          [](const FilteredEntry& a, const FilteredEntry& b) { return a.score > b.score; });
 }
@@ -399,6 +410,7 @@ void NodeEditorWindow::addToRecent(const std::string& type) {
 }
 
 void NodeEditorWindow::rebuildNodeTree() {
+	ZoneScopedN("NodeEditor::rebuildNodeTree");
 	m_rootCategory = CategoryNode{};
 	auto& registry = NodeRegistry::instance();
 
@@ -509,6 +521,7 @@ void NodeEditorWindow::renderNodeDescription() {
 }
 
 void NodeEditorWindow::renderContextMenu() {
+	ZoneScopedN("NodeEditor::renderContextMenu");
 	auto& registry = NodeRegistry::instance();
 
 	if (registry.getCategories().empty()) {
@@ -523,6 +536,7 @@ void NodeEditorWindow::renderContextMenu() {
 		m_filteredResults.clear();
 		m_selectedNodeType.clear();
 		rebuildNodeTree();
+		rebuildNodeCache();
 	}
 
 	constexpr float kPopupW = 320.0f;
@@ -660,6 +674,7 @@ ImFlow::ImNodeFlow* NodeEditorWindow::getNodeFlow() {
 // ─── Save / load (all workspaces) ─────────────────────────────────────────────
 
 void NodeEditorWindow::saveGraph(const std::string& filePath) {
+	ZoneScopedN("NodeEditor::saveGraph");
 	try {
 		nlohmann::json root;
 		root["active_index"] = m_activeIdx;
@@ -685,6 +700,7 @@ void NodeEditorWindow::saveGraph(const std::string& filePath) {
 }
 
 void NodeEditorWindow::loadGraph(const std::string& filePath) {
+	ZoneScopedN("NodeEditor::loadGraph");
 	try {
 		std::ifstream file(filePath);
 		if (!file.is_open()) {

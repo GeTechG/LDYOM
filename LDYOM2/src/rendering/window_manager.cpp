@@ -1,3 +1,4 @@
+#include <tracy/Tracy.hpp>
 #include "window_manager.h"
 #include "plugin.h"
 #include <CMenuManager.h>
@@ -209,6 +210,7 @@ std::string WindowManager::getHotkeyWindowId(ImGuiKey key, bool ctrl, bool alt, 
 }
 
 void WindowManager::render() {
+	ZoneScoped;
 	checkInitialized();
 
 	processHotkeys();
@@ -226,6 +228,7 @@ void WindowManager::render() {
 		ImguiHook::SetMouseState(mouseShown);
 	}
 	if (!FrontEndMenuManager.m_bMenuActive) {
+		ZoneScopedN("BackgroundCallbacks");
 		auto keys = m_backgroundRenderCallbacks | std::views::keys | std::ranges::to<std::vector>();
 		for (const auto& id : keys) {
 			auto it = m_backgroundRenderCallbacks.find(id);
@@ -236,6 +239,7 @@ void WindowManager::render() {
 	}
 
 	if (isRenderWindows) {
+		ZoneScopedN("RenderWindows");
 		for (const auto& window : m_windows | std::views::values) {
 			try {
 				window->render();

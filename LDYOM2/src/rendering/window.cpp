@@ -1,4 +1,5 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include <tracy/Tracy.hpp>
 #include "window.h"
 #include "utils/imgui_configurate.h"
 #include <imgui.h>
@@ -20,6 +21,8 @@ void Window::configurateWindow() {
 
 void Window::render() {
 	if (m_open) {
+		ZoneScopedN("Window::render");
+		ZoneText(m_title.c_str(), m_title.size());
 		this->configurateWindow();
 		if (ImGui::Begin(_(this->m_title).c_str(), &this->m_open, this->m_flags)) {
 			this->m_isFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);

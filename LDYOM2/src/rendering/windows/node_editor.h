@@ -42,6 +42,18 @@ class NodeEditorWindow : public Window {
     std::vector<std::string> m_searchTokens;
     std::vector<FilteredEntry> m_filteredResults;
 
+    // Pre-built cache of all node entries for fast search (built once on menu open)
+    struct NodeCacheEntry {
+        std::string type;
+        std::string label;      // icon + title
+        std::string titleLower; // lowercase title for matching
+        std::string desc;
+        std::string descLower;  // lowercase description for matching
+        std::string category;
+    };
+    std::vector<NodeCacheEntry> m_nodeCache;
+    void rebuildNodeCache();
+
     // Category tree for the node picker
     struct CategoryNode {
         std::string name;

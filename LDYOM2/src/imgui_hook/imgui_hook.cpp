@@ -1,3 +1,4 @@
+#include <tracy/Tracy.hpp>
 #include "imgui_hook.h"
 #include "MinHook.h"
 #ifdef LDYOM_BACKEND_DX11
@@ -89,6 +90,7 @@ HRESULT ImguiHook::hkReset(IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPr
 }
 
 void ImguiHook::ProcessFrame(void* ptr) {
+	ZoneScoped;
 	if (m_bInitialized) {
 		ProcessMouse();
 
@@ -127,44 +129,55 @@ void ImguiHook::ProcessFrame(void* ptr) {
 
 		// ScriptExData::InitRenderStates();
 
-		ImGui_ImplWin32_NewFrame();
-		if (gRenderer == eRenderer::Dx9) {
-			ImGui_ImplDX9_NewFrame();
-		}
+		{
+			ZoneScopedN("ImGui_NewFrame");
+			ImGui_ImplWin32_NewFrame();
+			if (gRenderer == eRenderer::Dx9) {
+				ImGui_ImplDX9_NewFrame();
+			}
 #ifdef LDYOM_BACKEND_DX11
-		else if (gRenderer == eRenderer::Dx11) {
-			ImGui_ImplDX11_NewFrame();
-		}
+			else if (gRenderer == eRenderer::Dx11) {
+				ImGui_ImplDX11_NewFrame();
+			}
 #endif
 #ifdef LDYOM_BACKEND_OPENGL
-		else if (gRenderer == eRenderer::OpenGL) {
-			ImGui_ImplOpenGL3_NewFrame();
-		}
+			else if (gRenderer == eRenderer::OpenGL) {
+				ImGui_ImplOpenGL3_NewFrame();
+			}
 #endif
-
-		ImGui::NewFrame();
-
-		if (renderFunc != nullptr) {
-			renderFunc();
+			ImGui::NewFrame();
 		}
 
-		ImGui::EndFrame();
-		ImGui::Render();
-
-		if (gRenderer == eRenderer::Dx9) {
-			ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+		{
+			ZoneScopedN("renderFunc");
+			if (renderFunc != nullptr) {
+				renderFunc();
+			}
 		}
+
+		{
+			ZoneScopedN("ImGui_EndFrame_Render");
+			ImGui::EndFrame();
+			ImGui::Render();
+		}
+
+		{
+			ZoneScopedN("RenderDrawData");
+			if (gRenderer == eRenderer::Dx9) {
+				ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+			}
 #ifdef LDYOM_BACKEND_DX11
-		else if (gRenderer == eRenderer::Dx11) {
-			pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
-			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-		}
+			else if (gRenderer == eRenderer::Dx11) {
+				pDeviceContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);
+				ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+			}
 #endif
 #ifdef LDYOM_BACKEND_OPENGL
-		else if (gRenderer == eRenderer::OpenGL) {
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		}
+			else if (gRenderer == eRenderer::OpenGL) {
+				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			}
 #endif
+		}
 	} else {
 		if (!ImGui::GetCurrentContext()) {
 			ImGui::CreateContext();
@@ -259,6 +272,7 @@ void ImguiHook::ProcessFrame(void* ptr) {
 }
 
 HRESULT ImguiHook::hkEndScene(IDirect3DDevice9* pDevice) {
+	ZoneScoped;
 	ProcessFrame(pDevice);
 	return oEndScene(pDevice);
 }
