@@ -34,6 +34,7 @@ class ldyomRecipe(ConanFile):
         self.requires("watcher/0.12.0")
         self.requires("glm/1.0.1")
         self.requires("sqlitecpp/3.3.3")
+        self.requires("tracy/0.13.1")
 
     def config_options(self):
         pass

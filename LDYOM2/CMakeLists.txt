@@ -37,6 +37,7 @@ find_package(stduuid REQUIRED)
 find_package(watcher REQUIRED)
 find_package(glm REQUIRED)
 find_package(SQLiteCpp REQUIRED)
+find_package(Tracy REQUIRED)
 
 option(LDYOM_BACKEND_DX11 "Enable DirectX 11 rendering backend" OFF)
 option(LDYOM_BACKEND_OPENGL "Enable OpenGL rendering backend" OFF)
@@ -114,6 +115,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     libluajit
     glm::glm
     SQLiteCpp
+    Tracy::TracyClient
     ImGuiLuaWrapper
     OpcodesLuaWrapper
 )
@@ -205,6 +207,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     SOL_ALL_SAFETIES_ON=1
     SOL_USE_LUAJIT=1
     SOL_NO_NIL=1
+    $<$<CONFIG:Debug>:TRACY_ENABLE>
 )
 
 if(MSVC)
