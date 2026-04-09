@@ -28,7 +28,7 @@ class ldyomRecipe(ConanFile):
         self.requires("plugin/0.0")
         self.requires("minhook/1.3.4")
         self.requires("imgui/1.92.5")
-        self.requires("i18ncpp/1.0")
+        self.requires("i18ncpp/1.4")
         self.requires("spdlog/1.15.1")
         self.requires("stduuid/1.2.3")
         self.requires("watcher/0.12.0")
