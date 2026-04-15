@@ -118,8 +118,8 @@ void from_json(const nlohmann::json& j, Entity& p) {
 			if (componentJson.is_object()) {
 				std::shared_ptr<Component> component =
 					ComponentsManager::instance().createComponent(componentJson["type"].get<std::string>());
-				component->from_json(componentJson);
 				component->entity = &p;
+				component->from_json(componentJson);
 				p.components.emplace_back(std::move(component));
 			} else {
 				throw std::invalid_argument("Invalid JSON format for Entity components");

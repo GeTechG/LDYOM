@@ -18,7 +18,7 @@ namespace components {
 
 class Vehicle : public Component {
   private:
-	void updateDirection();
+	void updateRotation();
 	void updatePosition();
 
 	std::optional<rocket::scoped_connection> onSpawnedConnection;
@@ -28,10 +28,10 @@ class Vehicle : public Component {
 	enum DirtyFlags {
 		None = 0,
 		Position = 1 << 0,
-		Direction = 1 << 1,
+		Rotation = 1 << 1,
 		Model = 1 << 2,
 	};
-	SOL_LUA_DEFINE_ENUM_NAMED(DirtyFlags, "VehicleComponentDirtyFlags", None, Position, Direction, Model);
+	SOL_LUA_DEFINE_ENUM_NAMED(DirtyFlags, "VehicleComponentDirtyFlags", None, Position, Rotation, Model);
 
 	static constexpr auto TYPE = "vehicle";
 	static constexpr auto CATEGORY = "entities";
@@ -42,7 +42,6 @@ class Vehicle : public Component {
 
 	static Dependencies getDependencies() { return Dependencies{{}, true}; }
 
-	float initialDirection = 0.0f;
 	int model = 400;
 
 	// Game Colors Mode (uses GTA color palette)

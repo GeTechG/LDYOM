@@ -14,7 +14,7 @@ namespace components {
 
 class Actor : public Component {
   private:
-	void updateDirection();
+	void updateRotation();
 	void updatePosition();
 
 	std::optional<rocket::scoped_connection> onSpawnedConnection;
@@ -24,10 +24,10 @@ class Actor : public Component {
 	enum DirtyFlags {
 		None = 0,
 		Position = 1 << 0,
-		Direction = 1 << 1,
+		Rotation = 1 << 1,
 		Model = 1 << 2,
 	};
-	SOL_LUA_DEFINE_ENUM_NAMED(DirtyFlags, "ActorComponentDirtyFlags", None, Position, Direction, Model);
+	SOL_LUA_DEFINE_ENUM_NAMED(DirtyFlags, "ActorComponentDirtyFlags", None, Position, Rotation, Model);
 
 	static constexpr auto TYPE = "actor";
 	static constexpr auto CATEGORY = "entities";
@@ -38,7 +38,6 @@ class Actor : public Component {
 
 	static Dependencies getDependencies() { return Dependencies{{}, true}; }
 
-	float initialDirection = 0.0f;
 	bool isRandomModel = false;
 	int model = 0;
 	std::string specialModel;

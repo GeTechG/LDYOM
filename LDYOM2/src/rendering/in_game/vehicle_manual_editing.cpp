@@ -11,7 +11,9 @@
 #include <localization.h>
 #include <ranges>
 #include <utils/manual_editing_session.h>
+#include <utils/rotation_utils.h>
 #include <window_manager.h>
+#include <corecrt_math_defines.h>
 
 using namespace plugin;
 
@@ -94,12 +96,13 @@ void VehicleManualEditing::closeVehicleEditor(bool saveChanges) noexcept {
 		// Save new position and direction
 		const auto position = m_vehicleHandle->GetPosition();
 		m_vehicle->entity->position = {position.x, position.y, position.z};
-		m_vehicle->initialDirection = m_vehicleHandle->GetHeading();
+		const float headingDeg = m_vehicleHandle->GetHeading() * 180.0f / static_cast<float>(M_PI);
+		m_vehicle->entity->rotation = eulerToQuaternion(0.0f, 0.0f, headingDeg);
 		std::ranges::copy(m_vehicleHandle->m_anUpgrades, std::begin(m_vehicle->upgrades));
 		m_vehicle->paintjob = m_vehicleHandle->GetRemapIndex();
 
 		// Mark as dirty to update
-		m_vehicle->dirty |= components::Vehicle::DirtyFlags::Position | components::Vehicle::DirtyFlags::Direction;
+		m_vehicle->dirty |= components::Vehicle::DirtyFlags::Position | components::Vehicle::DirtyFlags::Rotation;
 	}
 
 	// Disable player control

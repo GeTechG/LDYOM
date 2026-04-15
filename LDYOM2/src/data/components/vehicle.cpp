@@ -16,6 +16,7 @@
 #include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
 #include <project_player.h>
+#include <rotation_utils.h>
 #include <scenes_manager.h>
 #include <sstream>
 #include <string_utils.h>
@@ -80,7 +81,7 @@ CRGBA getCarColorRgba(unsigned char id) {
 void components::Vehicle::sol_lua_register(sol::state_view lua_state) {
 	sol_lua_register_enum_DirtyFlags(lua_state);
 	auto ut = lua_state.new_usertype<Vehicle>("VehicleComponent");
-	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Vehicle, cast, initialDirection, model, primaryColorId,
+	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Vehicle, cast, model, primaryColorId,
 	                 secondaryColorId, tertiaryColorId, quaternaryColorId, paintjob, health, bulletproof, fireproof,
 	                 explosionproof, collisionproof, meleeproof, tiresVulnerability, mustSurvive, locked, despawn,
 	                 getVehicleRef);
@@ -92,13 +93,11 @@ void components::Vehicle::sol_lua_register(sol::state_view lua_state) {
 
 components::Vehicle::Vehicle()
 	: Component(TYPE) {
-	this->initialDirection = FindPlayerPed()->GetHeading();
 	this->upgrades.fill(-1);
 }
 
 inline nlohmann::json components::Vehicle::to_json() const {
 	auto j = this->Component::to_json();
-	j["initialDirection"] = initialDirection;
 	j["model"] = model;
 
 	// Game colors
@@ -139,7 +138,16 @@ inline nlohmann::json components::Vehicle::to_json() const {
 
 void components::Vehicle::from_json(const nlohmann::json& j) {
 	this->Component::from_json(j);
-	j.at("initialDirection").get_to(initialDirection);
+	if (j.contains("initialDirection") && this->entity) {
+		// Legacy migration: fold scalar heading into the entity rotation if it's still identity.
+		const auto& r = this->entity->rotation;
+		const bool identityRotation = std::abs(r.real - 1.0f) < 1e-5f && std::abs(r.imag.x) < 1e-5f &&
+		                              std::abs(r.imag.y) < 1e-5f && std::abs(r.imag.z) < 1e-5f;
+		if (identityRotation) {
+			const float headingDeg = j.at("initialDirection").get<float>() * 180.0f / static_cast<float>(M_PI);
+			this->entity->rotation = eulerToQuaternion(0.0f, 0.0f, headingDeg);
+		}
+	}
 	j.at("model").get_to(model);
 	j.at("primaryColorId").get_to(primaryColorId);
 	j.at("secondaryColorId").get_to(secondaryColorId);
@@ -336,13 +344,6 @@ std::array<VehicleColorData, 127> vehicleColorsData = {{
 
 void components::Vehicle::editorRender() {
 	const auto availableWidth = ImGui::GetContentRegionAvail().x;
-	ImGui::Text("%s", tr("direction").c_str());
-	ImGui::SameLine(availableWidth * 0.45f);
-	ImGui::SetNextItemWidth(-1.f);
-	if (ImGui::SliderAngle("##direction", &initialDirection, -180.0f, 180.0f, "%.0f°")) {
-		dirty |= Direction;
-	}
-
 	ImGui::Text(_("model").c_str());
 	ImGui::SameLine(availableWidth * 0.45f);
 
@@ -739,8 +740,7 @@ void components::Vehicle::onStart() {
 		},
 		[this](const CQuaternion rotation) {
 			if (this->handle) {
-				this->handle->m_matrix->SetRotate(rotation);
-				this->updateDirection();
+				this->updateRotation();
 			}
 		},
 		[this](const std::array<float, 3>& scale) {
@@ -765,8 +765,8 @@ void components::Vehicle::onStart() {
 
 void components::Vehicle::onUpdate(float deltaTime) {
 	Component::onUpdate(deltaTime);
-	if (this->dirty & Direction) {
-		updateDirection();
+	if (this->dirty & Rotation) {
+		updateRotation();
 	}
 	if (this->dirty & Position) {
 		updatePosition();
@@ -784,11 +784,14 @@ void components::Vehicle::onReset() {
 	this->onDespawnedConnection.reset();
 }
 
-void components::Vehicle::updateDirection() {
-	if (this->handle) {
-		auto heading = this->initialDirection * 180.0f / static_cast<float>(M_PI);
-		plugin::Command<plugin::Commands::SET_CAR_HEADING>(this->getVehicleRef(), heading);
+void components::Vehicle::updateRotation() {
+	if (!this->handle) {
+		return;
 	}
+	this->handle->m_matrix->SetRotate(this->entity->rotation);
+	this->handle->m_matrix->UpdateRW();
+	this->handle->UpdateRwMatrix();
+	this->handle->UpdateRwFrame();
 }
 
 void components::Vehicle::updatePosition() {
@@ -845,7 +848,7 @@ void components::Vehicle::spawn() {
 		vehicle->SetRemap(this->paintjob);
 	}
 
-	this->updateDirection();
+	this->updateRotation();
 
 	auto restoreUpgrade = [](Vehicle* this_, int newVehicle) -> ktwait {
 		for (size_t i = 0; i < this_->upgrades.size(); ++i) {

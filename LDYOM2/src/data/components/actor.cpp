@@ -7,26 +7,24 @@
 #include <lua_define_type.h>
 #include <matrix_utils.h>
 #include <project_player.h>
+#include <rotation_utils.h>
 #include <scenes_manager.h>
 #include <string_utils.h>
 
 void components::Actor::sol_lua_register(sol::state_view lua_state) {
 	sol_lua_register_enum_DirtyFlags(lua_state);
 	auto ut = lua_state.new_usertype<Actor>("ActorComponent");
-	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, isRandomModel, initialDirection, model,
+	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, isRandomModel, model,
 	                 specialModel, isSimpleType, pedType, health, headshotImmune, mustSurvive, ped, spawn, despawn,
 	                 getPedRef);
 }
 
 components::Actor::Actor()
-	: Component(TYPE) {
-	this->initialDirection = FindPlayerPed()->GetHeading();
-}
+	: Component(TYPE) {}
 
 inline nlohmann::json components::Actor::to_json() const {
 	auto j = this->Component::to_json();
 	j["isRandomModel"] = isRandomModel;
-	j["initialDirection"] = initialDirection;
 	j["model"] = model;
 	j["specialModel"] = specialModel;
 	j["isSimpleType"] = isSimpleType;
@@ -40,7 +38,16 @@ inline nlohmann::json components::Actor::to_json() const {
 void components::Actor::from_json(const nlohmann::json& j) {
 	this->Component::from_json(j);
 	j.at("isRandomModel").get_to(isRandomModel);
-	j.at("initialDirection").get_to(initialDirection);
+	if (j.contains("initialDirection") && this->entity) {
+		// Legacy migration: fold scalar heading into the entity rotation if it's still identity.
+		const auto& r = this->entity->rotation;
+		const bool identityRotation = std::abs(r.real - 1.0f) < 1e-5f && std::abs(r.imag.x) < 1e-5f &&
+		                              std::abs(r.imag.y) < 1e-5f && std::abs(r.imag.z) < 1e-5f;
+		if (identityRotation) {
+			const float headingDeg = j.at("initialDirection").get<float>() * 180.0f / static_cast<float>(M_PI);
+			this->entity->rotation = eulerToQuaternion(0.0f, 0.0f, headingDeg);
+		}
+	}
 	j.at("model").get_to(model);
 	j.at("specialModel").get_to(specialModel);
 	j.at("isSimpleType").get_to(isSimpleType);
@@ -52,30 +59,25 @@ void components::Actor::from_json(const nlohmann::json& j) {
 
 void components::Actor::editorRender() {
 	const auto availableWidth = ImGui::GetContentRegionAvail().x;
-	ImGui::Text("%s", tr("direction").c_str());
 
-	// Button to copy player heading
-	ImGui::SameLine();
+	// Button to copy player heading into the entity's rotation (Z-axis yaw)
 	const float buttonHeight = ImGui::GetFrameHeight();
-	const float buttonWidth = buttonHeight * 1.2f;
+	const float copyBtnWidth = buttonHeight * 1.2f;
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 4.0f));
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0)); // Transparent background
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_HeaderHovered));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGui::GetStyleColorVec4(ImGuiCol_HeaderActive));
-	if (ImGui::Button(ICON_FA_LOCATION_CROSSHAIRS "##copyPlayerHeading", ImVec2(buttonWidth, buttonHeight))) {
-		this->initialDirection = FindPlayerPed()->GetHeading();
-		dirty |= Direction;
+	if (ImGui::Button(ICON_FA_LOCATION_CROSSHAIRS " " ICON_FA_COMPASS "##copyPlayerHeading",
+	                  ImVec2(0.f, buttonHeight))) {
+		const float headingDeg = FindPlayerPed()->GetHeading() * 180.0f / static_cast<float>(M_PI);
+		this->entity->rotation = eulerToQuaternion(0.0f, 0.0f, headingDeg);
+		this->entity->updateSetTransformCallbacks();
+		dirty |= Rotation;
 	}
 	ImGui::PopStyleColor(3);
 	ImGui::PopStyleVar();
 	if (ImGui::IsItemHovered()) {
 		ImGui::SetTooltip("%s", tr("copy_player_heading").c_str());
-	}
-
-	ImGui::SameLine(availableWidth * 0.45f);
-	ImGui::SetNextItemWidth(-1.f);
-	if (ImGui::SliderAngle("##direction", &initialDirection, -180.0f, 180.0f, "%.0f°")) {
-		dirty |= Direction;
 	}
 
 	ImGui::Text("%s", tr("is_random_model").c_str());
@@ -232,8 +234,7 @@ void components::Actor::onStart() {
 		},
 		[this](const CQuaternion rotation) {
 			if (this->ped) {
-				this->ped->m_matrix->SetRotate(rotation);
-				this->updateDirection();
+				this->updateRotation();
 			}
 		},
 		[this](const std::array<float, 3>& scale) {
@@ -258,8 +259,8 @@ void components::Actor::onStart() {
 
 void components::Actor::onUpdate(float deltaTime) {
 	Component::onUpdate(deltaTime);
-	if (this->dirty & Direction) {
-		updateDirection();
+	if (this->dirty & Rotation) {
+		updateRotation();
 	}
 	if (this->dirty & Position) {
 		updatePosition();
@@ -279,11 +280,24 @@ void components::Actor::onReset() {
 	this->onDespawnedConnection.reset();
 }
 
-void components::Actor::updateDirection() {
-	if (this->ped) {
-		auto heading = this->initialDirection * 180.0f / static_cast<float>(M_PI);
-		plugin::Command<plugin::Commands::SET_CHAR_HEADING>(CPools::GetPedRef(this->ped.get()), heading);
+void components::Actor::updateRotation() {
+	if (!this->ped) {
+		return;
 	}
+	// Mirrors opcode 371 (SET_CHAR_HEADING) guard: don't rewrite the ped matrix while it's attached to a vehicle,
+	// otherwise we desync the seat transform the vehicle imposes.
+	if (this->ped->m_pVehicle != nullptr) {
+		return;
+	}
+	this->ped->m_matrix->SetRotate(this->entity->rotation);
+	this->ped->m_matrix->UpdateRW();
+	this->ped->UpdateRwMatrix();
+	this->ped->UpdateRwFrame();
+	// Keep AI/aim rotation fields in sync with the yaw component so combat/aim code stays coherent.
+	const auto euler = quaternionToEuler(this->entity->rotation);
+	const float yawRad = glm::radians(euler[2]);
+	this->ped->m_fCurrentRotation = yawRad;
+	this->ped->m_fAimingRotation = yawRad;
 }
 
 void components::Actor::updatePosition() {
@@ -378,7 +392,7 @@ void components::Actor::spawn() {
 	}
 
 	updatePosition();
-	updateDirection();
+	updateRotation();
 
 	onSpawned();
 }

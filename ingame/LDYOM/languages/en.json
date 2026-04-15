@@ -603,7 +603,6 @@
         "actor": {
             "name": "Actor",
             "description": "Represents a character or NPC in the game world.",
-            "direction": "Direction",
             "model": "Model",
             "is_random_model": "Is Random Model",
             "is_special": "Is Special",
@@ -623,7 +622,6 @@
         "vehicle": {
             "name": "Vehicle",
             "description": "Represents a vehicle in the game world.",
-            "direction": "Direction",
             "primary_color": "Primary Color",
             "secondary_color": "Secondary Color",
             "tertiary_color": "Tertiary Color",
