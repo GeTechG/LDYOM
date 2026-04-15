@@ -8,6 +8,7 @@
 #include <in_game/entity_orbit_camera.h>
 #include <localization.h>
 #include <utils/imgui_configurate.h>
+#include <utils/ui_scale.h>
 #include <window_manager.h>
 
 // Static member initialization
@@ -40,23 +41,24 @@ void EntityInfoPanel::render() noexcept {
 	                                         ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
 	                                         ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
 
-	const ImVec2 screenScale = ImGuiConfigurate::getScreenScale();
+	const float uiScale = ImGuiConfigurate::getUiScale();
 	const auto& io = ImGui::GetIO();
 
 	// Calculate adaptive width based on screen aspect ratio
 	const float aspectRatio = io.DisplaySize.x / io.DisplaySize.y;
-	const float baseWidth = 320.0f;                                             // Base width for standard 16:9
+	const float baseWidth = ui::em(20.0f);                                      // ~320px at 1em=16
 	const float widthMultiplier = std::clamp(aspectRatio / 1.778f, 0.8f, 1.5f); // 1.778 = 16:9
-	const float adaptiveWidth = baseWidth * widthMultiplier * screenScale.x;
+	const float adaptiveWidth = baseWidth * widthMultiplier;
 
-	// Position in top-left corner, next to entities panel
-	ImGui::SetNextWindowPos(ImVec2(210, 10) * screenScale, ImGuiCond_Always, ImVec2(0.0f, 0.0f));
+	// Position in top-left corner, next to entities panel (framework-level position uses uiScale)
+	ImGui::SetNextWindowPos(ImVec2(210.0f, 10.0f) * uiScale, ImGuiCond_Always, ImVec2(0.0f, 0.0f));
 	ImGui::SetNextWindowBgAlpha(0.85f); // Semi-transparent background
 
 	// Set minimum window width constraint
 	ImGui::SetNextWindowSizeConstraints(ImVec2(adaptiveWidth, 0), ImVec2(adaptiveWidth, FLT_MAX));
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 12) * screenScale);
+	// WindowPadding is a style var — auto-scaled by FontScaleDpi, pass raw.
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 12));
 
 	if (ImGui::Begin("##EntityInfoPanel", nullptr, windowFlags)) {
 
@@ -81,7 +83,6 @@ void EntityInfoPanel::render() noexcept {
 }
 
 void EntityInfoPanel::renderCameraControls() noexcept {
-	const ImVec2 screenScale = ImGuiConfigurate::getScreenScale();
 	const float availWidth = ImGui::GetContentRegionAvail().x;
 
 	// Header - use accent color from theme (ButtonHovered gives good visibility)
@@ -103,8 +104,8 @@ void EntityInfoPanel::renderCameraControls() noexcept {
 	ImGui::Spacing();
 
 	// Control instructions
-	const float iconWidth = 30.0f * screenScale.x;
-	const float textOffset = iconWidth + 5.0f * screenScale.x;
+	const float iconWidth = ui::em(2.0f);
+	const float textOffset = iconWidth + ui::em(0.3f);
 
 	if (freeMode) {
 		// Free camera controls
@@ -191,7 +192,6 @@ void EntityInfoPanel::renderCameraControls() noexcept {
 }
 
 void EntityInfoPanel::renderGizmoControls() noexcept {
-	const ImVec2 screenScale = ImGuiConfigurate::getScreenScale();
 	const float availWidth = ImGui::GetContentRegionAvail().x;
 
 	ImGui::Spacing();
@@ -206,8 +206,8 @@ void EntityInfoPanel::renderGizmoControls() noexcept {
 	ImGui::Separator();
 	ImGui::Spacing();
 
-	const float iconWidth = 30.0f * screenScale.x;
-	const float textOffset = iconWidth + 5.0f * screenScale.x;
+	const float iconWidth = ui::em(2.0f);
+	const float textOffset = iconWidth + ui::em(0.3f);
 
 	// Current mode indicator
 	bool isLocal = (EntityGizmo::getCurrentMode() == GizmoMode::LOCAL);

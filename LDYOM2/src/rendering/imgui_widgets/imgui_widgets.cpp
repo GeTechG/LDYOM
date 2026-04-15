@@ -5,6 +5,7 @@
 #include <localization.h>
 #include <string>
 #include <utils/imgui_configurate.h>
+#include <utils/ui_scale.h>
 
 bool ImGui::TextSelectable(const char* label, bool selected, const ImVec2& size) {
 	PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -176,7 +177,7 @@ bool ImGui::InputTextWithPopup(const char* label, std::string* str) {
 	if (Button("..."))
 		OpenPopup("##popup");
 
-	SetNextWindowSize(ImVec2((SCL_PX).x * 400.0f, 0.0f), ImGuiCond_Always);
+	SetNextWindowSize(ImVec2(ui::em(25.0f), 0.0f), ImGuiCond_Always);
 	if (BeginPopup("##popup")) {
 		if (InputTextMultiline("##multiline", str, ImVec2(-1.0f, GetTextLineHeight() * 8.0f)))
 			changed = true;
@@ -207,12 +208,12 @@ int ImGui::ConfirmDialog(const char* title, const char* message, const char* yes
 		Separator();
 
 		// Add spacing before buttons
-		Dummy(ImVec2(0.0f, 5.0f) * SCL_PX);
+		Dummy(ImVec2(0.0f, ui::em(0.3125f)));
 
 		// Create block for centering buttons
 		float width = GetWindowWidth();
-		float buttonWidth = 120.0f * (SCL_PX).x;
-		float spacingX = 10.0f * (SCL_PX).x;
+		float buttonWidth = ui::em(7.5f);
+		float spacingX = ui::em(0.625f);
 		float totalWidth = 2 * buttonWidth + spacingX;
 		float offsetX = (width - totalWidth) * 0.5f;
 

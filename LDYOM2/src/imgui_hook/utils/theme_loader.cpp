@@ -231,7 +231,6 @@ const std::vector<std::string>& ThemeLoader::getAvailableThemes() { return avail
 
 void ThemeLoader::applyTheme(ImGuiTheme theme) {
 	ImGuiStyle& style = ImGui::GetStyle();
-	ImVec2 screenScale = ImGuiConfigurate::getScreenScale();
 
 	for (int i = 0; i < ImGuiCol_COUNT; i++) {
 		style.Colors[i] = theme.colors[i];
@@ -246,61 +245,61 @@ void ThemeLoader::applyTheme(ImGuiTheme theme) {
 			style.DisabledAlpha = value;
 			break;
 		case ImGuiStyleVar_WindowRounding:
-			style.WindowRounding = value * screenScale.x;
+			style.WindowRounding = value;
 			break;
 		case ImGuiStyleVar_WindowBorderSize:
-			style.WindowBorderSize = value * screenScale.x;
+			style.WindowBorderSize = value;
 			break;
 		case ImGuiStyleVar_ChildRounding:
-			style.ChildRounding = value * screenScale.x;
+			style.ChildRounding = value;
 			break;
 		case ImGuiStyleVar_ChildBorderSize:
-			style.ChildBorderSize = value * screenScale.x;
+			style.ChildBorderSize = value;
 			break;
 		case ImGuiStyleVar_PopupRounding:
-			style.PopupRounding = value * screenScale.x;
+			style.PopupRounding = value;
 			break;
 		case ImGuiStyleVar_PopupBorderSize:
-			style.PopupBorderSize = value * screenScale.x;
+			style.PopupBorderSize = value;
 			break;
 		case ImGuiStyleVar_FrameRounding:
-			style.FrameRounding = value * screenScale.x;
+			style.FrameRounding = value;
 			break;
 		case ImGuiStyleVar_FrameBorderSize:
-			style.FrameBorderSize = value * screenScale.x;
+			style.FrameBorderSize = value;
 			break;
 		case ImGuiStyleVar_IndentSpacing:
-			style.IndentSpacing = value * screenScale.x;
+			style.IndentSpacing = value;
 			break;
 		case ImGuiStyleVar_ScrollbarSize:
-			style.ScrollbarSize = value * screenScale.x;
+			style.ScrollbarSize = value;
 			break;
 		case ImGuiStyleVar_ScrollbarRounding:
-			style.ScrollbarRounding = value * screenScale.x;
+			style.ScrollbarRounding = value;
 			break;
 		case ImGuiStyleVar_GrabMinSize:
-			style.GrabMinSize = value * screenScale.x;
+			style.GrabMinSize = value;
 			break;
 		case ImGuiStyleVar_GrabRounding:
-			style.GrabRounding = value * screenScale.x;
+			style.GrabRounding = value;
 			break;
 		case ImGuiStyleVar_TabRounding:
-			style.TabRounding = value * screenScale.x;
+			style.TabRounding = value;
 			break;
 		case ImGuiStyleVar_TabBorderSize:
-			style.TabBorderSize = value * screenScale.x;
+			style.TabBorderSize = value;
 			break;
 		case ImGuiStyleVar_TabBarBorderSize:
-			style.TabBarBorderSize = value * screenScale.x;
+			style.TabBarBorderSize = value;
 			break;
 		case ImGuiStyleVar_TabBarOverlineSize:
-			style.TabBarOverlineSize = value * screenScale.x;
+			style.TabBarOverlineSize = value;
 			break;
 		case ImGuiStyleVar_TableAngledHeadersAngle:
 			style.TableAngledHeadersAngle = value;
 			break;
 		case ImGuiStyleVar_SeparatorTextBorderSize:
-			style.SeparatorTextBorderSize = value * screenScale.x;
+			style.SeparatorTextBorderSize = value;
 			break;
 		default:
 			break;
@@ -310,25 +309,25 @@ void ThemeLoader::applyTheme(ImGuiTheme theme) {
 	for (const auto& [styleVar, value] : theme.styleVarsVec2) {
 		switch (styleVar) {
 		case ImGuiStyleVar_WindowPadding:
-			style.WindowPadding = value * screenScale;
+			style.WindowPadding = value;
 			break;
 		case ImGuiStyleVar_WindowMinSize:
-			style.WindowMinSize = value * screenScale;
+			style.WindowMinSize = value;
 			break;
 		case ImGuiStyleVar_WindowTitleAlign:
 			style.WindowTitleAlign = value;
 			break;
 		case ImGuiStyleVar_FramePadding:
-			style.FramePadding = value * screenScale;
+			style.FramePadding = value;
 			break;
 		case ImGuiStyleVar_ItemSpacing:
-			style.ItemSpacing = value * screenScale;
+			style.ItemSpacing = value;
 			break;
 		case ImGuiStyleVar_ItemInnerSpacing:
-			style.ItemInnerSpacing = value * screenScale;
+			style.ItemInnerSpacing = value;
 			break;
 		case ImGuiStyleVar_CellPadding:
-			style.CellPadding = value * screenScale;
+			style.CellPadding = value;
 			break;
 		case ImGuiStyleVar_TableAngledHeadersTextAlign:
 			style.TableAngledHeadersTextAlign = value;

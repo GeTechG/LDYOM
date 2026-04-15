@@ -15,11 +15,7 @@ void ModalPopupWindow::render() {
 	if (m_open) {
 		this->configurateWindow();
 		if (ImGui::BeginPopupModal(this->m_title.c_str(), &this->m_open, this->m_flags)) {
-			ImVec2 currentSize = ImGui::GetWindowSize();
-			if (currentSize.x != this->m_size.x || currentSize.y != this->m_size.y) {
-				// this->onResize(currentSize);
-				this->m_size = currentSize;
-			}
+			m_lastPixelSize = ImGui::GetWindowSize();
 
 			if (m_renderCallback) {
 				m_renderCallback(this);

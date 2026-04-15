@@ -5,11 +5,12 @@
 #include <fmt/format.h>
 #include <localization.h>
 #include <utils/imgui_configurate.h>
+#include <utils/ui_scale.h>
 #include <window_manager.h>
 
 void EntitiesMenu::renderContent(Window* window) {
 	// Calculate the maximum button width needed
-	float buttonWidth = 250.0f * (SCL_PX).x;
+	float buttonWidth = ui::em(15.5f);
 	ImVec2 buttonSize(buttonWidth, 0.0f); // Height 0 means use default height
 
 	auto openEntitiesWindow = [window](EntitiesWindowType type) {

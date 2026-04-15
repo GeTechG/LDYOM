@@ -6,6 +6,7 @@
 #include <logger.h>
 #include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
+#include <utils/ui_scale.h>
 
 void ScenesWindow::renderContent(ScenesWindow* window) {
 	auto& scenesManager = ScenesManager::instance();
@@ -14,7 +15,7 @@ void ScenesWindow::renderContent(ScenesWindow* window) {
 	if (scenesInfo.empty()) {
 		ImGui::Text(_("scenes.no_scenes").c_str());
 	} else {
-		ImGui::BeginListBox("##ScenesList", ImVec2(0, 200) * SCL_PX);
+		ImGui::BeginListBox("##ScenesList", ImVec2(0, ui::em(12.5f)));
 		for (size_t i = 0; i < scenesInfo.size(); i++) {
 			auto& sceneInfo = scenesInfo[i];
 			ImGui::PushID(sceneInfo.id.c_str());

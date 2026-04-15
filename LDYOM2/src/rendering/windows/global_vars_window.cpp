@@ -8,6 +8,7 @@
 #include <logger.h>
 #include <projects_manager.h>
 #include <utils/imgui_configurate.h>
+#include <utils/ui_scale.h>
 
 static const char* typeLabels[] = {"Number", "String", "Boolean"};
 
@@ -23,7 +24,7 @@ void GlobalVarsWindow::renderContent(GlobalVarsWindow* window) {
 	bool dirty = false;
 
 	// ── Add Variable ────────────────────────────────────────────────────
-	ImGui::SetNextItemWidth(200.0f * (SCL_PX).x);
+	ImGui::SetNextItemWidth(ui::em(12.5f));
 	ImGui::InputTextWithHint("##new_var_name", _("global_vars.name").c_str(), &window->m_newVarName);
 	ImGui::SameLine();
 	ImGui::BeginDisabled(window->m_newVarName.empty());
@@ -49,14 +50,12 @@ void GlobalVarsWindow::renderContent(GlobalVarsWindow* window) {
 	} else {
 		const ImGuiTableFlags tableFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollY |
 		                                   ImGuiTableFlags_SizingStretchSame;
-		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 4) * SCL_PX);
-		if (ImGui::BeginTable("GlobalVarsTable", 4, tableFlags, ImVec2(0, 280.0f * (SCL_PX).y))) {
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 4));
+		if (ImGui::BeginTable("GlobalVarsTable", 4, tableFlags, ImVec2(0, ui::em(17.5f)))) {
 			ImGui::TableSetupColumn(_("global_vars.name").c_str(), ImGuiTableColumnFlags_WidthStretch);
-			ImGui::TableSetupColumn(_("global_vars.type").c_str(), ImGuiTableColumnFlags_WidthFixed,
-			                        100.0f * (SCL_PX).x);
+			ImGui::TableSetupColumn(_("global_vars.type").c_str(), ImGuiTableColumnFlags_WidthFixed, ui::em(6.0f));
 			ImGui::TableSetupColumn(_("global_vars.value").c_str(), ImGuiTableColumnFlags_WidthStretch);
-			ImGui::TableSetupColumn(_("global_vars.delete").c_str(), ImGuiTableColumnFlags_WidthFixed,
-			                        50.0f * (SCL_PX).x);
+			ImGui::TableSetupColumn(_("global_vars.delete").c_str(), ImGuiTableColumnFlags_WidthFixed, ui::em(3.0f));
 			ImGui::TableSetupScrollFreeze(0, 1);
 			ImGui::TableHeadersRow();
 
@@ -133,7 +132,7 @@ void GlobalVarsWindow::renderContent(GlobalVarsWindow* window) {
 	ImGui::Spacing();
 	ImGui::Separator();
 	ImGui::Spacing();
-	float bw = 120.0f * (SCL_PX).x;
+	float bw = ui::em(7.5f);
 	ImGui::SetCursorPosX((ImGui::GetContentRegionAvail().x - bw) * 0.5f);
 	if (ImGui::Button(_("tools.close").c_str(), ImVec2(bw, 0)))
 		window->close();

@@ -18,27 +18,28 @@
 #include <settings.h>
 #include <utils/carrec_paths_service.h>
 #include <utils/imgui_configurate.h>
+#include <utils/ui_scale.h>
 #include <vector>
 
 void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 	auto& paths = CarrecPathsService::instance().getPaths();
 
 	// Header section with improved spacing
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 6) * SCL_PX);
-	if (ImGui::Button(_("carrec_paths.new_recording", ICON_FA_PLUS).c_str(), ImVec2(180 * (SCL_PX).x, 0))) {
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 6));
+	if (ImGui::Button(_("carrec_paths.new_recording", ICON_FA_PLUS).c_str(), ImVec2(ui::em(11.0f), 0))) {
 		window->m_showSelectVehiclePopup = true;
 		ImGui::OpenPopup("SelectVehicleForNewRecording");
 	}
 	ImGui::PopStyleVar();
 
-	ImGui::SameLine(0, 15 * (SCL_PX).x);
+	ImGui::SameLine(0, ui::em(1.0f));
 
 	// Paths count badge с фоном
 	auto badgeColor = ImGui::GetStyleColorVec4(ImGuiCol_ChildBg);
 	badgeColor.w *= 1.2f;
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, badgeColor);
-	ImGui::BeginChild("PathCountBadge", ImVec2(150 * (SCL_PX).x, 28 * (SCL_PX).y), true, ImGuiWindowFlags_NoScrollbar);
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3 * (SCL_PX).y);
+	ImGui::BeginChild("PathCountBadge", ui::em(9.5f, 1.75f), true, ImGuiWindowFlags_NoScrollbar);
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ui::em(0.2f));
 	ImGui::TextColored(ImGui::GetStyleColorVec4(ImGuiCol_Text), _("carrec_paths.paths_count", paths.size()).c_str());
 	ImGui::EndChild();
 	ImGui::PopStyleColor();
@@ -100,7 +101,7 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 	// Paths list
 	if (paths.empty()) {
 		// Centered empty state message
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 40 * (SCL_PX).y);
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ui::em(2.5f));
 		auto emptyText = _("carrec_paths.no_recorded_paths");
 		auto hintText = _("carrec_paths.no_recorded_paths_hint");
 
@@ -119,21 +120,16 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 		                                   ImGuiTableFlags_ScrollY | ImGuiTableFlags_HighlightHoveredColumn;
 
 		// Улучшенный padding для таблицы
-		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(8, 6) * SCL_PX);
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(8, 6));
 
-		if (ImGui::BeginTable("PathsTable", 7, tableFlags, ImVec2(0, 300) * SCL_PX)) {
+		if (ImGui::BeginTable("PathsTable", 7, tableFlags, ImVec2(0, ui::em(19.0f)))) {
 			ImGui::TableSetupColumn(_("carrec_path.name").c_str(), ImGuiTableColumnFlags_WidthStretch);
-			ImGui::TableSetupColumn(_("components.vehicle.name").c_str(), ImGuiTableColumnFlags_WidthFixed,
-			                        110.0f * (SCL_PX).x);
-			ImGui::TableSetupColumn(_("carrec_path.frames").c_str(), ImGuiTableColumnFlags_WidthFixed,
-			                        70.0f * (SCL_PX).x);
-			ImGui::TableSetupColumn(_("carrec_path.duration").c_str(), ImGuiTableColumnFlags_WidthFixed,
-			                        80.0f * (SCL_PX).x);
-			ImGui::TableSetupColumn(_("carrec_path.preview").c_str(), ImGuiTableColumnFlags_WidthFixed,
-			                        70.0f * (SCL_PX).x);
-			ImGui::TableSetupColumn(_("carrec_path.ai_rerecord").c_str(), ImGuiTableColumnFlags_WidthFixed,
-			                        90.0f * (SCL_PX).x);
-			ImGui::TableSetupColumn(_("general.actions").c_str(), ImGuiTableColumnFlags_WidthFixed, 60.0f * (SCL_PX).x);
+			ImGui::TableSetupColumn(_("components.vehicle.name").c_str(), ImGuiTableColumnFlags_WidthFixed, ui::em(7.0f));
+			ImGui::TableSetupColumn(_("carrec_path.frames").c_str(), ImGuiTableColumnFlags_WidthFixed, ui::em(4.5f));
+			ImGui::TableSetupColumn(_("carrec_path.duration").c_str(), ImGuiTableColumnFlags_WidthFixed, ui::em(5.0f));
+			ImGui::TableSetupColumn(_("carrec_path.preview").c_str(), ImGuiTableColumnFlags_WidthFixed, ui::em(4.5f));
+			ImGui::TableSetupColumn(_("carrec_path.ai_rerecord").c_str(), ImGuiTableColumnFlags_WidthFixed, ui::em(5.5f));
+			ImGui::TableSetupColumn(_("general.actions").c_str(), ImGuiTableColumnFlags_WidthFixed, ui::em(4.0f));
 			ImGui::TableSetupScrollFreeze(0, 1);
 
 			// Выделенный header
@@ -303,8 +299,8 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 
 	// Action buttons с улучшенным spacing
 	ImGui::BeginDisabled(window->m_selectedPathIndex == -1);
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 8) * SCL_PX);
-	if (ImGui::Button(_("carrec_paths.play", ICON_FA_PLAY).c_str(), ImVec2(140 * (SCL_PX).x, 0))) {
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 8));
+	if (ImGui::Button(_("carrec_paths.play", ICON_FA_PLAY).c_str(), ImVec2(ui::em(9.0f), 0))) {
 		auto& selectedPath = paths[window->m_selectedPathIndex];
 
 		std::vector<CarrecPath*> previewPaths;
@@ -322,8 +318,8 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 									 });
 	}
 
-	ImGui::SameLine(0, 10 * (SCL_PX).x);
-	if (ImGui::Button(_("carrec_paths.rerecord", ICON_FA_PEN).c_str(), ImVec2(140 * (SCL_PX).x, 0))) {
+	ImGui::SameLine(0, ui::em(0.6f));
+	if (ImGui::Button(_("carrec_paths.rerecord", ICON_FA_PEN).c_str(), ImVec2(ui::em(9.0f), 0))) {
 		auto& selectedPath = paths[window->m_selectedPathIndex];
 
 		std::vector<CarrecPath*> previewPaths;
@@ -382,7 +378,7 @@ void CarrecPathsWindow::renderContent(CarrecPathsWindow* window) {
 	                                               ImGui::GetStyleColorVec4(ImGuiCol_FrameBg).y,
 	                                               ImGui::GetStyleColorVec4(ImGuiCol_FrameBg).z, 0.5f));
 	ImGui::BeginChild("TipsSection", ImVec2(0, 0), true, ImGuiWindowFlags_NoScrollbar);
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 4) * SCL_PX);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 4));
 
 	ImGui::TextColored(ImVec4(ImGui::GetStyleColorVec4(ImGuiCol_Text).x * 0.8f,
 	                          ImGui::GetStyleColorVec4(ImGuiCol_Text).y * 0.8f,
@@ -429,7 +425,7 @@ void CarrecPathsWindow::selectVehiclePopup(const char* namePopup, bool* open,
 		ImGui::Spacing();
 
 		ImGui::BeginDisabled(m_selectedVehicleModel == -1);
-		if (ImGui::Button(_("ok").c_str(), ImVec2(120 * (SCL_PX).x, 0))) {
+		if (ImGui::Button(_("ok").c_str(), ImVec2(ui::em(7.5f), 0))) {
 			callback(m_selectedVehicleModel);
 			ImGui::CloseCurrentPopup();
 			*open = false;
@@ -437,7 +433,7 @@ void CarrecPathsWindow::selectVehiclePopup(const char* namePopup, bool* open,
 		ImGui::EndDisabled();
 
 		ImGui::SameLine();
-		if (ImGui::Button(_("cancel").c_str(), ImVec2(120 * (SCL_PX).x, 0))) {
+		if (ImGui::Button(_("cancel").c_str(), ImVec2(ui::em(7.5f), 0))) {
 			ImGui::CloseCurrentPopup();
 			*open = false;
 		}

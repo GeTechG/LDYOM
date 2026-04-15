@@ -1,6 +1,7 @@
 #include "skin_selector.h"
 #include <CPedModelInfo.h>
 #include <CPopulation.h>
+#include <imgui_hook/utils/imgui_configurate.h>
 #include <fa_icons.h>
 #include <fmt/format.h>
 #include <imgui.h>
@@ -125,9 +126,10 @@ void PopupSkinSelector::renderPopup(const std::function<void(Skin)>& onSelectCal
 					icon = TexturesManager::instance().getTexture("SkinNoIcon").value();
 				}
 
+				const float uiScale = ImGuiConfigurate::getUiScale();
 				auto size = ImVec2(static_cast<float>(icon->getWidth()), static_cast<float>(icon->getHeight()));
-				size.x *= scale;
-				size.y *= scale;
+				size.x *= scale * uiScale;
+				size.y *= scale * uiScale;
 
 				if (i > 0) {
 					float lastItemMaxScreenX = ImGui::GetItemRectMax().x;

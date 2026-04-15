@@ -8,12 +8,13 @@
 #include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
 #include <utils/theme_loader.h>
+#include <utils/ui_scale.h>
 #include <window_manager.h>
 
 
 void MainMenu::renderContent(Window* window) {
 	// Calculate the maximum button width needed
-	float buttonWidth = 250.0f * (SCL_PX).x;
+	float buttonWidth = ui::em(15.5f);
 	ImVec2 buttonSize(buttonWidth, 0.0f); // Height 0 means use default height
 
 	if (ImGui::Button(_("entities_menu.title", ICON_FA_USER_ALIEN).c_str(), buttonSize)) {

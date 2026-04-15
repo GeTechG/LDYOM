@@ -1,4 +1,6 @@
 #include "object_selector.h"
+#include <imgui_hook/utils/imgui_configurate.h>
+#include <utils/ui_scale.h>
 #include <CModelInfo.h>
 #include <CObjectData.h>
 #include <CStreaming.h>
@@ -99,7 +101,7 @@ void PopupObjectSelector::drawPreviewModal(const std::function<void(int)>& onSel
 	static bool s_editTitleInit = false;
 	static char s_editTitleBuf[256] = "";
 
-	ImGui::SetNextWindowSize(ImVec2(600.f, 500.f), ImGuiCond_Appearing);
+	ImGui::SetNextWindowSize(ui::em(37.5f, 31.25f), ImGuiCond_Appearing);
 	if (!ImGui::BeginPopupModal("##objectPreview", nullptr, ImGuiWindowFlags_NoTitleBar))
 		return;
 
@@ -503,7 +505,7 @@ void PopupObjectSelector::drawResultsView(const char* searchText, const std::fun
 
 		const float availableWidth = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
 		const float contentMinScreenX = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMin().x;
-		const float iconSize = 128.f * scale;
+		const float iconSize = 128.f * scale * ImGuiConfigurate::getUiScale();
 		const ImVec2 iconSizeVec(iconSize, iconSize);
 
 		for (int i = startIdx; i < endIdx; ++i) {

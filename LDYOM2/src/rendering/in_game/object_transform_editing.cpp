@@ -11,6 +11,7 @@
 #include <extensions/ScriptCommands.h>
 #include <glm/gtc/quaternion.hpp>
 #include <imgui_hook/utils/imgui_configurate.h>
+#include <utils/ui_scale.h>
 #include <localization.h>
 #include <matrix_utils.h>
 #include <models_manager.h>
@@ -32,8 +33,7 @@ void ObjectTransformEditing::render() noexcept {
 	                                         ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Always);
 	if (ImGui::Begin("##ObjectTransformEditor", nullptr, windowFlags)) {
-		const auto textWidth = (SCL_PX).x * 300.f;
-		ImGui::PushTextWrapPos(textWidth);
+		ImGui::PushTextWrapPos(ui::em(18.75f));
 		ImGui::TextWrapped(_("object_transform_editing.info_cancel_editing", "F").c_str());
 		ImGui::TextWrapped(_("object_transform_editing.info_save", "Y").c_str());
 		ImGui::PopTextWrapPos();

@@ -7,6 +7,7 @@
 #include <entity.h>
 #include <extensions/ScriptCommands.h>
 #include <imgui_hook/utils/imgui_configurate.h>
+#include <utils/ui_scale.h>
 #include <localization.h>
 #include <models_manager.h>
 #include <utils/manual_editing_session.h>
@@ -25,8 +26,7 @@ void ActorPathsEditing::render() noexcept {
 	                                         ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Always);
 	if (ImGui::Begin("##ActorPathsEditor", nullptr, windowFlags)) {
-		const auto textWidth = (SCL_PX).x * 300.f;
-		ImGui::PushTextWrapPos(textWidth);
+		ImGui::PushTextWrapPos(ui::em(18.75f));
 		ImGui::TextWrapped(_("actor_paths_editing.info_add_point", "N").c_str());
 		ImGui::TextWrapped(_("actor_paths_editing.info_remove_point", "M").c_str());
 		ImGui::TextWrapped(_("actor_paths_editing.info_clear_all_points", "L").c_str());

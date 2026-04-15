@@ -11,7 +11,6 @@
 #include <window_manager.h>
 
 void ObjectivesWindow::renderContent(ObjectivesWindow* window) {
-	const ImVec2 screenScale = ImGuiConfigurate::getScreenScale();
 	const float spacing = ImGui::GetStyle().ItemSpacing.x;
 	const float buttonSize = ImGui::GetFrameHeight() * 1.5f; // Используем для квадратных кнопок
 	const ImVec2 squareButtonSize(buttonSize, buttonSize);

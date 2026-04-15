@@ -1,4 +1,5 @@
 #include "vehicle_selector.h"
+#include <imgui_hook/utils/imgui_configurate.h>
 #include <fa_icons.h>
 #include <fmt/format.h>
 #include <imgui.h>
@@ -130,9 +131,10 @@ void PopupVehicleSelector::renderPopup(const std::function<void(int)>& onSelectC
 					icon = TexturesManager::instance().getTexture("Vehicle_unk").value();
 				}
 
+				const float uiScale = ImGuiConfigurate::getUiScale();
 				auto size = ImVec2(static_cast<float>(icon->getWidth()), static_cast<float>(icon->getHeight()));
-				size.x *= scale;
-				size.y *= scale;
+				size.x *= scale * uiScale;
+				size.y *= scale * uiScale;
 
 				if (i > 0) {
 					float lastItemMaxScreenX = ImGui::GetItemRectMax().x;

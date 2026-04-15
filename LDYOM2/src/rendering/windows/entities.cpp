@@ -19,6 +19,7 @@
 #include <rotation_utils.h>
 #include <scenes_manager.h>
 #include <utils/imgui_configurate.h>
+#include <utils/ui_scale.h>
 #include <uuid_wrap.h>
 #include <window_manager.h>
 
@@ -38,7 +39,6 @@ bool EntitiesWindow::filterByType(Entity& entity) {
 }
 
 void EntitiesWindow::renderContent(EntitiesWindow* window) {
-	const ImVec2 screenScale = ImGuiConfigurate::getScreenScale();
 	const float spacing = ImGui::GetStyle().ItemSpacing.x;
 	const float buttonSize = ImGui::GetFrameHeight() * 1.5f; // Используем для квадратных кнопок
 	const ImVec2 squareButtonSize(buttonSize, buttonSize);
@@ -255,7 +255,7 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, int i) {
 	ImGui::SetNextWindowPos(ImGui::GetIO().DisplaySize, ImGuiCond_Always, ImVec2(1, 1));
 	if (ImGui::Begin("##entity", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
-		if (ImGui::BeginChild("EntityContentScroll", ImVec2(300.0f, 500.0f) * SCL_PX, ImGuiChildFlags_AutoResizeX)) {
+		if (ImGui::BeginChild("EntityContentScroll", ui::em(19.0f, 31.0f), ImGuiChildFlags_AutoResizeX)) {
 			if (ImGui::CollapsingHeader("Entity", ImGuiTreeNodeFlags_DefaultOpen)) {
 				if (ImGui::BeginChild("EntityContent", ImVec2(),
 				                      ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_Borders)) {
@@ -451,7 +451,7 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 				window->m_pendingComponentOperations.clear();
 			}
 
-			ImGui::Dummy(ImVec2(0, 10 * (SCL_PX).y));
+			ImGui::Dummy(ImVec2(0, ui::em(0.6f)));
 			if (ImGui::Button(_("entities.add_component").c_str(), ImVec2(-1.f, 0))) {
 				WindowManager::instance().openWindow("create_new_component");
 			}

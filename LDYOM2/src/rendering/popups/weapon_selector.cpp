@@ -1,4 +1,5 @@
 #include "weapon_selector.h"
+#include <imgui_hook/utils/imgui_configurate.h>
 #include <fa_icons.h>
 #include <imgui.h>
 #include <localization.h>
@@ -60,9 +61,10 @@ void PopupWeaponSelector::renderPopup(std::string_view title, bool* open,
 					icon = TexturesManager::instance().getTexture("50px-Weapon-unk-hd").value();
 				}
 
+				const float uiScale = ImGuiConfigurate::getUiScale();
 				auto size = ImVec2(static_cast<float>(icon->getWidth()), static_cast<float>(icon->getHeight()));
-				size.x *= scale * 2;
-				size.y *= scale * 2;
+				size.x *= scale * 2 * uiScale;
+				size.y *= scale * 2 * uiScale;
 
 				if (i > 0) {
 					float lastItemMaxScreenX = ImGui::GetItemRectMax().x;
