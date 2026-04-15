@@ -20,6 +20,7 @@ class Window {
 	ImVec2 m_position = ImVec2(0, 0);
 	ImGuiCond m_positionCondition = ImGuiCond_FirstUseEver;
 	ImGuiWindowFlags m_flags = ImGuiWindowFlags_None;
+	float m_lastGlobalScale = 0.0f;
 	std::function<void(Window*)> m_renderCallback = nullptr;
 
 	virtual void configurateWindow();

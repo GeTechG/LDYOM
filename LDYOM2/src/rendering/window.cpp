@@ -14,9 +14,21 @@ void Window::close() { m_open = false; }
 
 void Window::configurateWindow() {
 	const auto screenScale = ImGuiConfigurate::getScreenScale();
-	ImGui::SetNextWindowPos(this->m_position * screenScale, this->m_positionCondition, this->m_pivot);
-	ImGui::SetNextWindowSize(this->m_size * screenScale, ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSizeConstraints(this->m_sizeMin * screenScale, ImVec2(FLT_MAX, FLT_MAX));
+	const float globalScale = ImGuiConfigurate::getGlobalScale();
+	const ImVec2 totalScale = screenScale * globalScale;
+
+	ImGuiCond sizeCond = ImGuiCond_FirstUseEver;
+	ImVec2 nextSize = this->m_size * screenScale;
+	if (m_lastGlobalScale > 0.0f && m_lastGlobalScale != globalScale) {
+		sizeCond = ImGuiCond_Always;
+		const float ratio = globalScale / m_lastGlobalScale;
+		nextSize = ImVec2(this->m_size.x * ratio, this->m_size.y * ratio);
+	}
+	m_lastGlobalScale = globalScale;
+
+	ImGui::SetNextWindowPos(this->m_position * totalScale, this->m_positionCondition, this->m_pivot);
+	ImGui::SetNextWindowSize(nextSize, sizeCond);
+	ImGui::SetNextWindowSizeConstraints(this->m_sizeMin * totalScale, ImVec2(FLT_MAX, FLT_MAX));
 }
 
 void Window::render() {
