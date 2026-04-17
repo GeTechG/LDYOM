@@ -1,5 +1,6 @@
 #include <tracy/Tracy.hpp>
 #include "application.h"
+#include "notifications.h"
 #include "version.h"
 #include "addons_manager.h"
 #include "entities_manager.h"
@@ -171,5 +172,6 @@ void Application::renderFrames() {
 	Hotkeys::instance().update();
 	rocket::dispatch_queued_calls();
 	WindowManager::instance().render();
+	Notifications::renderAll();
 	FrameMark;
 }

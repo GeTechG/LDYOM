@@ -13,3 +13,7 @@
 [submodule "LDYOM2/modules/ImGuiLuaWrapper/cimgui"]
 	path = LDYOM2/modules/ImGuiLuaWrapper/cimgui
 	url = https://github.com/cimgui/cimgui
+[submodule "LDYOM2/thirdparty/ImGuiNotify"]
+	path = LDYOM2/thirdparty/ImGuiNotify
+	url = https://github.com/TyomaVader/ImGuiNotify
+	branch = Dev

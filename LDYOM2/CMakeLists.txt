@@ -63,6 +63,10 @@ endif()
 if(NOT LDYOM_BACKEND_OPENGL)
     list(FILTER SRC_FILES EXCLUDE REGEX "imgui_impl_opengl")
 endif()
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImGuiNotify/win32Example/backends/ImGuiNotify.hpp")
+    message(FATAL_ERROR "thirdparty/ImGuiNotify submodule missing — run: git submodule update --init")
+endif()
+
 set(IMGUIZMO_FILES
     thirdparty/ImGuizmo/ImGuizmo.cpp
 )
@@ -148,6 +152,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImGuizmo
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImNodeFlow/include
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImNodeFlow/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ImGuiNotify/win32Example/backends
 )
 
 set(GTA_SA_DIR "C:/Games/GTA San Andreas")

@@ -2,6 +2,7 @@
 #include "application.h"
 #include "ImGuiLuaWrapper.h"
 #include "OpcodesLuaWrapper.h"
+#include "lua/ldyom_binding.h"
 #include "lua/localization_binding.h"
 #include "lua/log_bindings.h"
 #include "lua/node_editor_binding.h"
@@ -38,6 +39,7 @@ void LuaManager::initialize() {
 	lua["package"]["path"] =
 		fmt::format("{};{}/?.lua", lua["package"]["path"].get<std::string>(), libsPath);
 
+	register_ldyom_bindings(lua);
 	register_log_bindings(lua);
 	register_filesystem_bindings(lua);
 	register_localization_bindings(lua);

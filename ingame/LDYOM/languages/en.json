@@ -232,7 +232,9 @@
         "remove_title": "Remove Scene",
         "remove_message": "Are you sure you want to remove the scene?",
         "copy_id": "Copy ID",
-        "rename": "Rename"
+        "rename": "Rename",
+        "notify_saved": "Scene saved",
+        "notify_save_error": "Failed to save scene"
     },
     "objectives": {
         "title": "{} Objectives",

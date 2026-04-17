@@ -2,6 +2,7 @@
 #include <tracy/Tracy.hpp>
 #include "scenes_manager.h"
 #include "localization.h"
+#include "notifications.h"
 #include "projects_manager.h"
 #include <ePedType.h>
 #include <eRelationshipType.h>
@@ -258,8 +259,10 @@ void ScenesManager::saveCurrentScene() {
 			m_scenesInfo.push_back(m_currentScene->info);
 		}
 		LDYOM_INFO("Saved scene: {}", m_currentScene->info.name);
+		Notifications::success(_("scenes.notify_saved"), m_currentScene->info.name);
 	} else {
 		LDYOM_ERROR("Failed to open file for saving scene: {}", sceneFilePath.string());
+		Notifications::error(_("scenes.notify_save_error"), sceneFilePath.string());
 	}
 
 	// Save node graph for this scene
