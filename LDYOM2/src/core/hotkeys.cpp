@@ -29,6 +29,11 @@ void Hotkeys::initialize() {
 		.functionKeys = 0xFFFFFF40, // F6
 	});
 
+	this->m_hotkeys.emplace_back(ImHotKey::HotKey{
+		.functionName = "saveScene",
+		.functionKeys = 0xFFFF1F1D, // Ctrl+S
+	});
+
 	const auto hotkeysConfig =
 		Settings::instance().getSetting<std::unordered_map<std::string, std::string>>("hotkeys", {});
 

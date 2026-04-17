@@ -81,6 +81,12 @@ void Application::initialize() {
 			}
 		});
 
+		Hotkeys::instance().addHotkeyCallback("saveScene", []() {
+			if (!ProjectPlayer::instance().isPlaying()) {
+				ScenesManager::instance().saveCurrentScene();
+			}
+		});
+
 		initWindows();
 
 		// Register `node_tasks` Lua table bound to the node editor's own LuaTaskManager.
