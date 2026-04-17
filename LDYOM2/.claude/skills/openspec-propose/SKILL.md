@@ -5,106 +5,138 @@ license: MIT
 compatibility: Requires openspec CLI.
 metadata:
   author: openspec
-  version: "1.0"
+  version: "1.1"
   generatedBy: "1.3.0"
 ---
 
-Propose a new change - create the change and generate all artifacts in one step.
+Propose a new change — create the change and generate all artifacts in one step.
+
+**Execution model** — Artifact drafting is research-heavy (proposal/design/specs require reasoning about the codebase). Each artifact is delegated to a `general-purpose` subagent running on **Opus** via `Agent({ subagent_type: "general-purpose", model: "opus", ... })`. This skill itself is the orchestrator: it manages the artifact build order, handles user interrupts (`AskUserQuestion`), and verifies outputs. It should not draft artifact content directly.
 
 I'll create a change with artifacts:
-- proposal.md (what & why)
-- design.md (how)
-- tasks.md (implementation steps)
+- `proposal.md` (what & why)
+- `design.md` (how)
+- `tasks.md` (implementation steps)
 
-When ready to implement, run /opsx:apply
+When ready to implement, run `/opsx:apply`.
 
 ---
 
-**Input**: The user's request should include a change name (kebab-case) OR a description of what they want to build.
+## Steps
 
-**Steps**
+### 1. Get the user's intent
 
-1. **If no clear input provided, ask what they want to build**
+If a clear description wasn't provided, use the **AskUserQuestion tool** (open-ended, no preset options) to ask:
 
-   Use the **AskUserQuestion tool** (open-ended, no preset options) to ask:
-   > "What change do you want to work on? Describe what you want to build or fix."
+> "What change do you want to work on? Describe what you want to build or fix."
 
-   From their description, derive a kebab-case name (e.g., "add user authentication" → `add-user-auth`).
+From the description, derive a kebab-case name (e.g., "add user authentication" → `add-user-auth`).
 
-   **IMPORTANT**: Do NOT proceed without understanding what the user wants to build.
+**IMPORTANT**: Do NOT proceed without understanding what the user wants to build.
 
-2. **Create the change directory**
-   ```bash
-   openspec new change "<name>"
-   ```
-   This creates a scaffolded change at `openspec/changes/<name>/` with `.openspec.yaml`.
+### 2. Create the change directory
 
-3. **Get the artifact build order**
-   ```bash
-   openspec status --change "<name>" --json
-   ```
-   Parse the JSON to get:
-   - `applyRequires`: array of artifact IDs needed before implementation (e.g., `["tasks"]`)
-   - `artifacts`: list of all artifacts with their status and dependencies
+```bash
+openspec new change "<name>"
+```
 
-4. **Create artifacts in sequence until apply-ready**
+If a change with that name already exists, ask whether to continue it (switch to `/opsx:apply`) or pick a new name.
 
-   Use the **TodoWrite tool** to track progress through the artifacts.
+### 3. Get the artifact build order
 
-   Loop through artifacts in dependency order (artifacts with no pending dependencies first):
+```bash
+openspec status --change "<name>" --json
+```
 
-   a. **For each artifact that is `ready` (dependencies satisfied)**:
-      - Get instructions:
-        ```bash
-        openspec instructions <artifact-id> --change "<name>" --json
-        ```
-      - The instructions JSON includes:
-        - `context`: Project background (constraints for you - do NOT include in output)
-        - `rules`: Artifact-specific rules (constraints for you - do NOT include in output)
-        - `template`: The structure to use for your output file
-        - `instruction`: Schema-specific guidance for this artifact type
-        - `outputPath`: Where to write the artifact
-        - `dependencies`: Completed artifacts to read for context
-      - Read any completed dependency files for context
-      - Create the artifact file using `template` as the structure
-      - Apply `context` and `rules` as constraints - but do NOT copy them into the file
-      - Show brief progress: "Created <artifact-id>"
+Parse:
+- `applyRequires` — artifact IDs needed before implementation
+- `artifacts` — status + dependencies for each
 
-   b. **Continue until all `applyRequires` artifacts are complete**
-      - After creating each artifact, re-run `openspec status --change "<name>" --json`
-      - Check if every artifact ID in `applyRequires` has `status: "done"` in the artifacts array
-      - Stop when all `applyRequires` artifacts are done
+### 4. Create each artifact via an Opus subagent
 
-   c. **If an artifact requires user input** (unclear context):
-      - Use **AskUserQuestion tool** to clarify
-      - Then continue with creation
+Use the **TaskCreate tool** to track progress through the artifact list.
 
-5. **Show final status**
-   ```bash
-   openspec status --change "<name>"
-   ```
+Loop artifacts in dependency order (those whose dependencies are `done` first):
 
-**Output**
+#### 4a. Fetch instructions for the artifact
 
-After completing all artifacts, summarize:
+```bash
+openspec instructions <artifact-id> --change "<name>" --json
+```
+
+This returns `context`, `rules`, `template`, `instruction`, `outputPath`, `dependencies`.
+
+#### 4b. Dispatch the subagent
+
+```
+Agent({
+  subagent_type: "general-purpose",
+  model: "opus",
+  description: "Draft <artifact-id>",
+  prompt: <self-contained prompt, see template below>
+})
+```
+
+**Prompt template** — the subagent has no prior history, so pass everything it needs inline:
+
+```
+You are drafting the `<artifact-id>` artifact for OpenSpec change `<name>`.
+
+## User's original request
+<verbatim description the user gave>
+
+## Instructions payload (from `openspec instructions <artifact-id> --change "<name>" --json`)
+<paste the entire JSON output here>
+
+## Dependency artifacts (read these first for context)
+<list of file paths taken from the `dependencies` field>
+
+## What to do
+1. Read each dependency file.
+2. Follow the `template` field as the structure for the output file.
+3. Apply `context` and `rules` as constraints — do NOT copy those sections into the file.
+4. Write the artifact to `outputPath`.
+5. If something is critically unclear, do NOT loop — write a best-effort draft with a TODO marker and list the question in your summary.
+6. Report back under 200 words with exactly these fields:
+   - **wrote**: the file path you wrote
+   - **assumptions**: assumptions you made to proceed (empty list if none)
+   - **needs_clarification**: questions the orchestrator should ask the user (empty list if none)
+```
+
+#### 4c. Handle the subagent result
+
+- If `needs_clarification` is non-empty → use **AskUserQuestion tool** with those questions, then dispatch the subagent again with a prompt appendix containing the user's answers. Do NOT merge user answers into the orchestrator's own reasoning — always pass them to the subagent.
+- Otherwise → verify `outputPath` exists on disk before proceeding.
+
+#### 4d. Re-check status
+
+```bash
+openspec status --change "<name>" --json
+```
+
+Continue the loop. Stop when every ID in `applyRequires` has `status: "done"`.
+
+### 5. Show final status
+
+```bash
+openspec status --change "<name>"
+```
+
+---
+
+## Output
+
+After all artifacts are created, summarize:
 - Change name and location
-- List of artifacts created with brief descriptions
-- What's ready: "All artifacts created! Ready for implementation."
-- Prompt: "Run `/opsx:apply` or ask me to implement to start working on the tasks."
+- Artifacts created (one line each)
+- `All artifacts created! Ready for implementation.`
+- `Run /opsx:apply or ask me to implement to start working on the tasks.`
 
-**Artifact Creation Guidelines**
+## Guardrails
 
-- Follow the `instruction` field from `openspec instructions` for each artifact type
-- The schema defines what each artifact should contain - follow it
-- Read dependency artifacts for context before creating new ones
-- Use `template` as the structure for your output file - fill in its sections
-- **IMPORTANT**: `context` and `rules` are constraints for YOU, not content for the file
-  - Do NOT copy `<context>`, `<rules>`, `<project_context>` blocks into the artifact
-  - These guide what you write, but should never appear in the output
-
-**Guardrails**
-- Create ALL artifacts needed for implementation (as defined by schema's `apply.requires`)
-- Always read dependency artifacts before creating a new one
-- If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum
-- If a change with that name already exists, ask if user wants to continue it or create a new one
-- Verify each artifact file exists after writing before proceeding to next
+- **Never draft artifact content in the orchestrator** — always delegate.
+- Always pass dependency files as paths, not inline content.
+- If the subagent reports `needs_clarification`, resolve via `AskUserQuestion` before redispatching — never let artifacts drift on silent assumptions.
+- Verify each artifact file exists on disk after the subagent returns.
+- If a change with that name already exists, ask whether to continue it or create a new one.
+- Do NOT copy `context` / `rules` / `<project_context>` blocks into artifact files — they guide drafting, they are not content.

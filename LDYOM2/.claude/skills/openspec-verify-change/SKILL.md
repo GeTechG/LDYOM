@@ -11,6 +11,8 @@ metadata:
 
 Verify that an implementation matches the change artifacts (specs, tasks, design).
 
+**Model recommendation** — Verification reads specs + code and makes judgment calls (divergence, coverage, coherence). It's research, not execution. Runs best on **Opus**. If on Sonnet, consider `/model opus` before a full verification pass. This skill does not delegate to subagents — it keeps findings in the orchestrator's context so the final report can cross-reference across all three dimensions.
+
 **Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
 **Steps**
