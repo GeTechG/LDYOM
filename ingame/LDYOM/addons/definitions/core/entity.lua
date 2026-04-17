@@ -28,7 +28,6 @@ function Component:getName() end
 ---@field id userdata UUID userdata (use `tostring(entity.id)` for the string form).
 ---@field position number[] World-space position as {x, y, z}.
 ---@field rotation userdata CQuaternion rotation (raw userdata).
----@field scale number[] Scale as {x, y, z}.
 ---@field areaId integer GTA interior area ID.
 local Entity = {}
 
@@ -45,3 +44,20 @@ function Entity:getComponent(type) end
 ---@param type string Component type identifier
 ---@return boolean
 function Entity:hasComponent(type) end
+
+-- ─── ObjectComponent ─────────────────────────────────────────────────────────
+
+---Object entity component. Wraps an in-game `CObject` instance.
+---@class ObjectComponent : Component
+---@field model integer GTA model id used to spawn the object.
+---@field scale number Uniform scale applied via `CObject::m_fScale`. Defaults to 1.0. Negative/zero values are accepted.
+local ObjectComponent = {}
+
+---Returns the in-game object reference (`CPools::GetObjectRef`), or -1 if not spawned.
+---@return integer
+function ObjectComponent:getObjectRef() end
+
+---Downcasts a generic Component to ObjectComponent. Returns nil if the component is not an Object.
+---@param component Component
+---@return ObjectComponent|nil
+function ObjectComponent.cast(component) end

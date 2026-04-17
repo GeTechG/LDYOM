@@ -9,7 +9,6 @@
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <lua_define_type.h>
-#include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
 #include <project_player.h>
 #include <scenes_manager.h>
@@ -99,12 +98,6 @@ void components::Firework::onStart() {
 		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->rot;
 		    // }
 			return {};
-		},
-		[this]() -> std::array<float, 3> {
-			// if (this->vehicle) {
-		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->scale;
-		    // }
-			return {0.0f, 0.0f, 0.0f};
 		});
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) {
@@ -124,14 +117,6 @@ void components::Firework::onStart() {
 		[this](const CQuaternion rotation) {
 			// if (this->handle) {
 		    // 	this->handle->m_matrix->SetRotate(rotation);
-		    // }
-		},
-		[this](const std::array<float, 3>& scale) {
-			// if (this->handle) {
-		    // 	scaleMatrix(*this->handle->m_matrix, scale);
-		    // 	this->handle->m_matrix->UpdateRW();
-		    // 	this->handle->UpdateRwMatrix();
-		    // 	this->handle->UpdateRwFrame();
 		    // }
 		});
 	if (!IS_PLAYING) {

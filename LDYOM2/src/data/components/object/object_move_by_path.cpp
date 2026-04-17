@@ -12,7 +12,6 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/trigonometric.hpp>
 #include <in_game/object_paths_editing.h>
-#include <matrix_utils.h>
 #include <project_player.h>
 #include <window_manager.h>
 
@@ -73,7 +72,6 @@ void components::ObjectMoveByPath::reset() {
 			matrix->GetPosition().y = currentPosition[1];
 			matrix->GetPosition().z = currentPosition[2];
 			matrix->SetRotate(currentRotation);
-			scaleMatrix(*matrix, this->entity->scale);
 			matrix->UpdateRW();
 		} else {
 			object->handle->m_placement.m_vPosn.x = currentPosition[0];
@@ -275,8 +273,7 @@ void components::ObjectMoveByPath::onUpdate(float deltaTime) {
 					matrix->GetPosition().y = currentPosition[1];
 					matrix->GetPosition().z = currentPosition[2];
 					matrix->SetRotate(currentRotation);
-					scaleMatrix(*matrix, this->entity->scale);
-					matrix->UpdateRW();
+							matrix->UpdateRW();
 				} else {
 					object->handle->m_placement.m_vPosn.x = currentPosition[0];
 					object->handle->m_placement.m_vPosn.y = currentPosition[1];
@@ -316,8 +313,7 @@ void components::ObjectMoveByPath::onUpdate(float deltaTime) {
 					matrix->GetPosition().y = currentPosition[1];
 					matrix->GetPosition().z = currentPosition[2];
 					matrix->SetRotate(currentRotation);
-					scaleMatrix(*matrix, this->entity->scale);
-					matrix->UpdateRW();
+							matrix->UpdateRW();
 				} else {
 					object->handle->m_placement.m_vPosn.x = currentPosition[0];
 					object->handle->m_placement.m_vPosn.y = currentPosition[1];
@@ -359,7 +355,6 @@ void components::ObjectMoveByPath::onUpdate(float deltaTime) {
 		matrix->GetPosition().y = currentPosition[1];
 		matrix->GetPosition().z = currentPosition[2];
 		matrix->SetRotate(currentRotation);
-		scaleMatrix(*matrix, this->entity->scale);
 		matrix->UpdateRW();
 	} else {
 		object->handle->m_placement.m_vPosn.x = currentPosition[0];

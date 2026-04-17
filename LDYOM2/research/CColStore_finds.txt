@@ -1,0 +1,174 @@
+Address	Function	Instruction
+.text:004042D0	CRect::IsCircleInside	                                                                    ; CColStore::EnsureCollisionIsInMemory(CVector2D const&)+AB↓p
+.text:0040C989	_ZN10CStreaming21ConvertBufferToObjectEPci	03C E8 42 3D 00 00                          call    _ZN9CColStore7LoadColEiPhi ; CColStore::LoadCol(int,uchar *,int)
+.text:0040E855	_ZN10CStreaming6UpdateEv	02C E8 06 20 00 00                          call    _ZN9CColStore13LoadCollisionERK9CVector2D ; CColStore::LoadCollision(CVector2D const&)
+.text:0040E873	_ZN10CStreaming6UpdateEv	020 E8 58 22 00 00                          call    _ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D ; CColStore::EnsureCollisionIsInMemory(CVector2D const&)
+.text:0040E8FD	_ZN10CStreaming6UpdateEv	02C E8 5E 1F 00 00                          call    _ZN9CColStore13LoadCollisionERK9CVector2D ; CColStore::LoadCollision(CVector2D const&)
+.text:0040E907	_ZN10CStreaming6UpdateEv	030 E8 C4 21 00 00                          call    _ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D ; CColStore::EnsureCollisionIsInMemory(CVector2D const&)
+.text:0040ED9E	_ZN10CStreaming18LoadSceneCollisionERK7CVector	014 E8 BD 1A 00 00                          call    _ZN9CColStore13LoadCollisionERK9CVector2D ; CColStore::LoadCollision(CVector2D const&)
+.text:004103D0	sub_4103D0	                            sub_4103D0      proc near               ; DATA XREF: CColStore::SetCollisionRequired(CVector const&,int)+4A↓o
+.text:00410470	sub_410470	                            sub_410470      proc near               ; DATA XREF: CColStore::SetCollisionRequired(CVector const&,int):loc_410539↓o
+.text:004104E0	_ZN9CColStore20SetCollisionRequiredERK7CVectori	                            ; int __cdecl CColStore::SetCollisionRequired(CVector2D *, int number)
+.text:004104FF	_ZN9CColStore20SetCollisionRequiredERK7CVectori	                            loc_4104FF:                             ; CODE XREF: CColStore::SetCollisionRequired(CVector const&,int)+17↑j
+.text:00410504	_ZN9CColStore20SetCollisionRequiredERK7CVectori	                                                                    ; CColStore::SetCollisionRequired(CVector const&,int)+1D↑j
+.text:0041051B	_ZN9CColStore20SetCollisionRequiredERK7CVectori	008 8B 0D 5C 55 96 00                       mov     ecx, _ZN9CColStore12ms_pQuadTreeE ; this
+.text:00410539	_ZN9CColStore20SetCollisionRequiredERK7CVectori	                            loc_410539:                             ; CODE XREF: CColStore::SetCollisionRequired(CVector const&,int)+48↑j
+.text:00410547	_ZN9CColStore20SetCollisionRequiredERK7CVectori	                            _ZN9CColStore20SetCollisionRequiredERK7CVectori endp
+.text:00410690	_ZN9CColStore7LoadColEiPKc	                            ; int __cdecl CColStore::LoadCol(int, const char *)
+.text:004106A8	_ZN9CColStore7LoadColEiPKc	                            loc_4106A8:                             ; CODE XREF: CColStore::LoadCol(int,char const*)+12↑j
+.text:004106B1	_ZN9CColStore7LoadColEiPKc	                            loc_4106B1:                             ; CODE XREF: CColStore::LoadCol(int,char const*)+16↑j
+.text:004106C4	_ZN9CColStore7LoadColEiPKc	                            _ZN9CColStore7LoadColEiPKc endp
+.text:004106D0	_ZN9CColStore7LoadColEiPhi	                            ; char __cdecl CColStore::LoadCol(unsigned int colId, int data, unsigned int dataSize)
+.text:004106E8	_ZN9CColStore7LoadColEiPhi	                            loc_4106E8:                             ; CODE XREF: CColStore::LoadCol(int,uchar *,int)+12↑j
+.text:004106F1	_ZN9CColStore7LoadColEiPhi	                            loc_4106F1:                             ; CODE XREF: CColStore::LoadCol(int,uchar *,int)+16↑j
+.text:0041070D	_ZN9CColStore7LoadColEiPhi	                            loc_41070D:                             ; CODE XREF: CColStore::LoadCol(int,uchar *,int)+2A↑j
+.text:0041071C	_ZN9CColStore7LoadColEiPhi	                            loc_41071C:                             ; CODE XREF: CColStore::LoadCol(int,uchar *,int)+3B↑j
+.text:0041072A	_ZN9CColStore7LoadColEiPhi	                            loc_41072A:                             ; CODE XREF: CColStore::LoadCol(int,uchar *,int)+51↑j
+.text:0041072D	_ZN9CColStore7LoadColEiPhi	                            _ZN9CColStore7LoadColEiPhi endp
+.text:00410730	sub_410730	000 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:004107A0	_ZN9CColStore6AddRefEi	                            ; char *__cdecl CColStore::AddRef(int)
+.text:004107BA	_ZN9CColStore6AddRefEi	                            loc_4107BA:                             ; CODE XREF: CColStore::AddRef(int)+11↑j
+.text:004107C5	_ZN9CColStore6AddRefEi	                            _ZN9CColStore6AddRefEi endp
+.text:00410800	CollisionFilePool__atIndex	000 8B 0D 60 55 96 00                       mov     ecx, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410820	_ZN9CColStore17IncludeModelIndexEii	                            ; int __cdecl CColStore::IncludeModelIndex(int, signed int)
+.text:00410837	_ZN9CColStore17IncludeModelIndexEii	                            loc_410837:                             ; CODE XREF: CColStore::IncludeModelIndex(int,int)+11↑j
+.text:0041083E	_ZN9CColStore17IncludeModelIndexEii	                            loc_41083E:                             ; CODE XREF: CColStore::IncludeModelIndex(int,int)+15↑j
+.text:0041084E	_ZN9CColStore17IncludeModelIndexEii	                            loc_41084E:                             ; CODE XREF: CColStore::IncludeModelIndex(int,int)+28↑j
+.text:0041085A	_ZN9CColStore17IncludeModelIndexEii	                            locret_41085A:                          ; CODE XREF: CColStore::IncludeModelIndex(int,int)+34↑j
+.text:00410860	_ZN9CColStore13LoadCollisionERK9CVector2D	                            ; char __cdecl CColStore::LoadCollision(int, int, int, char)
+.text:004108D1	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_4108D1:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+1C↑j
+.text:004108EB	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_4108EB:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+83↑j
+.text:00410900	_ZN9CColStore13LoadCollisionERK9CVector2D	00C 8B 0D 5C 55 96 00                       mov     ecx, _ZN9CColStore12ms_pQuadTreeE ; this
+.text:00410917	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_410917:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+AE↑j
+.text:00410937	_ZN9CColStore13LoadCollisionERK9CVector2D	014 E8 A4 FB FF FF                          call    _ZN9CColStore20SetCollisionRequiredERK7CVectori ; CColStore::SetCollisionRequired(CVector const&,int)
+.text:0041093F	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_41093F:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+C9↑j
+.text:00410950	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_410950:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+1C7↓j
+.text:0041098E	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_41098E:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+F8↑j
+.text:004109C5	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_4109C5:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+12C↑j
+.text:004109C7	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_4109C7:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+18B↓j
+.text:004109E9	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_4109E9:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+147↑j
+.text:004109ED	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_4109ED:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+182↑j
+.text:004109F9	_ZN9CColStore13LoadCollisionERK9CVector2D	018 8B 0D 5C 55 96 00                       mov     ecx, _ZN9CColStore12ms_pQuadTreeE ; this
+.text:00410A1E	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_410A1E:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+10B↑j
+.text:00410A40	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_410A40:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+1D7↑j
+.text:00410A84	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_410A84:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+1FC↑j
+.text:00410A9C	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_410A9C:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+229↑j
+.text:00410AA0	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_410AA0:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+1EC↑j
+.text:00410ABE	_ZN9CColStore13LoadCollisionERK9CVector2D	                            loc_410ABE:                             ; CODE XREF: CColStore::LoadCollision(CVector2D const&)+A↑j
+.text:00410AC1	_ZN9CColStore13LoadCollisionERK9CVector2D	                            _ZN9CColStore13LoadCollisionERK9CVector2D endp
+.text:00410AD0	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	                            ; char __cdecl CColStore::EnsureCollisionIsInMemory(CVector2D *)
+.text:00410AFE	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	                            loc_410AFE:                             ; CODE XREF: CColStore::EnsureCollisionIsInMemory(CVector2D const&)+1C↑j
+.text:00410B1A	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	020 E8 C1 F9 FF FF                          call    _ZN9CColStore20SetCollisionRequiredERK7CVectori ; CColStore::SetCollisionRequired(CVector const&,int)
+.text:00410B1F	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	020 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410B40	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	                            loc_410B40:                             ; CODE XREF: CColStore::EnsureCollisionIsInMemory(CVector2D const&)+66↑j
+.text:00410BBA	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	                            loc_410BBA:                             ; CODE XREF: CColStore::EnsureCollisionIsInMemory(CVector2D const&)+D7↑j
+.text:00410BCE	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	                            loc_410BCE:                             ; CODE XREF: CColStore::EnsureCollisionIsInMemory(CVector2D const&)+B2↑j
+.text:00410BD2	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	018 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410BD7	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	                            loc_410BD7:                             ; CODE XREF: CColStore::EnsureCollisionIsInMemory(CVector2D const&)+77↑j
+.text:00410BEE	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	                            loc_410BEE:                             ; CODE XREF: CColStore::EnsureCollisionIsInMemory(CVector2D const&)+A↑j
+.text:00410BF1	_ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D	                            _ZN9CColStore25EnsureCollisionIsInMemoryERK9CVector2D endp
+.text:00410C11	sub_410C00	020 E8 CA F8 FF FF                          call    _ZN9CColStore20SetCollisionRequiredERK7CVectori ; CColStore::SetCollisionRequired(CVector const&,int)
+.text:00410C16	sub_410C00	020 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410CBB	sub_410C00	018 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410CF0	CWorld::hasCollisionBeenLoaded	01C E8 EB F7 FF FF                          call    _ZN9CColStore20SetCollisionRequiredERK7CVectori ; CColStore::SetCollisionRequired(CVector const&,int)
+.text:00410CF5	CWorld::hasCollisionBeenLoaded	01C A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410D98	CWorld::hasCollisionBeenLoaded	014 8B 35 60 55 96 00                       mov     esi, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410DB2	CWorld::hasCollisionBeenLoaded	014 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410DDF	CWorld::hasCollisionBeenLoaded	014 8B 35 60 55 96 00                       mov     esi, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410E00	_ZN9CColStore18RemoveAllCollisionEv	                            ; void *__cdecl CColStore::RemoveAllCollision()
+.text:00410E01	_ZN9CColStore18RemoveAllCollisionEv	004 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410E20	_ZN9CColStore18RemoveAllCollisionEv	                            loc_410E20:                             ; CODE XREF: CColStore::RemoveAllCollision(void)+18↑j
+.text:00410E44	_ZN9CColStore18RemoveAllCollisionEv	014 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410E4C	_ZN9CColStore18RemoveAllCollisionEv	                            loc_410E4C:                             ; CODE XREF: CColStore::RemoveAllCollision(void)+27↑j
+.text:00410E5F	_ZN9CColStore18RemoveAllCollisionEv	                            _ZN9CColStore18RemoveAllCollisionEv endp
+.text:00410E61	sub_410E60	004 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410EA1	sub_410E60	020 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410EC0	_ZN9CColStore24BoundingBoxesPostProcessEv	                            ; CPool *__cdecl CColStore::BoundingBoxesPostProcess()
+.text:00410EC1	_ZN9CColStore24BoundingBoxesPostProcessEv	004 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410EE0	_ZN9CColStore24BoundingBoxesPostProcessEv	                            loc_410EE0:                             ; CODE XREF: CColStore::BoundingBoxesPostProcess(void)+17↑j
+.text:00410F0A	_ZN9CColStore24BoundingBoxesPostProcessEv	                            loc_410F0A:                             ; CODE XREF: CColStore::BoundingBoxesPostProcess(void)+3D↑j
+.text:00410F4E	_ZN9CColStore24BoundingBoxesPostProcessEv	                            loc_410F4E:                             ; CODE XREF: CColStore::BoundingBoxesPostProcess(void)+48↑j
+.text:00410F5B	_ZN9CColStore24BoundingBoxesPostProcessEv	014 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00410F60	_ZN9CColStore24BoundingBoxesPostProcessEv	                            loc_410F60:                             ; CODE XREF: CColStore::BoundingBoxesPostProcess(void)+2B↑j
+.text:00410F7D	_ZN9CColStore24BoundingBoxesPostProcessEv	                            _ZN9CColStore24BoundingBoxesPostProcessEv endp
+.text:00410F80	_CPool_CCollisionFile__constructor	                                                                    ; CODE XREF: CColStore::Initialise(void)+6E↓p
+.text:00411140	_allocateCollisionFile	                            _allocateCollisionFile proc near        ; CODE XREF: CColStore::Initialise(void)+89↓p
+.text:00411313	_allocateCollisionFile	008 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00411330	sub_411330	                            sub_411330      proc near               ; CODE XREF: CColStore::Shutdown(void)+24↓p
+.text:0041135F	sub_411330	00C 8B 0D 60 55 96 00                       mov     ecx, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:0041137E	sub_411330	008 8B 0D 5C 55 96 00                       mov     ecx, _ZN9CColStore12ms_pQuadTreeE ; this
+.text:0041138A	sub_411330	008 8B 0D 60 55 96 00                       mov     ecx, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:004113F0	_ZN9CColStore10InitialiseEv	                            ; CQuadTreeNode *__cdecl CColStore::Initialise()
+.text:00411408	_ZN9CColStore10InitialiseEv	020 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00411465	_ZN9CColStore10InitialiseEv	                            loc_411465:                             ; CODE XREF: CColStore::Initialise(void)+60↑j
+.text:0041146F	_ZN9CColStore10InitialiseEv	020 A3 60 55 96 00                          mov     _ZN9CColStore11ms_pColPoolE, eax ; CColStore::ms_pColPool
+.text:00411474	_ZN9CColStore10InitialiseEv	                            loc_411474:                             ; CODE XREF: CColStore::Initialise(void)+46↑j
+.text:004114A6	_ZN9CColStore10InitialiseEv	020 A3 5C 55 96 00                          mov     _ZN9CColStore12ms_pQuadTreeE, eax ; CColStore::ms_pQuadTree
+.text:004114BA	_ZN9CColStore10InitialiseEv	                            loc_4114BA:                             ; CODE XREF: CColStore::Initialise(void)+A6↑j
+.text:004114C0	_ZN9CColStore10InitialiseEv	020 A3 5C 55 96 00                          mov     _ZN9CColStore12ms_pQuadTreeE, eax ; CColStore::ms_pQuadTree
+.text:004114CF	_ZN9CColStore10InitialiseEv	                            _ZN9CColStore10InitialiseEv endp
+.text:004114D0	_ZN9CColStore8ShutdownEv	                            ; void __cdecl CColStore::Shutdown()
+.text:004114D1	_ZN9CColStore8ShutdownEv	004 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:004114E0	_ZN9CColStore8ShutdownEv	                            loc_4114E0:                             ; CODE XREF: CColStore::Shutdown(void)+3B↓j
+.text:004114F9	_ZN9CColStore8ShutdownEv	014 A1 60 55 96 00                          mov     eax, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00411501	_ZN9CColStore8ShutdownEv	                            loc_411501:                             ; CODE XREF: CColStore::Shutdown(void)+17↑j
+.text:00411536	_ZN9CColStore8ShutdownEv	                            loc_411536:                             ; CODE XREF: CColStore::Shutdown(void)+50↑j
+.text:00411540	_ZN9CColStore8ShutdownEv	                            loc_411540:                             ; CODE XREF: CColStore::Shutdown(void)+4B↑j
+.text:00411549	_ZN9CColStore8ShutdownEv	                            loc_411549:                             ; CODE XREF: CColStore::Shutdown(void)+41↑j
+.text:00411551	_ZN9CColStore8ShutdownEv	010 89 1D 60 55 96 00                       mov     _ZN9CColStore11ms_pColPoolE, ebx ; CColStore::ms_pColPool
+.text:00411569	_ZN9CColStore8ShutdownEv	                            loc_411569:                             ; CODE XREF: CColStore::Shutdown(void)+89↑j
+.text:0041156B	_ZN9CColStore8ShutdownEv	008 89 1D 5C 55 96 00                       mov     _ZN9CColStore12ms_pQuadTreeE, ebx ; CColStore::ms_pQuadTree
+.text:00411573	_ZN9CColStore8ShutdownEv	                            _ZN9CColStore8ShutdownEv endp
+.text:00411E51	_ZN10CCollision25SortOutCollisionAfterLoadEv	010 E8 0A EA FF FF                          call    _ZN9CColStore13LoadCollisionERK9CVector2D ; CColStore::LoadCollision(CVector2D const&)
+.text:004162D2	_ZN10CCollision4InitEv	000 E9 19 B1 FF FF                          jmp     _ZN9CColStore10InitialiseEv ; CColStore::Initialise(void)
+.text:0041631F	_ZN10CCollision8ShutdownEv	000 E9 AC B1 FF FF                          jmp     _ZN9CColStore8ShutdownEv ; CColStore::Shutdown(void)
+.text:004D5B27	_ZN12CCutsceneMgr48RemoveEverythingBecauseCutsceneDoesntFitInMemoryEv	00C E8 D4 B2 F3 FF                          call    _ZN9CColStore18RemoveAllCollisionEv ; CColStore::RemoveAllCollision(void)
+.text:0050AE20	_ZN7CCamera19GetScreenFadeStatusEv	                                                                    ; CColStore::EnsureCollisionIsInMemory(CVector2D const&)+D0↑p
+.text:00537A80	_sub_537A80	000 8B 0D 60 55 96 00                       mov     ecx, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00537AB0	_sub_537AB0	000 8B 0D 60 55 96 00                       mov     ecx, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00538440	_ZN11CFileLoader17LoadCollisionFileEPhjh	                                                                    ; CODE XREF: CColStore::LoadCol(int,uchar *,int)+47↑p
+.text:00538523	_ZN11CFileLoader17LoadCollisionFileEPhjh	044 8B 35 60 55 96 00                       mov     esi, _ZN9CColStore11ms_pColPoolE ; CColStore::ms_pColPool
+.text:00552520	_ZN13CQuadTreeNodeD2Ev	                                                                    ; CColStore::Shutdown(void)+8B↑p
+.text:00552830	_ZN13CQuadTreeNodeC2ERK5CRecti	                                                                    ; CColStore::Initialise(void)+B1↑p
+.text:005529F0	_ZN13CQuadTreeNode14ForAllMatchingERK9CVector2DPFvS2_PvE	                                                                    ; CColStore::SetCollisionRequired(CVector const&,int)+50↑p
+.text:00552C80	_ZN13CQuadTreeNodenwEj	                                                                    ; CColStore::Initialise(void)+90↑p
+.text:00552C90	_ZN13CQuadTreeNodedlEPv	                                                                    ; CColStore::Shutdown(void)+91↑p
+.text:00552CD0	_ZN13CQuadTreeNode7AddItemEPvRK5CRect	                                                                    ; CColStore::BoundingBoxesPostProcess(void)+96↑p ...
+.text:005619D0	_ZN6CTimer7SuspendEv	                                                                    ; CColStore::EnsureCollisionIsInMemory(CVector2D const&):loc_410BBA↑p
+.text:00561A00	_ZN6CTimer6ResumeEv	                                                                    ; CColStore::EnsureCollisionIsInMemory(CVector2D const&)+F9↑p
+.text:0056E0D0	_Z17FindPlayerVehicleib	                                                                    ; CColStore::LoadCollision(CVector2D const&)+2A↑p ...
+.text:00579330	_ZN12CMenuManager13MessageScreenEPKcbb	                                                                    ; CColStore::EnsureCollisionIsInMemory(CVector2D const&)+E5↑p
+.text:0059F8C3	_ZN7CObject4InitEv	010 E8 D8 0E E7 FF                          call    _ZN9CColStore6AddRefEi ; CColStore::AddRef(int)
+.text:005B2AC0	_ZN9CColAccel14isCacheLoadingEv	                                                                    ; CColStore::BoundingBoxesPostProcess(void)+36↑p
+.text:005B2D98	sub_5B2CC0	02C E8 83 DA E5 FF                          call    _ZN9CColStore17IncludeModelIndexEii ; CColStore::IncludeModelIndex(int,int)
+.text:005B2DD0	sub_5B2DD0	                            sub_5B2DD0      proc near               ; CODE XREF: CColStore::BoundingBoxesPostProcess(void)+86↑p
+.text:005B2E60	sub_5B2E60	                            sub_5B2E60      proc near               ; CODE XREF: CColStore::BoundingBoxesPostProcess(void)+40↑p
+.text:005B4E60	_ZN11CFileLoader17LoadCollisionFileEPKch	                                                                    ; CODE XREF: CColStore::LoadCol(int,char const*)+27↑p
+.text:005B5000	_ZN11CFileLoader26LoadCollisionFileFirstTimeEPhjh	                                                                    ; CODE XREF: CColStore::LoadCol(int,uchar *,int)+36↑p
+.text:005B50FB	_ZN11CFileLoader26LoadCollisionFileFirstTimeEPhjh	050 E8 20 B7 E5 FF                          call    _ZN9CColStore17IncludeModelIndexEii ; CColStore::IncludeModelIndex(int,int)
+.text:005B9314	_ZN11CFileLoader9LoadLevelEPKc	044 E8 A7 7B E5 FF                          call    _ZN9CColStore24BoundingBoxesPostProcessEv ; CColStore::BoundingBoxesPostProcess(void)
+.text:005B9321	_ZN11CFileLoader9LoadLevelEPKc	000 E9 DA 7A E5 FF                          jmp     _ZN9CColStore18RemoveAllCollisionEv ; CColStore::RemoveAllCollision(void)
+.text:006164AC	_ZN11CPopulation16PopulateInteriorEi7CVector	044 E8 AF A3 DF FF                          call    _ZN9CColStore13LoadCollisionERK9CVector2D ; CColStore::LoadCollision(CVector2D const&)
+.text:0082119A	_Znwj	                                                                    ; CColStore::Initialise(void)+4A↑p ...
+.text:00837190	_ZN9CColStore10InitialiseEv	                            ; START OF FUNCTION CHUNK FOR CColStore::Initialise(void)
+.text:008371A6	_ZN9CColStore10InitialiseEv	                            _eh_handler_4113f0:                     ; DATA XREF: CColStore::Initialise(void)+2↑o
+.text:008371AB	_ZN9CColStore10InitialiseEv	                            ; END OF FUNCTION CHUNK FOR CColStore::Initialise(void)
+.rdata:00858A18		                                                                    ; CColStore::EnsureCollisionIsInMemory(CVector2D const&)+DB↑o
+.rdata:00858A34		                                                                    ; CColStore::Initialise(void):loc_411474↑o
+.rdata:00858BA4		00 00 A0 41                 flt_858BA4      dd 20.0                 ; DATA XREF: CColStore::LoadCollision(CVector2D const&)+49↑r
+.rdata:00858BB0		00 00 F0 42                 flt_858BB0      dd 120.0                ; DATA XREF: CColStore::BoundingBoxesPostProcess(void)+4F↑r
+.rdata:00858BE4		43 6F 6C 6C 69 73 69 6F+    aCollisionfiles db 'CollisionFiles',0   ; DATA XREF: CColStore::Initialise(void)+62↑o
+.rdata:0088E288		78 E2 88 00 00 00 00 00+                                            ; DATA XREF: CColStore::Initialise(void):_eh_handler_4113f0↑o
+.data:0095EDFA		??                          unk_95EDFA      db    ? ;               ; DATA XREF: CColStore::RemoveAllCollision(void)+13↑o
+.data:0095EE04		??                          unk_95EE04      db    ? ;               ; DATA XREF: CColStore::EnsureCollisionIsInMemory(CVector2D const&)+61↑o
+.data:009601D2		                                                                    ; CColStore::RemoveAllCollision(void)+53↑o
+.data:009601DC		??                          unk_9601DC      db    ? ;               ; DATA XREF: CColStore::EnsureCollisionIsInMemory(CVector2D const&)+10E↑o
+.data:00965554		                                                                    ; CColStore::SetCollisionRequired(CVector const&,int)+2A↑w
+.data:00965558		                                                                    ; CColStore::LoadCollision(CVector2D const&)+257↑w
+.data:0096555C		                            ; CQuadTreeNode *CColStore::ms_pQuadTree
+.data:00965560		                            ; CPool *CColStore::ms_pColPool
+.data:00965580		?? ?? ?? ??                                                         ; CColStore::LoadCollision(CVector2D const&)+D2↑o
+.data:00A90850		?? ?? ?? ?? ?? ?? ?? ??+                                            ; CColStore::LoadCollision(CVector2D const&):loc_410950↑r
+.data:00B6F028		?? ?? ?? ?? ?? ?? ?? ??+                                            ; CColStore::EnsureCollisionIsInMemory(CVector2D const&)+CB↑o ...
+.data:00B74494		                                                                    ; CColStore::LoadCollision(CVector2D const&):loc_41093F↑r ...
+.data:00BA6748		?? ?? ?? ?? ?? ?? ?? ??+                                            ; CColStore::EnsureCollisionIsInMemory(CVector2D const&)+E0↑o

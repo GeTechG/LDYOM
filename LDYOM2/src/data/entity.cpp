@@ -1,6 +1,8 @@
 #include "entity.h"
+#include "components/object.h"
 #include <components_manager.h>
 #include <cquat_json.h>
+#include <spdlog/spdlog.h>
 
 void Entity::addComponent(std::shared_ptr<Component> component) {
 	component->entity = this;
@@ -17,18 +19,14 @@ std::shared_ptr<Component> Entity::getComponent(const std::string_view type) {
 }
 
 void Entity::setGetTransformCallbacks(std::function<std::array<float, 3>()> positionCallback,
-                                      std::function<CQuaternion()> rotationCallback,
-                                      std::function<std::array<float, 3>()> scaleCallback) {
+                                      std::function<CQuaternion()> rotationCallback) {
 	getPositionCallback = positionCallback;
 	getRotationCallback = rotationCallback;
-	getScaleCallback = scaleCallback;
 }
 void Entity::setSetTransformCallbacks(std::function<void(std::array<float, 3>)> positionCallback,
-                                      std::function<void(CQuaternion)> rotationCallback,
-                                      std::function<void(std::array<float, 3>)> scaleCallback) {
+                                      std::function<void(CQuaternion)> rotationCallback) {
 	setPositionCallback = positionCallback;
 	setRotationCallback = rotationCallback;
-	setScaleCallback = scaleCallback;
 }
 
 void Entity::updateSetTransformCallbacks() {
@@ -37,9 +35,6 @@ void Entity::updateSetTransformCallbacks() {
 	}
 	if (setRotationCallback) {
 		setRotationCallback(this->rotation);
-	}
-	if (setScaleCallback) {
-		setScaleCallback(this->scale);
 	}
 }
 
@@ -93,7 +88,7 @@ void Entity::moveComponentDown(size_t index) {
 
 void Entity::sol_lua_register(sol::state_view lua_state) {
 	auto ut = lua_state.new_usertype<Entity>("Entity");
-	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Entity, name, id, position, rotation, scale, areaId, getComponents, getComponent, hasComponent)
+	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Entity, name, id, position, rotation, areaId, getComponents, getComponent, hasComponent)
 }
 
 void to_json(nlohmann::json& j, const Entity& p) {
@@ -101,8 +96,8 @@ void to_json(nlohmann::json& j, const Entity& p) {
 	for (const auto& component : p.components) {
 		componentsArray.push_back(component->to_json());
 	}
-	j = {{"name", p.name},   {"id", p.id},         {"position", p.position},       {"rotation", p.rotation},
-	     {"scale", p.scale}, {"areaId", p.areaId}, {"components", componentsArray}};
+	j = {{"name", p.name},       {"id", p.id},         {"position", p.position},
+	     {"rotation", p.rotation}, {"areaId", p.areaId}, {"components", componentsArray}};
 }
 
 void from_json(const nlohmann::json& j, Entity& p) {
@@ -110,7 +105,16 @@ void from_json(const nlohmann::json& j, Entity& p) {
 	j.at("id").get_to(p.id);
 	j.at("position").get_to(p.position);
 	j.at("rotation").get_to(p.rotation);
-	j.at("scale").get_to(p.scale);
+	if (j.contains("scale")) {
+		try {
+			const auto& scaleJson = j.at("scale");
+			if (scaleJson.is_array() && !scaleJson.empty()) {
+				p._legacyScale = scaleJson[0].get<float>();
+			}
+		} catch (...) {
+			// ignore malformed legacy scale
+		}
+	}
 	j.at("areaId").get_to(p.areaId);
 	if (j.contains("components") && j["components"].is_array()) {
 		p.components.clear();
@@ -125,5 +129,15 @@ void from_json(const nlohmann::json& j, Entity& p) {
 				throw std::invalid_argument("Invalid JSON format for Entity components");
 			}
 		}
+	}
+	if (p._legacyScale.has_value()) {
+		if (auto objectComp = p.getComponent(components::Object::TYPE)) {
+			auto object = components::Object::cast(objectComp);
+			if (object) {
+				object->scale = *p._legacyScale;
+				spdlog::debug("Migrated legacy entity.scale={} to Object.scale for entity '{}'", *p._legacyScale, p.name);
+			}
+		}
+		p._legacyScale.reset();
 	}
 }

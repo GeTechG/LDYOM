@@ -12,7 +12,6 @@
 #include <imgui_hook/utils/imgui_configurate.h>
 #include <utils/ui_scale.h>
 #include <localization.h>
-#include <matrix_utils.h>
 #include <models_manager.h>
 #include <utils/manual_editing_session.h>
 #include <utils/task_manager.h>

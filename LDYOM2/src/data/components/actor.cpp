@@ -5,7 +5,6 @@
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <lua_define_type.h>
-#include <matrix_utils.h>
 #include <project_player.h>
 #include <rotation_utils.h>
 #include <scenes_manager.h>
@@ -224,8 +223,7 @@ void components::Actor::onStart() {
 				return q;
 			}
 			return {};
-		},
-		[this]() -> std::array<float, 3> { return {1.0f, 1.0f, 1.0f}; });
+		});
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) {
 			if (this->ped) {
@@ -235,14 +233,6 @@ void components::Actor::onStart() {
 		[this](const CQuaternion rotation) {
 			if (this->ped) {
 				this->updateRotation();
-			}
-		},
-		[this](const std::array<float, 3>& scale) {
-			if (this->ped) {
-				scaleMatrix(*this->ped->m_matrix, scale);
-				this->ped->m_matrix->UpdateRW();
-				this->ped->UpdateRwMatrix();
-				this->ped->UpdateRwFrame();
 			}
 		});
 	if (!IS_PLAYING) {

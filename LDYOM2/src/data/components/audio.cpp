@@ -199,8 +199,7 @@ void components::Audio::onStart() {
 
 	// Set transform callbacks for position updates
 	this->entity->setGetTransformCallbacks([this]() -> std::array<float, 3> { return {0.0f, 0.0f, 0.0f}; },
-	                                       [this]() -> CQuaternion { return {}; },
-	                                       [this]() -> std::array<float, 3> { return {0.0f, 0.0f, 0.0f}; });
+	                                       [this]() -> CQuaternion { return {}; });
 
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) {
@@ -208,7 +207,7 @@ void components::Audio::onStart() {
 				dirty |= Position;
 			}
 		},
-		[this](const CQuaternion rotation) {}, [this](const std::array<float, 3>& scale) {});
+		[this](const CQuaternion rotation) {});
 
 	if (!IS_PLAYING) {
 		spawn();

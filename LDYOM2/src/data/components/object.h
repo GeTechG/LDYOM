@@ -29,8 +29,9 @@ class Object : public Component {
 		Position = 1 << 0,
 		Rotation = 1 << 1,
 		Model = 1 << 2,
+		Scale = 1 << 3,
 	};
-	SOL_LUA_DEFINE_ENUM_NAMED(DirtyFlags, "ObjectComponentDirtyFlags", None, Position, Rotation, Model);
+	SOL_LUA_DEFINE_ENUM_NAMED(DirtyFlags, "ObjectComponentDirtyFlags", None, Position, Rotation, Model, Scale);
 
 	static constexpr auto TYPE = "object";
 	static constexpr auto CATEGORY = "entities";
@@ -42,6 +43,7 @@ class Object : public Component {
 	static Dependencies getDependencies() { return Dependencies{{}, true}; }
 
 	int model = 0;
+	float scale = 1.0f;
 
 	int dirty = DirtyFlags::None;
 	std::shared_ptr<CObject> handle;

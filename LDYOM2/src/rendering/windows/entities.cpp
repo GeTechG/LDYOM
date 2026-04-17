@@ -331,17 +331,6 @@ void EntitiesWindow::renderEntity(EntitiesWindow* window, const Entity& entity, 
 						entity.rotation = eulerToQuaternion(eularRot[0], eularRot[1], eularRot[2]);
 						entity.updateSetTransformCallbacks();
 					}
-
-					// Scale
-					ImGui::Text("Scale");
-					ImGui::SameLine(availableWidth * 0.45f);
-					std::array<float, 3> scale(entity.scale);
-					ImGui::SetNextItemWidth(-1.f);
-					if (ImGui::DragFloat3("##scale", scale.data(), 0.1f, -10000.0f, 10000.0f)) {
-						auto& entity = EntitiesManager::instance().getUnsafeEntity(i);
-						entity.scale = scale;
-						entity.updateSetTransformCallbacks();
-					}
 				}
 				ImGui::EndChild();
 			}

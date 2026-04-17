@@ -37,8 +37,6 @@ void EntityGizmo::render(CVector eye, CVector center) noexcept {
 			m_currentOperation = GizmoOperation::TRANSLATE;
 		if (ImGui::IsKeyPressed(ImGuiKey_2))
 			m_currentOperation = GizmoOperation::ROTATE;
-		if (ImGui::IsKeyPressed(ImGuiKey_3))
-			m_currentOperation = GizmoOperation::SCALE;
 		if (ImGui::IsKeyPressed(ImGuiKey_G))
 			m_currentMode = (m_currentMode == GizmoMode::LOCAL) ? GizmoMode::GLOBAL : GizmoMode::LOCAL;
 	}
@@ -69,18 +67,15 @@ void EntityGizmo::render(CVector eye, CVector center) noexcept {
 	glm::vec3 pos(m_entity->position[0], m_entity->position[1], m_entity->position[2]);
 	glm::quat rot(m_entity->rotation.real, m_entity->rotation.imag.x, m_entity->rotation.imag.y,
 	              m_entity->rotation.imag.z); // glm::quat(w, x, y, z)
-	glm::vec3 scl(m_entity->scale[0], m_entity->scale[1], m_entity->scale[2]);
 
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), pos);
 	modelMatrix *= glm::mat4_cast(rot);
-	modelMatrix *= glm::scale(glm::mat4(1.0f), scl);
 
 	// Map our enum to ImGuizmo operation
 	ImGuizmo::OPERATION op;
 	switch (m_currentOperation) {
 		case GizmoOperation::TRANSLATE: op = ImGuizmo::TRANSLATE; break;
 		case GizmoOperation::ROTATE: op = ImGuizmo::ROTATE; break;
-		case GizmoOperation::SCALE: op = ImGuizmo::SCALE; break;
 	}
 
 	ImGuizmo::MODE mode = (m_currentMode == GizmoMode::LOCAL) ? ImGuizmo::LOCAL : ImGuizmo::WORLD;
@@ -88,18 +83,8 @@ void EntityGizmo::render(CVector eye, CVector center) noexcept {
 	                                    glm::value_ptr(modelMatrix));
 
 	if (changed) {
-		// Translation: column 3
 		glm::vec3 newPos = modelMatrix[3];
-
-		// Scale: length of each column (0, 1, 2)
-		glm::vec3 newScale(glm::length(modelMatrix[0]), glm::length(modelMatrix[1]), glm::length(modelMatrix[2]));
-
-		// Rotation: normalize the 3x3 sub-matrix columns, then quat_cast
-		glm::mat3 rotMat;
-		rotMat[0] = modelMatrix[0] / newScale.x;
-		rotMat[1] = modelMatrix[1] / newScale.y;
-		rotMat[2] = modelMatrix[2] / newScale.z;
-		glm::quat newRot = glm::quat_cast(rotMat);
+		glm::quat newRot = glm::quat_cast(glm::mat3(modelMatrix));
 
 		m_entity->position[0] = newPos.x;
 		m_entity->position[1] = newPos.y;
@@ -109,10 +94,6 @@ void EntityGizmo::render(CVector eye, CVector center) noexcept {
 		m_entity->rotation.imag.x = newRot.x;
 		m_entity->rotation.imag.y = newRot.y;
 		m_entity->rotation.imag.z = newRot.z;
-
-		m_entity->scale[0] = newScale.x;
-		m_entity->scale[1] = newScale.y;
-		m_entity->scale[2] = newScale.z;
 
 		m_entity->updateSetTransformCallbacks();
 	}

@@ -8,7 +8,6 @@
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <lua_define_type.h>
-#include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
 #include <project_player.h>
 #include <scenes_manager.h>
@@ -76,12 +75,6 @@ void components::Particle::onStart() {
 		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->rot;
 		    // }
 			return {};
-		},
-		[this]() -> std::array<float, 3> {
-			// if (this->vehicle) {
-		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->scale;
-		    // }
-			return {0.0f, 0.0f, 0.0f};
 		});
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) {
@@ -106,19 +99,6 @@ void components::Particle::onStart() {
 				if (fxSystem) {
 					CMatrix matrix(&fxSystem->m_localMatrix, true);
 					matrix.SetRotate(rotation);
-					matrix.UpdateRW(&fxSystem->m_localMatrix);
-				}
-			}
-		},
-		[this](const std::array<float, 3>& scale) {
-			if (this->handle) {
-				auto actual = CTheScripts::GetActualScriptThingIndex(this->handle.value(), 1);
-				const auto fxSystem =
-					static_cast<FxSystem_c*>(CTheScripts::ScriptEffectSystemArray[actual].m_pFxSystem);
-
-				if (fxSystem) {
-					CMatrix matrix(&fxSystem->m_localMatrix, true);
-					scaleMatrix(matrix, scale);
 					matrix.UpdateRW(&fxSystem->m_localMatrix);
 				}
 			}

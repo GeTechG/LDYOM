@@ -7,7 +7,6 @@ class Entity;
 enum class GizmoOperation {
 	TRANSLATE,
 	ROTATE,
-	SCALE,
 };
 
 enum class GizmoMode {

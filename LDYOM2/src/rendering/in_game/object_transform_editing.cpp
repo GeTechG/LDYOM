@@ -13,7 +13,6 @@
 #include <imgui_hook/utils/imgui_configurate.h>
 #include <utils/ui_scale.h>
 #include <localization.h>
-#include <matrix_utils.h>
 #include <models_manager.h>
 #include <utils/manual_editing_session.h>
 #include <utils/task_manager.h>
@@ -21,7 +20,7 @@
 
 std::array<float, 3> ObjectTransformEditing::m_position = {0.f, 0.f, 0.f};
 CQuaternion ObjectTransformEditing::m_rotation = {{{0.f, 0.f, 0.f}}, 0.f};
-std::array<float, 3> ObjectTransformEditing::m_scale = {1.f, 1.f, 1.f};
+float ObjectTransformEditing::m_scale = 1.f;
 CObject* ObjectTransformEditing::m_object = nullptr;
 std::function<void(ObjectTransformEditingCallbackData)> ObjectTransformEditing::m_onCloseCallback = nullptr;
 CPlayerPed* ObjectTransformEditing::playerPed = nullptr;
@@ -32,11 +31,17 @@ void ObjectTransformEditing::render() noexcept {
 	                                         ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
 	                                         ImGuiWindowFlags_NoNav;
 	ImGui::SetNextWindowPos(ImVec2(0.f, 0.f), ImGuiCond_Always);
+	bool scaleChanged = false;
 	if (ImGui::Begin("##ObjectTransformEditor", nullptr, windowFlags)) {
 		ImGui::PushTextWrapPos(ui::em(18.75f));
 		ImGui::TextWrapped(_("object_transform_editing.info_cancel_editing", "F").c_str());
 		ImGui::TextWrapped(_("object_transform_editing.info_save", "Y").c_str());
 		ImGui::PopTextWrapPos();
+
+		ImGui::SetNextItemWidth(ui::em(12.f));
+		if (ImGui::DragFloat(_("scale").c_str(), &m_scale, 0.01f, 0.0f, 0.0f, "%.3f")) {
+			scaleChanged = true;
+		}
 	}
 
 	static CQuaternion lastQ;
@@ -120,10 +125,12 @@ void ObjectTransformEditing::render() noexcept {
 	if (isRotating || isMoving) {
 		m_object->Teleport(CVector(m_position[0], m_position[1], m_position[2]), false);
 		m_object->m_matrix->SetRotate(m_rotation);
-		scaleMatrix(*m_object->m_matrix, m_scale);
 		m_object->m_matrix->UpdateRW();
 		m_object->UpdateRwMatrix();
 		m_object->UpdateRwFrame();
+	}
+	if (scaleChanged) {
+		m_object->m_fScale = m_scale;
 	}
 
 	if (ImGui::IsKeyReleased(ImGuiKey_F)) {
@@ -137,7 +144,7 @@ void ObjectTransformEditing::render() noexcept {
 }
 
 void ObjectTransformEditing::openTransformEditing(
-	Entity* entity, CObject* object, std::array<float, 3> position, CQuaternion rotation, std::array<float, 3> scale,
+	Entity* entity, CObject* object, std::array<float, 3> position, CQuaternion rotation, float scale,
 	std::function<void(ObjectTransformEditingCallbackData)> onClose) noexcept {
 
 	// Create RAII session that handles UI/camera automatically
@@ -159,10 +166,10 @@ void ObjectTransformEditing::openTransformEditing(
 	if (object) {
 		object->Teleport(CVector(m_position[0], m_position[1], m_position[2]), false);
 		object->m_matrix->SetRotate(m_rotation);
-		scaleMatrix(*object->m_matrix, m_scale);
 		object->m_matrix->UpdateRW();
 		object->UpdateRwMatrix();
 		object->UpdateRwFrame();
+		object->m_fScale = m_scale;
 	}
 	WindowManager::instance().addBackgroundRenderCallback("ObjectTransformEditor", render);
 }

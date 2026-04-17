@@ -12,7 +12,6 @@
 #include <glm/trigonometric.hpp>
 #include <in_game/entity_orbit_camera.h>
 #include <in_game/object_transform_editing.h>
-#include <matrix_utils.h>
 #include <project_player.h>
 #include <window_manager.h>
 #include <windows/entities.h>
@@ -97,7 +96,7 @@ void components::ObjectTriggerMove::editorRender() {
 		auto object = Object::cast(this->entity->getComponent(Object::TYPE));
 		if (object && object->handle) {
 			ObjectTransformEditing::openTransformEditing(
-				this->entity, &*object->handle, this->endPosition, this->endRotation, this->entity->scale,
+				this->entity, &*object->handle, this->endPosition, this->endRotation, object->scale,
 				[this](ObjectTransformEditingCallbackData data) {
 					if (data.saveChanges) {
 						this->endPosition = data.position;
@@ -164,10 +163,9 @@ void components::ObjectTriggerMove::onUpdate(float deltaTime) {
 					object->handle->m_placement.m_vPosn = newPosition;
 				}
 
-				// Update rotation and scale
+				// Update rotation
 				if (matrix) {
 					matrix->SetRotate(newRotation);
-					scaleMatrix(*matrix, this->entity->scale);
 					matrix->UpdateRW();
 				}
 

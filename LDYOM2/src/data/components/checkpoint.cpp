@@ -12,7 +12,6 @@
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <lua_define_type.h>
-#include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
 #include <project_player.h>
 #include <scenes_manager.h>
@@ -71,12 +70,6 @@ void components::Checkpoint::onStart() {
 		                                       // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->rot;
 		                                       // }
 											   return {};
-										   },
-	                                       [this]() -> std::array<float, 3> {
-											   // if (this->vehicle) {
-		                                       // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->scale;
-		                                       // }
-											   return {0.0f, 0.0f, 0.0f};
 										   });
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) {
@@ -97,14 +90,6 @@ void components::Checkpoint::onStart() {
 					plugin::Command<plugin::Commands::SET_CHECKPOINT_HEADING>(this->handle.value(), DEG(eulerAngles.z));
 				}
 			}
-		},
-		[this](const std::array<float, 3>& scale) {
-			// if (this->handle) {
-		    // 	scaleMatrix(*this->handle->m_matrix, scale);
-		    // 	this->handle->m_matrix->UpdateRW();
-		    // 	this->handle->UpdateRwMatrix();
-		    // 	this->handle->UpdateRwFrame();
-		    // }
 		});
 	if (!IS_PLAYING) {
 		spawn();

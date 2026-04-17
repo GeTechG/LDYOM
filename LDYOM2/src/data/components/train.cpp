@@ -6,7 +6,6 @@
 #include <entity.h>
 #include <in_game/entity_orbit_camera.h>
 #include <lua_define_type.h>
-#include <matrix_utils.h>
 #include <project_player.h>
 #include <scenes_manager.h>
 #include <spdlog/spdlog.h>
@@ -223,16 +222,12 @@ void components::Train::onStart() {
 		[this]() -> CQuaternion {
 			// Trains don't support rotation queries via API
 			return {};
-		},
-		[this]() -> std::array<float, 3> { return {1.0f, 1.0f, 1.0f}; });
+		});
 
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) { this->dirty |= DirtyFlags::Model; },
 		[this](const CQuaternion& rotation) {
 			// Trains don't support rotation changes via API
-		},
-		[this](const std::array<float, 3>& scale) {
-			// Trains don't support scale
 		});
 
 	this->spawn();

@@ -7,7 +7,6 @@
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <lua_define_type.h>
-#include <matrix_utils.h>
 #include <popups/object_selector.h>
 #include <project_player.h>
 #include <scenes_manager.h>
@@ -17,7 +16,7 @@
 void components::Object::sol_lua_register(sol::state_view lua_state) {
 	sol_lua_register_enum_DirtyFlags(lua_state);
 	auto ut = lua_state.new_usertype<Object>("ObjectComponent");
-	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Object, cast, model, getObjectRef);
+	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Object, cast, model, scale, getObjectRef);
 }
 
 components::Object::Object()
@@ -26,12 +25,16 @@ components::Object::Object()
 inline nlohmann::json components::Object::to_json() const {
 	auto j = this->Component::to_json();
 	j["model"] = model;
+	j["scale"] = scale;
 	return j;
 }
 
 void components::Object::from_json(const nlohmann::json& j) {
 	this->Component::from_json(j);
 	j.at("model").get_to(model);
+	if (j.contains("scale")) {
+		j.at("scale").get_to(scale);
+	}
 }
 
 void components::Object::editorRender() {
@@ -52,6 +55,13 @@ void components::Object::editorRender() {
 		this->model = selectedModel;
 		this->dirty |= Model;
 	});
+
+	ImGui::Text(_("scale").c_str());
+	ImGui::SameLine(availableWidth * 0.45f);
+	ImGui::SetNextItemWidth(-1.f);
+	if (ImGui::DragFloat("##scale", &scale, 0.01f, 0.0f, 0.0f, "%.3f")) {
+		this->dirty |= Scale;
+	}
 }
 
 void components::Object::onStart() {
@@ -69,12 +79,6 @@ void components::Object::onStart() {
 		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->rot;
 		    // }
 			return {};
-		},
-		[this]() -> std::array<float, 3> {
-			// if (this->vehicle) {
-		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->scale;
-		    // }
-			return {0.0f, 0.0f, 0.0f};
 		});
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) {
@@ -122,24 +126,6 @@ void components::Object::onStart() {
 				this->handle->UpdateRwFrame();
 				this->handle->Add();
 			}
-		},
-		[this](const std::array<float, 3>& scale) {
-			if (this->handle) {
-				// Scale update with Remove/Add
-				this->handle->Remove();
-
-				CMatrixLink* matrix = this->handle->GetMatrix();
-				if (matrix) {
-					scaleMatrix(*matrix, scale);
-					matrix->UpdateRW();
-				}
-
-				if (this->handle->m_pRwObject) {
-					this->handle->UpdateRwMatrix();
-				}
-				this->handle->UpdateRwFrame();
-				this->handle->Add();
-			}
 		});
 	if (!IS_PLAYING) {
 		spawn();
@@ -163,6 +149,11 @@ void components::Object::onUpdate(float deltaTime) {
 	}
 	if (this->dirty & Model) {
 		spawn();
+	}
+	if (this->dirty & Scale) {
+		if (this->handle) {
+			this->handle->m_fScale = this->scale;
+		}
 	}
 	dirty = None;
 }
@@ -245,6 +236,7 @@ void components::Object::spawn() {
 			plugin::Command<plugin::Commands::DELETE_OBJECT>(ref);
 		}
 	});
+	this->handle->m_fScale = this->scale;
 	this->entity->updateSetTransformCallbacks();
 
 	CStreaming::SetMissionDoesntRequireModel(this->model);
@@ -260,6 +252,7 @@ void components::Object::spawn() {
 
 void components::Object::despawn() {
 	if (handle) {
+		handle->m_fScale = 1.0f;
 		handle = nullptr;
 	}
 	onDespawned();

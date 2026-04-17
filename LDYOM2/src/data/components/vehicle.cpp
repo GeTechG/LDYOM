@@ -13,7 +13,6 @@
 #include <in_game/vehicle_manual_editing.h>
 #include <iomanip>
 #include <lua_define_type.h>
-#include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
 #include <project_player.h>
 #include <rotation_utils.h>
@@ -725,12 +724,6 @@ void components::Vehicle::onStart() {
 		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->rot;
 		    // }
 			return {};
-		},
-		[this]() -> std::array<float, 3> {
-			// if (this->vehicle) {
-		    // 	return (std::array<float,3>)&this->vehicle->GetMatrix()->scale;
-		    // }
-			return {0.0f, 0.0f, 0.0f};
 		});
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3>& position) {
@@ -741,14 +734,6 @@ void components::Vehicle::onStart() {
 		[this](const CQuaternion rotation) {
 			if (this->handle) {
 				this->updateRotation();
-			}
-		},
-		[this](const std::array<float, 3>& scale) {
-			if (this->handle) {
-				scaleMatrix(*this->handle->m_matrix, scale);
-				this->handle->m_matrix->UpdateRW();
-				this->handle->UpdateRwMatrix();
-				this->handle->UpdateRwFrame();
 			}
 		});
 	if (!IS_PLAYING) {

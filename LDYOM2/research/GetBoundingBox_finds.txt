@@ -1,0 +1,39 @@
+Address	Function	Instruction
+.text:00404C70	_ZN9CIplStore14GetBoundingBoxEi	                            ; IplDef *__cdecl CIplStore::GetBoundingBox(int slotId)
+.text:00404C86	_ZN9CIplStore14GetBoundingBoxEi	                            loc_404C86:                             ; CODE XREF: CIplStore::GetBoundingBox(int)+11↑j
+.text:00404C8D	_ZN9CIplStore14GetBoundingBoxEi	                            _ZN9CIplStore14GetBoundingBoxEi endp
+.text:00415230	_ZN10CCollision28GetBoundingBoxFromTwoSpheresEP7CColBoxP10CColSphereS3_	                            ; void __cdecl CCollision::GetBoundingBoxFromTwoSpheres(CColBox *a1, CColSphere *a2, CColSphere *a3)
+.text:00415257	_ZN10CCollision28GetBoundingBoxFromTwoSpheresEP7CColBoxP10CColSphereS3_	                            loc_415257:                             ; CODE XREF: CCollision::GetBoundingBoxFromTwoSpheres(CColBox *,CColSphere *,CColSphere *)+19↑j
+.text:00415261	_ZN10CCollision28GetBoundingBoxFromTwoSpheresEP7CColBoxP10CColSphereS3_	                            loc_415261:                             ; CODE XREF: CCollision::GetBoundingBoxFromTwoSpheres(CColBox *,CColSphere *,CColSphere *)+25↑j
+.text:00415280	_ZN10CCollision28GetBoundingBoxFromTwoSpheresEP7CColBoxP10CColSphereS3_	                            loc_415280:                             ; CODE XREF: CCollision::GetBoundingBoxFromTwoSpheres(CColBox *,CColSphere *,CColSphere *)+3F↑j
+.text:0041528D	_ZN10CCollision28GetBoundingBoxFromTwoSpheresEP7CColBoxP10CColSphereS3_	                            loc_41528D:                             ; CODE XREF: CCollision::GetBoundingBoxFromTwoSpheres(CColBox *,CColSphere *,CColSphere *)+4E↑j
+.text:004152AD	_ZN10CCollision28GetBoundingBoxFromTwoSpheresEP7CColBoxP10CColSphereS3_	                            loc_4152AD:                             ; CODE XREF: CCollision::GetBoundingBoxFromTwoSpheres(CColBox *,CColSphere *,CColSphere *)+6B↑j
+.text:004152BC	_ZN10CCollision28GetBoundingBoxFromTwoSpheresEP7CColBoxP10CColSphereS3_	                            _ZN10CCollision28GetBoundingBoxFromTwoSpheresEP7CColBoxP10CColSphereS3_ endp
+.text:0041AC56	_ZN10CCollision27BuildCacheOfCameraCollisionEP10CColSphereS1_	07C E8 D5 A5 FF FF                          call    _ZN10CCollision28GetBoundingBoxFromTwoSpheresEP7CColBoxP10CColSphereS3_ ; CCollision::GetBoundingBoxFromTwoSpheres(CColBox *,CColSphere *,CColSphere *)
+.text:004AA930	_ZN10FxSystem_c15ForAllParticlesEPFvP10Particle_ciPPvES2_	                                                                    ; CODE XREF: FxSystem_c::GetBoundingBox(FxBox_c *)+29↓p
+.text:004AA9A0	_ZN10FxSystem_c19UpdateBoundingBoxCBEP10Particle_ciPPv	                                                                    ; DATA XREF: FxSystem_c::GetBoundingBox(FxBox_c *)+19↓o
+.text:004AAA40	_ZN10FxSystem_c14GetBoundingBoxEP7FxBox_c	                            ; void __thiscall FxSystem_c::GetBoundingBox(FxSystem_c *this, int)
+.text:004AAA96	_ZN10FxSystem_c14GetBoundingBoxEP7FxBox_c	                            loc_4AAA96:                             ; CODE XREF: FxSystem_c::GetBoundingBox(FxBox_c *)+47↑j
+.text:004AAAA1	_ZN10FxSystem_c14GetBoundingBoxEP7FxBox_c	                            loc_4AAAA1:                             ; CODE XREF: FxSystem_c::GetBoundingBox(FxBox_c *)+54↑j
+.text:004AAAC7	_ZN10FxSystem_c14GetBoundingBoxEP7FxBox_c	                            loc_4AAAC7:                             ; CODE XREF: FxSystem_c::GetBoundingBox(FxBox_c *)+30↑j
+.text:004AAAC9	_ZN10FxSystem_c14GetBoundingBoxEP7FxBox_c	                            _ZN10FxSystem_c14GetBoundingBoxEP7FxBox_c endp
+.text:004C5710	_ZN15CClumpModelInfo14GetBoundingBoxEv	                            ; int __thiscall CClumpModelInfo::GetBoundingBox(int this)
+.text:005913B0	_ZN10Interior_c18GetFurnitureEntityEP7CEntity	                                                                    ; CODE XREF: InteriorManager_c::GetBoundingBox(CEntity *,CVector *)+1E↓p
+.text:005922C0	_ZN10Interior_c15FindBoundingBoxEiiPiS0_S0_S0_S0_	                                                                    ; Interior_c::GetBoundingBox(FurnitureEntity_c *,CVector *)+81↓p
+.text:00593DB0	_ZN10Interior_c14GetBoundingBoxEP17FurnitureEntity_cP7CVector	                            ; char __thiscall Interior_c::GetBoundingBox(int this, int, int)
+.text:00593DDD	_ZN10Interior_c14GetBoundingBoxEP17FurnitureEntity_cP7CVector	                            loc_593DDD:                             ; CODE XREF: Interior_c::GetBoundingBox(FurnitureEntity_c *,CVector *)+18↑j
+.text:00593F0C	_ZN10Interior_c14GetBoundingBoxEP17FurnitureEntity_cP7CVector	                            _ZN10Interior_c14GetBoundingBoxEP17FurnitureEntity_cP7CVector endp
+.text:00598090	_ZN17InteriorManager_c14GetBoundingBoxEP7CEntityP7CVector	                            ; char __thiscall InteriorManager_c::GetBoundingBox(InteriorManager_c *this, int a2, int a3)
+.text:005980A2	_ZN17InteriorManager_c14GetBoundingBoxEP7CEntityP7CVector	                            loc_5980A2:                             ; CODE XREF: InteriorManager_c::GetBoundingBox(CEntity *,CVector *)+35↓j
+.text:005980A7	_ZN17InteriorManager_c14GetBoundingBoxEP7CEntityP7CVector	                            loc_5980A7:                             ; CODE XREF: InteriorManager_c::GetBoundingBox(CEntity *,CVector *)+2E↓j
+.text:005980B7	_ZN17InteriorManager_c14GetBoundingBoxEP7CEntityP7CVector	                            loc_5980B7:                             ; CODE XREF: InteriorManager_c::GetBoundingBox(CEntity *,CVector *)+1B↑j
+.text:005980C7	_ZN17InteriorManager_c14GetBoundingBoxEP7CEntityP7CVector	                            loc_5980C7:                             ; CODE XREF: InteriorManager_c::GetBoundingBox(CEntity *,CVector *)+C↑j
+.text:005980D0	_ZN17InteriorManager_c14GetBoundingBoxEP7CEntityP7CVector	                            loc_5980D0:                             ; CODE XREF: InteriorManager_c::GetBoundingBox(CEntity *,CVector *)+25↑j
+.text:005980DA	_ZN17InteriorManager_c14GetBoundingBoxEP7CEntityP7CVector	018 E8 D1 BC FF FF                          call    _ZN10Interior_c14GetBoundingBoxEP17FurnitureEntity_cP7CVector ; Interior_c::GetBoundingBox(FurnitureEntity_c *,CVector *)
+.text:005980E3	_ZN17InteriorManager_c14GetBoundingBoxEP7CEntityP7CVector	                            _ZN17InteriorManager_c14GetBoundingBoxEP7CEntityP7CVector endp
+.text:005F1FCF	sub_5F1FA0	094 E8 BC 60 FA FF                          call    _ZN17InteriorManager_c14GetBoundingBoxEP7CEntityP7CVector ; InteriorManager_c::GetBoundingBox(CEntity *,CVector *)
+.rdata:0085BD6C		10 57 4C 00                                 dd offset _ZN15CClumpModelInfo14GetBoundingBoxEv ; CClumpModelInfo::GetBoundingBox(void)
+.rdata:0085BDB4		10 57 4C 00                                 dd offset _ZN15CClumpModelInfo14GetBoundingBoxEv ; CClumpModelInfo::GetBoundingBox(void)
+.rdata:0085BDFC		10 57 4C 00                                 dd offset _ZN15CClumpModelInfo14GetBoundingBoxEv ; CClumpModelInfo::GetBoundingBox(void)
+.rdata:0085C604		10 57 4C 00                                 dd offset _ZN15CClumpModelInfo14GetBoundingBoxEv ; CClumpModelInfo::GetBoundingBox(void)
+.data:008D22B0		33 33 B3 3E                 dword_8D22B0    dd 3EB33333h            ; DATA XREF: Interior_c::GetBoundingBox(FurnitureEntity_c *,CVector *)+86↑r

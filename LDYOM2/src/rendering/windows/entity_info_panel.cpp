@@ -237,7 +237,6 @@ void EntityInfoPanel::renderGizmoControls() noexcept {
 
 	renderOpHint('1', GizmoOperation::TRANSLATE, "entity_info.gizmo_translate");
 	renderOpHint('2', GizmoOperation::ROTATE, "entity_info.gizmo_rotate");
-	renderOpHint('3', GizmoOperation::SCALE, "entity_info.gizmo_scale");
 
 	ImGui::Spacing();
 

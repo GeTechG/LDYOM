@@ -3,6 +3,7 @@
 #include <array>
 #include <lua_define_type.h>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <sol/sol.hpp>
 #include <string>
 #include <uuid_wrap.h>
@@ -15,38 +16,34 @@ class Entity {
 	std::vector<std::shared_ptr<Component>> components;
 	std::function<std::array<float, 3>()> getPositionCallback;
 	std::function<CQuaternion()> getRotationCallback;
-	std::function<std::array<float, 3>()> getScaleCallback;
 
 	std::function<void(std::array<float, 3>)> setPositionCallback;
 	std::function<void(CQuaternion)> setRotationCallback;
-	std::function<void(std::array<float, 3>)> setScaleCallback;
+
+	// migration Phase 1: holds legacy entity.scale[0] until Scene transfers it into Object.scale
+	std::optional<float> _legacyScale;
 
   public:
 	std::string name;
 	uuids::uuid id = uuids::uuid_system_generator{}();
 	std::array<float, 3> position = {0.0f, 0.0f, 0.0f};
 	CQuaternion rotation;
-	std::array<float, 3> scale = {1.0f, 1.0f, 1.0f};
 	int areaId = 0;
 	void addComponent(std::shared_ptr<Component> component);
 	const std::vector<std::shared_ptr<Component>>& getComponents() const { return components; }
 	std::shared_ptr<Component> getComponent(const std::string_view type);
 	bool hasComponent(const std::string_view type) { return getComponent(type) != nullptr; }
 	void setGetTransformCallbacks(std::function<std::array<float, 3>()> positionCallback,
-	                              std::function<CQuaternion()> rotationCallback,
-	                              std::function<std::array<float, 3>()> scaleCallback);
+	                              std::function<CQuaternion()> rotationCallback);
 	void setSetTransformCallbacks(std::function<void(std::array<float, 3>)> positionCallback,
-	                              std::function<void(CQuaternion)> rotationCallback,
-	                              std::function<void(std::array<float, 3>)> scaleCallback);
+	                              std::function<void(CQuaternion)> rotationCallback);
 	void clearGetTransformCallbacks() {
 		getPositionCallback = nullptr;
 		getRotationCallback = nullptr;
-		getScaleCallback = nullptr;
 	}
 	void clearSetTransformCallbacks() {
 		setPositionCallback = nullptr;
 		setRotationCallback = nullptr;
-		setScaleCallback = nullptr;
 	}
 	void updateSetTransformCallbacks();
 

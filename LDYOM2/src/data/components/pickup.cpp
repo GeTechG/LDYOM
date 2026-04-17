@@ -7,7 +7,6 @@
 #include <corecrt_math_defines.h>
 #include <entity.h>
 #include <lua_define_type.h>
-#include <matrix_utils.h>
 #include <popups/vehicle_selector.h>
 #include <popups/weapon_selector.h>
 #include <project_player.h>
@@ -154,12 +153,6 @@ void components::Pickup::onStart() {
 		    // 	return (std::array<float, 3>)&this->vehicle->GetMatrix()->rot;
 		    // }
 			return {};
-		},
-		[this]() -> std::array<float, 3> {
-			// if (this->vehicle) {
-		    // 	return (std::array<float, 3>)&this->vehicle->GetMatrix()->scale;
-		    // }
-			return {0.0f, 0.0f, 0.0f};
 		});
 	this->entity->setSetTransformCallbacks(
 		[this](const std::array<float, 3> position) {
@@ -173,14 +166,6 @@ void components::Pickup::onStart() {
 				auto actualIndex = CPickups::GetActualPickupIndex(handle);
 				if (CPickups::aPickUps[actualIndex].m_pObject != NULL) {
 					CPickups::aPickUps[actualIndex].m_pObject->m_matrix->SetRotate(rotation);
-				}
-			}
-		},
-		[this](const std::array<float, 3> scale) {
-			if (this->handle != -1) {
-				auto actualIndex = CPickups::GetActualPickupIndex(handle);
-				if (CPickups::aPickUps[actualIndex].m_pObject != NULL) {
-					scaleMatrix(*CPickups::aPickUps[actualIndex].m_pObject->m_matrix, scale);
 				}
 			}
 		});
