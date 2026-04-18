@@ -81,5 +81,18 @@
         "interface_theme": "Тема интерфейса",
         "display_scale": "Масштаб отображения",
         "close": "Закрыть"
+    },
+    "hotkey_editor": {
+        "record": "Запись",
+        "recording": "Ожидание нажатия...",
+        "set_disabled_empty_tooltip": "Нажмите хотя бы одну клавишу для привязки.",
+        "set_disabled_toomany_tooltip": "Максимум 4 клавиши в комбинации.",
+        "unsaved_discard_title": "Отменить несохранённые изменения?",
+        "unsaved_discard_message": "У вас есть несохранённые изменения для этой горячей клавиши. Отменить их?",
+        "discard": "Отменить",
+        "cancel": "Закрыть",
+        "conflict_tooltip": "Конфликтует с: {}",
+        "hk_saveScene": "Сохранить сцену",
+        "hk_saveScene_desc": "Сохранить текущую сцену на диск"
     }
 }

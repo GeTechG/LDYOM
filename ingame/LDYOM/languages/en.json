@@ -201,6 +201,15 @@
         "clear": "Clear",
         "set": "Set",
         "done": "Done",
+        "record": "Record",
+        "recording": "Listening...",
+        "set_disabled_empty_tooltip": "Press at least one key to bind.",
+        "set_disabled_toomany_tooltip": "Maximum 4 keys in a combination.",
+        "unsaved_discard_title": "Discard unsaved changes?",
+        "unsaved_discard_message": "You have unsaved modifications to this hotkey. Discard them?",
+        "discard": "Discard",
+        "cancel": "Cancel",
+        "conflict_tooltip": "Conflicts with: {}",
         "hk_openEditor": "Open Editor",
         "hk_openEditor_desc": "Open project manager/main menu",
         "hk_toggleDebugInfo": "Toggle Debug Info",
@@ -208,7 +217,9 @@
         "hk_teleportToMarker": "Teleport to Marker",
         "hk_teleportToMarker_desc": "Teleport player to map marker",
         "hk_unlockPlayer": "Unlock Player",
-        "hk_unlockPlayer_desc": "Unlock player controls"
+        "hk_unlockPlayer_desc": "Unlock player controls",
+        "hk_saveScene": "Save Scene",
+        "hk_saveScene_desc": "Save the current scene to disk"
     },
     "addons_settings": {
         "title": "{} Addons Settings",

@@ -1,7 +1,4 @@
-#include <tracy/Tracy.hpp>
 #include "application.h"
-#include "notifications.h"
-#include "version.h"
 #include "addons_manager.h"
 #include "entities_manager.h"
 #include "hotkeys.h"
@@ -9,12 +6,14 @@
 #include "localization.h"
 #include "lua_manager.h"
 #include "models_manager.h"
+#include "notifications.h"
 #include "object_tags_manager.h"
 #include "objectives_manager.h"
 #include "project_player.h"
 #include "project_script_manager.h"
 #include "settings.h"
 #include "textures_manager.h"
+#include "version.h"
 #include <CHud.h>
 #include <components_manager.h>
 #include <fires_remover.h>
@@ -26,11 +25,13 @@
 #include <scenes_manager.h>
 #include <sol/sol.hpp>
 #include <task_manager.h>
+#include <tracy/Tracy.hpp>
 #include <utils/teleport_utils.h>
 #include <utils/theme_loader.h>
 #include <window_manager.h>
 #include <windows/init.h>
 #include <windows/node_editor.h>
+
 
 void Application::initialize() {
 	LDYOM_INFO("LDYOM Application starting...");
