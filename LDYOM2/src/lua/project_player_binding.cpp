@@ -104,7 +104,8 @@ void register_project_player_bindings(sol::state_view lua) {
 		},
 
 		// State (read-only properties, except is_faded which is read-write)
-		"is_playing", sol::property(&ProjectPlayer::isPlaying), "current_scene_id",
+		"is_playing", sol::property(&ProjectPlayer::isPlaying), "is_mission",
+		sol::property(&ProjectPlayer::isMissionActive), "current_scene_id",
 		sol::property(&ProjectPlayer::getCurrentSceneId), "current_objective_index",
 		sol::property(&ProjectPlayer::getCurrentObjectiveIndex), "is_faded",
 		sol::property(&ProjectPlayer::isFaded, &ProjectPlayer::setFaded),

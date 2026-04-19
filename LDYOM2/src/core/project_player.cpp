@@ -122,9 +122,12 @@ ktwait ProjectPlayer::run() {
 				plugin::Command<plugin::Commands::DO_FADE>(500, 0);
 				co_await 600; // Wait 600ms for fade to complete
 				ProjectPlayer::instance().setFaded(true);
-			} else {
+			} else if (objectiveType != "core.mission_start") {
 				// Centralized fade in before each objective (as in DYOM lines 20537-20541)
-				// Only fade in if screen is currently black ($DYOM_faded == 1)
+				// Only fade in if screen is currently black ($DYOM_faded == 1).
+				// core.mission_start is exempt: it owns the fade-in so its fadeIn flag and
+				// banner timing stay in sync. If mission_start is authored mid-project and
+				// fadeIn=false, the screen will still be revealed instantly by mission_start.
 				if (instance().m_state.isFaded) {
 					plugin::Command<plugin::Commands::DO_FADE>(500, 1); // Fade IN from black
 					instance().m_state.isFaded = false;
@@ -260,7 +263,39 @@ void ProjectPlayer::stopCurrentProject() {
 	});
 }
 
-void ProjectPlayer::failCurrentProject() { this->stopCurrentProject(); }
+void ProjectPlayer::failCurrentProject() {
+	if (!m_state.missionMode.active) {
+		stopCurrentProject();
+		return;
+	}
+	TaskManager::instance().removeTask("run_project_player");
+	TaskManager::instance().addTask("mission_fail_sequence", missionFailSequence);
+}
+
+ktwait ProjectPlayer::missionFailSequence() {
+	auto& missionMode = instance().m_state.missionMode;
+	int localFailTextMode = missionMode.failTextMode;
+	std::string localFailTextGxt = missionMode.failTextGxt;
+	MissionFailAction localFailAction = missionMode.failAction;
+	missionMode.active = false; // re-entrancy guard BEFORE any co_await
+
+	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, false);
+	if (localFailTextMode == 0) {
+		// Default: built-in M_FAIL GXT entry (SCM opcode style 1 == eMessageStyle::STYLE_MIDDLE after -1 inside handler)
+		plugin::Command<plugin::Commands::PRINT_BIG>("M_FAIL", MISSION_FAIL_TEXT_TIME_MS, 1);
+	} else {
+		CMessages::AddBigMessage((char*)localFailTextGxt.c_str(), MISSION_FAIL_TEXT_TIME_MS, STYLE_MIDDLE);
+	}
+	co_await MISSION_FAIL_TEXT_TIME_MS;
+	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
+
+	std::visit([](const auto& action) {
+		using T = std::decay_t<decltype(action)>;
+		if constexpr (std::is_same_v<T, mission_fail_actions::EndProject>) {
+			ProjectPlayer::instance().stopCurrentProject();
+		}
+	}, localFailAction);
+}
 
 void ProjectPlayer::requestSceneTransition(std::string_view sceneId, bool instant) {
 	m_state.pendingSceneTransition = PendingTransition{std::string(sceneId), instant};
@@ -323,6 +358,9 @@ void ProjectPlayer::transitionPlayingState(bool toPlayMode) {
 
 		// Reset fade state for next mission
 		instance().m_state.isFaded = false;
+		TaskManager::instance().removeTask("mission_fail_sequence");
+		CTheScripts::OnAMissionFlag = 0;
+		instance().m_state.missionMode = {};
 	}
 	ScenesManager::instance().resetCurrentScene();
 }

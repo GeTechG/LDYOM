@@ -505,6 +505,42 @@
                 "instant_transition": "Instant transition",
                 "instant_transition_tooltip": "Skip the fade-out/fade-in animation. The transition happens in a single frame — expect visible artifacts: entity pop-in, camera jumpcut, weather/time snap, scene name banner appears immediately."
             },
+            "mission_start": {
+                "name": "Start mission",
+                "description": "Marks the start of mission mode. Sets the mission flag, shows a title banner, and configures the fail-text banner for fail events.",
+                "title_text": "Title text",
+                "title_time": "Title duration (seconds)",
+                "fade_in": "Fade in",
+                "fail_text_mode": "Fail text mode",
+                "fail_text_modes": [
+                    "Default (M_FAIL)",
+                    "Custom"
+                ],
+                "fail_text": "Fail text",
+                "fail_action": "Fail action",
+                "fail_actions": [
+                    "End project"
+                ],
+                "nested_error": {
+                    "title": "Nested mission_start",
+                    "body": "Scene '{}' objective #{} tried to start mission mode while it was already active. Stopping project."
+                }
+            },
+            "mission_end": {
+                "name": "End mission",
+                "description": "Marks the end of mission mode. Shows an end banner, clears the mission flag, and resets the fail-text state.",
+                "end_text_mode": "End text mode",
+                "end_text_modes": [
+                    "Default (M_PASSD)",
+                    "With money (M_PASS)",
+                    "Custom"
+                ],
+                "end_text": "End text",
+                "end_money": "Money",
+                "end_time": "End duration (seconds)",
+                "fade_out": "Fade out",
+                "end_tune": "End tune"
+            },
             "set_global_var": {
                 "name": "Set Global Variable",
                 "description": "Assign, add or subtract a value to a global variable.",

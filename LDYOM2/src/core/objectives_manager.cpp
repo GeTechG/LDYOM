@@ -8,6 +8,8 @@
 #include <objectives/clock.h>
 #include <objectives/countdown.h>
 #include <objectives/cutscene.h>
+#include <objectives/mission_start.h>
+#include <objectives/mission_end.h>
 #include <objectives/destroy_vehicle.h>
 #include <objectives/enter_to_vehicle.h>
 #include <objectives/interact_with_object.h>
@@ -123,6 +125,8 @@ void ObjectivesManager::registerCoreObjectives() {
 	this->registerObjectiveBuilder<checkpoint::Data>(checkpoint::builder());
 	this->registerObjectiveBuilder<countdown::Data>(countdown::builder());
 	this->registerObjectiveBuilder<cutscene::Data>(cutscene::builder());
+	this->registerObjectiveBuilder<mission_start::Data>(mission_start::builder());
+	this->registerObjectiveBuilder<mission_end::Data>(mission_end::builder());
 	this->registerObjectiveBuilder<clock::Data>(clock::builder());
 	this->registerObjectiveBuilder<money_add::Data>(money_add::builder());
 	this->registerObjectiveBuilder<money_subtract::Data>(money_subtract::builder());

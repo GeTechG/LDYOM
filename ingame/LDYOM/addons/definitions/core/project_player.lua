@@ -5,6 +5,7 @@
 ---Mission execution engine. Access via the `project_player` singleton.
 ---@class ProjectPlayer
 ---@field is_playing boolean Whether a project is currently playing (read-only).
+---@field is_mission boolean Whether mission mode is active (read-only).
 ---@field current_scene_id string UUID string of the currently active scene (read-only).
 ---@field current_objective_index integer 0-based index of the currently running objective (read-only).
 ---@field is_faded boolean Whether the screen is faded to black. Read-write.
