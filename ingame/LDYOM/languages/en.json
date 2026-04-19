@@ -483,7 +483,9 @@
             "goto_scene": {
                 "name": "Goto Scene",
                 "description": "Transition to another scene without ending the mission.",
-                "scene": "Scene"
+                "scene": "Scene",
+                "instant_transition": "Instant transition",
+                "instant_transition_tooltip": "Skip the fade-out/fade-in animation.\nThe transition happens in a single frame — expect visible artifacts: \nentity pop-in, camera jumpcut, weather/time snap, scene name banner appears immediately."
             },
             "goto_scene_if_var": {
                 "name": "Goto Scene If Variable",
@@ -499,7 +501,9 @@
                     ">=",
                     "<",
                     "<="
-                ]
+                ],
+                "instant_transition": "Instant transition",
+                "instant_transition_tooltip": "Skip the fade-out/fade-in animation. The transition happens in a single frame — expect visible artifacts: entity pop-in, camera jumpcut, weather/time snap, scene name banner appears immediately."
             },
             "set_global_var": {
                 "name": "Set Global Variable",

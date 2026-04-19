@@ -8,12 +8,17 @@
 #include <rocket.hpp>
 #include <string>
 
+struct PendingTransition {
+	std::string sceneId;
+	bool instant;
+};
+
 struct ProjectPlayerState {
 	bool isPlaying = false;
 	int currentObjectiveIndex = 0;
 	std::string currentSceneId;
 	bool isFaded = false; // Tracks fade state: true = screen is black, false = screen is visible (analog of $DYOM_faded)
-	std::optional<std::string> pendingSceneTransition;
+	std::optional<PendingTransition> pendingSceneTransition;
 	std::optional<std::string> pendingObjectiveJump; // UUID of objective to jump to
 };
 
@@ -48,7 +53,7 @@ class ProjectPlayer {
 	void stopCurrentProject();
 	void failCurrentProject();
 	void transitionPlayingState(bool toPlayMode);
-	void requestSceneTransition(std::string_view sceneId);
+	void requestSceneTransition(std::string_view sceneId, bool instant = false);
 	void requestObjectiveJump(std::string_view objectiveId);
 
 	bool isPlaying() const { return m_state.isPlaying; }

@@ -23,7 +23,8 @@ function ProjectPlayer:fail() end
 ---Requests a scene transition to the given scene UUID.
 ---The transition is queued and executed at the next safe opportunity.
 ---@param sceneId string Target scene UUID string.
-function ProjectPlayer:request_scene_transition(sceneId) end
+---@param instant? boolean Skip fade-out/wait/fade-in animation (default false).
+function ProjectPlayer:request_scene_transition(sceneId, instant) end
 
 ---Returns all entities spawned in the current scene.
 ---@return Entity[]

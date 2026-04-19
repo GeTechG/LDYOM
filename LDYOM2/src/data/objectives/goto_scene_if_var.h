@@ -32,12 +32,13 @@ struct Data {
 	double numberValue = 0.0;
 	std::string stringValue;
 	bool boolValue = false;
+	bool instantTransition = false;
 
 	static void sol_lua_register(sol::state_view lua_state) {
 		auto ut = lua_state.new_usertype<Data>("ObjectiveGotoSceneIfVarData");
-		SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Data, sceneId, varName, numberValue, stringValue, boolValue);
+		SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Data, sceneId, varName, numberValue, stringValue, boolValue, instantTransition);
 	}
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Data, sceneId, varName, condition, numberValue, stringValue, boolValue)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Data, sceneId, varName, condition, numberValue, stringValue, boolValue, instantTransition)
 };
 
 static GlobalVarType findVarType(const std::string& varName) {
@@ -151,6 +152,15 @@ void renderEditor(Data& data) {
 		case GlobalVarType::String: ImGui::InputText("##val", &data.stringValue); break;
 		case GlobalVarType::Boolean: ImGui::Checkbox("##val", &data.boolValue); break;
 	}
+
+	// ── Instant Transition ────────────────────────────────────────────────
+	ImGui::Text(_("objectives.core.goto_scene_if_var.instant_transition").c_str());
+	ImGui::SameLine(ImGui::GetContentRegionAvail().x * 0.45f);
+	ImGui::SetNextItemWidth(-1.f);
+	ImGui::Checkbox("##instant", &data.instantTransition);
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetTooltip("%s", _("objectives.core.goto_scene_if_var.instant_transition_tooltip").c_str());
+	}
 }
 
 static bool evaluateCondition(const Data& data) {
@@ -192,7 +202,7 @@ static bool evaluateCondition(const Data& data) {
 
 ktwait execute(Data& data) {
 	if (evaluateCondition(data))
-		ProjectPlayer::instance().requestSceneTransition(data.sceneId);
+		ProjectPlayer::instance().requestSceneTransition(data.sceneId, data.instantTransition);
 	co_return;
 }
 

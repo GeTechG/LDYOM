@@ -99,7 +99,9 @@ void register_project_player_bindings(sol::state_view lua) {
 		[](ProjectPlayer& pp, sol::optional<std::string> sceneId) { pp.startCurrentProject(sceneId.value_or("")); },
 		"stop", &ProjectPlayer::stopCurrentProject, "fail", &ProjectPlayer::failCurrentProject,
 		"request_scene_transition",
-		[](ProjectPlayer& pp, const std::string& sceneId) { pp.requestSceneTransition(sceneId); },
+		[](ProjectPlayer& pp, const std::string& sceneId, sol::optional<bool> instant) {
+			pp.requestSceneTransition(sceneId, instant.value_or(false));
+		},
 
 		// State (read-only properties, except is_faded which is read-write)
 		"is_playing", sol::property(&ProjectPlayer::isPlaying), "current_scene_id",

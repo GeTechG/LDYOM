@@ -158,21 +158,25 @@ ktwait ProjectPlayer::run() {
 		instance().onSceneEnded(instance().m_state.currentSceneId);
 
 		if (instance().m_state.pendingSceneTransition.has_value()) {
-			std::string newSceneId = instance().m_state.pendingSceneTransition.value();
+			auto pending = instance().m_state.pendingSceneTransition.value();
 			instance().m_state.pendingSceneTransition.reset();
-			instance().m_state.currentSceneId = newSceneId;
+			instance().m_state.currentSceneId = pending.sceneId;
 
-			if (!instance().m_state.isFaded) {
-				plugin::Command<plugin::Commands::DO_FADE>(500, 0);
-				co_await 600;
-				instance().m_state.isFaded = true;
+			if (!pending.instant) {
+				if (!instance().m_state.isFaded) {
+					plugin::Command<plugin::Commands::DO_FADE>(500, 0);
+					co_await 600;
+					instance().m_state.isFaded = true;
+				}
+			} else {
+				instance().m_state.isFaded = false;
 			}
 
 			Application::instance().luaTaskManager().cancelAll();
 			instance().projectTasklist->clear_all_tasks();
 			ScenesManager::instance().resetCurrentScene();
-			ScenesManager::instance().loadScene(newSceneId);
-			LDYOM_INFO("Scene transition to: {}", newSceneId);
+			ScenesManager::instance().loadScene(pending.sceneId);
+			LDYOM_INFO("Scene transition to: {}", pending.sceneId);
 			co_await 1;
 			// continueRunning stays true — loop repeats with new scene
 		} else {
@@ -257,8 +261,8 @@ void ProjectPlayer::stopCurrentProject() {
 
 void ProjectPlayer::failCurrentProject() { this->stopCurrentProject(); }
 
-void ProjectPlayer::requestSceneTransition(std::string_view sceneId) {
-	m_state.pendingSceneTransition = std::string(sceneId);
+void ProjectPlayer::requestSceneTransition(std::string_view sceneId, bool instant) {
+	m_state.pendingSceneTransition = PendingTransition{std::string(sceneId), instant};
 }
 
 void ProjectPlayer::requestObjectiveJump(std::string_view objectiveId) {

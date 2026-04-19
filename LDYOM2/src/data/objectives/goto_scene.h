@@ -11,11 +11,12 @@ constexpr const char* TYPE = "core.goto_scene";
 
 struct Data {
 	std::string sceneId;
+	bool instantTransition = false;
 	static void sol_lua_register(sol::state_view lua_state) {
 		auto ut = lua_state.new_usertype<Data>("ObjectiveGotoSceneData");
-		SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Data, sceneId)
+		SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, Data, sceneId, instantTransition)
 	}
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Data, sceneId)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Data, sceneId, instantTransition)
 };
 
 void renderEditor(Data& data) {
@@ -39,10 +40,14 @@ void renderEditor(Data& data) {
 		}
 		ImGui::EndCombo();
 	}
+	ImGui::Checkbox(_("objectives.core.goto_scene.instant_transition").c_str(), &data.instantTransition);
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetTooltip("%s", _("objectives.core.goto_scene.instant_transition_tooltip").c_str());
+	}
 }
 
 ktwait execute(Data& data) {
-	ProjectPlayer::instance().requestSceneTransition(data.sceneId);
+	ProjectPlayer::instance().requestSceneTransition(data.sceneId, data.instantTransition);
 	co_return;
 }
 
