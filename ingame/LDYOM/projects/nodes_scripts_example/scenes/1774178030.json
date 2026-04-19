@@ -6,7 +6,6 @@
                 {
                     "headshotImmune": false,
                     "health": 100.0,
-                    "initialDirection": -0.13159577548503876,
                     "isRandomModel": false,
                     "isSimpleType": true,
                     "model": -1,
@@ -39,11 +38,6 @@
                 0.0,
                 0.0,
                 0.0
-            ],
-            "scale": [
-                1.0,
-                1.0,
-                1.0
             ]
         },
         {
@@ -75,11 +69,6 @@
                 0.0,
                 0.0,
                 0.0
-            ],
-            "scale": [
-                1.0,
-                1.0,
-                1.0
             ]
         }
     ],
