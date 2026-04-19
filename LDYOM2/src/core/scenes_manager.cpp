@@ -224,7 +224,7 @@ void ScenesManager::rewriteSceneInfo(std::string_view sceneId) {
 	}
 }
 
-void ScenesManager::saveCurrentScene() {
+void ScenesManager::saveCurrentScene(bool notify) {
 	if (!m_currentScene) {
 		LDYOM_ERROR("No current scene to save");
 		return;
@@ -259,10 +259,14 @@ void ScenesManager::saveCurrentScene() {
 			m_scenesInfo.push_back(m_currentScene->info);
 		}
 		LDYOM_INFO("Saved scene: {}", m_currentScene->info.name);
-		Notifications::success(_("scenes.notify_saved"), m_currentScene->info.name);
+		if (notify) {
+			Notifications::success(_("scenes.notify_saved"), m_currentScene->info.name);
+		}
 	} else {
 		LDYOM_ERROR("Failed to open file for saving scene: {}", sceneFilePath.string());
-		Notifications::error(_("scenes.notify_save_error"), sceneFilePath.string());
+		if (notify) {
+			Notifications::error(_("scenes.notify_save_error"), sceneFilePath.string());
+		}
 	}
 
 	// Save node graph for this scene

@@ -69,7 +69,7 @@ void ScenesWindow::renderContent(ScenesWindow* window) {
 	}
 
 	if (ImGui::Button(_("scenes.save").c_str())) {
-		ScenesManager::instance().saveCurrentScene();
+		ScenesManager::instance().saveCurrentScene(true);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button(_("scenes.create").c_str())) {

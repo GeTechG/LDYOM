@@ -84,7 +84,7 @@ void Application::initialize() {
 
 		Hotkeys::instance().addHotkeyCallback("saveScene", []() {
 			if (!ProjectPlayer::instance().isPlaying()) {
-				ScenesManager::instance().saveCurrentScene();
+				ScenesManager::instance().saveCurrentScene(true);
 			}
 		});
 

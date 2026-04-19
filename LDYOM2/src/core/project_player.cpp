@@ -236,6 +236,7 @@ void ProjectPlayer::startCurrentProject(std::string_view sceneId) {
 		LDYOM_ERROR("No current project set, cannot start project player");
 		return;
 	}
+	ScenesManager::instance().saveCurrentScene();
 	this->m_state.currentSceneId = sceneId.empty() ? currentProject.value()->startSceneId : std::string(sceneId);
 	GlobalVarsService::instance().reset();
 
