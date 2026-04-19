@@ -13,9 +13,8 @@
 void components::Actor::sol_lua_register(sol::state_view lua_state) {
 	sol_lua_register_enum_DirtyFlags(lua_state);
 	auto ut = lua_state.new_usertype<Actor>("ActorComponent");
-	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, isRandomModel, model,
-	                 specialModel, isSimpleType, pedType, health, headshotImmune, mustSurvive, ped, spawn, despawn,
-	                 getPedRef);
+	SOL_LUA_FOR_EACH(SOL_LUA_BIND_MEMBER_ACTION, ut, components::Actor, cast, isRandomModel, model, specialModel,
+	                 isSimpleType, pedType, health, headshotImmune, mustSurvive, ped, spawn, despawn, getPedRef);
 }
 
 components::Actor::Actor()
@@ -338,8 +337,9 @@ void components::Actor::spawn() {
 		}
 	}
 
-	int newPed;
 	auto& position = this->entity->position;
+
+	int newPed;
 	plugin::Command<plugin::Commands::CREATE_CHAR>(pedType, model, position[0], position[1], position[2], &newPed);
 	CStreaming::SetMissionDoesntRequireModel(model);
 
@@ -379,6 +379,29 @@ void components::Actor::spawn() {
 		this->ped->m_nPhysicalFlags.bFireProof = 1;
 		this->ped->m_nPhysicalFlags.bMeleeProof = 1;
 		plugin::Command<plugin::Commands::FREEZE_CHAR_POSITION_AND_DONT_LOAD_COLLISION>(newPed, 1);
+	} else {
+		// Mission peds keep ticking physics even outside the streamer radius, so a ped
+		// spawned far from the player falls through ungenerated world collision. Freeze
+		// position + disable collision-load wait until the player gets close enough for
+		// world collision around the ped to be streamed in; then release the freeze so
+		// normal physics/AI resumes.
+		constexpr float kUnfreezeRadius = 100.0f;
+		const CVector spawnPos(position[0], position[1], position[2]);
+		if (DistanceBetweenPoints(spawnPos, FindPlayerPed()->GetPosition()) > kUnfreezeRadius) {
+			plugin::Command<plugin::Commands::FREEZE_CHAR_POSITION_AND_DONT_LOAD_COLLISION>(newPed, 1);
+			ProjectPlayer::instance().projectTasklist->add_task(
+				[](const Actor* _this, float radius) -> ktwait {
+					while (_this->ped && IS_PLAYING) {
+						if (DistanceBetweenPoints(_this->ped->GetPosition(), FindPlayerPed()->GetPosition()) < radius) {
+							const int ref = CPools::GetPedRef(_this->ped.get());
+							plugin::Command<plugin::Commands::FREEZE_CHAR_POSITION_AND_DONT_LOAD_COLLISION>(ref, 0);
+							break;
+						}
+						co_await 1;
+					}
+				},
+				this, kUnfreezeRadius);
+		}
 	}
 
 	updatePosition();

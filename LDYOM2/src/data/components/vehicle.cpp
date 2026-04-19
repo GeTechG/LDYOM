@@ -888,6 +888,28 @@ void components::Vehicle::spawn() {
 		vehicle->m_nPhysicalFlags.bFireProof = 1;
 		vehicle->m_nPhysicalFlags.bMeleeProof = 1;
 		plugin::Command<plugin::Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(newVehicle, 1);
+	} else {
+		// Mission vehicles keep ticking physics even outside the streamer radius, so one
+		// spawned far from the player falls through ungenerated world collision. Freeze
+		// position + disable collision-load wait until the player gets close enough.
+		constexpr float kUnfreezeRadius = 100.0f;
+		const CVector spawnPos(position[0], position[1], position[2]);
+		if (DistanceBetweenPoints(spawnPos, FindPlayerPed()->GetPosition()) > kUnfreezeRadius) {
+			plugin::Command<plugin::Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(newVehicle, 1);
+			ProjectPlayer::instance().projectTasklist->add_task(
+				[](const Vehicle* _this, float radius) -> ktwait {
+					while (_this->handle && IS_PLAYING) {
+						if (DistanceBetweenPoints(_this->handle->GetPosition(), FindPlayerPed()->GetPosition()) <
+						    radius) {
+							plugin::Command<plugin::Commands::FREEZE_CAR_POSITION_AND_DONT_LOAD_COLLISION>(
+								_this->getVehicleRef(), 0);
+							break;
+						}
+						co_await 1;
+					}
+				},
+				this, kUnfreezeRadius);
+		}
 	}
 
 	onSpawned();
