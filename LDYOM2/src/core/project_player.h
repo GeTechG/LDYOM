@@ -18,15 +18,57 @@ struct PendingTransition {
 namespace mission_fail_actions {
 	struct EndProject {
 		static constexpr const char* TYPE = "end_project";
+		bool fadeOut = true;
 	};
 
-	inline void to_json(nlohmann::json& j, const EndProject&) {
+	inline void to_json(nlohmann::json& j, const EndProject& e) {
 		j = nlohmann::json::object();
+		j["fadeOut"] = e.fadeOut;
 	}
-	inline void from_json(const nlohmann::json&, EndProject&) {}
+	inline void from_json(const nlohmann::json& j, EndProject& e) {
+		e.fadeOut = j.value("fadeOut", true);
+	}
+
+	struct RestartScene {
+		static constexpr const char* TYPE = "restart_scene";
+		bool fadeOut = true;
+	};
+
+	inline void to_json(nlohmann::json& j, const RestartScene& r) {
+		j = nlohmann::json::object();
+		j["fadeOut"] = r.fadeOut;
+	}
+	inline void from_json(const nlohmann::json& j, RestartScene& r) {
+		r.fadeOut = j.value("fadeOut", true);
+	}
+
+	struct GotoScene {
+		static constexpr const char* TYPE = "goto_scene";
+		std::string sceneId;
+		std::optional<std::string> objectiveId;
+		bool fadeOut = true;
+	};
+
+	inline void to_json(nlohmann::json& j, const GotoScene& g) {
+		j = nlohmann::json::object();
+		j["sceneId"] = g.sceneId;
+		if (g.objectiveId.has_value()) {
+			j["objectiveId"] = g.objectiveId.value();
+		}
+		j["fadeOut"] = g.fadeOut;
+	}
+	inline void from_json(const nlohmann::json& j, GotoScene& g) {
+		g.sceneId = j.at("sceneId").get<std::string>();
+		if (j.contains("objectiveId") && !j.at("objectiveId").is_null()) {
+			g.objectiveId = j.at("objectiveId").get<std::string>();
+		} else {
+			g.objectiveId = std::nullopt;
+		}
+		g.fadeOut = j.value("fadeOut", true);
+	}
 } // namespace mission_fail_actions
 
-using MissionFailAction = std::variant<mission_fail_actions::EndProject>;
+using MissionFailAction = std::variant<mission_fail_actions::EndProject, mission_fail_actions::RestartScene, mission_fail_actions::GotoScene>;
 
 namespace nlohmann {
 	template <>
@@ -44,6 +86,10 @@ namespace nlohmann {
 			const auto& data = j.at("data");
 			if (type == mission_fail_actions::EndProject::TYPE) {
 				action = data.get<mission_fail_actions::EndProject>();
+			} else if (type == mission_fail_actions::RestartScene::TYPE) {
+				action = data.get<mission_fail_actions::RestartScene>();
+			} else if (type == mission_fail_actions::GotoScene::TYPE) {
+				action = data.get<mission_fail_actions::GotoScene>();
 			} else {
 				throw std::runtime_error("Unknown MissionFailAction type: " + type);
 			}
@@ -76,9 +122,11 @@ class ProjectPlayer {
 	~ProjectPlayer();
 
 	static ktwait run();
+	static ktwait runScenesLoop();
 	static ktwait processStopCheat();
 	static ktwait playerLeaveAnyVehicle();
 	static ktwait missionFailSequence();
+	static void navigationalArmContinue(const std::string& sceneId, const std::optional<std::string>& objectiveId);
 
   public:
 	static constexpr int MISSION_FAIL_TEXT_TIME_MS = 1000;

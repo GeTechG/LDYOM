@@ -22,6 +22,40 @@ local ObjectiveGotoSceneData = {}
 ---@field instantTransition boolean Skip fade-out/wait/fade-in when transitioning (default false).
 local ObjectiveGotoSceneIfVarData = {}
 
+-- ── core.mission_start — fail action types ───────────────────────────────────
+
+---Fail action: stop the project and return to free-roam.
+---@class MissionFailEndProject
+---@field fadeOut boolean Fade to black before stopping the project (default true).
+MissionFailEndProject = {
+    ---Create a new MissionFailEndProject instance.
+    ---@return MissionFailEndProject
+    new = function() end
+}
+
+---Fail action: restart the current scene from the beginning.
+---@class MissionFailRestartScene
+---@field fadeOut boolean Fade to black before restarting the scene (default true).
+MissionFailRestartScene = {
+    ---Create a new MissionFailRestartScene instance.
+    ---@return MissionFailRestartScene
+    new = function() end
+}
+
+---Fail action: transition to a specific scene (and optionally a specific objective within it).
+---@class MissionFailGotoScene
+---@field sceneId string UUID of the target scene (default "").
+---@field objectiveId string? UUID of the target objective inside the scene, or nil to start from the first objective (default nil).
+---@field fadeOut boolean Fade to black before transitioning (default true).
+MissionFailGotoScene = {
+    ---Create a new MissionFailGotoScene instance.
+    ---@return MissionFailGotoScene
+    new = function() end
+}
+
+---Union of all supported mission fail action types.
+---@alias MissionFailAction MissionFailEndProject | MissionFailRestartScene | MissionFailGotoScene
+
 -- ── core.mission_start ───────────────────────────────────────────────────────
 
 ---Data struct for the `core.mission_start` objective.
@@ -31,9 +65,7 @@ local ObjectiveGotoSceneIfVarData = {}
 ---@field fadeIn boolean Fade in from black when the mission starts.
 ---@field failTextMode integer Fail text source: 0 = Default (built-in GXT `M_FAIL`), 1 = Custom (uses `failText`).
 ---@field failText string Custom fail banner text (only read when `failTextMode == 1`).
---- Note: `failAction` is intentionally not exposed in v1 — sol2 requires per-variant-alternative
---- usertype registration plus a custom from_lua path. With only one alternative (EndProject)
---- the work is not justified. See design.md "Lua visibility".
+---@field failAction MissionFailAction Action to perform when the mission fails.
 local ObjectiveMissionStartData = {}
 
 -- ── core.mission_end ─────────────────────────────────────────────────────────

@@ -106,7 +106,7 @@ void ScenesManager::loadSceneInternal(std::string_view sceneId) {
 			Scene newScene;
 			try {
 				newScene = jsonData.get<Scene>();
-			} catch (const nlohmann::json::exception& e) {
+			} catch (const std::exception& e) {
 				LDYOM_ERROR("Failed to parse scene JSON: {}", e.what());
 				return;
 			}

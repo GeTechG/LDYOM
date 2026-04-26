@@ -1,5 +1,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "project_player.h"
+#include <algorithm>
 #include "global_vars_service.h"
 #include "application.h"
 #include "localization.h"
@@ -42,6 +43,10 @@ ktwait ProjectPlayer::run() {
 	TheCamera.Fade(0.5f, FADE_OUT);
 	instance().m_state.isFaded = true; // Mark as faded for first objective
 
+	co_await runScenesLoop();
+}
+
+ktwait ProjectPlayer::runScenesLoop() {
 	bool continueRunning = true;
 	while (continueRunning) {
 		const auto& settings = ScenesManager::instance().getCurrentScene().settings;
@@ -101,7 +106,20 @@ ktwait ProjectPlayer::run() {
 
 		auto& objectives = ScenesManager::instance().getCurrentScene().objectives.data;
 
-		for (int i = 0; i < static_cast<int>(objectives.size()); i++) {
+		int startIndex = 0;
+		if (instance().m_state.pendingObjectiveJump.has_value()) {
+			const std::string& targetId = *instance().m_state.pendingObjectiveJump;
+			auto it = std::find_if(objectives.begin(), objectives.end(),
+				[&](const auto& obj) { return uuids::to_string(obj.id) == targetId; });
+			if (it != objectives.end()) {
+				startIndex = static_cast<int>(std::distance(objectives.begin(), it));
+			} else {
+				LDYOM_WARN("pendingObjectiveJump '{}' not found in scene '{}', starting from 0", targetId, instance().m_state.currentSceneId);
+			}
+			instance().m_state.pendingObjectiveJump.reset();
+		}
+
+		for (int i = startIndex; i < static_cast<int>(objectives.size()); i++) {
 			instance().m_state.currentObjectiveIndex = i;
 			auto& objective = ObjectivesManager::instance().getUnsafeObjective(i);
 			auto objectiveType = objective.type;
@@ -257,6 +275,11 @@ void ProjectPlayer::stopCurrentProject() {
 
 	TaskManager::instance().addTask("stopping_project_player", []() -> ktwait {
 		co_await ProjectPlayer::playerLeaveAnyVehicle();
+		if (ProjectPlayer::instance().m_state.isFaded) {
+			plugin::Command<plugin::Commands::DO_FADE>(MISSION_FADE_TIME_MS, 1); // Fade IN from black
+			co_await (MISSION_FADE_TIME_MS + 100);
+			ProjectPlayer::instance().m_state.isFaded = false;
+		}
 		ProjectPlayer::instance().m_state.isPlaying = false;
 		ProjectPlayer::instance().transitionPlayingState(false);
 		LDYOM_INFO("Project player stopped");
@@ -287,14 +310,63 @@ ktwait ProjectPlayer::missionFailSequence() {
 		CMessages::AddBigMessage((char*)localFailTextGxt.c_str(), MISSION_FAIL_TEXT_TIME_MS, STYLE_MIDDLE);
 	}
 	co_await MISSION_FAIL_TEXT_TIME_MS;
+
+	// 4.2 Fade-out before action
+	bool fadeOut = std::visit([](const auto& a) { return a.fadeOut; }, localFailAction);
+	if (fadeOut && !instance().isFaded()) {
+		plugin::Command<plugin::Commands::DO_FADE>(MISSION_FADE_TIME_MS, 0);
+		co_await (MISSION_FADE_TIME_MS + 100);
+		instance().setFaded(true);
+	}
+
+	// 4.3
 	plugin::Command<plugin::Commands::SET_PLAYER_CONTROL>(0, true);
 
+	// 4.4 Dispatch fail action
 	std::visit([](const auto& action) {
 		using T = std::decay_t<decltype(action)>;
 		if constexpr (std::is_same_v<T, mission_fail_actions::EndProject>) {
 			ProjectPlayer::instance().stopCurrentProject();
+		} else if constexpr (std::is_same_v<T, mission_fail_actions::RestartScene>) {
+			navigationalArmContinue(instance().m_state.currentSceneId, std::nullopt);
+		} else if constexpr (std::is_same_v<T, mission_fail_actions::GotoScene>) {
+			navigationalArmContinue(action.sceneId, action.objectiveId);
 		}
 	}, localFailAction);
+}
+
+// 4.5 Helper for navigational fail arms (RestartScene / GotoScene)
+void ProjectPlayer::navigationalArmContinue(const std::string& sceneId, const std::optional<std::string>& objectiveId) {
+	if (!instance().isPlaying()) {
+		return; // Guard against LDSTOP-during-fade-out edge case
+	}
+
+	auto& scenesInfo = ScenesManager::instance().getScenesInfo();
+	auto it = std::find_if(scenesInfo.begin(), scenesInfo.end(),
+	                       [&](const SceneInfo& si) { return si.id == sceneId; });
+	if (it == scenesInfo.end()) {
+		LDYOM_ERROR("navigational fail action references unknown scene id '{}'", sceneId);
+		instance().stopCurrentProject();
+		return;
+	}
+
+	// Clear lingering fail banner so the next scene's mission_start title slot is free.
+	CMessages::ClearThisPrintBigNow(STYLE_MIDDLE);
+	CMessages::ClearThisPrintBigNow(STYLE_BOTTOM_RIGHT);
+
+	CTheScripts::OnAMissionFlag = 0;
+	instance().clearMissionMode();
+	Application::instance().luaTaskManager().cancelAll();
+	instance().projectTasklist->clear_all_tasks();
+	ScenesManager::instance().resetCurrentScene();
+	ScenesManager::instance().loadScene(sceneId);
+	instance().m_state.currentSceneId = sceneId;
+
+	if (objectiveId) {
+		instance().requestObjectiveJump(*objectiveId);
+	}
+
+	TaskManager::instance().addTask("run_project_player", runScenesLoop);
 }
 
 void ProjectPlayer::requestSceneTransition(std::string_view sceneId, bool instant) {

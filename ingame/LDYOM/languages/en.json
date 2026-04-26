@@ -521,6 +521,14 @@
                 "fail_actions": [
                     "End project"
                 ],
+                "fail_action_end_project": "End project",
+                "fail_action_restart_scene": "Restart scene",
+                "fail_action_goto_scene": "Go to scene",
+                "fail_action_goto_scene_target": "Target scene",
+                "fail_action_goto_scene_objective": "Target objective",
+                "fail_action_first_objective": "(first objective)",
+                "fade_out": "Fade out",
+                "fade_out_tooltip": "Fade to black after the banner so the next action is hidden.",
                 "nested_error": {
                     "title": "Nested mission_start",
                     "body": "Scene '{}' objective #{} tried to start mission mode while it was already active. Stopping project."
