@@ -41,12 +41,23 @@ class EntitiesWindow : public Window {
 
 	void open() override {
 		Window::open();
-		setSelectedEntityIndex(-1);
+		// Restore previously selected entity (if any). close() tore down EntityOrbitCamera and EntityInfoPanel;
+		// re-calling setSelectedEntityIndex with the saved index re-activates them. Mirrors ObjectivesWindow's
+		// implicit persistence (it has no open() override and never resets m_selectedObjectiveIndex).
+		if (m_selectedEntityIndex >= 0) {
+			setSelectedEntityIndex(m_selectedEntityIndex);
+		}
 	}
 
 	void close() override;
 
 	int getSelectedEntityIndex() const { return m_selectedEntityIndex; }
 	void setSelectedEntityIndex(int index);
-	void setWindowType(EntitiesWindowType type) { m_windowType = type; }
+	void setWindowType(EntitiesWindowType type) {
+		if (m_windowType == type) {
+			return;
+		}
+		m_windowType = type;
+		setSelectedEntityIndex(-1);
+	}
 };

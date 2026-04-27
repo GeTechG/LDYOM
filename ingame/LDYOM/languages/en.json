@@ -219,7 +219,11 @@
         "hk_unlockPlayer": "Unlock Player",
         "hk_unlockPlayer_desc": "Unlock player controls",
         "hk_saveScene": "Save Scene",
-        "hk_saveScene_desc": "Save the current scene to disk"
+        "hk_saveScene_desc": "Save the current scene to disk",
+        "hk_openEntitiesEditor": "Open Entities Editor",
+        "hk_openEntitiesEditor_desc": "Toggle the entities editor window. Disabled while a project is playing or no project is loaded.",
+        "hk_openObjectivesEditor": "Open Objectives Editor",
+        "hk_openObjectivesEditor_desc": "Toggle the objectives editor window. Disabled while a project is playing or no project is loaded."
     },
     "addons_settings": {
         "title": "{} Addons Settings",

@@ -44,6 +44,35 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 	const ImVec2 squareButtonSize(buttonSize, buttonSize);
 	const ImVec2 availContentSize = ImGui::GetContentRegionAvail();
 
+	// Window-local Alt+digit shortcuts: Alt+1..Alt+9 switch entity type. Bare digits are reserved for the in-game
+	// EntityGizmo (TRANSLATE/ROTATE), so the chord requires Alt. The handler is implicitly scoped to "entities window
+	// is open and rendering" (it lives inside renderContent). We deliberately do NOT gate on IsWindowFocused or
+	// IsAnyItemActive because EntityInfoPanel is a separate sibling ImGui window — when the user interacts with the
+	// info panel or the in-game viewport, focus leaves the entities window and the chord would otherwise be swallowed.
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		const bool altOnly = io.KeyAlt && !io.KeyCtrl && !io.KeyShift && !io.KeySuper;
+		if (altOnly && !io.WantTextInput) {
+			static const std::pair<ImGuiKey, EntitiesWindowType> keyTypeMap[] = {
+				{ImGuiKey_1, EntitiesWindowType_Actor},
+				{ImGuiKey_2, EntitiesWindowType_Vehicle},
+				{ImGuiKey_3, EntitiesWindowType_Train},
+				{ImGuiKey_4, EntitiesWindowType_Object},
+				{ImGuiKey_5, EntitiesWindowType_Pickup},
+				{ImGuiKey_6, EntitiesWindowType_Firework},
+				{ImGuiKey_7, EntitiesWindowType_Particle},
+				{ImGuiKey_8, EntitiesWindowType_Checkpoint},
+				{ImGuiKey_9, EntitiesWindowType_Audio},
+			};
+			for (const auto& [key, targetType] : keyTypeMap) {
+				if (ImGui::IsKeyPressed(key, /*repeat=*/false)) {
+					window->setWindowType(targetType);
+					break;
+				}
+			}
+		}
+	}
+
 	auto& entities = ScenesManager::instance().getCurrentScene().entities;
 
 	if (ImGui::BeginChild("TopButtons", ImVec2(-1.0f, buttonSize), false)) {
@@ -457,18 +486,16 @@ void EntitiesWindow::setSelectedEntityIndex(int index) {
 		EntityOrbitCamera::deactivate(true);
 	}
 
-	m_selectedEntityIndex = index;
-
-	// Activate orbit camera for newly selected entity
 	auto& entities = ScenesManager::instance().getCurrentScene().entities;
-	if (index != -1 && index < static_cast<int>(entities.size())) {
+	if (index >= 0 && index < static_cast<int>(entities.size())) {
+		m_selectedEntityIndex = index;
 		auto& entity = EntitiesManager::instance().getUnsafeEntity(index);
 		EntityOrbitCamera::activate(&entity, index);
-
-		// Show info panel when entity is selected
 		EntityInfoPanel::show(&entity);
 	} else {
-		// Hide info panel when no entity is selected
+		// Out-of-range or -1 → normalize to -1 so callers that read this field afterwards
+		// (including open() restoring the previous selection) see a consistent state.
+		m_selectedEntityIndex = -1;
 		EntityInfoPanel::hide();
 	}
 }

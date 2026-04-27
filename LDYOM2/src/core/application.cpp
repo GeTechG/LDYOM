@@ -88,6 +88,28 @@ void Application::initialize() {
 			}
 		});
 
+		Hotkeys::instance().addHotkeyCallback("openEntitiesEditor", []() {
+			if (ProjectPlayer::instance().isPlaying() || ProjectsManager::instance().getCurrentProjectIndex() == -1)
+				return;
+			if (WindowManager::instance().isWindowOpen("entities"))
+				WindowManager::instance().closeWindow("entities");
+			else {
+				WindowManager::instance().closeAllWindows();
+				WindowManager::instance().openWindow("entities");
+			}
+		});
+
+		Hotkeys::instance().addHotkeyCallback("openObjectivesEditor", []() {
+			if (ProjectPlayer::instance().isPlaying() || ProjectsManager::instance().getCurrentProjectIndex() == -1)
+				return;
+			if (WindowManager::instance().isWindowOpen("objectives"))
+				WindowManager::instance().closeWindow("objectives");
+			else {
+				WindowManager::instance().closeAllWindows();
+				WindowManager::instance().openWindow("objectives");
+			}
+		});
+
 		initWindows();
 
 		// Register `node_tasks` Lua table bound to the node editor's own LuaTaskManager.

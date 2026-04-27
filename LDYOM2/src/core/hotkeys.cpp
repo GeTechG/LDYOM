@@ -30,6 +30,16 @@ void Hotkeys::initialize() {
 	});
 
 	this->m_hotkeys.emplace_back(ImHotKey::HotKey{
+		.functionName = "openEntitiesEditor",
+		.functionKeys = 0xFFFFFF19, // P
+	});
+
+	this->m_hotkeys.emplace_back(ImHotKey::HotKey{
+		.functionName = "openObjectivesEditor",
+		.functionKeys = 0xFFFFFF18, // O
+	});
+
+	this->m_hotkeys.emplace_back(ImHotKey::HotKey{
 		.functionName = "saveScene",
 		.functionKeys = 0xFFFF1F1D, // Ctrl+S
 	});

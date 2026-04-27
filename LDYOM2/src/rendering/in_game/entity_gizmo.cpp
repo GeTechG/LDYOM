@@ -30,9 +30,10 @@ void EntityGizmo::render(CVector eye, CVector center) noexcept {
 
 	ImGuizmo::BeginFrame();
 
-	// Keyboard shortcuts for mode switching (only when not typing)
+	// Keyboard shortcuts for mode switching (only when not typing). The !io.KeyAlt guard prevents Alt+digit chords
+	// (used by EntitiesWindow for tab navigation) from also firing gizmo operations.
 	ImGuiIO& io = ImGui::GetIO();
-	if (!io.WantTextInput) {
+	if (!io.WantTextInput && !io.KeyAlt) {
 		if (ImGui::IsKeyPressed(ImGuiKey_1))
 			m_currentOperation = GizmoOperation::TRANSLATE;
 		if (ImGui::IsKeyPressed(ImGuiKey_2))

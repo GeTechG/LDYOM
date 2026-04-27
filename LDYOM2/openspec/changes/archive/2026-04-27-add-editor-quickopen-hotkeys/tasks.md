@@ -1,0 +1,55 @@
+## 1. Verify prerequisites
+
+- [x] 1.1 Inspect `src/utils/imHotKey.h` `Keys[]` table to find the `scanCodePage1` value for `P` and `O`. The existing entries in `Hotkeys::initialize()` use `0xFFFFFFxx` literals (e.g. `0xFFFFFF17` for `I`, `0xFFFFFF3E` for `F4`); record the equivalent literals for `P` and `O` so they can be hardcoded with the same shape. (Note: an earlier iteration used bare `E` for `openEntitiesEditor` but was changed to `P` because `E` is read every frame by `EntityOrbitCamera::handleInput` as the WASDQE move-down axis — pressing the hotkey nudged the selected entity downward.)
+- [x] 1.2 Confirm `WindowManager::closeWindow(string_view)`, `WindowManager::isWindowOpen(string_view)`, and `WindowManager::closeAllWindows()` exist (verified in `window_manager.h:74-84`) and that the entity and objective editor window ids are `"entities"` and `"objectives"` (grep `addWindow(.*"entities"` in `src/rendering/windows/init.cpp` to confirm).
+- [x] 1.3 Grep `../ingame/languages/en.json` for `hotkeys.openEditor`, `hotkeys.toggleDebugInfo`, `hotkeys.teleportToMarker`, `hotkeys.unlockPlayer`, `hotkeys.saveScene` to confirm the localization-key convention used by the existing five entries; the two new keys MUST follow the same shape.
+- [x] 1.4 Confirm `EntitiesWindow::open()` (in `entities.h:42-45`) does NOT reset `m_windowType` — only `m_selectedEntityIndex`. If a future refactor adds a reset, the spec's last-used-mode requirement breaks; record this as a precondition for the change.
+
+## 2. Register hotkey defaults in `src/core/hotkeys.cpp`
+
+- [x] 2.1 Add a sixth `m_hotkeys.emplace_back` block in `Hotkeys::initialize()` between the existing `unlockPlayer` (F6) and `saveScene` (Ctrl+S) entries with `.functionName = "openEntitiesEditor"` and `.functionKeys = 0xFFFFFF19` (P — see task 1.1 for the rationale).
+- [x] 2.2 Add a seventh `emplace_back` directly after the new `openEntitiesEditor` entry with `.functionName = "openObjectivesEditor"` and `.functionKeys = <scancode literal for O from task 1.1>`.
+- [x] 2.3 Verify nothing else in `Hotkeys::initialize()` needs to change — the load-from-settings loop (`hotkeys.cpp:40-46`) iterates over `m_hotkeys.size()` and the `saveHotkey(i)` call inside it persists every binding back to settings, so the two new entries inherit the same load/persist path automatically.
+
+## 3. Wire the toggle callbacks in `src/core/application.cpp`
+
+- [x] 3.1 After the existing `Hotkeys::instance().addHotkeyCallback("saveScene", ...)` block (around `application.cpp:85-89`), add a new block for `"openEntitiesEditor"` whose lambda body matches the spec's gating + toggle requirement: early-return if `ProjectPlayer::instance().isPlaying()` or `ProjectsManager::instance().getCurrentProjectIndex() == -1`; if `WindowManager::instance().isWindowOpen("entities")` then `WindowManager::instance().closeWindow("entities")`; otherwise `WindowManager::instance().closeAllWindows()` followed by `WindowManager::instance().openWindow("entities")`.
+- [x] 3.2 Add the symmetric block for `"openObjectivesEditor"` against the `"objectives"` window id.
+- [x] 3.3 Verify the includes already cover `WindowManager`, `ProjectPlayer`, and `ProjectsManager` (existing callbacks already use them); no new `#include` directives should be needed.
+
+## 4. Window-local digit handler in `src/rendering/windows/entities.cpp`
+
+- [x] 4.1 At the very top of `EntitiesWindow::renderContent` (after the local `spacing` / `buttonSize` declarations at `entities.cpp:42-45`, before the `BeginChild("TopButtons", ...)` call), add a guarded block. The guard is `io.KeyAlt && !io.KeyCtrl && !io.KeyShift && !io.KeySuper && !io.WantTextInput`. (The originally specified `IsWindowFocused` / `IsAnyItemActive` checks were dropped during testing — `EntityInfoPanel` is a sibling ImGui window, so focus leaves the entities window as soon as the user touches the info panel or in-game gizmo, which would silently swallow the chord.)
+- [x] 4.2 Inside the guarded block (also gated on pure-Alt: `io.KeyAlt && !io.KeyCtrl && !io.KeyShift && !io.KeySuper`), define a static-or-inline mapping from `ImGuiKey_1..ImGuiKey_9` to the nine `EntitiesWindowType` values in the spec's order (`Alt+1=Actor`, `Alt+2=Vehicle`, `Alt+3=Train`, `Alt+4=Object`, `Alt+5=Pickup`, `Alt+6=Firework`, `Alt+7=Particle`, `Alt+8=Checkpoint`, `Alt+9=Audio`). Iterate the mapping with `ImGui::IsKeyPressed(key, /*repeat=*/false)`; on a hit, call `window->setWindowType(targetType)` and `window->setSelectedEntityIndex(-1)`. Break after the first hit so a single frame cannot trigger two switches. (Note: `IsKeyChordPressed` was tried first but its routing layer swallowed the first chord press — explicit IO-flag check is the working pattern.)
+- [x] 4.3 Confirm `setSelectedEntityIndex` is callable here (it is `public` per `entities.h:50`) and that `setWindowType` is also `public` per `entities.h:51`.
+- [x] 4.4 Skip the no-op case (digit pressed equals current mode) by comparing `targetType` against `window->m_windowType` *before* calling the setters — this is not behaviorally required by the spec (the spec permits resetting selection on a no-op), but it avoids a spurious selection flicker.
+- [x] 4.5 In `src/rendering/in_game/entity_gizmo.cpp`, gate the existing bare-digit handlers (`IsKeyPressed(ImGuiKey_1)` for TRANSLATE, `IsKeyPressed(ImGuiKey_2)` for ROTATE, `IsKeyPressed(ImGuiKey_G)` for mode toggle) on `!io.KeyAlt` so that `Alt+digit` chords used by the entities editor do not also fire gizmo operations.
+- [x] 4.6 In `src/rendering/windows/entities.h`, change `EntitiesWindow::open()` to NOT reset `m_selectedEntityIndex` to `-1`. Instead: if `m_selectedEntityIndex >= 0` after `Window::open()`, call `setSelectedEntityIndex(m_selectedEntityIndex)` so `EntityOrbitCamera` and `EntityInfoPanel` (torn down by `close()`) are re-activated for the previously selected entity. Mirrors `ObjectivesWindow`'s implicit persistence.
+- [x] 4.7 In `src/rendering/windows/entities.cpp`, harden `setSelectedEntityIndex` to normalize out-of-range indices to `-1` (the previous implementation set `m_selectedEntityIndex = index` unconditionally, which could leave the field stale if entities were removed while the window was closed). The reopen path in 4.6 relies on this normalization.
+
+## 5. Localization
+
+- [x] 5.1 Add a localized display-name string for `openEntitiesEditor` in `../ingame/languages/en.json` under the key path identified in task 1.3. Suggested English text: `"Open Entities Editor"`. The exact key MUST mirror whatever the existing five hotkeys use (e.g. `hotkeys.openEntitiesEditor.name` or `hotkeys.openEntitiesEditor` depending on convention).
+- [x] 5.2 Add the symmetric string for `openObjectivesEditor`. Suggested English text: `"Open Objectives Editor"`.
+- [x] 5.3 Do NOT add localization for the digit-key navigation; it is a hidden affordance and not user-visible in the hotkey-editor popup.
+
+## 6. Verification
+
+- [x] 6.1 Build the project in Debug configuration (per CLAUDE.md: always build Debug).
+- [x] 6.2 Manually verify: load a project, close every editor window, press `P` — the entities editor opens. Press `P` again — it closes (toggle restored now that the default is no longer `E`). Press `P` while the objectives editor is open — the objectives editor closes and the entities editor opens. Verify that with an entity selected, pressing `P` does NOT also nudge the entity downward, and that bare `E` in orbit mode still works as the move-down axis without affecting the hotkey.
+- [x] 6.3 Manually verify `O` against the objectives editor: press once to open, press again to close (toggle), press while entities editor is open — entities closes and objectives opens.
+- [x] 6.4 Manually verify gating: start project playback (`Play` button or `F5`/`F6` interactions as relevant), then press `P` and `O` — neither opens an editor.
+- [x] 6.5 Manually verify gating: from the application startup state with no project loaded (project index `-1`), press `P` and `O` — neither opens an editor. The `project_manager` window does NOT open via these hotkeys.
+- [x] 6.6 Manually verify Alt+digit navigation: open entities editor, press `Alt+2` — switches to Vehicle. Press `Alt+5` — switches to Pickup. Press `Alt+9` — switches to Audio. Then press bare `2` (no Alt) with an entity selected — `EntityGizmo` toggles to ROTATE but `m_windowType` MUST NOT change.
+- [x] 6.7 Manually verify Alt+digit inertness inside text input: open entities editor, double-click an entity name (or open a rename buffer per the existing rename UX), press `Alt+5` — the mode is unchanged.
+- [x] 6.8 Manually verify Alt+digit inertness during a `DragInt`: open entities editor, select an entity with a numeric component (e.g. an actor's health DragInt), click-drag and press `Alt+1` while dragging — the mode does not switch.
+- [x] 6.9 Manually verify in-session persistence of mode: switch to Vehicle, close the editor with `P`, reopen with `P` — lands on Vehicle. Restart the game (kill process, restart) and press `P` — lands on Actor (defaults reasserted, no cross-session persistence per the design's non-goal).
+- [x] 6.13 Manually verify in-session persistence of selection: open entities editor, select an entity (e.g. Actor #2 — orbit camera + info panel activate for it), close the editor with `P`, reopen with `P` — lands on Actor mode with Actor #2 selected, orbit camera + info panel re-activated. Then close, delete that entity through some other path (or load a different scene), reopen — selection is reset to `-1`, no orbit camera, info panel hidden.
+- [x] 6.10 Manually verify the hotkey-editor popup: open it via the existing path; the left-panel list MUST show two new rows for `openEntitiesEditor` and `openObjectivesEditor` with the localized names from task 5; rebind one of them to `Ctrl+E`, press `Set`, close the popup, restart the application, confirm the rebound combination is what fires.
+- [x] 6.11 Manually verify settings persistence: inspect `settings.json` after first run on a fresh install — `hotkeys.openEntitiesEditor` and `hotkeys.openObjectivesEditor` keys are present with their default values written by the `saveHotkey(i)` loop.
+- [x] 6.12 Manually verify GTA-overlap edge case: with no project loaded (project index `-1`) and not in playback, press `P` mid-gameplay (where GTA's native `P` opens the pause/map menu). The LDYOM hotkey is gated to a no-op, so only GTA's pause should fire. With a project loaded and not playing, pressing `P` opens the entities editor (matching the existing `I`-opens-menu-mid-gameplay pattern). The user can rebind in the popup if undesired.
+
+## 7. Validate the change artifacts
+
+- [x] 7.1 Run `openspec validate add-editor-quickopen-hotkeys --strict` and resolve any warnings before declaring the change ready for implementation.
+- [x] 7.2 Run `openspec show add-editor-quickopen-hotkeys` and skim the rendered view for clarity — the change name, the four artifacts (proposal, design, tasks, spec), and the requirement count should all render correctly.
