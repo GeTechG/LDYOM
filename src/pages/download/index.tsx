@@ -5,7 +5,7 @@ import Beta0_8_0_Preview_9 from "@site/src/pages/download/versions/beta0_8_0_Pre
 import Beta_0_7_2 from "@site/src/pages/download/versions/beta_0_7_2";
 import Beta_0_7_1 from "@site/src/pages/download/versions/beta_0_7_1";
 import Beta_0_7_0 from "@site/src/pages/download/versions/beta_0_7_0";
-import Beta0_9_0 from "./versions/beta0_9_0";
+import Beta0_9 from "./versions/beta0_9";
 
 
 export default function Downloads(): JSX.Element {
@@ -13,7 +13,7 @@ export default function Downloads(): JSX.Element {
         <Layout
             description="Create your world">
             <div>
-                <Beta0_9_0/>
+                <Beta0_9/>
                 <Beta0_8_0_Preview_10/>
                 <Beta0_8_0_Preview_9/>
                 <Beta_0_7_2/>

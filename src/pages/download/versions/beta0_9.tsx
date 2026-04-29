@@ -2,8 +2,8 @@ import Link from "@docusaurus/Link";
 import styles from "@site/src/pages/download/index.module.css";
 import VerInfoLDYOM from "@site/src/pages/download/verInfoLDYOM";
 
-function Beta0_9_0() {
-    return (<VerInfoLDYOM version="Beta 0.9.1" date=""
+function Beta0_9() {
+    return (<VerInfoLDYOM version="Beta 0.9.2" date=""
                          changes={
                             <ul>
                             </ul>
@@ -16,4 +16,4 @@ function Beta0_9_0() {
                          blogLink=""/>);
 }
 
-export default Beta0_9_0;
+export default Beta0_9;
