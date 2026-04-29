@@ -1,8 +1,10 @@
 #include "entities_manager.h"
+#include "../data/components/objective_specific.h"
 #include "../utils/vector_utils.h"
 #include "components_manager.h"
 #include "localization.h"
 #include "scenes_manager.h"
+#include "settings.h"
 #include <extensions/ScriptCommands.h>
 #include <plugin.h>
 #include <stdexcept>
@@ -52,6 +54,39 @@ std::unique_ptr<Entity> EntitiesManager::createEmptyEntity() {
 
 int EntitiesManager::addNewEntityFromTemplate(const std::string& templateType) {
 	std::unique_ptr<Entity> entity = createEntityFromTemplate(templateType);
+	auto& entities = ScenesManager::instance().getUnsafeCurrentScene().entities;
+	entities.emplace_back(std::move(entity));
+	return static_cast<int>(entities.size() - 1);
+}
+
+int EntitiesManager::addNewEntityFromTemplateWithEditorDefaults(const std::string& templateType, std::optional<std::string> defaultSpawnObjectiveUuid) {
+	bool auto_attach = Settings::instance().getSetting<bool>("editor.entities.auto_attach_objective_specific", true);
+	bool auto_link = Settings::instance().getSetting<bool>("editor.entities.auto_link_spawn_objective", true);
+
+	auto templatePtr = getEntityTemplate(templateType);
+	if (!templatePtr) {
+		throw std::runtime_error("Entity template not found: " + templateType);
+	}
+
+	std::unique_ptr<Entity> entity = createEmptyEntity();
+
+	for (const auto& componentType : *templatePtr) {
+		if (componentType == components::ObjectiveSpecific::TYPE && !auto_attach) {
+			continue;
+		}
+		entity->addComponent(ComponentsManager::instance().createComponent(componentType));
+	}
+
+	auto osComponent = entity->getComponent(components::ObjectiveSpecific::TYPE);
+	if (osComponent) {
+		auto os = components::ObjectiveSpecific::cast(osComponent);
+		if (!auto_link) {
+			os->spawnObjective = "";
+		} else if (auto_link && defaultSpawnObjectiveUuid.has_value()) {
+			os->spawnObjective = *defaultSpawnObjectiveUuid;
+		}
+	}
+
 	auto& entities = ScenesManager::instance().getUnsafeCurrentScene().entities;
 	entities.emplace_back(std::move(entity));
 	return static_cast<int>(entities.size() - 1);

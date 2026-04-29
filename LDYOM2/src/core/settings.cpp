@@ -17,7 +17,8 @@ void Settings::initialize() {
 	                  {"hotkeys", std::unordered_map<std::string, std::string>()},
 	                  {"display_scale", 1.f},
 	                  {"theme", "default"},
-	                  {"active_addons", {"skic.core"}}};
+	                  {"active_addons", {"skic.core"}},
+	                  {"editor", {{"entities", {{"auto_attach_objective_specific", true}, {"auto_link_spawn_objective", true}}}}}};
 
 	std::filesystem::path configPath(LDYOM_PATH(CONFIG_FILE_PATH));
 	if (exists(configPath)) {

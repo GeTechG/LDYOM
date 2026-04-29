@@ -1,6 +1,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "entities.h"
 #include "entity_info_panel.h"
+#include "objectives.h"
 #include "logger.h"
 #include <algorithm>
 #include <angles.h>
@@ -15,9 +16,12 @@
 #include <imgui_widgets/imgui_widgets.h>
 #include <in_game/entity_orbit_camera.h>
 #include <localization.h>
+#include <optional>
 #include <plugin.h>
 #include <rotation_utils.h>
 #include <scenes_manager.h>
+#include <settings.h>
+#include <string>
 #include <utils/imgui_configurate.h>
 #include <utils/ui_scale.h>
 #include <uuid_wrap.h>
@@ -85,50 +89,60 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 
 		if (ImGui::Button(ICON_FA_PLUS_LARGE, squareButtonSize)) {
 			int newEntityIndex = -1;
+			std::optional<std::string> defaultSpawnObjUuid;
+			if (Settings::instance().getSetting<bool>("editor.entities.auto_link_spawn_objective", true)) {
+				if (auto objWinOpt = WindowManager::instance().getWindowAs<ObjectivesWindow>("objectives")) {
+					int selIdx = (*objWinOpt)->getSelectedObjectiveIndex();
+					auto& objectives = ScenesManager::instance().getUnsafeCurrentScene().objectives.data;
+					if (selIdx >= 0 && selIdx < static_cast<int>(objectives.size())) {
+						defaultSpawnObjUuid = uuids::to_string(objectives[selIdx].id);
+					}
+				}
+			}
 			switch (window->m_windowType) {
 				case EntitiesWindowType_Actor:
 					{
-						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("actor");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplateWithEditorDefaults("actor", defaultSpawnObjUuid);
 						break;
 					}
 				case EntitiesWindowType_Vehicle:
 					{
-						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("vehicle");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplateWithEditorDefaults("vehicle", defaultSpawnObjUuid);
 						break;
 					}
 				case EntitiesWindowType_Train:
 					{
-						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("train");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplateWithEditorDefaults("train", defaultSpawnObjUuid);
 						break;
 					}
 				case EntitiesWindowType_Object:
 					{
-						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("object");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplateWithEditorDefaults("object", defaultSpawnObjUuid);
 						break;
 					}
 				case EntitiesWindowType_Pickup:
 					{
-						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("pickup");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplateWithEditorDefaults("pickup", defaultSpawnObjUuid);
 						break;
 					}
 				case EntitiesWindowType_Firework:
 					{
-						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("firework");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplateWithEditorDefaults("firework", defaultSpawnObjUuid);
 						break;
 					}
 				case EntitiesWindowType_Particle:
 					{
-						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("particle");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplateWithEditorDefaults("particle", defaultSpawnObjUuid);
 						break;
 					}
 				case EntitiesWindowType_Checkpoint:
 					{
-						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("checkpoint");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplateWithEditorDefaults("checkpoint", defaultSpawnObjUuid);
 						break;
 					}
 				case EntitiesWindowType_Audio:
 					{
-						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplate("audio");
+						newEntityIndex = EntitiesManager::instance().addNewEntityFromTemplateWithEditorDefaults("audio", defaultSpawnObjUuid);
 						break;
 					}
 			}

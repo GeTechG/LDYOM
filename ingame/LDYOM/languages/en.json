@@ -162,7 +162,19 @@
         "interface_theme": "Interface Theme",
         "display_scale": "Display Scale",
         "edit_hotkeys": "Edit Hotkeys",
-        "close": "Close"
+        "close": "Close",
+        "entity_creation": {
+            "section_header": "Entity creation",
+            "auto_attach": {
+                "label": "Auto-attach Objective Lifecycle",
+                "tooltip": "When ON, every newly created entity gets an Objective Lifecycle component (spawn/despawn tied to objectives). Turn OFF if you manage entity lifetimes via nodes or Lua. Existing entities are not changed."
+            },
+            "auto_link": {
+                "label": "Auto-link to Selected Objective",
+                "tooltip": "When ON, a newly created entity is linked to the currently selected objective (or the last objective if none is selected). Turn OFF to leave the spawn objective empty so the entity exists from scene start.",
+                "disabled_hint": "Requires Auto-attach Objective Lifecycle"
+            }
+        }
     },
     "create_new_project": {
         "title": "Create New Project",

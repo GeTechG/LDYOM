@@ -7,6 +7,7 @@
 #include <localization.h>
 #include <utils/imgui_configurate.h>
 #include <utils/theme_loader.h>
+#include <settings.h>
 
 // Setup options for dropdowns
 const float displayScales[] = {0.25f, 0.5f, 0.75f, 1.f, 1.1f, 1.25f, 1.5f, 1.75f, 2.f};
@@ -92,6 +93,36 @@ void QuickSettings::renderContent(Window* window) {
 	auto& hotkeys = Hotkeys::instance().getHotkeys();
 	ImHotKey::Edit(hotkeys.data(), hotkeys.size(), hotkeysEditorTitle.c_str(),
 	               [](int index) { Hotkeys::instance().saveHotkey(index); });
+
+	// Entity Creation Defaults
+	ImGui::SeparatorText(_("quick_settings.entity_creation.section_header").c_str());
+
+	bool autoAttach = Settings::instance().getSetting<bool>("editor.entities.auto_attach_objective_specific", true);
+	if (ImGui::Checkbox(_("quick_settings.entity_creation.auto_attach.label").c_str(), &autoAttach)) {
+		Settings::instance().setSetting<bool>("editor.entities.auto_attach_objective_specific", autoAttach);
+	}
+	if (ImGui::BeginItemTooltip()) {
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::TextUnformatted(_("quick_settings.entity_creation.auto_attach.tooltip").c_str());
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
+
+	ImGui::BeginDisabled(!autoAttach);
+	bool autoLink = Settings::instance().getSetting<bool>("editor.entities.auto_link_spawn_objective", true);
+	if (ImGui::Checkbox(_("quick_settings.entity_creation.auto_link.label").c_str(), &autoLink)) {
+		Settings::instance().setSetting<bool>("editor.entities.auto_link_spawn_objective", autoLink);
+	}
+	if (ImGui::BeginItemTooltip()) {
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::TextUnformatted(_("quick_settings.entity_creation.auto_link.tooltip").c_str());
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
+	if (!autoAttach) {
+		ImGui::TextDisabled(_("quick_settings.entity_creation.auto_link.disabled_hint").c_str());
+	}
+	ImGui::EndDisabled();
 
 	ImGui::Dummy(ImVec2(0.0f, ImGui::GetContentRegionAvail().y - ImGui::GetFrameHeight() -
 	                              ImGui::GetStyle().FramePadding.y * 2));

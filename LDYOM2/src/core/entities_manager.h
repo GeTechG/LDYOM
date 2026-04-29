@@ -1,5 +1,6 @@
 #pragma once
 #include <entity.h>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -26,6 +27,7 @@ class EntitiesManager {
 	std::unique_ptr<Entity> createEntityFromTemplate(const std::string& templateType);
 	std::unique_ptr<Entity> createEmptyEntity();
 	int addNewEntityFromTemplate(const std::string& templateType);
+	int addNewEntityFromTemplateWithEditorDefaults(const std::string& templateType, std::optional<std::string> defaultSpawnObjectiveUuid = std::nullopt);
 	int addNewEmptyEntity();
 
 	// Entity management within the current scene
