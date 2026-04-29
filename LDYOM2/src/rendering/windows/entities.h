@@ -21,6 +21,7 @@ class EntitiesWindow : public Window {
 	int m_indexToRemove = -1;
 	std::string m_renameBuffer = "";
 	EntitiesWindowType m_windowType = EntitiesWindowType_Actor;
+	bool m_hintRequested = false; // one-shot guard for demo hint
 
 	// Отложенные операции с компонентами
 	struct PendingComponentOperation {

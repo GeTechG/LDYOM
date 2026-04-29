@@ -15,6 +15,7 @@
 #include <imgui_internal.h>
 #include <imgui_widgets/imgui_widgets.h>
 #include <in_game/entity_orbit_camera.h>
+#include <hints.h>
 #include <localization.h>
 #include <optional>
 #include <plugin.h>
@@ -75,6 +76,22 @@ void EntitiesWindow::renderContent(EntitiesWindow* window) {
 				}
 			}
 		}
+	}
+
+	// Demo hint: shown once on first open (hint.example.entities_first_open)
+	if (!window->m_hintRequested && Hints::instance().shouldShow("hint.example.entities_first_open")) {
+		ImGui::OpenPopup("##hint_example_entities_first_open");
+		window->m_hintRequested = true;
+	}
+	if (ImGui::BeginPopupModal("##hint_example_entities_first_open", nullptr,
+	                           ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar)) {
+		ImGui::TextUnformatted(_("hint.example.body").c_str());
+		ImGui::Spacing();
+		if (ImGui::Button(_("ok").c_str())) {
+			Hints::instance().markShown("hint.example.entities_first_open");
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
 	}
 
 	auto& entities = ScenesManager::instance().getCurrentScene().entities;

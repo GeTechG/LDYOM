@@ -60,9 +60,13 @@ void Application::initialize() {
 				if (WindowManager::instance().isAnyWindowOpen()) {
 					WindowManager::instance().closeAllWindows();
 				} else {
-					if (currentProjectIndex == -1)
-						WindowManager::instance().openWindow("project_manager");
-					else
+					if (currentProjectIndex == -1) {
+						if (!Settings::instance().getSetting<bool>("onboarding.completed", false)) {
+							WindowManager::instance().openWindow("welcome");
+						} else {
+							WindowManager::instance().openWindow("project_manager");
+						}
+					} else
 						WindowManager::instance().openWindow("main_menu");
 				}
 			}

@@ -16,6 +16,7 @@
 #include "windows/info_window.h"
 #include "windows/project_manager.h"
 #include "windows/quick_settings.h"
+#include "windows/welcome.h"
 #include "windows/scene_settings.h"
 #include "windows/scenes.h"
 #include <logger.h>
@@ -38,6 +39,7 @@ void initWindows() {
 	WindowManager::instance().addWindow("tools_window", std::make_unique<ToolsWindow>());
 	WindowManager::instance().addWindow("global_vars", std::make_unique<GlobalVarsWindow>());
 	WindowManager::instance().addWindow("info_window", std::make_unique<InfoWindow>());
+	WindowManager::instance().addWindow("welcome", std::make_unique<Welcome>());
 
 	LDYOM_INFO("Windows initialized");
 }

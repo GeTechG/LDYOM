@@ -163,6 +163,7 @@
         "display_scale": "Display Scale",
         "edit_hotkeys": "Edit Hotkeys",
         "close": "Close",
+        "continue": "Continue",
         "entity_creation": {
             "section_header": "Entity creation",
             "auto_attach": {
@@ -1658,6 +1659,24 @@
     },
     "welcome": {
         "message": "Welcome to LDYOM {}!",
-        "open_hint": "Press ~y~{}~w~ to open the main menu"
+        "open_hint": "Press ~y~{}~w~ to open the main menu",
+        "title": "Welcome to LDYOM",
+        "intro": "LDYOM is a mission editor for GTA San Andreas. Before you start creating missions, choose a preset that fits your workflow.",
+        "preset_choice_explain": "Select the preset that best matches your experience level. You can adjust these settings later in Quick Settings.",
+        "preset": {
+            "simple": {
+                "label": "Simple",
+                "description": "Recommended for beginners. Entities are automatically linked to objectives, making mission setup faster and easier."
+            },
+            "advanced": {
+                "label": "Advanced",
+                "description": "For experienced users. Full manual control over entity lifetimes and objective links. Ideal for complex missions."
+            }
+        }
+    },
+    "hint": {
+        "example": {
+            "body": "This is an example one-shot hint. Click Got it to dismiss."
+        }
     }
 }

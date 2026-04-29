@@ -33,6 +33,11 @@ void ModalPopupWindow::render() {
 
 void ModalPopupWindow::open() {
 	this->m_needOpen = true;
+	// Also flip m_open synchronously so isAnyWindowOpen()/the render-loop gate count this
+	// popup as open before its render() runs and consumes m_needOpen. Otherwise opening a
+	// modal popup while no other window is m_open=true (e.g. Welcome → QuickSettings handoff)
+	// leaves the loop with nothing to render and the popup never mounts.
+	this->m_open = true;
 	this->m_isAppering = true;
 }
 

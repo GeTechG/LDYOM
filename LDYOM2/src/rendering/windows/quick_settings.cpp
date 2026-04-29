@@ -8,11 +8,13 @@
 #include <utils/imgui_configurate.h>
 #include <utils/theme_loader.h>
 #include <settings.h>
+#include <window_manager.h>
 
 // Setup options for dropdowns
 const float displayScales[] = {0.25f, 0.5f, 0.75f, 1.f, 1.1f, 1.25f, 1.5f, 1.75f, 2.f};
 
 void QuickSettings::renderContent(Window* window) {
+	auto* self = static_cast<QuickSettings*>(window);
 	float windowWidth = ImGui::GetContentRegionAvail().x;
 	float windowHeight = ImGui::GetContentRegionAvail().y;
 
@@ -130,8 +132,19 @@ void QuickSettings::renderContent(Window* window) {
 	float buttonWidth = windowWidth * 0.3f;
 	ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
 
-	if (ImGui::Button(_("quick_settings.close").c_str(), ImVec2(buttonWidth, 0.f))) {
-		window->close();
+	if (self->isOnboardingMode()) {
+		if (ImGui::Button(_("quick_settings.continue").c_str(), ImVec2(buttonWidth, 0.f))) {
+			Settings::instance().setSetting<bool>("onboarding.completed", true);
+			// Welcome is still open in the background (project_manager pattern) — close it
+			// here so the user lands cleanly on project_manager.
+			WindowManager::instance().closeWindow("welcome");
+			window->close();
+			WindowManager::instance().openWindow("project_manager");
+		}
+	} else {
+		if (ImGui::Button(_("quick_settings.close").c_str(), ImVec2(buttonWidth, 0.f))) {
+			window->close();
+		}
 	}
 }
 
@@ -142,4 +155,20 @@ QuickSettings::QuickSettings()
 	setPosition(640, 360);
 	setPivot(0.5, 0.5);
 	setRenderCallback(QuickSettings::renderContent);
+}
+
+void QuickSettings::render() {
+	const bool wasOpen = isOpen();
+	ModalPopupWindow::render();
+	// ImGui can flip m_open=false directly via the &m_open ref in BeginPopupModal (Esc, X
+	// button) which bypasses our close() override. Catch that path so m_onboardingMode
+	// doesn't leak into a subsequent normal open of QuickSettings.
+	if (wasOpen && !isOpen() && m_onboardingMode) {
+		m_onboardingMode = false;
+	}
+}
+
+void QuickSettings::close() {
+	m_onboardingMode = false;
+	ModalPopupWindow::close();
 }
